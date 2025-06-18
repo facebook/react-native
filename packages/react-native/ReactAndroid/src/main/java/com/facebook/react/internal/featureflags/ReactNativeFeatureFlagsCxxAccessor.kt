@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8cb9eb082005be480c39272ffc7dde03>>
+ * @generated SignedSource<<15b001b69d9ea8bedbce2ce0f70bfa8e>>
  */
 
 /**
@@ -23,6 +23,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
+  private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
@@ -96,6 +97,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedEnabled()
       cxxNativeAnimatedEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun cxxNativeAnimatedRemoveJsSync(): Boolean {
+    var cached = cxxNativeAnimatedRemoveJsSyncCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedRemoveJsSync()
+      cxxNativeAnimatedRemoveJsSyncCache = cached
     }
     return cached
   }

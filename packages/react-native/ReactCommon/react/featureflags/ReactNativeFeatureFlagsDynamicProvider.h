@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e0fefd464f6f7f693eaad1b72441d1a>>
+ * @generated SignedSource<<0e532705f336a7e8fb21ae8056a17083>>
  */
 
 /**
@@ -70,6 +70,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedEnabled();
+  }
+
+  bool cxxNativeAnimatedRemoveJsSync() override {
+    auto value = values_["cxxNativeAnimatedRemoveJsSync"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
   }
 
   bool disableMainQueueSyncDispatchIOS() override {
