@@ -3685,7 +3685,6 @@ export type AccessibilityProps = $ReadOnly<{
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   \\"aria-label\\"?: ?Stringish,
-  experimental_accessibilityOrder?: ?Array<string>,
   accessibilityRole?: ?AccessibilityRole,
   role?: ?Role,
   accessibilityState?: ?AccessibilityState,
@@ -3833,6 +3832,7 @@ type ViewBaseProps = $ReadOnly<{
   hitSlop?: ?EdgeInsetsOrSizeProp,
   pointerEvents?: ?(\\"auto\\" | \\"box-none\\" | \\"box-only\\" | \\"none\\"),
   removeClippedSubviews?: ?boolean,
+  experimental_accessibilityOrder?: ?Array<string>,
 }>;
 export type ViewProps = $ReadOnly<{
   ...DirectEventProps,
