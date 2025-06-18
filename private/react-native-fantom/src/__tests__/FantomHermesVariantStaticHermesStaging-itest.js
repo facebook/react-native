@@ -6,12 +6,12 @@
  *
  * @flow strict-local
  * @format
- * @fantom_hermes_variant static_hermes_stable
+ * @fantom_hermes_variant static_hermes_staging
  */
 
 declare var HermesInternal: $HermesInternalType;
 
-describe('"@fantom_hermes_variant static_hermes_stable" in docblock', () => {
+describe('"@fantom_hermes_variant static_hermes_staging" in docblock', () => {
   it('should use Static Hermes', () => {
     expect(HermesInternal.getRuntimeProperties?.()['Static Hermes']).toBe(true);
   });

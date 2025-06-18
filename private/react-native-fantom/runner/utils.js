@@ -20,7 +20,8 @@ const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
 
 export enum HermesVariant {
   Hermes,
-  StaticHermes, // Static Hermes Stable
+  StaticHermesStable, // Static Hermes Stable
+  StaticHermesStaging, // Static Hermes Staging
   StaticHermesExperimental, // Static Hermes Trunk
 }
 
@@ -30,8 +31,10 @@ export function getBuckOptionsForHermes(
   switch (variant) {
     case HermesVariant.Hermes:
       return [];
-    case HermesVariant.StaticHermes:
+    case HermesVariant.StaticHermesStable:
       return ['-c hermes.static_hermes=stable'];
+    case HermesVariant.StaticHermesStaging:
+      return ['-c hermes.static_hermes=staging'];
     case HermesVariant.StaticHermesExperimental:
       return ['-c hermes.static_hermes=trunk'];
   }
@@ -41,8 +44,10 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
   switch (variant) {
     case HermesVariant.Hermes:
       return '//xplat/hermes/tools/hermesc:hermesc';
-    case HermesVariant.StaticHermes:
+    case HermesVariant.StaticHermesStable:
       return '//xplat/shermes/stable:hermesc';
+    case HermesVariant.StaticHermesStaging:
+      return '//xplat/shermes/staging:hermesc';
     case HermesVariant.StaticHermesExperimental:
       return '//xplat/static_h:hermesc';
   }
