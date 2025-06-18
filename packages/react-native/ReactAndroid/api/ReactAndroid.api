@@ -5336,6 +5336,15 @@ public abstract interface class com/facebook/react/viewmanagers/UnimplementedNat
 	public abstract fun setName (Landroid/view/View;Ljava/lang/String;)V
 }
 
+public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
+	public fun <init> (Lcom/facebook/react/uimanager/BaseViewManager;)V
+	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public abstract interface class com/facebook/react/viewmanagers/VirtualViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
+	public abstract fun setInitialHidden (Landroid/view/View;Z)V
+}
+
 public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
