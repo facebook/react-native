@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags cxxNativeAnimatedRemoveJsSync:*
  * @flow strict-local
  * @format
  */
@@ -16,6 +17,7 @@ import ensureInstance from '../../../src/private/__tests__/utilities/ensureInsta
 import * as Fantom from '@react-native/fantom';
 import {createRef} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('moving box by 100 points', () => {
@@ -73,11 +75,15 @@ test('moving box by 100 points', () => {
   Fantom.unstable_produceFramesForDuration(500);
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
-  expect(viewElement.getBoundingClientRect().x).toBe(100);
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
+    // TODO(T223344928): this shouldn't be neccessary
+    Fantom.runWorkLoop();
+  } else {
+    expect(viewElement.getBoundingClientRect().x).toBe(0);
+    Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+  }
 
-  // TODO: this shouldn't be needed but C++ Animated still schedules a React state update
-  // for synchronisation, even though it doesn't need to.
-  Fantom.runWorkLoop();
   expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
 
@@ -188,7 +194,7 @@ test('animated opacity', () => {
     0,
   );
 
-  // TODO: this shouldn't be neccessary but C++ Animated still schedules a React state update.
+  // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
   Fantom.runWorkLoop();
 
   expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
@@ -262,12 +268,18 @@ test('moving box by 50 points with offset 10', () => {
       .translateX,
   ).toBeCloseTo(60, 0.001);
 
-  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-    <rn-view transform='[{"translateX": 60.000000}]' />,
-  );
-
-  // TODO: this shouldn't be neccessary but C++ Animated still schedules a React state update.
-  Fantom.runWorkLoop();
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      <rn-view transform='[{"translateX": 60.000000}]' />,
+    );
+    // TODO(T223344928): this shouldn't be neccessary
+    Fantom.runWorkLoop();
+  } else {
+    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      <rn-view transform="[]" />,
+    );
+    Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+  }
 
   expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
     <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
@@ -360,7 +372,7 @@ describe('Value.flattenOffset', () => {
 
     expect(transform.translateY).toBeCloseTo(40, 0.001);
 
-    // TODO: this shouldn't be neccessary.
+    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
     Fantom.runWorkLoop();
   });
 });
@@ -459,7 +471,7 @@ describe('Value.extractOffset', () => {
     // Previously we set offset to 35. The final value is 35.
     expect(transform.translateY).toBeCloseTo(35, 0.001);
 
-    // TODO: this shouldn't be neccessary.
+    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
     Fantom.runWorkLoop();
   });
 });

@@ -10,6 +10,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/profiling/perfetto.h>
 #include <react/renderer/animated/drivers/AnimationDriver.h>
 #include <react/renderer/animated/drivers/AnimationDriverUtils.h>
@@ -658,7 +659,9 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
 
     if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
+      if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
+        finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
+      }
     }
   }
 
