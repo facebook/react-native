@@ -2,7 +2,7 @@
  * This file is generated, do not edit.
  * @generated
  *
- * @file_count 1199
+ * @file_count 1202
  * @generate-command: node tools/api/public-api.js
  */
 
@@ -3734,18 +3734,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
-/// @src {packages/react-native/React/CxxBridge/JSCExecutorFactory.h}:
-namespace facebook::react {
-class JSCExecutorFactory : public JSExecutorFactory {
- public:
-  explicit JSCExecutorFactory(JSIExecutor::RuntimeInstaller runtimeInstaller)
-      : runtimeInstaller_(std::move(runtimeInstaller)) {}
-  std::unique_ptr<JSExecutor> createJSExecutor(
-      std::shared_ptr<ExecutorDelegate> delegate,
-      std::shared_ptr<MessageQueueThread> jsQueue) override;
-};
-} // namespace facebook::react
-
 /// @src {packages/react-native/React/CxxBridge/NSDataBigString.h}:
 namespace facebook::react {
 class NSDataBigString : public JSBigString {
@@ -5149,11 +5137,6 @@ RCT_EXTERN const uint64_t RCTProfileTagAlways;
 /// @src {packages/react-native/React/Runtime/RCTHermesInstanceFactory.h}:
 extern "C" {
 JSRuntimeFactoryRef jsrt_create_hermes_factory(void);
-}
-
-/// @src {packages/react-native/React/Runtime/RCTJscInstanceFactory.h}:
-extern "C" {
-JSRuntimeFactoryRef jsrt_create_jsc_factory(void);
 }
 
 /// @src {packages/react-native/React/Views/RCTActivityIndicatorView.h}:
@@ -6810,7 +6793,6 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     std::shared_ptr<MessageQueueThread> moduleMessageQueue);
 } // namespace facebook::react
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/ReactInstanceManagerInspectorTarget.h}
-
 namespace facebook::react {
 struct JInstanceCallback : public jni::JavaClass<JInstanceCallback> {
   static constexpr auto kJavaDescriptor =
@@ -7191,7 +7173,6 @@ inline jni::local_ref<jni::JWeakReference<T>> makeJWeakReference(
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/JavaModuleWrapper.h}:
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/MethodInvoker.h}
-
 namespace facebook::react {
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
@@ -7318,7 +7299,6 @@ class MethodInvoker {
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/ModuleRegistryBuilder.h}:
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/CxxModuleWrapper.h}
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/JavaModuleWrapper.h}
-
 namespace facebook::react {
 class ModuleHolder : public jni::JavaClass<ModuleHolder> {
  public:
@@ -19876,6 +19856,21 @@ class AndroidProgressBarShadowNode final : public ConcreteViewShadowNode<
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/conversions.h}:
 /// @dep {packages/react-native/ReactCommon/react/renderer/components/text/conversions.h}
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h}:
+
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h}:
+
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/rncore/Props.h}:
+
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h}:
+
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/rncore/States.h}:
+
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/root/RootComponentDescriptor.h}:
 namespace facebook::react {
@@ -34532,7 +34527,10 @@ class ImageRequest final {
       SharedFunction<> resumeFunction = {},
       SharedFunction<> cancelationFunction = {});
   ImageRequest(ImageRequest&& other) noexcept = default;
+  ImageRequest& operator=(ImageRequest&& other) noexcept = default;
   ImageRequest(const ImageRequest& other) = delete;
+  ImageRequest& operator=(const ImageRequest& other) = delete;
+  ~ImageRequest() = default;
   const ImageSource& getImageSource() const;
   const std::shared_ptr<const ImageResponseObserverCoordinator>&
   getSharedObserverCoordinator() const;
@@ -42810,6 +42808,12 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
     Tag nodeTag{};
     double offset{};
   };
+  struct FlattenAnimatedNodeOffsetOp {
+    Tag nodeTag{};
+  };
+  struct ExtractAnimatedNodeOffsetOp {
+    Tag nodeTag{};
+  };
   struct ConnectAnimatedNodeToViewOp {
     Tag nodeTag{};
     Tag viewTag{};
@@ -42848,6 +42852,8 @@ class AnimatedModule : public NativeAnimatedModuleCxxSpec<AnimatedModule>,
       ConnectAnimatedNodeToViewOp,
       DisconnectAnimatedNodeFromViewOp,
       RestoreDefaultValuesOp,
+      FlattenAnimatedNodeOffsetOp,
+      ExtractAnimatedNodeOffsetOp,
       DropAnimatedNodeOp,
       AddAnimatedEventToViewOp,
       RemoveAnimatedEventFromViewOp>;
@@ -43044,6 +43050,8 @@ class NativeAnimatedNodesManager {
   void restoreDefaultValues(Tag tag) noexcept;
   void dropAnimatedNode(Tag tag) noexcept;
   void setAnimatedNodeValue(Tag tag, double value);
+  void flattenAnimatedNodeOffset(Tag tag);
+  void extractAnimatedNodeOffsetOp(Tag tag);
   void setAnimatedNodeOffset(Tag tag, double offset);
   void startAnimatingNode(
       int animationId,
