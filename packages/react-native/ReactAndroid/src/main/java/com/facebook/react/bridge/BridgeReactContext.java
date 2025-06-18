@@ -21,6 +21,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
@@ -34,6 +35,7 @@ import java.util.Collection;
  * BridgeReactContext.
  */
 @DeprecatedInNewArchitecture
+@VisibleForTesting
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class BridgeReactContext extends ReactApplicationContext {
   static {
