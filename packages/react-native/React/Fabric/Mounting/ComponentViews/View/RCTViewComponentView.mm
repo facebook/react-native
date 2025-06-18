@@ -1215,7 +1215,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
         result = [NSMutableString string];
       }
       if (result.length > 0) {
-        [result appendString:@" "];
+        [result appendString:@", "];
       }
       [result appendString:label];
     }
