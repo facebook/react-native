@@ -345,7 +345,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   // `accessible`
   if (oldViewProps.accessible != newViewProps.accessible) {
-    self.accessibilityElement.isAccessibilityElement = newViewProps.accessible;
+    self.accessibilityElement.isAccessibilityElement = newViewProps.accessible.value_or(false);
   }
 
   // `accessibilityLabel`
