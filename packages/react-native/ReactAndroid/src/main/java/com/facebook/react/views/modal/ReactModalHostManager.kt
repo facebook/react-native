@@ -85,6 +85,9 @@ internal class ReactModalHostManager :
   @ReactProp(name = "identifier")
   override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
+  @ReactProp(name = "allowSwipeDismissal")
+  override fun setAllowSwipeDismissal(view: ReactModalHostView, value: Boolean): Unit = Unit
+
   override fun setTestId(view: ReactModalHostView, value: String?) {
     super.setTestId(view, value)
     view.setDialogRootViewGroupTestId(value)

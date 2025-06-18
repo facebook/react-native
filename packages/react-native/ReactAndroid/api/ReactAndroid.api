@@ -5306,6 +5306,7 @@ public class com/facebook/react/viewmanagers/ModalHostViewManagerDelegate : com/
 }
 
 public abstract interface class com/facebook/react/viewmanagers/ModalHostViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
+	public abstract fun setAllowSwipeDismissal (Landroid/view/View;Z)V
 	public abstract fun setAnimated (Landroid/view/View;Z)V
 	public abstract fun setAnimationType (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setHardwareAccelerated (Landroid/view/View;Z)V

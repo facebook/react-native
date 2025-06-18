@@ -5689,6 +5689,7 @@ export type ModalPropsIOS = {
   >,
   onDismiss?: ?() => void,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  allowSwipeDismissal?: ?boolean,
 };
 export type ModalPropsAndroid = {
   hardwareAccelerated?: ?boolean,
