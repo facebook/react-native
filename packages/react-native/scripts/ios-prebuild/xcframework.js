@@ -69,6 +69,8 @@ const HEADERFILE_IGNORE_LIST = [
   'JsArgumentHelpers-inl.h',
   'RCTJscInstance.h',
   'RCTJSThreadManager.h',
+  'YGEnums.h',
+  'YGNode.h',
 ];
 
 function buildXCFrameworks(
@@ -106,8 +108,9 @@ function buildXCFrameworks(
   } catch (error) {
     frameworkLog(
       `Error building XCFramework: ${error.message}. Check if the build was successful.`,
-      'warning',
+      'error',
     );
+    return;
   }
 
   // Copy header files from the headers folder that we used to build the swift package
@@ -124,14 +127,29 @@ function buildXCFrameworks(
   );
 
   // Create the module map file
-  createModuleMapFile(outputPath, umbrellaHeaderFile);
+  const moduleMapFile = createModuleMapFile(outputPath, umbrellaHeaderFile);
+  if (!moduleMapFile) {
+    frameworkLog(
+      'Failed to create module map file. The XCFramework may not work correctly. Stopping.',
+      'error',
+    );
+    return;
+  }
+
+  // Get the platforms in the framework folder and copy modulemaps and headers into each platform folder
+  linkArchFolders(
+    outputPath,
+    moduleMapFile,
+    umbrellaHeaderFile,
+    outputHeaderFiles,
+  );
 
   // Copy Symbols to symbols folder
   const symbolPaths = frameworkFolders.map(framework =>
     path.join(framework, `..`, `..`, `React.framework.dSYM`),
   );
   console.log('Copying symbols to symbols folder...');
-  const symbolOutput = path.join(outputPath, '..', 'Symbols');
+  const symbolOutput = path.join(outputPath, '../..', 'Symbols');
   symbolPaths.forEach(symbol => {
     const destination = extractDestinationFromPath(symbol);
     const outputFolder = path.join(symbolOutput, destination);
@@ -142,6 +160,91 @@ function buildXCFrameworks(
   if (identity) {
     signXCFramework(identity, outputPath);
   }
+}
+
+function linkArchFolders(
+  outputPath /*:string*/,
+  moduleMapFile /*:string*/,
+  umbrellaHeaderFile /*:string*/,
+  outputHeaderFiles /*: Array<string> */,
+) {
+  frameworkLog('Linking modules and headers to platform folders...');
+  const headerRootFolder = path.dirname(umbrellaHeaderFile);
+
+  fs.readdirSync(outputPath)
+    .filter(folder => {
+      const folderPath = path.join(outputPath, folder);
+      return (
+        fs.statSync(folderPath).isDirectory() &&
+        folder !== 'Headers' &&
+        folder !== 'Modules'
+      );
+    })
+    .forEach(folder => {
+      // Get full platform folder path
+      const platformFolder = path.join(outputPath, folder);
+      // Link the Modules folder into the platform folder
+      const targetModulesFolder = path.join(
+        platformFolder,
+        'React.Framework',
+        'Modules',
+      );
+      createFolderIfNotExists(targetModulesFolder);
+      try {
+        fs.linkSync(
+          moduleMapFile,
+          path.join(targetModulesFolder, path.basename(moduleMapFile)),
+        );
+      } catch (error) {
+        frameworkLog(
+          `Error copying module map file: ${error.message}. Check if the file exists.`,
+          'error',
+        );
+      }
+      // Copy headers folder into the platform folder
+      const targetHeadersFolder = path.join(
+        platformFolder,
+        'React.Framework',
+        'Headers',
+      );
+      // Link header files into the platform folder
+      outputHeaderFiles.forEach(headerFile => {
+        // Get the relative path of the header file based on the root folder
+        const relativePath = path.relative(headerRootFolder, headerFile);
+        // Create the target folder for the header file
+        const targetFolder = path.join(
+          targetHeadersFolder,
+          path.dirname(relativePath),
+        );
+        // Create the target folder if it doesn't exist
+        createFolderIfNotExists(targetFolder);
+        // Link the header file to the target folder
+        try {
+          fs.linkSync(
+            headerFile,
+            path.join(targetFolder, path.basename(headerFile)),
+          );
+        } catch (error) {
+          frameworkLog(
+            `Error linking header file: ${error.message}. Check if the file exists.`,
+            'error',
+          );
+        }
+      });
+      // Link the umbrella header file to the target headers folder
+      try {
+        const targetUmbrellaPath = path.join(
+          targetHeadersFolder,
+          'React-umbrella.h',
+        );
+        fs.linkSync(umbrellaHeaderFile, targetUmbrellaPath);
+      } catch (error) {
+        frameworkLog(
+          `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
+          'error',
+        );
+      }
+    });
 }
 
 function copyHeaderFiles(
@@ -249,7 +352,8 @@ function createUmbrellaHeaderFile(
   return umbrellaHeaderFile;
 }
 
-const cppHeaderRegex = /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::/;
+const cppHeaderRegex =
+  /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::|NS_ENUM\s*\([^)]*\)|NS_OPTIONS\s*\([^)]*\)|typedef\s+enum|static\s+const|@interface|static\s+inline/;
 
 function isCppHeaderFile(headerFilePath /*: string */) /*: boolean */ {
   // Check if there is a cpp or mm file with the same name
@@ -299,21 +403,24 @@ function createModuleMapFile(
   // Create the module map file
   const moduleMapFile = path.join(moduleMapFolder, 'module.modulemap');
   frameworkLog('Creating module map file: ' + moduleMapFile);
-  const moduleMapContent = `module React {
-    umbrella header "../Headers/${path.basename(umbrellaPath)}"
+  const moduleMapContent = `framework module React {
+    umbrella header "${path.basename(umbrellaPath)}"
     export *
     module * { export * }
 }`;
 
   try {
     fs.writeFileSync(moduleMapFile, moduleMapContent);
+    return moduleMapFile;
   } catch (error) {
     frameworkLog(
       `Error creating module map file: ${error.message}. Check if the file exists.`,
       'warning',
     );
+    return null;
   }
 }
+
 function cleanPlatformFolders(outputPath /*:string*/) {
   if (!fs.existsSync(outputPath)) {
     return;
