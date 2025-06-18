@@ -3315,6 +3315,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;
 	public fun getExportedCustomDirectEventTypeConstants ()Ljava/util/Map;
 	protected fun onAfterUpdateTransaction (Landroid/view/View;)V
+	public fun onDropViewInstance (Landroid/view/View;)V
 	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
 	protected fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
 	public fun setAccessibilityActions (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
