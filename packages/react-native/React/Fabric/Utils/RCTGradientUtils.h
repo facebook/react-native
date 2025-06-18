@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (std::vector<facebook::react::ProcessedColorStop>)getFixedColorStops:
                                                         (const std::vector<facebook::react::ColorStop> &)colorStops
                                                     gradientLineLength:(CGFloat)gradientLineLength;
++ (std::pair<CGPoint, CGPoint>)fixGradientPoints:(CGPoint)startPoint
+                                        endPoint:(CGPoint)endPoint
+                                          bounds:(CGSize)bounds;
 @end
 
 NS_ASSUME_NONNULL_END
