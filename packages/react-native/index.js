@@ -83,7 +83,18 @@ module.exports = {
     return require('./Libraries/Components/RefreshControl/RefreshControl')
       .default;
   },
+  /**
+   * @deprecated SafeAreaView has been deprecated and will be removed in a future release.
+   * Please use 'react-native-safe-area-context' instead.
+   * See https://github.com/th3rdwave/react-native-safe-area-context
+   */
   get SafeAreaView() {
+    warnOnce(
+      'safe-area-view-deprecated',
+      'SafeAreaView has been deprecated and will be removed in a future release. ' +
+        "Please use 'react-native-safe-area-context' instead. " +
+        'See https://github.com/th3rdwave/react-native-safe-area-context',
+    );
     return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView() {
