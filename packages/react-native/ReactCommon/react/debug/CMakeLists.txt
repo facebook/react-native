@@ -13,7 +13,11 @@ add_library(react_debug OBJECT ${react_debug_SRC})
 
 target_include_directories(react_debug PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_debug log folly_runtime)
+target_link_libraries(react_debug folly_runtime)
+
+if(ANDROID)
+  target_link_libraries(react_debug log)
+endif()
 
 target_compile_reactnative_options(react_debug PRIVATE)
 target_compile_options(react_debug PRIVATE -Wpedantic)

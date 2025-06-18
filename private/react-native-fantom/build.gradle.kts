@@ -25,7 +25,8 @@ val downloadsDir =
       File("$buildDir/downloads")
     }
 val thirdParty = File("$buildDir/third-party")
-val reactNativeRootDir = projectDir.parent
+val reactNativeRootDir = projectDir.parentFile.parentFile
+val reactAndroidBuildDir = File("$reactNativeRootDir/packages/react-native/ReactAndroid/build")
 
 val createNativeDepsDirectories by
     tasks.registering {
@@ -54,12 +55,36 @@ val prepareGflags by
       outputDir.set(File(thirdParty, "gflags"))
     }
 
-// Tasks used by Fantom to download the Native 3p dependencies used.
+var codegenSrcDir = File("$reactAndroidBuildDir/generated/source/codegen/jni/react")
+var codegenOutDir = File("$buildDir/codegen/react")
+val prepareRNCodegen by
+    tasks.registering(Copy::class) {
+      dependsOn(":packages:react-native:ReactAndroid:generateCodegenArtifactsFromSchema")
+      from(codegenSrcDir)
+      from("tester/codegen/react")
+      include(
+          "**/FBReactNativeSpecJSI.h", "**/FBReactNativeSpecJSI-generated.cpp", "CMakeLists.txt")
+      includeEmptyDirs = false
+      into(codegenOutDir)
+    }
+
+val prepareHermesDependencies by
+    tasks.registering {
+      dependsOn(
+          ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLib",
+          ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefab",
+      )
+    }
+
 val prepareNative3pDependencies by
     tasks.registering {
       dependsOn(
           prepareGflags,
-          ":packages:react-native:ReactAndroid:hermes-engine:buildHermesLib",
-          ":packages:react-native:ReactAndroid:hermes-engine:prepareHeadersForPrefab",
+          ":packages:react-native:ReactAndroid:prepareNative3pDependencies",
       )
+    }
+
+val prepareAllDependencies by
+    tasks.registering {
+      dependsOn(prepareRNCodegen, prepareHermesDependencies, prepareNative3pDependencies)
     }

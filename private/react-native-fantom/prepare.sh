@@ -7,6 +7,5 @@
 set -e
 
 pushd ../..
-./gradlew :packages:react-native:ReactAndroid:prepareNative3pDependencies
-./gradlew :private:react-native-fantom:prepareNative3pDependencies
+./gradlew :private:react-native-fantom:prepareAllDependencies
 popd

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include "StubQueue.h"
+
 #include <folly/json.h>
 #include <gflags/gflags.h>
 #include <glog/logging.h>
@@ -12,6 +14,7 @@
 #include <jsi/jsi.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h>
+#include <react/runtime/hermes/HermesInstance.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGValue.h>
 
@@ -51,28 +54,23 @@ static folly::dynamic setUpFeatureFlags() {
 }
 
 void createHermesInstance() {
-  auto gcConfig = ::hermes::vm::GCConfig::Builder()
-                      // Default to 3GB
-                      .withMaxHeapSize(3072 << 20)
-                      .withName("RNBridgeless");
-  ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
-      ::hermes::vm::RuntimeConfig::Builder()
-          .withGCConfig(gcConfig.build())
-          .withEnableSampleProfiling(true);
+  auto queue = std::make_shared<StubQueue>();
+  std::unique_ptr<JSRuntime> jsRuntime = HermesInstance::createJSRuntime(
+      nullptr,
+      queue,
+      /* allocInOldGenBeforeTTI */ false);
 
-  std::unique_ptr<HermesRuntime> hermesRuntime =
-      makeHermesRuntime(runtimeConfigBuilder.build());
-
-  hermesRuntime->evaluateJavaScript(
+  facebook::jsi::Runtime& runtime = jsRuntime->getRuntime();
+  runtime.evaluateJavaScript(
       std::make_unique<StringBuffer>(
           "var fantom = 'Hello, I am fantom_tester'"),
       "script.js");
 
   LOG(INFO) << "JS evaluated value: "
-            << hermesRuntime->global()
-                   .getProperty(*hermesRuntime, "fantom")
-                   .getString(*hermesRuntime)
-                   .utf8(*hermesRuntime);
+            << runtime.global()
+                   .getProperty(runtime, "fantom")
+                   .getString(runtime)
+                   .utf8(runtime);
 }
 
 int main(int argc, char* argv[]) {
