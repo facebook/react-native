@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e718763435de15f788b1f510e4799a67>>
+ * @generated SignedSource<<d83426bd1594435bf9f233a44fc776be>>
  */
 
 /**
@@ -44,7 +44,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
@@ -273,16 +272,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
-    }
-    return cached
-  }
-
-  override fun enableIntersectionObserverEventLoopIntegration(): Boolean {
-    var cached = enableIntersectionObserverEventLoopIntegrationCache
-    if (cached == null) {
-      cached = currentProvider.enableIntersectionObserverEventLoopIntegration()
-      accessedFeatureFlags.add("enableIntersectionObserverEventLoopIntegration")
-      enableIntersectionObserverEventLoopIntegrationCache = cached
     }
     return cached
   }

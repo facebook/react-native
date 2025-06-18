@@ -6655,8 +6655,6 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableIOSViewClipToPaddingBox(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableIntersectionObserverEventLoopIntegration(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnIOS(
@@ -16725,7 +16723,6 @@ class NativeReactNativeFeatureFlags
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
-  bool enableIntersectionObserverEventLoopIntegration(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
