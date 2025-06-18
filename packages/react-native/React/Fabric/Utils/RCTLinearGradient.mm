@@ -51,7 +51,8 @@ using namespace facebook::react;
   CGPoint fixedStartPoint;
   CGPoint fixedEndPoint;
   
-  std::tie(fixedStartPoint, fixedEndPoint) = [RCTGradientUtils getPointsForCAGradientLayerLinearGradient: relativeStartPoint endPoint: relativeEndPoint bounds:size];
+  std::tie(fixedStartPoint, fixedEndPoint) =
+      [RCTGradientUtils pointsForCAGradientLayerLinearGradient:relativeStartPoint endPoint:relativeEndPoint bounds:size];
   
   gradientLayer.startPoint = fixedStartPoint;
   gradientLayer.endPoint = fixedEndPoint;

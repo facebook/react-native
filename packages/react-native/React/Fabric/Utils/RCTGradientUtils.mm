@@ -339,9 +339,9 @@ gradientLineLength:(CGFloat)gradientLineLength
 // CAGradientLayer linear gradient squishes the non-square gradient to square gradient.
 // This function fixes the "squished" effect.
 // See https://stackoverflow.com/a/43176174 for more information.
-+ (std::pair<CGPoint, CGPoint>)getPointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
-endPoint:(CGPoint)endPoint
-bounds:(CGSize)bounds
++ (std::pair<CGPoint, CGPoint>)pointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
+                                                             endPoint:(CGPoint)endPoint
+                                                               bounds:(CGSize)bounds
 {
   if (floatEquality(startPoint.x, endPoint.x) ||
       floatEquality(startPoint.y, endPoint.y)) {
