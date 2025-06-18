@@ -321,6 +321,22 @@
 - Fix bug: unstable_hasComponent(*) = true for unregistered components for n > 1th call. ([f4d99d6a23](https://github.com/facebook/react-native/commit/f4d99d6a23a08c2ef2c2fff78dc966961608683b) by [@RSNara](https://github.com/RSNara))
 - RCTDeviceInfo: fix crash due to failure to get AccessibilityManager ([ac23323da1](https://github.com/facebook/react-native/commit/ac23323da1bda2ce271797aa58dd74ffb0a5992f) by Adam Ernst)
 
+## v0.79.4
+
+### Fixed
+
+- **Codegen:** Backports fix: exclusion of selectively disabled libraries from codegen generation ([3acfe01382](https://github.com/facebook/react-native/commit/3acfe01382e67b16386bb04f7730abc479fec1cc) by [@cipolleschi](https://github.com/cipolleschi))
+- **Flow:** Publish top-level Flow types for `react-native` ([50667eceb1](https://github.com/facebook/react-native/commit/50667eceb1be4771375d6a3cc2f4e42d4d8aad3a) by [@aswinandro](https://github.com/aswinandro))
+- **Runtime:** Disabling `updateRuntimeShadowNodeReferencesOnCommit` by default. ([2cd074d77a](https://github.com/facebook/react-native/commit/2cd074d77a706f4fe4396ffdf87408f781e935a4) by [@lenaic](https://github.com/lenaic))
+
+#### Android specific
+
+- **TextInput:** Fix broken focus behavior for TextInput in older Android versions (< 9) ([0ebaaed281](https://github.com/facebook/react-native/commit/0ebaaed281fcfa01b20a17a461c1d0b489a7f0a2) by [@joevilches](https://github.com/joevilches))
+
+#### iOS specific
+
+- **Dimensions:** Fix Dimensions not changing when orientation changes ([235ac2cca0](https://github.com/facebook/react-native/commit/235ac2cca0b173934d329f3a797f136a219d315f) by [@riteshshukla04](https://github.com/riteshshukla04))
+
 ## v0.79.3
 
 ### Fixed
