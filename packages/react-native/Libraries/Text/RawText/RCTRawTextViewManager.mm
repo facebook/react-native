@@ -7,6 +7,8 @@
 
 #import <React/RCTRawTextViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTRawTextShadowView.h>
 
 @implementation RCTRawTextViewManager
@@ -26,3 +28,5 @@ RCT_EXPORT_MODULE(RCTRawText)
 RCT_EXPORT_SHADOW_PROPERTY(text, NSString)
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

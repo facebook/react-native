@@ -11,6 +11,8 @@
 #import <React/RCTTextDecorationLineType.h>
 #import <React/RCTTextTransform.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const RCTTextAttributesIsHighlightedAttributeName;
@@ -98,3 +100,5 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

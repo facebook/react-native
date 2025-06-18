@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTComponent.h>
 
 @interface RCTSwitch : UISwitch
@@ -15,3 +17,5 @@
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
