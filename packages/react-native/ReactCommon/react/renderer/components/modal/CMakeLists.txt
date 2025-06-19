@@ -14,7 +14,10 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB rrc_modal_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB rrc_modal_SRC CONFIGURE_DEPENDS
+        *.cpp
+        platform/android/*.cpp)
+
 add_library(rrc_modal STATIC ${rrc_modal_SRC})
 
 target_include_directories(rrc_modal PUBLIC ${REACT_COMMON_DIR})

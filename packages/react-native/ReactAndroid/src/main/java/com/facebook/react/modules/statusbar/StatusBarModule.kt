@@ -13,8 +13,6 @@ import android.os.Build
 import android.view.View
 import android.view.WindowInsetsController
 import android.view.WindowManager
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeStatusBarManagerAndroidSpec
 import com.facebook.react.bridge.GuardedRunnable
@@ -23,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setStatusBarVisibility
@@ -34,27 +33,15 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
 
   @Suppress("DEPRECATION")
   override fun getTypedExportedConstants(): Map<String, Any> {
+    val currentActivity = reactApplicationContext.currentActivity
     val statusBarColor =
         currentActivity?.window?.statusBarColor?.let { color ->
           String.format("#%06X", 0xFFFFFF and color)
         } ?: "black"
     return mapOf(
-        HEIGHT_KEY to PixelUtil.toDIPFromPixel(getStatusBarHeightPx()),
+        HEIGHT_KEY to PixelUtil.toDIPFromPixel(getStatusBarHeightPx(currentActivity).toFloat()),
         DEFAULT_BACKGROUND_COLOR_KEY to statusBarColor,
     )
-  }
-
-  @Suppress("DEPRECATION")
-  private fun getStatusBarHeightPx(): Float {
-    val windowInsets =
-        currentActivity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0f
-    return windowInsets
-        .getInsets(
-            WindowInsetsCompat.Type.statusBars() or
-                WindowInsetsCompat.Type.navigationBars() or
-                WindowInsetsCompat.Type.displayCutout())
-        .top
-        .toFloat()
   }
 
   @Suppress("DEPRECATION")
