@@ -171,6 +171,8 @@ def use_react_native! (
     pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
     pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
     pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
+    setup_fabric!(:react_native_path => prefix)
+    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
     if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
       pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
@@ -187,22 +189,24 @@ def use_react_native! (
     pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
     pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes-engine/hermes-engine.podspec"
-
-    # Not needed, but run_codegen expects this to be set.
-    folly_config = get_folly_config()
-    run_codegen!(
-      app_path,
-      config_file_dir,
-      :new_arch_enabled => NewArchitectureHelper.new_arch_enabled,
-      :disable_codegen => ENV['DISABLE_CODEGEN'] == '1',
-      :react_native_path => prefix,
-      :fabric_enabled => fabric_enabled,
-      :hermes_enabled => hermes_enabled,
-      :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
-      :package_json_file => File.join(__dir__, "..", "package.json"),
-      :folly_version => folly_config[:version]
-    )
   end
+
+  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  # Not needed, but run_codegen expects this to be set.
+  folly_config = get_folly_config()
+  run_codegen!(
+    app_path,
+    config_file_dir,
+    :new_arch_enabled => NewArchitectureHelper.new_arch_enabled,
+    :disable_codegen => ENV['DISABLE_CODEGEN'] == '1',
+    :react_native_path => prefix,
+    :fabric_enabled => fabric_enabled,
+    :hermes_enabled => hermes_enabled,
+    :codegen_output_dir => $CODEGEN_OUTPUT_DIR,
+    :package_json_file => File.join(__dir__, "..", "package.json"),
+    :folly_version => folly_config[:version]
+  )
 
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
