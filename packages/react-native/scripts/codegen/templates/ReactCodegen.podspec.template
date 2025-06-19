@@ -47,17 +47,21 @@ if ReactNativeCoreUtils.build_rncore_from_source()
     end
 else
   header_search_paths = [
-    "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-    "\"$(PODS_ROOT)/Headers/Public/React-Core-prebuilt/ReactCommon\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/react/nativemodule/core\"",
-    "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/RCTDeprecation\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/yoga\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/jsi\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries/AppDelegate\"",
-    "\"${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries\""
+    "$(PODS_ROOT)/ReactNativeDependencies",
+    "$(PODS_ROOT)/Headers/Public/React-Core-prebuilt/ReactCommon",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/react/nativemodule/core",
+    "${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/RCTDeprecation",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/yoga",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/jsi",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries/AppDelegate",
+    "${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries",
+    "${REACT_NATIVE_PATH}/ReactCommon/yoga",
+    "${REACT_NATIVE_PATH}/ReactCommon/jsi",
+    "$(REACT_NATIVE_PATH)/Libraries",
+    "$(REACT_NATIVE_PATH)/Libraries/FBLazyVector",
   ]
 end
 
