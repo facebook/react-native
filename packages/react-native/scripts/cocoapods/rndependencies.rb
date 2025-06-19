@@ -250,10 +250,6 @@ class ReactNativeDependenciesUtils
         end
     end
 
-    def self.resolve_url_redirects(url)
-        return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
-    end
-
     def self.get_nightly_npm_version()
         uri = URI('https://registry.npmjs.org/react-native/nightly')
         response = Net::HTTP.get_response(uri)
