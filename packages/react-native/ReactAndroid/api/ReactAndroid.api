@@ -2375,24 +2375,6 @@ public final class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/f
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public class com/facebook/react/fabric/mounting/MountItemDispatcher {
-	public fun <init> (Lcom/facebook/react/fabric/mounting/MountingManager;Lcom/facebook/react/fabric/mounting/MountItemDispatcher$ItemDispatchListener;)V
-	public fun addMountItem (Lcom/facebook/react/fabric/mounting/mountitems/MountItem;)V
-	public fun addPreAllocateMountItem (Lcom/facebook/react/fabric/mounting/mountitems/MountItem;)V
-	public fun addViewCommandMountItem (Lcom/facebook/react/fabric/mounting/mountitems/DispatchCommandMountItem;)V
-	public fun dispatchMountItems (Ljava/util/Queue;)V
-	public fun dispatchPreMountItems (J)V
-	public fun getBatchedExecutionTime ()J
-	public fun getRunStartTime ()J
-	public fun tryDispatchMountItems ()V
-}
-
-public abstract interface class com/facebook/react/fabric/mounting/MountItemDispatcher$ItemDispatchListener {
-	public abstract fun didDispatchMountItems ()V
-	public abstract fun didMountItems (Ljava/util/List;)V
-	public abstract fun willMountItems (Ljava/util/List;)V
-}
-
 public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public static final field TAG Ljava/lang/String;
 	public fun <init> (ILcom/facebook/react/touch/JSResponderHandler;Lcom/facebook/react/uimanager/ViewManagerRegistry;Lcom/facebook/react/uimanager/RootViewManager;Lcom/facebook/react/fabric/mounting/MountingManager$MountItemExecutor;Lcom/facebook/react/uimanager/ThemedReactContext;)V
