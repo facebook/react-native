@@ -6173,16 +6173,17 @@ public final class com/facebook/react/views/text/ReactFontManager$Companion {
 	public final fun getInstance ()Lcom/facebook/react/views/text/ReactFontManager;
 }
 
-public class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
+public final class com/facebook/react/views/text/ReactTextShadowNode : com/facebook/react/views/text/ReactBaseTextShadowNode {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun calculateLayoutOnChildren ()Ljava/lang/Iterable;
 	public fun hoistNativeChildren ()Z
 	public fun isVirtualAnchor ()Z
 	public fun markUpdated ()V
 	public fun onBeforeLayout (Lcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)V
 	public fun onCollectExtraUpdates (Lcom/facebook/react/uimanager/UIViewOperationQueue;)V
-	public fun setShouldNotifyOnTextLayout (Z)V
+	public final fun setShouldNotifyOnTextLayout (Z)V
 }
 
 public final class com/facebook/react/views/text/ReactTextUpdate {
