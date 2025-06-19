@@ -104,7 +104,7 @@ Pod::Spec.new do |spec|
         CONFIG="Debug"
       fi
 
-      # TODO: Add this for React Native Core as well
+      # TODO(T228219721): Add this for React Native Core as well
       ##### "$NODE_BINARY" "$REACT_NATIVE_PATH/third-party-podspecs/replace_dependencies_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
       EOS
     }
