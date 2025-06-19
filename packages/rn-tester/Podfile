@@ -44,17 +44,17 @@ def pods(target_name, options = {})
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: false, #deprecated
   )
-  # pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
+  pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 
   # Additional Pods which aren't included in the default Podfile
-  # pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
+  pod 'React-RCTPushNotification', :path => "#{@prefix_path}/Libraries/PushNotificationIOS"
   # Additional Pods which are classed as unstable
 
   # RNTester native modules and components
-  # pod 'ScreenshotManager', :path => "NativeModuleExample"
-  # pod 'MyNativeView', :path => "NativeComponentExample"
-  # pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
-  # pod 'OSSLibraryExample', :path => '../react-native-test-library'
+  pod 'ScreenshotManager', :path => "NativeModuleExample"
+  pod 'MyNativeView', :path => "NativeComponentExample"
+  pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
+  pod 'OSSLibraryExample', :path => '../react-native-test-library'
 end
 
 target 'RNTester' do
@@ -63,13 +63,13 @@ end
 
 target 'RNTesterUnitTests' do
   pods('RNTesterUnitTests')
-  # pod 'React-RCTTest', :path => "./RCTTest"
-  # pod 'OCMock', '~> 3.9.1'
+  pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'OCMock', '~> 3.9.1'
 end
 
 target 'RNTesterIntegrationTests' do
   pods('RNTesterIntegrationTests')
-  # pod 'React-RCTTest', :path => "./RCTTest"
+  pod 'React-RCTTest', :path => "./RCTTest"
 end
 
 post_install do |installer|
