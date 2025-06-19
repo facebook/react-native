@@ -149,7 +149,7 @@ function buildXCFrameworks(
     path.join(framework, `..`, `..`, `React.framework.dSYM`),
   );
   console.log('Copying symbols to symbols folder...');
-  const symbolOutput = path.join(outputPath, '../..', 'Symbols');
+  const symbolOutput = path.join(outputPath, '..', 'Symbols');
   symbolPaths.forEach(symbol => {
     const destination = extractDestinationFromPath(symbol);
     const outputFolder = path.join(symbolOutput, destination);
