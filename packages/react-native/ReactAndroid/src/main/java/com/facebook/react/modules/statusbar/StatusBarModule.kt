@@ -22,6 +22,7 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.setStatusBarTranslucency
@@ -70,6 +71,12 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
           "StatusBarModule: Ignored status bar change, current activity is null.")
       return
     }
+    if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
+      return
+    }
     UiThreadUtil.runOnUiThread(
         object : GuardedRunnable(reactApplicationContext) {
           override fun runGuarded() {
@@ -96,6 +103,12 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
       FLog.w(
           ReactConstants.TAG,
           "StatusBarModule: Ignored status bar change, current activity is null.")
+      return
+    }
+    if (ReactBuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
       return
     }
     UiThreadUtil.runOnUiThread(
