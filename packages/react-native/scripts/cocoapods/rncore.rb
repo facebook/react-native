@@ -190,10 +190,6 @@ class ReactNativeCoreUtils
         return (`curl -o /dev/null --silent -Iw '%{http_code}' -L "#{tarball_url}"` == "200")
     end
 
-    def self.resolve_url_redirects(url)
-        return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
-    end
-
     def self.rncore_log(message, level = :info)
         if !Object.const_defined?("Pod::UI")
             return
