@@ -87,7 +87,7 @@ class ReactNativeCoreUtils
             end
 
             begin
-                return self.podspec_source_download_prebuild_release_tarball()
+                return self.podspec_source_download_prebuild_stable_tarball()
             rescue => e
                 rncore_log("Failed to download release tarball: #{e.message}", :error)
                 return
@@ -96,7 +96,7 @@ class ReactNativeCoreUtils
 
     end
 
-    def self.podspec_source_download_prebuild_release_tarball()
+    def self.podspec_source_download_prebuild_stable_tarball()
         # Warn if @@react_native_path is not set
         if @@react_native_path == ""
             rncore_log("react_native_path is not set", :error)
