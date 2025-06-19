@@ -7,9 +7,12 @@
 
 package com.facebook.react.uimanager
 
+import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -98,4 +101,14 @@ public object DisplayMetricsHolder {
         putDouble("fontScale", fontScale)
         putDouble("densityDpi", displayMetrics.densityDpi.toDouble())
       }
+
+  internal fun getStatusBarHeightPx(activity: Activity?): Int {
+    val windowInsets = activity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0
+    return windowInsets
+        .getInsets(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.navigationBars() or
+                WindowInsetsCompat.Type.displayCutout())
+        .top
+  }
 }

@@ -416,6 +416,8 @@ let reactFabricComponents = RNTarget(
   name: .reactFabricComponents,
   path: "ReactCommon/react/renderer",
   excludedPaths: [
+    "components/modal/platform/android",
+    "components/modal/platform/cxx",
     "components/view/platform/android",
     "components/view/platform/windows",
     "components/view/platform/macos",
