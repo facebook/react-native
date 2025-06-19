@@ -4890,30 +4890,36 @@ public final class com/facebook/react/uimanager/events/NativeGestureUtil {
 	public static final fun notifyNativeGestureStarted (Landroid/view/View;Landroid/view/MotionEvent;)V
 }
 
-public class com/facebook/react/uimanager/events/PointerEvent : com/facebook/react/uimanager/events/Event {
+public final class com/facebook/react/uimanager/events/PointerEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/uimanager/events/PointerEvent$Companion;
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun getCoalescingKey ()S
 	public fun getEventAnimationDriverMatchSpec ()Lcom/facebook/react/uimanager/events/Event$EventAnimationDriverMatchSpec;
 	public fun getEventName ()Ljava/lang/String;
-	public static fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;)Lcom/facebook/react/uimanager/events/PointerEvent;
-	public static fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;S)Lcom/facebook/react/uimanager/events/PointerEvent;
+	public static final fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;)Lcom/facebook/react/uimanager/events/PointerEvent;
+	public static final fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;S)Lcom/facebook/react/uimanager/events/PointerEvent;
 	public fun onDispose ()V
 }
 
-public class com/facebook/react/uimanager/events/PointerEvent$PointerEventState {
+public final class com/facebook/react/uimanager/events/PointerEvent$Companion {
+	public final fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;)Lcom/facebook/react/uimanager/events/PointerEvent;
+	public final fun obtain (Ljava/lang/String;ILcom/facebook/react/uimanager/events/PointerEvent$PointerEventState;Landroid/view/MotionEvent;S)Lcom/facebook/react/uimanager/events/PointerEvent;
+}
+
+public final class com/facebook/react/uimanager/events/PointerEvent$PointerEventState {
 	public fun <init> (IIIILjava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Set;)V
-	public fun getActivePointerId ()I
+	public final fun getActivePointerId ()I
 	public final fun getEventCoordinatesByPointerId ()Ljava/util/Map;
 	public final fun getHitPathByPointerId ()Ljava/util/Map;
 	public final fun getHitPathForActivePointer ()Ljava/util/List;
-	public fun getHoveringPointerIds ()Ljava/util/Set;
-	public fun getLastButtonState ()I
+	public final fun getHoveringPointerIds ()Ljava/util/Set;
+	public final fun getLastButtonState ()I
 	public final fun getOffsetByPointerId ()Ljava/util/Map;
-	public fun getPrimaryPointerId ()I
+	public final fun getPrimaryPointerId ()I
 	public final fun getScreenCoordinatesByPointerId ()Ljava/util/Map;
-	public fun getSurfaceId ()I
-	public fun supportsHover (I)Z
+	public final fun getSurfaceId ()I
+	public final fun supportsHover (I)Z
 }
 
 public abstract interface class com/facebook/react/uimanager/events/RCTEventEmitter : com/facebook/react/bridge/JavaScriptModule {
