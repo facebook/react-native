@@ -29,7 +29,7 @@ internal class ReactModalHostManager :
 
   override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
 
   override fun onDropViewInstance(view: ReactModalHostView) {
@@ -93,7 +93,7 @@ internal class ReactModalHostManager :
     view.setDialogRootViewGroupTestId(value)
   }
 
-  protected override fun addEventEmitters(
+  override fun addEventEmitters(
       reactContext: ThemedReactContext,
       view: ReactModalHostView
   ) {
@@ -118,7 +118,7 @@ internal class ReactModalHostManager :
         put("topOrientationChange", mapOf("registrationName" to "onOrientationChange"))
       }
 
-  protected override fun onAfterUpdateTransaction(view: ReactModalHostView) {
+  override fun onAfterUpdateTransaction(view: ReactModalHostView) {
     super.onAfterUpdateTransaction(view)
     view.showOrUpdate()
   }

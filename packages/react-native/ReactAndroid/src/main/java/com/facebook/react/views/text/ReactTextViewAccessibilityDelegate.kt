@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 
 internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
-  public constructor(
+  constructor(
       view: View,
       originalFocus: Boolean,
       originalImportantForAccessibility: Int
@@ -32,8 +32,8 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
 
   private var accessibilityLinks: AccessibilityLinks? = null
 
-  public companion object {
-    public fun setDelegate(
+  companion object {
+    fun setDelegate(
         view: View,
         originalFocus: Boolean,
         originalImportantForAccessibility: Int
@@ -55,7 +55,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       }
     }
 
-    public fun resetDelegate(
+    fun resetDelegate(
         view: View,
         originalFocus: Boolean,
         originalImportantForAccessibility: Int
@@ -280,7 +280,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     return null
   }
 
-  public class AccessibilityLinks(text: Spanned) {
+  class AccessibilityLinks(text: Spanned) {
     private val links: List<AccessibleLink>
 
     init {
@@ -306,7 +306,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       links = accessibleLinks
     }
 
-    public fun getLinkById(id: Int): AccessibleLink? {
+    fun getLinkById(id: Int): AccessibleLink? {
       for (link in links) {
         if (link.id == id) {
           return link
@@ -316,7 +316,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       return null
     }
 
-    public fun getLinkBySpanPos(start: Int, end: Int): AccessibleLink? {
+    fun getLinkBySpanPos(start: Int, end: Int): AccessibleLink? {
       for (link in links) {
         if (link.start == start && link.end == end) {
           return link
@@ -326,15 +326,15 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       return null
     }
 
-    public fun size(): Int {
+    fun size(): Int {
       return links.size
     }
 
-    public class AccessibleLink {
-      public var description: String? = null
-      public var start: Int = 0
-      public var end: Int = 0
-      public var id: Int = 0
+    class AccessibleLink {
+      var description: String? = null
+      var start: Int = 0
+      var end: Int = 0
+      var id: Int = 0
     }
   }
 }
