@@ -5,16 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import "ModalHostViewUtils.h"
-#import <Foundation/Foundation.h>
-#import <React/RCTUtils.h>
+#include <react/renderer/components/modal/ModalHostViewUtils.h>
+#include <react/renderer/graphics/Size.h>
 
 namespace facebook::react {
 
-Size ModalHostViewScreenSize(void)
-{
-  CGSize screenSize = RCTScreenSize();
-  return {screenSize.width, screenSize.height};
+Size ModalHostViewScreenSize() {
+  return Size{0, 0};
 }
 
 } // namespace facebook::react

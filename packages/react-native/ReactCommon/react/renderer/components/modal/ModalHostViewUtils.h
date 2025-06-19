@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/graphics/Size.h>
 
 namespace facebook::react {
 
-Size RCTModalHostViewScreenSize(void);
+Size ModalHostViewScreenSize(void);
 
 } // namespace facebook::react
