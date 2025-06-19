@@ -39,15 +39,12 @@ class ReactNativeCoreUtils
                 end
             end
 
-            artifacts_exists = ENV["RCT_USE_PREBUILT_RNCORE"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
-            use_local_xcframework = ENV["RCT_USE_LOCAL_RNCORE"] && File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
-
             if ENV["RCT_USE_LOCAL_RNCORE"]
-                if !File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
-                    abort("RCT_USE_LOCAL_RNCORE is set to #{ENV["RCT_USE_LOCAL_RNCORE"]} but the file does not exist!")
-                end
+              abort_if_use_local_rncore_with_no_file()
             end
 
+            use_local_xcframework = ENV["RCT_USE_LOCAL_RNCORE"] && File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
+            artifacts_exists = ENV["RCT_USE_PREBUILT_RNCORE"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
             @@build_from_source = !use_local_xcframework && !artifacts_exists
 
             if @@build_from_source && ENV["RCT_USE_LOCAL_RNCORE"] && !use_local_xcframework
@@ -61,15 +58,19 @@ class ReactNativeCoreUtils
         end
     end
 
+    def self.abort_if_use_local_rncore_with_no_file()
+      if !File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
+          abort("RCT_USE_LOCAL_RNCORE is set to #{ENV["RCT_USE_LOCAL_RNCORE"]} but the file does not exist!")
+      end
+    end
+
     def self.build_rncore_from_source()
         return @@build_from_source
     end
 
     def self.resolve_podspec_source()
         if ENV["RCT_USE_LOCAL_RNCORE"]
-            if !File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
-                abort("RCT_USE_LOCAL_RNCORE is set to #{ENV["RCT_USE_LOCAL_RNCORE"]} but the file does not exist in the current directory (#{Dir.pwd}).")
-            end
+            abort_if_use_local_rncore_with_no_file()
             rncore_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RNCORE"]}")
             return {:http => "file://#{ENV["RCT_USE_LOCAL_RNCORE"]}" }
         end
