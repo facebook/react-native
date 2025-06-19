@@ -75,7 +75,7 @@ class ReactNativeCoreUtils
             return {:http => "file://#{ENV["RCT_USE_LOCAL_RNCORE"]}" }
         end
 
-        if ENV["RCT_USE_PREBUILT_RNCORE"] && ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
+        if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
             if @@use_nightly
                 rncore_log("Using nightly tarball")
                 begin
