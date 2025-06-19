@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.events.PointerEventHelper.getPressure
 import com.facebook.react.uimanager.events.PointerEventHelper.getW3CPointerType
 import com.facebook.react.uimanager.events.PointerEventHelper.isBubblingEvent
 
-public class PointerEvent private constructor() : Event<PointerEvent>() {
+internal class PointerEvent private constructor() : Event<PointerEvent>() {
   private var motionEvent: MotionEvent? = null
   private lateinit var _eventName: String
   private var coalescingKey = UNSET_COALESCING_KEY
@@ -269,36 +269,35 @@ public class PointerEvent private constructor() : Event<PointerEvent>() {
     }
   }
 
-  public class PointerEventState
-  public constructor(
-      public val primaryPointerId: Int,
-      public val activePointerId: Int,
-      public val lastButtonState: Int,
+  class PointerEventState(
+      val primaryPointerId: Int,
+      val activePointerId: Int,
+      val lastButtonState: Int,
       private val surfaceId: Int,
-      public val offsetByPointerId: Map<Int, FloatArray>,
-      public val hitPathByPointerId: Map<Int, List<ViewTarget>>,
-      public val eventCoordinatesByPointerId: Map<Int, FloatArray>,
-      public val screenCoordinatesByPointerId: Map<Int, FloatArray>,
+      val offsetByPointerId: Map<Int, FloatArray>,
+      val hitPathByPointerId: Map<Int, List<ViewTarget>>,
+      val eventCoordinatesByPointerId: Map<Int, FloatArray>,
+      val screenCoordinatesByPointerId: Map<Int, FloatArray>,
       hoveringPointerIds: Set<Int>
   ) {
-    public val hoveringPointerIds: Set<Int> = HashSet(hoveringPointerIds)
+    val hoveringPointerIds: Set<Int> = HashSet(hoveringPointerIds)
 
-    public fun getSurfaceId(): Int = surfaceId
+    fun getSurfaceId(): Int = surfaceId
 
-    public fun supportsHover(pointerId: Int): Boolean = hoveringPointerIds.contains(pointerId)
+    fun supportsHover(pointerId: Int): Boolean = hoveringPointerIds.contains(pointerId)
 
-    public val hitPathForActivePointer: List<ViewTarget>
+    val hitPathForActivePointer: List<ViewTarget>
       get() = checkNotNull(hitPathByPointerId[activePointerId])
   }
 
-  public companion object {
+  companion object {
     private val TAG: String = PointerEvent::class.java.simpleName
     private const val POINTER_EVENTS_POOL_SIZE = 6
     private val EVENTS_POOL = SynchronizedPool<PointerEvent>(POINTER_EVENTS_POOL_SIZE)
     private const val UNSET_COALESCING_KEY: Short = -1
 
     @JvmStatic
-    public fun obtain(
+    fun obtain(
         eventName: String,
         targetTag: Int,
         eventState: PointerEventState,
@@ -318,7 +317,7 @@ public class PointerEvent private constructor() : Event<PointerEvent>() {
     }
 
     @JvmStatic
-    public fun obtain(
+    fun obtain(
         eventName: String,
         targetTag: Int,
         eventState: PointerEventState,
