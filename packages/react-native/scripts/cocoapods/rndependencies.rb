@@ -68,9 +68,7 @@ class ReactNativeDependenciesUtils
 
     def self.resolve_podspec_source()
         if ENV["RCT_USE_LOCAL_RN_DEP"]
-            if !File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
-                abort("RCT_USE_LOCAL_RN_DEP is set to #{ENV["RCT_USE_LOCAL_RN_DEP"]} but the file does not exist in the current directory (#{Dir.pwd}).")
-            end
+            abort_if_use_local_rndeps_with_no_file()
             rndeps_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RN_DEP"]}")
             return {:http => "file://#{ENV["RCT_USE_LOCAL_RN_DEP"]}" }
         end
@@ -117,14 +115,12 @@ class ReactNativeDependenciesUtils
                 end
             end
 
+            if ENV["RCT_USE_LOCAL_RN_DEP"]
+              abort_if_use_local_rndeps_with_no_file()
+            end
+
             artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
             use_local_xcframework = ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
-
-            if ENV["RCT_USE_LOCAL_RN_DEP"]
-                if !File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
-                    abort("RCT_USE_LOCAL_RN_DEP is set to #{ENV["RCT_USE_LOCAL_RN_DEP"]} but the file does not exist!")
-                end
-            end
 
             @@build_from_source = !use_local_xcframework && !artifacts_exists
 
@@ -137,6 +133,12 @@ class ReactNativeDependenciesUtils
             rndeps_log("Building from source: #{@@build_from_source}")
             rndeps_log("Source: #{self.resolve_podspec_source()}")
         end
+    end
+
+    def self.abort_if_use_local_rndeps_with_no_file()
+      if !File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+        abort("RCT_USE_LOCAL_RN_DEP is set to #{ENV["RCT_USE_LOCAL_RN_DEP"]} but the file does not exist!")
+      end
     end
 
     def self.podspec_source_download_prebuild_release_tarball()
