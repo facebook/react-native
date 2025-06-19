@@ -182,6 +182,8 @@ def use_react_native! (
       pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec", :modular_headers => true
       pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
       pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
+    else
+      pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
     end
   else
     # Install prebuilt React Native Core and React Native Dependencies
