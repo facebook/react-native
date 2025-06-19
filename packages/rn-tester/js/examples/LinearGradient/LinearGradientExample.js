@@ -273,4 +273,21 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Non-square multiple color stops',
+    name: 'non-square-multiple-color-stops',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-non-square-multiple-color-stops"
+          style={{
+            experimental_backgroundImage:
+              'linear-gradient(45deg, black 9%, red 20%, blue 30%, green 50%, black 90%, transparent)',
+            width: 100,
+            height: 200,
+          }}
+        />
+      );
+    },
+  },
 ];

@@ -302,11 +302,11 @@ Transform Transform::Interpolate(
 }
 
 bool Transform::isVerticalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(1, 1), -1.0f);
+  return floatEquality(transform.at(1, 1), static_cast<Float>(-1.0f));
 }
 
 bool Transform::isHorizontalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(0, 0), -1.0f);
+  return floatEquality(transform.at(0, 0), static_cast<Float>(-1.0f));
 }
 
 bool Transform::operator==(const Transform& rhs) const {
