@@ -226,6 +226,13 @@ export function unstable_getDirectManipulationProps(
   return NativeFantom.getDirectManipulationProps(shadowNode);
 }
 
+export function unstable_getFabricUpdateProps(node: ReadOnlyNode): $ReadOnly<{
+  [string]: mixed,
+}> {
+  const shadowNode = getNativeNodeReference(node);
+  return NativeFantom.getFabricUpdateProps(shadowNode);
+}
+
 /**
  * Simulates running a task on the UI thread and forces side effect to drain
  * the event queue, scheduling events to be dispatched to JavaScript.
