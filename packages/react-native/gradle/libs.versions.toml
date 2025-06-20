@@ -2,8 +2,8 @@
 # Android versions
 minSdk = "24"
 targetSdk = "35"
-compileSdk = "35"
-buildTools = "35.0.0"
+compileSdk = "36"
+buildTools = "36.0.0"
 ndkVersion = "27.1.12297006"
 # Dependencies versions
 agp = "8.10.1"
