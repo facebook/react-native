@@ -17,6 +17,7 @@ import ensureInstance from '../../../src/private/__tests__/utilities/ensureInsta
 import * as Fantom from '@react-native/fantom';
 import {createRef} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
+import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -152,6 +153,7 @@ test('animation driven by onScroll event', () => {
 
 test('animated opacity', () => {
   let _opacity;
+  let _opacityAnimation;
   const viewRef = createRef<HostInstance>();
 
   function MyApp() {
@@ -182,7 +184,7 @@ test('animated opacity', () => {
   expect(viewElement.getBoundingClientRect().x).toBe(0);
 
   Fantom.runTask(() => {
-    Animated.timing(_opacity, {
+    _opacityAnimation = Animated.timing(_opacity, {
       toValue: 0,
       duration: 30,
       useNativeDriver: true,
@@ -194,8 +196,10 @@ test('animated opacity', () => {
     0,
   );
 
-  // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-  Fantom.runWorkLoop();
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _opacityAnimation?.stop();
+  });
 
   expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
     <rn-view opacity="0" />,
@@ -474,4 +478,62 @@ describe('Value.extractOffset', () => {
     // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
     Fantom.runWorkLoop();
   });
+});
+
+test('animate layout props', () => {
+  const viewRef = createRef<HostInstance>();
+  allowStyleProp('height');
+
+  let _animatedHeight;
+  let _heightAnimation;
+
+  function MyApp() {
+    const animatedHeight = useAnimatedValue(0);
+    _animatedHeight = animatedHeight;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: animatedHeight,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  Fantom.runTask(() => {
+    _heightAnimation = Animated.timing(_animatedHeight, {
+      toValue: 100,
+      duration: 10,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(10);
+
+  // TODO: this shouldn't be neccessary since animation should be stopped after duration
+  Fantom.runTask(() => {
+    _heightAnimation?.stop();
+  });
+
+  // $FlowFixMe[incompatible-use]
+  expect(Fantom.unstable_getDirectManipulationProps(viewElement).height).toBe(
+    100,
+  );
+
+  expect(Fantom.unstable_getFabricUpdateProps(viewElement).height).toBe(100);
+
+  expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
+    <rn-view height="100.000000" />,
+  );
 });
