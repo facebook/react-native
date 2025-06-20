@@ -30,7 +30,7 @@ private object ReactAxOrderHelper {
    * @return an array of views following the accessibility order
    */
   @JvmStatic
-  public fun processAxOrderTree(
+  fun processAxOrderTree(
       root: View,
       axOrderIds: MutableList<String?>,
       axOrderSet: MutableSet<String?>
@@ -123,7 +123,7 @@ private object ReactAxOrderHelper {
   }
 
   @JvmStatic
-  public fun getVirtualViewBounds(host: View, virtualView: View): Rect {
+  fun getVirtualViewBounds(host: View, virtualView: View): Rect {
     var currentView: View = virtualView
     val viewBoundsInParent =
         Rect(virtualView.left, virtualView.top, virtualView.right, virtualView.bottom)
