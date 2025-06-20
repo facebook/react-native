@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * 0x0000ffff00000000 COALESCING_KEY_MASK = 0xffff000000000000
  */
 @InteropLegacyArchitecture
-public class EventDispatcherImpl(private val reactContext: ReactApplicationContext) :
+internal class EventDispatcherImpl(private val reactContext: ReactApplicationContext) :
     EventDispatcher, LifecycleEventListener {
   private val eventsStagingLock = Any()
   private val eventsToDispatchLock = Any()
@@ -313,7 +313,7 @@ public class EventDispatcherImpl(private val reactContext: ReactApplicationConte
     eventsToDispatchSize = 0
   }
 
-  public companion object {
+  companion object {
     private val EVENT_COMPARATOR: java.util.Comparator<Event<*>?> =
         java.util.Comparator { lhs, rhs ->
           when {
