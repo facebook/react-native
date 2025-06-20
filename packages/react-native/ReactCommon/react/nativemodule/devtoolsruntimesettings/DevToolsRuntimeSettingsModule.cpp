@@ -6,7 +6,9 @@
  */
 
 #include "DevToolsRuntimeSettingsModule.h"
+#if RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 ReactDevToolsRuntimeSettingsModuleProvider(
