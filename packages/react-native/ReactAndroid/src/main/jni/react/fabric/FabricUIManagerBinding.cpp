@@ -722,6 +722,11 @@ void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
   }
 }
 
+void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& /*tagToProps*/) {
+  // no-op
+}
+
 void FabricUIManagerBinding::onAnimationStarted() {
   auto mountingManager = getMountingManager("onAnimationStarted");
   if (!mountingManager) {

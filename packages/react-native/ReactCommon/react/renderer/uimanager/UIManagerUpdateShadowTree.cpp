@@ -218,6 +218,10 @@ void UIManager::updateShadowTree(
       LOG(ERROR) << "Root ShadowNode has not been cloned";
     }
   });
+
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidUpdateShadowTree(tagToProps);
+  }
 }
 
 } // namespace facebook::react
