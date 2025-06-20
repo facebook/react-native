@@ -29,18 +29,22 @@ internal class DiffClampAnimatedNode(
   }
 
   override fun update() {
-    val value = inputNodeValue
-    val diff = value - lastValue
-    lastValue = value
-    nodeValue = min(max(nodeValue + diff, minValue), maxValue)
+    if (inputNodeValue != null) {
+      val value = inputNodeValue!!
+      val diff = value - lastValue
+      lastValue = value
+      nodeValue = min(max(nodeValue + diff, minValue), maxValue)
+    }
   }
 
-  private val inputNodeValue: Double
+  private val inputNodeValue: Double?
     get() {
       val animatedNode = nativeAnimatedNodesManager.getNodeById(inputNodeTag)
       if (animatedNode == null || animatedNode !is ValueAnimatedNode) {
-        throw JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.DiffClamp node")
+        return null
+        // PATCH: COMMENTED OUT EXCEPTION THROWING
+        // throw JSApplicationCausedNativeException(
+        //     "Illegal node ID set as an input for Animated.DiffClamp node")
       }
       return animatedNode.getValue()
     }

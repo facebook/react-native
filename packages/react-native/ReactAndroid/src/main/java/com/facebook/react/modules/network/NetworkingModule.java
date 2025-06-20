@@ -52,7 +52,8 @@ import okio.Okio;
 public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   /**
-   * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
+   * Allows to implement a custom fetching process for specific URIs. It is the
+   * handler's job to
    * fetch the URI and return the JS body payload.
    */
   public interface UriHandler {
@@ -63,7 +64,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     WritableMap fetch(Uri uri) throws IOException;
   }
 
-  /** Allows adding custom handling to build the {@link RequestBody} from the JS body payload. */
+  /**
+   * Allows adding custom handling to build the {@link RequestBody} from the JS
+   * body payload.
+   */
   public interface RequestBodyHandler {
     /** Returns if the handler should be used for a JS body payload. */
     boolean supports(ReadableMap map);
@@ -72,7 +76,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     RequestBody toRequestBody(ReadableMap map, String contentType);
   }
 
-  /** Allows adding custom handling to build the JS body payload from the {@link ResponseBody}. */
+  /**
+   * Allows adding custom handling to build the JS body payload from the
+   * {@link ResponseBody}.
+   */
   public interface ResponseHandler {
     /** Returns if the handler should be used for a response type. */
     boolean supports(String responseType);
@@ -92,8 +99,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
-  private static @Nullable com.facebook.react.modules.network.CustomClientBuilder
-      customClientBuilder = null;
+  private static @Nullable com.facebook.react.modules.network.CustomClientBuilder customClientBuilder = null;
 
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler = new ForwardingCookieHandler();
@@ -131,10 +137,11 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   }
 
   /**
-   * @param context the ReactContext of the application
-   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   *     caller does not provide one explicitly
-   * @param client the {@link OkHttpClient} to be used for networking
+   * @param context          the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all
+   *                         requests where the
+   *                         caller does not provide one explicitly
+   * @param client           the {@link OkHttpClient} to be used for networking
    */
   /* package */ NetworkingModule(
       ReactApplicationContext context, @Nullable String defaultUserAgent, OkHttpClient client) {
@@ -145,26 +152,29 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(context), null);
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   /**
-   * @param context the ReactContext of the application
-   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s whose create()
-   *     methods would be called to attach the interceptors to the client.
+   * @param context                    the ReactContext of the application
+   * @param networkInterceptorCreators list of {@link NetworkInterceptorCreator}'s
+   *                                   whose create()
+   *                                   methods would be called to attach the
+   *                                   interceptors to the client.
    */
   public NetworkingModule(
       ReactApplicationContext context, List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.getOkHttpClient(), networkInterceptorCreators);
   }
 
   /**
-   * @param context the ReactContext of the application
-   * @param defaultUserAgent the User-Agent header that will be set for all requests where the
-   *     caller does not provide one explicitly
+   * @param context          the ReactContext of the application
+   * @param defaultUserAgent the User-Agent header that will be set for all
+   *                         requests where the
+   *                         caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.getOkHttpClient(), null);
   }
 
   public static void setCustomClientBuilder(
@@ -174,11 +184,12 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   /**
    * @deprecated To be removed in a future release. See
-   *     https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914
+   *             https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914
    */
   @Deprecated
   public interface CustomClientBuilder
-      extends com.facebook.react.modules.network.CustomClientBuilder {}
+      extends com.facebook.react.modules.network.CustomClientBuilder {
+  }
 
   private static void applyCustomBuilder(OkHttpClient.Builder builder) {
     if (customClientBuilder != null) {
@@ -277,8 +288,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       final boolean useIncrementalUpdates,
       int timeout,
       boolean withCredentials) {
-    final ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn();
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
     try {
       Uri uri = Uri.parse(url);
 
@@ -316,43 +326,46 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       clientBuilder.cookieJar(CookieJar.NO_COOKIES);
     }
 
-    // If JS is listening for progress updates, install a ProgressResponseBody that intercepts the
+    // If JS is listening for progress updates, install a ProgressResponseBody that
+    // intercepts the
     // response and counts bytes received.
     if (useIncrementalUpdates) {
       clientBuilder.addNetworkInterceptor(
           chain -> {
             Response originalResponse = chain.proceed(chain.request());
-            ProgressResponseBody responseBody =
-                new ProgressResponseBody(
-                    originalResponse.body(),
-                    new ProgressListener() {
-                      long last = System.nanoTime();
+            ProgressResponseBody responseBody = new ProgressResponseBody(
+                originalResponse.body(),
+                new ProgressListener() {
+                  long last = System.nanoTime();
 
-                      @Override
-                      public void onProgress(long bytesWritten, long contentLength, boolean done) {
-                        long now = System.nanoTime();
-                        if (!done && !shouldDispatch(now, last)) {
-                          return;
-                        }
-                        if (responseType.equals("text")) {
-                          // For 'text' responses we continuously send response data with progress
-                          // info to
-                          // JS below, so no need to do anything here.
-                          return;
-                        }
-                        ResponseUtil.onDataReceivedProgress(
-                            reactApplicationContext, requestId, bytesWritten, contentLength);
-                        last = now;
-                      }
-                    });
+                  @Override
+                  public void onProgress(long bytesWritten, long contentLength, boolean done) {
+                    long now = System.nanoTime();
+                    if (!done && !shouldDispatch(now, last)) {
+                      return;
+                    }
+                    if (responseType.equals("text")) {
+                      // For 'text' responses we continuously send response data with progress
+                      // info to
+                      // JS below, so no need to do anything here.
+                      return;
+                    }
+                    ResponseUtil.onDataReceivedProgress(
+                        reactApplicationContext, requestId, bytesWritten, contentLength);
+                    last = now;
+                  }
+                });
             return originalResponse.newBuilder().body(responseBody).build();
           });
     }
 
-    // If the current timeout does not equal the passed in timeout, we need to clone the existing
-    // client and set the timeout explicitly on the clone.  This is cheap as everything else is
+    // If the current timeout does not equal the passed in timeout, we need to clone
+    // the existing
+    // client and set the timeout explicitly on the clone. This is cheap as
+    // everything else is
     // shared under the hood.
-    // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
+    // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for
+    // more information
     if (timeout != mClient.callTimeoutMillis()) {
       clientBuilder.callTimeout(timeout, TimeUnit.MILLISECONDS);
     }
@@ -406,12 +419,12 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         }
       } else {
         // Use getBytes() to convert the body into a byte[], preventing okhttp from
-        // appending the character set to the Content-Type header when otherwise unspecified
+        // appending the character set to the Content-Type header when otherwise
+        // unspecified
         // https://github.com/facebook/react-native/issues/8237
-        Charset charset =
-            contentMediaType == null
-                ? StandardCharsets.UTF_8
-                : contentMediaType.charset(StandardCharsets.UTF_8);
+        Charset charset = contentMediaType == null
+            ? StandardCharsets.UTF_8
+            : contentMediaType.charset(StandardCharsets.UTF_8);
         requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
@@ -436,8 +449,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         return;
       }
       String uri = data.getString(REQUEST_BODY_KEY_URI);
-      InputStream fileInputStream =
-          RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
+      InputStream fileInputStream = RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri);
       if (fileInputStream == null) {
         ResponseUtil.onRequestError(
             reactApplicationContext, requestId, "Could not retrieve file for uri " + uri, null);
@@ -449,8 +461,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
         contentType = "multipart/form-data";
       }
       ReadableArray parts = data.getArray(REQUEST_BODY_KEY_FORMDATA);
-      MultipartBody.Builder multipartBuilder =
-          constructMultipartBody(parts, contentType, requestId);
+      MultipartBody.Builder multipartBuilder = constructMultipartBody(parts, contentType, requestId);
       if (multipartBuilder == null) {
         return;
       }
@@ -473,10 +484,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   return;
                 }
                 removeRequest(requestId);
-                String errorMessage =
-                    e.getMessage() != null
-                        ? e.getMessage()
-                        : "Error while executing request: " + e.getClass().getSimpleName();
+                String errorMessage = e.getMessage() != null
+                    ? e.getMessage()
+                    : "Error while executing request: " + e.getClass().getSimpleName();
                 ResponseUtil.onRequestError(reactApplicationContext, requestId, errorMessage, e);
               }
 
@@ -500,11 +510,14 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                   // internally.
                   // The issue is that it won't handle decoding if the user provides a
                   // Accept-Encoding
-                  // header. This is also undesirable considering that iOS does handle the decoding
+                  // header. This is also undesirable considering that iOS does handle the
+                  // decoding
                   // even
-                  // when the header is provided. To make sure this works in all cases, handle gzip
+                  // when the header is provided. To make sure this works in all cases, handle
+                  // gzip
                   // body
-                  // here also. This works fine since OKHttp will remove the Content-Encoding header
+                  // here also. This works fine since OKHttp will remove the Content-Encoding
+                  // header
                   // if
                   // it used transparent gzip.
                   // See
@@ -514,11 +527,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
                       && responseBody != null) {
                     GzipSource gzipSource = new GzipSource(responseBody.source());
                     String contentType = response.header("Content-Type");
-                    responseBody =
-                        ResponseBody.create(
-                            contentType != null ? MediaType.parse(contentType) : null,
-                            -1L,
-                            Okio.buffer(gzipSource));
+                    responseBody = ResponseBody.create(
+                        contentType != null ? MediaType.parse(contentType) : null,
+                        -1L,
+                        Okio.buffer(gzipSource));
                   }
 
                   // Check if a handler is registered
@@ -575,8 +587,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     if (requestBody == null) {
       return null;
     }
-    final ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn();
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
     return RequestBodyUtil.createProgressRequest(
         requestBody,
         new ProgressListener() {
@@ -605,18 +616,16 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       // Ignore
     }
 
-    Charset charset =
-        responseBody.contentType() == null
-            ? StandardCharsets.UTF_8
-            : responseBody.contentType().charset(StandardCharsets.UTF_8);
+    Charset charset = responseBody.contentType() == null
+        ? StandardCharsets.UTF_8
+        : responseBody.contentType().charset(StandardCharsets.UTF_8);
 
     ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
     InputStream inputStream = responseBody.byteStream();
     try {
       byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
       int read;
-      final ReactApplicationContext reactApplicationContext =
-          getReactApplicationContextIfActiveOrWarn();
+      final ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
       while ((read = inputStream.read(buffer)) != -1) {
         ResponseUtil.onIncrementalDataReceived(
             reactApplicationContext,
@@ -681,18 +690,19 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   }
 
   @Override
-  public void addListener(String eventName) {}
+  public void addListener(String eventName) {
+  }
 
   @Override
-  public void removeListeners(double count) {}
+  public void removeListeners(double count) {
+  }
 
   private @Nullable MultipartBody.Builder constructMultipartBody(
       ReadableArray body, String contentType, int requestId) {
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
     multipartBuilder.setType(MediaType.parse(contentType));
 
-    final ReactApplicationContext reactApplicationContext =
-        getReactApplicationContextIfActiveOrWarn();
+    final ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
     for (int i = 0, size = body.size(); i < size; i++) {
       ReadableMap bodyPart = body.getMap(i);
@@ -712,7 +722,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       String partContentTypeStr = headers.get(CONTENT_TYPE_HEADER_NAME);
       if (partContentTypeStr != null) {
         partContentType = MediaType.parse(partContentTypeStr);
-        // Remove the content-type header because MultipartBuilder gets it explicitly as an
+        // Remove the content-type header because MultipartBuilder gets it explicitly as
+        // an
         // argument and doesn't expect it in the headers array.
         headers = headers.newBuilder().removeAll(CONTENT_TYPE_HEADER_NAME).build();
       }
@@ -730,8 +741,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
           return null;
         }
         String fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI);
-        InputStream fileInputStream =
-            RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr);
+        InputStream fileInputStream = RequestBodyUtil.getFileInputStream(getReactApplicationContext(),
+            fileContentUriStr);
         if (fileInputStream == null) {
           ResponseUtil.onRequestError(
               reactApplicationContext,
@@ -750,7 +761,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   }
 
   /**
-   * Extracts the headers from the Array. If the format is invalid, this method will return null.
+   * Extracts the headers from the Array. If the format is invalid, this method
+   * will return null.
    */
   private @Nullable Headers extractHeaders(
       @Nullable ReadableArray headersArray, @Nullable ReadableMap requestData) {
@@ -774,7 +786,8 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       headersBuilder.add(USER_AGENT_HEADER_NAME, mDefaultUserAgent);
     }
 
-    // Sanitize content encoding header, supported only when request specify payload as string
+    // Sanitize content encoding header, supported only when request specify payload
+    // as string
     boolean isGzipSupported = requestData != null && requestData.hasKey(REQUEST_BODY_KEY_STRING);
     if (!isGzipSupported) {
       headersBuilder.removeAll(CONTENT_ENCODING_HEADER_NAME);

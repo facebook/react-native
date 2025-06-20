@@ -39,17 +39,26 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * This is the main class that coordinates how native animated JS implementation drives UI changes.
+ * This is the main class that coordinates how native animated JS implementation
+ * drives UI changes.
  *
- * <p>It implements a management interface for animated nodes graph as well as implements a graph
+ * <p>
+ * It implements a management interface for animated nodes graph as well as
+ * implements a graph
  * traversal algorithm that is run for each animation frame.
  *
- * <p>For each animation frame we visit animated nodes that might've been updated as well as their
- * children that may use parent's values to update themselves. At the end of the traversal algorithm
- * we expect to reach a special type of the node: PropsAnimatedNode that is then responsible for
- * calculating property map which can be sent to native view hierarchy to update the view.
+ * <p>
+ * For each animation frame we visit animated nodes that might've been updated
+ * as well as their
+ * children that may use parent's values to update themselves. At the end of the
+ * traversal algorithm
+ * we expect to reach a special type of the node: PropsAnimatedNode that is then
+ * responsible for
+ * calculating property map which can be sent to native view hierarchy to update
+ * the view.
  *
- * <p>IMPORTANT: This class should be accessed only from the UI Thread
+ * <p>
+ * IMPORTANT: This class should be accessed only from the UI Thread
  */
 public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
@@ -63,7 +72,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   private final List<EventAnimationDriver> mEventDrivers = new ArrayList<>();
   private final ReactApplicationContext mReactApplicationContext;
   private int mAnimatedGraphBFSColor = 0;
-  // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
+  // Used to avoid allocating a new array on every frame in `runUpdates` and
+  // `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
   private boolean mEventListenerInitializedForFabric = false;
@@ -76,8 +86,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   }
 
   /**
-   * Initialize event listeners for Fabric UIManager or non-Fabric UIManager, exactly once. Once
-   * Fabric is the only UIManager, this logic can be simplified. This is expected to only be called
+   * Initialize event listeners for Fabric UIManager or non-Fabric UIManager,
+   * exactly once. Once
+   * Fabric is the only UIManager, this logic can be simplified. This is expected
+   * to only be called
    * from the native module thread.
    *
    * @param uiManagerType
@@ -113,8 +125,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   @UiThread
   public void createAnimatedNode(int tag, ReadableMap config) {
     if (mAnimatedNodes.get(tag) != null) {
-      throw new JSApplicationIllegalArgumentException(
-          "createAnimatedNode: Animated node [" + tag + "] already exists");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "createAnimatedNode: Animated node [" + tag + "] already exists");
     }
     String type = config.getString("type");
     final AnimatedNode node;
@@ -147,7 +160,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     } else if ("object".equals(type)) {
       node = new ObjectAnimatedNode(config, this);
     } else {
-      throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
+      return;
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException("Unsupported node type: " +
+      // type);
     }
     node.tag = tag;
     mAnimatedNodes.put(tag, node);
@@ -158,8 +174,9 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void updateAnimatedNodeConfig(int tag, ReadableMap config) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "updateAnimatedNode: Animated node [" + tag + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "updateAnimatedNode: Animated node [" + tag + "] does not exist");
     }
 
     if (node instanceof AnimatedNodeWithUpdateableConfig) {
@@ -179,10 +196,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void startListeningToAnimatedNodeValue(int tag, AnimatedNodeValueListener listener) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "startListeningToAnimatedNodeValue: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "startListeningToAnimatedNodeValue: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(listener);
   }
@@ -191,10 +209,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void stopListeningToAnimatedNodeValue(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "startListeningToAnimatedNodeValue: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "startListeningToAnimatedNodeValue: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).setValueListener(null);
   }
@@ -203,10 +222,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void setAnimatedNodeValue(int tag, double value) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "setAnimatedNodeValue: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "setAnimatedNodeValue: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     stopAnimationsForNode(node);
     ((ValueAnimatedNode) node).nodeValue = value;
@@ -217,10 +237,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void setAnimatedNodeOffset(int tag, double offset) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "setAnimatedNodeOffset: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "setAnimatedNodeOffset: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).offset = offset;
     mUpdatedNodes.put(tag, node);
@@ -230,10 +251,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void flattenAnimatedNodeOffset(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "flattenAnimatedNodeOffset: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "flattenAnimatedNodeOffset: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).flattenOffset();
   }
@@ -242,10 +264,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void extractAnimatedNodeOffset(int tag) {
     AnimatedNode node = mAnimatedNodes.get(tag);
     if (node == null || !(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "extractAnimatedNodeOffset: Animated node ["
-              + tag
-              + "] does not exist, or is not a 'value' node");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "extractAnimatedNodeOffset: Animated node ["
+      // + tag
+      // + "] does not exist, or is not a 'value' node");
     }
     ((ValueAnimatedNode) node).extractOffset();
   }
@@ -255,20 +278,24 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       int animationId, int animatedNodeTag, ReadableMap animationConfig, Callback endCallback) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "startAnimatingNode: Animated node [" + animatedNodeTag + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "startAnimatingNode: Animated node [" + animatedNodeTag + "] does not
+      // exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "startAnimatingNode: Animated node ["
-              + animatedNodeTag
-              + "] should be of type "
-              + ValueAnimatedNode.class.getName());
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "startAnimatingNode: Animated node ["
+      // + animatedNodeTag
+      // + "] should be of type "
+      // + ValueAnimatedNode.class.getName());
     }
 
     final AnimationDriver existingDriver = mActiveAnimations.get(animationId);
     if (existingDriver != null) {
-      // animation with the given ID is already running, we need to update its configuration instead
+      // animation with the given ID is already running, we need to update its
+      // configuration instead
       // of spawning a new one
       existingDriver.resetConfig(animationConfig);
       return;
@@ -283,8 +310,11 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     } else if ("decay".equals(type)) {
       animation = new DecayAnimation(animationConfig);
     } else {
-      throw new JSApplicationIllegalArgumentException(
-          "startAnimatingNode: Unsupported animation type [" + animatedNodeTag + "]: " + type);
+      return;
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "startAnimatingNode: Unsupported animation type [" + animatedNodeTag + "]: "
+      // + type);
     }
     animation.id = animationId;
     animation.endCallback = endCallback;
@@ -294,9 +324,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   @UiThread
   private void stopAnimationsForNode(AnimatedNode animatedNode) {
-    // in most of the cases there should never be more than a few active animations running at the
-    // same time. Therefore it does not make much sense to create an animationId -> animation
-    // object map that would require additional memory just to support the use-case of stopping
+    // in most of the cases there should never be more than a few active animations
+    // running at the
+    // same time. Therefore it does not make much sense to create an animationId ->
+    // animation
+    // object map that would require additional memory just to support the use-case
+    // of stopping
     // an animation
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
@@ -309,8 +342,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
           animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
-          // If no callback is passed in, this /may/ be an animation set up by the single-op
-          // instruction from JS, meaning that no jsi::functions are passed into native and
+          // If no callback is passed in, this /may/ be an animation set up by the
+          // single-op
+          // instruction from JS, meaning that no jsi::functions are passed into native
+          // and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.id);
@@ -332,9 +367,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
   @UiThread
   public void stopAnimation(int animationId) {
-    // in most of the cases there should never be more than a few active animations running at the
-    // same time. Therefore it does not make much sense to create an animationId -> animation
-    // object map that would require additional memory just to support the use-case of stopping
+    // in most of the cases there should never be more than a few active animations
+    // running at the
+    // same time. Therefore it does not make much sense to create an animationId ->
+    // animation
+    // object map that would require additional memory just to support the use-case
+    // of stopping
     // an animation
     WritableArray events = null;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
@@ -347,8 +385,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
           animation.endCallback.invoke(endCallbackResponse);
         } else if (mReactApplicationContext != null) {
-          // If no callback is passed in, this /may/ be an animation set up by the single-op
-          // instruction from JS, meaning that no jsi::functions are passed into native and
+          // If no callback is passed in, this /may/ be an animation set up by the
+          // single-op
+          // instruction from JS, meaning that no jsi::functions are passed into native
+          // and
           // we communicate via RCTDeviceEventEmitter instead of callbacks.
           WritableMap params = Arguments.createMap();
           params.putInt("animationId", animation.id);
@@ -366,9 +406,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     if (events != null) {
       mReactApplicationContext.emitDeviceEvent("onNativeAnimatedModuleAnimationFinished", events);
     }
-    // Do not throw an error in the case animation could not be found. We only keep "active"
-    // animations in the registry and there is a chance that Animated.js will enqueue a
-    // stopAnimation call after the animation has ended or the call will reach native thread only
+    // Do not throw an error in the case animation could not be found. We only keep
+    // "active"
+    // animations in the registry and there is a chance that Animated.js will
+    // enqueue a
+    // stopAnimation call after the animation has ended or the call will reach
+    // native thread only
     // when the animation is already over.
   }
 
@@ -376,17 +419,19 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void connectAnimatedNodes(int parentNodeTag, int childNodeTag) {
     AnimatedNode parentNode = mAnimatedNodes.get(parentNodeTag);
     if (parentNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "connectAnimatedNodes: Animated node with tag (parent) ["
-              + parentNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "connectAnimatedNodes: Animated node with tag (parent) ["
+      // + parentNodeTag
+      // + "] does not exist");
     }
     AnimatedNode childNode = mAnimatedNodes.get(childNodeTag);
     if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "connectAnimatedNodes: Animated node with tag (child) ["
-              + childNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "connectAnimatedNodes: Animated node with tag (child) ["
+      // + childNodeTag
+      // + "] does not exist");
     }
     parentNode.addChild(childNode);
     mUpdatedNodes.put(childNodeTag, childNode);
@@ -395,17 +440,19 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void disconnectAnimatedNodes(int parentNodeTag, int childNodeTag) {
     AnimatedNode parentNode = mAnimatedNodes.get(parentNodeTag);
     if (parentNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "disconnectAnimatedNodes: Animated node with tag (parent) ["
-              + parentNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "disconnectAnimatedNodes: Animated node with tag (parent) ["
+      // + parentNodeTag
+      // + "] does not exist");
     }
     AnimatedNode childNode = mAnimatedNodes.get(childNodeTag);
     if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "disconnectAnimatedNodes: Animated node with tag (child) ["
-              + childNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "disconnectAnimatedNodes: Animated node with tag (child) ["
+      // + childNodeTag
+      // + "] does not exist");
     }
     parentNode.removeChild(childNode);
     mUpdatedNodes.put(childNodeTag, childNode);
@@ -415,28 +462,30 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void connectAnimatedNodeToView(int animatedNodeTag, int viewTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "connectAnimatedNodeToView: Animated node with tag ["
-              + animatedNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "connectAnimatedNodeToView: Animated node with tag ["
+      // + animatedNodeTag
+      // + "] does not exist");
     }
     if (!(node instanceof PropsAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "connectAnimatedNodeToView: Animated node connected to view ["
-              + viewTag
-              + "] should be of type "
-              + PropsAnimatedNode.class.getName());
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "connectAnimatedNodeToView: Animated node connected to view ["
+      // + viewTag
+      // + "] should be of type "
+      // + PropsAnimatedNode.class.getName());
     }
     if (mReactApplicationContext == null) {
-      throw new IllegalStateException(
-          "connectAnimatedNodeToView: Animated node could not be connected, no"
-              + " ReactApplicationContext: "
-              + viewTag);
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new IllegalStateException(
+      // "connectAnimatedNodeToView: Animated node could not be connected, no"
+      // + " ReactApplicationContext: "
+      // + viewTag);
     }
 
     @Nullable
-    UIManager uiManager =
-        UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, viewTag);
+    UIManager uiManager = UIManagerHelper.getUIManagerForReactTag(mReactApplicationContext, viewTag);
     if (uiManager == null) {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
@@ -456,17 +505,19 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   public void disconnectAnimatedNodeFromView(int animatedNodeTag, int viewTag) {
     AnimatedNode node = mAnimatedNodes.get(animatedNodeTag);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "disconnectAnimatedNodeFromView: Animated node with tag ["
-              + animatedNodeTag
-              + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "disconnectAnimatedNodeFromView: Animated node with tag ["
+      // + animatedNodeTag
+      // + "] does not exist");
     }
     if (!(node instanceof PropsAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "disconnectAnimatedNodeFromView: Animated node connected to view ["
-              + viewTag
-              + "] should be of type "
-              + PropsAnimatedNode.class.getName());
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "disconnectAnimatedNodeFromView: Animated node connected to view ["
+      // + viewTag
+      // + "] should be of type "
+      // + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
     propsAnimatedNode.disconnectFromView(viewTag);
@@ -485,10 +536,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       return;
     }
 
-    // If there's no callback, that means that JS is using the single-operation mode, and not
+    // If there's no callback, that means that JS is using the single-operation
+    // mode, and not
     // passing any callbacks into Java.
     // See NativeAnimatedHelper.js for details.
-    // Instead, we use RCTDeviceEventEmitter to pass data back to JS and emulate callbacks.
+    // Instead, we use RCTDeviceEventEmitter to pass data back to JS and emulate
+    // callbacks.
     if (mReactApplicationContext == null) {
       return;
     }
@@ -509,9 +562,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       return;
     }
     if (!(node instanceof PropsAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "Animated node connected to view [?] should be of type "
-              + PropsAnimatedNode.class.getName());
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "Animated node connected to view [?] should be of type "
+      // + PropsAnimatedNode.class.getName());
     }
     PropsAnimatedNode propsAnimatedNode = (PropsAnimatedNode) node;
     propsAnimatedNode.restoreDefaultValues();
@@ -523,17 +577,20 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     int nodeTag = eventMapping.getInt("animatedValueTag");
     AnimatedNode node = mAnimatedNodes.get(nodeTag);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException(
-          "addAnimatedEventToView: Animated node with tag [" + nodeTag + "] does not exist");
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "addAnimatedEventToView: Animated node with tag [" + nodeTag + "] does not
+      // exist");
     }
     if (!(node instanceof ValueAnimatedNode)) {
-      throw new JSApplicationIllegalArgumentException(
-          "addAnimatedEventToView: Animated node on view ["
-              + viewTag
-              + "] connected to event handler ("
-              + eventHandlerName
-              + ") should be of type "
-              + ValueAnimatedNode.class.getName());
+      // PATCH: COMMENTED OUT EXCEPTION THROWING
+      // throw new JSApplicationIllegalArgumentException(
+      // "addAnimatedEventToView: Animated node on view ["
+      // + viewTag
+      // + "] connected to event handler ("
+      // + eventHandlerName
+      // + ") should be of type "
+      // + ValueAnimatedNode.class.getName());
     }
 
     ReadableArray path = eventMapping.getArray("nativeEventPath");
@@ -544,12 +601,12 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
     String eventName = normalizeEventName(eventHandlerName);
 
-    EventAnimationDriver eventDriver =
-        new EventAnimationDriver(eventName, viewTag, pathList, (ValueAnimatedNode) node);
+    EventAnimationDriver eventDriver = new EventAnimationDriver(eventName, viewTag, pathList, (ValueAnimatedNode) node);
     mEventDrivers.add(eventDriver);
 
     if (eventName.equals("topScroll")) {
-      // Handle the custom topScrollEnded event sent by the ScrollViews when the user stops dragging
+      // Handle the custom topScrollEnded event sent by the ScrollViews when the user
+      // stops dragging
       addAnimatedEventToView(viewTag, "topScrollEnded", eventMapping);
     }
   }
@@ -571,14 +628,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
 
     if (eventName.equals("topScroll")) {
-      // Handle the custom topScrollEnded event sent by the ScrollViews when the user stops dragging
+      // Handle the custom topScrollEnded event sent by the ScrollViews when the user
+      // stops dragging
       removeAnimatedEventFromView(viewTag, "topScrollEnded", animatedValueTag);
     }
   }
 
   @Override
   public void onEventDispatch(final Event event) {
-    // Events can be dispatched from any thread so we have to make sure handleEvent is run from the
+    // Events can be dispatched from any thread so we have to make sure handleEvent
+    // is run from the
     // UI thread.
     if (UiThreadUtil.isOnUiThread()) {
       handleEvent(event);
@@ -617,15 +676,23 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
   }
 
   /**
-   * Animation loop performs two BFSes over the graph of animated nodes. We use incremented {@code
-   * mAnimatedGraphBFSColor} to mark nodes as visited in each of the BFSes which saves additional
+   * Animation loop performs two BFSes over the graph of animated nodes. We use
+   * incremented {@code
+   * mAnimatedGraphBFSColor} to mark nodes as visited in each of the BFSes which
+   * saves additional
    * loops for clearing "visited" states.
    *
-   * <p>First BFS starts with nodes that are in {@code mUpdatedNodes} (that is, their value have
-   * been modified from JS in the last batch of JS operations) or directly attached to an active
-   * animation (hence linked to objects from {@code mActiveAnimations}). In that step we calculate
-   * an attribute {@code activeIncomingNodes}. The second BFS runs in topological order over the
-   * sub-graph of *active* nodes. This is done by adding node to the BFS queue only if all its
+   * <p>
+   * First BFS starts with nodes that are in {@code mUpdatedNodes} (that is, their
+   * value have
+   * been modified from JS in the last batch of JS operations) or directly
+   * attached to an active
+   * animation (hence linked to objects from {@code mActiveAnimations}). In that
+   * step we calculate
+   * an attribute {@code activeIncomingNodes}. The second BFS runs in topological
+   * order over the
+   * sub-graph of *active* nodes. This is done by adding node to the BFS queue
+   * only if all its
    * "predecessors" have already been visited.
    */
   @UiThread
@@ -654,7 +721,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     updateNodes(mRunUpdateNodeList);
     mRunUpdateNodeList.clear();
 
-    // Cleanup finished animations. Iterate over the array of animations and override ones that has
+    // Cleanup finished animations. Iterate over the array of animations and
+    // override ones that has
     // finished, then resize `mActiveAnimations`.
     if (hasFinishedAnimations) {
       WritableArray events = null;
@@ -667,8 +735,10 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
             endCallbackResponse.putDouble("value", animation.animatedValue.nodeValue);
             animation.endCallback.invoke(endCallbackResponse);
           } else if (mReactApplicationContext != null) {
-            // If no callback is passed in, this /may/ be an animation set up by the single-op
-            // instruction from JS, meaning that no jsi::functions are passed into native and
+            // If no callback is passed in, this /may/ be an animation set up by the
+            // single-op
+            // instruction from JS, meaning that no jsi::functions are passed into native
+            // and
             // we communicate via RCTDeviceEventEmitter instead of callbacks.
             WritableMap params = Arguments.createMap();
             params.putInt("animationId", animation.id);
@@ -716,13 +786,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     int updatedNodesCount = 0;
 
     // STEP 1.
-    // BFS over graph of nodes. Update `mIncomingNodes` attribute for each node during that BFS.
-    // Store number of visited nodes in `activeNodesCount`. We "execute" active animations as a part
+    // BFS over graph of nodes. Update `mIncomingNodes` attribute for each node
+    // during that BFS.
+    // Store number of visited nodes in `activeNodesCount`. We "execute" active
+    // animations as a part
     // of this step.
 
     mAnimatedGraphBFSColor++; /* use new color */
     if (mAnimatedGraphBFSColor == AnimatedNode.INITIAL_BFS_COLOR) {
-      // value "0" is used as an initial color for a new node, using it in BFS may cause some nodes
+      // value "0" is used as an initial color for a new node, using it in BFS may
+      // cause some nodes
       // to be skipped.
       mAnimatedGraphBFSColor++;
     }
@@ -752,11 +825,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
     }
 
     // STEP 2
-    // BFS over the graph of active nodes in topological order -> visit node only when all its
-    // "predecessors" in the graph have already been visited. It is important to visit nodes in that
-    // order as they may often use values of their predecessors in order to calculate "next state"
-    // of their own. We start by determining the starting set of nodes by looking for nodes with
-    // `activeIncomingNodes = 0` (those can only be the ones that we start BFS in the previous
+    // BFS over the graph of active nodes in topological order -> visit node only
+    // when all its
+    // "predecessors" in the graph have already been visited. It is important to
+    // visit nodes in that
+    // order as they may often use values of their predecessors in order to
+    // calculate "next state"
+    // of their own. We start by determining the starting set of nodes by looking
+    // for nodes with
+    // `activeIncomingNodes = 0` (those can only be the ones that we start BFS in
+    // the previous
     // step). We store number of visited nodes in this step in `updatedNodesCount`
 
     mAnimatedGraphBFSColor++;
@@ -765,7 +843,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       mAnimatedGraphBFSColor++;
     }
 
-    // find nodes with zero "incoming nodes", those can be either nodes from `mUpdatedNodes` or
+    // find nodes with zero "incoming nodes", those can be either nodes from
+    // `mUpdatedNodes` or
     // ones connected to active animations
     for (AnimatedNode node : nodes) {
       if (node.activeIncomingNodes == 0 && node.BFSColor != mAnimatedGraphBFSColor) {
@@ -786,12 +865,16 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
           ((PropsAnimatedNode) nextNode).updateView();
         }
       } catch (JSApplicationCausedNativeException e) {
-        // An exception is thrown if the view hasn't been created yet. This can happen because
-        // views are created in batches. If this particular view didn't make it into a batch yet,
-        // the view won't exist and an exception will be thrown when attempting to start an
+        // An exception is thrown if the view hasn't been created yet. This can happen
+        // because
+        // views are created in batches. If this particular view didn't make it into a
+        // batch yet,
+        // the view won't exist and an exception will be thrown when attempting to start
+        // an
         // animation on it.
         //
-        // Eat the exception rather than crashing. The impact is that we may drop one or more
+        // Eat the exception rather than crashing. The impact is that we may drop one or
+        // more
         // frames of the animation.
         FLog.e(TAG, "Native animation workaround, frame lost as result of race condition", e);
       }
@@ -814,12 +897,17 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       }
     }
 
-    // Verify that we've visited *all* active nodes. Throw otherwise as this could mean there is a
-    // cycle in animated node graph, or that the graph is only partially set up. We also take
-    // advantage of the fact that all active nodes are visited in the step above so that all the
+    // Verify that we've visited *all* active nodes. Throw otherwise as this could
+    // mean there is a
+    // cycle in animated node graph, or that the graph is only partially set up. We
+    // also take
+    // advantage of the fact that all active nodes are visited in the step above so
+    // that all the
     // nodes properties `activeIncomingNodes` are set to zero.
-    // In Fabric there can be race conditions between the JS thread setting up or tearing down
-    // animated nodes, and Fabric executing them on the UI thread, leading to temporary inconsistent
+    // In Fabric there can be race conditions between the JS thread setting up or
+    // tearing down
+    // animated nodes, and Fabric executing them on the UI thread, leading to
+    // temporary inconsistent
     // states.
     if (activeNodesCount != updatedNodesCount) {
       if (mWarnedAboutGraphTraversal) {
@@ -827,7 +915,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       }
       mWarnedAboutGraphTraversal = true;
 
-      // Before crashing or logging soft exception, log details about current graph setup
+      // Before crashing or logging soft exception, log details about current graph
+      // setup
       FLog.e(TAG, "Detected animation cycle or disconnected graph. ");
       for (AnimatedNode node : nodes) {
         FLog.e(TAG, node.prettyPrintWithChildren());
@@ -835,29 +924,32 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
       // If we're running only in non-Fabric, we still throw an exception.
       // In Fabric, it seems that animations enter an inconsistent state fairly often.
-      // We detect if the inconsistency is due to a cycle (a fatal error for which we must crash)
-      // or disconnected regions, indicating a partially-set-up animation graph, which is not
+      // We detect if the inconsistency is due to a cycle (a fatal error for which we
+      // must crash)
+      // or disconnected regions, indicating a partially-set-up animation graph, which
+      // is not
       // fatal and can stay a warning.
-      String reason =
-          cyclesDetected > 0 ? "cycles (" + cyclesDetected + ")" : "disconnected regions";
-      IllegalStateException ex =
-          new IllegalStateException(
-              "Looks like animated nodes graph has "
-                  + reason
-                  + ", there are "
-                  + activeNodesCount
-                  + " but toposort visited only "
-                  + updatedNodesCount);
+      String reason = cyclesDetected > 0 ? "cycles (" + cyclesDetected + ")" : "disconnected regions";
+      IllegalStateException ex = new IllegalStateException(
+          "Looks like animated nodes graph has "
+              + reason
+              + ", there are "
+              + activeNodesCount
+              + " but toposort visited only "
+              + updatedNodesCount);
       if (mEventListenerInitializedForFabric && cyclesDetected == 0) {
-        // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
+        // TODO T71377544: investigate these SoftExceptions and see if we can remove
+        // entirely
         // or fix the root cause
         ReactSoftExceptionLogger.logSoftException(TAG, new ReactNoCrashSoftException(ex));
       } else if (mEventListenerInitializedForFabric) {
-        // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
+        // TODO T71377544: investigate these SoftExceptions and see if we can remove
+        // entirely
         // or fix the root cause
         ReactSoftExceptionLogger.logSoftException(TAG, new ReactNoCrashSoftException(ex));
       } else {
-        throw ex;
+        // PATCH: COMMENTED OUT EXCEPTION THROWING
+        // throw ex;
       }
     } else {
       mWarnedAboutGraphTraversal = false;

@@ -44,47 +44,78 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Module that exposes interface for creating and managing animated nodes on the "native" side.
+ * Module that exposes interface for creating and managing animated nodes on the
+ * "native" side.
  *
- * <p>Animated.js library is based on a concept of a graph where nodes are values or transform
- * operations (such as interpolation, addition, etc) and connection are used to describe how change
+ * <p>
+ * Animated.js library is based on a concept of a graph where nodes are values
+ * or transform
+ * operations (such as interpolation, addition, etc) and connection are used to
+ * describe how change
  * of the value in one node can affect other nodes.
  *
- * <p>Few examples of the nodes that can be created on the JS side:
+ * <p>
+ * Few examples of the nodes that can be created on the JS side:
  *
  * <ul>
- *   <li>Animated.Value is a simplest type of node with a numeric value which can be driven by an
- *       animation engine (spring, decay, etc) or by calling setValue on it directly from JS
- *   <li>Animated.add is a type of node that may have two or more input nodes. It outputs the sum of
- *       all the input node values
- *   <li>interpolate - is actually a method you can call on any node and it creates a new node that
- *       takes the parent node as an input and outputs its interpolated value (e.g. if you have
- *       value that can animate from 0 to 1 you can create interpolated node and set output range to
- *       be 0 to 100 and when the input node changes the output of interpolated node will multiply
- *       the values by 100)
+ * <li>Animated.Value is a simplest type of node with a numeric value which can
+ * be driven by an
+ * animation engine (spring, decay, etc) or by calling setValue on it directly
+ * from JS
+ * <li>Animated.add is a type of node that may have two or more input nodes. It
+ * outputs the sum of
+ * all the input node values
+ * <li>interpolate - is actually a method you can call on any node and it
+ * creates a new node that
+ * takes the parent node as an input and outputs its interpolated value (e.g. if
+ * you have
+ * value that can animate from 0 to 1 you can create interpolated node and set
+ * output range to
+ * be 0 to 100 and when the input node changes the output of interpolated node
+ * will multiply
+ * the values by 100)
  * </ul>
  *
- * <p>You can mix and chain nodes however you like and this way create nodes graph with connections
+ * <p>
+ * You can mix and chain nodes however you like and this way create nodes graph
+ * with connections
  * between them.
  *
- * <p>To map animated node values to view properties there is a special type of a node:
- * AnimatedProps. It is created by AnimatedImplementation whenever you render Animated.View and
- * stores a mapping from the view properties to the corresponding animated values (so it's actually
+ * <p>
+ * To map animated node values to view properties there is a special type of a
+ * node:
+ * AnimatedProps. It is created by AnimatedImplementation whenever you render
+ * Animated.View and
+ * stores a mapping from the view properties to the corresponding animated
+ * values (so it's actually
  * also a node with connections to the value nodes).
  *
- * <p>Last "special" elements of the graph are "animation drivers". Those are objects (represented
- * as a graph nodes too) that based on some criteria updates attached values every frame (we have
- * few types of those, e.g., spring, timing, decay). Animation objects can be "started" and
- * "stopped". Those are like "pulse generators" for the rest of the nodes graph. Those pulses then
- * propagate along the graph to the children nodes up to the special node type: AnimatedProps which
+ * <p>
+ * Last "special" elements of the graph are "animation drivers". Those are
+ * objects (represented
+ * as a graph nodes too) that based on some criteria updates attached values
+ * every frame (we have
+ * few types of those, e.g., spring, timing, decay). Animation objects can be
+ * "started" and
+ * "stopped". Those are like "pulse generators" for the rest of the nodes graph.
+ * Those pulses then
+ * propagate along the graph to the children nodes up to the special node type:
+ * AnimatedProps which
  * then can be used to calculate property update map for a view.
  *
- * <p>This class acts as a proxy between the "native" API that can be called from JS and the main
- * class that coordinates all the action: {@link NativeAnimatedNodesManager}. Since all the methods
- * from {@link NativeAnimatedNodesManager} need to be called from the UI thread, we we create a
- * queue of animated graph operations that is then enqueued to be executed in the UI Thread at the
- * end of the batch of JS->native calls (similarly to how it's handled in {@link UIManagerModule}).
- * This isolates us from the problems that may be caused by concurrent updates of animated graph
+ * <p>
+ * This class acts as a proxy between the "native" API that can be called from
+ * JS and the main
+ * class that coordinates all the action: {@link NativeAnimatedNodesManager}.
+ * Since all the methods
+ * from {@link NativeAnimatedNodesManager} need to be called from the UI thread,
+ * we we create a
+ * queue of animated graph operations that is then enqueued to be executed in
+ * the UI Thread at the
+ * end of the batch of JS->native calls (similarly to how it's handled in
+ * {@link UIManagerModule}).
+ * This isolates us from the problems that may be caused by concurrent updates
+ * of animated graph
  * while UI thread is "executing" the animation loop.
  */
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
@@ -153,7 +184,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   private class ConcurrentOperationQueue {
     private final Queue<UIThreadOperation> mQueue = new ConcurrentLinkedQueue<>();
-    @Nullable private UIThreadOperation mPeekedOperation = null;
+    @Nullable
+    private UIThreadOperation mPeekedOperation = null;
 
     @AnyThread
     boolean isEmpty() {
@@ -184,7 +216,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
       List<UIThreadOperation> operations = new ArrayList<>();
       while (true) {
-        // Due to a race condition, we manually "carry-over" a polled item from previous batch
+        // Due to a race condition, we manually "carry-over" a polled item from previous
+        // batch
         // instead of peeking the queue itself for consistency.
         // TODO(T112522554): Clean up the queue access
         if (mPeekedOperation != null) {
@@ -202,7 +235,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         }
 
         if (polledOperation.getBatchNumber() > maxBatchNumber) {
-          // Because the operation is already retrieved from the queue, there's no way of placing it
+          // Because the operation is already retrieved from the queue, there's no way of
+          // placing it
           // back as the head element, so we remember it manually here
           mPeekedOperation = polledOperation;
           break;
@@ -214,11 +248,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
   }
 
-  @NonNull private final GuardedFrameCallback mAnimatedFrameCallback;
+  @NonNull
+  private final GuardedFrameCallback mAnimatedFrameCallback;
   private final ReactChoreographer mReactChoreographer;
 
-  @NonNull private final ConcurrentOperationQueue mOperations = new ConcurrentOperationQueue();
-  @NonNull private final ConcurrentOperationQueue mPreOperations = new ConcurrentOperationQueue();
+  @NonNull
+  private final ConcurrentOperationQueue mOperations = new ConcurrentOperationQueue();
+  @NonNull
+  private final ConcurrentOperationQueue mPreOperations = new ConcurrentOperationQueue();
 
   private final AtomicReference<NativeAnimatedNodesManager> mNodesManager = new AtomicReference<>();
 
@@ -237,38 +274,43 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     super(reactContext);
 
     mReactChoreographer = ReactChoreographer.getInstance();
-    mAnimatedFrameCallback =
-        new GuardedFrameCallback(reactContext) {
-          @Override
-          protected void doFrameGuarded(final long frameTimeNanos) {
-            try {
-              mEnqueuedAnimationOnFrame = false;
-              NativeAnimatedNodesManager nodesManager = getNodesManager();
-              if (nodesManager != null && nodesManager.hasActiveAnimations()) {
-                nodesManager.runUpdates(frameTimeNanos);
-              }
-              // This is very unlikely to ever be hit.
-              if (nodesManager == null || mReactChoreographer == null) {
-                return;
-              }
-
-              if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
-                  || nodesManager.hasActiveAnimations()) {
-                enqueueFrameCallback();
-              }
-            } catch (Exception ex) {
-              throw new RuntimeException(ex);
-            }
+    mAnimatedFrameCallback = new GuardedFrameCallback(reactContext) {
+      @Override
+      protected void doFrameGuarded(final long frameTimeNanos) {
+        try {
+          mEnqueuedAnimationOnFrame = false;
+          NativeAnimatedNodesManager nodesManager = getNodesManager();
+          if (nodesManager != null && nodesManager.hasActiveAnimations()) {
+            nodesManager.runUpdates(frameTimeNanos);
           }
-        };
+          // This is very unlikely to ever be hit.
+          if (nodesManager == null || mReactChoreographer == null) {
+            return;
+          }
+
+          if (!ReactNativeFeatureFlags.lazyAnimationCallbacks()
+              || nodesManager.hasActiveAnimations()) {
+            enqueueFrameCallback();
+          }
+        } catch (Exception ex) {
+          // PATCH: COMMENTED OUT EXCEPTION THROWING
+          // throw new RuntimeException(ex);
+        }
+      }
+    };
   }
 
   /**
-   * This method is used to notify the JS side that the user has stopped scrolling. With natively
-   * driven animation, we might have to force a resync between the Shadow Tree and the Native Tree.
-   * This is because with natively driven animation, the Shadow Tree is bypassed and it can have
-   * stale information on the layout of the native views. This method takes care of verifying if
-   * there are some views listening to the native driven animation and it triggers the resynch.
+   * This method is used to notify the JS side that the user has stopped
+   * scrolling. With natively
+   * driven animation, we might have to force a resync between the Shadow Tree and
+   * the Native Tree.
+   * This is because with natively driven animation, the Shadow Tree is bypassed
+   * and it can have
+   * stale information on the layout of the native views. This method takes care
+   * of verifying if
+   * there are some views listening to the native driven animation and it triggers
+   * the resynch.
    *
    * @param viewTag The tag of the scroll view that has stopped scrolling
    */
@@ -356,8 +398,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     // TODO T71377544: delete this when the JS method is confirmed safe
     if (!mBatchingControlledByJS) {
       // The problem we're trying to solve here: we could be in the middle of queueing
-      // a batch of related animation operations when Fabric flushes a batch of MountItems.
-      // It's visually bad if we execute half of the animation ops and then wait another frame
+      // a batch of related animation operations when Fabric flushes a batch of
+      // MountItems.
+      // It's visually bad if we execute half of the animation ops and then wait
+      // another frame
       // (or more) to execute the rest.
       // See mFrameNumber. If the dispatchedFrameNumber drifts too far - that
       // is, if no MountItems are scheduled for a while, which can happen if a tree
@@ -388,21 +432,19 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
     final long frameNo = mCurrentBatchNumber++;
 
-    UIBlock preOperationsUIBlock =
-        new UIBlock() {
-          @Override
-          public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            mPreOperations.executeBatch(frameNo, getNodesManager());
-          }
-        };
+    UIBlock preOperationsUIBlock = new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        mPreOperations.executeBatch(frameNo, getNodesManager());
+      }
+    };
 
-    UIBlock operationsUIBlock =
-        new UIBlock() {
-          @Override
-          public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-            mOperations.executeBatch(frameNo, getNodesManager());
-          }
-        };
+    UIBlock operationsUIBlock = new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        mOperations.executeBatch(frameNo, getNodesManager());
+      }
+    };
 
     assert (uiManager instanceof UIManagerModule);
     UIManagerModule uiManagerModule = (UIManagerModule) uiManager;
@@ -417,12 +459,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void onHostDestroy() {
-    // Is it possible for onHostDestroy to be called without a corresponding onHostPause?
+    // Is it possible for onHostDestroy to be called without a corresponding
+    // onHostPause?
     clearFrameCallback();
   }
 
   /**
-   * Returns a {@link NativeAnimatedNodesManager}, either the existing instance or a new one. Will
+   * Returns a {@link NativeAnimatedNodesManager}, either the existing instance or
+   * a new one. Will
    * return null if and only if the {@link ReactApplicationContext} is also null.
    *
    * @return {@link NativeAnimatedNodesManager}
@@ -462,8 +506,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   /**
-   * Given a viewTag, detect if we're running in Fabric or non-Fabric and attach an event listener
-   * to the correct UIManager, if necessary. This is expected to only be called from the native
+   * Given a viewTag, detect if we're running in Fabric or non-Fabric and attach
+   * an event listener
+   * to the correct UIManager, if necessary. This is expected to only be called
+   * from the native
    * module thread, and not concurrently.
    *
    * @param viewTag
@@ -487,7 +533,8 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                   + " NativeAnimatedNodesManager"));
     }
 
-    // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
+    // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't
+    // yet
     if (mUIManagerType == UIManagerType.FABRIC ? mInitializedForFabric : mInitializedForNonFabric) {
       return;
     }
@@ -508,14 +555,17 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   /**
-   * Given a viewTag and the knowledge that a "disconnect" or "stop"-type imperative command is
-   * being executed, decrement the number of inflight animations and possibly switch UIManager
+   * Given a viewTag and the knowledge that a "disconnect" or "stop"-type
+   * imperative command is
+   * being executed, decrement the number of inflight animations and possibly
+   * switch UIManager
    * modes.
    *
    * @param viewTag
    */
   private void decrementInFlightAnimationsForViewTag(final int viewTag) {
-    @UIManagerType int animationManagerType = ViewUtil.getUIManagerType(viewTag);
+    @UIManagerType
+    int animationManagerType = ViewUtil.getUIManagerType(viewTag);
     if (animationManagerType == UIManagerType.FABRIC) {
       mNumFabricAnimations--;
     } else {
@@ -608,20 +658,18 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       FLog.d(NAME, "queue startListeningToAnimatedNodeValue: " + tag);
     }
 
-    final AnimatedNodeValueListener listener =
-        new AnimatedNodeValueListener() {
-          public void onValueUpdate(double value) {
-            WritableMap onAnimatedValueData = Arguments.createMap();
-            onAnimatedValueData.putInt("tag", tag);
-            onAnimatedValueData.putDouble("value", value);
+    final AnimatedNodeValueListener listener = new AnimatedNodeValueListener() {
+      public void onValueUpdate(double value) {
+        WritableMap onAnimatedValueData = Arguments.createMap();
+        onAnimatedValueData.putInt("tag", tag);
+        onAnimatedValueData.putDouble("value", value);
 
-            ReactApplicationContext reactApplicationContext =
-                getReactApplicationContextIfActiveOrWarn();
-            if (reactApplicationContext != null) {
-              reactApplicationContext.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData);
-            }
-          }
-        };
+        ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+        if (reactApplicationContext != null) {
+          reactApplicationContext.emitDeviceEvent("onAnimatedValueUpdate", onAnimatedValueData);
+        }
+      }
+    };
 
     addOperation(
         new UIThreadOperation() {
@@ -1035,15 +1083,22 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
   }
 
   /**
-   * This is a currently-experimental method that allows JS to queue and immediately execute many
-   * instructions at once. Since we make 1 JNI/JSI call instead of N, this should significantly
+   * This is a currently-experimental method that allows JS to queue and
+   * immediately execute many
+   * instructions at once. Since we make 1 JNI/JSI call instead of N, this should
+   * significantly
    * improve performance.
    *
-   * <p>The arguments operate as a byte buffer. All integer command IDs and any args are packed into
+   * <p>
+   * The arguments operate as a byte buffer. All integer command IDs and any args
+   * are packed into
    * opsAndArgs.
    *
-   * <p>For the getValue callback: since this is batched, we accumulate a list of all requested
-   * values, in order, and call the callback once at the end (if present) with the list of requested
+   * <p>
+   * For the getValue callback: since this is batched, we accumulate a list of all
+   * requested
+   * values, in order, and call the callback once at the end (if present) with the
+   * list of requested
    * values.
    */
   @Override
@@ -1055,10 +1110,12 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     }
 
     // This block of code is unfortunate and should be refactored - we just want to
-    // extract the ViewTags in the ReadableArray to mark animations on views as being enabled.
-    // We only do this for initializing animations on views - disabling animations on views
+    // extract the ViewTags in the ReadableArray to mark animations on views as
+    // being enabled.
+    // We only do this for initializing animations on views - disabling animations
+    // on views
     // happens later, when the disconnect/stop operations are actually executed.
-    for (int i = 0; i < opBufferSize; ) {
+    for (int i = 0; i < opBufferSize;) {
       BatchExecutionOpCodes command = BatchExecutionOpCodes.fromId(opsAndArgs.getInt(i++));
       switch (command) {
         case OP_CODE_GET_VALUE:
@@ -1109,11 +1166,10 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         new UIThreadOperation() {
           @Override
           public void execute(NativeAnimatedNodesManager animatedNodesManager) {
-            ReactApplicationContext reactApplicationContext =
-                getReactApplicationContextIfActiveOrWarn();
+            ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
 
             int viewTag = -1;
-            for (int i = 0; i < opBufferSize; ) {
+            for (int i = 0; i < opBufferSize;) {
               BatchExecutionOpCodes command = BatchExecutionOpCodes.fromId(opsAndArgs.getInt(i++));
 
               switch (command) {
@@ -1130,21 +1186,19 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                   break;
                 case OP_START_LISTENING_TO_ANIMATED_NODE_VALUE:
                   final int tag = opsAndArgs.getInt(i++);
-                  final AnimatedNodeValueListener listener =
-                      new AnimatedNodeValueListener() {
-                        public void onValueUpdate(double value) {
-                          WritableMap onAnimatedValueData = Arguments.createMap();
-                          onAnimatedValueData.putInt("tag", tag);
-                          onAnimatedValueData.putDouble("value", value);
+                  final AnimatedNodeValueListener listener = new AnimatedNodeValueListener() {
+                    public void onValueUpdate(double value) {
+                      WritableMap onAnimatedValueData = Arguments.createMap();
+                      onAnimatedValueData.putInt("tag", tag);
+                      onAnimatedValueData.putDouble("value", value);
 
-                          ReactApplicationContext reactApplicationContext =
-                              getReactApplicationContextIfActiveOrWarn();
-                          if (reactApplicationContext != null) {
-                            reactApplicationContext.emitDeviceEvent(
-                                "onAnimatedValueUpdate", onAnimatedValueData);
-                          }
-                        }
-                      };
+                      ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+                      if (reactApplicationContext != null) {
+                        reactApplicationContext.emitDeviceEvent(
+                            "onAnimatedValueUpdate", onAnimatedValueData);
+                      }
+                    }
+                  };
                   animatedNodesManager.startListeningToAnimatedNodeValue(tag, listener);
                   break;
                 case OP_STOP_LISTENING_TO_ANIMATED_NODE_VALUE:

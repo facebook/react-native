@@ -38,14 +38,18 @@ internal class DivisionAnimatedNode(
         if (i == 0) {
           nodeValue = v
         } else if (v == 0.0) {
-          throw JSApplicationCausedNativeException(
-              "Detected a division by zero in Animated.divide node with Animated ID $tag")
+          return 
+          // PATCH: COMMENTED OUT EXCEPTION THROWING
+          // throw JSApplicationCausedNativeException(
+          //     "Detected a division by zero in Animated.divide node with Animated ID $tag")
         } else {
           nodeValue /= v
         }
       } else {
-        throw JSApplicationCausedNativeException(
-            "Illegal node ID set as an input for Animated.divide node with Animated ID $tag")
+        return
+        // PATCH: COMMENTED OUT EXCEPTION THROWING
+        // throw JSApplicationCausedNativeException(
+        //     "Illegal node ID set as an input for Animated.divide node with Animated ID $tag")
       }
     }
   }

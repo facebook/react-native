@@ -34,7 +34,8 @@ internal abstract class AnimationDriver {
    * start animating with the new properties (different destination or spring settings)
    */
   open fun resetConfig(config: ReadableMap) {
-    throw JSApplicationCausedNativeException(
-        "Animation config for ${javaClass.simpleName} cannot be reset")
+    // PATCH: COMMENTED OUT EXCEPTION THROWING
+    // throw JSApplicationCausedNativeException(
+    //     "Animation config for ${javaClass.simpleName} cannot be reset")
   }
 }
