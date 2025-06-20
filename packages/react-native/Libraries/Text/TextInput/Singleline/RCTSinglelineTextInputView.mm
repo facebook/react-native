@@ -7,6 +7,8 @@
 
 #import <React/RCTSinglelineTextInputView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridge.h>
 
 #import <React/RCTUITextField.h>
@@ -37,3 +39,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -6,6 +6,7 @@
  */
 
 #import "RCTScrollEvent.h"
+
 #import <React/RCTAssert.h>
 
 @implementation RCTScrollEvent {

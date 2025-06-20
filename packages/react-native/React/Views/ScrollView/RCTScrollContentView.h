@@ -7,8 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTView.h>
 
 @interface RCTScrollContentView : RCTView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

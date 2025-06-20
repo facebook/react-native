@@ -9,6 +9,8 @@
 
 #import <React/RCTLog.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @implementation RCTImageShadowView
 
 - (BOOL)isYogaLeafNode
@@ -22,3 +24,5 @@
 }
 
 @end
+
+#endif
