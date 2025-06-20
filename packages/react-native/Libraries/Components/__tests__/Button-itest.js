@@ -31,8 +31,8 @@ describe('<Button>', () => {
             .toJSX(),
         ).toEqual(
           // Upper case on Android (also used by Fantom)
-          <rn-view backgroundColor="rgba(33, 150, 243, 255)">
-            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
+          <rn-view backgroundColor="rgba(33, 150, 243, 1)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 1)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -53,8 +53,8 @@ describe('<Button>', () => {
             .getRenderedOutput({props: ['foregroundColor', 'backgroundColor']})
             .toJSX(),
         ).toEqual(
-          <rn-view backgroundColor="rgba(0, 0, 255, 255)">
-            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
+          <rn-view backgroundColor="rgba(0, 0, 255, 1)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 1)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -99,8 +99,8 @@ describe('<Button>', () => {
             .getRenderedOutput({props: ['foregroundColor', 'backgroundColor']})
             .toJSX(),
         ).toEqual(
-          <rn-view backgroundColor="rgba(223, 223, 223, 255)">
-            <rn-paragraph foregroundColor="rgba(161, 161, 161, 255)">
+          <rn-view backgroundColor="rgba(223, 223, 223, 1)">
+            <rn-paragraph foregroundColor="rgba(161, 161, 161, 1)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -181,8 +181,8 @@ describe('<Button>', () => {
             .getRenderedOutput({props: ['foregroundColor', 'backgroundColor']})
             .toJSX(),
         ).toEqual(
-          <rn-view backgroundColor="rgba(33, 150, 243, 255)">
-            <rn-paragraph foregroundColor="rgba(255, 255, 255, 255)">
+          <rn-view backgroundColor="rgba(33, 150, 243, 1)">
+            <rn-paragraph foregroundColor="rgba(255, 255, 255, 1)">
               HELLO
             </rn-paragraph>
           </rn-view>,
@@ -223,8 +223,8 @@ describe('<Button>', () => {
             .getRenderedOutput({props: ['foregroundColor', 'backgroundColor']})
             .toJSX(),
         ).toEqual(
-          <rn-view backgroundColor="rgba(223, 223, 223, 255)">
-            <rn-paragraph foregroundColor="rgba(161, 161, 161, 255)">
+          <rn-view backgroundColor="rgba(223, 223, 223, 1)">
+            <rn-paragraph foregroundColor="rgba(161, 161, 161, 1)">
               HELLO
             </rn-paragraph>
           </rn-view>,

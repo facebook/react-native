@@ -3515,7 +3515,7 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"declare export default component(
+"declare export default component View(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
@@ -3685,7 +3685,6 @@ export type AccessibilityProps = $ReadOnly<{
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   \\"aria-label\\"?: ?Stringish,
-  experimental_accessibilityOrder?: ?Array<string>,
   accessibilityRole?: ?AccessibilityRole,
   role?: ?Role,
   accessibilityState?: ?AccessibilityState,
@@ -3833,6 +3832,7 @@ type ViewBaseProps = $ReadOnly<{
   hitSlop?: ?EdgeInsetsOrSizeProp,
   pointerEvents?: ?(\\"auto\\" | \\"box-none\\" | \\"box-only\\" | \\"none\\"),
   removeClippedSubviews?: ?boolean,
+  experimental_accessibilityOrder?: ?Array<string>,
 }>;
 export type ViewProps = $ReadOnly<{
   ...DirectEventProps,
@@ -5689,6 +5689,7 @@ export type ModalPropsIOS = {
   >,
   onDismiss?: ?() => void,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  allowSwipeDismissal?: ?boolean,
 };
 export type ModalPropsAndroid = {
   hardwareAccelerated?: ?boolean,
@@ -9348,6 +9349,11 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from \\"./src/private/components/virtualview/VirtualView\\";
+export type { ModeChangeEvent } from \\"./src/private/components/virtualview/VirtualView\\";
 "
 `;
 

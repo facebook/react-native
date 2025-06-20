@@ -203,16 +203,10 @@ function downloadArtifact(
   exec(command, {stdio: 'inherit'});
 }
 
-async function artifactURLForJSCRNTesterAPK(
+async function artifactURLForRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  return getArtifactURL('rntester-jsc-debug');
-}
-
-async function artifactURLForHermesRNTesterAPK(
-  emulatorArch /*: string */,
-) /*: Promise<string> */ {
-  return getArtifactURL('rntester-hermes-debug');
+  return getArtifactURL('rntester-debug');
 }
 
 async function artifactURLForJSCRNTesterApp() /*: Promise<string> */ {
@@ -254,8 +248,7 @@ function baseTmpPath() /*: string */ {
 module.exports = {
   initialize,
   downloadArtifact,
-  artifactURLForJSCRNTesterAPK,
-  artifactURLForHermesRNTesterAPK,
+  artifactURLForRNTesterAPK,
   artifactURLForJSCRNTesterApp,
   artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,

@@ -34,7 +34,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
     private val horizontal: Boolean
 ) : UIManagerListener where ScrollViewT : HasSmoothScroll?, ScrollViewT : ViewGroup? {
 
-  public var config: Config? = null
+  var config: Config? = null
   private var firstVisibleViewRef: WeakReference<View>? = null
   private var prevFirstVisibleFrame: Rect? = null
   private var isListening = false

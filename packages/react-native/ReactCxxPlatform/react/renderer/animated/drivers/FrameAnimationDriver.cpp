@@ -24,13 +24,13 @@ FrameAnimationDriver::FrameAnimationDriver(
     int id,
     Tag animatedValueTag,
     std::optional<AnimationEndCallback> endCallback,
-    const folly::dynamic& config,
+    folly::dynamic config,
     NativeAnimatedNodesManager* manager)
     : AnimationDriver(
           id,
           animatedValueTag,
           std::move(endCallback),
-          config,
+          std::move(config),
           manager) {
   onConfigChanged();
 }
@@ -58,7 +58,7 @@ bool FrameAnimationDriver::update(double timeDeltaMs, bool /*restarting*/) {
     }
 
     const auto startIndex =
-        static_cast<size_t>(std::ceil(timeDeltaMs / SingleFrameIntervalMs));
+        static_cast<size_t>(std::round(timeDeltaMs / SingleFrameIntervalMs));
     assert(startIndex >= 0);
     const auto nextIndex = startIndex + 1;
 

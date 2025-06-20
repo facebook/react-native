@@ -9,7 +9,7 @@
 <PROJECT_ROOT>/packages/react-native-codegen/e2e/__test_fixtures__/modules/NativeEnumTurboModule.js
 
 ; Ignore the Dangerfile
-<PROJECT_ROOT>/packages/react-native-bots/dangerfile.js
+<PROJECT_ROOT>/private/react-native-bots/dangerfile.js
 
 ; Ignore "BUCK" generated dirs
 <PROJECT_ROOT>/\.buckd/
@@ -27,7 +27,7 @@
 <PROJECT_ROOT>/packages/.*/dist
 
 ; helloworld
-<PROJECT_ROOT>/packages/helloworld/ios/Pods/
+<PROJECT_ROOT>/private/helloworld/ios/Pods/
 
 ; Ignore rn-tester Pods
 <PROJECT_ROOT>/packages/rn-tester/Pods/
@@ -48,6 +48,7 @@ packages/react-native/flow/
 [options]
 enums=true
 casting_syntax=both
+component_syntax=true
 
 emoji=true
 
@@ -102,4 +103,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.272.2
+^0.273.1

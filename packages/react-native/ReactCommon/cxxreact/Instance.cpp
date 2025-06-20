@@ -7,6 +7,8 @@
 
 #include "Instance.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include "ErrorUtils.h"
 #include "JSBigString.h"
 #include "JSBundleType.h"
@@ -362,3 +364,5 @@ void Instance::JSCallInvoker::scheduleAsync(CallFunc&& work) noexcept {
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

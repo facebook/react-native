@@ -18,6 +18,8 @@ export type Destination =
   'iOS' |
   'iOS Simulator' |
   'macOS,variant=Mac Catalyst';
+
+export type BuildFlavor = 'Debug' | 'Release';
 */
 
 module.exports = {};

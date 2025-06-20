@@ -1,0 +1,212 @@
+name: Prebuild iOS Dependencies
+
+on:
+  workflow_call: # this directive allow us to call this workflow from other workflows
+
+
+jobs:
+  build-rn-slice:
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ['Debug', 'Release']
+        slice: [
+          'ios',
+          'ios-simulator',
+          'mac-catalyst',
+        ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Restore cache if present
+        id: restore-ios-slice
+        uses: actions/cache/restore@v4
+        with:
+          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          path: packages/react-native/
+      - name: Setup node.js
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.2.0'
+      - name: Yarn Install
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Download Hermes
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: hermes-darwin-bin-${{ matrix.flavor }}
+          path: /tmp/hermes/hermes-runtime-darwin
+      - name: Extract Hermes
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          HERMES_TARBALL_ARTIFACTS_DIR=/tmp/hermes/hermes-runtime-darwin
+          if [ ! -d $HERMES_TARBALL_ARTIFACTS_DIR ]; then
+            echo "Hermes tarball artifacts dir not present ($HERMES_TARBALL_ARTIFACTS_DIR)."
+            exit 0
+          fi
+
+          TARBALL_FILENAME=$(node ./packages/react-native/scripts/hermes/get-tarball-name.js --buildType "${{ matrix.flavor }}")
+          TARBALL_PATH=$HERMES_TARBALL_ARTIFACTS_DIR/$TARBALL_FILENAME
+
+          echo "Looking for $TARBALL_FILENAME in $HERMES_TARBALL_ARTIFACTS_DIR"
+          echo "$TARBALL_PATH"
+
+          if [ ! -f $TARBALL_PATH ]; then
+            echo "Hermes tarball not present ($TARBALL_PATH). Build Hermes from source."
+            exit 0
+          fi
+
+          echo "Found Hermes tarball at $TARBALL_PATH"
+          echo "HERMES_ENGINE_TARBALL_PATH=$TARBALL_PATH" >> $GITHUB_ENV
+      - name: Download ReactNativeDependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/third-party/
+      - name: Extract ReactNativeDependencies
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          # Extract ReactNativeDependencies
+          tar -xzf /tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz -C /tmp/third-party/
+
+          # Create destination folder
+          mkdir -p packages/react-native/third-party/
+
+          # Move the XCFramework in the destination directory
+          mv /tmp/third-party/packages/react-native/third-party/ReactNativeDependencies.xcframework packages/react-native/third-party/ReactNativeDependencies.xcframework
+
+          VERSION=$(jq -r '.version' package.json)
+          echo "$VERSION-${{matrix.flavor}}" > "packages/react-native/third-party/version.txt"
+          cat "packages/react-native/third-party/version.txt"
+          # Check destination directory
+          ls -lR packages/react-native/third-party/
+      - name: Setup the workspace
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          cd packages/react-native
+          node scripts/ios-prebuild.js -s -f "${{ matrix.flavor }}"
+      - name: Build React Native
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          # This is going to be replaced by a CLI script
+          cd packages/react-native
+          node scripts/ios-prebuild -b -f "${{ matrix.flavor }}" -p "${{ matrix.slice }}"
+      - name: Upload headers
+        uses: actions/upload-artifact@v4
+        with:
+          name: prebuild-ios-core-headers-${{ matrix.flavor }}-${{ matrix.slice }}
+          path:
+            packages/react-native/.build/headers
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: prebuild-ios-core-slice-${{ matrix.flavor }}-${{ matrix.slice }}
+          path: |
+            packages/react-native/.build/output/spm/${{ matrix.flavor }}/Build/Products
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        with:
+          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          path: |
+            packages/react-native/.build/output/spm/${{ matrix.flavor }}/Build/Products
+            packages/react-native/.build/headers
+
+  compose-xcframework:
+    runs-on: macos-14
+    needs: [build-rn-slice]
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ['Debug', 'Release']
+    env:
+      REACT_ORG_CODE_SIGNING_P12_CERT: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT }}
+      REACT_ORG_CODE_SIGNING_P12_CERT_PWD: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT_PWD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Restore cache if present
+        id: restore-ios-xcframework
+        uses: actions/cache/restore@v4
+        with:
+          path: packages/react-native/.build/output/xcframeworks
+          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+      - name: Setup node.js
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.2.0'
+      - name: Yarn Install
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Download slice artifacts
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuild-ios-core-slice-${{ matrix.flavor }}-*
+          path: packages/react-native/.build/output/spm/${{ matrix.flavor }}/Build/Products
+          merge-multiple: true
+      - name: Download headers
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuild-ios-core-headers-${{ matrix.flavor }}-*
+          path: packages/react-native/.build/headers
+          merge-multiple: true
+      - name: Setup Keychain
+        if: ${{ steps.restore-ios-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT != '' }}
+        uses: apple-actions/import-codesign-certs@v3 # https://github.com/marketplace/actions/import-code-signing-certificates
+        with:
+          p12-file-base64: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT }}
+          p12-password: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT_PWD }}
+      - name: Create XCFramework
+        if: ${{ steps.restore-ios-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT == '' }}
+        run: |
+          cd packages/react-native
+          node scripts/ios-prebuild -c -f "${{ matrix.flavor }}"
+      - name: Create and Sign XCFramework
+        if: ${{ steps.restore-ios-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT != '' }}
+        run: |
+          cd packages/react-native
+          node scripts/ios-prebuild -c -f "${{ matrix.flavor }}" -i "React Org"
+      - name: Compress and Rename XCFramework
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        run: |
+          cd packages/react-native/.build/output/xcframeworks/${{matrix.flavor}}
+          tar -cz -f ../ReactCore${{matrix.flavor}}.xcframework.tar.gz React.xcframework
+      - name: Compress and Rename dSYM
+        if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
+        run: |
+          cd packages/react-native/.build/output/xcframeworks/${{matrix.flavor}}/Symbols
+          tar -cz -f ../../ReactCore${{ matrix.flavor }}.framework.dSYM.tar.gz .
+      - name: Upload XCFramework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
+          path: packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.xcframework.tar.gz
+      - name: Upload dSYM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactCore${{ matrix.flavor }}.framework.dSYM.tar.gz
+          path: packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.framework.dSYM.tar.gz
+      - name: Save cache if present
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.xcframework.tar.gz
+            packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.framework.dSYM.tar.gz
+          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}

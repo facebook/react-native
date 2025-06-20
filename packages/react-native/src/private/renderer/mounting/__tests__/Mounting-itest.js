@@ -380,7 +380,7 @@ describe('ViewFlattening', () => {
       <rn-view
         width="100.000000"
         height="100.000000"
-        backgroundColor="rgba(255, 255, 255, 127)"
+        backgroundColor="rgba(255, 255, 255, 0.498039)"
       />,
     );
   });

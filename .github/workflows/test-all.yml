@@ -117,8 +117,13 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
+
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
@@ -464,6 +469,7 @@ jobs:
         build_hermesc_windows,
         build_android,
         prebuild_apple_dependencies,
+        prebuild_react_native_core,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -527,7 +533,7 @@ jobs:
       - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to New Architecture.
         shell: bash
         run: |
-          cd packages/helloworld/android
+          cd private/helloworld/android
           args=()
           if [[ ${{ matrix.flavor }} == "Release" ]]; then
             args+=(--prod)
@@ -537,7 +543,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.4
         with:
           name: helloworld-apk-${{ matrix.flavor }}-NewArch-hermes
-          path: ./packages/helloworld/android/app/build/outputs/apk/
+          path: ./private/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:

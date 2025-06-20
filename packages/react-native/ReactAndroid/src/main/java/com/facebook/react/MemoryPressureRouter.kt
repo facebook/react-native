@@ -32,7 +32,7 @@ public class MemoryPressureRouter(context: Context) : ComponentCallbacks2 {
     }
   }
 
-  /** Remove a listener previously added with [.addMemoryPressureListener]. */
+  /** Remove a listener previously added with [addMemoryPressureListener]. */
   public fun removeMemoryPressureListener(listener: MemoryPressureListener) {
     listeners.remove(listener)
   }

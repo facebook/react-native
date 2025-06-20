@@ -142,8 +142,23 @@ class ReactNativeDependenciesUtils
     end
 
     def self.nightly_tarball_url(version)
-        params = "r=snapshots\&g=com.facebook.react\&a=react-native-artifacts\&c=reactnative-dependencies-debug\&e=tar.gz\&v=#{version}-SNAPSHOT"
-        return resolve_url_redirects("http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}")
+        artifact_coordinate = "react-native-artifacts"
+        artifact_name = "reactnative-dependencies-debug.tar.gz"
+        xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
+
+
+        response = Net::HTTP.get(URI(xml_url))
+        if response.kind_of? Net::HTTPSuccess
+          xml = REXML::Document.new(response)
+          timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
+          build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
+          full_version = "#{version}-#{timestamp}-#{build_number}"
+
+          final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+          return final_url
+        else
+          return ""
+        end
     end
 
     def self.download_stable_rndeps(react_native_path, version, configuration)

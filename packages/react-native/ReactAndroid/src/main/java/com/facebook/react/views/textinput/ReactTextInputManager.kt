@@ -71,8 +71,6 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
-import com.facebook.react.views.text.TextTransform
-import com.facebook.react.views.text.TextTransform.Companion.apply
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan.Companion.possiblyUpdateInlineImageSpans
 import java.util.LinkedList
 
@@ -182,7 +180,7 @@ public open class ReactTextInputManager public constructor() :
 
   private fun getReactTextUpdate(text: String?, mostRecentEventCount: Int): ReactTextUpdate {
     val sb = SpannableStringBuilder()
-    sb.append(apply(text, TextTransform.UNSET))
+    sb.append(text)
     return ReactTextUpdate(
         sb, mostRecentEventCount, false, 0f, 0f, 0f, 0f, Gravity.NO_GRAVITY, 0, 0)
   }

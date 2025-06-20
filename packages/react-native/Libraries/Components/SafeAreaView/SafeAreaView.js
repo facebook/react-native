@@ -22,6 +22,7 @@ import * as React from 'react';
  * Moreover, and most importantly, Safe Area's paddings reflect physical
  * limitation of the screen, such as rounded corners or camera notches (aka
  * sensor housing area on iPhone X).
+ * @deprecated Use `react-native-safe-area-context` instead. This component will be removed in a future release.
  */
 const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,

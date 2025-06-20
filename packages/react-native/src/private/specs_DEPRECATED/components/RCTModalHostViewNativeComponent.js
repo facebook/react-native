@@ -113,6 +113,12 @@ type RCTModalHostViewNativeProps = $ReadOnly<{
   animated?: WithDefault<boolean, false>,
 
   /**
+   * Controls whether the modal can be dismissed by swiping down on iOS.
+   * This requires you to implement the `onRequestClose` prop to handle the dismissal.
+   */
+  allowSwipeDismissal?: WithDefault<boolean, false>,
+
+  /**
    * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
    *
    * See https://reactnative.dev/docs/modal#supportedorientations

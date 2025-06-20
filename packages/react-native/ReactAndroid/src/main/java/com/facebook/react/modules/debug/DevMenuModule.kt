@@ -40,7 +40,7 @@ internal class DevMenuModule(
     devSupportManager.setHotModuleReplacementEnabled(enabled)
   }
 
-  public companion object {
-    public const val NAME: String = NativeDevMenuSpec.NAME
+  companion object {
+    const val NAME: String = NativeDevMenuSpec.NAME
   }
 }

@@ -12,6 +12,7 @@
 import type {PluginObj} from '@babel/core';
 
 const {PACKAGES_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../consts');
+const {isGitRepo} = require('../scm-utils');
 const {API_EXTRACTOR_CONFIG_FILE, TYPES_OUTPUT_DIR} = require('./config');
 const apiSnapshotTemplate = require('./templates/ReactNativeApi.d.ts-template.js');
 const resolveCyclicImportsInDefinition = require('./transforms/resolveCyclicImportsInDefinition');
@@ -23,54 +24,128 @@ const {
 } = require('@microsoft/api-extractor');
 const {promises: fs} = require('fs');
 const glob = require('glob');
+const {diff} = require('jest-diff');
 const path = require('path');
 const prettier = require('prettier');
 const osTempDir = require('temp-dir');
+const {styleText} = require('util');
 
 const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/renameDefaultExportedIdentifiers'),
 ];
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+  require('./transforms/stripUnstableApis'),
   require('./transforms/sortTypeDefinitions'),
   require('./transforms/sortProperties'),
   require('./transforms/sortUnions'),
 ];
 
-async function buildAPISnapshot() {
+async function buildAPISnapshot(validate: boolean) {
+  console.log(
+    styleText('yellow', '  >') + ' Creating temp dir for api-extractor',
+  );
   const tempDirectory = await createTempDir('react-native-js-api-snapshot');
   const packages = await findPackagesWithTypedef();
 
+  console.log(styleText('yellow', '  >') + ' Preparing codebase in temp dir');
   await preparePackagesInTempDir(tempDirectory, packages);
   await rewriteLocalImports(tempDirectory, packages);
 
+  console.log(styleText('yellow', '  >') + ' Running api-extractor');
   const extractorConfig = ExtractorConfig.loadFileAndPrepare(
     path.join(tempDirectory, API_EXTRACTOR_CONFIG_FILE),
   );
-
   const extractorResult = Extractor.invoke(extractorConfig, {
     localBuild: true,
     showVerboseMessages: true,
   });
 
-  if (extractorResult.succeeded) {
-    const apiSnapshot = apiSnapshotTemplate(
-      await getCleanedUpRollup(tempDirectory),
-    );
-
-    await fs.writeFile(
-      path.join(REACT_NATIVE_PACKAGE_DIR, 'ReactNativeApi.d.ts'),
-      apiSnapshot,
-    );
-  } else {
-    process.exitCode = 1;
+  if (!extractorResult.succeeded) {
     console.error(
-      `API Extractor failed with ${extractorResult.errorCount} errors` +
-        ` and ${extractorResult.warningCount} warnings`,
+      '\n' +
+        styleText(['bold', 'inverse', 'red'], ' FAIL ') +
+        ' api-extractor encountered errors.\n',
+    );
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log(styleText('yellow', '  >') + ' Applying additional transforms');
+  const apiSnapshot = apiSnapshotTemplate(
+    await getCleanedUpRollup(tempDirectory),
+  ) as string;
+
+  console.log(styleText('yellow', '  >') + ' Removing temp dir');
+  await fs.rm(tempDirectory, {recursive: true});
+
+  const snapshotPath = path.join(
+    REACT_NATIVE_PACKAGE_DIR,
+    'ReactNativeApi.d.ts',
+  );
+
+  if (validate) {
+    console.log(
+      '\n' +
+        styleText(
+          ['bold', 'inverse'],
+          ' Validating API snapshot (--validate) ',
+        ) +
+        '\n',
+    );
+    console.log(
+      styleText('yellow', '  >') +
+        ' Diffing API with snapshot on disk\n' +
+        '    ' +
+        styleText('underline', snapshotPath) +
+        '\n',
+    );
+    const prevSnapshot = await fs.readFile(snapshotPath, 'utf-8');
+    const hasChanged = await validateSnapshots(prevSnapshot, apiSnapshot);
+    if (hasChanged) {
+      process.exitCode = 1;
+    }
+    return;
+  }
+
+  await fs.writeFile(snapshotPath, apiSnapshot);
+  console.log(
+    styleText('green', '  ✔') +
+      ' API snapshot written to ' +
+      styleText('underline', snapshotPath) +
+      '\n',
+  );
+}
+
+async function validateSnapshots(
+  prevSnapshot: string,
+  newSnapshot: string,
+): Promise<boolean> {
+  const hasChanged = newSnapshot !== prevSnapshot;
+  if (hasChanged) {
+    const options = {
+      aAnnotation: 'Previous Snapshot',
+      bAnnotation: 'New Snapshot',
+      expand: false,
+      emptyFirstOrLastLinePlaceholder: '↵',
+      includeChangeCounts: true,
+      aColor: (line: string) => styleText(['red'], line),
+      bColor: (line: string) => styleText(['green'], line),
+    };
+
+    const diffResult = diff(prevSnapshot, newSnapshot, options);
+    const rerunCommand = isGitRepo() ? 'yarn build-types' : 'js1 build-js-api';
+    console.error(
+      `${styleText(['bold', 'inverse', 'red'], ' FAIL ')} ReactNativeApi.d.ts has changed. Please re-run '${rerunCommand}' and commit the updated snapshot.\n`,
+    );
+    console.error(diffResult);
+  } else {
+    console.log(
+      `${styleText(['bold', 'inverse', 'green'], ' PASS ')} API snapshot is up to date.\n`,
     );
   }
 
-  await fs.rm(tempDirectory, {recursive: true});
+  return hasChanged;
 }
 
 async function findPackagesWithTypedef() {
@@ -155,7 +230,7 @@ async function getCleanedUpRollup(tempDirectory: string) {
     tempDirectory,
     'react-native',
     'dist',
-    'api-rollup.d.ts',
+    'ReactNativeApi.d.ts',
   );
   const sourceRollup = await fs.readFile(rollupPath, 'utf-8');
 
@@ -172,6 +247,8 @@ async function getCleanedUpRollup(tempDirectory: string) {
 
   const formattedRollup = prettier.format(transformedRollup, {
     parser: 'typescript',
+    semi: false,
+    trailingComma: 'all',
   });
 
   return formattedRollup;

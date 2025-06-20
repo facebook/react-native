@@ -10,12 +10,10 @@
 #import <UIKit/UIKit.h>
 #import <vector>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 struct ColorComponents;
 struct Color;
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 facebook::react::ColorComponents RCTPlatformColorComponentsFromSemanticItems(
     std::vector<std::string>& semanticItems);

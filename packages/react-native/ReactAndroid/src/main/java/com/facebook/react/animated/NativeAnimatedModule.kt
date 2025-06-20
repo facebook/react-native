@@ -84,7 +84,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
     NativeAnimatedModuleSpec(reactContext), LifecycleEventListener, UIManagerListener {
 
   // For `queueAndExecuteBatchedOperations`
-  private enum class BatchExecutionOpCodes(val value: Int) {
+  private enum class BatchExecutionOpCodes(value: Int) {
     OP_CODE_CREATE_ANIMATED_NODE(1),
     OP_CODE_UPDATE_ANIMATED_NODE_CONFIG(2),
     OP_CODE_GET_VALUE(3),
@@ -111,7 +111,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
       private var valueMap: Array<BatchExecutionOpCodes>? = null
 
       @JvmStatic
-      public fun fromId(id: Int): BatchExecutionOpCodes {
+      fun fromId(id: Int): BatchExecutionOpCodes {
         val valueMapNonnull: Array<BatchExecutionOpCodes> =
             valueMap ?: BatchExecutionOpCodes.values()
         if (valueMap == null) {

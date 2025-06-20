@@ -240,7 +240,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   if (label) {
     return label;
   }
-  return RCTRecursiveAccessibilityLabel(self);
+  if (self.isAccessibilityElement) {
+    return RCTRecursiveAccessibilityLabel(self);
+  }
+  return nil;
 }
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions

@@ -71,7 +71,13 @@ async function main() {
     if (cli.tasks.compose) {
       const productsFolder = computeProductsFolder(outputFolder);
       const frameworkPaths = computeFrameworkPaths(productsFolder);
-      buildXCFrameworks(root, buildFolder, frameworkPaths, buildType);
+      buildXCFrameworks(
+        root,
+        buildFolder,
+        frameworkPaths,
+        buildType,
+        cli.identity,
+      );
     }
 
     // Done!

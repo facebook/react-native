@@ -7,6 +7,8 @@
 
 #import "RCTModuleData.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <objc/runtime.h>
 #import <atomic>
 #import <mutex>
@@ -485,3 +487,38 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+@implementation RCTModuleData
+
+- (instancetype)initWithModuleClass:(Class)moduleClass
+                             bridge:(RCTBridge *)bridge
+                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                      bundleManager:(RCTBundleManager *)bundleManager
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules
+{
+  return self;
+}
+
+- (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
+                                bridge:(RCTBridge *)bridge
+                        moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+               viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+                         bundleManager:(RCTBundleManager *)bundleManager
+                     callableJSModules:(RCTCallableJSModules *)callableJSModules
+{
+  return self;
+}
+
+- (void)gatherConstants
+{
+}
+
+- (void)invalidate
+{
+}
+
+@end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

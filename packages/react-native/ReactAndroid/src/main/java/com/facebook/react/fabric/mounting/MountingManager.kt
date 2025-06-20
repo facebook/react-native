@@ -36,7 +36,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Class responsible for actually dispatching view updates enqueued via
- * [FabricUIManager.scheduleMountItem] on the UI thread.
+ * [com.facebook.react.fabric.FabricUIManager.scheduleMountItem] on the UI thread.
  */
 internal class MountingManager(
     private val viewManagerRegistry: ViewManagerRegistry,

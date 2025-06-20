@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e292665e2ee20e82b3a76b33743225d9>>
+ * @generated SignedSource<<ee714ff865ecd52f3644451aaa1e1d2a>>
  */
 
 /**
@@ -40,9 +40,9 @@ class NativeReactNativeFeatureFlags
 
   bool animatedShouldSignalBatch(jsi::Runtime& runtime);
 
-  bool avoidCeilingAvailableAndroidTextWidth(jsi::Runtime& runtime);
-
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
+
+  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
 
@@ -78,8 +78,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
-  bool enableIntersectionObserverEventLoopIntegration(jsi::Runtime& runtime);
-
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
@@ -112,21 +110,19 @@ class NativeReactNativeFeatureFlags
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
+  bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
-  bool incorporateMaxLinesDuringAndroidLayout(jsi::Runtime& runtime);
-
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
-
-  bool useAndroidTextLayoutWidthDirectly(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 

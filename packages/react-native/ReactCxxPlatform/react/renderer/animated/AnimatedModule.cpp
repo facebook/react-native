@@ -56,7 +56,9 @@ void AnimatedModule::updateAnimatedNodeConfig(
     jsi::Runtime& rt,
     Tag tag,
     jsi::Object config) {
-  // TODO(T196513045): missing implementation
+  // TODO(T196513045): missing implementation. This API is only used by Animated
+  // when PlatformColor API is used and animation is updated with a new value
+  // through AnimatedColor.setValue.
 }
 
 void AnimatedModule::getValue(
@@ -123,21 +125,22 @@ void AnimatedModule::setAnimatedNodeValue(
 
 void AnimatedModule::setAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
-    Tag /*nodeTag*/,
-    double /*offset*/) {
-  // TODO(T196512946): missing implementation
+    Tag nodeTag,
+    double offset) {
+  operations_.emplace_back(
+      SetAnimatedNodeOffsetOp{.nodeTag = nodeTag, .offset = offset});
 }
 
 void AnimatedModule::flattenAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
-    Tag /*nodeTag*/) {
-  // TODO(T196512986): missing implementation
+    Tag nodeTag) {
+  operations_.push_back(FlattenAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
 }
 
 void AnimatedModule::extractAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
-    Tag /*nodeTag*/) {
-  // TODO(T196513004): missing implementation
+    Tag nodeTag) {
+  operations_.push_back(ExtractAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
 }
 
 void AnimatedModule::connectAnimatedNodeToView(
@@ -190,11 +193,15 @@ void AnimatedModule::removeAnimatedEventFromView(
 void AnimatedModule::addListener(
     jsi::Runtime& /*rt*/,
     const std::string& /*eventName*/) {
-  // TODO(T225953415): missing implementation
+  // Not needed in C++ Animated. addListener is used to synchronise event
+  // animations like onScroll with React and Fabric. However C++ Animated
+  // synchronises with Fabric directly.
 }
 
 void AnimatedModule::removeListeners(jsi::Runtime& /*rt*/, int /*count*/) {
-  // TODO(T225953457): missing implementation
+  // Not needed in C++ Animated. removeListeners is used to synchronise event
+  // animations like onScroll with React and Fabric. However C++ Animated
+  // synchronises with Fabric directly.
 }
 
 void AnimatedModule::queueAndExecuteBatchedOperations(
@@ -240,11 +247,20 @@ void AnimatedModule::executeOperation(const Operation& operation) {
           nodesManager_->disconnectAnimatedNodes(op.parentTag, op.childTag);
         } else if constexpr (std::is_same_v<T, StartAnimatingNodeOp>) {
           nodesManager_->startAnimatingNode(
-              op.animationId, op.nodeTag, op.config, op.endCallback);
+              op.animationId,
+              op.nodeTag,
+              std::move(op.config),
+              std::move(op.endCallback));
         } else if constexpr (std::is_same_v<T, StopAnimationOp>) {
           nodesManager_->stopAnimation(op.animationId, false);
         } else if constexpr (std::is_same_v<T, SetAnimatedNodeValueOp>) {
           nodesManager_->setAnimatedNodeValue(op.nodeTag, op.value);
+        } else if constexpr (std::is_same_v<T, SetAnimatedNodeOffsetOp>) {
+          nodesManager_->setAnimatedNodeOffset(op.nodeTag, op.offset);
+        } else if constexpr (std::is_same_v<T, FlattenAnimatedNodeOffsetOp>) {
+          nodesManager_->flattenAnimatedNodeOffset(op.nodeTag);
+        } else if constexpr (std::is_same_v<T, ExtractAnimatedNodeOffsetOp>) {
+          nodesManager_->extractAnimatedNodeOffsetOp(op.nodeTag);
         } else if constexpr (std::is_same_v<T, ConnectAnimatedNodeToViewOp>) {
           nodesManager_->connectAnimatedNodeToView(op.nodeTag, op.viewTag);
         } else if constexpr (std::is_same_v<

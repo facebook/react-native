@@ -89,7 +89,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "modal" do |sss|
-      sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
+      sss.source_files         = "react/renderer/components/modal/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
     end
@@ -128,6 +128,18 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
+    end
+
+    ss.subspec "virtualview" do |sss|
+      sss.source_files         = "react/renderer/components/virtualview/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/virtualview/tests"
+      sss.header_dir           = "react/renderer/components/virtualview"
+    end
+
+    # Legacy header paths for backwards compat
+    ss.subspec "rncore" do |sss|
+      sss.source_files         = "react/renderer/components/rncore/**/*.h"
+      sss.header_dir           = "react/renderer/components/rncore"
     end
   end
 

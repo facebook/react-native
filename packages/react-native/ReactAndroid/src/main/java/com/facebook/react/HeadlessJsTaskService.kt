@@ -49,7 +49,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
   }
 
   /**
-   * Called from [.onStartCommand] to create a [HeadlessJsTaskConfig] for this intent.
+   * Called from [onStartCommand] to create a [HeadlessJsTaskConfig] for this intent.
    *
    * @return a [HeadlessJsTaskConfig] to be used with [startTask], or `null` to ignore this command.
    */
@@ -116,7 +116,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
     get() = (application as ReactApplication).reactNativeHost
 
   /**
-   * Get the [ReactHost] used by this app. By default, assumes [.getApplication] is an instance of
+   * Get the [ReactHost] used by this app. By default, assumes [getApplication] is an instance of
    * [ReactApplication] and calls [ReactApplication.reactHost]. This method assumes it is called in
    * new architecture and returns null if not.
    */

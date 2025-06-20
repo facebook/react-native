@@ -169,6 +169,20 @@ describe('<View>', () => {
     });
   });
 
+  describe('transform style', () => {
+    it('causes view to be unflattened', () => {
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<View style={{transform: [{translateX: 10}]}} />);
+      });
+
+      expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+        <rn-view transform='[{"translateX": 10.000000}]' />,
+      );
+    });
+  });
+
   describe('props', () => {
     describe('pointerEvents', () => {
       it('auto does not propagate to the mounting layer, it is the default', () => {

@@ -36,6 +36,11 @@ typedef struct {
 } RCTBorderColors;
 
 /**
+ * Determine the largest border inset value.
+ */
+RCT_EXTERN CGFloat RCTMaxBorderInset(UIEdgeInsets borderInsets);
+
+/**
  * Determine if the border widths, colors and radii are all equal.
  */
 RCT_EXTERN BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets);

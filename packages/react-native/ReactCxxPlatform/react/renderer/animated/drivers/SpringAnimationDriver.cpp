@@ -21,13 +21,13 @@ SpringAnimationDriver::SpringAnimationDriver(
     int id,
     Tag animatedValueTag,
     std::optional<AnimationEndCallback> endCallback,
-    const folly::dynamic& config,
+    folly::dynamic config,
     NativeAnimatedNodesManager* manager)
     : AnimationDriver(
           id,
           animatedValueTag,
           std::move(endCallback),
-          config,
+          std::move(config),
           manager),
       springStiffness_(config_["stiffness"].asDouble()),
       springDamping_(config_["damping"].asDouble()),

@@ -76,12 +76,15 @@ async function setVersion(
     includeReactNative: true,
   });
   const newPackageVersions = Object.fromEntries(
-    Object.keys(packages).map(packageName => [
-      packageName,
-      packageName === 'react-native' && skipReactNativeVersion
-        ? '1000.0.0'
-        : version,
-    ]),
+    Object.entries(packages).map(([packageName, {packageJson}]) => {
+      let packageVersion = version;
+      if (packageName === 'react-native' && skipReactNativeVersion) {
+        packageVersion = '1000.0.0';
+      } else if (packageJson.private === true) {
+        packageVersion = packageJson.version ?? '0.0.0';
+      }
+      return [packageName, packageVersion];
+    }),
   );
 
   const packagesToUpdate = [

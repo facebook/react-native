@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<999bacd5ad8eac2c69f0d7e8d20dcba9>>
+ * @generated SignedSource<<77750d9d71424a12867ade6d627b957c>>
  */
 
 /**
@@ -35,11 +35,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool avoidCeilingAvailableAndroidTextWidth() override {
-    return true;
+  bool cxxNativeAnimatedEnabled() override {
+    return false;
   }
 
-  bool cxxNativeAnimatedEnabled() override {
+  bool cxxNativeAnimatedRemoveJsSync() override {
     return false;
   }
 
@@ -111,10 +111,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    return true;
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     return false;
   }
@@ -179,6 +175,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableVirtualViewDebugFeatures() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -191,10 +191,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    return true;
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -205,10 +201,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useAlwaysAvailableJSErrorHandling() override {
     return false;
-  }
-
-  bool useAndroidTextLayoutWidthDirectly() override {
-    return true;
   }
 
   bool useFabricInterop() override {

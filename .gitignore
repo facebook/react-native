@@ -40,8 +40,8 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/external-artifacts/artifacts/
 /packages/react-native/ReactAndroid/hermes-engine/build/
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
-/packages/helloworld/android/app/build/
-/packages/helloworld/android/build/
+/private/helloworld/android/app/build/
+/private/helloworld/android/build/
 /packages/react-native-popup-menu-android/android/build/
 /packages/react-native-test-library/android/build/
 
@@ -108,15 +108,15 @@ package-lock.json
 
 # Ruby Gems (Bundler)
 /packages/react-native/vendor
-/packages/helloworld/vendor
+/private/helloworld/vendor
 .ruby-version
 /**/.ruby-version
 vendor/
 
 # iOS / CocoaPods
-/packages/helloworld/ios/build/
-/packages/helloworld/ios/Pods/
-/packages/helloworld/ios/Podfile.lock
+/private/helloworld/ios/build/
+/private/helloworld/ios/Pods/
+/private/helloworld/ios/Podfile.lock
 /packages/rn-tester/bin/
 /packages/rn-tester/cache/
 /packages/rn-tester/extensions/
@@ -139,12 +139,11 @@ vendor/
 /packages/react-native/React/FBReactNativeSpec/
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/
-/packages/react-native/ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /**/RCTThirdPartyFabricComponentsProvider.*
 
 # @react-native/codegen-typescript-test
-/packages/react-native-codegen-typescript-test/lib
+/private/react-native-codegen-typescript-test/lib
 
 # Additional SDKs
 /packages/react-native/sdks/download
@@ -171,8 +170,8 @@ fix_*.patch
 .metro-health-check*
 
 # Jest Integration
-/packages/react-native-fantom/build/
-/packages/react-native-fantom/tester/build/
+/private/react-native-fantom/build/
+/private/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/

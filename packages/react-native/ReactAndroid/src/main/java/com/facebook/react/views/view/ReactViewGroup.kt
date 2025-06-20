@@ -175,7 +175,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
     childrenRemovedWhileTransitioning = null
   }
 
-  internal fun recycleView() {
+  internal open fun recycleView() {
     recycleCount++
     // Remove dangling listeners
     if (allChildren != null && childrenLayoutChangeListener != null) {

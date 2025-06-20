@@ -59,7 +59,7 @@ internal class FabricEventDispatcher(
     eventEmitter.registerFabricEventEmitter(fabricEventEmitter)
   }
 
-  public override fun dispatchEvent(event: Event<*>) {
+  override fun dispatchEvent(event: Event<*>) {
     for (listener in listeners) {
       listener.onEventDispatch(event)
     }
@@ -100,7 +100,7 @@ internal class FabricEventDispatcher(
     }
   }
 
-  public override fun dispatchAllEvents() {
+  override fun dispatchAllEvents() {
     scheduleDispatchOfBatchedEvents()
   }
 
@@ -116,46 +116,46 @@ internal class FabricEventDispatcher(
   }
 
   /** Add a listener to this EventDispatcher. */
-  public override fun addListener(listener: EventDispatcherListener) {
+  override fun addListener(listener: EventDispatcherListener) {
     listeners.add(listener)
   }
 
   /** Remove a listener from this EventDispatcher. */
-  public override fun removeListener(listener: EventDispatcherListener) {
+  override fun removeListener(listener: EventDispatcherListener) {
     listeners.remove(listener)
   }
 
-  public override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
+  override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
     postEventDispatchListeners.add(listener)
   }
 
-  public override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
+  override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
     postEventDispatchListeners.remove(listener)
   }
 
-  public override fun onHostResume() {
+  override fun onHostResume() {
     scheduleDispatchOfBatchedEvents()
     if (!ReactNativeFeatureFlags.useOptimizedEventBatchingOnAndroid()) {
       currentFrameCallback.resume()
     }
   }
 
-  public override fun onHostPause() {
+  override fun onHostPause() {
     cancelDispatchOfBatchedEvents()
   }
 
-  public override fun onHostDestroy() {
+  override fun onHostDestroy() {
     cancelDispatchOfBatchedEvents()
   }
 
-  public fun invalidate() {
+  fun invalidate() {
     eventEmitter.registerFabricEventEmitter(null)
 
     UiThreadUtil.runOnUiThread { cancelDispatchOfBatchedEvents() }
   }
 
   @Deprecated("Private API, should only be used when the concrete implementation is known.")
-  public override fun onCatalystInstanceDestroyed() {
+  override fun onCatalystInstanceDestroyed() {
     invalidate()
   }
 

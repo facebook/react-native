@@ -17,7 +17,6 @@
     "format": "npm run prettier && npm run clang-format",
     "featureflags": "yarn --cwd packages/react-native featureflags",
     "lint-ci": "./.github/workflow-scripts/analyze_code.sh && yarn shellcheck",
-    "lint-java": "node ./scripts/lint-java.js",
     "lint-markdown": "markdownlint-cli2 2>&1",
     "lint": "eslint --max-warnings 0 .",
     "prettier": "prettier --write \"./**/*.{js,md,yml,ts,tsx}\"",
@@ -33,14 +32,14 @@
     "test-typescript": "tsc -p packages/react-native/types/tsconfig.json",
     "test-generated-typescript": "tsc -p packages/react-native/types_generated/tsconfig.test.json",
     "test": "jest",
-    "fantom": "JS_DIR='..' yarn jest --config packages/react-native-fantom/config/jest.config.js",
+    "fantom": "JS_DIR='..' yarn jest --config private/react-native-fantom/config/jest.config.js",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
     "update-lock": "npx yarn-deduplicate"
   },
   "workspaces": [
     "packages/*",
     "private/*",
-    "!packages/helloworld"
+    "!private/helloworld"
   ],
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -55,7 +54,7 @@
     "@react-native/metro-babel-transformer": "0.80.0-main",
     "@react-native/metro-config": "0.80.0-main",
     "@tsconfig/node22": "22.0.2",
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.1.0",
     "@typescript-eslint/parser": "^7.1.1",
     "ansi-styles": "^4.2.1",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
@@ -74,12 +73,11 @@
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-jsx-a11y": "^6.6.0",
     "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-native": "^4.0.0",
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.28.1",
-    "flow-bin": "^0.272.2",
+    "flow-bin": "^0.273.1",
     "glob": "^7.1.1",
     "hermes-eslint": "0.28.1",
     "hermes-transform": "0.28.1",
@@ -111,6 +109,7 @@
     "ws": "^6.2.3"
   },
   "resolutions": {
+    "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",
     "react-is": "19.1.0"
   }
 }
