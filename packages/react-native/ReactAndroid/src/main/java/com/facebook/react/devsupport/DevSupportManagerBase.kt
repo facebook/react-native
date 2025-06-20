@@ -465,9 +465,7 @@ public abstract class DevSupportManagerBase(
     devOptionsDialog?.show()
 
     val reactContext = currentReactContext
-    if (reactContext != null) {
-      reactContext.getJSModule(RCTNativeAppEventEmitter::class.java).emit("RCTDevMenuShown", null)
-    }
+    reactContext?.getJSModule(RCTNativeAppEventEmitter::class.java)?.emit("RCTDevMenuShown", null)
   }
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
