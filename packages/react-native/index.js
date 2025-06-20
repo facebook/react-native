@@ -251,6 +251,9 @@ module.exports = {
   get Networking() {
     return require('./Libraries/Network/RCTNetworking').default;
   },
+  get NewAppScreen() {
+    return require('./Libraries/NewAppScreen');
+  },
   get PanResponder() {
     return require('./Libraries/Interaction/PanResponder').default;
   },
