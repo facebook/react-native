@@ -35,6 +35,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = WebSocketModule.NAME)
 public class WebSocketModule(context: ReactApplicationContext) :
     NativeWebSocketModuleSpec(context) {

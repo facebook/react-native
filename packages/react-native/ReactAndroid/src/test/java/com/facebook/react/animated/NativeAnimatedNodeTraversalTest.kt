@@ -46,6 +46,7 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 /** Tests the animated nodes graph traversal algorithm from {@link NativeAnimatedNodesManager}. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @RunWith(RobolectricTestRunner::class)
 class NativeAnimatedNodeTraversalTest {
 
