@@ -21,16 +21,16 @@ import com.facebook.react.R
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 
-internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
-  public constructor(
-      view: View,
-      originalFocus: Boolean,
-      originalImportantForAccessibility: Int
-  ) : super(view, originalFocus, originalImportantForAccessibility) {
+internal class ReactTextViewAccessibilityDelegate(
+    view: View,
+    originalFocus: Boolean,
+    originalImportantForAccessibility: Int
+) : ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility) {
+  private var accessibilityLinks: AccessibilityLinks? = null
+
+  init {
     accessibilityLinks = hostView.getTag(R.id.accessibility_links) as AccessibilityLinks?
   }
-
-  private var accessibilityLinks: AccessibilityLinks? = null
 
   public companion object {
     public fun setDelegate(
