@@ -67,6 +67,12 @@ class UIManagerDelegate {
       const folly::dynamic& props) = 0;
 
   /*
+   * Called after updateShadowTree is invoked.
+   */
+  virtual void uiManagerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) = 0;
+
+  /*
    * Add event listener.
    */
   virtual void uiManagerShouldAddEventListener(

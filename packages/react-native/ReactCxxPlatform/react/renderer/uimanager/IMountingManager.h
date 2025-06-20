@@ -54,6 +54,9 @@ class IMountingManager {
       Tag reactTag,
       const folly::dynamic& changedProps) {};
 
+  virtual void onUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) {};
+
   virtual void initializeAccessibilityManager() {};
 
   virtual void setAccessibilityFocusedView(Tag viewTag) {};
