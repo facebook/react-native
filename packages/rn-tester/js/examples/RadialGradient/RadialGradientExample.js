@@ -254,4 +254,36 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Radial gradient with non-square bounds',
+    name: 'radial-gradient-with-non-square-bounds',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 200,
+            height: 100,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Radial gradient with non-square bounds. height > width',
+    name: 'radial-gradient-with-non-square-bounds-height-gt-width',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 100,
+            height: 300,
+          }}
+        />
+      );
+    },
+  },
 ];
