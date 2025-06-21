@@ -562,6 +562,7 @@ export interface ScrollViewPropsAndroid {
 
   /**
    * Enables nested scrolling for Android API level 21+. Nested scrolling is supported by default on iOS.
+   * @deprecated this will be removed in a future version of React Native as it no longer has any effect. This will also be enabled by default on android.
    */
   nestedScrollEnabled?: boolean | undefined;
 
