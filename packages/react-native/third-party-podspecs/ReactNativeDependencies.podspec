@@ -36,7 +36,7 @@ Pod::Spec.new do |spec|
     'WARNING_CFLAGS' => '-Wno-comma -Wno-shorten-64-to-32',
   }
 
-  spec.source             = source
+  spec.source               = source
   spec.preserve_paths       = '**/*.*'
   spec.vendored_frameworks  = 'framework/packages/react-native/ReactNativeDependencies.xcframework'
   spec.header_mappings_dir  = 'Headers'
@@ -49,6 +49,19 @@ Pod::Spec.new do |spec|
     mkdir -p Headers
     XCFRAMEWORK_PATH=$(find "$CURRENT_PATH" -type d -name "ReactNativeDependencies.xcframework")
     HEADERS_PATH=$(find "$XCFRAMEWORK_PATH" -type d -name "Headers" | head -n 1)
+
+    # Check if XCFRAMEWORK_PATH is empty
+    if [ -z "$XCFRAMEWORK_PATH" ]; then
+      echo "ERROR: XCFRAMEWORK_PATH is empty."
+      exit 0
+    fi
+
+    # Check if HEADERS_PATH is empty
+    if [ -z "$HEADERS_PATH" ]; then
+      echo "ERROR: HEADERS_PATH is empty."
+      exit 0
+    fi
+
     cp -R "$HEADERS_PATH/" Headers
     mkdir -p framework/packages/react-native
     cp -R "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
