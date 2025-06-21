@@ -56,7 +56,7 @@ class AndroidTextInputComponentDescriptor final
       if (getThemeData(
               fabricUIManager, surfaceId, defaultTextInputPaddingArray)) {
         jfloat* defaultTextInputPadding =
-            env->GetFloatArrayElements(defaultTextInputPaddingArray, 0);
+            env->GetFloatArrayElements(defaultTextInputPaddingArray, nullptr);
         theme.start = defaultTextInputPadding[0];
         theme.end = defaultTextInputPadding[1];
         theme.top = defaultTextInputPadding[2];
