@@ -81,7 +81,7 @@
     "gradle.properties",
     "gradle/libs.versions.toml",
     "index.js",
-    "index.flow.js",
+    "index.js.flow",
     "interface.js",
     "jest-preset.js",
     "jest",
