@@ -94,20 +94,23 @@ for (const file of schemaFiles) {
               .includes(platform),
         );
 
-        if (isExcludedForPlatform) {
+        // Check for interfaceOnly components
+        const hasInterfaceOnly = Object.values(components).some(
+          component =>
+            component.interfaceOnly !== undefined && component.interfaceOnly,
+        );
+
+        if (
+          isExcludedForPlatform ||
+          hasInterfaceOnly ||
+          schema.libraryName === 'FBReactNativeSpec'
+        ) {
           continue;
         }
       }
 
-      if (
-        module.type === 'Component' &&
-        schema.libraryName === 'FBReactNativeSpec'
-      ) {
-        continue;
-      } else {
-        modules[specName] = module;
-        specNameToFile[specName] = file;
-      }
+      modules[specName] = module;
+      specNameToFile[specName] = file;
     }
   }
 }
