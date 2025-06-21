@@ -60,6 +60,11 @@ class ImageResponseObserverCoordinator {
    */
   void nativeImageResponseFailed(const ImageLoadError& loadError) const;
 
+  /*
+   * Releases image data and metadata pointers.
+   */
+  void reset() const;
+
  private:
   /*
    * List of observers.
