@@ -177,11 +177,13 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   internal open fun recycleView() {
     recycleCount++
+
     // Remove dangling listeners
+    val allChildren = allChildren
     if (allChildren != null && childrenLayoutChangeListener != null) {
       childrenLayoutChangeListener?.shutdown()
       for (i in 0..<allChildrenCount) {
-        allChildren?.get(i)?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
+        allChildren[i]?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
       }
     }
 
@@ -334,8 +336,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     setBorderRadius(this, BorderRadiusProp.entries[position], radius)
   }
 
-  public fun setBorderRadius(property: BorderRadiusProp?, borderRadius: LengthPercentage?) {
-    setBorderRadius(this, checkNotNull(property), borderRadius)
+  public fun setBorderRadius(property: BorderRadiusProp, borderRadius: LengthPercentage?) {
+    setBorderRadius(this, property, borderRadius)
   }
 
   public fun setBorderStyle(style: String?) {
@@ -351,30 +353,33 @@ public open class ReactViewGroup public constructor(context: Context?) :
       _removeClippedSubviews = newValue
       childrenRemovedWhileTransitioning = null
       if (newValue) {
-        clippingRect = Rect()
-        calculateClippingRect(this, checkNotNull(clippingRect))
+        val clippingRect = Rect()
+        calculateClippingRect(this, clippingRect)
+        this.clippingRect = clippingRect
+
         allChildrenCount = childCount
-        val initialSize = max(12.0, allChildrenCount.toDouble()).toInt()
-        allChildren = arrayOfNulls(initialSize)
+        val allChildren = arrayOfNulls<View?>(max(12, allChildrenCount))
         childrenLayoutChangeListener = ChildrenLayoutChangeListener(this)
         for (i in 0..<allChildrenCount) {
           val child = getChildAt(i)
-          allChildren?.set(i, child)
+          allChildren[i] = child
           child.addOnLayoutChangeListener(childrenLayoutChangeListener)
           setViewClipped(child, false)
         }
+        this.allChildren = allChildren
         updateClippingRect()
       } else {
         // Add all clipped views back, deallocate additional arrays, remove layoutChangeListener
-        checkNotNull(allChildren)
+        val childArray = checkNotNull(allChildren)
         checkNotNull(childrenLayoutChangeListener)
         for (i in 0..<allChildrenCount) {
-          allChildren?.get(i)?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
+          childArray[i]?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
         }
-        getDrawingRect(checkNotNull(clippingRect))
-        updateClippingToRect(checkNotNull(clippingRect))
-        allChildren = null
-        clippingRect = null
+        val clippingRect = checkNotNull(clippingRect)
+        getDrawingRect(clippingRect)
+        updateClippingToRect(clippingRect)
+        this.allChildren = null
+        this.clippingRect = null
         allChildrenCount = 0
         childrenLayoutChangeListener = null
       }
@@ -388,15 +393,14 @@ public open class ReactViewGroup public constructor(context: Context?) :
     updateClippingRect(null)
   }
 
-  override fun updateClippingRect(excludedView: Set<Int>?) {
+  override fun updateClippingRect(excludedViews: Set<Int>?) {
     if (!_removeClippedSubviews) {
       return
     }
 
-    checkNotNull(allChildren)
-
-    calculateClippingRect(this, checkNotNull(clippingRect))
-    updateClippingToRect(checkNotNull(clippingRect), excludedView)
+    val clippingRect = checkNotNull(clippingRect)
+    calculateClippingRect(this, clippingRect)
+    updateClippingToRect(clippingRect, excludedViews)
   }
 
   override fun endViewTransition(view: View) {
@@ -415,58 +419,58 @@ public open class ReactViewGroup public constructor(context: Context?) :
       childrenRemovedWhileTransitioning?.contains(child.id) == true
 
   private fun updateClippingToRect(clippingRect: Rect, excludedViewsSet: Set<Int>? = null) {
-    checkNotNull(allChildren)
+    val childArray = checkNotNull(allChildren)
     inSubviewClippingLoop = true
     var clippedSoFar = 0
     for (i in 0..<allChildrenCount) {
       try {
         updateSubviewClipStatus(clippingRect, i, clippedSoFar, excludedViewsSet)
-      } catch (error: IndexOutOfBoundsException) {
+      } catch (ex: IndexOutOfBoundsException) {
         var realClippedSoFar = 0
         val uniqueViews: MutableSet<View?> = HashSet()
         var j = 0
         while (j < i) {
-          realClippedSoFar += if (isViewClipped(checkNotNull(allChildren?.get(j)), null)) 1 else 0
-          uniqueViews.add(allChildren?.get(j))
+          realClippedSoFar += if (isViewClipped(childArray[j], j)) 1 else 0
+          uniqueViews.add(childArray[j])
           j++
         }
 
         throw IllegalStateException(
-            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount realClippedSoFar=$realClippedSoFar uniqueViewsCount=${uniqueViews.size}",
-            error)
+            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount realClippedSoFar=$realClippedSoFar uniqueViewsCount=${uniqueViews.size} excludedViews=${excludedViewsSet?.size ?: 0}",
+            ex)
       }
-      if (isViewClipped(checkNotNull(allChildren?.get(i)), i)) {
+      if (isViewClipped(childArray[i], i)) {
         clippedSoFar++
+      }
+      if (i - clippedSoFar > childCount) {
+        throw IllegalStateException(
+            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount  excludedViews=${excludedViewsSet?.size ?: 0}")
       }
     }
     inSubviewClippingLoop = false
-  }
-
-  private fun updateSubviewClipStatus(clippingRect: Rect?, idx: Int, clippedSoFar: Int) {
-    val nonNullClippingRect = checkNotNull(clippingRect)
-    updateSubviewClipStatus(nonNullClippingRect, idx, clippedSoFar, null)
   }
 
   private fun updateSubviewClipStatus(
       clippingRect: Rect,
       idx: Int,
       clippedSoFar: Int,
-      excludedViewsSet: Set<Int>?
+      excludedViewsSet: Set<Int>? = null
   ) {
     assertOnUiThread()
 
     val child = checkNotNull(allChildren?.get(idx))
     val intersects = clippingRect.intersects(child.left, child.top, child.right, child.bottom)
     var needUpdateClippingRecursive = false
+
     // We never want to clip children that are being animated, as this can easily break layout :
     // when layout animation changes size and/or position of views contained inside a listview that
     // clips offscreen children, we need to ensure that, when view exits the viewport, final size
     // and position is set prior to removing the view from its listview parent.
     // Otherwise, when view gets re-attached again, i.e when it re-enters the viewport after scroll,
     // it won't be size and located properly.
-    val animation = child.animation
-    val isAnimating = animation != null && !animation.hasEnded()
-    val shouldSkipView = excludedViewsSet != null && excludedViewsSet.contains(child.id)
+    val isAnimating = child.animation?.hasEnded() == false
+
+    val shouldSkipView = excludedViewsSet?.contains(child.id) == true
     if (excludedViewsSet != null) {
       needUpdateClippingRecursive = true
     }
@@ -492,12 +496,10 @@ public open class ReactViewGroup public constructor(context: Context?) :
       // If there is any intersection we need to inform the child to update its clipping rect
       needUpdateClippingRecursive = true
     }
+
     if (needUpdateClippingRecursive) {
-      if (child is ReactClippingViewGroup) {
-        val clippingChild = child as ReactClippingViewGroup
-        if (clippingChild.removeClippedSubviews) {
-          clippingChild.updateClippingRect(excludedViewsSet)
-        }
+      if ((child as? ReactClippingViewGroup)?.removeClippedSubviews == true) {
+        child.updateClippingRect(excludedViewsSet)
       }
     }
   }
@@ -507,12 +509,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
       return
     }
 
-    val nonNullClippingRect = checkNotNull(clippingRect)
-    checkNotNull(allChildren)
+    val clippingRect = checkNotNull(clippingRect)
+    val allChildren = checkNotNull(allChildren)
 
     // do fast check whether intersect state changed
     val intersects =
-        nonNullClippingRect.intersects(subview.left, subview.top, subview.right, subview.bottom)
+        clippingRect.intersects(subview.left, subview.top, subview.right, subview.bottom)
 
     // If it was intersecting before, should be attached to the parent
     val oldIntersects = !isViewClipped(subview, null)
@@ -521,11 +523,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
       inSubviewClippingLoop = true
       var clippedSoFar = 0
       for (i in 0..<allChildrenCount) {
-        if (allChildren?.get(i) === subview) {
+        if (allChildren[i] === subview) {
           updateSubviewClipStatus(clippingRect, i, clippedSoFar)
           break
         }
-        if (isViewClipped(checkNotNull(allChildren?.get(i)), i)) {
+        if (isViewClipped(allChildren[i], i)) {
           clippedSoFar++
         }
       }
@@ -558,7 +560,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   override fun onViewAdded(child: View) {
     assertOnUiThread()
-    checkViewClippingTag(child, java.lang.Boolean.FALSE)
+    checkViewClippingTag(child, false)
     if (!customDrawOrderDisabled()) {
       drawingOrderHelper.handleAddView(child)
       isChildrenDrawingOrderEnabled = drawingOrderHelper.shouldEnableCustomDrawingOrder()
@@ -570,7 +572,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   override fun onViewRemoved(child: View) {
     assertOnUiThread()
-    checkViewClippingTag(child, java.lang.Boolean.TRUE)
+    checkViewClippingTag(child, true)
     if (!customDrawOrderDisabled()) {
       drawingOrderHelper.handleRemoveView(child)
       isChildrenDrawingOrderEnabled = drawingOrderHelper.shouldEnableCustomDrawingOrder()
@@ -597,6 +599,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
     }
     if (_removeClippedSubviews) {
       child.setTag(R.id.view_clipped, expectedTag)
+    } else {
+      child.setTag(R.id.view_clipped, null)
     }
   }
 
@@ -654,11 +658,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
     val clippingRect = checkNotNull(clippingRect)
-    val childArray: Array<View?> = checkNotNull(allChildren)
+    val allChildren = checkNotNull(allChildren)
     inSubviewClippingLoop = true
     var clippedSoFar = 0
     for (i in 0..<index) {
-      if (isViewClipped(checkNotNull(childArray[i]), i)) {
+      if (isViewClipped(allChildren[i], i)) {
         clippedSoFar++
       }
     }
@@ -685,14 +689,13 @@ public open class ReactViewGroup public constructor(context: Context?) :
     assertOnUiThread()
 
     check(_removeClippedSubviews)
-    checkNotNull(clippingRect)
-    val childArray: Array<View?> = checkNotNull(allChildren)
+    val allChildren = checkNotNull(allChildren)
     view.removeOnLayoutChangeListener(childrenLayoutChangeListener)
     val index = indexOfChildInAllChildren(view)
-    if (!isViewClipped(checkNotNull(childArray[index]), index)) {
+    if (!isViewClipped(allChildren[index], index)) {
       var clippedSoFar = 0
       for (i in 0..<index) {
-        if (isViewClipped(checkNotNull(childArray[i]), i)) {
+        if (isViewClipped(allChildren[i], i)) {
           clippedSoFar++
         }
       }
@@ -704,9 +707,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   internal fun removeAllViewsWithSubviewClippingEnabled() {
     check(_removeClippedSubviews)
-    val childArray = checkNotNull(allChildren)
+    val allChildren = checkNotNull(allChildren)
     for (i in 0..<allChildrenCount) {
-      childArray[i]?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
+      allChildren[i]?.removeOnLayoutChangeListener(childrenLayoutChangeListener)
     }
     removeAllViewsInLayout()
     allChildrenCount = 0
@@ -716,11 +719,13 @@ public open class ReactViewGroup public constructor(context: Context?) :
    * @param index For logging - index of the view in `allChildren`, or `null` to skip logging.
    * @return `true` if the view has been removed from the ViewGroup.
    */
-  private fun isViewClipped(view: View, index: Int?): Boolean {
+  private fun isViewClipped(view: View?, index: Int?): Boolean {
+    val view = checkNotNull(view)
     val tag = view.getTag(R.id.view_clipped)
     if (tag != null) {
       return tag as Boolean
     }
+
     val parent = view.parent
     val transitioning = isChildRemovedWhileTransitioning(view)
     if (index != null) {
@@ -750,22 +755,24 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   private fun addInArray(child: View, index: Int) {
-    var childArray = checkNotNull(allChildren) // TODO
+    var childArray = checkNotNull(allChildren)
     val count = allChildrenCount
     val size = childArray.size
     if (index == count) {
       if (size == count) {
-        allChildren = arrayOfNulls(size + ARRAY_CAPACITY_INCREMENT)
-        System.arraycopy(childArray, 0, checkNotNull(allChildren), 0, size)
-        childArray = checkNotNull(allChildren)
+        val allChildren = arrayOfNulls<View?>(size + ARRAY_CAPACITY_INCREMENT)
+        System.arraycopy(childArray, 0, allChildren, 0, size)
+        childArray = allChildren
+        this.allChildren = childArray
       }
       childArray[allChildrenCount++] = child
     } else if (index < count) {
       if (size == count) {
-        allChildren = arrayOfNulls(size + ARRAY_CAPACITY_INCREMENT)
-        System.arraycopy(childArray, 0, checkNotNull(allChildren), 0, index)
-        System.arraycopy(childArray, index, checkNotNull(allChildren), index + 1, count - index)
-        childArray = checkNotNull(allChildren)
+        val allChildren = arrayOfNulls<View?>(size + ARRAY_CAPACITY_INCREMENT)
+        System.arraycopy(childArray, 0, allChildren, 0, index)
+        System.arraycopy(childArray, index, allChildren, index + 1, count - index)
+        childArray = allChildren
+        this.allChildren = childArray
       } else {
         System.arraycopy(childArray, index, childArray, index + 1, count - index)
       }
