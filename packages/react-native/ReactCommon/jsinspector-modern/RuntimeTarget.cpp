@@ -53,6 +53,7 @@ void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
   installConsoleHandler();
   installDebuggerSessionObserver();
+  installConsoleTimeStamp();
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
