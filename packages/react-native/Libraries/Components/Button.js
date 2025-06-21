@@ -281,10 +281,12 @@ export type ButtonProps = $ReadOnly<{
   ```
  */
 
-const Touchable: typeof TouchableNativeFeedback | typeof TouchableOpacity =
+const NativeTouchable:
+  | typeof TouchableNativeFeedback
+  | typeof TouchableOpacity =
   Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
-type ButtonRef = React.ElementRef<typeof Touchable>;
+type ButtonRef = React.ElementRef<typeof NativeTouchable>;
 
 const Button: component(
   ref?: React.RefSetter<ButtonRef>,
@@ -362,7 +364,7 @@ const Button: component(
       : importantForAccessibility;
 
   return (
-    <Touchable
+    <NativeTouchable
       accessible={accessible}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
@@ -391,7 +393,7 @@ const Button: component(
           {formattedTitle}
         </Text>
       </View>
-    </Touchable>
+    </NativeTouchable>
   );
 };
 
