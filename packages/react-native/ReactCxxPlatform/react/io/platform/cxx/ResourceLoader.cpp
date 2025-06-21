@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ResourceLoader.h"
+#include <react/io/ResourceLoader.h>
 
 #include <cassert>
 #include <fstream>
