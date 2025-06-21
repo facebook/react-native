@@ -1,5 +1,5 @@
 [versions]
-agp = "8.10.1"
+agp = "8.11.0-rc2"
 gson = "2.8.9"
 guava = "31.0.1-jre"
 javapoet = "1.13.0"
