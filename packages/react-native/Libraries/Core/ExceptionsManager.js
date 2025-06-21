@@ -17,6 +17,24 @@ export class SyntheticError extends Error {
   name: string = '';
 }
 
+class UncaughtInComponentError extends Error {
+  name: string = 'UncaughtInComponentError';
+  constructor(e: ExtendedError) {
+    const componentName = e.componentStack
+      ?.split('\n')?.[1]
+      .replace(/ \(\S+\)$/, '')
+      .replace(/^\s*at /, '');
+
+    const errorMessage =
+      `An uncaught error was thrown from ` +
+      (componentName != null ? `'${componentName}'` : 'a component');
+
+    super(errorMessage, {cause: e});
+
+    this.stack = `${this.name}: ${this.message}${e.componentStack ?? ''}`;
+  }
+}
+
 type ExceptionDecorator = ExceptionData => ExceptionData;
 
 let userExceptionDecorator: ?ExceptionDecorator;
@@ -62,6 +80,25 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
+  let currentE = e;
+  while (currentE != null) {
+    // $FlowIgnore
+    if (typeof currentE.stack === 'string') {
+      // $FlowIgnore
+      currentE.stack = currentE.stack.replaceAll('10.0.2.2:', 'localhost:');
+    }
+
+    if (typeof currentE.componentStack === 'string') {
+      // $FlowIgnore
+      currentE.componentStack = currentE.componentStack.replaceAll(
+        '10.0.2.2:',
+        'localhost:',
+      );
+    }
+
+    // $FlowIgnore
+    currentE = currentE.cause;
+  }
   const parseErrorStack = require('./Devtools/parseErrorStack').default;
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
@@ -105,7 +142,12 @@ function reportException(
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(data.message);
+
+    if (e.isComponentError === true) {
+      console.error(new UncaughtInComponentError(e));
+    } else {
+      console.error(e);
+    }
   }
 
   if (__DEV__) {
