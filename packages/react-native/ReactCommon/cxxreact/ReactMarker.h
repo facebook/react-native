@@ -14,8 +14,7 @@
 #include <functional>
 #endif
 
-namespace facebook::react {
-namespace ReactMarker {
+namespace facebook::react::ReactMarker {
 
 enum ReactMarkerId {
   APP_STARTUP_START,
@@ -106,5 +105,4 @@ extern RN_EXPORT void logMarkerDone(
     const ReactMarkerId markerId,
     double markerTime);
 
-} // namespace ReactMarker
-} // namespace facebook::react
+} // namespace facebook::react::ReactMarker

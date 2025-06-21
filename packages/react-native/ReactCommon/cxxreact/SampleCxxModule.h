@@ -12,9 +12,7 @@
 
 #include <cxxreact/CxxModule.h>
 
-namespace facebook {
-namespace xplat {
-namespace samples {
+namespace facebook::xplat::samples {
 
 // In a less contrived example, Sample would be part of a traditional
 // C++ library.
@@ -52,8 +50,6 @@ class SampleCxxModule : public module::CxxModule {
   std::unique_ptr<Sample> sample_;
 };
 
-} // namespace samples
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::samples
 
 extern "C" facebook::xplat::module::CxxModule* SampleCxxModule();

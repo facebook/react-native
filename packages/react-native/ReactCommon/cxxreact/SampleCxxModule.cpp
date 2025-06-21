@@ -15,9 +15,7 @@
 
 using namespace folly;
 
-namespace facebook {
-namespace xplat {
-namespace samples {
+namespace facebook::xplat::samples {
 
 std::string Sample::hello() {
   LOG(WARNING) << "glog: hello, world";
@@ -171,9 +169,7 @@ void SampleCxxModule::load([[maybe_unused]] folly::dynamic args, Callback cb) {
   cb({d});
 }
 
-} // namespace samples
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::samples
 
 // By convention, the function name should be the same as the class name.
 facebook::xplat::module::CxxModule* SampleCxxModule() {

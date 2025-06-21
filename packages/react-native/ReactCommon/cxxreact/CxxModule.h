@@ -20,9 +20,7 @@ class Instance;
 
 } // namespace facebook::react
 
-namespace facebook {
-namespace xplat {
-namespace module {
+namespace facebook::xplat::module {
 
 /**
  * Base class for Catalyst native modules whose implementations are
@@ -249,6 +247,4 @@ class CxxModule {
   std::weak_ptr<react::Instance> instance_;
 };
 
-} // namespace module
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::module

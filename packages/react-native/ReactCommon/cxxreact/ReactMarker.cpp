@@ -8,8 +8,7 @@
 #include "ReactMarker.h"
 #include <cxxreact/JSExecutor.h>
 
-namespace facebook::react {
-namespace ReactMarker {
+namespace facebook::react::ReactMarker {
 
 #if __clang__
 #pragma clang diagnostic push
@@ -138,5 +137,4 @@ double StartupLogger::getAppStartupEndTime() {
   return appStartupEndTime;
 }
 
-} // namespace ReactMarker
-} // namespace facebook::react
+} // namespace facebook::react::ReactMarker
