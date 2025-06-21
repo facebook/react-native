@@ -14,7 +14,7 @@ add_library(react_nativemodule_devtoolsruntimesettings OBJECT ${react_nativemodu
 target_include_directories(react_nativemodule_devtoolsruntimesettings PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_nativemodule_devtoolsruntimesettings
-        react_devtoolsruntimesettingscxx
+        devtoolsruntimesettings
 )
 target_compile_reactnative_options(react_nativemodule_devtoolsruntimesettings PRIVATE)
 target_compile_options(react_nativemodule_devtoolsruntimesettings PRIVATE -Wpedantic)
