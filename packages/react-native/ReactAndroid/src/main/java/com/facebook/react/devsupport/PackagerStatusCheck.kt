@@ -76,7 +76,7 @@ internal class PackagerStatusCheck {
                 if (PACKAGER_OK_STATUS != bodyString) {
                   FLog.e(
                       ReactConstants.TAG,
-                      "Got unexpected response from packager when requesting status: ${bodyString}")
+                      "Got unexpected response from packager when requesting status: $bodyString")
                   callback.onPackagerStatusFetched(false)
                   return
                 }
