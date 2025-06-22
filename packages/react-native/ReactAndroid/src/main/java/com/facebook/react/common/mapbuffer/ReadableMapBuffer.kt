@@ -140,9 +140,9 @@ private constructor(
     var curLen = 0
     while (curLen < sizeMapBufferList) {
       val sizeMapBuffer = buffer.getInt(offset + curLen)
-      curLen = curLen + Int.SIZE_BYTES
+      curLen += Int.SIZE_BYTES
       readMapBufferList.add(cloneWithOffset(offset + curLen))
-      curLen = curLen + sizeMapBuffer
+      curLen += sizeMapBuffer
     }
     return readMapBufferList
   }
