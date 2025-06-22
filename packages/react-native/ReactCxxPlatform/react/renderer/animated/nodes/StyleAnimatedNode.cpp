@@ -11,12 +11,29 @@
 
 #include "StyleAnimatedNode.h"
 
+#include <react/renderer/animated/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
 
 namespace facebook::react {
+
+namespace {
+
+bool isLayoutPropsUpdated(const folly::dynamic& props) {
+  for (const auto& styleNodeProp : props.items()) {
+    if (getDirectManipulationAllowlist().count(
+            styleNodeProp.first.asString()) == 0u) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+} // namespace
+
 StyleAnimatedNode::StyleAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
@@ -77,5 +94,8 @@ void StyleAnimatedNode::update() {
       }
     }
   }
+
+  layoutStyleUpdated_ = isLayoutPropsUpdated(props_);
 }
+
 } // namespace facebook::react

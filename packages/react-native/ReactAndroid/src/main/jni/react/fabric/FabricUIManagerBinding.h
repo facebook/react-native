@@ -126,6 +126,9 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       Tag tag,
       const folly::dynamic& props) override;
 
+  void schedulerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();

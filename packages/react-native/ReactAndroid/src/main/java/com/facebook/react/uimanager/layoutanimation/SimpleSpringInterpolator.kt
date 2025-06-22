@@ -17,13 +17,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-internal class SimpleSpringInterpolator : Interpolator {
-  private val _springDamping: Float
-
-  @JvmOverloads
-  constructor(springDamping: Float = FACTOR) {
-    _springDamping = springDamping
-  }
+internal class SimpleSpringInterpolator @JvmOverloads constructor(springDamping: Float = FACTOR) :
+    Interpolator {
+  private val _springDamping: Float = springDamping
 
   override fun getInterpolation(input: Float): Float =
       // Using mSpringDamping in this equation is not really the exact mathematical springDamping,
