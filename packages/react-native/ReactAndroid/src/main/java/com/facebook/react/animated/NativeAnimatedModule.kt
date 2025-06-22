@@ -494,7 +494,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
   override fun createAnimatedNode(tagDouble: Double, config: ReadableMap) {
     val tag = tagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(NAME, "queue createAnimatedNode: $tag config: ${config.toHashMap().toString()}")
+      FLog.d(NAME, "queue createAnimatedNode: $tag config: ${config.toHashMap()}")
     }
 
     addOperation(
@@ -503,7 +503,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute createAnimatedNode: $tag config: ${config.toHashMap().toString()}"))
+                  ("execute createAnimatedNode: $tag config: ${config.toHashMap()}"))
             }
             animatedNodesManager.createAnimatedNode(tag, config)
           }
@@ -514,7 +514,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
     val tag = tagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
-          NAME, "queue updateAnimatedNodeConfig: $tag config: ${config.toHashMap().toString()}")
+          NAME, "queue updateAnimatedNodeConfig: $tag config: ${config.toHashMap()}")
     }
 
     addOperation(
@@ -523,7 +523,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute updateAnimatedNodeConfig: $tag config: ${config.toHashMap().toString()}"))
+                  ("execute updateAnimatedNodeConfig: $tag config: ${config.toHashMap()}"))
             }
             animatedNodesManager.updateAnimatedNodeConfig(tag, config)
           }
@@ -816,7 +816,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap().toString()}"))
+          ("queue addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
     }
 
     initializeLifecycleEventListenersForViewTag(viewTag)
@@ -827,7 +827,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext?) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap().toString()}"))
+                  ("execute addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
             }
             animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping)
           }
