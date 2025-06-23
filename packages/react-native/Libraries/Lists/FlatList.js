@@ -15,6 +15,7 @@ import type {
   ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
+  VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
