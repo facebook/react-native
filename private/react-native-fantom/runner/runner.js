@@ -45,7 +45,7 @@ import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
-const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
+const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
 fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
 const BUILD_OUTPUT_PATH = fs.mkdtempSync(
   path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
@@ -268,7 +268,7 @@ module.exports = async function runTest(
           testConfig.mode === FantomTestConfigMode.Optimized,
         ),
         ...getBuckOptionsForHermes(testConfig.hermesVariant),
-        '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
+        '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
         '--',
         '--bundlePath',
         testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
