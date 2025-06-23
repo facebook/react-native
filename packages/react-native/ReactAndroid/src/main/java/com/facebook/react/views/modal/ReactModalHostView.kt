@@ -70,6 +70,7 @@ import com.facebook.yoga.annotations.DoNotStrip
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
+@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
