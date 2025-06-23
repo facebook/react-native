@@ -5,14 +5,14 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
-​​​
+
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
-​​​
+
 file(GLOB react_cxx_platform_react_coremodules_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_cxx_platform_react_coremodules OBJECT ${react_cxx_platform_react_coremodules_SRC})
-​​​
+
 target_include_directories(react_cxx_platform_react_coremodules PUBLIC ${REACT_CXX_PLATFORM_DIR})
-​​​
+
 target_link_libraries(react_cxx_platform_react_coremodules
       folly_runtime
       jsi
