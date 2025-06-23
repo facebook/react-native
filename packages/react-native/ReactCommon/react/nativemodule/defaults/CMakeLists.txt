@@ -14,6 +14,8 @@ add_library(react_nativemodule_defaults OBJECT ${react_nativemodule_defaults_SRC
 target_include_directories(react_nativemodule_defaults PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_nativemodule_defaults
+        react_codegen_rncore
+        react_nativemodule_core
         react_nativemodule_dom
         react_nativemodule_devtoolsruntimesettings
         react_nativemodule_featureflags
