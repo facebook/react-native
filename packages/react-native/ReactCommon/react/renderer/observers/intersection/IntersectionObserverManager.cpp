@@ -194,7 +194,10 @@ void IntersectionObserverManager::updateIntersectionObservations(
     return;
   }
 
-  TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
+  TraceSection s(
+      "IntersectionObserverManager::updateIntersectionObservations",
+      "pendingObserverCount",
+      observersPendingInitialization_.size());
 
   std::unordered_map<SurfaceId, RootShadowNode::Shared> rootShadowNodeCache;
 
@@ -234,6 +237,7 @@ void IntersectionObserverManager::updateIntersectionObservations(
 void IntersectionObserverManager::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
     HighResTimeStamp time) noexcept {
+  TraceSection s("IntersectionObserverManager::shadowTreeDidMount");
   updateIntersectionObservations(
       rootShadowNode->getSurfaceId(), rootShadowNode.get(), time);
 }
@@ -241,6 +245,7 @@ void IntersectionObserverManager::shadowTreeDidMount(
 void IntersectionObserverManager::shadowTreeDidUnmount(
     SurfaceId surfaceId,
     HighResTimeStamp time) noexcept {
+  TraceSection s("IntersectionObserverManager::shadowTreeDidUnmount");
   updateIntersectionObservations(surfaceId, nullptr, time);
 }
 
@@ -250,9 +255,6 @@ void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
     const RootShadowNode* rootShadowNode,
     HighResTimeStamp time) {
-  TraceSection s(
-      "IntersectionObserverManager::updateIntersectionObservations(mount)");
-
   std::vector<IntersectionObserverEntry> entries;
 
   // Run intersection observations
@@ -263,6 +265,11 @@ void IntersectionObserverManager::updateIntersectionObservations(
     if (observersIt == observersBySurfaceId_.end()) {
       return;
     }
+
+    TraceSection s(
+        "IntersectionObserverManager::updateIntersectionObservations(mount)",
+        "observerCount",
+        observersIt->second.size());
 
     auto& observers = observersIt->second;
     for (auto& observer : observers) {
