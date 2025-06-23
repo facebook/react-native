@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+def isSnapshot = findProperty("isSnapshot")?.toBoolean()
+def signingKey = findProperty("SIGNING_KEY")
+def signingPwd = findProperty("SIGNING_PWD")
+
+def reactAndroidProjectDir = project(':packages:react-native:ReactAndroid').projectDir
+def mavenTempLocalUrl = "file:///tmp/maven-local"
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            afterEvaluate {
+                // We do a multi variant release, so for Android libraries
+                // we publish `components.release`
+                if (plugins.hasPlugin("com.android.library")) {
+                    from components.default
+                }
+            }
+
+            // We populate the publishing version using the project version,
+            // appending -SNAPSHOT if on nightly or prerelase.
+            if (isSnapshot) {
+                version = this.version + "-SNAPSHOT"
+            } else {
+                version = this.version
+            }
+
+            pom {
+                name = "react-native"
+                description = "A framework for building native apps with React"
+                url = "https://github.com/facebook/react-native"
+
+                developers {
+                    developer {
+                        id = "facebook"
+                        name = "Facebook"
+                    }
+                }
+
+                licenses {
+                    license {
+                        name = "MIT License"
+                        url = "https://github.com/facebook/react-native/blob/HEAD/LICENSE"
+                        distribution = "repo"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/facebook/react-native.git"
+                    connection = "scm:git:https://github.com/facebook/react-native.git"
+                    developerConnection = "scm:git:git@github.com:facebook/react-native.git"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "mavenTempLocal"
+            url = mavenTempLocalUrl
+        }
+    }
+
+    if (signingKey && signingPwd) {
+        logger.info("PGP Key found - Signing enabled")
+        signing {
+            useInMemoryPgpKeys(signingKey, signingPwd)
+            sign(publishing.publications.release)
+        }
+    } else {
+        logger.info("Signing disabled as the PGP key was not found")
+    }
+}
