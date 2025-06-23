@@ -111,9 +111,9 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
 }
 
 bool RuntimeScheduler_Modern::getShouldYield() noexcept {
-  std::shared_lock lock(schedulingMutex_);
-
   markYieldingOpportunity(now_());
+
+  std::shared_lock lock(schedulingMutex_);
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -152,13 +152,12 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
 
   syncTaskRequests_++;
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, currentTime, &task](jsi::Runtime& runtime) mutable {
+      runtimeExecutor_, [&](jsi::Runtime& runtime) mutable {
         TraceSection s2("RuntimeScheduler::executeNowOnTheSameThread callback");
 
         syncTaskRequests_--;
         runtimePtr = &runtime;
-        runEventLoopTick(runtime, task, currentTime);
+        runEventLoopTick(runtime, task);
         runtimePtr = nullptr;
       });
 
@@ -249,37 +248,29 @@ void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
 }
 
 void RuntimeScheduler_Modern::scheduleEventLoop() {
-  runtimeExecutor_(
-      [this](jsi::Runtime& runtime) { runEventLoop(runtime, false); });
+  runtimeExecutor_([this](jsi::Runtime& runtime) { runEventLoop(runtime); });
 }
 
-void RuntimeScheduler_Modern::runEventLoop(
-    jsi::Runtime& runtime,
-    bool onlyExpired) {
+void RuntimeScheduler_Modern::runEventLoop(jsi::Runtime& runtime) {
   TraceSection s("RuntimeScheduler::runEventLoop");
 
   auto previousPriority = currentPriority_;
 
-  auto currentTime = now_();
   // `selectTask` must be called unconditionaly to ensure that
   // `isEventLoopScheduled_` is set to false and the event loop resume
   // correctly if a synchronous task is scheduled.
   // Unit test normalTaskYieldsToSynchronousAccessAndResumes covers this
   // scenario.
-  auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  auto topPriorityTask = selectTask();
   while (topPriorityTask && syncTaskRequests_ == 0) {
-    runEventLoopTick(runtime, *topPriorityTask, currentTime);
-
-    currentTime = now_();
-    topPriorityTask = selectTask(currentTime, onlyExpired);
+    runEventLoopTick(runtime, *topPriorityTask);
+    topPriorityTask = selectTask();
   }
 
   currentPriority_ = previousPriority;
 }
 
-std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
-    HighResTimeStamp currentTime,
-    bool onlyExpired) {
+std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask() {
   // We need a unique lock here because we'll also remove executed tasks from
   // the top of the queue.
   std::unique_lock lock(schedulingMutex_);
@@ -294,11 +285,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
   }
 
   if (!taskQueue_.empty()) {
-    auto task = taskQueue_.top();
-    auto didUserCallbackTimeout = task->expirationTime <= currentTime;
-    if (!onlyExpired || didUserCallbackTimeout) {
-      return task;
-    }
+    return taskQueue_.top();
   }
 
   return nullptr;
@@ -306,8 +293,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 
 void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
-    Task& task,
-    HighResTimeStamp taskStartTime) {
+    Task& task) {
   TraceSection s("RuntimeScheduler::runEventLoopTick");
   jsinspector_modern::tracing::EventLoopReporter performanceReporter(
       jsinspector_modern::tracing::EventLoopPhase::Task);
@@ -318,6 +304,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
+  auto taskStartTime = now_();
   lastYieldingOpportunity_ = taskStartTime;
   longestPeriodWithoutYieldingOpportunity_ = HighResDuration::zero();
 
