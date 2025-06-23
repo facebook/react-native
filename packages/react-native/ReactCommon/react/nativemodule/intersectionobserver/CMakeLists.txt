@@ -8,8 +8,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_nativemodule_webperformance_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_nativemodule_intersectionobserver OBJECT ${react_nativemodule_webperformance_SRC})
+file(GLOB react_nativemodule_intersectionobserver_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_nativemodule_intersectionobserver OBJECT ${react_nativemodule_intersectionobserver_SRC})
 
 target_include_directories(react_nativemodule_intersectionobserver PUBLIC ${REACT_COMMON_DIR})
 

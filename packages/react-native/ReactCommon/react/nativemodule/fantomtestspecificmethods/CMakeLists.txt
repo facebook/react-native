@@ -8,8 +8,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_nativemodule_webperformance_SRC CONFIGURE_DEPENDS *.cpp internal/*.cpp)
-add_library(react_nativemodule_fantomspecificmethods OBJECT ${react_nativemodule_webperformance_SRC})
+file(GLOB react_nativemodule_fantomspecificmethods_SRC CONFIGURE_DEPENDS *.cpp internal/*.cpp)
+add_library(react_nativemodule_fantomspecificmethods OBJECT ${react_nativemodule_fantomspecificmethods_SRC})
 
 target_include_directories(react_nativemodule_fantomspecificmethods PUBLIC ${REACT_COMMON_DIR})
 target_include_directories(react_nativemodule_fantomspecificmethods PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/internal)
