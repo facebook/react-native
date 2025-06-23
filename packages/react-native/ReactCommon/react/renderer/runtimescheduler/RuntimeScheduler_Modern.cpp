@@ -50,13 +50,6 @@ void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     jsi::Function&& callback) noexcept {
-  TraceSection s(
-      "RuntimeScheduler::scheduleTask",
-      "priority",
-      serialize(priority),
-      "callbackType",
-      "jsi::Function");
-
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -69,13 +62,6 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     RawCallback&& callback) noexcept {
-  TraceSection s(
-      "RuntimeScheduler::scheduleTask",
-      "priority",
-      serialize(priority),
-      "callbackType",
-      "RawCallback");
-
   auto expirationTime = now_() + timeoutForSchedulerPriority(priority);
   auto task =
       std::make_shared<Task>(priority, std::move(callback), expirationTime);
@@ -233,6 +219,13 @@ void RuntimeScheduler_Modern::setIntersectionObserverDelegate(
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
+  TraceSection s(
+      "RuntimeScheduler::scheduleTask",
+      "priority",
+      serialize(task->priority),
+      "id",
+      task->id);
+
   bool shouldScheduleEventLoop = false;
 
   {
@@ -384,6 +377,8 @@ void RuntimeScheduler_Modern::executeTask(
     bool didUserCallbackTimeout) const {
   TraceSection s(
       "RuntimeScheduler::executeTask",
+      "id",
+      task.id,
       "priority",
       serialize(task.priority),
       "didUserCallbackTimeout",
