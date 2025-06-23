@@ -23,6 +23,7 @@ import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/Turbo
  */
 export interface Spec extends TurboModule {
   +registerForcedCloneCommitHook: () => void;
+  +takeFunctionAndNoop: (fn: () => void) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

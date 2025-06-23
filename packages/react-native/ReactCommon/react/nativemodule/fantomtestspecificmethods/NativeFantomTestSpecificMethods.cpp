@@ -45,4 +45,8 @@ void NativeFantomTestSpecificMethods::registerForcedCloneCommitHook(
   uiManager.registerCommitHook(*fantomForcedCloneCommitHook_);
 }
 
+void NativeFantomTestSpecificMethods::takeFunctionAndNoop(
+    jsi::Runtime& runtime,
+    jsi::Function function) {}
+
 } // namespace facebook::react
