@@ -44,7 +44,7 @@ constructor(
     }
 
     val that = other as ImageSource
-    return java.lang.Double.compare(that.size, size) == 0 &&
+    return that.size.compareTo(size) == 0 &&
         isResource == that.isResource &&
         uri == that.uri &&
         source == that.source &&
