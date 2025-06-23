@@ -7,6 +7,8 @@
 
 #import "RCTModalManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTModalManager ()
 
 @property BOOL shouldEmit;
@@ -40,3 +42,5 @@ RCT_EXPORT_MODULE();
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

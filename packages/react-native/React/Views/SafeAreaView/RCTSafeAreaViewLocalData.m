@@ -7,6 +7,8 @@
 
 #import "RCTSafeAreaViewLocalData.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @implementation RCTSafeAreaViewLocalData
 
 - (instancetype)initWithInsets:(UIEdgeInsets)insets
@@ -19,3 +21,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
