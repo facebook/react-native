@@ -67,46 +67,78 @@ class ReactNativeDependenciesUtils
     end
 
     def self.resolve_podspec_source()
-        if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
-            if @@use_nightly
-                rndeps_log("Using nightly tarball")
-                return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
-            end
-
-            rndeps_log("Using release tarball")
-            return self.podspec_source_download_prebuild_release_tarball()
-        end
-
-        if ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+        if ENV["RCT_USE_LOCAL_RN_DEP"]
+            abort_if_use_local_rndeps_with_no_file()
             rndeps_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RN_DEP"]}")
             return {:http => "file://#{ENV["RCT_USE_LOCAL_RN_DEP"]}" }
         end
+
+        if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
+            if @@use_nightly
+                rndeps_log("Using nightly tarball")
+                begin
+                    return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
+                rescue => e
+                    rndeps_log("Failed to download nightly tarball: #{e.message}", :error)
+                    return
+                end
+            end
+
+            rndeps_log("Using release tarball")
+            begin
+                return self.podspec_source_download_prebuild_release_tarball()
+            rescue => e
+                rndeps_log("Failed to download release tarball: #{e.message}", :error)
+                return
+            end
+        end
+
     end
 
     ## Sets up wether react-native-dependencies should be built from source or not.
     ## If RCT_USE_RN_DEP is set to 1 and the artifacts exists on Maven, it will
     ## not build from source. Otherwise, it will build from source.
     def self.setup_react_native_dependencies(react_native_path, react_native_version)
-        @@react_native_path = react_native_path
-        @@react_native_version = ENV["RCT_DEPS_VERSION"] == nil ? react_native_version : ENV["RCT_DEPS_VERSION"]
+        # We don't want setup to be called multiple times, so we check if the variables are already set.
+        if @@react_native_version == ""
+            rndeps_log("Setting up ReactNativeDependencies...")
+            @@react_native_path = react_native_path
+            @@react_native_version = ENV["RCT_DEPS_VERSION"] == nil ? react_native_version : ENV["RCT_DEPS_VERSION"]
 
-        if @@react_native_version.include? 'nightly'
-            rndeps_log("Using nightly build")
-            @@use_nightly = true
-        end
-
-        artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
-        use_local_xcframework = ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
-
-        if ENV["RCT_USE_LOCAL_RN_DEP"]
-            if !File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
-                abort("RCT_USE_LOCAL_RN_DEP is set to #{ENV["RCT_USE_LOCAL_RN_DEP"]} but the file does not exist!")
+            if @@react_native_version.include? 'nightly'
+                @@use_nightly = true
+                if ENV["RCT_DEPS_VERSION"] == "nightly"
+                    @@react_native_version = ReactNativeDependenciesUtils.get_nightly_npm_version()
+                    rndeps_log("Using nightly version from npm: #{@@react_native_version}")
+                else
+                    rndeps_log("Using nightly build #{@@react_native_version}")
+                end
             end
+
+            if ENV["RCT_USE_LOCAL_RN_DEP"]
+              abort_if_use_local_rndeps_with_no_file()
+            end
+
+            artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
+            use_local_xcframework = ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+
+            @@build_from_source = !use_local_xcframework && !artifacts_exists
+
+            if @@build_from_source && ENV["RCT_USE_LOCAL_RN_DEP"] && !use_local_xcframework
+                rndeps_log("No local xcframework found, reverting to building from source.")
+            end
+            if @@build_from_source && ENV["RCT_USE_PREBUILT_RNCORE"] && !artifacts_exists
+                rndeps_log("No prebuilt artifacts found, reverting to building from source.")
+            end
+            rndeps_log("Building from source: #{@@build_from_source}")
+            rndeps_log("Source: #{self.resolve_podspec_source()}")
         end
+    end
 
-        @@build_from_source = !use_local_xcframework && !artifacts_exists
-
-        rndeps_log("Building from source: #{@@build_from_source}")
+    def self.abort_if_use_local_rndeps_with_no_file()
+      if !File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+        abort("RCT_USE_LOCAL_RN_DEP is set to #{ENV["RCT_USE_LOCAL_RN_DEP"]} but the file does not exist!")
+      end
     end
 
     def self.podspec_source_download_prebuild_release_tarball()
@@ -205,7 +237,7 @@ class ReactNativeDependenciesUtils
         return (`curl -o /dev/null --silent -Iw '%{http_code}' -L "#{tarball_url}"` == "200")
     end
 
-    def self.rndeps_log(message, level = :warning)
+    def self.rndeps_log(message, level = :info)
         if !Object.const_defined?("Pod::UI")
             return
         end
@@ -220,7 +252,16 @@ class ReactNativeDependenciesUtils
         end
     end
 
-    def self.resolve_url_redirects(url)
-        return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
+    def self.get_nightly_npm_version()
+        uri = URI('https://registry.npmjs.org/react-native/nightly')
+        response = Net::HTTP.get_response(uri)
+
+        unless response.is_a?(Net::HTTPSuccess)
+          raise "Couldn't get an answer from NPM: #{response.code} #{response.message}"
+        end
+
+        json = JSON.parse(response.body)
+        latest_nightly = json['version']
+        return latest_nightly
     end
 end
