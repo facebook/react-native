@@ -6,11 +6,15 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/internal/react-native-platform-selector.cmake)
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
+react_native_android_selector(platform_SRC
+        platform/android/*.cpp
+        platform/cxx/*.cpp)
 file(GLOB rrc_modal_SRC CONFIGURE_DEPENDS
         *.cpp
-        platform/android/*.cpp)
+        ${platform_SRC})
 
 add_library(rrc_modal STATIC ${rrc_modal_SRC})
 
