@@ -95,6 +95,8 @@ export {default as RefreshControl} from './Libraries/Components/RefreshControl/R
 export {default as SafeAreaView} from './Libraries/Components/SafeAreaView/SafeAreaView';
 
 export type {
+  ScrollViewImperativeMethods,
+  ScrollViewScrollToOptions,
   ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
