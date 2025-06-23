@@ -21,9 +21,7 @@ import type {
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
-import VirtualizedLists, {
-  type VirtualizedListProps,
-} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import * as React from 'react';
 
