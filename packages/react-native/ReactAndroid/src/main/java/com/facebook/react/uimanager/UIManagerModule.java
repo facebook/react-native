@@ -149,7 +149,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     super(reactContext);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.init");
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
-    long startTime, endTime;
+    mEventDispatcher = new EventDispatcherImpl(reactContext);
+    mCustomDirectEvents = MapBuilder.newHashMap();
+    mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
+    mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
+    mUIImplementation =
+         new UIImplementation(
+             reactContext,
+             mViewManagerRegistry,
+             mEventDispatcher,
+             minTimeLeftInFrameForNonBatchedOperationMs);
 
     if (ReactBuildConfig.DEBUG) {
       for (ViewManager<?, ?> viewManager : viewManagersList) {
