@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeSwitchChangeEvent = $ReadOnly<{
+type SwitchChangeEvent = $ReadOnly<{
   value: boolean,
   target: Int32,
 }>;
@@ -42,7 +42,7 @@ type SwitchNativeProps = $ReadOnly<{
   trackColorForTrue?: ?ColorValue,
 
   // Events
-  onChange?: ?BubblingEventHandler<NativeSwitchChangeEvent>,
+  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
 }>;
 
 type ComponentType = HostComponent<SwitchNativeProps>;

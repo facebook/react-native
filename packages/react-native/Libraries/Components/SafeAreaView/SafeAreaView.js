@@ -24,7 +24,7 @@ import * as React from 'react';
  * sensor housing area on iPhone X).
  * @deprecated Use `react-native-safe-area-context` instead. This component will be removed in a future release.
  */
-const SafeAreaView: component(
+const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 ) = Platform.select({
@@ -32,4 +32,4 @@ const SafeAreaView: component(
   default: View,
 });
 
-export default SafeAreaView;
+export default exported;

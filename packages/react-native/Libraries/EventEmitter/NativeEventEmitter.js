@@ -32,7 +32,7 @@ export type {EventSubscription, EmitterSubscription};
 export type NativeEventSubscription = EventSubscription;
 
 // $FlowFixMe[unclear-type] unclear type of events
-type UnsafeNativeEventObject = Object;
+type UnsafeObject = Object;
 
 /**
  * `NativeEventEmitter` is intended for use by Native Modules to emit events to
@@ -46,8 +46,8 @@ type UnsafeNativeEventObject = Object;
  */
 export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;

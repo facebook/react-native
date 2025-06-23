@@ -45,7 +45,7 @@ type OnAnimationDidFailCallback = () => void;
 let isLayoutAnimationEnabled: boolean =
   ReactNativeFeatureFlags.isLayoutAnimationEnabled();
 
-function setLayoutAnimationEnabled(value: boolean) {
+function setEnabled(value: boolean) {
   isLayoutAnimationEnabled = isLayoutAnimationEnabled;
 }
 
@@ -115,7 +115,7 @@ function configureNext(
   }
 }
 
-function createLayoutAnimation(
+function create(
   duration: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty,
@@ -129,16 +129,12 @@ function createLayoutAnimation(
 }
 
 const Presets = {
-  easeInEaseOut: (createLayoutAnimation(
+  easeInEaseOut: (create(
     300,
     'easeInEaseOut',
     'opacity',
   ): LayoutAnimationConfig),
-  linear: (createLayoutAnimation(
-    500,
-    'linear',
-    'opacity',
-  ): LayoutAnimationConfig),
+  linear: (create(500, 'linear', 'opacity'): LayoutAnimationConfig),
   spring: ({
     duration: 700,
     create: {
@@ -184,7 +180,7 @@ const LayoutAnimation = {
   /**
    * Helper for creating a config for `configureNext`.
    */
-  create: createLayoutAnimation,
+  create,
   Types: Object.freeze({
     spring: 'spring',
     linear: 'linear',
@@ -212,7 +208,7 @@ const LayoutAnimation = {
   spring: (configureNext.bind(null, Presets.spring): (
     onAnimationDidEnd?: OnAnimationDidEndCallback,
   ) => void),
-  setEnabled: setLayoutAnimationEnabled,
+  setEnabled,
 };
 
 export default LayoutAnimation;

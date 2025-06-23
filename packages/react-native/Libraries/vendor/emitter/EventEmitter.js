@@ -9,14 +9,14 @@
  */
 
 // $FlowFixMe[unclear-type] unclear type of events
-type UnsafeEventObject = Object;
+type UnsafeObject = Object;
 
 export interface EventSubscription {
   remove(): void;
 }
 
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -41,7 +41,7 @@ interface Registration<TArgs> {
 }
 
 type Registry<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > = {
   [K in keyof TEventToArgsMap]: Set<Registration<TEventToArgsMap[K]>>,
 };
@@ -68,8 +68,8 @@ type Registry<
  */
 export default class EventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   #registry: Registry<TEventToArgsMap>;
@@ -157,7 +157,7 @@ export default class EventEmitter<
 }
 
 function allocate<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
   TEvent: $Keys<TEventToArgsMap>,
   TEventArgs: TEventToArgsMap[TEvent],
 >(

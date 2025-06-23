@@ -1535,10 +1535,10 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 }>;
-declare const NativeTouchable:
+declare const Touchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-type ButtonRef = React.ElementRef<typeof NativeTouchable>;
+type ButtonRef = React.ElementRef<typeof Touchable>;
 declare const Button: component(
   ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
@@ -1928,11 +1928,11 @@ export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTS
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
-"declare const SafeAreaView: component(
+"declare const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 );
-declare export default typeof SafeAreaView;
+declare export default typeof exported;
 "
 `;
 
@@ -4175,11 +4175,11 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
 type EmitterSubscription = EventSubscription;
 export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
-type UnsafeNativeEventObject = Object;
+type UnsafeObject = Object;
 declare export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(nativeModule?: ?NativeModule): void;
@@ -4855,13 +4855,13 @@ export type LayoutAnimationProperties = $ReadOnly<{
 }>;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
-declare function setLayoutAnimationEnabled(value: boolean): void;
+declare function setEnabled(value: boolean): void;
 declare function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback
 ): void;
-declare function createLayoutAnimation(
+declare function create(
   duration: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty
@@ -4873,7 +4873,7 @@ declare const Presets: {
 };
 declare const LayoutAnimation: {
   configureNext: typeof configureNext,
-  create: typeof createLayoutAnimation,
+  create: typeof create,
   Types: LayoutAnimationTypes,
   Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
@@ -4881,7 +4881,7 @@ declare const LayoutAnimation: {
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   linear: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   spring: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
-  setEnabled: typeof setLayoutAnimationEnabled,
+  setEnabled: typeof setEnabled,
 };
 declare export default typeof LayoutAnimation;
 "
@@ -6141,7 +6141,7 @@ type PermissionsType = $ReadOnly<{
 }>;
 export type PermissionStatus = \\"granted\\" | \\"denied\\" | \\"never_ask_again\\";
 export type Permission = $Values<PermissionsType>;
-declare class PermissionsAndroidImpl {
+declare class PermissionsAndroid {
   PERMISSIONS: PermissionsType;
   RESULTS: $ReadOnly<{
     DENIED: \\"denied\\",
@@ -6162,7 +6162,7 @@ declare class PermissionsAndroidImpl {
     permissions: Array<Permission>
   ): Promise<{ [permission: Permission]: PermissionStatus, ... }>;
 }
-declare const PermissionsAndroidInstance: PermissionsAndroidImpl;
+declare const PermissionsAndroidInstance: PermissionsAndroid;
 declare export default typeof PermissionsAndroidInstance;
 "
 `;
@@ -6428,8 +6428,8 @@ declare export default typeof AppContainer;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
-"type HeadlessTask = (taskData: any) => Promise<void>;
-export type TaskProvider = () => HeadlessTask;
+"type Task = (taskData: any) => Promise<void>;
+export type TaskProvider = () => Task;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -8359,7 +8359,7 @@ declare export default typeof NativeDevLoadingView;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeDeviceInfo.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
-export { default } from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
+declare export default typeof NativeDeviceInfo;
 "
 `;
 
@@ -8955,12 +8955,12 @@ declare export default ErrorUtils;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/emitter/EventEmitter.js 1`] = `
-"type UnsafeEventObject = Object;
+"type UnsafeObject = Object;
 export interface EventSubscription {
   remove(): void;
 }
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -8976,8 +8976,8 @@ export interface IEventEmitter<
 }
 declare export default class EventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeEventObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(): void;
