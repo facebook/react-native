@@ -34,9 +34,37 @@ const TYPES_OUTPUT_DIR = 'types_generated';
  */
 const API_EXTRACTOR_CONFIG_FILE = 'api-extractor.json';
 
+/**
+ * Aliases that can be blocked from inlining for aeshetic and
+ * readability reasons.
+ */
+const API_SNAPSHOT_ALIAS_INLINING_BLOCKLIST: Set<string> = new Set([
+  'AlertOptions',
+  'Runnable',
+  'DimensionsPayload',
+  'DisplayMetrics',
+  'DisplayMetricsAndroid',
+  'NativeTouchEvent',
+  'State',
+  'WithAnimatedValue',
+]);
+
+/**
+ * Aliases that can be blocked from inlining recursively for aeshetic and
+ * readability reasons.
+ */
+const API_SNAPSHOT_ALIAS_INLINING_BLOCKLIST_RECURSIVE: Set<string> = new Set([
+  'AnimatedComponentType',
+  'AnimatedProps',
+  'NativeSyntheticEvent',
+]);
+
 module.exports = {
   API_EXTRACTOR_CONFIG_FILE,
   ENTRY_POINT,
   IGNORE_PATTERNS,
   TYPES_OUTPUT_DIR,
+
+  API_SNAPSHOT_ALIAS_INLINING_BLOCKLIST,
+  API_SNAPSHOT_ALIAS_INLINING_BLOCKLIST_RECURSIVE,
 };
