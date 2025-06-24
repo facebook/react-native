@@ -6,6 +6,7 @@
 # Convert input paths to CMake format (with forward slashes)
 file(TO_CMAKE_PATH "${REACT_THIRD_PARTY_NDK_DIR}" REACT_THIRD_PARTY_NDK_DIR)
 file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
+file(TO_CMAKE_PATH "${REACT_CXX_PLATFORM_DIR}" REACT_CXX_PLATFORM_DIR)
 file(TO_CMAKE_PATH "${FANTOM_CODEGEN_DIR}" FANTOM_CODEGEN_DIR)
 file(TO_CMAKE_PATH "${FANTOM_THIRD_PARTY_DIR}" FANTOM_THIRD_PARTY_DIR)
 
@@ -21,15 +22,8 @@ function(add_react_common_subdir relative_path)
   add_subdirectory(${REACT_COMMON_DIR}/${relative_path} ReactCommon/${relative_path})
 endfunction()
 
-function(add_fantom_codegen_subdir relative_path)
-  add_subdirectory(${FANTOM_CODEGEN_DIR}/${relative_path} ${relative_path})
-endfunction()
-
-function(add_fantom_react_common_subdir relative_path)
-  string(REPLACE "/" "_" var_name ${relative_path})
-  string(REPLACE "-" "_" var_name ${var_name})
-  set(${var_name}_DIR ${REACT_COMMON_DIR}/${relative_path})
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ReactCommon/${relative_path} ReactCommon/${relative_path})
+function(add_react_cxx_platform_subdir relative_path)
+  add_subdirectory(${REACT_CXX_PLATFORM_DIR}/${relative_path} ReactCxxPlatform/${relative_path})
 endfunction()
 
 function(add_fantom_third_party_subdir relative_path)
