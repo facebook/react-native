@@ -299,4 +299,65 @@ describe('inlineTypes', () => {
       };"
     `);
   });
+
+  test('should inline generic type aliases', async () => {
+    const code = `
+      type Required<T, U = string> = {
+        data: T[];
+      } & {
+        title: U;
+      }
+
+      type Optional<T> = {
+        header: T;
+      }
+
+      export type Example<DataT> = Omit<
+        Required<DataT>,
+        keyof Optional<DataT>
+      > & Optional<DataT>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Example<DataT> = {
+        data: DataT[];
+        title: string;
+        header: DataT;
+      };"
+    `);
+  });
+
+  test('should inline generic type equal to one of its type parameters', async () => {
+    const code = `
+      type PropsAlias<Props extends {}> = Props;
+      export type Example = PropsAlias<{a: string}>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Example = {
+        a: string;
+      };"
+    `);
+  });
+
+  test('should not confuse local symbols with global ones', async () => {
+    const code = `
+      type PropsAlias<Props extends {}> = Props;
+
+      type Props = {
+        b: number;
+      };
+
+      export type Example = PropsAlias<{a: string}>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Example = {
+        a: string;
+      };"
+    `);
+  });
 });
