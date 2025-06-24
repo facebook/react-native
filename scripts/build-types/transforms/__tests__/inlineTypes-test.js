@@ -360,4 +360,87 @@ describe('inlineTypes', () => {
       };"
     `);
   });
+
+  test('should inline types inside Omit when used in union', async () => {
+    const code = `
+      declare type ProgressBarAndroidBaseProps = {
+        readonly animating?: boolean | undefined;
+        readonly color?: ColorValue | undefined;
+        readonly testID?: string | undefined;
+      };
+
+      declare type DeterminateProgressBarAndroidStyleAttrProp = {
+        styleAttr: "Horizontal";
+        indeterminate: false;
+        progress: number;
+      };
+
+      declare type IndeterminateProgressBarAndroidStyleAttrProp = {
+        styleAttr: "Normal"
+        indeterminate: true;
+      };
+
+      export declare type ProgressBarAndroidProps =
+        | Readonly<
+            Omit<
+              ProgressBarAndroidBaseProps,
+              "styleAttr" | "indeterminate" | "progress"
+            > &
+            Omit<DeterminateProgressBarAndroidStyleAttrProp, never> & {}
+          >
+        | Readonly<
+            Omit<
+              ProgressBarAndroidBaseProps,
+              "styleAttr" | "indeterminate"
+            > &
+            Omit<IndeterminateProgressBarAndroidStyleAttrProp, never> & {}
+          >;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export declare type ProgressBarAndroidProps = {
+        readonly animating?: boolean | undefined;
+        readonly color?: ColorValue | undefined;
+        readonly testID?: string | undefined;
+        readonly styleAttr: \\"Horizontal\\";
+        readonly indeterminate: false;
+        readonly progress: number;
+      } | {
+        readonly animating?: boolean | undefined;
+        readonly color?: ColorValue | undefined;
+        readonly testID?: string | undefined;
+        readonly styleAttr: \\"Normal\\";
+        readonly indeterminate: true;
+      };"
+    `);
+  });
+
+  test('should not inline generic types under blacklisted types', async () => {
+    const code = `
+      declare class AnimatedNode {}
+
+      type AnimatedProps<Props extends {}> = {
+        [K in keyof Props]: Props[K] | AnimatedNode;
+      }
+
+      type Props<T> = {
+        foo: T;
+        bar: number;
+      }
+
+      export type Example = AnimatedProps<Props<string>>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "declare class AnimatedNode {}
+      type AnimatedProps<Props extends {}> = { [K in keyof Props]: Props[K] | AnimatedNode };
+      type Props<T> = {
+        foo: T;
+        bar: number;
+      };
+      export type Example = AnimatedProps<Props<string>>;"
+    `);
+  });
 });
