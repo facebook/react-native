@@ -32,6 +32,16 @@ const aliasInliningBlocklist = new Set([
   'WithAnimatedValue',
 ]);
 
+/**
+ * Aliases that can be blocked from inlining recursively for aeshetic and
+ * readability reasons.
+ */
+const aliasInliningBlocklistRecursive = new Set([
+  'AnimatedComponentType',
+  'AnimatedProps',
+  'NativeSyntheticEvent',
+]);
+
 // TODO: Handle more builtin TS types
 const builtinTypeResolvers: {
   +[K: string]: (
@@ -51,6 +61,13 @@ const builtinTypeResolvers: {
 
     const [objectType, keys] = path.node.typeParameters.params;
 
+    if (t.isTSNeverKeyword(keys)) {
+      // never is just an empty union, so we can just replace the Omit with the object type
+      replaceWithCleanup(state, path, objectType);
+      path.skip(); // We don't want to traverse the new node
+      return;
+    }
+
     if (
       !t.isTSTypeLiteral(objectType) ||
       // Only performing the resolution on objects with non-computed string keys.
@@ -65,11 +82,6 @@ const builtinTypeResolvers: {
     }
 
     const stringLiteralElements = (() => {
-      if (t.isTSNeverKeyword(keys)) {
-        // 'never' is just an empty union
-        return [];
-      }
-
       if (t.isTSLiteralType(keys) && t.isStringLiteral(keys.literal)) {
         return [keys.literal.value];
       }
@@ -415,6 +427,10 @@ type KeyofLayer = {
   type: 'keyof',
 };
 
+type OmitLayer = {
+  type: 'omit',
+};
+
 type UnionLayer = {
   type: 'union',
 };
@@ -444,15 +460,21 @@ type ResolvableTypeLayer = {
   type: 'resolvableType',
 };
 
+type NoInlineLayer = {
+  type: 'noInline',
+};
+
 type StackLayer =
   | KeyofLayer
+  | OmitLayer
   | UnionLayer
   | ExtendsLayer
   | ArrayLayer
   | TypeAliasLayer
   | TypeParameterInstantiationLayer
   | UnresolvableTypeLayer
-  | ResolvableTypeLayer;
+  | ResolvableTypeLayer
+  | NoInlineLayer;
 
 type VisitorState = {
   aliasToPathMap: Map<string, NodePath<t.TSTypeAliasDeclaration>>,
@@ -488,6 +510,10 @@ function insideKeyofLayer(state: VisitorState): boolean {
   return state.stack.some(layer => layer.type === 'keyof');
 }
 
+function insideOmitLayer(state: VisitorState): boolean {
+  return state.stack.some(layer => layer.type === 'omit');
+}
+
 function insideUnionLayer(state: VisitorState): boolean {
   return state.stack.some(layer => layer.type === 'union');
 }
@@ -509,6 +535,10 @@ function insideTypeAliasLayerWithTypeParam(
       layer.type === 'typeAlias' &&
       layer.typeParams?.includes(parameter) === true,
   );
+}
+
+function insideNoInlineLayer(state: VisitorState): boolean {
+  return state.stack.some(layer => layer.type === 'noInline');
 }
 
 function insideUnresolvableTypeInstantiation(state: VisitorState): boolean {
@@ -684,6 +714,14 @@ const inlineTypes: PluginObj<VisitorState> = {
       },
     },
     TSTypeLiteral: {
+      enter() {
+        // Do nothing
+      },
+      exit(path, state) {
+        onNodeExit(state, path.node);
+      },
+    },
+    TSFunctionType: {
       enter() {
         // Do nothing
       },
@@ -868,6 +906,10 @@ const inlineTypes: PluginObj<VisitorState> = {
 
         if (builtinTypeResolvers[typeName]) {
           pushLayer(state, {type: 'resolvableType'});
+
+          if (typeName === 'Omit') {
+            pushLayer(state, {type: 'omit'});
+          }
           // Builtin type, do nothing. Will be resolved on exit.
           return;
         }
@@ -876,16 +918,24 @@ const inlineTypes: PluginObj<VisitorState> = {
           return;
         }
 
+        if (aliasInliningBlocklistRecursive.has(typeName)) {
+          // Explicit blocklist
+          pushLayer(state, {type: 'noInline'});
+          state.aliasesToPrune?.delete(typeName);
+          return;
+        }
+
         if (
           // Explicit blocklist
           aliasInliningBlocklist.has(typeName) ||
           // Type instantiations of types that are not resolvable
           insideUnresolvableTypeInstantiation(state) ||
+          insideNoInlineLayer(state) ||
           // Skipping inline of union/array types, except when inside keyof
           ((insideUnionLayer(state) ||
             insideArrayLayer(state) ||
             insideExtendsLayer(state)) &&
-            !insideKeyofLayer(state))
+            !(insideKeyofLayer(state) || insideOmitLayer(state)))
         ) {
           state.aliasesToPrune?.delete(typeName);
           return;
@@ -917,10 +967,21 @@ const inlineTypes: PluginObj<VisitorState> = {
 
         const resolver = builtinTypeResolvers[typeName];
         if (resolver) {
+          if (typeName === 'Omit') {
+            popLayer(state, 'omit');
+          }
+
           popLayer(state, 'resolvableType');
           resolver(path, state);
           return;
         }
+
+        if (aliasInliningBlocklistRecursive.has(typeName)) {
+          popLayer(state, 'noInline');
+          return;
+        }
+
+        state.parentTypeAliases?.delete(typeName);
       },
     },
   },
