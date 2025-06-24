@@ -251,7 +251,10 @@ function resolveIntersection(
   const newTypes: Array<BabelNodeTSType> = [];
   const requiredKeys = new Set<string>();
   const mutableKeys = new Set<string>();
-  const combinedMembers: Record<string, BabelNodeTSTypeAnnotation[]> = {};
+  const combinedMembers: Record<
+    string,
+    {node: BabelNodeTSTypeAnnotation, leadingComments?: BabelNodeComment[]}[],
+  > = {};
 
   for (const type of path.node.types) {
     if (!t.isTSTypeLiteral(type)) {
@@ -313,9 +316,14 @@ function resolveIntersection(
       }
 
       if (!combinedMembers[key]) {
-        combinedMembers[key] = [annotation];
+        combinedMembers[key] = [
+          {node: annotation, leadingComments: prop.leadingComments},
+        ];
       } else {
-        combinedMembers[key].push(annotation);
+        combinedMembers[key].push({
+          node: annotation,
+          leadingComments: prop.leadingComments,
+        });
       }
     }
   }
@@ -330,14 +338,20 @@ function resolveIntersection(
       const prop = t.tsPropertySignature(
         keyNode,
         values.length === 1
-          ? values[0]
+          ? values[0].node
           : t.tsTypeAnnotation(
-              t.tsIntersectionType(values.map(value => value.typeAnnotation)),
+              t.tsIntersectionType(
+                values.map(value => value.node.typeAnnotation),
+              ),
             ),
       );
 
       prop.optional = !requiredKeys.has(key);
       prop.readonly = !mutableKeys.has(key);
+      prop.leadingComments = values
+        .map(value => value.leadingComments)
+        .filter(Boolean)
+        .flat();
 
       return prop;
     }),
