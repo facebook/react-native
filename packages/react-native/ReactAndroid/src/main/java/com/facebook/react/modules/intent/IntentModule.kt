@@ -187,8 +187,14 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    *
    * @param action The general action to be performed
    * @param extras An array of extras [{ String, String | Number | Boolean }]
+   * @param flags An array of flags [ Int ]
    */
-  override fun sendIntent(action: String?, extras: ReadableArray?, promise: Promise) {
+  override fun sendIntent(
+    action: String?,
+    extras: ReadableArray?,
+    flags: ReadableArray?,
+    promise: Promise
+  ) {
     if (action == null || action.isEmpty()) {
       promise.reject(JSApplicationIllegalArgumentException("Invalid Action: $action."))
       return
@@ -236,7 +242,15 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
         }
       }
 
-      sendOSIntent(intent, true)
+      if (flags != null) {
+        for (i in 0..<flags.size()) {
+          val flag = flags.getInt(i)
+          intent.addFlags(flag)
+        }
+      }
+
+      // If there are no flags set, we need to set the FLAG_ACTIVITY_NEW_TASK flag
+      sendOSIntent(intent, intent.flags == 0)
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject(e)

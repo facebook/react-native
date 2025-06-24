@@ -4907,7 +4907,8 @@ declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
       key: string,
       value: string | number | boolean,
       ...
-    }>
+    }>,
+    flags?: Array<number>
   ): Promise<void>;
 }
 declare const Linking: LinkingImpl;
