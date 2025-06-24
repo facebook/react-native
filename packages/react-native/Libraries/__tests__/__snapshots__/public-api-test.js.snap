@@ -185,6 +185,7 @@ export type { default as AnimatedNode } from \\"./nodes/AnimatedNode\\";
 export type { default as AnimatedAddition } from \\"./nodes/AnimatedAddition\\";
 export type { default as AnimatedDiffClamp } from \\"./nodes/AnimatedDiffClamp\\";
 export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
+export type { InterpolationConfigType as InterpolationConfig } from \\"./nodes/AnimatedInterpolation\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
