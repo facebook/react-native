@@ -1,13 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @flow strict-local
- * @format
- */
-
 const resolveCyclicImportsInDefinition = require('../resolveCyclicImportsInDefinition.js');
 const path = require('path');
 
@@ -31,8 +21,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import type { Test1 } from \\"../package1\\";
-      import type { Test2 } from \\"../package2\\";"
+      "import type { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1\\";
+      import type { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2\\";"
     `);
   });
 
@@ -48,8 +38,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import type { Test1 } from \\"../package1/Test1\\";
-      import type { Test2 } from \\"../package2/Test2\\";"
+      "import type { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1/Test1\\";
+      import type { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2/Test2\\";"
     `);
   });
 
@@ -65,8 +55,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { Test1 } from \\"../package1\\";
-      import { Test2 } from \\"../package2\\";"
+      "import { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1\\";
+      import { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2\\";"
     `);
   });
 
@@ -82,8 +72,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { Test1 } from \\"../package1/Test1\\";
-      import { Test2 } from \\"../package2/Test2\\";"
+      "import { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1/Test1\\";
+      import { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2/Test2\\";"
     `);
   });
 
@@ -99,8 +89,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import Test1 from \\"../package1\\";
-      import Test2 from \\"../package2\\";"
+      "import Test1 from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1\\";
+      import Test2 from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2\\";"
     `);
   });
 
@@ -116,8 +106,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import Test1 from \\"../package1/Test1\\";
-      import Test2 from \\"../package2/Test2\\";"
+      "import Test1 from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1/Test1\\";
+      import Test2 from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2/Test2\\";"
     `);
   });
 
@@ -140,8 +130,8 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { Test1 } from \\"../../../../package1/Test1\\";
-      import { Test2 } from \\"../../../../package2/Test2\\";"
+      "import { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1/Test1\\";
+      import { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2/Test2\\";"
     `);
   });
 
@@ -158,9 +148,9 @@ describe('resolveCyclicImportsInDefinition', () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "export { Test1 } from \\"../package1/Test1\\";
-      export { Test2 } from \\"../package2/Test2\\";
-      export { default as Test3 } from \\"../package1\\";"
+      "export { Test1 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1/Test1\\";
+      export { Test2 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package2/Test2\\";
+      export { default as Test3 } from \\"..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\..\\\\\\\\path\\\\\\\\to\\\\\\\\package\\\\\\\\definition\\\\\\\\files\\\\\\\\package1\\";"
     `);
   });
 });
