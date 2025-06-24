@@ -180,7 +180,7 @@ class ReactNativeDependenciesUtils
 
         response = Net::HTTP.get_response(URI(xml_url))
         if response.is_a?(Net::HTTPSuccess)
-          xml = REXML::Document.new(response)
+          xml = REXML::Document.new(response.body)
           timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
           build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
           full_version = "#{version}-#{timestamp}-#{build_number}"
