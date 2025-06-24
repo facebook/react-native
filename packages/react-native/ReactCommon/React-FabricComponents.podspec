@@ -89,7 +89,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "modal" do |sss|
-      sss.source_files         = podspec_sources("react/renderer/components/modal/**/*.{m,mm,cpp,h}", "react/renderer/components/modal/**/*.h")
+      sss.source_files         = podspec_sources("react/renderer/components/modal/*.{m,mm,cpp,h}", "react/renderer/components/modal/*.h")
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
     end
