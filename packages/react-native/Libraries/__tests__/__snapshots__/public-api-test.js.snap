@@ -166,7 +166,10 @@ declare export default {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js.flow 1`] = `
-"export { default as FlatList } from \\"./components/AnimatedFlatList\\";
+"export type { DecayAnimationConfig } from \\"./animations/DecayAnimation\\";
+export type { SpringAnimationConfig } from \\"./animations/SpringAnimation\\";
+export type { TimingAnimationConfig } from \\"./animations/TimingAnimation\\";
+export { default as FlatList } from \\"./components/AnimatedFlatList\\";
 export { default as Image } from \\"./components/AnimatedImage\\";
 export { default as ScrollView } from \\"./components/AnimatedScrollView\\";
 export { default as SectionList } from \\"./components/AnimatedSectionList\\";
