@@ -8,7 +8,7 @@
  * @format
  */
 
-const reattachDocComments = require('../reattachDocComments.js');
+const reattachDocComments = require('../reattachDocComments');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};
