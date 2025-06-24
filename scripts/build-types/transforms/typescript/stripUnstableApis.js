@@ -40,6 +40,11 @@ const stripUnstableProperties: PluginObj<mixed> = {
         path.remove();
       }
     },
+    TSTypeAliasDeclaration(path) {
+      if (isUnstableSymbol(path.node.id.name)) {
+        path.remove();
+      }
+    },
     ClassProperty(path) {
       if (isUnstableSymbol(path.node.key.name)) {
         path.remove();
