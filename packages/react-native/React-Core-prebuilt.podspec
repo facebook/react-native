@@ -23,70 +23,43 @@ version = package['version']
 
 source = ReactNativeCoreUtils.resolve_podspec_source()
 
-header_search_paths = [
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt",
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt/RCTDeprecation",
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt/ReactCommon/yoga",
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt/ReactCommon",
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt/Libraries/AppDelegate",
-  "${PODS_ROOT}/Headers/Private/React-Core-prebuilt/Libraries",
+Pod::Spec.new do |s|
+  s.name                   = "React-Core-prebuilt"
+  s.version                = version
+  s.summary                = "The core of React Native prebuilt frameworks."
+  s.homepage               = "https://reactnative.dev/"
+  s.license                = package["license"]
+  s.author                 = "Meta Platforms, Inc. and its affiliates"
+  s.platforms              = min_supported_versions
+  s.source                 = source
+  s.vendored_frameworks    = "React.xcframework"
 
-  "$(REACT_NATIVE_PATH)/React/Base",
-  "$(REACT_NATIVE_PATH)/ReactCommon",
-  "$(REACT_NATIVE_PATH)/Libraries",
-  "$(REACT_NATIVE_PATH)/ReactApple",
-  "$(REACT_NATIVE_PATH)/ReactCxxPlatform",
-  "$(REACT_NATIVE_PATH)/ReactCommon/react/runtime/platform/ios",
-  "${REACT_NATIVE_PATH}/ReactCommon/jsi",
-  "$(REACT_NATIVE_PATH)/ReactCommon/jsiexecutor/",
-  "$(REACT_NATIVE_PATH)/ReactCommon/react/nativemodule/samples/platform/ios",
-  "$(REACT_NATIVE_PATH)/ReactCommon/react/nativemodule/samples",
-]
+  s.preserve_paths       = '**/*.*'
+  s.header_mappings_dir  = 'React.xcframework/Headers'
+  s.source_files         = 'React.xcframework/Headers/**/*.{h,hpp}'
 
-Pod::Spec.new do |spec|
-  spec.name                 = 'React-Core-prebuilt'
-  spec.version              = version
-  spec.summary              = "Prebuilt core of React Native."
-  spec.homepage             = "https://reactnative.dev/"
-  spec.description          = 'Prebuilt React Native Core libraries and headers'
-  spec.homepage             = 'https://github.com/facebook/react-native'
-  spec.license              = package['license']
-  spec.authors              = 'meta'
-  spec.platforms            = min_supported_versions
-  spec.source               = source
+  s.module_name          = 'React'
+  s.module_map           = 'React.xcframework/Modules/module.modulemap'
+  s.public_header_files  = 'React.xcframework/Headers/**/*.h'
 
-  spec.vendored_frameworks  = "React.xcframework"
-
-  spec.preserve_paths       = '**/*.*'
-  spec.header_mappings_dir  = 'React.xcframework/Headers'
-  spec.source_files         = 'React.xcframework/Headers/**/*.{h,hpp}'
-
-  spec.module_name          = 'React'
-  spec.module_map           = 'React.xcframework/Modules/module.modulemap'
-  spec.public_header_files  = 'React.xcframework/Headers/**/*.h'
-
-  # Setup the consuming project's search paths
-  spec.user_target_xcconfig = {
-    "HEADER_SEARCH_PATHS" => header_search_paths,
-    "SWIFT_INCLUDE_PATHS" => "${PODS_ROOT}/Headers/Private/React-Core-prebuilt",
-    'DEFINES_MODULE' => 'YES',
-    'CLANG_ENABLE_MODULES' => 'YES',
-  }
-
-  spec.pod_target_xcconfig  = {
-    'WARNING_CFLAGS' => '-Wno-comma -Wno-shorten-64-to-32',
-    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-    'DEFINES_MODULE' => 'YES',
-    'CLANG_ENABLE_MODULES' => 'YES',
-  }
+  add_rn_third_party_dependencies(s)
 
   # We need to make sure that the React.xcframework is copied correctly - in the downloaded tarball
   # the root directory is the framework, but when using it we need to have it in a subdirectory
   # called React.xcframework, so we need to move the contents of the tarball into that directory.
   # This is done in the prepare_command.
-  spec.prepare_command = <<~'CMD'
+  # We need to make sure that the headers are copied to the right place - local tar.gz has a different structure
+  # than the one from the maven repo
+  s.prepare_command = <<~'CMD'
     CURRENT_PATH=$(pwd)
     XCFRAMEWORK_PATH="${CURRENT_PATH}/React.xcframework"
+
+    # Check if XCFRAMEWORK_PATH is empty
+    if [ -z "$XCFRAMEWORK_PATH" ]; then
+      echo "ERROR: XCFRAMEWORK_PATH is empty."
+      exit 0
+    fi
+
     mkdir -p "${XCFRAMEWORK_PATH}"
     find "$CURRENT_PATH" -mindepth 1 -maxdepth 1 ! -name "$(basename "$XCFRAMEWORK_PATH")" -exec mv {} "$XCFRAMEWORK_PATH" \;
   CMD
@@ -116,7 +89,6 @@ Pod::Spec.new do |spec|
       script_phase[:always_out_of_date] = "1"
     end
 
-    spec.script_phase = script_phase
+    s.script_phase = script_phase
   end
-
 end
