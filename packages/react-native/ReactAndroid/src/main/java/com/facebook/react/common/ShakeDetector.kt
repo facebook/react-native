@@ -12,6 +12,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 /** Listens for the user shaking their phone. Allocation-less once it starts listening. */
 public class ShakeDetector
@@ -63,7 +64,7 @@ constructor(private val shakeListener: ShakeListener, private val minNumShakes: 
    * @return true if the magnitude of the force exceeds the minimum required amount of force. false
    *   otherwise.
    */
-  private fun atLeastRequiredForce(a: Float): Boolean = Math.abs(a) > REQUIRED_FORCE
+  private fun atLeastRequiredForce(a: Float): Boolean = abs(a) > REQUIRED_FORCE
 
   /**
    * Save data about last shake
