@@ -23,7 +23,7 @@ type Options = $ReadOnly<{
   excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
 }>;
 
-export type NativeComponentType<T> = HostComponent<T>;
+export type NativeComponentType<T: {...}> = HostComponent<T>;
 
 // If this function runs then that means the view configs were not
 // generated at build time using `GenerateViewConfigJs.js`. Thus

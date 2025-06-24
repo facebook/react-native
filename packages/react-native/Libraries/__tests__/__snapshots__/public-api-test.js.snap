@@ -1928,11 +1928,11 @@ export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTS
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
-"declare const exported: component(
+"declare const SafeAreaView: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 );
-declare export default typeof exported;
+declare export default typeof SafeAreaView;
 "
 `;
 
@@ -8650,7 +8650,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/codege
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<\\"iOS\\" | \\"android\\">,
 }>;
-export type NativeComponentType<T> = HostComponent<T>;
+export type NativeComponentType<T: { ... }> = HostComponent<T>;
 declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
   options?: Options
