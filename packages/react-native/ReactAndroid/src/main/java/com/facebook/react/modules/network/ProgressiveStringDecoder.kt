@@ -62,14 +62,14 @@ internal class ProgressiveStringDecoder(charset: Charset) {
     }
 
     val hasRemainder = decoded && remainderLength > 0
-    if (hasRemainder) {
-      remainder =
+    remainder =
+        if (hasRemainder) {
           ByteArray(remainderLength).apply {
             System.arraycopy(decodeData, length - remainderLength, this, 0, remainderLength)
           }
-    } else {
-      remainder = null
-    }
+        } else {
+          null
+        }
 
     if (!decoded) {
       FLog.w(ReactConstants.TAG, "failed to decode string from byte array")
