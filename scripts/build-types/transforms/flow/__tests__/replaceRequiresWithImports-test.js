@@ -8,7 +8,7 @@
  * @format
  */
 
-const replaceRequiresWithImports = require('../replaceRequiresWithImports.js');
+const replaceRequiresWithImports = require('../replaceRequiresWithImports');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};

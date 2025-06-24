@@ -15,7 +15,7 @@ const {PACKAGES_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../consts');
 const {isGitRepo} = require('../scm-utils');
 const {API_EXTRACTOR_CONFIG_FILE, TYPES_OUTPUT_DIR} = require('./config');
 const apiSnapshotTemplate = require('./templates/ReactNativeApi.d.ts-template.js');
-const resolveCyclicImportsInDefinition = require('./transforms/resolveCyclicImportsInDefinition');
+const resolveCyclicImportsInDefinition = require('./utils/resolveCyclicImportsInDefinition');
 const babel = require('@babel/core');
 const {
   Extractor,
@@ -31,14 +31,14 @@ const osTempDir = require('temp-dir');
 const {styleText} = require('util');
 
 const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
-  require('./transforms/renameDefaultExportedIdentifiers'),
+  require('./transforms/typescript/renameDefaultExportedIdentifiers'),
 ];
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
-  require('./transforms/stripUnstableApis'),
-  require('./transforms/sortTypeDefinitions'),
-  require('./transforms/sortProperties'),
-  require('./transforms/sortUnions'),
+  require('./transforms/typescript/stripUnstableApis'),
+  require('./transforms/typescript/sortTypeDefinitions'),
+  require('./transforms/typescript/sortProperties'),
+  require('./transforms/typescript/sortUnions'),
   require('./transforms/removeUndefinedFromOptionalMembers'),
 ];
 

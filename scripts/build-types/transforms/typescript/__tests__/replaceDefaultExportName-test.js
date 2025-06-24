@@ -8,7 +8,7 @@
  * @format
  */
 
-const createReplaceDefaultExportName = require('../replaceDefaultExportName.js');
+const createReplaceDefaultExportName = require('../replaceDefaultExportName');
 const babel = require('@babel/core');
 const flowApiTranslator = require('flow-api-translator');
 

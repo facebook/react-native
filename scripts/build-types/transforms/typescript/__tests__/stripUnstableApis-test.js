@@ -8,7 +8,7 @@
  * @format
  */
 
-const stripUnstableApisVisitor = require('../stripUnstableApis.js');
+const stripUnstableApisVisitor = require('../stripUnstableApis');
 const babel = require('@babel/core');
 
 async function translate(code: string): Promise<string> {

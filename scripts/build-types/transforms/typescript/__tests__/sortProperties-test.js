@@ -8,23 +8,23 @@
  * @format
  */
 
-const sortTypeDefinitionsVisitor = require('../sortTypeDefinitions.js');
+const sortPropertiesVisitor = require('../sortProperties');
 const babel = require('@babel/core');
 const {promises: fs} = require('fs');
 const path = require('path');
 
 async function translate(code: string): Promise<string> {
   const result = await babel.transformAsync(code, {
-    plugins: ['@babel/plugin-syntax-typescript', sortTypeDefinitionsVisitor],
+    plugins: ['@babel/plugin-syntax-typescript', sortPropertiesVisitor],
   });
 
   return result.code;
 }
 
-describe('sortTypeDefinitions', () => {
-  test('should divide top-lelvel declarations into exported and non-exported sections', async () => {
+describe('sortProperties', () => {
+  test('should divide type properties into methods, functions and others and sort them within each group', async () => {
     const code = await fs.readFile(
-      path.join(__dirname, '../__fixtures__/sortTypeDefinitions.d.ts'),
+      path.join(__dirname, '../__fixtures__/sortProperties.d.ts'),
       'utf-8',
     );
     const result = await translate(code);
