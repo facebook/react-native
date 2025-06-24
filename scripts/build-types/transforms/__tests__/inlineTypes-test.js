@@ -21,40 +21,78 @@ async function applyPostTransforms(inSrc: string): Promise<string> {
 }
 
 describe('inlineTypes', () => {
-  test('should resolve `keyof` operator on a type literal', async () => {
+  test('should inline type non-generic type aliases', async () => {
     const code = `
-      export type FooKeys = keyof {
-        A: number;
-        B: string;
-        C: boolean;
+      type AnimatedNodeConfig = {
+        readonly debugID?: string | undefined;
+      };
+
+      export type Example = Omit<
+        AnimatedNodeConfig,
+        keyof {
+          useNativeDriver: boolean;
+        }
+      > & {
+        useNativeDriver: boolean;
       };
     `;
 
     const result = await applyPostTransforms(code);
-    expect(result).toMatchInlineSnapshot(
-      `"export type FooKeys = \\"A\\" | \\"B\\" | \\"C\\";"`,
-    );
+    expect(result).toMatchInlineSnapshot(`
+      "export type Example = {
+        readonly debugID?: string | undefined;
+      } & {
+        useNativeDriver: boolean;
+      };"
+    `);
   });
 
-  test('should resolve the builtin Omit<T, K> type on a type literal', async () => {
+  test('should skip recursive definitions', async () => {
     const code = `
-
-      export type Bar = Omit<
-        {
-          A: number;
-          B: string;
-          C: boolean;
-          D: 123;
-        },
-        'B' | 'D'
-      >;
+      export type LinkedNode = {
+        value: number;
+        next: LinkedNode;
+      };
     `;
 
     const result = await applyPostTransforms(code);
     expect(result).toMatchInlineSnapshot(`
-      "export type Bar = {
-        A: number;
-        C: boolean;
+      "export type LinkedNode = {
+        value: number;
+        next: LinkedNode;
+      };"
+    `);
+  });
+
+  test('should skip co-recursive definitions', async () => {
+    const code = `
+      export type Expr = Add | Multiply | number;
+
+      export type Add = {
+        type: 'add';
+        lhs: Expr;
+        rhs: Expr;
+      };
+
+      export type Multiply = {
+        type: 'multiply';
+        lhs: Expr;
+        rhs: Expr;
+      };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Expr = Add | Multiply | number;
+      export type Add = {
+        type: 'add';
+        lhs: Add | Multiply | number;
+        rhs: Expr;
+      };
+      export type Multiply = {
+        type: 'multiply';
+        lhs: Expr;
+        rhs: Expr;
       };"
     `);
   });
