@@ -190,7 +190,6 @@ def use_react_native! (
     ReactNativeCoreUtils.rncore_log("Using React Native Core and React Native Dependencies prebuilt versions.")
     pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
-    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes-engine/hermes-engine.podspec"
   end
 
   pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
