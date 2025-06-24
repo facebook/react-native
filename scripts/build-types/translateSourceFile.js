@@ -13,7 +13,7 @@ import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
 const getDependencies = require('./resolution/getDependencies');
-const babel = require('@babel/core');
+const applyBabelTransformsSeq = require('./utils/applyBabelTransformsSeq');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
 
@@ -80,7 +80,10 @@ async function translateSourceFile(
   }
 
   // Apply post-transforms
-  const result = await applyPostTransforms(tsDefResult, filePath);
+  const result = await applyBabelTransformsSeq(
+    tsDefResult,
+    postTransforms(filePath),
+  );
 
   return {
     result,
@@ -95,21 +98,9 @@ async function applyPreTransforms(source: ParseResult): Promise<ParseResult> {
       const code = transformed.astWasMutated
         ? await print(transformed.ast, transformed.mutatedCode, prettierOptions)
         : transformed.mutatedCode;
-
       return parse(code);
     });
   }, Promise.resolve(source));
-}
-
-async function applyPostTransforms(
-  source: string,
-  filePath: string,
-): Promise<string> {
-  const result = await babel.transformAsync(source, {
-    plugins: ['@babel/plugin-syntax-typescript', ...postTransforms(filePath)],
-  });
-
-  return result.code;
 }
 
 module.exports = translateSourceFile;
