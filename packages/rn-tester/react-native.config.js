@@ -27,7 +27,6 @@ module.exports = {
       manifestPath:
         'packages/rn-tester/android/app/src/main/AndroidManifest.xml',
       packageName: 'com.facebook.react.uiapp',
-      watchModeCommandParams: ['--mode HermesDebug'],
     },
   },
 };

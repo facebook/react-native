@@ -602,6 +602,12 @@ SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
               defaultBaseViewProps.backgroundColor),
           debugStringConvertibleItem(
               "zIndex", zIndex, defaultBaseViewProps.zIndex.value_or(0)),
+          debugStringConvertibleItem(
+              "pointerEvents",
+              pointerEvents,
+              defaultBaseViewProps.pointerEvents),
+          debugStringConvertibleItem(
+              "transform", transform, defaultBaseViewProps.transform),
       };
 }
 #endif

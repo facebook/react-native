@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @fantom_flags useShadowNodeStateOnClone:true
+ * @fantom_flags updateRuntimeShadowNodeReferencesOnCommit:*
  * @flow strict-local
  * @format
  */

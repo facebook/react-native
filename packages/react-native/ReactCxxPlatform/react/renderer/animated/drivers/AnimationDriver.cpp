@@ -51,16 +51,13 @@ void AnimationDriver::startAnimation() {
 }
 
 void AnimationDriver::stopAnimation(bool /*ignoreCompletedHandlers*/) {
-  std::optional<double> value = std::nullopt;
   if (auto node =
-          manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_)) {
-    value = node->getValue();
-  } else {
-    LOG(ERROR)
-        << "animatedValueTag should be associated with a ValueAnimatedNode";
-  }
-  if (endCallback_) {
-    endCallback_.value().call({.finished = true, .value = value});
+          manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_);
+      endCallback_) {
+    endCallback_.value().call(
+        {.finished = true,
+         .value = node->getRawValue(),
+         .offset = node->getOffset()});
   }
 }
 
@@ -69,7 +66,6 @@ void AnimationDriver::runAnimationStep(double renderingTime) {
     return;
   }
 
-  // ticks are 100 nanoseconds, divide by 10000 to get milliseconds.
   const auto frameTimeMs = renderingTime;
   auto restarting = false;
   if (startFrameTimeMs_ < 0) {

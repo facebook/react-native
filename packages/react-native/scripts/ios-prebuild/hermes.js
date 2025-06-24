@@ -8,7 +8,7 @@
  * @format
  */
 
-const {createLogger} = require('./utils');
+const {computeNightlyTarballURL, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +18,10 @@ const {promisify} = require('util');
 const pipeline = promisify(stream.pipeline);
 const hermesLog = createLogger('Hermes');
 
+/*::
+import type {BuildFlavor, Destination, Platform} from './types';
+*/
+
 /**
  * Downloads hermes artifacts from the specified version and build type. If you want to specify a specific
  * version of hermes, use the HERMES_VERSION environment variable. The path to the artifacts will be inside
@@ -26,7 +30,7 @@ const hermesLog = createLogger('Hermes');
  */
 async function prepareHermesArtifactsAsync(
   version /*:string*/,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: Promise<string> */ {
   hermesLog(`Preparing Hermes...`);
 
@@ -135,7 +139,7 @@ const HermesEngineSourceTypes = {
 function checkExistingVersion(
   versionFilePath /*: string */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) {
   const resolvedVersion = `${version}-${buildType}`;
@@ -177,36 +181,25 @@ function hermesEngineTarballEnvvarDefined() /*: boolean */ {
 
 function getTarballUrl(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: string */ {
   const mavenRepoUrl = 'https://repo1.maven.org/maven2';
   const namespace = 'com/facebook/react';
-  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType}.tar.gz`;
+  return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }
 
-function getNightlyTarballUrl(
+async function getNightlyTarballUrl(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
-) /*: string */ {
-  const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-${buildType}&e=tar.gz&v=${version}-SNAPSHOT`;
-  return `https://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`;
-}
-
-/**
- * Resolves URL redirects using fetch instead of curl
- */
-async function resolveUrlRedirects(url /*: string */) /*: Promise<string> */ {
-  try {
-    const response /*: Response */ = await fetch(url, {
-      method: 'HEAD',
-      redirect: 'follow',
-    });
-
-    return response.url;
-  } catch (e) {
-    hermesLog(`Failed to resolve URL redirects\n${e}`, 'error');
-    return url;
-  }
+  buildType /*: BuildFlavor */,
+) /*: Promise<string> */ {
+  const artifactCoordinate = 'react-native-artifacts';
+  const artifactName = `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
+  return await computeNightlyTarballURL(
+    version,
+    buildType,
+    artifactCoordinate,
+    artifactName,
+  );
 }
 
 /**
@@ -231,7 +224,7 @@ async function hermesArtifactExists(
  */
 async function hermesSourceType(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
 ) /*: Promise<HermesEngineSourceType> */ {
   if (hermesEngineTarballEnvvarDefined()) {
     hermesLog('Using local prebuild tarball');
@@ -245,9 +238,7 @@ async function hermesSourceType(
   }
 
   // For nightly tarball, we need to resolve redirects first
-  const nightlyUrl = await resolveUrlRedirects(
-    getNightlyTarballUrl(version, buildType),
-  );
+  const nightlyUrl = await getNightlyTarballUrl(version, buildType);
   if (await hermesArtifactExists(nightlyUrl)) {
     hermesLog('Using download prebuild nightly tarball');
     return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
@@ -262,7 +253,7 @@ async function hermesSourceType(
 async function resolveSourceFromSourceType(
   sourceType /*: HermesEngineSourceType */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
   switch (sourceType) {
@@ -296,7 +287,7 @@ function localPrebuiltTarball() /*: string */ {
 
 async function downloadPrebuildTarball(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
   const url = getTarballUrl(version, buildType);
@@ -306,19 +297,17 @@ async function downloadPrebuildTarball(
 
 async function downloadPrebuiltNightlyTarball(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
-  const url = await resolveUrlRedirects(
-    getNightlyTarballUrl(version, buildType),
-  );
+  const url = await getNightlyTarballUrl(version, buildType);
   hermesLog(`Using nightly tarball from URL: ${url}`);
   return downloadHermesTarball(url, version, buildType, artifactsPath);
 }
 
 async function downloadStableHermes(
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) /*: Promise<string> */ {
   const tarballUrl = getTarballUrl(version, buildType);
@@ -331,7 +320,7 @@ async function downloadStableHermes(
 async function downloadHermesTarball(
   tarballUrl /*: string */,
   version /*: string */,
-  buildType /*: 'debug' | 'release' */,
+  buildType /*: BuildFlavor */,
   artifactsPath /*: string */,
 ) /*: Promise<string> */ {
   const destPath = buildType

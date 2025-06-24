@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_hermes()
     s.dependency "hermes-engine"
   end
 

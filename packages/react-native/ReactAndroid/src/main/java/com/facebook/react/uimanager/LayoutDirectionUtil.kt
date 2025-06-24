@@ -9,13 +9,15 @@ package com.facebook.react.uimanager
 
 import android.view.View
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaDirection
 
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal object LayoutDirectionUtil {
   init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("LayoutDirectionUtil")
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "LayoutDirectionUtil", LegacyArchitectureLogLevel.ERROR)
   }
 
   @JvmStatic
@@ -24,13 +26,5 @@ internal object LayoutDirectionUtil {
         YogaDirection.LTR -> View.LAYOUT_DIRECTION_LTR
         YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
         else -> View.LAYOUT_DIRECTION_INHERIT
-      }
-
-  @JvmStatic
-  fun toYogaFromAndroid(direction: Int): YogaDirection =
-      when (direction) {
-        View.LAYOUT_DIRECTION_LTR -> YogaDirection.LTR
-        View.LAYOUT_DIRECTION_RTL -> YogaDirection.RTL
-        else -> YogaDirection.INHERIT
       }
 }

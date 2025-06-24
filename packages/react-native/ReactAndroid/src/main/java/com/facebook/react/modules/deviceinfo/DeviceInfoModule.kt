@@ -74,7 +74,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactApplicationContext.removeLifecycleEventListener(this)
   }
 
-  public companion object {
-    public const val NAME: String = NativeDeviceInfoSpec.NAME
+  companion object {
+    const val NAME: String = NativeDeviceInfoSpec.NAME
   }
 }

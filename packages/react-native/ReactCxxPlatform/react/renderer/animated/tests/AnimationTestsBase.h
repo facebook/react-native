@@ -42,7 +42,7 @@ class AnimationTestsBase : public testing::Test {
   }
 
   void runAnimationFrame(double timestamp) {
-    nodesManager_->onAnimationFrame(static_cast<uint64_t>(timestamp));
+    nodesManager_->onAnimationFrame(timestamp);
   }
 
   std::shared_ptr<NativeAnimatedNodesManager> nodesManager_;

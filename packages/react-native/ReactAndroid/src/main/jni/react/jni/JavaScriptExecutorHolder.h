@@ -10,6 +10,8 @@
 #include <cxxreact/JSExecutor.h>
 #include <fbjni/fbjni.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class JavaScriptExecutorHolder
@@ -31,3 +33,5 @@ class JavaScriptExecutorHolder
 };
 
 } // namespace facebook::react
+
+#endif

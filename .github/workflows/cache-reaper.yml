@@ -14,7 +14,7 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Trim the cache
         run: node scripts/clean-gha-cache.js

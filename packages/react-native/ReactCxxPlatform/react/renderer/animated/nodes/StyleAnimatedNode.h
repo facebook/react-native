@@ -28,7 +28,12 @@ class StyleAnimatedNode final : public AnimatedNode {
     return props_;
   }
 
+  bool isLayoutStyleUpdated() const noexcept {
+    return layoutStyleUpdated_;
+  }
+
  private:
   folly::dynamic props_;
+  bool layoutStyleUpdated_;
 };
 } // namespace facebook::react

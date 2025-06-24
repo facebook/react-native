@@ -2327,6 +2327,126 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: "grandchild", index: 0, nativeID: "grandgrandchild"}',
     ]);
   });
+
+  test('parent-child flattening with deep hierarchy', () => {
+    function renderTree(root: Fantom.Root, isFinal: boolean) {
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            style={{height: 100, width: 100}}
+            contentOffset={{x: 0, y: 52}}>
+            <View
+              style={{
+                marginTop: isFinal ? 92 : 100,
+                opacity: isFinal ? 0 : undefined,
+              }}>
+              <View
+                style={{
+                  marginTop: 50,
+                  opacity: isFinal ? 0 : undefined,
+                }}>
+                <View collapsable={false} style={{height: 10, width: 10}}>
+                  <View
+                    collapsable={false}
+                    style={{height: 5, width: 5, marginTop: 5}}>
+                    <View
+                      nativeID="child"
+                      style={{height: 2.5, width: 2.5, marginTop: 2.5}}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>,
+        );
+      });
+    }
+
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    renderTree(root, false);
+
+    expect(root.takeMountingManagerLogs()).not.toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    renderTree(root, true);
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    const finalRoot = Fantom.createRoot({
+      viewportWidth: 100,
+      viewportHeight: 100,
+    });
+
+    renderTree(finalRoot, true);
+
+    expect(root.getRenderedOutput().toJSON).toEqual(
+      finalRoot.getRenderedOutput().toJSON,
+    );
+  });
+
+  test('parent-child unflattening with deep hierarchy', () => {
+    function renderTree(root: Fantom.Root, isFinal: boolean) {
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            style={{height: 100, width: 100}}
+            contentOffset={{x: 0, y: 52}}>
+            <View
+              style={{
+                marginTop: isFinal ? 92 : 100,
+                opacity: isFinal ? undefined : 0,
+              }}>
+              <View
+                style={{
+                  marginTop: 50,
+                  opacity: isFinal ? undefined : 0,
+                }}>
+                <View collapsable={false} style={{height: 10, width: 10}}>
+                  <View
+                    collapsable={false}
+                    style={{height: 5, width: 5, marginTop: 5}}>
+                    <View
+                      nativeID="child"
+                      style={{height: 2.5, width: 2.5, marginTop: 2.5}}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </ScrollView>,
+        );
+      });
+    }
+
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    renderTree(root, false);
+
+    expect(root.takeMountingManagerLogs()).not.toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    renderTree(root, true);
+
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+
+    const finalRoot = Fantom.createRoot({
+      viewportWidth: 100,
+      viewportHeight: 100,
+    });
+
+    renderTree(finalRoot, true);
+
+    expect(root.getRenderedOutput().toJSON).toEqual(
+      finalRoot.getRenderedOutput().toJSON,
+    );
+  });
 });
 
 describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace', () => {
@@ -2409,6 +2529,28 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
     });
     Fantom.runWorkLoop();
 
+    expect(root.takeMountingManagerLogs()).toContain(
+      'Create {type: "View", nativeID: "child"}',
+    );
+  });
+});
+
+describe('culling inside ScrollView with overflow visible', () => {
+  it('shows view outside of bounds', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100, overflow: 'visible'}}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 145}} // 145 is below the viewport
+          />
+        </ScrollView>,
+      );
+    });
+
+    // Child is not culled because overflow:visible.
     expect(root.takeMountingManagerLogs()).toContain(
       'Create {type: "View", nativeID: "child"}',
     );

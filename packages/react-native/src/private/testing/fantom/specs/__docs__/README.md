@@ -16,4 +16,4 @@ Fantom. These are not meant to be consumed directly.
 
 ### Part of
 
-- [Fantom](../../../../../../../react-native-fantom/__docs__/README.md).
+- [Fantom](../../../../../../../../private/react-native-fantom/__docs__/README.md).

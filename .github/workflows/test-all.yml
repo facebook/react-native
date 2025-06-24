@@ -117,8 +117,13 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
-    uses: ./.github/workflows/prebuild-ios.yml
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
+
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
@@ -196,6 +201,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: ./.github/actions/setup-node
       - name: Download App
         uses: actions/download-artifact@v4
         with:
@@ -439,14 +446,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rntester-${{ matrix.flavor }}
-          path: ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/
+          path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
       - name: Print folder structure
-        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/
+        run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
         timeout-minutes: 60
         with:
-          app-path: ./packages/rn-tester/android/app/build/outputs/apk/hermes/${{ matrix.flavor }}/app-hermes-x86-${{ matrix.flavor }}.apk
+          app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.flavor }}/app-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
           maestro-flow: ./packages/rn-tester/.maestro
           flavor: ${{ matrix.flavor }}
@@ -462,6 +469,7 @@ jobs:
         build_hermesc_windows,
         build_android,
         prebuild_apple_dependencies,
+        prebuild_react_native_core,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -525,7 +533,7 @@ jobs:
       - name: Build the Helloworld application for ${{ matrix.flavor }} with Architecture set to New Architecture.
         shell: bash
         run: |
-          cd packages/helloworld/android
+          cd private/helloworld/android
           args=()
           if [[ ${{ matrix.flavor }} == "Release" ]]; then
             args+=(--prod)
@@ -535,7 +543,7 @@ jobs:
         uses: actions/upload-artifact@v4.3.4
         with:
           name: helloworld-apk-${{ matrix.flavor }}-NewArch-hermes
-          path: ./packages/helloworld/android/app/build/outputs/apk/
+          path: ./private/helloworld/android/app/build/outputs/apk/
           compression-level: 0
 
   test_ios_helloworld_with_ruby_3_2_0:
@@ -585,7 +593,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["22", "20", "18"]
+        node-version: ["24", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -601,7 +609,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run all the Linters
+      - name: Run all the linters
         uses: ./.github/actions/lint
         with:
           github-token: ${{ env.GH_TOKEN }}

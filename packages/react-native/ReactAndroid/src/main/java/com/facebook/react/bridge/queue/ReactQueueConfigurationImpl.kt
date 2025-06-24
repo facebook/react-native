@@ -36,9 +36,9 @@ private constructor(
     }
   }
 
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun create(
+    fun create(
         spec: ReactQueueConfigurationSpec,
         exceptionHandler: QueueThreadExceptionHandler
     ): ReactQueueConfigurationImpl {

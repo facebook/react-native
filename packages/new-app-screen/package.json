@@ -20,7 +20,7 @@
   ],
   "dependencies": {},
   "peerDependencies": {
-    "@types/react": "^19.0.0",
+    "@types/react": "^19.1.0",
     "react": "*",
     "react-native": "*"
   },
@@ -30,6 +30,6 @@
     }
   },
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   }
 }

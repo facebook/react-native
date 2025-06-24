@@ -365,7 +365,10 @@ public class FabricUIManager
       final SurfaceHandlerBinding surfaceHandler,
       final Context context,
       final @Nullable View rootView) {
-    final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
+    final int rootTag =
+        rootView instanceof ReactRoot
+            ? ((ReactRoot) rootView).getRootViewTag()
+            : ReactRootViewTagGenerator.getNextRootViewTag();
 
     ThemedReactContext reactContext =
         new ThemedReactContext(
@@ -1314,7 +1317,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void willMountItems(@Nullable List<MountItem> mountItems) {
+    public void willMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.willMountItems(FabricUIManager.this);
       }
@@ -1323,7 +1326,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void didMountItems(@Nullable List<MountItem> mountItems) {
+    public void didMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
       }

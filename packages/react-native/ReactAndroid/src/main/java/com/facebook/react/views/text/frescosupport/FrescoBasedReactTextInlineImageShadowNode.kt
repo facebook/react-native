@@ -19,6 +19,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode
@@ -27,7 +29,7 @@ import com.facebook.yoga.YogaConstants
 import java.util.Locale
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class FrescoBasedReactTextInlineImageShadowNode(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
     private val callerContext: Any?
@@ -41,7 +43,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   private var tintColor = 0
 
   @ReactProp(name = "src")
-  public fun setSource(sources: ReadableArray?) {
+  fun setSource(sources: ReadableArray?) {
     val source =
         if (sources == null || sources.size() == 0 || sources.getType(0) != ReadableType.Map) null
         else checkNotNull(sources.getMap(0)).getString("uri")
@@ -67,12 +69,12 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   }
 
   @ReactProp(name = "headers")
-  public fun setHeaders(newHeaders: ReadableMap?) {
+  fun setHeaders(newHeaders: ReadableMap?) {
     headers = newHeaders
   }
 
   @ReactProp(name = "tintColor", customType = "Color")
-  public fun setTintColor(newTintColor: Int) {
+  fun setTintColor(newTintColor: Int) {
     tintColor = newTintColor
   }
 
@@ -96,13 +98,13 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   }
 
   @ReactProp(name = ViewProps.RESIZE_MODE)
-  public fun setResizeMode(newResizeMode: String?) {
+  fun setResizeMode(newResizeMode: String?) {
     resizeMode = newResizeMode
   }
 
-  public fun getUri(): Uri? = uri
+  fun getUri(): Uri? = uri
 
-  public fun getHeaders(): ReadableMap? = headers
+  fun getHeaders(): ReadableMap? = headers
 
   override fun isVirtual(): Boolean = true
 
@@ -122,19 +124,24 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         resizeMode)
   }
 
-  public fun getDraweeControllerBuilder() = draweeControllerBuilder
+  fun getDraweeControllerBuilder() = draweeControllerBuilder
 
-  public fun getCallerContext(): Any? = callerContext
+  fun getCallerContext(): Any? = callerContext
 
   // TODO: t9053573 is tracking that this code should be shared
   companion object {
-    public fun getResourceDrawableUri(context: Context, name: String?): Uri? {
+    fun getResourceDrawableUri(context: Context, name: String?): Uri? {
       if (name == null || name.isEmpty()) {
         return null
       }
       val formattedName = name.lowercase(Locale.getDefault()).replace("-", "_")
       val resId = context.resources.getIdentifier(formattedName, "drawable", context.packageName)
       return Uri.Builder().scheme(UriUtil.LOCAL_RESOURCE_SCHEME).path(resId.toString()).build()
+    }
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "FrescoBasedReactTextInlineImageShadowNode", LegacyArchitectureLogLevel.ERROR)
     }
   }
 }

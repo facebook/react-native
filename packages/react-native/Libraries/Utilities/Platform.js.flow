@@ -8,6 +8,6 @@
  * @format
  */
 
-import type {Platform} from './PlatformTypes';
+import type {PlatformType} from './PlatformTypes';
 
-declare export default Platform;
+declare export default PlatformType;

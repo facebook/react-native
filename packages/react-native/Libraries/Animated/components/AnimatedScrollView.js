@@ -15,7 +15,9 @@ import type {
 } from '../createAnimatedComponent';
 
 import RefreshControl from '../../Components/RefreshControl/RefreshControl';
-import ScrollView from '../../Components/ScrollView/ScrollView';
+import ScrollView, {
+  type ScrollViewProps,
+} from '../../Components/ScrollView/ScrollView';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -26,21 +28,20 @@ import useAnimatedProps from '../useAnimatedProps';
 import * as React from 'react';
 import {cloneElement, useMemo} from 'react';
 
-type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
 type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 
 /**
  * @see https://github.com/facebook/react-native/commit/b8c8562
  */
 const AnimatedScrollView: AnimatedComponentType<
-  AnimatedScrollViewProps,
+  ScrollViewProps,
   AnimatedScrollViewInstance,
 > = function AnimatedScrollViewWithOrWithoutInvertedRefreshControl({
   ref: forwardedRef,
   ...props
 }: {
   ref?: React.RefSetter<AnimatedScrollViewInstance>,
-  ...AnimatedProps<AnimatedScrollViewProps>,
+  ...AnimatedProps<ScrollViewProps>,
 }) {
   // (Android only) When a ScrollView has a RefreshControl and
   // any `style` property set with an Animated.Value, the CSS
@@ -111,7 +112,7 @@ const AnimatedScrollViewWithInvertedRefreshControl =
 
     // Handle animated props on `NativeDirectionalScrollView`.
     const [scrollViewAnimatedProps, scrollViewRef] = useAnimatedProps<
-      AnimatedScrollViewProps,
+      ScrollViewProps,
       AnimatedScrollViewInstance,
     >(intermediatePropsForScrollView);
     const ref = useMergeRefs<AnimatedScrollViewInstance>(

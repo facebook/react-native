@@ -12,7 +12,9 @@
 #import <React/RCTSurfaceHostingView.h>
 
 @implementation RCTLogBoxView {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   RCTSurface *_surface;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -33,6 +35,7 @@
   self.rootViewController = _rootViewController;
 }
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
   RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTLogBoxView", nil);
@@ -52,6 +55,7 @@
 
   return self;
 }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
@@ -70,7 +74,9 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   [_surface setSize:self.frame.size];
+#endif // RCT_FIT_RM_OLD_RUNTIME
 }
 
 - (void)dealloc

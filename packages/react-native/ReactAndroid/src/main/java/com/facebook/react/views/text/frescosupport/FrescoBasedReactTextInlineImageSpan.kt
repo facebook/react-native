@@ -73,23 +73,23 @@ internal class FrescoBasedReactTextInlineImageSpan(
    * The ReactTextView that holds this ImageSpan is responsible for passing these methods on so that
    * we can do proper lifetime management for Fresco
    */
-  public override fun onDetachedFromWindow() {
+  override fun onDetachedFromWindow() {
     draweeHolder.onDetach()
   }
 
-  public override fun onStartTemporaryDetach() {
+  override fun onStartTemporaryDetach() {
     draweeHolder.onDetach()
   }
 
-  public override fun onAttachedToWindow() {
+  override fun onAttachedToWindow() {
     draweeHolder.onAttach()
   }
 
-  public override fun onFinishTemporaryDetach() {
+  override fun onFinishTemporaryDetach() {
     draweeHolder.onAttach()
   }
 
-  public override fun getSize(
+  override fun getSize(
       paint: Paint,
       text: CharSequence,
       start: Int,
@@ -110,11 +110,11 @@ internal class FrescoBasedReactTextInlineImageSpan(
     return _width
   }
 
-  public override fun setTextView(textView: TextView?) {
+  override fun setTextView(textView: TextView?) {
     this.textView = textView
   }
 
-  public override fun draw(
+  override fun draw(
       canvas: Canvas,
       text: CharSequence,
       start: Int,

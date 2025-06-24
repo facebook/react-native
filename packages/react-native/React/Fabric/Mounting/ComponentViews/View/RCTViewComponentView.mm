@@ -51,6 +51,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   UIView *_containerView;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
+  NSMutableArray<NSObject *> *_accessibilityElements;
   RCTViewAccessibilityElement *_axElementDescribingSelf;
 }
 
@@ -403,6 +404,8 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     for (const std::string &childId : newViewProps.accessibilityOrder) {
       [_accessibilityOrderNativeIDs addObject:RCTNSStringFromString(childId)];
     }
+
+    _accessibilityElements = [NSMutableArray new];
   }
 
   // `accessibilityTraits`
@@ -614,6 +617,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+  _accessibilityElements = [NSMutableArray new];
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -1151,13 +1155,19 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     return super.accessibilityElements;
   }
 
+  // TODO: Currently this ignores changes to descendant nativeID's. While that should rarely, if ever happen, it's an
+  // edge case we should address. Currently this fixes some app deaths so landing this without addressing that edge case
+  // for now.
+  if ([_accessibilityElements count] > 0) {
+    return _accessibilityElements;
+  }
+
   NSMutableDictionary<NSString *, UIView *> *nativeIdToView = [NSMutableDictionary new];
 
   [RCTViewComponentView collectAccessibilityElements:self
                                       intoDictionary:nativeIdToView
                                            nativeIds:_accessibilityOrderNativeIDs];
 
-  NSMutableArray<NSObject *> *elements = [NSMutableArray new];
   for (auto childId : _props->accessibilityOrder) {
     NSString *nsStringChildId = RCTNSStringFromString(childId);
     // Special case to allow for self-referencing with accessibilityOrder
@@ -1166,16 +1176,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         _axElementDescribingSelf = [[RCTViewAccessibilityElement alloc] initWithView:self];
       }
       _axElementDescribingSelf.isAccessibilityElement = [super isAccessibilityElement];
-      [elements addObject:_axElementDescribingSelf];
+      [_accessibilityElements addObject:_axElementDescribingSelf];
     } else {
       UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
       if (viewWithMatchingNativeId) {
-        [elements addObject:viewWithMatchingNativeId];
+        [_accessibilityElements addObject:viewWithMatchingNativeId];
       }
     }
   }
 
-  return elements;
+  return _accessibilityElements;
 }
 
 + (void)collectAccessibilityElements:(UIView *)view
@@ -1205,7 +1215,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
         result = [NSMutableString string];
       }
       if (result.length > 0) {
-        [result appendString:@" "];
+        [result appendString:@", "];
       }
       [result appendString:label];
     }
@@ -1220,7 +1230,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return label;
   }
 
-  return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  if (self.isAccessibilityElement) {
+    return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  }
+  return nil;
 }
 
 - (NSString *)accessibilityLabelForCoopting

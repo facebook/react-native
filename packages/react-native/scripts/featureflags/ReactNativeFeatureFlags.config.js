@@ -70,22 +70,22 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    avoidCeilingAvailableAndroidTextWidth: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Do not incorrectly ceil the available width of an Android text layout',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'stable',
-    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
         dateAdded: '2025-03-14',
         description:
           'Use a C++ implementation of Native Animated instead of the platform implementation.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    cxxNativeAnimatedRemoveJsSync: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-16',
+        description: 'Removes JS sync at end of native animation',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -264,17 +264,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-08-30',
         description: 'iOS Views will clip to their padding box vs border box',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableIntersectionObserverEventLoopIntegration: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-04-16',
-        description:
-          'Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -459,6 +448,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewDebugFeatures: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables VirtualView debug features such as logging and overlays.',
+        expectedReleaseValue: false,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -491,16 +490,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    incorporateMaxLinesDuringAndroidLayout: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Set maxLines and ellipsization during Android layout creation',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'stable',
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -531,16 +520,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'none',
-    },
-    useAndroidTextLayoutWidthDirectly: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Trust the width of a text layout we create, instead of re-deriving it from its contents',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'stable',
     },
     useFabricInterop: {
       defaultValue: true,
@@ -691,16 +670,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableVirtualViewDebugFeatures: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables VirtualView debug features such as logging and overlays.',
-        expectedReleaseValue: false,
-        purpose: 'operational',
       },
       ossReleaseStage: 'none',
     },

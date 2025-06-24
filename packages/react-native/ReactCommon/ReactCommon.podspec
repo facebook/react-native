@@ -16,8 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-
 Pod::Spec.new do |s|
   s.name                   = "ReactCommon"
   s.module_name            = "ReactCommon"
@@ -48,7 +46,7 @@ Pod::Spec.new do |s|
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "React-logger", version
-    if using_hermes
+    if use_hermes()
       ss.dependency "hermes-engine"
     end
 
@@ -58,7 +56,7 @@ Pod::Spec.new do |s|
       sss.exclude_files        = "react/bridging/tests"
       sss.header_dir           = "react/bridging"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-      if using_hermes
+      if use_hermes()
         sss.dependency "hermes-engine"
       end
     end

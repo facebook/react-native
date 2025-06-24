@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeWebSocketModule';
 import NativeWebSocketModule from '../../src/private/specs_DEPRECATED/modules/NativeWebSocketModule';
+
 export default NativeWebSocketModule;

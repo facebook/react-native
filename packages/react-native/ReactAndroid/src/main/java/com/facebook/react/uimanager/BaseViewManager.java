@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
@@ -35,6 +36,9 @@ import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.BlurEvent;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.FocusEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.style.OutlineStyle;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -163,6 +167,25 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setForeground(null);
 
     return view;
+  }
+
+  @Override
+  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {
+    super.addEventEmitters(reactContext, view);
+
+    BaseVMFocusChangeListener focusChangeListener =
+        new BaseVMFocusChangeListener(view.getOnFocusChangeListener());
+    focusChangeListener.attach(view);
+  }
+
+  @Override
+  public void onDropViewInstance(@NonNull T view) {
+    super.onDropViewInstance(view);
+
+    @Nullable OnFocusChangeListener focusChangeListener = view.getOnFocusChangeListener();
+    if (focusChangeListener instanceof BaseVMFocusChangeListener) {
+      ((BaseVMFocusChangeListener) focusChangeListener).detach(view);
+    }
   }
 
   // Currently, layout listener is only attached when transform or transformOrigin is set.
@@ -778,6 +801,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onClick", "captured", "onClickCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -1008,4 +1041,49 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   // Please add new props to BaseViewManagerDelegate as well!
+
+  /**
+   * A helper class to keep track of the original focus change listener if one is set. This is
+   * especially helpful for views that are recycled so we can retain and restore the original
+   * listener upon recycling (onDropViewInstance).
+   */
+  private class BaseVMFocusChangeListener<V extends View> implements OnFocusChangeListener {
+    private @Nullable OnFocusChangeListener mOriginalFocusChangeListener;
+
+    public BaseVMFocusChangeListener(@Nullable OnFocusChangeListener originalFocusChangeListener) {
+      mOriginalFocusChangeListener = originalFocusChangeListener;
+    }
+
+    public void attach(T view) {
+      view.setOnFocusChangeListener(this);
+    }
+
+    public void detach(T view) {
+      view.setOnFocusChangeListener(mOriginalFocusChangeListener);
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+      if (mOriginalFocusChangeListener != null) {
+        mOriginalFocusChangeListener.onFocusChange(view, hasFocus);
+      }
+      int surfaceId = UIManagerHelper.getSurfaceId(view.getContext());
+      if (surfaceId == View.NO_ID) {
+        return;
+      }
+      if (view.getContext() instanceof ThemedReactContext) {
+        ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
+        @Nullable
+        EventDispatcher eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(themedReactContext, view.getId());
+        if (eventDispatcher != null) {
+          if (hasFocus) {
+            eventDispatcher.dispatchEvent(new FocusEvent(surfaceId, view.getId()));
+          } else {
+            eventDispatcher.dispatchEvent(new BlurEvent(surfaceId, view.getId()));
+          }
+        }
+      }
+    }
+  }
 }

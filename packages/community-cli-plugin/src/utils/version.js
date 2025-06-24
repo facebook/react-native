@@ -11,8 +11,8 @@
 import type {Config} from '@react-native-community/cli-types';
 import type {TerminalReporter} from 'metro';
 
-import chalk from 'chalk';
 import semver from 'semver';
+import {styleText} from 'util';
 
 const debug = require('debug')('ReactNative:CommunityCliPlugin');
 
@@ -81,8 +81,8 @@ export async function logIfUpdateAvailable(
       type: 'unstable_server_log',
       level: 'info',
       data: `React Native v${newVersion.stable} is now available (your project is running on v${currentVersion}).
-Changelog: ${chalk.dim.underline(newVersion?.changelogUrl ?? 'none')}
-Diff: ${chalk.dim.underline(newVersion?.diffUrl ?? 'none')}
+Changelog: ${styleText(['dim', 'underline'], newVersion?.changelogUrl ?? 'none')}
+Diff: ${styleText(['dim', 'underline'], newVersion?.diffUrl ?? 'none')}
 `,
     });
   }

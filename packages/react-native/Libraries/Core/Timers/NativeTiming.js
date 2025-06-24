@@ -10,4 +10,5 @@
 
 export * from '../../../src/private/specs_DEPRECATED/modules/NativeTiming';
 import NativeTiming from '../../../src/private/specs_DEPRECATED/modules/NativeTiming';
+
 export default NativeTiming;

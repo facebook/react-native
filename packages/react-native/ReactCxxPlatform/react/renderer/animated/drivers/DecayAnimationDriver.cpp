@@ -18,15 +18,15 @@ DecayAnimationDriver::DecayAnimationDriver(
     int id,
     Tag animatedValueTag,
     std::optional<AnimationEndCallback> endCallback,
-    const folly::dynamic& config,
+    folly::dynamic config,
     NativeAnimatedNodesManager* manager)
     : AnimationDriver(
           id,
           animatedValueTag,
           std::move(endCallback),
-          config,
+          std::move(config),
           manager),
-      velocity_(config["velocity"].asDouble()),
+      velocity_(config_["velocity"].asDouble()),
       deceleration_(config_["deceleration"].asDouble()) {
   react_native_assert(deceleration_ > 0);
 }

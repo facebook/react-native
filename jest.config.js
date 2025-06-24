@@ -16,7 +16,7 @@ const {defaults} = require('jest-config');
 
 const PODS_LOCATIONS = [
   'packages/rn-tester/Pods',
-  'packages/helloworld/ios/Pods',
+  'private/helloworld/ios/Pods',
 ];
 
 module.exports = {

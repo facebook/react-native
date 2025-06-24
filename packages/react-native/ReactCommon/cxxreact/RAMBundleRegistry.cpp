@@ -7,6 +7,8 @@
 
 #include "RAMBundleRegistry.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <folly/String.h>
 
 #include <memory>
@@ -78,3 +80,5 @@ JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

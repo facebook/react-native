@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent';
-import AndroidSwitchNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent';
-export default AndroidSwitchNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent';

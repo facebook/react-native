@@ -9,5 +9,4 @@
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
-import RCTSafeAreaViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
-export default RCTSafeAreaViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';

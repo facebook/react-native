@@ -90,7 +90,7 @@ TODO: Explain the different components of React Native at a high level.
     - Jest
     - ESLint
   - Integration / E2E
-    - [Fantom](../packages/react-native-fantom/__docs__/README.md)
+    - [Fantom](../private/react-native-fantom/__docs__/README.md)
 - Tooling
   - React Native DevTools
 

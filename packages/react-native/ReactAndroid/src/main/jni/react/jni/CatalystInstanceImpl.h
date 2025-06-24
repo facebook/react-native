@@ -21,6 +21,8 @@
 #include "ModuleRegistryBuilder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class Instance;
@@ -125,3 +127,5 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 };
 
 } // namespace facebook::react
+
+#endif

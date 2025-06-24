@@ -27,7 +27,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/* eslint-disable indent */
 
 /**
  * @fileoverview This file contains small testing framework along with the
@@ -71,7 +70,7 @@
      * Key event with given key identifier.
      */
     static createKeyEvent(key) {
-      return new KeyboardEvent('keydown', {bubbles: true, cancelable: true, key: key});
+      return new KeyboardEvent('keydown', {bubbles: true, cancelable: true, key});
     }
   };
 
@@ -158,39 +157,33 @@
   };
 
   TestSuite.prototype.setupLegacyFilesForTest = async function() {
-    try {
-      // 'Tests.js' is executed on 'about:blank' so we can't use `import` directly without
-      // specifying the full devtools://devtools/bundled URL.
-      ([
-        Common,
-        HostModule,
-        Root,
-        SDK,
-        Sources,
-        Timeline,
-        UI,
-        Workspace,
-      ] =
-           await Promise.all([
-             self.runtime.loadLegacyModule('core/common/common.js'),
-             self.runtime.loadLegacyModule('core/host/host.js'),
-             self.runtime.loadLegacyModule('core/root/root.js'),
-             self.runtime.loadLegacyModule('core/sdk/sdk.js'),
-             self.runtime.loadLegacyModule('panels/sources/sources.js'),
-             self.runtime.loadLegacyModule('panels/timeline/timeline.js'),
-             self.runtime.loadLegacyModule('ui/legacy/legacy.js'),
-             self.runtime.loadLegacyModule('models/workspace/workspace.js'),
-           ]));
+    // 'Tests.js' is executed on 'about:blank' so we can't use `import` directly without
+    // specifying the full devtools://devtools/bundled URL.
+    ([
+      Common,
+      HostModule,
+      Root,
+      SDK,
+      Sources,
+      Timeline,
+      UI,
+      Workspace,
+    ] =
+         await Promise.all([
+           self.runtime.loadLegacyModule('core/common/common.js'),
+           self.runtime.loadLegacyModule('core/host/host.js'),
+           self.runtime.loadLegacyModule('core/root/root.js'),
+           self.runtime.loadLegacyModule('core/sdk/sdk.js'),
+           self.runtime.loadLegacyModule('panels/sources/sources.js'),
+           self.runtime.loadLegacyModule('panels/timeline/timeline.js'),
+           self.runtime.loadLegacyModule('ui/legacy/legacy.js'),
+           self.runtime.loadLegacyModule('models/workspace/workspace.js'),
+         ]));
 
-      // We have to map 'Host.InspectorFrontendHost' as the C++ uses it directly.
-      self.Host = {};
-      self.Host.InspectorFrontendHost = HostModule.InspectorFrontendHost.InspectorFrontendHostInstance;
-      self.Host.InspectorFrontendHostAPI = HostModule.InspectorFrontendHostAPI;
-
-      this.reportOk_();
-    } catch (e) {
-      this.reportFailure_(e);
-    }
+    // We have to map 'Host.InspectorFrontendHost' as the C++ uses it directly.
+    self.Host = {};
+    self.Host.InspectorFrontendHost = HostModule.InspectorFrontendHost.InspectorFrontendHostInstance;
+    self.Host.InspectorFrontendHostAPI = HostModule.InspectorFrontendHostAPI;
   };
 
   /**
@@ -1138,13 +1131,7 @@
     SDK.TargetManager.TargetManager.instance().addModelListener(
         SDK.NetworkManager.NetworkManager, SDK.NetworkManager.Events.ResponseReceived, onResponseReceived);
 
-    this.evaluateInConsole_(
-        `
-      let img = document.createElement('img');
-      img.src = "${url}";
-      document.body.appendChild(img);
-    `,
-        () => {});
+    this.evaluateInConsole_(`location.href= "${url}";`, () => {});
 
     let count = 0;
     function onResponseReceived(event) {

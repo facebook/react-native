@@ -18,7 +18,6 @@ const {
   getTypeScriptCompilerOptions,
 } = require('./config');
 const babel = require('@babel/core');
-const chalk = require('chalk');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
 const glob = require('glob');
@@ -26,7 +25,7 @@ const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
 const ts = require('typescript');
-const {parseArgs} = require('util');
+const {parseArgs, styleText} = require('util');
 
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
@@ -36,7 +35,7 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    check: {type: 'boolean'},
+    validate: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
@@ -44,7 +43,7 @@ const config = {
 async function build() {
   const {
     positionals: packageNames,
-    values: {check, help},
+    values: {validate, help},
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -59,15 +58,17 @@ async function build() {
   a package list is provided, builds only those specified.
 
   Options:
-    --check           Validate that no build artifacts have been accidentally
+    --validate        Validate that no build artifacts have been accidentally
                       committed.
     `);
     process.exitCode = 0;
     return;
   }
 
-  if (!check) {
-    console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
+  if (!validate) {
+    console.log(
+      '\n' + styleText(['bold', 'inverse'], 'Building packages') + '\n',
+    );
   }
 
   const packagesToBuild = packageNames.length
@@ -76,7 +77,7 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
-    if (check) {
+    if (validate) {
       ok &&= await checkPackage(packageName);
     } else {
       await buildPackage(packageName);
@@ -90,7 +91,7 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
   const artifacts = await exportedBuildArtifacts(packageName);
   if (artifacts.length > 0) {
     console.log(
-      `${chalk.bgRed(packageName)}: has been built and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
+      `${styleText('bgRed', packageName)}: has been built and the ${styleText('bold', 'build artifacts')} committed to the repository. This will break Flow checks.`,
     );
     return false;
   }
@@ -113,7 +114,7 @@ async function buildPackage(packageName /*: string */) {
       );
 
     process.stdout.write(
-      `${packageName} ${chalk.dim('.').repeat(72 - packageName.length)} `,
+      `${packageName} ${styleText('dim', '.').repeat(72 - packageName.length)} `,
     );
 
     // Build regular files
@@ -138,9 +139,13 @@ async function buildPackage(packageName /*: string */) {
     // Rewrite package.json "exports" field (src -> dist)
     await rewritePackageExports(packageName);
 
-    process.stdout.write(chalk.reset.inverse.bold.green(' DONE '));
+    process.stdout.write(
+      styleText(['reset', 'inverse', 'bold', 'green'], ' DONE '),
+    );
   } catch (e) {
-    process.stdout.write(chalk.reset.inverse.bold.red(' FAIL ') + '\n');
+    process.stdout.write(
+      styleText(['reset', 'inverse', 'bold', 'red'], ' FAIL ') + '\n',
+    );
     throw e;
   } finally {
     process.stdout.write('\n');
@@ -159,7 +164,7 @@ async function buildFile(
   const logResult = ({copied, desc} /*: {copied: boolean, desc?: string} */) =>
     silent ||
     console.log(
-      chalk.dim('  - ') +
+      styleText('dim', '  - ') +
         path.relative(PACKAGES_DIR, file) +
         (copied ? ' -> ' + path.relative(PACKAGES_DIR, buildPath) : ' ') +
         (desc != null ? ' (' + desc + ')' : ''),
@@ -318,7 +323,7 @@ async function getEntryPoints(
 
       if (target.includes('*')) {
         console.warn(
-          `${chalk.yellow('Warning')}: Encountered subpath pattern ${subpath}` +
+          `${styleText('yellow', 'Warning')}: Encountered subpath pattern ${subpath}` +
             ` in package.json exports for ${packageName}. Matched entry points ` +
             'will not be validated.',
         );
@@ -432,7 +437,13 @@ function validateTypeScriptDefs(packageName /*: string */) {
     noEmit: true,
     skipLibCheck: false,
   };
-  const program = ts.createProgram(files, compilerOptions);
+  const program = ts.createProgram(
+    files,
+    ts.convertCompilerOptionsFromJson(
+      compilerOptions,
+      path.resolve(PACKAGES_DIR, packageName),
+    ),
+  );
   const emitResult = program.emit();
 
   if (emitResult.diagnostics.length) {

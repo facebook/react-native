@@ -15,10 +15,10 @@ const path = require('path');
 const {cp, echo, exec, exit} = require('shelljs');
 
 /*::
-type Commit = string
+type Commit = string;
 */
 
-function isGitRepo() {
+function isGitRepo() /*: boolean */ {
   try {
     return (
       exec('git rev-parse --is-inside-work-tree', {
@@ -111,6 +111,7 @@ module.exports = {
   exitIfNotOnGit,
   getCurrentCommit,
   getBranchName,
+  isGitRepo,
   isTaggedLatest,
   revertFiles,
   saveFiles,

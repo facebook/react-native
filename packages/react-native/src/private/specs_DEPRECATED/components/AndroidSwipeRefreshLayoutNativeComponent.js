@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeProps = $ReadOnly<{
+type AndroidSwipeRefreshLayoutNativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -56,7 +56,7 @@ type NativeProps = $ReadOnly<{
   refreshing: boolean,
 }>;
 
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidSwipeRefreshLayoutNativeProps>;
 
 interface NativeCommands {
   +setNativeRefreshing: (
@@ -69,6 +69,6 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setNativeRefreshing'],
 });
 
-export default (codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<AndroidSwipeRefreshLayoutNativeProps>(
   'AndroidSwipeRefreshLayout',
 ): NativeType);

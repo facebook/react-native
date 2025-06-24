@@ -9,6 +9,7 @@ package com.facebook.react.views.imagehelper
 
 import com.facebook.imagepipeline.core.ImagePipelineFactory
 import com.facebook.react.modules.fresco.ImageCacheControl
+import kotlin.math.abs
 
 /** Helper class for dealing with multisource images. */
 internal object MultiSourceHelper {
@@ -54,7 +55,7 @@ internal object MultiSourceHelper {
     var bestPrecision = Double.MAX_VALUE
     var bestCachePrecision = Double.MAX_VALUE
     for (source in sources) {
-      val precision = Math.abs(1.0 - source.size / viewArea)
+      val precision = abs(1.0 - source.size / viewArea)
       if (precision < bestPrecision) {
         bestPrecision = precision
         best = source
@@ -83,7 +84,7 @@ internal object MultiSourceHelper {
       @JvmField val bestResult: ImageSource?,
       /**
        * Get the best result (closest in size to the view's size) that is also in cache. If this
-       * would be the same as the source from [.getBestResult], this will return `null` instead.
+       * would be the same as the source from [getBestResult], this will return `null` instead.
        */
       @JvmField val bestResultInCache: ImageSource?
   )

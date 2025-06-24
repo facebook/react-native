@@ -98,23 +98,23 @@ internal class PreparedLayoutTextViewManager :
   }
 
   @ReactProp(name = "overflow")
-  public fun setOverflow(view: PreparedLayoutTextView, overflow: String?): Unit {
+  fun setOverflow(view: PreparedLayoutTextView, overflow: String?): Unit {
     view.overflow = overflow?.let { Overflow.fromString(it) } ?: Overflow.HIDDEN
   }
 
   @ReactProp(name = "accessible")
-  public fun setAccessible(view: PreparedLayoutTextView, accessible: Boolean): Unit {
+  fun setAccessible(view: PreparedLayoutTextView, accessible: Boolean): Unit {
     view.isFocusable = accessible
   }
 
   @ReactProp(name = "selectable", defaultBoolean = false)
-  public fun setSelectable(view: PreparedLayoutTextView, isSelectable: Boolean): Unit {
+  fun setSelectable(view: PreparedLayoutTextView, isSelectable: Boolean): Unit {
     // T222052152: Implement fine-grained text selection for PreparedLayoutTextView
     // view.setTextIsSelectable(isSelectable);
   }
 
   @ReactProp(name = "selectionColor", customType = "Color")
-  public fun setSelectionColor(view: PreparedLayoutTextView, color: Int?): Unit {
+  fun setSelectionColor(view: PreparedLayoutTextView, color: Int?): Unit {
     if (color == null) {
       view.selectionColor = DefaultStyleValuesUtil.getDefaultTextColorHighlight(view.context)
     } else {
@@ -131,7 +131,7 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
       defaultFloat = Float.NaN)
-  public fun setBorderRadius(view: PreparedLayoutTextView, index: Int, borderRadius: Float): Unit {
+  fun setBorderRadius(view: PreparedLayoutTextView, index: Int, borderRadius: Float): Unit {
     val radius =
         if (borderRadius.isNaN()) null
         else LengthPercentage(borderRadius, LengthPercentageType.POINT)
@@ -139,7 +139,7 @@ internal class PreparedLayoutTextViewManager :
   }
 
   @ReactProp(name = "borderStyle")
-  public fun setBorderStyle(view: PreparedLayoutTextView, borderStyle: String?): Unit {
+  fun setBorderStyle(view: PreparedLayoutTextView, borderStyle: String?): Unit {
     val parsedBorderStyle = if (borderStyle == null) null else BorderStyle.fromString(borderStyle)
     BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle)
   }
@@ -155,7 +155,7 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH],
       defaultFloat = Float.NaN)
-  public fun setBorderWidth(view: PreparedLayoutTextView, index: Int, width: Float): Unit {
+  fun setBorderWidth(view: PreparedLayoutTextView, index: Int, width: Float): Unit {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
 
@@ -174,12 +174,12 @@ internal class PreparedLayoutTextViewManager :
               ViewProps.BORDER_BLOCK_START_COLOR,
           ],
       customType = "Color")
-  public fun setBorderColor(view: PreparedLayoutTextView, index: Int, color: Int?): Unit {
+  fun setBorderColor(view: PreparedLayoutTextView, index: Int, color: Int?): Unit {
     BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }
 
   @ReactProp(name = "disabled", defaultBoolean = false)
-  public fun setDisabled(view: PreparedLayoutTextView, disabled: Boolean): Unit {
+  fun setDisabled(view: PreparedLayoutTextView, disabled: Boolean): Unit {
     view.setEnabled(!disabled)
   }
 
@@ -214,7 +214,7 @@ internal class PreparedLayoutTextViewManager :
     reactTextViewManagerCallback?.onPostProcessSpannable(text)
   }
 
-  public companion object {
-    public const val REACT_CLASS: String = "RCTText"
+  companion object {
+    const val REACT_CLASS: String = "RCTText"
   }
 }

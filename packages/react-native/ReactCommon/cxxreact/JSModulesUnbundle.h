@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -42,3 +44,5 @@ class JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

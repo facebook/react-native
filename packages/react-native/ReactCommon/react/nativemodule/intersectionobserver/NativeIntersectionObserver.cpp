@@ -11,7 +11,9 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeIntersectionObserverModuleProvider(
@@ -68,12 +70,20 @@ jsi::Object NativeIntersectionObserver::observeV2(
   auto intersectionObserverId = options.intersectionObserverId;
   auto shadowNode = options.targetShadowNode;
   auto shadowNodeFamily = shadowNode->getFamilyShared();
+
+  std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily;
+  if (options.rootShadowNode.has_value()) {
+    observationRootShadowNodeFamily =
+        options.rootShadowNode.value()->getFamilyShared();
+  }
+
   auto thresholds = options.thresholds;
   auto rootThresholds = options.rootThresholds;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
       intersectionObserverId,
+      observationRootShadowNodeFamily,
       shadowNodeFamily,
       thresholds,
       rootThresholds,

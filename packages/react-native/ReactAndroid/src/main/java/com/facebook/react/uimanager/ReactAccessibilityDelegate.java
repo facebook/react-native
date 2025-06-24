@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.EditText;
-import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
@@ -499,10 +498,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       if (virtualView == mView) {
         if (mView.getContentDescription() != null) {
           node.setContentDescription(mView.getContentDescription());
-        }
-
-        if (mView instanceof TextView && ((TextView) mView).getText() != null) {
-          node.setText(((TextView) mView).getText());
         }
 
         populateAccessibilityNodeInfo(mView, node);

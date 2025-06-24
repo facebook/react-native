@@ -24,7 +24,7 @@ void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 template <typename DataT>
 inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
-    std::function<DataT(jsi::Runtime& runtime)>&& runtimeWork) {
+    std::function<DataT(jsi::Runtime&)>&& runtimeWork) {
   DataT data;
 
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
@@ -33,4 +33,7 @@ inline static DataT executeSynchronouslyOnSameThread_CAN_DEADLOCK(
 
   return data;
 }
+
+void unsafeExecuteOnMainThreadSync(std::function<void()> work);
+
 } // namespace facebook::react

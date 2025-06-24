@@ -16,7 +16,7 @@ import android.text.SpannedString
  * implementation should be passed by setRedBoxHandler in ReactInstanceManager.
  */
 public interface RedBoxHandler {
-  /** Callback interface for [.reportRedbox]. */
+  /** Callback interface for [reportRedbox]. */
   public interface ReportCompletedListener {
     public fun onReportSuccess(spannedString: SpannedString?)
 

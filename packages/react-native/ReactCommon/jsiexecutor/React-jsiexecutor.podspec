@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+  if use_hermes()
     s.dependency 'hermes-engine'
   end
 

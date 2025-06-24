@@ -10,6 +10,7 @@
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
 import {Insets} from '../../../types/public/Insets';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
@@ -877,6 +878,12 @@ export class ScrollView extends ScrollViewBase {
 
   // Undocumented
   getInnerViewNode(): any;
+
+  /**
+   * Returns a reference to the underlying native scroll view, or null if the
+   * native instance is not mounted.
+   */
+  getNativeScrollRef: () => HostInstance | null;
 
   /**
    * @deprecated Use scrollTo instead

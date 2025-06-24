@@ -13,6 +13,8 @@
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class Instance;
@@ -62,3 +64,5 @@ class MethodInvoker {
 };
 
 } // namespace facebook::react
+
+#endif

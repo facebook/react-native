@@ -223,7 +223,7 @@ public object StackTraceHelper {
    * @property file the file this stack frame points to. JS traces return the full path to the file
    *   here, while Java traces only return the file name (the path is not known).
    * @property fileName the name of the file this frame points to. For JS traces this is different
-   *   from [.getFile] in that it only returns the file name, not the full path. For Java traces
+   *   from [getFile] in that it only returns the file name, not the full path. For Java traces
    *   there is no difference.
    * @property method the name of the method this frame points to.
    * @property line the line number this frame points to in the file returned by [file]

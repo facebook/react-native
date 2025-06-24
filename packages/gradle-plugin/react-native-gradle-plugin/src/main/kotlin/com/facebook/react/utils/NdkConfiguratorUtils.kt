@@ -7,7 +7,7 @@
 
 package com.facebook.react.utils
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
@@ -19,7 +19,8 @@ internal object NdkConfiguratorUtils {
   @Suppress("UnstableApiUsage")
   fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     project.pluginManager.withPlugin("com.android.application") {
-      project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+      project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
+          ext ->
         if (!project.isNewArchEnabled(extension)) {
           // For Old Arch, we don't need to setup the NDK
           return@finalizeDsl
@@ -125,6 +126,8 @@ internal object NdkConfiguratorUtils {
   ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
+
+    // note: libjsctooling.so is kept here for backward compatibility.
     when {
       hermesEnabled -> {
         excludes.add("**/libjsc.so")

@@ -276,12 +276,6 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     message = *name + ": " + message;
   }
 
-  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
-
-  if (!isLooselyNull(jsEngineValue)) {
-    message += ", js engine: " + stringifyToCpp(runtime, jsEngineValue);
-  }
-
   auto extraDataKey = jsi::PropNameID::forUtf8(runtime, "RN$ErrorExtraDataKey");
   auto extraDataValue = errorObj.getProperty(runtime, extraDataKey);
 
@@ -290,6 +284,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     objectAssign(runtime, extraData, extraDataValue.asObject(runtime));
   }
 
+  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
   auto isDEV =
       isTruthy(runtime, runtime.global().getProperty(runtime, "__DEV__"));
 

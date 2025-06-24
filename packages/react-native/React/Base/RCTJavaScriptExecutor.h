@@ -13,6 +13,7 @@
 typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
 typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a
  * web view (for debugging purposes), or may be running code in a `JSContext`.
@@ -78,3 +79,4 @@ typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
 @end
+#endif // RCT_FIT_RM_OLD_RUNTIME

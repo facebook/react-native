@@ -39,6 +39,8 @@ IntersectionObserverManager::IntersectionObserverManager() = default;
 
 void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
+    const std::optional<ShadowNodeFamily::Shared>&
+        observationRootShadowNodeFamily,
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
@@ -47,64 +49,18 @@ void IntersectionObserverManager::observe(
 
   auto surfaceId = shadowNodeFamily->getSurfaceId();
 
-  // The actual observer lives in the array, so we need to create it there and
-  // then get a reference. Otherwise we only update its state in a copy.
-  IntersectionObserver* observer = nullptr;
-
   // Register observer
-  {
-    std::unique_lock lock(observersMutex_);
+  std::unique_lock lock(observersMutex_);
 
-    auto& observers = observersBySurfaceId_[surfaceId];
-    observers.emplace_back(std::make_unique<IntersectionObserver>(
-        intersectionObserverId,
-        shadowNodeFamily,
-        std::move(thresholds),
-        std::move(rootThresholds)));
+  auto& observers = observersBySurfaceId_[surfaceId];
+  observers.emplace_back(std::make_unique<IntersectionObserver>(
+      intersectionObserverId,
+      observationRootShadowNodeFamily,
+      shadowNodeFamily,
+      std::move(thresholds),
+      std::move(rootThresholds)));
 
-    if (ReactNativeFeatureFlags::
-            enableIntersectionObserverEventLoopIntegration()) {
-      observersPendingInitialization_.emplace_back(observers.back().get());
-    }
-
-    observer = observers.back().get();
-  }
-
-  if (!ReactNativeFeatureFlags::
-          enableIntersectionObserverEventLoopIntegration()) {
-    // Notification of initial state.
-    // Ideally, we'd have well defined event loop step to notify observers
-    // (like on the Web) and we'd send the initial notification there, but as
-    // we don't have it we have to run this check once and manually dispatch.
-    auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
-    std::shared_ptr<const MountingCoordinator> mountingCoordinator = nullptr;
-    RootShadowNode::Shared rootShadowNode = nullptr;
-    shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree& shadowTree) {
-      mountingCoordinator = shadowTree.getMountingCoordinator();
-      rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
-    });
-
-    // If the surface doesn't exist for some reason, we skip initial
-    // notification.
-    if (!rootShadowNode) {
-      return;
-    }
-
-    auto hasPendingTransactions = mountingCoordinator != nullptr &&
-        mountingCoordinator->hasPendingTransactions();
-
-    if (!hasPendingTransactions) {
-      auto entry = observer->updateIntersectionObservation(
-          *rootShadowNode, HighResTimeStamp::now());
-      if (entry) {
-        {
-          std::unique_lock lock(pendingEntriesMutex_);
-          pendingEntries_.push_back(std::move(entry).value());
-        }
-        notifyObserversIfNecessary();
-      }
-    }
-  }
+  observersPendingInitialization_.emplace_back(observers.back().get());
 }
 
 void IntersectionObserverManager::unobserve(
@@ -112,22 +68,19 @@ void IntersectionObserverManager::unobserve(
     const ShadowNodeFamily::Shared& shadowNodeFamily) {
   TraceSection s("IntersectionObserverManager::unobserve");
 
-  if (ReactNativeFeatureFlags::
-          enableIntersectionObserverEventLoopIntegration()) {
-    // This doesn't need to be protected by the mutex because it is only
-    // accessed and modified from the JS thread.
-    observersPendingInitialization_.erase(
-        std::remove_if(
-            observersPendingInitialization_.begin(),
-            observersPendingInitialization_.end(),
-            [intersectionObserverId, &shadowNodeFamily](const auto& observer) {
-              return (
-                  observer->getIntersectionObserverId() ==
-                      intersectionObserverId &&
-                  observer->getTargetShadowNodeFamily() == shadowNodeFamily);
-            }),
-        observersPendingInitialization_.end());
-  }
+  // This doesn't need to be protected by the mutex because it is only
+  // accessed and modified from the JS thread.
+  observersPendingInitialization_.erase(
+      std::remove_if(
+          observersPendingInitialization_.begin(),
+          observersPendingInitialization_.end(),
+          [intersectionObserverId, &shadowNodeFamily](const auto& observer) {
+            return (
+                observer->getIntersectionObserverId() ==
+                    intersectionObserverId &&
+                observer->getTargetShadowNodeFamily() == shadowNodeFamily);
+          }),
+      observersPendingInitialization_.end());
 
   {
     std::unique_lock lock(observersMutex_);
@@ -185,10 +138,7 @@ void IntersectionObserverManager::connect(
     return;
   }
 
-  if (ReactNativeFeatureFlags::
-          enableIntersectionObserverEventLoopIntegration()) {
-    runtimeScheduler.setIntersectionObserverDelegate(this);
-  }
+  runtimeScheduler.setIntersectionObserverDelegate(this);
   uiManager.registerMountHook(*this);
   shadowTreeRegistry_ = &uiManager.getShadowTreeRegistry();
   mountHookRegistered_ = true;
@@ -204,10 +154,7 @@ void IntersectionObserverManager::disconnect(
     return;
   }
 
-  if (ReactNativeFeatureFlags::
-          enableIntersectionObserverEventLoopIntegration()) {
-    runtimeScheduler.setIntersectionObserverDelegate(nullptr);
-  }
+  runtimeScheduler.setIntersectionObserverDelegate(nullptr);
   uiManager.unregisterMountHook(*this);
   shadowTreeRegistry_ = nullptr;
   mountHookRegistered_ = false;
@@ -247,7 +194,10 @@ void IntersectionObserverManager::updateIntersectionObservations(
     return;
   }
 
-  TraceSection s("IntersectionObserverManager::updateIntersectionObservations");
+  TraceSection s(
+      "IntersectionObserverManager::updateIntersectionObservations",
+      "pendingObserverCount",
+      observersPendingInitialization_.size());
 
   std::unordered_map<SurfaceId, RootShadowNode::Shared> rootShadowNodeCache;
 
@@ -287,6 +237,7 @@ void IntersectionObserverManager::updateIntersectionObservations(
 void IntersectionObserverManager::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
     HighResTimeStamp time) noexcept {
+  TraceSection s("IntersectionObserverManager::shadowTreeDidMount");
   updateIntersectionObservations(
       rootShadowNode->getSurfaceId(), rootShadowNode.get(), time);
 }
@@ -294,6 +245,7 @@ void IntersectionObserverManager::shadowTreeDidMount(
 void IntersectionObserverManager::shadowTreeDidUnmount(
     SurfaceId surfaceId,
     HighResTimeStamp time) noexcept {
+  TraceSection s("IntersectionObserverManager::shadowTreeDidUnmount");
   updateIntersectionObservations(surfaceId, nullptr, time);
 }
 
@@ -303,9 +255,6 @@ void IntersectionObserverManager::updateIntersectionObservations(
     SurfaceId surfaceId,
     const RootShadowNode* rootShadowNode,
     HighResTimeStamp time) {
-  TraceSection s(
-      "IntersectionObserverManager::updateIntersectionObservations(mount)");
-
   std::vector<IntersectionObserverEntry> entries;
 
   // Run intersection observations
@@ -316,6 +265,11 @@ void IntersectionObserverManager::updateIntersectionObservations(
     if (observersIt == observersBySurfaceId_.end()) {
       return;
     }
+
+    TraceSection s(
+        "IntersectionObserverManager::updateIntersectionObservations(mount)",
+        "observerCount",
+        observersIt->second.size());
 
     auto& observers = observersIt->second;
     for (auto& observer : observers) {

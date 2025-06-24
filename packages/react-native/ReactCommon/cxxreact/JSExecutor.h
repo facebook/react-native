@@ -70,11 +70,13 @@ class RN_EXPORT JSExecutor {
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) = 0;
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   /**
    * Add an application "RAM" bundle registry
    */
   virtual void setBundleRegistry(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   /**
    * Register a file path for an additional "RAM" bundle

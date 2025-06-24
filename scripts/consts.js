@@ -22,6 +22,11 @@ const REPO_ROOT /*: string */ = path.resolve(__dirname, '..');
 const PACKAGES_DIR /*: string */ = path.join(REPO_ROOT, 'packages');
 
 /**
+ * The absolute path to the repo private directory.
+ */
+const PRIVATE_DIR /*: string */ = path.join(REPO_ROOT, 'private');
+
+/**
  * The absolute path to the repo scripts directory.
  */
 const SCRIPTS_DIR /*: string */ = path.join(REPO_ROOT, 'scripts');
@@ -56,6 +61,7 @@ const RN_INTEGRATION_TESTS_RUNNER_DIR /*: string */ = path.join(
 
 module.exports = {
   PACKAGES_DIR,
+  PRIVATE_DIR,
   REACT_NATIVE_PACKAGE_DIR,
   REPO_ROOT,
   RN_TESTER_DIR,

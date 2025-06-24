@@ -22,12 +22,7 @@ internal object FontMetricsUtil {
   private const val AMPLIFICATION_FACTOR = 100f
 
   @JvmStatic
-  fun getFontMetrics(
-      text: CharSequence,
-      layout: Layout,
-      paint: TextPaint,
-      context: Context
-  ): WritableArray {
+  fun getFontMetrics(text: CharSequence, layout: Layout, context: Context): WritableArray {
     val dm = context.resources.displayMetrics
     val lines = Arguments.createArray()
 
@@ -35,7 +30,7 @@ internal object FontMetricsUtil {
     // their height. In order to get more precision than Android offers, we blow up the text size by
     // 100 and
     // measure it. Luckily, text size affects rendering linearly, so we can do this trick.
-    val paintCopy = TextPaint(paint).apply { textSize *= AMPLIFICATION_FACTOR }
+    val paintCopy = TextPaint(layout.paint).apply { textSize *= AMPLIFICATION_FACTOR }
 
     val capHeightBounds = Rect()
     paintCopy.getTextBounds(

@@ -55,6 +55,8 @@ nexusPublishing {
     sonatype {
       username.set(sonatypeUsername)
       password.set(sonatypePassword)
+      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
     }
   }
 }
@@ -122,7 +124,7 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            .using(module("com.facebook.react:hermes-android:0.0.0-+"))
+            .using(module("com.facebook.react:hermes-android:0.+"))
             .because("Users opted to use hermes from nightly")
       }
     }

@@ -8,6 +8,8 @@
  * @format
  */
 
+/*:: import type {BuildFlavor} from './types'; */
+
 const {execSync} = require('child_process');
 const fs = require('fs');
 
@@ -57,8 +59,51 @@ function createLogger(
   };
 }
 
+async function computeNightlyTarballURL(
+  version /*: string */,
+  buildType /*: BuildFlavor */,
+  artifactCoordinate /*: string */,
+  artifactName /*: string */,
+) /*: Promise<string> */ {
+  const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
+
+  const response = await fetch(xmlUrl);
+  if (!response.ok) {
+    return '';
+  }
+  const xmlText = await response.text();
+
+  // Extract the <snapshot> block
+  const snapshotMatch = xmlText.match(/<snapshot>([\s\S]*?)<\/snapshot>/);
+  if (!snapshotMatch) {
+    return '';
+  }
+  const snapshotContent = snapshotMatch[1];
+
+  // Extract <timestamp> from the snapshot block
+  const timestampMatch = snapshotContent.match(/<timestamp>(.*?)<\/timestamp>/);
+  if (!timestampMatch) {
+    return '';
+  }
+  const timestamp = timestampMatch[1];
+
+  // Extract <buildNumber> from the snapshot block
+  const buildNumberMatch = snapshotContent.match(
+    /<buildNumber>(.*?)<\/buildNumber>/,
+  );
+  if (!buildNumberMatch) {
+    return '';
+  }
+  const buildNumber = buildNumberMatch[1];
+
+  const fullVersion = `${version}-${timestamp}-${buildNumber}`;
+  const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
+  return finalUrl;
+}
+
 module.exports = {
   createFolderIfNotExists,
   throwIfOnEden,
   createLogger,
+  computeNightlyTarballURL,
 };

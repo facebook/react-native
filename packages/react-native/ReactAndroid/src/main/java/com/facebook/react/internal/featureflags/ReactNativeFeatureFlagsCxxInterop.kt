@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f0b011a6d3359341e2ef0e60925c1ff>>
+ * @generated SignedSource<<fc671a9cfe52b4ccdb230f74a1bb465e>>
  */
 
 /**
@@ -32,9 +32,9 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun animatedShouldSignalBatch(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun avoidCeilingAvailableAndroidTextWidth(): Boolean
-
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMainQueueSyncDispatchIOS(): Boolean
 
@@ -70,8 +70,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableIntersectionObserverEventLoopIntegration(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
@@ -106,21 +104,19 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableVirtualViewDebugFeatures(): Boolean
+
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun incorporateMaxLinesDuringAndroidLayout(): Boolean
-
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun updateRuntimeShadowNodeReferencesOnCommit(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useAndroidTextLayoutWidthDirectly(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 

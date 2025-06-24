@@ -51,7 +51,7 @@ runs:
     - name: Install iOS dependencies - Configuration ${{ inputs.flavor }};
       shell: bash
       run: |
-        cd packages/helloworld
+        cd private/helloworld
         args=()
 
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
@@ -70,7 +70,7 @@ runs:
         fi
 
         BUILD_TYPE="${{ inputs.flavor }}"
-        TARBALL_FILENAME=$(node ../react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
+        TARBALL_FILENAME=$(node ../../packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
         export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
         export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
 
@@ -79,13 +79,13 @@ runs:
     - name: Run Helloworld tests
       shell: bash
       run: |
-        cd packages/helloworld
+        cd private/helloworld
         yarn test
 
     - name: Build HelloWorld project
       shell: bash
       run: |
-        cd packages/helloworld
+        cd private/helloworld
 
         args=()
         if [[ ${{ inputs.flavor }} == "Release" ]]; then

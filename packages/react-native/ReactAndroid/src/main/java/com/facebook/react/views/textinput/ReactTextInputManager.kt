@@ -71,8 +71,6 @@ import com.facebook.react.views.text.ReactTextViewManagerCallback
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.TextAttributeProps
 import com.facebook.react.views.text.TextLayoutManager
-import com.facebook.react.views.text.TextTransform
-import com.facebook.react.views.text.TextTransform.Companion.apply
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan.Companion.possiblyUpdateInlineImageSpans
 import java.util.LinkedList
 
@@ -123,14 +121,6 @@ public open class ReactTextInputManager public constructor() :
                 mapOf(
                     "phasedRegistrationNames" to
                         mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
-            "topFocus" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onFocus", "captured" to "onFocusCapture")),
-            "topBlur" to
-                mapOf(
-                    "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onBlur", "captured" to "onBlurCapture")),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
@@ -190,7 +180,7 @@ public open class ReactTextInputManager public constructor() :
 
   private fun getReactTextUpdate(text: String?, mostRecentEventCount: Int): ReactTextUpdate {
     val sb = SpannableStringBuilder()
-    sb.append(apply(text, TextTransform.UNSET))
+    sb.append(text)
     return ReactTextUpdate(
         sb, mostRecentEventCount, false, 0f, 0f, 0f, 0f, Gravity.NO_GRAVITY, 0, 0)
   }
@@ -894,6 +884,9 @@ public open class ReactTextInputManager public constructor() :
   override fun addEventEmitters(reactContext: ThemedReactContext, editText: ReactEditText) {
     editText.setEventDispatcher(getEventDispatcher(reactContext, editText))
     editText.addTextChangedListener(ReactTextInputTextWatcher(reactContext, editText))
+
+    // Implements focus/blur dispatching on behalf of BaseViewManager since only one focus listener
+    // can be set on a view instance
     editText.onFocusChangeListener = OnFocusChangeListener { _: View?, hasFocus: Boolean ->
       val surfaceId = reactContext.surfaceId
       val eventDispatcher = getEventDispatcher(reactContext, editText)

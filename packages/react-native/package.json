@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "bin": {
     "react-native": "cli.js"
@@ -81,6 +81,7 @@
     "gradle.properties",
     "gradle/libs.versions.toml",
     "index.js",
+    "index.js.flow",
     "interface.js",
     "jest-preset.js",
     "jest",
@@ -169,9 +170,8 @@
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "babel-jest": "^29.7.0",
-    "babel-plugin-syntax-hermes-parser": "0.28.1",
+    "babel-plugin-syntax-hermes-parser": "0.29.0",
     "base64-js": "^1.5.1",
-    "chalk": "^4.0.0",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
     "glob": "^7.1.1",
