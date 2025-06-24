@@ -485,16 +485,14 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   override fun createAnimatedNode(tagDouble: Double, config: ReadableMap) {
     val tag = tagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(NAME, "queue createAnimatedNode: ${tag} config: ${config.toHashMap().toString()}")
+      FLog.d(NAME, "queue createAnimatedNode: $tag config: ${config.toHashMap()}")
     }
 
     addOperation(
         object : UIThreadOperation() {
           override fun execute(animatedNodesManager: NativeAnimatedNodesManager) {
             if (ANIMATED_MODULE_DEBUG) {
-              FLog.d(
-                  NAME,
-                  ("execute createAnimatedNode: ${tag} config: ${config.toHashMap().toString()}"))
+              FLog.d(NAME, ("execute createAnimatedNode: $tag config: ${config.toHashMap()}"))
             }
             animatedNodesManager.createAnimatedNode(tag, config)
           }
@@ -504,17 +502,14 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   override fun updateAnimatedNodeConfig(tagDouble: Double, config: ReadableMap) {
     val tag = tagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
-      FLog.d(
-          NAME, "queue updateAnimatedNodeConfig: ${tag} config: ${config.toHashMap().toString()}")
+      FLog.d(NAME, "queue updateAnimatedNodeConfig: $tag config: ${config.toHashMap()}")
     }
 
     addOperation(
         object : UIThreadOperation() {
           override fun execute(animatedNodesManager: NativeAnimatedNodesManager) {
             if (ANIMATED_MODULE_DEBUG) {
-              FLog.d(
-                  NAME,
-                  ("execute updateAnimatedNodeConfig: ${tag} config: ${config.toHashMap().toString()}"))
+              FLog.d(NAME, ("execute updateAnimatedNodeConfig: $tag config: ${config.toHashMap()}"))
             }
             animatedNodesManager.updateAnimatedNodeConfig(tag, config)
           }
@@ -705,7 +700,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute connectAnimatedNodes: parent: ${parentNodeTag} child: ${childNodeTag}"))
+                  ("execute connectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"))
             }
             animatedNodesManager.connectAnimatedNodes(parentNodeTag, childNodeTag)
           }
@@ -725,7 +720,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute disconnectAnimatedNodes: parent: ${parentNodeTag} child: ${childNodeTag}"))
+                  ("execute disconnectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"))
             }
             animatedNodesManager.disconnectAnimatedNodes(parentNodeTag, childNodeTag)
           }
@@ -738,7 +733,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue connectAnimatedNodeToView: animatedNodeTag: ${animatedNodeTag} viewTag: ${viewTag}"))
+          ("queue connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"))
     }
 
     initializeLifecycleEventListenersForViewTag(viewTag)
@@ -749,7 +744,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute connectAnimatedNodeToView: animatedNodeTag: ${animatedNodeTag} viewTag: ${viewTag}"))
+                  ("execute connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"))
             }
             animatedNodesManager.connectAnimatedNodeToView(animatedNodeTag, viewTag)
           }
@@ -774,7 +769,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute disconnectAnimatedNodeFromView: ${animatedNodeTag} viewTag: ${viewTag}"))
+                  ("execute disconnectAnimatedNodeFromView: $animatedNodeTag viewTag: $viewTag"))
             }
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag)
           }
@@ -807,7 +802,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue addAnimatedEventToView: ${viewTag} eventName: ${eventName} eventMapping: ${eventMapping.toHashMap().toString()}"))
+          ("queue addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
     }
 
     initializeLifecycleEventListenersForViewTag(viewTag)
@@ -818,7 +813,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute addAnimatedEventToView: ${viewTag} eventName: ${eventName} eventMapping: ${eventMapping.toHashMap().toString()}"))
+                  ("execute addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
             }
             animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping)
           }
@@ -835,7 +830,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue removeAnimatedEventFromView: viewTag: ${viewTag} eventName: ${eventName} animatedValueTag: ${animatedValueTag}"))
+          ("queue removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"))
     }
 
     decrementInFlightAnimationsForViewTag(viewTag)
@@ -846,7 +841,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute removeAnimatedEventFromView: viewTag: ${viewTag} eventName: ${eventName} animatedValueTag: ${animatedValueTag}"))
+                  ("execute removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"))
             }
             animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag)
           }
