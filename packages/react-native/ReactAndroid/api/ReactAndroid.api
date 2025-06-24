@@ -3659,6 +3659,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public static final field TOP_ACCESSIBILITY_ACTION_EVENT Ljava/lang/String;
 	public static final field sActionIdMap Ljava/util/HashMap;
 	public fun <init> (Landroid/view/View;ZI)V
+	public fun cleanUp ()V
 	public static fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 	public fun getAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 	protected fun getHostView ()Landroid/view/View;
