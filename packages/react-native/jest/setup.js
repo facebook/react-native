@@ -120,4 +120,5 @@ mock(
 mock('m#../Libraries/ReactNative/UIManager', 'm#./mocks/UIManager');
 mock('m#../Libraries/Text/Text', 'm#./mocks/Text');
 mock('m#../Libraries/Utilities/useColorScheme', 'm#./mocks/useColorScheme');
+// $FlowFixMe[incompatible-call]
 mock('m#../Libraries/Vibration/Vibration', 'm#./mocks/Vibration');
