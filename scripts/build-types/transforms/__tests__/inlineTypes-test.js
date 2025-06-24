@@ -242,4 +242,61 @@ describe('inlineTypes', () => {
       export default $$Value;"
     `);
   });
+
+  test('should preserve dec comments when inlining types', async () => {
+    const code = `
+      declare type A = {
+        /**
+         * Comment for prop1 in A
+         */
+        prop1: string;
+        /**
+         * Comment for prop2 in A
+         */
+        prop2: number;
+      };
+
+      declare type B = {
+        /**
+         * Comment for prop1 in B
+         */
+        prop1: string[];
+        /**
+         * Comment for prop3 in B
+         */
+        prop3: boolean;
+      };
+
+      declare type C = {
+        /**
+         * Comment for prop4 in D
+         */
+        prop4: number;
+      };
+
+      export declare type D = Omit<Omit<A, keyof B> & B, keyof C> & C;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export declare type D = {
+        /**
+         * Comment for prop2 in A
+         */
+        prop2: number;
+        /**
+         * Comment for prop1 in B
+         */
+        prop1: string[];
+        /**
+         * Comment for prop3 in B
+         */
+        prop3: boolean;
+        /**
+         * Comment for prop4 in D
+         */
+        prop4: number;
+      };"
+    `);
+  });
 });
