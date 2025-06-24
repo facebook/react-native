@@ -11,9 +11,7 @@
 
 #include <cxxreact/CxxModule.h>
 
-namespace facebook {
-namespace xplat {
-namespace module {
+namespace facebook::xplat::module {
 
 // Allows a Cxx-module to be shared or reused across multiple React instances
 // Caveat: the setInstance call is not forwarded, so usages of getInstance
@@ -39,6 +37,4 @@ class SharedProxyCxxModule : public CxxModule {
   std::shared_ptr<CxxModule> shared_;
 };
 
-} // namespace module
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::module

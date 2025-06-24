@@ -153,75 +153,42 @@ static RadiusVector GetRadialGradientRadius(
 
 + (CALayer *)gradientLayerWithSize:(CGSize)size gradient:(const RadialGradient &)gradient
 {
-  UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
-  UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
-    CGContextRef context = rendererContext.CGContext;
+  CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+  gradientLayer.type = kCAGradientLayerRadial;
+  CGPoint centerPoint = CGPointMake(size.width / 2.0, size.height / 2.0);
 
-    CGPoint centerPoint = CGPointMake(size.width / 2.0, size.height / 2.0);
+  if (gradient.position.top) {
+    centerPoint.y = gradient.position.top->resolve(size.height);
+  } else if (gradient.position.bottom) {
+    centerPoint.y = size.height - gradient.position.bottom->resolve(size.height);
+  }
 
-    if (gradient.position.top) {
-      centerPoint.y = gradient.position.top->resolve(size.height);
-    } else if (gradient.position.bottom) {
-      centerPoint.y = size.height - gradient.position.bottom->resolve(size.height);
-    }
+  if (gradient.position.left) {
+    centerPoint.x = gradient.position.left->resolve(size.width);
+  } else if (gradient.position.right) {
+    centerPoint.x = size.width - gradient.position.right->resolve(size.width);
+  }
 
-    if (gradient.position.left) {
-      centerPoint.x = gradient.position.left->resolve(size.width);
-    } else if (gradient.position.right) {
-      centerPoint.x = size.width - gradient.position.right->resolve(size.width);
-    }
+  bool isCircle = (gradient.shape == RadialGradientShape::Circle);
+  auto [radiusX, radiusY] =
+      GetRadialGradientRadius(isCircle, gradient.size, centerPoint.x, centerPoint.y, size.width, size.height);
+  const auto gradientLineLength = std::max(radiusX, radiusY);
+  const auto colorStops = [RCTGradientUtils getFixedColorStops:gradient.colorStops
+                                            gradientLineLength:gradientLineLength];
+  gradientLayer.startPoint = CGPointMake(centerPoint.x / size.width, centerPoint.y / size.height);
+  // endpoint.x is horizontal length and endpoint.y is vertical length
+  gradientLayer.endPoint = CGPointMake(
+      gradientLayer.startPoint.x + radiusX / size.width, gradientLayer.startPoint.y + radiusY / size.height);
 
-    bool isCircle = (gradient.shape == RadialGradientShape::Circle);
-    auto [radiusX, radiusY] =
-        GetRadialGradientRadius(isCircle, gradient.size, centerPoint.x, centerPoint.y, size.width, size.height);
+  NSMutableArray<id> *colors = [NSMutableArray array];
+  NSMutableArray<NSNumber *> *locations = [NSMutableArray array];
+  for (const auto &colorStop : colorStops) {
+    [colors addObject:(id)RCTUIColorFromSharedColor(colorStop.color).CGColor];
+    [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
+  }
 
-    CGFloat scale = 1.0;
-    if (radiusX != radiusY && gradient.shape != RadialGradientShape::Circle) {
-      scale = radiusX / radiusY;
-      CGContextSaveGState(context);
-      // Scale the context to make the circular gradient appear elliptical
-      CGContextTranslateCTM(context, centerPoint.x, centerPoint.y);
-      CGContextScaleCTM(context, 1.0, 1.0 / scale);
-      CGContextTranslateCTM(context, -centerPoint.x, -centerPoint.y);
-      radiusX = std::max(radiusX, radiusY * scale);
-    }
-
-    const auto colorStops = [RCTGradientUtils getFixedColorStops:gradient.colorStops gradientLineLength:radiusX];
-
-    NSMutableArray *colors = [NSMutableArray array];
-    CGFloat locations[colorStops.size()];
-
-    for (size_t i = 0; i < colorStops.size(); ++i) {
-      const auto &colorStop = colorStops[i];
-      CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
-      [colors addObject:(__bridge id)cgColor];
-      locations[i] = std::max(std::min(colorStop.position.value(), 1.0), 0.0);
-    }
-
-    CGGradientRef cgGradient = CGGradientCreateWithColors(NULL, (__bridge CFArrayRef)colors, locations);
-
-    CGContextDrawRadialGradient(
-        context,
-        cgGradient,
-        centerPoint,
-        0,
-        centerPoint,
-        radiusX,
-        kCGGradientDrawsBeforeStartLocation | kCGGradientDrawsAfterEndLocation);
-
-    // Restore the context state if we scaled it
-    if (radiusX != radiusY && gradient.shape != RadialGradientShape::Circle) {
-      CGContextRestoreGState(context);
-    }
-
-    for (id color in colors) {
-      CGColorRelease((__bridge CGColorRef)color);
-    }
-    CGGradientRelease(cgGradient);
-  }];
-
-  CALayer *gradientLayer = [CALayer layer];
-  gradientLayer.contents = (__bridge id)gradientImage.CGImage;
+  gradientLayer.colors = colors;
+  gradientLayer.locations = locations;
 
   return gradientLayer;
 }

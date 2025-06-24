@@ -4,25 +4,10 @@
 # LICENSE file in the root directory of this source tree.
 
 require "json"
-
-begin
-  react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
-    'require.resolve(
-    "react-native",
-    {paths: [process.argv[1]]},
-    )', __dir__]).strip
-  )
-rescue => e
-  # Fallback to the parent directory if the above command fails (e.g when building locally in OOT Platform)
-  react_native_path = File.join(__dir__, "..", "..")
-end
-
-# package.json
-package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 version = package['version']
 
 source = ReactNativeCoreUtils.resolve_podspec_source()
-
 Pod::Spec.new do |s|
   s.name                   = "React-Core-prebuilt"
   s.version                = version
@@ -65,7 +50,7 @@ Pod::Spec.new do |s|
   CMD
 
   # If we are passing a local tarball, we don't want to switch between Debug and Release
-  if !ENV["RCT_USE_LOCAL_RN_CORE"]
+  if !ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]
     script_phase = {
       :name => "[RNDeps] Replace React Native Core for the right configuration, if needed",
       :execution_position => :before_compile,
@@ -88,7 +73,7 @@ Pod::Spec.new do |s|
       # always run the script without warning
       script_phase[:always_out_of_date] = "1"
     end
-
+    
     s.script_phase = script_phase
   end
 end

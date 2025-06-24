@@ -381,7 +381,7 @@ public class NativeAnimatedNodesManager(
           ("connectAnimatedNodeToView: Animated node connected to view [${viewTag}] should be of type ${PropsAnimatedNode::class.java.name}"))
     }
     checkNotNull(reactApplicationContext) {
-      ("connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: ${viewTag}")
+      ("connectAnimatedNodeToView: Animated node could not be connected, no ReactApplicationContext: $viewTag")
     }
 
     val uiManager = UIManagerHelper.getUIManagerForReactTag(reactApplicationContext, viewTag)
@@ -389,7 +389,7 @@ public class NativeAnimatedNodesManager(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: ${viewTag}")))
+              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: $viewTag")))
       return
     }
 
@@ -751,7 +751,7 @@ public class NativeAnimatedNodesManager(
       val reason = if (cyclesDetected > 0) ("cycles ($cyclesDetected)") else "disconnected regions"
       val ex =
           IllegalStateException(
-              ("Looks like animated nodes graph has ${reason}, there are ${activeNodesCount} but toposort visited only ${updatedNodesCount}"))
+              ("Looks like animated nodes graph has ${reason}, there are $activeNodesCount but toposort visited only $updatedNodesCount"))
       if (eventListenerInitializedForFabric && cyclesDetected == 0) {
         // TODO T71377544: investigate these SoftExceptions and see if we can remove entirely
         // or fix the root cause

@@ -124,7 +124,7 @@ class ReactNativeDependenciesUtils
 
             @@build_from_source = !use_local_xcframework && !artifacts_exists
 
-            if @@build_from_source && ENV["RCT_USE_LOCAL_RNCORE"] && !use_local_xcframework
+            if @@build_from_source && ENV["RCT_USE_LOCAL_RN_DEP"] && !use_local_xcframework
                 rndeps_log("No local xcframework found, reverting to building from source.")
             end
             if @@build_from_source && ENV["RCT_USE_PREBUILT_RNCORE"] && !artifacts_exists
@@ -178,9 +178,8 @@ class ReactNativeDependenciesUtils
         artifact_name = "reactnative-dependencies-debug.tar.gz"
         xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-
-        response = Net::HTTP.get(URI(xml_url))
-        if response.kind_of? Net::HTTPSuccess
+        response = Net::HTTP.get_response(URI(xml_url))
+        if response.is_a?(Net::HTTPSuccess)
           xml = REXML::Document.new(response)
           timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
           build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text

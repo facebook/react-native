@@ -166,7 +166,10 @@ declare export default {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js.flow 1`] = `
-"export { default as FlatList } from \\"./components/AnimatedFlatList\\";
+"export type { DecayAnimationConfig } from \\"./animations/DecayAnimation\\";
+export type { SpringAnimationConfig } from \\"./animations/SpringAnimation\\";
+export type { TimingAnimationConfig } from \\"./animations/TimingAnimation\\";
+export { default as FlatList } from \\"./components/AnimatedFlatList\\";
 export { default as Image } from \\"./components/AnimatedImage\\";
 export { default as ScrollView } from \\"./components/AnimatedScrollView\\";
 export { default as SectionList } from \\"./components/AnimatedSectionList\\";
@@ -185,6 +188,7 @@ export type { default as AnimatedNode } from \\"./nodes/AnimatedNode\\";
 export type { default as AnimatedAddition } from \\"./nodes/AnimatedAddition\\";
 export type { default as AnimatedDiffClamp } from \\"./nodes/AnimatedDiffClamp\\";
 export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
+export type { InterpolationConfigType as InterpolationConfig } from \\"./nodes/AnimatedInterpolation\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
@@ -628,10 +632,9 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedScrollView.js 1`] = `
-"type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
-type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
+"type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 declare const AnimatedScrollView: AnimatedComponentType<
-  AnimatedScrollViewProps,
+  ScrollViewProps,
   AnimatedScrollViewInstance,
 >;
 declare export default typeof AnimatedScrollView;
@@ -648,7 +651,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedText.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof Text>,
+  TextProps,
   React.ElementRef<typeof Text>,
 >;
 "
@@ -656,7 +659,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedView.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof View>,
+  ViewProps,
   React.ElementRef<typeof View>,
 >;
 "
@@ -695,9 +698,7 @@ type NonAnimatedProps =
   | \\"disabled\\"
   | \\"accessibilityLabel\\";
 type PassThroughProps = $ReadOnly<{
-  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-    typeof View,
-  > | null,
+  passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 export type AnimatedProps<Props: { ... }> = {
   [K in keyof Props]: K extends NonAnimatedProps
@@ -1757,8 +1758,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
-export type { PressableAndroidRippleConfig };
+"export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -1932,11 +1932,11 @@ export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTS
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
-"declare const exported: component(
+"declare const SafeAreaView: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 );
-declare export default typeof exported;
+declare export default typeof SafeAreaView;
 "
 `;
 
@@ -4940,8 +4940,7 @@ declare export default typeof FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"declare const VirtualizedList: typeof VirtualizedLists.VirtualizedList;
-type RequiredProps<ItemT> = {
+"type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
@@ -4971,7 +4970,6 @@ type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
   ...Omit<
     VirtualizedListProps,
@@ -8656,7 +8654,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/codege
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<\\"iOS\\" | \\"android\\">,
 }>;
-export type NativeComponentType<T> = HostComponent<T>;
+export type NativeComponentType<T: { ... }> = HostComponent<T>;
 declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
   options?: Options
@@ -9063,6 +9061,8 @@ export type {
 export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
 export type {
+  ScrollViewImperativeMethods,
+  ScrollViewScrollToOptions,
   ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
@@ -9349,6 +9349,11 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from \\"./src/private/components/virtualview/VirtualView\\";
+export type { ModeChangeEvent } from \\"./src/private/components/virtualview/VirtualView\\";
 "
 `;
 

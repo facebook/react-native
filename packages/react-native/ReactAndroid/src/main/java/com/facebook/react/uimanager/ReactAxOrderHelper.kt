@@ -10,7 +10,6 @@ package com.facebook.react.uimanager
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.facebook.react.R
 import com.facebook.react.bridge.ReadableArray
 
@@ -30,7 +29,7 @@ private object ReactAxOrderHelper {
    * @return an array of views following the accessibility order
    */
   @JvmStatic
-  public fun processAxOrderTree(
+  fun processAxOrderTree(
       root: View,
       axOrderIds: MutableList<String?>,
       axOrderSet: MutableSet<String?>
@@ -76,10 +75,6 @@ private object ReactAxOrderHelper {
         }
       }
 
-      if (!isIncluded && !isContained && parent != view && view !is TextView) {
-        view.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-      }
-
       // Don't traverse the children of a nested accessibility order
       if (view is ViewGroup) {
         val axChildren: ArrayList<View> = getAxChildren(view)
@@ -99,6 +94,13 @@ private object ReactAxOrderHelper {
             traverseAndBuildAxOrder(parent, axChildren[i], null)
           }
         }
+      }
+
+      if (!isIncluded && !isContained && parent != view) {
+        if (view.getTag(R.id.original_focusability) == null) {
+          view.setTag(R.id.original_focusability, view.isFocusable)
+        }
+        view.isFocusable = false
       }
     }
 
@@ -123,7 +125,7 @@ private object ReactAxOrderHelper {
   }
 
   @JvmStatic
-  public fun getVirtualViewBounds(host: View, virtualView: View): Rect {
+  fun getVirtualViewBounds(host: View, virtualView: View): Rect {
     var currentView: View = virtualView
     val viewBoundsInParent =
         Rect(virtualView.left, virtualView.top, virtualView.right, virtualView.bottom)
@@ -158,5 +160,22 @@ private object ReactAxOrderHelper {
       host.addChildrenForAccessibility(axChildren)
     }
     return axChildren
+  }
+
+  @JvmStatic
+  public fun restoreSubtreeFocusability(view: View) {
+    val originalFocusability = view.getTag(R.id.original_focusability)
+    if (originalFocusability is Boolean) {
+      view.isFocusable = originalFocusability
+    }
+
+    if (view is ViewGroup) {
+      for (i in 0 until view.childCount) {
+        val child = view.getChildAt(i)
+        if (child != null) {
+          restoreSubtreeFocusability(child)
+        }
+      }
+    }
   }
 }

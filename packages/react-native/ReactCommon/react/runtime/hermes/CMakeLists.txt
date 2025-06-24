@@ -6,6 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/internal/react-native-platform-selector.cmake)
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB_RECURSE bridgeless_hermes_SRC CONFIGURE_DEPENDS *.cpp)
@@ -16,13 +17,15 @@ add_library(
 )
 target_include_directories(bridgelesshermes PUBLIC .)
 
+react_native_android_selector(reactnative reactnative "")
 target_link_libraries(bridgelesshermes
         hermes-engine::libhermes
         hermes_executor_common
         hermes_inspector_modern
         jsi
+        jsitooling
         jsinspector
-        reactnative
+        ${reactnative}
 )
 
 target_compile_reactnative_options(bridgelesshermes PRIVATE)

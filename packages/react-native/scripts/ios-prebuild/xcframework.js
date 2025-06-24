@@ -197,7 +197,7 @@ function linkArchFolders(
         );
       } catch (error) {
         frameworkLog(
-          `Error copying module map file: ${error.message}. Check if the file exists.`,
+          `Error copying module map file: ${error.message}. Check if the file exists at ${moduleMapFile}.`,
           'error',
         );
       }
@@ -352,6 +352,9 @@ function createUmbrellaHeaderFile(
   return umbrellaHeaderFile;
 }
 
+// This regex matches some C++ construct that might be present in a header file.
+// To uniquely identify them. We need to exclude headers with C++ constructs from the module map
+// otherwise Swift won't be able to import the React.xcframework
 const cppHeaderRegex =
   /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::|NS_ENUM\s*\([^)]*\)|NS_OPTIONS\s*\([^)]*\)|typedef\s+enum|static\s+const|@interface|static\s+inline/;
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0e532705f336a7e8fb21ae8056a17083>>
+ * @generated SignedSource<<72e5c7b050f76d427ca8ddada1283b98>>
  */
 
 /**
@@ -232,15 +232,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
-  }
-
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    auto value = values_["enableIntersectionObserverEventLoopIntegration"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverEventLoopIntegration();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {

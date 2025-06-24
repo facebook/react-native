@@ -16,6 +16,7 @@ const translateSourceFile = require('./translateSourceFile');
 const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
+const {styleText} = require('util');
 
 /**
  * Build generated TypeScript types for react-native.
@@ -76,8 +77,29 @@ async function buildGeneratedTypes(): Promise<void> {
   ]);
 
   if (allErrors.length > 0) {
+    console.error(
+      '\n' +
+        styleText(['bold', 'inverse', 'red'], ' FAIL ') +
+        ' API translation encountered errors.\n',
+    );
     process.exitCode = 1;
+    return;
   }
+
+  const touchedPackages = new Set<string>(
+    Array.from(translatedFiles).map(
+      file =>
+        path.join(PACKAGES_DIR, getPackageName(file), TYPES_OUTPUT_DIR) + '/',
+    ),
+  );
+  for (const packagePath of touchedPackages) {
+    console.log(
+      styleText('green', '  ✔') +
+        ' Types built to ' +
+        styleText('underline', packagePath),
+    );
+  }
+  console.log('');
 }
 
 type DependencyEdges = Array<[string, string]>;

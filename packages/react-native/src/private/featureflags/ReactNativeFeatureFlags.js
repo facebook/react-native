@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eab8c8d6490730084776ef01c46e0f9d>>
+ * @generated SignedSource<<fae0668a375c5bbc4afe2c7c9bc9f0ef>>
  * @flow strict
  * @noformat
  */
@@ -71,7 +71,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
@@ -268,10 +267,6 @@ export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeF
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
-/**
- * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
- */
-export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', true);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */

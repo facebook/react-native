@@ -397,6 +397,7 @@ let reactFabric = RNTarget(
     "components/textinput",
     "components/textinput/platform/ios/",
     "components/unimplementedview",
+    "components/virtualview",
     "components/root/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
@@ -415,6 +416,8 @@ let reactFabricComponents = RNTarget(
   name: .reactFabricComponents,
   path: "ReactCommon/react/renderer",
   excludedPaths: [
+    "components/modal/platform/android",
+    "components/modal/platform/cxx",
     "components/view/platform/android",
     "components/view/platform/windows",
     "components/view/platform/macos",
@@ -430,7 +433,7 @@ let reactFabricComponents = RNTarget(
     "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
 )
 
 /// React-FabricImage.podspec

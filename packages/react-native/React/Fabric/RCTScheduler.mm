@@ -72,6 +72,12 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:props];
   }
 
+  void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
+  }
+
  private:
   void *scheduler_;
 };

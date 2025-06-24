@@ -14,6 +14,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.NativeGestureUtil
+import kotlin.math.abs
 
 /** Basic extension of [SwipeRefreshLayout] with ReactNative-specific functionality. */
 public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
@@ -115,7 +116,7 @@ public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
       }
       MotionEvent.ACTION_MOVE -> {
         val eventX = ev.x
-        val xDiff = Math.abs(eventX - prevTouchX)
+        val xDiff = abs(eventX - prevTouchX)
 
         if (intercepted || xDiff > touchSlop) {
           intercepted = true

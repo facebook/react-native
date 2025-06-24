@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.Objects
+import kotlin.math.max
 
 /**
  * A view created by [com.facebook.react.interfaces.fabric.ReactSurface] that's responsible for
@@ -55,7 +56,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
       for (i in 0 until childCount) {
         val child = getChildAt(i)
         val childSize = (child.left + child.measuredWidth + child.paddingLeft + child.paddingRight)
-        width = Math.max(width, childSize)
+        width = max(width, childSize)
       }
     } else {
       width = MeasureSpec.getSize(widthMeasureSpec)
@@ -65,7 +66,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
       for (i in 0 until childCount) {
         val child = getChildAt(i)
         val childSize = (child.top + child.measuredHeight + child.paddingTop + child.paddingBottom)
-        height = Math.max(height, childSize)
+        height = max(height, childSize)
       }
     } else {
       height = MeasureSpec.getSize(heightMeasureSpec)

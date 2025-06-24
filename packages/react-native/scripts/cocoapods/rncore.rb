@@ -3,15 +3,15 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-require "json"
+require 'json'
 require 'net/http'
 require 'rexml/document'
 
 require_relative './utils.rb'
 
 ## - RCT_USE_PREBUILT_RNCORE: If set to 1, it will use the release tarball from Maven instead of building from source.
-## - RCT_USE_LOCAL_RNCORE: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
-## - RCT_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.
+## - RCT_TESTONLY_RNCORE_TARBALL_PATH: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
+## - RCT_TESTONLY_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.
 
 class ReactNativeCoreUtils
     @@build_from_source = true
@@ -27,11 +27,11 @@ class ReactNativeCoreUtils
         if @@react_native_version == ""
             rncore_log("Setting up ReactNativeCore...")
             @@react_native_path = react_native_path
-            @@react_native_version = ENV["RCT_RNCORE_VERSION"] == nil ? react_native_version : ENV["RCT_RNCORE_VERSION"]
+            @@react_native_version = ENV["RCT_TESTONLY_RNCORE_VERSION"] == nil ? react_native_version : ENV["RCT_TESTONLY_RNCORE_VERSION"]
 
-            if @@react_native_version.include? 'nightly'
+            if @@react_native_version.include? "nightly"
                 @@use_nightly = true
-                if ENV["RCT_RNCORE_VERSION"] == "nightly"
+                if ENV["RCT_TESTONLY_RNCORE_VERSION"] == "nightly"
                     @@react_native_version = ReactNativeDependenciesUtils.get_nightly_npm_version()
                     rncore_log("Using nightly version from npm: #{@@react_native_version}")
                 else
@@ -39,15 +39,15 @@ class ReactNativeCoreUtils
                 end
             end
 
-            if ENV["RCT_USE_LOCAL_RNCORE"]
+            if ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]
               abort_if_use_local_rncore_with_no_file()
             end
 
-            use_local_xcframework = ENV["RCT_USE_LOCAL_RNCORE"] && File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
+            use_local_xcframework = ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"] && File.exist?(ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"])
             artifacts_exists = ENV["RCT_USE_PREBUILT_RNCORE"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
             @@build_from_source = !use_local_xcframework && !artifacts_exists
 
-            if @@build_from_source && ENV["RCT_USE_LOCAL_RNCORE"] && !use_local_xcframework
+            if @@build_from_source && ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"] && !use_local_xcframework
                 rncore_log("No local xcframework found, reverting to building from source.")
             end
             if @@build_from_source && ENV["RCT_USE_PREBUILT_RNCORE"] && !artifacts_exists
@@ -59,8 +59,8 @@ class ReactNativeCoreUtils
     end
 
     def self.abort_if_use_local_rncore_with_no_file()
-      if !File.exist?(ENV["RCT_USE_LOCAL_RNCORE"])
-          abort("RCT_USE_LOCAL_RNCORE is set to #{ENV["RCT_USE_LOCAL_RNCORE"]} but the file does not exist!")
+      if !File.exist?(ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"])
+          abort("RCT_TESTONLY_RNCORE_TARBALL_PATH is set to #{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]} but the file does not exist!")
       end
     end
 
@@ -69,10 +69,10 @@ class ReactNativeCoreUtils
     end
 
     def self.resolve_podspec_source()
-        if ENV["RCT_USE_LOCAL_RNCORE"]
+        if ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]
             abort_if_use_local_rncore_with_no_file()
-            rncore_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RNCORE"]}")
-            return {:http => "file://#{ENV["RCT_USE_LOCAL_RNCORE"]}" }
+            rncore_log("Using local xcframework at #{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}")
+            return {:http => "file://#{ENV["RCT_TESTONLY_RNCORE_TARBALL_PATH"]}" }
         end
 
         if ENV["RCT_USE_PREBUILT_RNCORE"] == "1"
@@ -97,13 +97,11 @@ class ReactNativeCoreUtils
     end
 
     def self.podspec_source_download_prebuild_stable_tarball()
-        # Warn if @@react_native_path is not set
         if @@react_native_path == ""
             rncore_log("react_native_path is not set", :error)
             return
         end
 
-        # Warn if @@react_native_version is not set
         if @@react_native_version == ""
             rncore_log("react_native_version is not set", :error)
             return
@@ -124,7 +122,8 @@ class ReactNativeCoreUtils
         maven_repo_url = "https://repo1.maven.org/maven2"
         group = "com/facebook/react"
         # Sample url from Maven:
-        return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-core-debug.tar.gz-#{build_type.to_s}.tar.gz"
+        # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.81.0/react-native-artifacts-0.81.0-reactnative-core-debug.tar.gz
+        return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-core-#{build_type.to_s}.tar.gz"
     end
 
     def self.nightly_tarball_url(version)
@@ -132,9 +131,9 @@ class ReactNativeCoreUtils
         artefact_name = "reactnative-core-debug.tar.gz"
         xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artefact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-        response = Net::HTTP.get(URI(xml_url))
-        if response.kind_of? Net::HTTPSuccess
-          xml = REXML::Document.new(response)
+        response = Net::HTTP.get_response(URI(xml_url))
+        if response.is_a?(Net::HTTPSuccess)
+          xml = REXML::Document.new(response.body)
           timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
           build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
           full_version = "#{version}-#{timestamp}-#{build_number}"

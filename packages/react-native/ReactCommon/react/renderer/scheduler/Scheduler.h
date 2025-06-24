@@ -97,6 +97,8 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
   void uiManagerShouldAddEventListener(
       std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(

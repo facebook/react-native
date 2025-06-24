@@ -67,7 +67,7 @@
     "@babel/plugin-transform-unicode-regex": "^7.24.7",
     "@babel/template": "^7.25.0",
     "@react-native/babel-plugin-codegen": "0.80.0-main",
-    "babel-plugin-syntax-hermes-parser": "0.28.1",
+    "babel-plugin-syntax-hermes-parser": "0.29.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "react-refresh": "^0.14.0"
   },

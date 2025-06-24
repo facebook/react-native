@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc8ac9241675deb1324d8ff0572f2fad>>
+ * @generated SignedSource<<62c548a9bfbf777a40b1b9e9d52b1de2>>
  */
 
 /**
@@ -69,8 +69,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableIOSTextBaselineOffsetPerLine(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableIntersectionObserverEventLoopIntegration(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 

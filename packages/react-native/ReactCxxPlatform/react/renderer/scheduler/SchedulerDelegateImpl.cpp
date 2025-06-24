@@ -58,4 +58,9 @@ void SchedulerDelegateImpl::schedulerShouldSynchronouslyUpdateViewOnUIThread(
   mountingManager_->synchronouslyUpdateViewOnUIThread(tag, props);
 }
 
+void SchedulerDelegateImpl::schedulerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+  mountingManager_->onUpdateShadowTree(tagToProps);
+}
+
 } // namespace facebook::react

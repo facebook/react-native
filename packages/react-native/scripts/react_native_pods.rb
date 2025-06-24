@@ -9,6 +9,7 @@ require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
 require_relative './cocoapods/rndependencies.rb'
+require_relative './cocoapods/rncore.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -185,7 +186,11 @@ def use_react_native! (
     pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
     pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
   else
+    # Install prebuilt React Native Core and React Native Dependencies
+    ReactNativeCoreUtils.rncore_log("Using React Native Core and React Native Dependencies prebuilt versions.")
+    pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
+    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes-engine/hermes-engine.podspec"
   end
 
   pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true

@@ -97,6 +97,9 @@ interface Spec extends TurboModule {
   ) => $ReadOnly<{
     [string]: mixed,
   }>;
+  getFabricUpdateProps: (shadowNode: mixed /* ShadowNode */) => $ReadOnly<{
+    [string]: mixed,
+  }>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
   produceFramesForDuration: (miliseconds: number) => void;
