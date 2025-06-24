@@ -41,7 +41,6 @@ describe('inlineTypes', () => {
     expect(result).toMatchInlineSnapshot(`
       "export type Example = {
         readonly debugID?: string | undefined;
-      } & {
         useNativeDriver: boolean;
       };"
     `);
@@ -121,8 +120,8 @@ describe('inlineTypes', () => {
 
   test('resolves Readonly type', async () => {
     const code = `
-    export type Foo = Readonly<{ a?: number, 'b-key': number }>;
-  `;
+      export type Foo = Readonly<{ a?: number, 'b-key': number }>;
+    `;
 
     const result = await applyPostTransforms(code);
     expect(result).toMatchInlineSnapshot(`
@@ -131,5 +130,59 @@ describe('inlineTypes', () => {
         readonly 'b-key': number;
       };"
     `);
+  });
+
+  test('resolves simple intersection', async () => {
+    const code = `
+      export type Foo = { a?: number, 'b-key': number } & { c: number, 'd-key'?: number };
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Foo = {
+        a?: number;
+        \\"b-key\\": number;
+        c: number;
+        \\"d-key\\"?: number;
+      };"
+    `);
+  });
+
+  test('can inline multiple references to a single type in a declaration', async () => {
+    const code = `
+      export declare type Result =
+        & Omit<{ alpha: 1; }, keyof Beta>
+        & Omit<Beta, "gamma">
+      ;
+
+      declare type Beta = Readonly<{
+        beta: 2;
+      }>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export declare type Result = {
+        alpha: 1;
+        readonly beta: 2;
+      };"
+    `);
+  });
+
+  test('can inline indexing into an object literal', async () => {
+    const code = `
+      declare type Catalog = {
+        readonly boots: 123;
+        readonly socks: 456;
+        readonly shoes: 789;
+      };
+
+      export declare type BootsPrice = Catalog['boots'];
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(
+      `"export declare type BootsPrice = 123;"`,
+    );
   });
 });
