@@ -17,7 +17,7 @@ else
 end
 
 Pod::Spec.new do |s|
-  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  source_files = ["*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"]
   header_search_paths = [
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
   ]
