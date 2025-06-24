@@ -132,6 +132,20 @@ describe('inlineTypes', () => {
     `);
   });
 
+  test('resolves Partial type', async () => {
+    const code = `
+      export type Foo = Partial<{ a: number, 'b-key': number }>;
+    `;
+
+    const result = await applyPostTransforms(code);
+    expect(result).toMatchInlineSnapshot(`
+      "export type Foo = {
+        a?: number;
+        'b-key'?: number;
+      };"
+    `);
+  });
+
   test('resolves simple intersection', async () => {
     const code = `
       export type Foo = { a?: number, 'b-key': number } & { c: number, 'd-key'?: number };
