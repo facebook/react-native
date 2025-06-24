@@ -261,10 +261,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+    super.onInitializeAccessibilityNodeInfo(host, info);
     // If we set an accessibility order then all the focusing logic should go through our custom
     // virtual view tree hierarchy and ignore the default path
     ReadableArray axOrderIds = (ReadableArray) mView.getTag(R.id.accessibility_order);
     if (axOrderIds != null && axOrderIds.size() != 0) {
+      info.setContentDescription("");
+      info.setFocusable(false);
 
       AccessibilityManager am =
           (AccessibilityManager) host.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -299,7 +302,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    super.onInitializeAccessibilityNodeInfo(host, info);
     populateAccessibilityNodeInfo(host, info);
   }
 
