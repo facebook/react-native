@@ -448,6 +448,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewWindowFocusDetection: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables window focus detection for prioritizing VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {

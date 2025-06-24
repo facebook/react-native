@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c80472950cb864b029873b4e64acc976>>
+ * @generated SignedSource<<f49d0daf5a24592688931ec47c016bd4>>
  */
 
 /**
@@ -228,6 +228,11 @@ class ReactNativeFeatureFlags {
    * Enables VirtualView debug features such as logging and overlays.
    */
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
+
+  /**
+   * Enables window focus detection for prioritizing VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
