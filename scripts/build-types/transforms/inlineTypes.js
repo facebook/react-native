@@ -646,6 +646,29 @@ const inlineTypes: PluginObj<VisitorState> = {
         resolveIndexAccess(path, state);
       },
     },
+    ExportSpecifier: {
+      enter(path, state): void {
+        const localName = path.node.local.name;
+        if (state.aliasesToPrune.has(localName)) {
+          // This alias is not inlined, so we don't prune it
+          state.aliasesToPrune.delete(localName);
+          return;
+        }
+      },
+      exit(path, state): void {},
+    },
+    ExportDefaultDeclaration: {
+      enter(path, state): void {
+        const name =
+          path.node.declaration.name ?? path.node.declaration.id?.name;
+        if (name != null && state.aliasesToPrune.has(name)) {
+          // This alias is not inlined, so we don't prune it
+          state.aliasesToPrune.delete(name);
+          return;
+        }
+      },
+      exit(path, state): void {},
+    },
     // Classes are a very special case, because they can extend a super class,
     // and that super class can be generic. We need to track that superclass
     // either as a resolvable or unresolvable type layer.
