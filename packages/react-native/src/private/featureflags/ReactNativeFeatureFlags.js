@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fae0668a375c5bbc4afe2c7c9bc9f0ef>>
+ * @generated SignedSource<<d333a07d7f69906e8f4f4bb08d2f9aa2>>
  * @flow strict
  * @noformat
  */
@@ -73,6 +73,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
+  enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
   enableMainQueueModulesOnIOS: Getter<boolean>,
   enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
@@ -275,6 +276,10 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnIOS', false);
 /**
  * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
  */

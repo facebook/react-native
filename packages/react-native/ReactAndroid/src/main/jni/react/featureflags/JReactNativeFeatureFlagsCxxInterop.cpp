@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8d441d64e8e04ebbfe611edb4a96b97>>
+ * @generated SignedSource<<38d86c006807727b00b087e7112b11d7>>
  */
 
 /**
@@ -174,6 +174,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableLineHeightCenteringOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLineHeightCenteringOnIOS");
     return method(javaProvider_);
   }
 
@@ -470,6 +476,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS();
@@ -715,6 +726,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
+      makeNativeMethod(
+        "enableLineHeightCenteringOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS),
       makeNativeMethod(
         "enableMainQueueCoordinatorOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS),

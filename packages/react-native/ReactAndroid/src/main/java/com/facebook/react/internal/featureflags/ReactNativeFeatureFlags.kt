@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dee97293bfeab942c9cd0ba8622a5f86>>
+ * @generated SignedSource<<39dc8e96dd56b468f391db2ee2c02882>>
  */
 
 /**
@@ -167,6 +167,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  @JvmStatic
+  public fun enableLineHeightCenteringOnIOS(): Boolean = accessor.enableLineHeightCenteringOnIOS()
 
   /**
    * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
