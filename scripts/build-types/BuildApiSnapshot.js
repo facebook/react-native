@@ -15,8 +15,8 @@ const {PACKAGES_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../consts');
 const {isGitRepo} = require('../scm-utils');
 const {API_EXTRACTOR_CONFIG_FILE, TYPES_OUTPUT_DIR} = require('./config');
 const apiSnapshotTemplate = require('./templates/ReactNativeApi.d.ts-template.js');
+const applyBabelTransformsSeq = require('./utils/applyBabelTransformsSeq');
 const resolveCyclicImportsInDefinition = require('./utils/resolveCyclicImportsInDefinition');
-const babel = require('@babel/core');
 const {
   Extractor,
   ExtractorConfig,
@@ -193,7 +193,7 @@ async function preparePackagesInTempDir(
   await Promise.all(
     typeDefs.map(async file => {
       const source = await fs.readFile(file, 'utf-8');
-      const transformed = await applyPostTransforms(
+      const transformed = await applyBabelTransformsSeq(
         source,
         inputFilesPostTransforms,
       );
@@ -241,7 +241,7 @@ async function getCleanedUpRollup(tempDirectory: string) {
     .replace(/^\s+$/gm, '') // Clear whitespace-only lines
     .replace(/\n+/gm, '\n'); // Collapse empty lines
 
-  const transformedRollup = await applyPostTransforms(
+  const transformedRollup = await applyBabelTransformsSeq(
     cleanedRollup,
     postTransforms,
   );
@@ -253,17 +253,6 @@ async function getCleanedUpRollup(tempDirectory: string) {
   });
 
   return formattedRollup;
-}
-
-async function applyPostTransforms(
-  inSrc: string,
-  transforms: $ReadOnlyArray<PluginObj<mixed>>,
-): Promise<string> {
-  const result = await babel.transformAsync(inSrc, {
-    plugins: ['@babel/plugin-syntax-typescript', ...transforms],
-  });
-
-  return result.code;
 }
 
 async function generateConfigFiles(tempDirectory: string) {
