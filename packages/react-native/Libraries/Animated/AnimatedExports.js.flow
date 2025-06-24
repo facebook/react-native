@@ -10,6 +10,10 @@
 
 import AnimatedImplementation from './AnimatedImplementation';
 
+export type {DecayAnimationConfig} from './animations/DecayAnimation';
+export type {SpringAnimationConfig} from './animations/SpringAnimation';
+export type {TimingAnimationConfig} from './animations/TimingAnimation';
+
 export {default as FlatList} from './components/AnimatedFlatList';
 export {default as Image} from './components/AnimatedImage';
 export {default as ScrollView} from './components/AnimatedScrollView';
