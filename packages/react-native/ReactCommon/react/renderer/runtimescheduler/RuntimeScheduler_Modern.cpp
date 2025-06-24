@@ -180,10 +180,6 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
   }
 }
 
-void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
-  // No-op in the event loop implementation.
-}
-
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
