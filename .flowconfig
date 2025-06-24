@@ -47,6 +47,8 @@ packages/react-native/flow/
 
 [options]
 enums=true
+experimental.pattern_matching=true
+experimental.pattern_matching.includes=<PROJECT_ROOT>/packages/react-native/src/private/components/virtualview/
 casting_syntax=both
 component_syntax=true
 
