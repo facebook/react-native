@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{h,mm}"
+  s.source_files           = podspec_sources("*.{h,mm}", "*.h")
   s.compiler_flags         = new_arch_flags
   s.header_dir             = header_dir
   s.module_name          = module_name

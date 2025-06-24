@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{h,m,mm}"
+  s.source_files           = podspec_sources("*.{h,m,mm}", "**/*.h")
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTBlob"
   s.pod_target_xcconfig    = {

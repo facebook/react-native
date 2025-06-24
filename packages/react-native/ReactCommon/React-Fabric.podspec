@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "dummyFile.cpp"
+  s.source_files           = podspec_sources("dummyFile.cpp", "")
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
@@ -58,19 +58,19 @@ Pod::Spec.new do |s|
   add_rn_third_party_dependencies(s)
 
   s.subspec "animations" do |ss|
-    ss.source_files         = "react/renderer/animations/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/animations/**/*.{m,mm,cpp,h}", "react/renderer/animations/**/*.{h}")
     ss.exclude_files        = "react/renderer/animations/tests"
     ss.header_dir           = "react/renderer/animations"
   end
 
   s.subspec "attributedstring" do |ss|
-    ss.source_files         = "react/renderer/attributedstring/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/attributedstring/**/*.{m,mm,cpp,h}", "react/renderer/attributedstring/**/*.{h}")
     ss.exclude_files        = "react/renderer/attributedstring/tests"
     ss.header_dir           = "react/renderer/attributedstring"
   end
 
   s.subspec "bridging" do |ss|
-    ss.source_files         = "react/renderer/bridging/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/bridging/**/*.{m,mm,cpp,h}", "react/renderer/bridging/**/*.{h}")
     ss.exclude_files        = "react/renderer/bridging/tests"
     ss.header_dir           = "react/renderer/bridging"
   end
@@ -92,7 +92,7 @@ Pod::Spec.new do |s|
       ]
     end
 
-    ss.source_files         = "react/renderer/core/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/core/**/*.{m,mm,cpp,h}", "react/renderer/core/**/*.{h}")
     ss.exclude_files        = "react/renderer/core/tests"
     ss.header_dir           = "react/renderer/core"
     ss.pod_target_xcconfig  = {
@@ -101,18 +101,18 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "componentregistry" do |ss|
-    ss.source_files         = "react/renderer/componentregistry/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/componentregistry/*.{m,mm,cpp,h}", "react/renderer/componentregistry/*.{h}")
     ss.header_dir           = "react/renderer/componentregistry"
   end
 
   s.subspec "componentregistrynative" do |ss|
-    ss.source_files         = "react/renderer/componentregistry/native/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/componentregistry/native/**/*.{m,mm,cpp,h}", "react/renderer/componentregistry/native/**/*.{h}")
     ss.header_dir           = "react/renderer/componentregistry/native"
   end
 
   s.subspec "components" do |ss|
     ss.subspec "root" do |sss|
-      sss.source_files         = "react/renderer/components/root/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/root/**/*.{m,mm,cpp,h}", "react/renderer/components/root/**/*.{h}")
       sss.exclude_files        = "react/renderer/components/root/tests"
       sss.header_dir           = "react/renderer/components/root"
     end
@@ -120,19 +120,19 @@ Pod::Spec.new do |s|
     ss.subspec "view" do |sss|
       sss.dependency             "React-renderercss"
       sss.dependency             "Yoga"
-      sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/view/**/*.{m,mm,cpp,h}", "react/renderer/components/view/**/*.{h}")
       sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android", "react/renderer/components/view/platform/windows"
       sss.header_dir           = "react/renderer/components/view"
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/scrollview/**/*.{m,mm,cpp,h}", "react/renderer/components/scrollview/**/*.{h}")
       sss.header_dir           = "react/renderer/components/scrollview"
       sss.exclude_files        = "react/renderer/components/scrollview/tests", "react/renderer/components/scrollview/platform/android"
     end
 
     ss.subspec "legacyviewmanagerinterop" do |sss|
-      sss.source_files         = "react/renderer/components/legacyviewmanagerinterop/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/legacyviewmanagerinterop/**/*.{m,mm,cpp,h}", "react/renderer/components/legacyviewmanagerinterop/**/*.{h}")
       sss.exclude_files        = "react/renderer/components/legacyviewmanagerinterop/tests"
       sss.header_dir           = "react/renderer/components/legacyviewmanagerinterop"
     end
@@ -140,13 +140,13 @@ Pod::Spec.new do |s|
 
   s.subspec "dom" do |ss|
     ss.dependency             "React-graphics"
-    ss.source_files         = "react/renderer/dom/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/dom/**/*.{m,mm,cpp,h}", "react/renderer/dom/**/*.{h}")
     ss.exclude_files        = "react/renderer/dom/tests"
     ss.header_dir           = "react/renderer/dom"
   end
 
   s.subspec "scheduler" do |ss|
-    ss.source_files         = "react/renderer/scheduler/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/scheduler/**/*.{m,mm,cpp,h}", "react/renderer/scheduler/**/*.h")
     ss.header_dir           = "react/renderer/scheduler"
 
     ss.dependency             "React-performancetimeline"
@@ -154,55 +154,55 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "imagemanager" do |ss|
-    ss.source_files         = "react/renderer/imagemanager/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/imagemanager/*.{m,mm,cpp,h}", "react/renderer/imagemanager/*.h")
     ss.header_dir           = "react/renderer/imagemanager"
   end
 
   s.subspec "mounting" do |ss|
-    ss.source_files         = "react/renderer/mounting/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/mounting/**/*.{m,mm,cpp,h}", "react/renderer/mounting/**/*.h")
     ss.exclude_files        = "react/renderer/mounting/tests"
     ss.header_dir           = "react/renderer/mounting"
   end
 
   s.subspec "observers" do |ss|
     ss.subspec "events" do |sss|
-      sss.source_files         = "react/renderer/observers/events/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/observers/events/**/*.{m,mm,cpp,h}", "react/renderer/observers/events/**/*.h")
       sss.exclude_files        = "react/renderer/observers/events/tests"
       sss.header_dir           = "react/renderer/observers/events"
     end
   end
 
   s.subspec "templateprocessor" do |ss|
-    ss.source_files         = "react/renderer/templateprocessor/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/templateprocessor/**/*.{m,mm,cpp,h}", "react/renderer/templateprocessor/**/*.h")
     ss.exclude_files        = "react/renderer/templateprocessor/tests"
     ss.header_dir           = "react/renderer/templateprocessor"
   end
 
   s.subspec "telemetry" do |ss|
-    ss.source_files         = "react/renderer/telemetry/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/telemetry/**/*.{m,mm,cpp,h}", "react/renderer/telemetry/**/*.h")
     ss.exclude_files        = "react/renderer/telemetry/tests"
     ss.header_dir           = "react/renderer/telemetry"
 
   end
 
   s.subspec "consistency" do |ss|
-    ss.source_files         = "react/renderer/consistency/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/consistency/**/*.{m,mm,cpp,h}", "react/renderer/consistency/**/*.h")
     ss.header_dir           = "react/renderer/consistency"
   end
 
   s.subspec "uimanager" do |ss|
     ss.subspec "consistency" do |sss|
-      sss.source_files         = "react/renderer/uimanager/consistency/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/uimanager/consistency/*.{m,mm,cpp,h}", "react/renderer/uimanager/consistency/*.h")
       sss.header_dir           = "react/renderer/uimanager/consistency"
     end
 
     ss.dependency             "React-rendererconsistency"
-    ss.source_files         = "react/renderer/uimanager/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/uimanager/*.{m,mm,cpp,h}", "react/renderer/uimanager/*.h")
     ss.header_dir           = "react/renderer/uimanager"
   end
 
   s.subspec "leakchecker" do |ss|
-    ss.source_files         = "react/renderer/leakchecker/**/*.{cpp,h}"
+    ss.source_files         = podspec_sources("react/renderer/leakchecker/**/*.{cpp,h}", "react/renderer/leakchecker/**/*.h")
     ss.exclude_files        = "react/renderer/leakchecker/tests"
     ss.header_dir           = "react/renderer/leakchecker"
     ss.pod_target_xcconfig  = { "GCC_WARN_PEDANTIC" => "YES" }

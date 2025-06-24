@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "dummyFile.cpp"
+  s.source_files           = podspec_sources("dummyFile.cpp", "")
   s.pod_target_xcconfig = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" "),
@@ -83,64 +83,73 @@ Pod::Spec.new do |s|
   s.subspec "components" do |ss|
 
     ss.subspec "inputaccessory" do |sss|
-      sss.source_files         = "react/renderer/components/inputaccessory/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/inputaccessory/**/*.{m,mm,cpp,h}", "react/renderer/components/inputaccessory/**/*.h")
       sss.exclude_files        = "react/renderer/components/inputaccessory/tests"
       sss.header_dir           = "react/renderer/components/inputaccessory"
     end
 
     ss.subspec "modal" do |sss|
-      sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/modal/**/*.{m,mm,cpp,h}", "react/renderer/components/modal/**/*.h")
       sss.exclude_files        = "react/renderer/components/modal/tests"
       sss.header_dir           = "react/renderer/components/modal"
     end
 
     ss.subspec "safeareaview" do |sss|
-      sss.source_files         = "react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/safeareaview/**/*.{m,mm,cpp,h}", "react/renderer/components/safeareaview/**/*.h")
+      # Exclude tests to avoid conflicts with the react-native-safe-area-context package
       sss.exclude_files        = "react/renderer/components/safeareaview/tests"
       sss.header_dir           = "react/renderer/components/safeareaview"
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}",
-                                 "react/renderer/components/scrollview/platform/cxx/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources(["react/renderer/components/scrollview/*.{m,mm,cpp,h}",
+                                  "react/renderer/components/scrollview/platform/cxx/**/*.{m,mm,cpp,h}"],
+                                  ["react/renderer/components/scrollview/*.h",
+                                  "react/renderer/components/scrollview/platform/cxx/**/*.h"])
       sss.exclude_files        = "react/renderer/components/scrollview/tests"
       sss.header_dir           = "react/renderer/components/scrollview"
     end
 
     ss.subspec "text" do |sss|
-      sss.source_files         = "react/renderer/components/text/*.{m,mm,cpp,h}",
-                                 "react/renderer/components/text/platform/cxx/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources(["react/renderer/components/text/*.{m,mm,cpp,h}",
+                                  "react/renderer/components/text/platform/cxx/**/*.{m,mm,cpp,h}"],
+                                  ["react/renderer/components/text/*.h",
+                                  "react/renderer/components/text/platform/cxx/**/*.h"])
       sss.header_dir           = "react/renderer/components/text"
     end
 
     ss.subspec "iostextinput" do |sss|
-      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
-                                 "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources(["react/renderer/components/textinput/*.{m,mm,cpp,h}",
+                                  "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"],
+                                  ["react/renderer/components/textinput/*.h",
+                                  "react/renderer/components/textinput/platform/ios/**/*.h"])
       sss.header_dir           = "react/renderer/components/iostextinput"
     end
 
     ss.subspec "textinput" do |sss|
-      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/textinput/*.{m,mm,cpp,h}", "react/renderer/components/textinput/**/*.h")
       sss.header_dir           = "react/renderer/components/textinput"
     end
 
     ss.subspec "unimplementedview" do |sss|
-      sss.source_files         = "react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}"
+      sss.source_files         = podspec_sources("react/renderer/components/unimplementedview/**/*.{m,mm,cpp,h}", "react/renderer/components/unimplementedview/**/*.h")
       sss.exclude_files        = "react/renderer/components/unimplementedview/tests"
       sss.header_dir           = "react/renderer/components/unimplementedview"
     end
 
     # Legacy header paths for backwards compat
     ss.subspec "rncore" do |sss|
-      sss.source_files         = "react/renderer/components/rncore/**/*.h"
+      sss.source_files         = podspec_sources("react/renderer/components/rncore/**/*.h", "react/renderer/components/rncore/**/*.h")
       sss.header_dir           = "react/renderer/components/rncore"
     end
   end
 
   s.subspec "textlayoutmanager" do |ss|
     ss.dependency             "React-Fabric"
-    ss.source_files         = "react/renderer/textlayoutmanager/platform/ios/**/*.{m,mm,cpp,h}",
-                              "react/renderer/textlayoutmanager/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources(["react/renderer/textlayoutmanager/platform/ios/**/*.{m,mm,cpp,h}",
+                                "react/renderer/textlayoutmanager/*.{m,mm,cpp,h}"],
+                                ["react/renderer/textlayoutmanager/platform/ios/**/*.h",
+                                "react/renderer/textlayoutmanager/*.{h}"])
     ss.exclude_files        = "react/renderer/textlayoutmanager/tests",
                               "react/renderer/textlayoutmanager/platform/android",
                               "react/renderer/textlayoutmanager/platform/cxx"

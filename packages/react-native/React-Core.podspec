@@ -66,7 +66,7 @@ Pod::Spec.new do |s|
   s.default_subspec        = "Default"
 
   s.subspec "Default" do |ss|
-    ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
+    ss.source_files = podspec_sources("React/**/*.{c,h,m,mm,S,cpp}", "React/**/*.h")
     exclude_files = [
       "React/CoreModules/**/*",
       "React/DevSupport/**/*",
@@ -76,17 +76,24 @@ Pod::Spec.new do |s|
       "React/Inspector/**/*",
       "React/Runtime/**/*",
     ]
-    
+
     # The default is use hermes,  we don't have jsc installed
     exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
 
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
+
+    # Include prebuilt if we're not building from source
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+      ss.dependency "React-Core-prebuilt", version
+    end
   end
 
   s.subspec "DevSupport" do |ss|
-    ss.source_files = "React/DevSupport/*.{h,mm,m}",
-                      "React/Inspector/*.{h,mm,m}"
+    ss.source_files = podspec_sources(["React/DevSupport/*.{h,mm,m}",
+                        "React/Inspector/*.{h,mm,m}"],
+                        ["React/DevSupport/*.h",
+                        "React/Inspector/*.h"])
 
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
@@ -94,7 +101,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "RCTWebSocket" do |ss|
-    ss.source_files = "Libraries/WebSocket/*.{h,m}"
+    ss.source_files = podspec_sources("Libraries/WebSocket/*.{h,m}", "Libraries/WebSocket/*.h")
     ss.dependency "React-Core/Default", version
   end
 
