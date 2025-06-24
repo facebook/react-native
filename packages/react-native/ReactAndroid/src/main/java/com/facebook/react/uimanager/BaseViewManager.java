@@ -19,6 +19,7 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -185,6 +186,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     @Nullable OnFocusChangeListener focusChangeListener = view.getOnFocusChangeListener();
     if (focusChangeListener instanceof BaseVMFocusChangeListener) {
       ((BaseVMFocusChangeListener) focusChangeListener).detach(view);
+    }
+
+    AccessibilityDelegateCompat axDelegate = ViewCompat.getAccessibilityDelegate(view);
+
+    if (axDelegate instanceof ReactAccessibilityDelegate) {
+      ((ReactAccessibilityDelegate) axDelegate).cleanUp();
+    }
+
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view).setOnHierarchyChangeListener(null);
     }
   }
 
