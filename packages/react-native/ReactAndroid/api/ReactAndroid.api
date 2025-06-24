@@ -4339,20 +4339,20 @@ public abstract interface class com/facebook/react/uimanager/UIImplementation$La
 	public abstract fun onLayoutUpdated (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 }
 
-public class com/facebook/react/uimanager/UIManagerHelper {
+public final class com/facebook/react/uimanager/UIManagerHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/UIManagerHelper;
 	public static final field PADDING_BOTTOM_INDEX I
 	public static final field PADDING_END_INDEX I
 	public static final field PADDING_START_INDEX I
 	public static final field PADDING_TOP_INDEX I
-	public fun <init> ()V
-	public static fun getDefaultTextInputPadding (Landroid/content/Context;)[F
-	public static fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public static fun getEventDispatcherForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public static fun getReactContext (Landroid/view/View;)Lcom/facebook/react/bridge/ReactContext;
-	public static fun getSurfaceId (Landroid/content/Context;)I
-	public static fun getSurfaceId (Landroid/view/View;)I
-	public static fun getUIManager (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
-	public static fun getUIManagerForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
+	public static final fun getDefaultTextInputPadding (Landroid/content/Context;)[F
+	public static final fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
+	public static final fun getEventDispatcherForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
+	public static final fun getReactContext (Landroid/view/View;)Lcom/facebook/react/bridge/ReactContext;
+	public static final fun getSurfaceId (Landroid/content/Context;)I
+	public static final fun getSurfaceId (Landroid/view/View;)I
+	public static final fun getUIManager (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
+	public static final fun getUIManagerForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
 }
 
 public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/OnBatchCompleteListener, com/facebook/react/bridge/UIManager {
