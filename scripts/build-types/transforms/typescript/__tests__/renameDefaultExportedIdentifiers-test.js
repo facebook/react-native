@@ -8,7 +8,7 @@
  * @format
  */
 
-const renameDefaultExportedIdentifiersVisitor = require('../renameDefaultExportedIdentifiers.js');
+const renameDefaultExportedIdentifiersVisitor = require('../renameDefaultExportedIdentifiers');
 const babel = require('@babel/core');
 
 async function translate(code: string): Promise<string> {

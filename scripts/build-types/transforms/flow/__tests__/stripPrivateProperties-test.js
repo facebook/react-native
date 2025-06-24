@@ -8,7 +8,7 @@
  * @format
  */
 
-const stripPrivateProperties = require('../stripPrivateProperties.js');
+const stripPrivateProperties = require('../stripPrivateProperties');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};

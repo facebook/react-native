@@ -8,7 +8,7 @@
  * @format
  */
 
-const resolveCyclicImportsInDefinition = require('../resolveCyclicImportsInDefinition.js');
+const resolveCyclicImportsInDefinition = require('../resolveCyclicImportsInDefinition');
 const path = require('path');
 
 const packagesPath = '/path/to/package/definition/files';

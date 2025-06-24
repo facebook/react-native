@@ -8,7 +8,7 @@
  * @format
  */
 
-const replaceNullablePropertiesWithUndefined = require('../replaceNullablePropertiesWithUndefined.js');
+const replaceNullablePropertiesWithUndefined = require('../replaceNullablePropertiesWithUndefined');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};

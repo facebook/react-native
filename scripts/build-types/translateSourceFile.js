@@ -13,7 +13,6 @@ import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
 const getDependencies = require('./resolution/getDependencies');
-const createReplaceDefaultExportName = require('./transforms/replaceDefaultExportName');
 const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
@@ -21,15 +20,17 @@ const {parse, print} = require('hermes-transform');
 type PreTransformFn = ParseResult => Promise<TransformASTResult>;
 
 const preTransforms: Array<PreTransformFn> = [
-  require('./transforms/stripPrivateProperties'),
-  require('./transforms/replaceRequiresWithImports'),
-  require('./transforms/replaceEmptyWithNever'),
-  require('./transforms/replaceStringishWithString'),
-  require('./transforms/replaceNullablePropertiesWithUndefined'),
-  require('./transforms/reattachDocComments'),
-  require('./transforms/ensureNoUnprefixedProps'),
+  require('./transforms/flow/stripPrivateProperties'),
+  require('./transforms/flow/replaceRequiresWithImports'),
+  require('./transforms/flow/replaceEmptyWithNever'),
+  require('./transforms/flow/replaceStringishWithString'),
+  require('./transforms/flow/replaceNullablePropertiesWithUndefined'),
+  require('./transforms/flow/reattachDocComments'),
+  require('./transforms/flow/ensureNoUnprefixedProps'),
 ];
-const postTransforms: Array<PluginObj<mixed>> = [];
+const postTransforms = (filePath: string): Array<PluginObj<mixed>> => [
+  require('./transforms/typescript/replaceDefaultExportName')(filePath),
+];
 const prettierOptions = {parser: 'babel'};
 const unsupportedFeatureRegex =
   /Unsupported feature: Translating ".*" is currently not supported/;
@@ -100,19 +101,12 @@ async function applyPreTransforms(source: ParseResult): Promise<ParseResult> {
   }, Promise.resolve(source));
 }
 
-/**
- * Apply post-transforms to .d.ts source code containing @build-types directives.
- */
 async function applyPostTransforms(
   source: string,
   filePath: string,
 ): Promise<string> {
   const result = await babel.transformAsync(source, {
-    plugins: [
-      '@babel/plugin-syntax-typescript',
-      ...postTransforms,
-      createReplaceDefaultExportName(filePath),
-    ],
+    plugins: ['@babel/plugin-syntax-typescript', ...postTransforms(filePath)],
   });
 
   return result.code;

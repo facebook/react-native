@@ -8,7 +8,7 @@
  * @format
  */
 
-const ensureNoUnprefixedProps = require('../ensureNoUnprefixedProps.js');
+const ensureNoUnprefixedProps = require('../ensureNoUnprefixedProps');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};

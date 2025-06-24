@@ -8,23 +8,23 @@
  * @format
  */
 
-const sortUnionsVisitor = require('../sortUnions.js');
+const sortTypeDefinitionsVisitor = require('../sortTypeDefinitions');
 const babel = require('@babel/core');
 const {promises: fs} = require('fs');
 const path = require('path');
 
 async function translate(code: string): Promise<string> {
   const result = await babel.transformAsync(code, {
-    plugins: ['@babel/plugin-syntax-typescript', sortUnionsVisitor],
+    plugins: ['@babel/plugin-syntax-typescript', sortTypeDefinitionsVisitor],
   });
 
   return result.code;
 }
 
-describe('sortUnions', () => {
-  test('should sort union members', async () => {
+describe('sortTypeDefinitions', () => {
+  test('should divide top-lelvel declarations into exported and non-exported sections', async () => {
     const code = await fs.readFile(
-      path.join(__dirname, '../__fixtures__/sortUnions.d.ts'),
+      path.join(__dirname, '../__fixtures__/sortTypeDefinitions.d.ts'),
       'utf-8',
     );
     const result = await translate(code);

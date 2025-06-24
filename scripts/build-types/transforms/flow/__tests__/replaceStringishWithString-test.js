@@ -8,41 +8,41 @@
  * @format
  */
 
-const replaceEmptyWithNever = require('../replaceEmptyWithNever.js');
+const replaceStringishWithString = require('../replaceStringishWithString');
 const {parse, print} = require('hermes-transform');
 
 const prettierOptions = {parser: 'babel'};
 
 async function translate(code: string): Promise<string> {
   const parsed = await parse(code);
-  const result = await replaceEmptyWithNever(parsed);
+  const result = await replaceStringishWithString(parsed);
   return print(result.ast, result.mutatedCode, prettierOptions);
 }
 
-describe('replaceEmptyWithNever', () => {
-  test('should replace empty with never in return annotation', async () => {
-    const code = `function foo(): empty {}`;
+describe('replaceStringishWithString', () => {
+  test('should replace Stringish with string in return annotation', async () => {
+    const code = `function foo(): Stringish {}`;
     const result = await translate(code);
     expect(result).toMatchInlineSnapshot(`
-      "function foo(): never {}
+      "function foo(): string {}
       "
     `);
   });
 
-  test('should replace empty annotation with never in type annotation', async () => {
-    const code = `let foo: empty;`;
+  test('should replace Stringish annotation with string in type annotation', async () => {
+    const code = `let foo: Stringish;`;
     const result = await translate(code);
     expect(result).toMatchInlineSnapshot(`
-      "let foo: never;
+      "let foo: string;
       "
     `);
   });
 
-  test('should replace empty annotation with never in type alias', async () => {
-    const code = `type Foo = empty;`;
+  test('should replace Stringish annotation with string in type alias', async () => {
+    const code = `type Foo = Stringish;`;
     const result = await translate(code);
     expect(result).toMatchInlineSnapshot(`
-      "type Foo = never;
+      "type Foo = string;
       "
     `);
   });
