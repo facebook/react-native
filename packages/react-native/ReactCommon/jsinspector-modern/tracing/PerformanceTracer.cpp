@@ -181,6 +181,61 @@ void PerformanceTracer::reportMeasure(
   });
 }
 
+void PerformanceTracer::reportTimeStamp(
+    std::string name,
+    std::optional<ConsoleTimeStampEntry> start,
+    std::optional<ConsoleTimeStampEntry> end,
+    std::optional<std::string> trackName,
+    std::optional<std::string> trackGroup,
+    std::optional<ConsoleTimeStampColor> color) {
+  if (!isTracing()) {
+    return;
+  }
+
+  // `name` takes precedence over `message` in Chrome DevTools Frontend, no need
+  // to record both.
+  folly::dynamic data = folly::dynamic::object("name", std::move(name));
+  if (start) {
+    if (std::holds_alternative<HighResTimeStamp>(*start)) {
+      data["start"] = highResTimeStampToTracingClockTimeStamp(
+          std::get<HighResTimeStamp>(*start));
+    } else {
+      data["start"] = std::move(std::get<std::string>(*start));
+    }
+  }
+  if (end) {
+    if (std::holds_alternative<HighResTimeStamp>(*end)) {
+      data["end"] = highResTimeStampToTracingClockTimeStamp(
+          std::get<HighResTimeStamp>(*end));
+    } else {
+      data["end"] = std::move(std::get<std::string>(*end));
+    }
+  }
+  if (trackName) {
+    data["track"] = std::move(*trackName);
+  }
+  if (trackGroup) {
+    data["trackGroup"] = std::move(*trackGroup);
+  }
+  if (color) {
+    data["color"] = consoleTimeStampColorToString(*color);
+  }
+
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
+    return;
+  }
+  buffer_.emplace_back(TraceEvent{
+      .name = "TimeStamp",
+      .cat = "devtools.timeline",
+      .ph = 'I',
+      .ts = HighResTimeStamp::now(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", std::move(data)),
+  });
+}
+
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
   if (!isTracing()) {
     return;

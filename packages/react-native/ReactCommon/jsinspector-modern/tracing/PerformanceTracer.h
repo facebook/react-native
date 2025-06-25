@@ -8,6 +8,7 @@
 #pragma once
 
 #include "CdpTracing.h"
+#include "ConsoleTimeStamp.h"
 #include "TraceEvent.h"
 #include "TraceEventProfile.h"
 
@@ -78,6 +79,21 @@ class PerformanceTracer {
       HighResTimeStamp start,
       HighResDuration duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+
+  /**
+   * Record a "TimeStamp" Trace Event - a labelled entry on Performance
+   * timeline. The only required argument is `name`. Optional arguments, if not
+   * provided, won't be recorded in the serialized Trace Event.
+   * @see
+   https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
+   */
+  void reportTimeStamp(
+      std::string name,
+      std::optional<ConsoleTimeStampEntry> start = std::nullopt,
+      std::optional<ConsoleTimeStampEntry> end = std::nullopt,
+      std::optional<std::string> trackName = std::nullopt,
+      std::optional<std::string> trackGroup = std::nullopt,
+      std::optional<ConsoleTimeStampColor> color = std::nullopt);
 
   /**
    * Record a corresponding Trace Event for OS-level process.
