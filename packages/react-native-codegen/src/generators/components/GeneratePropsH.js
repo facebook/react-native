@@ -755,10 +755,8 @@ function generateStruct(
         case 'Int32TypeAnnotation':
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
-          return `result["${name}"] = ${name};`;
         case 'MixedTypeAnnotation':
-          // MixedTypeAnnotation does not support prop diffing codegen
-          return '';
+          return `result["${name}"] = ${name};`;
         default:
           return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
       }

@@ -737,6 +737,9 @@ folly::dynamic MixedPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (mixedProp != oldProps->mixedProp) {
+    result[\\"mixedProp\\"] = mixedProp;
+  }
   return result;
 }
 #endif
