@@ -29,7 +29,7 @@ export type EventConfig<T> = {
   platformConfig?: PlatformConfig,
 };
 
-export function attachNativeEvent(
+export function attachNativeEventImpl(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
@@ -181,7 +181,7 @@ export class AnimatedEvent {
       'Only native driven events need to be attached.',
     );
 
-    this._attachedEvent = attachNativeEvent(
+    this._attachedEvent = attachNativeEventImpl(
       viewRef,
       eventName,
       this._argMapping,
