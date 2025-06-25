@@ -63,6 +63,7 @@ using namespace facebook::react;
     [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
   }
 
+  gradientLayer.frame = CGRectMake(0.0f, 0.0f, size.width, size.height);
   gradientLayer.colors = colors;
   gradientLayer.locations = locations;
 
