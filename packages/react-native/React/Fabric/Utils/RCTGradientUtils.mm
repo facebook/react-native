@@ -374,4 +374,35 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
 
   return {startPoint, endPoint};
 }
++ (void)getColors:(NSMutableArray<id> *)colors
+     andLocations:(NSMutableArray<NSNumber *> *)locations
+   fromColorStops:(const std::vector<facebook::react::ProcessedColorStop> &)colorStops
+{
+  // iOS's CAGradientLayer interpolates colors in a way that can cause unexpected results.
+  // For example, a gradient from a color to `transparent` (which is transparent black) will
+  // fade the color's RGB components to black, creating a "muddy" or dark appearance.
+  // To fix this, we detect when a color stop is transparent black and replace it with
+  // a transparent version of the *previous* color stop. This creates a smooth fade-out effect
+  // by only interpolating the alpha channel, matching web and Android behavior.
+  UIColor *lastColor = nil;
+  for (const auto &colorStop : colorStops) {
+    UIColor *currentColor = RCTUIColorFromSharedColor(colorStop.color);
+
+    CGFloat red, green, blue, alpha;
+    [currentColor getRed:&red green:&green blue:&blue alpha:&alpha];
+
+    BOOL isTransparentBlack = alpha == 0 && red == 0  && green == 0 && blue == 0;
+
+    if (isTransparentBlack && lastColor) {
+      [colors addObject:(id)[lastColor colorWithAlphaComponent:0.0].CGColor];
+    } else {
+      [colors addObject:(id)currentColor.CGColor];
+    }
+
+    if (!isTransparentBlack) {
+      lastColor = currentColor;
+    }
+    [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
+  }
+}
 @end
