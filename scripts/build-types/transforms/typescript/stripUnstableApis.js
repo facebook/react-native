@@ -70,6 +70,23 @@ const stripUnstableProperties: PluginObj<mixed> = {
         path.remove();
       }
     },
+    ExportNamedDeclaration(path) {
+      if (
+        path.node.declaration &&
+        isUnstableSymbol(path.node.declaration?.id?.name)
+      ) {
+        path.remove();
+      } else if (path.node.specifiers) {
+        path.node.specifiers = path.node.specifiers.filter(
+          specifier => !isUnstableSymbol(specifier.exported.name),
+        );
+      }
+    },
+    ExportDefaultDeclaration(path) {
+      if (isUnstableSymbol(path.node.declaration?.id?.name)) {
+        path.remove();
+      }
+    },
   },
 };
 
