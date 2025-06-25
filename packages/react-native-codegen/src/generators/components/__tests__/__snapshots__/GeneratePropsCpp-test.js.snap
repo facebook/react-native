@@ -900,6 +900,9 @@ folly::dynamic InsetsPropNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (contentInset != oldProps->contentInset) {
+    result[\\"contentInset\\"] = toDynamic(contentInset);
+  }
   return result;
 }
 #endif

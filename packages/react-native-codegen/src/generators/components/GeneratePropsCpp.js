@@ -118,6 +118,10 @@ function generatePropsDiffString(
     result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'EdgeInsetsPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
             case 'DimensionPrimitive':
               // TODO: Implement diffProps for complex types
               return '';
