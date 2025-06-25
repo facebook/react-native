@@ -136,7 +136,7 @@ export type EventConfig<T> = {
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
-declare export function attachNativeEvent(
+declare export function attachNativeEventImpl(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
@@ -226,53 +226,53 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   reset: () => void,
   ...
 };
-declare const add: (
+declare const addImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedAddition;
-declare const subtract: (
+declare const subtractImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedSubtraction;
-declare const divide: (
+declare const divideImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedDivision;
-declare const multiply: (
+declare const multiplyImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedMultiplication;
-declare const modulo: (a: AnimatedNode, modulus: number) => AnimatedModulo;
-declare const diffClamp: (
+declare const moduloImpl: (a: AnimatedNode, modulus: number) => AnimatedModulo;
+declare const diffClampImpl: (
   a: AnimatedNode,
   min: number,
   max: number
 ) => AnimatedDiffClamp;
-declare const spring: (
+declare const springImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig
 ) => CompositeAnimation;
-declare const timing: (
+declare const timingImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig
 ) => CompositeAnimation;
-declare const decay: (
+declare const decayImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig
 ) => CompositeAnimation;
-declare const sequence: (
+declare const sequenceImpl: (
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
 type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-declare const parallel: (
+declare const parallelImpl: (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig
 ) => CompositeAnimation;
-declare const delay: (time: number) => CompositeAnimation;
-declare const stagger: (
+declare const delayImpl: (time: number) => CompositeAnimation;
+declare const staggerImpl: (
   time: number,
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
@@ -281,19 +281,19 @@ type LoopAnimationConfig = {
   resetBeforeIteration?: boolean,
   ...
 };
-declare const loop: (
+declare const loopImpl: (
   animation: CompositeAnimation,
   $$PARAM_1$$?: LoopAnimationConfig
 ) => CompositeAnimation;
-declare function forkEvent(
+declare function forkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): AnimatedEvent | Function;
-declare function unforkEvent(
+declare function unforkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: <T>(
+declare const eventImpl: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig<T>
 ) => any;
@@ -313,25 +313,25 @@ declare export default {
   Color: typeof AnimatedColor,
   Interpolation: typeof AnimatedInterpolation,
   Node: typeof AnimatedNode,
-  decay: typeof decay,
-  timing: typeof timing,
-  spring: typeof spring,
-  add: typeof add,
-  subtract: typeof subtract,
-  divide: typeof divide,
-  multiply: typeof multiply,
-  modulo: typeof modulo,
-  diffClamp: typeof diffClamp,
-  delay: typeof delay,
-  sequence: typeof sequence,
-  parallel: typeof parallel,
-  stagger: typeof stagger,
-  loop: typeof loop,
-  event: typeof event,
+  decay: typeof decayImpl,
+  timing: typeof timingImpl,
+  spring: typeof springImpl,
+  add: typeof addImpl,
+  subtract: typeof subtractImpl,
+  divide: typeof divideImpl,
+  multiply: typeof multiplyImpl,
+  modulo: typeof moduloImpl,
+  diffClamp: typeof diffClampImpl,
+  delay: typeof delayImpl,
+  sequence: typeof sequenceImpl,
+  parallel: typeof parallelImpl,
+  stagger: typeof staggerImpl,
+  loop: typeof loopImpl,
+  event: typeof eventImpl,
   createAnimatedComponent: typeof createAnimatedComponent,
-  attachNativeEvent: typeof attachNativeEvent,
-  forkEvent: typeof forkEvent,
-  unforkEvent: typeof unforkEvent,
+  attachNativeEvent: typeof attachNativeEventImpl,
+  forkEvent: typeof forkEventImpl,
+  unforkEvent: typeof unforkEventImpl,
   Event: typeof AnimatedEvent,
 };
 "
