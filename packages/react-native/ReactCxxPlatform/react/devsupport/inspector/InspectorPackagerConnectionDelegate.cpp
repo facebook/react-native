@@ -21,29 +21,49 @@ InspectorPackagerConnectionDelegate::WebSocket::WebSocket(
       inspectorThread_(std::move(inspectorThread)) {
   websocket_ = webSocketClientFactory();
   websocket_->setOnMessageCallback(
-      [webSocketDelegate](const std::string& message) {
-        if (const auto strongDelegate = webSocketDelegate.lock()) {
-          strongDelegate->didReceiveMessage(message);
-        }
-      });
-  websocket_->setOnClosedCallback(
-      [webSocketDelegate](const std::string& /*message*/) {
-        if (const auto strongDelegate = webSocketDelegate.lock()) {
-          strongDelegate->didClose();
-        }
-      });
-  websocket_->connect(
-      url, [webSocketDelegate](bool success, const std::string& message) {
-        const auto strongDelegate = webSocketDelegate.lock();
-        if (!strongDelegate) {
+      [webSocketDelegate,
+       inspectorThread = inspectorThread_](const std::string& message) {
+        auto strongInspectorThread = inspectorThread.lock();
+        if (!strongInspectorThread) {
           return;
         }
-
-        if (success) {
-          strongDelegate->didOpen();
-        } else {
-          strongDelegate->didFailWithError(std::nullopt, message);
+        strongInspectorThread->invokeElsePost([webSocketDelegate, message]() {
+          if (const auto strongDelegate = webSocketDelegate.lock()) {
+            strongDelegate->didReceiveMessage(message);
+          }
+        });
+      });
+  websocket_->setOnClosedCallback(
+      [webSocketDelegate,
+       inspectorThread = inspectorThread_](const std::string& /*message*/) {
+        auto strongInspectorThread = inspectorThread.lock();
+        if (!strongInspectorThread) {
+          return;
         }
+        strongInspectorThread->invokeElsePost([webSocketDelegate]() {
+          if (const auto strongDelegate = webSocketDelegate.lock()) {
+            strongDelegate->didClose();
+          }
+        });
+      });
+  websocket_->connect(
+      url,
+      [webSocketDelegate, inspectorThread = inspectorThread_](
+          bool success, const std::string& message) {
+        auto strongInspectorThread = inspectorThread.lock();
+        if (!strongInspectorThread) {
+          return;
+        }
+        strongInspectorThread->invokeElsePost(
+            [webSocketDelegate, success, message]() {
+              if (auto strongDelegate = webSocketDelegate.lock()) {
+                if (success) {
+                  strongDelegate->didOpen();
+                } else {
+                  strongDelegate->didFailWithError(std::nullopt, message);
+                }
+              }
+            });
       });
 }
 
