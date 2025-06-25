@@ -83,26 +83,23 @@ function createVirtualView(initialState: State): VirtualViewComponent {
               thresholdRect: event.nativeEvent.thresholdRect,
             });
 
-      switch (mode) {
-        case VirtualViewMode.Visible: {
+      match (mode) {
+        VirtualViewMode.Visible => {
           setState(NotHidden);
           emitModeChange?.();
-          break;
         }
-        case VirtualViewMode.Prerender: {
+        VirtualViewMode.Prerender => {
           startTransition(() => {
             setState(NotHidden);
             emitModeChange?.();
           });
-          break;
         }
-        case VirtualViewMode.Hidden: {
+        VirtualViewMode.Hidden => {
           const {height} = event.nativeEvent.targetRect;
           startTransition(() => {
             setState(height as HiddenHeight);
             emitModeChange?.();
           });
-          break;
         }
       }
     };
