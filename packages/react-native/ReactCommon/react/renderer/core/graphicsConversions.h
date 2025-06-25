@@ -178,6 +178,17 @@ inline void fromRawValue(
   }
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
+}
+#endif
+
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
