@@ -38,10 +38,9 @@ StyleAnimatedNode::StyleAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
     NativeAnimatedNodesManager& manager)
-    : AnimatedNode(tag, config, manager, AnimatedNodeType::Style),
-      props_(folly::dynamic::object()) {}
+    : AnimatedNode(tag, config, manager, AnimatedNodeType::Style) {}
 
-void StyleAnimatedNode::update() {
+void StyleAnimatedNode::collectViewUpdates(folly::dynamic& props) {
   const auto& style = getConfig()["style"];
   for (const auto& styleProp : style.items()) {
     auto propName = styleProp.first.asString();
@@ -51,11 +50,7 @@ void StyleAnimatedNode::update() {
         case AnimatedNodeType::Transform: {
           if (const auto transformNode =
                   manager_->getAnimatedNode<TransformAnimatedNode>(nodeTag)) {
-            transformNode->update();
-            auto& transformNodeProps = transformNode->getProps();
-            for (const auto& styleNodeProp : transformNodeProps.items()) {
-              props_.insert(styleNodeProp.first.c_str(), styleNodeProp.second);
-            }
+            transformNode->collectViewUpdates(props);
           }
         } break;
         case AnimatedNodeType::Value:
@@ -71,18 +66,18 @@ void StyleAnimatedNode::update() {
           if (const auto valueNode =
                   manager_->getAnimatedNode<ValueAnimatedNode>(nodeTag)) {
             if (valueNode->getIsColorValue()) {
-              props_.insert(
+              props.insert(
                   propName.c_str(),
                   static_cast<int32_t>(valueNode->getValue()));
             } else {
-              props_.insert(propName.c_str(), valueNode->getValue());
+              props.insert(propName.c_str(), valueNode->getValue());
             }
           }
         } break;
         case AnimatedNodeType::Color: {
           if (const auto colorAnimNode =
                   manager_->getAnimatedNode<ColorAnimatedNode>(nodeTag)) {
-            props_.insert(
+            props.insert(
                 propName.c_str(),
                 static_cast<int32_t>(colorAnimNode->getColor()));
           }
@@ -95,7 +90,7 @@ void StyleAnimatedNode::update() {
     }
   }
 
-  layoutStyleUpdated_ = isLayoutPropsUpdated(props_);
+  layoutStyleUpdated_ = isLayoutPropsUpdated(props);
 }
 
 } // namespace facebook::react
