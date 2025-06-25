@@ -60,6 +60,15 @@ inline std::string toString(const SharedColor& value) {
 
 #pragma mark - Geometry
 
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const Point& point) {
+  folly::dynamic pointResult = folly::dynamic::object();
+  pointResult["x"] = point.x;
+  pointResult["y"] = point.y;
+  return pointResult;
+}
+#endif
+
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,

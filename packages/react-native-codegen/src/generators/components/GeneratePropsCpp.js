@@ -115,10 +115,7 @@ function generatePropsDiffString(
             case 'PointPrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
-    folly::dynamic pointResult = folly::dynamic::object();
-    pointResult["x"] = ${prop.name}.x;
-    pointResult["y"] = ${prop.name}.y;
-    result["${prop.name}"] = pointResult;
+    result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'EdgeInsetsPrimitive':
             case 'DimensionPrimitive':
