@@ -42,7 +42,7 @@ bool PerformanceTracer::startTracing() {
     if (!isTracing()) {
       return false;
     }
-    buffer_.push_back(TraceEvent{
+    buffer_.emplace_back(TraceEvent{
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
         .ph = 'I',
@@ -69,7 +69,7 @@ bool PerformanceTracer::stopTracing() {
   // samples will be displayed as empty. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -122,7 +122,7 @@ void PerformanceTracer::reportMark(
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'I',
@@ -158,7 +158,7 @@ void PerformanceTracer::reportMeasure(
   }
   auto eventId = ++performanceMeasureCount_;
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -168,7 +168,7 @@ void PerformanceTracer::reportMeasure(
       .tid = currentThreadId,
       .args = beginEventArgs,
   });
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -189,7 +189,7 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "process_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -214,7 +214,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "thread_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -229,7 +229,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   // no timeline events or user timings. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "ReactNative-ThreadRegistered",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -251,7 +251,7 @@ void PerformanceTracer::reportEventLoopTask(
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "RunTask",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'X',
@@ -274,7 +274,7 @@ void PerformanceTracer::reportEventLoopMicrotasks(
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "RunMicrotasks",
       .cat = "v8.execute",
       .ph = 'X',
