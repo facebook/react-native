@@ -136,7 +136,7 @@ export type EventConfig<T> = {
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
-declare export function attachNativeEvent(
+declare export function attachNativeEventImpl(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
@@ -226,53 +226,53 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   reset: () => void,
   ...
 };
-declare const add: (
+declare const addImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedAddition;
-declare const subtract: (
+declare const subtractImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedSubtraction;
-declare const divide: (
+declare const divideImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedDivision;
-declare const multiply: (
+declare const multiplyImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedMultiplication;
-declare const modulo: (a: AnimatedNode, modulus: number) => AnimatedModulo;
-declare const diffClamp: (
+declare const moduloImpl: (a: AnimatedNode, modulus: number) => AnimatedModulo;
+declare const diffClampImpl: (
   a: AnimatedNode,
   min: number,
   max: number
 ) => AnimatedDiffClamp;
-declare const spring: (
+declare const springImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig
 ) => CompositeAnimation;
-declare const timing: (
+declare const timingImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig
 ) => CompositeAnimation;
-declare const decay: (
+declare const decayImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig
 ) => CompositeAnimation;
-declare const sequence: (
+declare const sequenceImpl: (
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
 type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-declare const parallel: (
+declare const parallelImpl: (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig
 ) => CompositeAnimation;
-declare const delay: (time: number) => CompositeAnimation;
-declare const stagger: (
+declare const delayImpl: (time: number) => CompositeAnimation;
+declare const staggerImpl: (
   time: number,
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
@@ -281,19 +281,19 @@ type LoopAnimationConfig = {
   resetBeforeIteration?: boolean,
   ...
 };
-declare const loop: (
+declare const loopImpl: (
   animation: CompositeAnimation,
   $$PARAM_1$$?: LoopAnimationConfig
 ) => CompositeAnimation;
-declare function forkEvent(
+declare function forkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): AnimatedEvent | Function;
-declare function unforkEvent(
+declare function unforkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: <T>(
+declare const eventImpl: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig<T>
 ) => any;
@@ -313,25 +313,25 @@ declare export default {
   Color: typeof AnimatedColor,
   Interpolation: typeof AnimatedInterpolation,
   Node: typeof AnimatedNode,
-  decay: typeof decay,
-  timing: typeof timing,
-  spring: typeof spring,
-  add: typeof add,
-  subtract: typeof subtract,
-  divide: typeof divide,
-  multiply: typeof multiply,
-  modulo: typeof modulo,
-  diffClamp: typeof diffClamp,
-  delay: typeof delay,
-  sequence: typeof sequence,
-  parallel: typeof parallel,
-  stagger: typeof stagger,
-  loop: typeof loop,
-  event: typeof event,
+  decay: typeof decayImpl,
+  timing: typeof timingImpl,
+  spring: typeof springImpl,
+  add: typeof addImpl,
+  subtract: typeof subtractImpl,
+  divide: typeof divideImpl,
+  multiply: typeof multiplyImpl,
+  modulo: typeof moduloImpl,
+  diffClamp: typeof diffClampImpl,
+  delay: typeof delayImpl,
+  sequence: typeof sequenceImpl,
+  parallel: typeof parallelImpl,
+  stagger: typeof staggerImpl,
+  loop: typeof loopImpl,
+  event: typeof eventImpl,
   createAnimatedComponent: typeof createAnimatedComponent,
-  attachNativeEvent: typeof attachNativeEvent,
-  forkEvent: typeof forkEvent,
-  unforkEvent: typeof unforkEvent,
+  attachNativeEvent: typeof attachNativeEventImpl,
+  forkEvent: typeof forkEventImpl,
+  unforkEvent: typeof unforkEventImpl,
   Event: typeof AnimatedEvent,
 };
 "
@@ -1539,10 +1539,10 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 }>;
-declare const Touchable:
+declare const NativeTouchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-type ButtonRef = React.ElementRef<typeof Touchable>;
+type ButtonRef = React.ElementRef<typeof NativeTouchable>;
 declare const Button: component(
   ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
@@ -4179,11 +4179,11 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
 type EmitterSubscription = EventSubscription;
 export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
-type UnsafeObject = Object;
+type UnsafeNativeEventObject = Object;
 declare export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(nativeModule?: ?NativeModule): void;
@@ -4859,13 +4859,13 @@ export type LayoutAnimationProperties = $ReadOnly<{
 }>;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
-declare function setEnabled(value: boolean): void;
+declare function setLayoutAnimationEnabled(value: boolean): void;
 declare function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback
 ): void;
-declare function create(
+declare function createLayoutAnimation(
   duration: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty
@@ -4877,7 +4877,7 @@ declare const Presets: {
 };
 declare const LayoutAnimation: {
   configureNext: typeof configureNext,
-  create: typeof create,
+  create: typeof createLayoutAnimation,
   Types: LayoutAnimationTypes,
   Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
@@ -4885,7 +4885,7 @@ declare const LayoutAnimation: {
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   linear: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   spring: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
-  setEnabled: typeof setEnabled,
+  setEnabled: typeof setLayoutAnimationEnabled,
 };
 declare export default typeof LayoutAnimation;
 "
@@ -6145,7 +6145,7 @@ type PermissionsType = $ReadOnly<{
 }>;
 export type PermissionStatus = \\"granted\\" | \\"denied\\" | \\"never_ask_again\\";
 export type Permission = $Values<PermissionsType>;
-declare class PermissionsAndroid {
+declare class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType;
   RESULTS: $ReadOnly<{
     DENIED: \\"denied\\",
@@ -6166,7 +6166,7 @@ declare class PermissionsAndroid {
     permissions: Array<Permission>
   ): Promise<{ [permission: Permission]: PermissionStatus, ... }>;
 }
-declare const PermissionsAndroidInstance: PermissionsAndroid;
+declare const PermissionsAndroidInstance: PermissionsAndroidImpl;
 declare export default typeof PermissionsAndroidInstance;
 "
 `;
@@ -6432,8 +6432,8 @@ declare export default typeof AppContainer;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
-"type Task = (taskData: any) => Promise<void>;
-export type TaskProvider = () => Task;
+"type HeadlessTask = (taskData: any) => Promise<void>;
+export type TaskProvider = () => HeadlessTask;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -8363,7 +8363,7 @@ declare export default typeof NativeDevLoadingView;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeDeviceInfo.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
-declare export default typeof NativeDeviceInfo;
+export { default } from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
 "
 `;
 
@@ -8959,12 +8959,12 @@ declare export default ErrorUtils;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/emitter/EventEmitter.js 1`] = `
-"type UnsafeObject = Object;
+"type UnsafeEventObject = Object;
 export interface EventSubscription {
   remove(): void;
 }
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -8980,8 +8980,8 @@ export interface IEventEmitter<
 }
 declare export default class EventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(): void;

@@ -130,7 +130,7 @@ const PERMISSIONS = Object.freeze({
  *
  * See https://reactnative.dev/docs/permissionsandroid
  */
-class PermissionsAndroid {
+class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType = PERMISSIONS;
   RESULTS: $ReadOnly<{
     DENIED: 'denied',
@@ -297,5 +297,6 @@ class PermissionsAndroid {
   }
 }
 
-const PermissionsAndroidInstance: PermissionsAndroid = new PermissionsAndroid();
+const PermissionsAndroidInstance: PermissionsAndroidImpl =
+  new PermissionsAndroidImpl();
 export default PermissionsAndroidInstance;

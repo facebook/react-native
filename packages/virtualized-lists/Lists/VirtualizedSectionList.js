@@ -17,17 +17,17 @@ import invariant from 'invariant';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 
-type DefaultSectionT = {
+type DefaultVirtualizedSectionT = {
   data: any,
   [key: string]: any,
 };
 
-export type SectionData<SectionItemT, SectionT = DefaultSectionT> =
+export type SectionData<SectionItemT, SectionT = DefaultVirtualizedSectionT> =
   | ($ReadOnly<SectionBase<SectionItemT, SectionT>> & SectionT)
   | (SectionBase<SectionItemT, SectionT> & SectionT)
   | SectionT;
 
-export type SectionBase<SectionItemT, SectionT = DefaultSectionT> = {
+export type SectionBase<SectionItemT, SectionT = DefaultVirtualizedSectionT> = {
   /**
    * The data for rendering items in this section.
    */
@@ -55,11 +55,11 @@ export type SectionBase<SectionItemT, SectionT = DefaultSectionT> = {
   ...
 };
 
-type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+type RequiredProps<ItemT, SectionT = DefaultVirtualizedSectionT> = {
   sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
 };
 
-type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+type OptionalProps<ItemT, SectionT = DefaultVirtualizedSectionT> = {
   /**
    * Default renderer for every item in every section.
    */
@@ -100,7 +100,10 @@ type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
 };
 
-export type VirtualizedSectionListProps<ItemT, SectionT = DefaultSectionT> = {
+export type VirtualizedSectionListProps<
+  ItemT,
+  SectionT = DefaultVirtualizedSectionT,
+> = {
   ...RequiredProps<ItemT, SectionT>,
   ...OptionalProps<ItemT, SectionT>,
   ...Omit<VirtualizedListProps, 'data' | 'renderItem'>,
@@ -122,7 +125,10 @@ type State = {childProps: VirtualizedListProps, ...};
  */
 class VirtualizedSectionList<
   ItemT,
-  SectionT: SectionBase<ItemT, DefaultSectionT> = DefaultSectionT,
+  SectionT: SectionBase<
+    ItemT,
+    DefaultVirtualizedSectionT,
+  > = DefaultVirtualizedSectionT,
 > extends React.PureComponent<
   VirtualizedSectionListProps<ItemT, SectionT>,
   State,
@@ -613,7 +619,10 @@ function ItemWithSeparator<ItemT>(
 
 const VirtualizedSectionListComponent = VirtualizedSectionList as component<
   ItemT,
-  SectionT: SectionBase<ItemT, DefaultSectionT> = DefaultSectionT,
+  SectionT: SectionBase<
+    ItemT,
+    DefaultVirtualizedSectionT,
+  > = DefaultVirtualizedSectionT,
 >(
   ref: React.RefSetter<
     interface {

@@ -12,6 +12,7 @@ import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import android.view.ViewTreeObserver
 import androidx.annotation.VisibleForTesting
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
@@ -35,6 +36,12 @@ internal class ReactVirtualView(context: Context) :
   internal var modeChangeEmitter: ModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
+  internal val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
+
+  private val onWindowFocusChangeListener =
+      ViewTreeObserver.OnWindowFocusChangeListener {
+        dispatchOnModeChangeIfNeeded(checkRectChange = false)
+      }
 
   private var parentScrollView: View? = null
 
@@ -79,6 +86,9 @@ internal class ReactVirtualView(context: Context) :
           ReactScrollViewHelper.addLayoutChangeListener(this)
         }
     debugLog("onAttachedToWindow")
+    if (detectWindowFocus) {
+      viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
     dispatchOnModeChangeIfNeeded(checkRectChange = false)
   }
 
@@ -86,6 +96,9 @@ internal class ReactVirtualView(context: Context) :
     super.onDetachedFromWindow()
     ReactScrollViewHelper.removeScrollListener(this)
     ReactScrollViewHelper.removeLayoutChangeListener(this)
+    if (detectWindowFocus) {
+      viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
     cleanupLayoutListeners()
   }
 
@@ -185,7 +198,15 @@ internal class ReactVirtualView(context: Context) :
 
     val newMode: VirtualViewMode
     if (rectsOverlap(targetRect, thresholdRect)) {
-      newMode = VirtualViewMode.Visible
+      if (detectWindowFocus) {
+        if (hasWindowFocus()) {
+          newMode = VirtualViewMode.Visible
+        } else {
+          newMode = VirtualViewMode.Prerender
+        }
+      } else {
+        newMode = VirtualViewMode.Visible
+      }
     } else {
       var prerender = false
       if (prerenderRatio > 0.0) {
