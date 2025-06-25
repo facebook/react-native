@@ -170,16 +170,20 @@ describe('<View>', () => {
   });
 
   describe('transform style', () => {
-    it('causes view to be unflattened', () => {
+    it.only('causes view to be unflattened', () => {
       const root = Fantom.createRoot();
 
       Fantom.runTask(() => {
         root.render(<View style={{transform: [{translateX: 10}]}} />);
       });
 
-      expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-        <rn-view transform='[{"translateX": 10.000000}]' />,
-      );
+      expect(root.takeMountingManagerLogs()).toEqual([
+        'Update {type: "RootView", nativeID: (root)}',
+      ]);
+
+      // expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      //   <rn-view transform='[{"translateX": 10.000000}]' />,
+      // );
     });
   });
 

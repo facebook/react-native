@@ -77,13 +77,14 @@ class Expect {
   }
 
   toEqual(expected: mixed): void {
+    console.log('toEqual', expected, this.#received);
     const pass = deepEqual(this.#received, expected, {strict: true});
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
         `Expected${this.#maybeNotLabel()} to equal:\n${
           diff(expected, this.#received, {
             contextLines: 1,
-            expand: false,
+            expand: true,
             omitAnnotationLines: true,
           }) ?? 'Failed to compare outputs'
         }`,
@@ -108,7 +109,7 @@ class Expect {
         `Expected${this.#maybeNotLabel()} to strictly equal:\n${
           diff(expected, this.#received, {
             contextLines: 1,
-            expand: false,
+            expand: true,
             omitAnnotationLines: true,
           }) ?? 'Failed to compare outputs'
         }`,

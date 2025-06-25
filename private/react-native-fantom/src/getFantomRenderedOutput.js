@@ -127,6 +127,7 @@ export default function getFantomRenderedOutput(
 function convertRawJsonToJSX(
   actualJSON: FantomJsonObject | $ReadOnlyArray<FantomJsonObject>,
 ): React.Node {
+  console.log({actualJSON});
   let actualJSX;
   if (actualJSON === null || typeof actualJSON === 'string') {
     actualJSX = actualJSON;
