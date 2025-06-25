@@ -36,10 +36,10 @@ const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/typescript/stripUnstableApis'),
-  require('./transforms/typescript/sortTypeDefinitions'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
   require('./transforms/removeUndefinedFromOptionalMembers'),
+  require('./transforms/typescript/organizeDeclarations'),
 ];
 
 async function buildAPISnapshot(validate: boolean) {

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`organizeDeclarations should sort declarations and move exports into single export block 1`] = `
+"/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+import * as React from \\"react\\";
+declare type Bar = null | string | number;
+declare class Baz {
+  foo: string;
+}
+declare type ExportedBar = null | string | number;
+declare class ExportedBaz {
+  foo: string;
+}
+declare function exportedFn(): void;
+declare type ExportedFoo = \\"A\\" | \\"B\\";
+declare function fn(): void;
+declare type Foo = \\"A\\" | \\"B\\";
+export { ExportedBar, ExportedBaz, ExportedFoo, exportedFn };"
+`;
