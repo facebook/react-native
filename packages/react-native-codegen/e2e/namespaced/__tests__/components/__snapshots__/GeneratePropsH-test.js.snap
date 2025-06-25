@@ -958,7 +958,7 @@ struct ObjectPropsNativeComponentObjectArrayPropStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
-    
+    result[\\"array\\"] = ::facebook::react::toDynamic(array);
     return result;
   }
 #endif
