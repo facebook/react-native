@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "ReactCommon/*.{mm,h}"
+  s.source_files           = podspec_sources("ReactCommon/*.{mm,h}", "ReactCommon/*.{h}")
   s.header_dir             = "ReactCommon"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                 "USE_HEADERMAP" => "YES",
