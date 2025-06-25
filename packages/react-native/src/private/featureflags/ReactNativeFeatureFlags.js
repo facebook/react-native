@@ -233,7 +233,7 @@ export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter(
 /**
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
-export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
+export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', true);
 /**
  * Enables various optimizations throughout the path of measuring text on Android.
  */
