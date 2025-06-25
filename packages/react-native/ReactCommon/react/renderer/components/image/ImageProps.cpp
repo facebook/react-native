@@ -201,17 +201,17 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   if (sources != oldProps->sources) {
     auto sourcesArray = folly::dynamic::array();
     for (const auto& source : sources) {
-      sourcesArray.push_back(source.toDynamic());
+      sourcesArray.push_back(toDynamic(source));
     }
     result["source"] = sourcesArray;
   }
 
   if (defaultSource != oldProps->defaultSource) {
-    result["defaultSource"] = defaultSource.toDynamic();
+    result["defaultSource"] = toDynamic(defaultSource);
   }
 
   if (loadingIndicatorSource != oldProps->loadingIndicatorSource) {
-    result["loadingIndicatorSource"] = loadingIndicatorSource.toDynamic();
+    result["loadingIndicatorSource"] = toDynamic(loadingIndicatorSource);
   }
 
   if (resizeMode != oldProps->resizeMode) {

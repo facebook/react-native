@@ -105,7 +105,7 @@ function generatePropsDiffString(
             case 'ImageSourcePrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = ${prop.name}.toDynamic();
+    result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
