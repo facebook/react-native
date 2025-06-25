@@ -1268,6 +1268,9 @@ folly::dynamic ObjectPropsProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (objectProp != oldProps->objectProp) {
+    result[\\"objectProp\\"] = toDynamic(objectProp);
+  }
   return result;
 }
 #endif

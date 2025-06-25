@@ -87,6 +87,16 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapp
 }
 struct ArrayPropsNativeComponentObjectStruct {
   std::string stringProp{\\"\\"};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentObjectStruct &result) {
@@ -102,6 +112,12 @@ static inline std::string toString(const ArrayPropsNativeComponentObjectStruct &
   return \\"[Object ArrayPropsNativeComponentObjectStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -114,6 +130,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 struct ArrayPropsNativeComponentArrayObjectStruct {
   std::string stringProp{\\"\\"};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentArrayObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayObjectStruct &result) {
@@ -129,6 +155,12 @@ static inline std::string toString(const ArrayPropsNativeComponentArrayObjectStr
   return \\"[Object ArrayPropsNativeComponentArrayObjectStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentArrayObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -141,6 +173,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 struct ArrayPropsNativeComponentArrayStruct {
   std::vector<ArrayPropsNativeComponentArrayObjectStruct> object{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentArrayStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayStruct &result) {
@@ -156,6 +198,12 @@ static inline std::string toString(const ArrayPropsNativeComponentArrayStruct &v
   return \\"[Object ArrayPropsNativeComponentArrayStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentArrayStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -168,6 +216,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
   std::string stringProp{\\"\\"};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &result) {
@@ -182,6 +240,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
   return \\"[Object ArrayPropsNativeComponentArrayOfArrayOfObjectStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<std::vector<ArrayPropsNativeComponentArrayOfArrayOfObjectStruct>> &result) {
   auto items = (std::vector<std::vector<RawValue>>)value;
@@ -255,6 +319,18 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
   std::vector<SharedColor> colors{};
   std::vector<ImageSource> srcs{};
   std::vector<Point> points{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentNativePrimitivesStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    
+    
+    
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentNativePrimitivesStruct &result) {
@@ -277,6 +353,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
   return \\"[Object ArrayPropsNativeComponentNativePrimitivesStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentNativePrimitivesStruct &value) {
+  return value.toDynamic();
+}
+#endif
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> &result) {
   auto items = (std::vector<RawValue>)value;
@@ -1228,6 +1310,16 @@ static inline folly::dynamic toDynamic(const ObjectPropsIntEnumProp &value) {
 #endif
 struct ObjectPropsObjectPropObjectArrayPropStruct {
   std::vector<std::string> array{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropObjectArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectArrayPropStruct &result) {
@@ -1243,10 +1335,28 @@ static inline std::string toString(const ObjectPropsObjectPropObjectArrayPropStr
   return \\"[Object ObjectPropsObjectPropObjectArrayPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropObjectArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
   ImageSource image{};
   SharedColor color{};
   Point point{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"image\\"] = ::facebook::react::toDynamic(image);
+    result[\\"color\\"] = ::facebook::react::toDynamic(color);
+    result[\\"point\\"] = ::facebook::react::toDynamic(point);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &result) {
@@ -1270,8 +1380,24 @@ static inline std::string toString(const ObjectPropsObjectPropObjectPrimitiveReq
   return \\"[Object ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
   std::string nestedPropC{\\"\\"};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropNestedPropANestedPropBStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropC\\"] = nestedPropC;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropANestedPropBStruct &result) {
@@ -1287,8 +1413,24 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropANestedP
   return \\"[Object ObjectPropsObjectPropNestedPropANestedPropBStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropANestedPropBStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsObjectPropNestedPropAStruct {
   ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropNestedPropAStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"nestedPropB\\"] = ::facebook::react::toDynamic(nestedPropB);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedPropAStruct &result) {
@@ -1304,8 +1446,24 @@ static inline std::string toString(const ObjectPropsObjectPropNestedPropAStruct 
   return \\"[Object ObjectPropsObjectPropNestedPropAStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropAStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
   std::string stringProp{\\"\\"};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &result) {
@@ -1321,6 +1479,12 @@ static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPrope
   return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -1333,6 +1497,16 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
   std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropNestedArrayAsPropertyStruct &result) {
@@ -1347,6 +1521,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
   return \\"[Object ObjectPropsObjectPropNestedArrayAsPropertyStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedArrayAsPropertyStruct &value) {
+  return value.toDynamic();
+}
+#endif
 
 struct ObjectPropsObjectPropStruct {
   std::string stringProp{\\"\\"};
@@ -1363,6 +1543,29 @@ struct ObjectPropsObjectPropStruct {
   ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
   ObjectPropsObjectPropNestedPropAStruct nestedPropA{};
   ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsObjectPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    result[\\"booleanProp\\"] = booleanProp;
+    result[\\"floatProp\\"] = floatProp;
+    result[\\"intProp\\"] = intProp;
+    result[\\"stringUserDefaultProp\\"] = stringUserDefaultProp;
+    result[\\"booleanUserDefaultProp\\"] = booleanUserDefaultProp;
+    result[\\"floatUserDefaultProp\\"] = floatUserDefaultProp;
+    result[\\"intUserDefaultProp\\"] = intUserDefaultProp;
+    result[\\"stringEnumProp\\"] = ::facebook::react::toDynamic(stringEnumProp);
+    result[\\"intEnumProp\\"] = ::facebook::react::toDynamic(intEnumProp);
+    result[\\"objectArrayProp\\"] = ::facebook::react::toDynamic(objectArrayProp);
+    result[\\"objectPrimitiveRequiredProp\\"] = ::facebook::react::toDynamic(objectPrimitiveRequiredProp);
+    result[\\"nestedPropA\\"] = ::facebook::react::toDynamic(nestedPropA);
+    result[\\"nestedArrayAsProperty\\"] = ::facebook::react::toDynamic(nestedArrayAsProperty);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsObjectPropStruct &result) {
@@ -1429,6 +1632,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsObjectPropStruct &value) {
   return \\"[Object ObjectPropsObjectPropStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsObjectPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
 class ObjectPropsProps final : public ViewProps {
  public:
   ObjectPropsProps() = default;

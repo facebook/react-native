@@ -88,6 +88,16 @@ static inline std::string toString(const ArrayPropsNativeComponentViewSizesMaskW
 }
 struct ArrayPropsNativeComponentViewObjectStruct {
   std::string prop{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentViewObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"prop\\"] = prop;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewObjectStruct &result) {
@@ -103,6 +113,12 @@ static inline std::string toString(const ArrayPropsNativeComponentViewObjectStru
   return \\"[Object ArrayPropsNativeComponentViewObjectStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentViewObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentViewObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -116,6 +132,17 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 struct ArrayPropsNativeComponentViewArrayOfObjectsStruct {
   Float prop1{0.0};
   int prop2{0};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentViewArrayOfObjectsStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"prop1\\"] = prop1;
+    result[\\"prop2\\"] = prop2;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewArrayOfObjectsStruct &result) {
@@ -134,6 +161,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ArrayPropsNativeComponentViewArrayOfObjectsStruct &value) {
   return \\"[Object ArrayPropsNativeComponentViewArrayOfObjectsStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentViewArrayOfObjectsStruct &value) {
+  return value.toDynamic();
+}
+#endif
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentViewArrayOfObjectsStruct> &result) {
   auto items = (std::vector<RawValue>)value;
@@ -861,6 +894,21 @@ struct ObjectPropsNativeComponentObjectPropStruct {
   int intProp{0};
   ObjectPropsNativeComponentStringEnumProp stringEnumProp{ObjectPropsNativeComponentStringEnumProp::Small};
   ObjectPropsNativeComponentIntEnumProp intEnumProp{ObjectPropsNativeComponentIntEnumProp::IntEnumProp0};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    result[\\"booleanProp\\"] = booleanProp;
+    result[\\"floatProp\\"] = floatProp;
+    result[\\"intProp\\"] = intProp;
+    result[\\"stringEnumProp\\"] = ::facebook::react::toDynamic(stringEnumProp);
+    result[\\"intEnumProp\\"] = ::facebook::react::toDynamic(intEnumProp);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPropStruct &result) {
@@ -896,8 +944,24 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectPropStr
   return \\"[Object ObjectPropsNativeComponentObjectPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsNativeComponentObjectArrayPropStruct {
   std::vector<std::string> array{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectArrayPropStruct &result) {
@@ -913,10 +977,28 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectArrayPr
   return \\"[Object ObjectPropsNativeComponentObjectArrayPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct {
   ImageSource image{};
   SharedColor color{};
   Point point{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"image\\"] = ::facebook::react::toDynamic(image);
+    result[\\"color\\"] = ::facebook::react::toDynamic(color);
+    result[\\"point\\"] = ::facebook::react::toDynamic(point);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &result) {
@@ -939,6 +1021,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &value) {
   return \\"[Object ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
 class ObjectPropsNativeComponentProps final : public ViewProps {
  public:
   ObjectPropsNativeComponentProps() = default;

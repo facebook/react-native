@@ -166,13 +166,25 @@ const StructTemplate = ({
   structName,
   fields,
   fromCases,
+  toDynamicCases,
 }: {
   structName: string,
   fields: string,
   fromCases: string,
+  toDynamicCases: string,
 }) =>
   `struct ${structName} {
   ${fields}
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ${structName}&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    ${toDynamicCases}
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${structName} &result) {
@@ -184,6 +196,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ${structName} &value) {
   return "[Object ${structName}]";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${structName} &value) {
+  return value.toDynamic();
+}
+#endif
 `.trim();
 
 const ArrayConversionFunctionTemplate = ({
@@ -728,12 +746,34 @@ function generateStruct(
     })
     .join('\n  ');
 
+  const toDynamicCases = properties
+    .map((property: NamedShape<PropTypeAnnotation>) => {
+      const name = property.name;
+      switch (property.typeAnnotation.type) {
+        case 'BooleanTypeAnnotation':
+        case 'StringTypeAnnotation':
+        case 'Int32TypeAnnotation':
+        case 'DoubleTypeAnnotation':
+        case 'FloatTypeAnnotation':
+          return `result["${name}"] = ${name};`;
+        case 'ArrayTypeAnnotation':
+          return '';
+        case 'MixedTypeAnnotation':
+          // MixedTypeAnnotation does not support prop diffing codegen
+          return '';
+        default:
+          return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+      }
+    })
+    .join('\n    ');
+
   structs.set(
     structName,
     StructTemplate({
       structName,
       fields,
       fromCases,
+      toDynamicCases,
     }),
   );
 }
