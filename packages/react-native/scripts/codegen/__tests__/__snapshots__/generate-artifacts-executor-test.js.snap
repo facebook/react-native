@@ -459,32 +459,25 @@ Pod::Spec.new do |s|
     \\"OTHER_CPLUSPLUSFLAGS\\" => \\"$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}\\"
   }
 
-  if ReactNativeCoreUtils.build_rncore_from_source()
+  s.dependency \\"React-jsiexecutor\\"
+  s.dependency \\"RCTRequired\\"
+  s.dependency \\"RCTTypeSafety\\"
+  s.dependency \\"React-Core\\"
+  s.dependency \\"React-jsi\\"
+  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"ReactCommon/turbomodule/core\\"
+  s.dependency \\"React-NativeModulesApple\\"
+  s.dependency 'React-graphics'
+  s.dependency 'React-rendererdebug'
+  s.dependency 'React-Fabric'
+  s.dependency 'React-FabricImage'
+  s.dependency 'React-debug'
+  s.dependency 'React-utils'
+  s.dependency 'React-featureflags'
+  s.dependency 'React-RCTAppDelegate'
 
-    s.dependency \\"React-jsiexecutor\\"
-    s.dependency \\"RCTRequired\\"
-    s.dependency \\"RCTTypeSafety\\"
-    s.dependency \\"React-Core\\"
-    s.dependency \\"React-jsi\\"
-    s.dependency \\"ReactCommon/turbomodule/bridging\\"
-    s.dependency \\"ReactCommon/turbomodule/core\\"
-    s.dependency \\"React-NativeModulesApple\\"
-    s.dependency 'React-graphics'
-    s.dependency 'React-rendererdebug'
-    s.dependency 'React-Fabric'
-    s.dependency 'React-FabricImage'
-    s.dependency 'React-debug'
-    s.dependency 'React-utils'
-    s.dependency 'React-featureflags'
-    s.dependency 'React-RCTAppDelegate'
-
-    depend_on_js_engine(s)
-    add_rn_third_party_dependencies(s)
-
-  else
-    s.dependency 'React-Core-prebuilt'
-    s.dependency 'ReactNativeDependencies'
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',
@@ -943,32 +936,25 @@ Pod::Spec.new do |s|
     \\"OTHER_CPLUSPLUSFLAGS\\" => \\"$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}\\"
   }
 
-  if ReactNativeCoreUtils.build_rncore_from_source()
+  s.dependency \\"React-jsiexecutor\\"
+  s.dependency \\"RCTRequired\\"
+  s.dependency \\"RCTTypeSafety\\"
+  s.dependency \\"React-Core\\"
+  s.dependency \\"React-jsi\\"
+  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"ReactCommon/turbomodule/core\\"
+  s.dependency \\"React-NativeModulesApple\\"
+  s.dependency 'React-graphics'
+  s.dependency 'React-rendererdebug'
+  s.dependency 'React-Fabric'
+  s.dependency 'React-FabricImage'
+  s.dependency 'React-debug'
+  s.dependency 'React-utils'
+  s.dependency 'React-featureflags'
+  s.dependency 'React-RCTAppDelegate'
 
-    s.dependency \\"React-jsiexecutor\\"
-    s.dependency \\"RCTRequired\\"
-    s.dependency \\"RCTTypeSafety\\"
-    s.dependency \\"React-Core\\"
-    s.dependency \\"React-jsi\\"
-    s.dependency \\"ReactCommon/turbomodule/bridging\\"
-    s.dependency \\"ReactCommon/turbomodule/core\\"
-    s.dependency \\"React-NativeModulesApple\\"
-    s.dependency 'React-graphics'
-    s.dependency 'React-rendererdebug'
-    s.dependency 'React-Fabric'
-    s.dependency 'React-FabricImage'
-    s.dependency 'React-debug'
-    s.dependency 'React-utils'
-    s.dependency 'React-featureflags'
-    s.dependency 'React-RCTAppDelegate'
-
-    depend_on_js_engine(s)
-    add_rn_third_party_dependencies(s)
-
-  else
-    s.dependency 'React-Core-prebuilt'
-    s.dependency 'ReactNativeDependencies'
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',
