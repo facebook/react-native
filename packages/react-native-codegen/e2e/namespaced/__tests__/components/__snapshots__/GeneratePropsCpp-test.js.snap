@@ -306,7 +306,13 @@ folly::dynamic EnumPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (alignment != oldProps->alignment) {
+    result[\\"alignment\\"] = toDynamic(alignment);
+  }
     
+  if (intervals != oldProps->intervals) {
+    result[\\"intervals\\"] = toDynamic(intervals);
+  }
   return result;
 }
 #endif
