@@ -51,18 +51,57 @@ folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (names != oldProps->names) {
+    result[\\"names\\"] = toDynamic(names);
+  }
     
+  if (disableds != oldProps->disableds) {
+    result[\\"disableds\\"] = toDynamic(disableds);
+  }
     
+  if (progress != oldProps->progress) {
+    result[\\"progress\\"] = toDynamic(progress);
+  }
     
+  if (radii != oldProps->radii) {
+    result[\\"radii\\"] = toDynamic(radii);
+  }
     
+  if (colors != oldProps->colors) {
+    result[\\"colors\\"] = toDynamic(colors);
+  }
     
+  if (srcs != oldProps->srcs) {
+    result[\\"srcs\\"] = toDynamic(srcs);
+  }
     
+  if (points != oldProps->points) {
+    result[\\"points\\"] = toDynamic(points);
+  }
     
+  if (dimensions != oldProps->dimensions) {
+    result[\\"dimensions\\"] = toDynamic(dimensions);
+  }
     
+  if (sizes != oldProps->sizes) {
+    result[\\"sizes\\"] = toDynamic(sizes);
+  }
     
+  if (object != oldProps->object) {
+    result[\\"object\\"] = toDynamic(object);
+  }
     
+  if (array != oldProps->array) {
+    result[\\"array\\"] = toDynamic(array);
+  }
     
+  if (arrayOfArrayOfObject != oldProps->arrayOfArrayOfObject) {
+    result[\\"arrayOfArrayOfObject\\"] = toDynamic(arrayOfArrayOfObject);
+  }
     
+  if (arrayOfMixed != oldProps->arrayOfMixed) {
+    result[\\"arrayOfMixed\\"] = toDynamic(arrayOfMixed);
+  }
   return result;
 }
 #endif
@@ -109,6 +148,9 @@ folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (nativePrimitives != oldProps->nativePrimitives) {
+    result[\\"nativePrimitives\\"] = toDynamic(nativePrimitives);
+  }
   return result;
 }
 #endif
