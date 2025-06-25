@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f49d0daf5a24592688931ec47c016bd4>>
+ * @generated SignedSource<<b50329bf9cb735978e08c721fc7c29ce>>
  */
 
 /**
@@ -228,6 +228,11 @@ class ReactNativeFeatureFlags {
    * Enables VirtualView debug features such as logging and overlays.
    */
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
+
+  /**
+   * Enables reading render state when dispatching VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewRenderState();
 
   /**
    * Enables window focus detection for prioritizing VirtualView events.

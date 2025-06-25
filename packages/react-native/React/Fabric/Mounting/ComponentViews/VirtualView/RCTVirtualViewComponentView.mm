@@ -32,6 +32,12 @@ typedef NS_ENUM(NSInteger, RCTVirtualViewMode) {
   RCTVirtualViewModeHidden = 2,
 };
 
+typedef NS_ENUM(NSInteger, RCTVirtualViewRenderState) {
+  RCTVirtualViewRenderStateUnknown = 0,
+  RCTVirtualViewRenderStateRendered = 1,
+  RCTVirtualViewRenderStateNone = 2,
+};
+
 /**
  * Checks whether one CGRect overlaps with another CGRect.
  *
@@ -67,6 +73,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 @implementation RCTVirtualViewComponentView {
   RCTScrollViewComponentView *_lastParentScrollViewComponentView;
   std::optional<enum RCTVirtualViewMode> _mode;
+  enum RCTVirtualViewRenderState _renderState;
   std::optional<CGRect> _targetRect;
 }
 
@@ -74,6 +81,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 {
   if (self = [super initWithFrame:frame]) {
     _props = VirtualViewShadowNode::defaultSharedProps();
+    _renderState = RCTVirtualViewRenderStateUnknown;
   }
 
   return self;
@@ -81,9 +89,25 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
+  const auto &newViewProps = static_cast<const VirtualViewProps &>(*props);
+
   if (!_mode.has_value()) {
-    const auto &newViewProps = static_cast<const VirtualViewProps &>(*props);
     _mode = newViewProps.initialHidden ? RCTVirtualViewModeHidden : RCTVirtualViewModeVisible;
+  }
+
+  // If disabled, `_renderState` will always be `RCTVirtualViewRenderStateUnknown`.
+  if (ReactNativeFeatureFlags::enableVirtualViewRenderState()) {
+    switch (newViewProps.renderState) {
+      case 1:
+        _renderState = RCTVirtualViewRenderStateRendered;
+        break;
+      case 2:
+        _renderState = RCTVirtualViewRenderStateNone;
+        break;
+      default:
+        _renderState = RCTVirtualViewRenderStateUnknown;
+        break;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -219,7 +243,18 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
   switch (newMode) {
     case RCTVirtualViewModeVisible:
-      [self dispatchSyncModeChange:event];
+      if (_renderState == RCTVirtualViewRenderStateUnknown) {
+        // Feature flag is disabled, so use the former logic.
+        [self dispatchSyncModeChange:event];
+      } else {
+        // If the previous mode was prerender and the result of dispatching that event was committed, we do not need to
+        // dispatch an event for visible.
+        const auto wasPrerenderCommitted = oldMode.has_value() && oldMode == RCTVirtualViewModePrerender &&
+            _renderState == RCTVirtualViewRenderStateRendered;
+        if (!wasPrerenderCommitted) {
+          [self dispatchSyncModeChange:event];
+        }
+      }
       break;
     case RCTVirtualViewModePrerender:
       if (!oldMode.has_value() || oldMode != RCTVirtualViewModeVisible) {

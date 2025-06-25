@@ -5290,6 +5290,7 @@ public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/fa
 
 public abstract interface class com/facebook/react/viewmanagers/VirtualViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setInitialHidden (Landroid/view/View;Z)V
+	public abstract fun setRenderState (Landroid/view/View;I)V
 }
 
 public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
