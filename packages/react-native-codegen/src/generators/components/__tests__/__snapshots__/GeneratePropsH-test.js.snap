@@ -933,6 +933,16 @@ static inline std::string toString(const Int32EnumPropsNativeComponentMaxInterva
   }
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const Int32EnumPropsNativeComponentMaxInterval &value) {
+  switch (value) {
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval0: return 0;
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval1: return 1;
+    case Int32EnumPropsNativeComponentMaxInterval::MaxInterval2: return 2;
+  }
+}
+#endif
+
 class Int32EnumPropsNativeComponentProps final : public ViewProps {
  public:
   Int32EnumPropsNativeComponentProps() = default;
@@ -1182,6 +1192,12 @@ static inline std::string toString(const ObjectPropsStringEnumProp &value) {
     case ObjectPropsStringEnumProp::Option1: return \\"option1\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsStringEnumProp &value) {
+  return toString(value);
+}
+#endif
 enum class ObjectPropsIntEnumProp { IntEnumProp0 = 0 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsIntEnumProp &result) {
@@ -1200,6 +1216,14 @@ static inline std::string toString(const ObjectPropsIntEnumProp &value) {
     case ObjectPropsIntEnumProp::IntEnumProp0: return \\"0\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsIntEnumProp::IntEnumProp0: return 0;
+  }
+}
+#endif
 struct ObjectPropsObjectPropObjectArrayPropStruct {
   std::vector<std::string> array{};
 };
@@ -1495,6 +1519,12 @@ static inline std::string toString(const StringEnumPropsNativeComponentAlignment
     case StringEnumPropsNativeComponentAlignment::BottomRight: return \\"bottom-right\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const StringEnumPropsNativeComponentAlignment &value) {
+  return toString(value);
+}
+#endif
 
 class StringEnumPropsNativeComponentProps final : public ViewProps {
  public:

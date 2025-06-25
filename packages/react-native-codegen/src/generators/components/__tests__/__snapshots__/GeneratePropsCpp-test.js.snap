@@ -949,6 +949,9 @@ folly::dynamic Int32EnumPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (maxInterval != oldProps->maxInterval) {
+    result[\\"maxInterval\\"] = toDynamic(maxInterval);
+  }
   return result;
 }
 #endif
@@ -1357,6 +1360,9 @@ folly::dynamic StringEnumPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (alignment != oldProps->alignment) {
+    result[\\"alignment\\"] = toDynamic(alignment);
+  }
   return result;
 }
 #endif

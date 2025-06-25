@@ -131,8 +131,17 @@ function generatePropsDiffString(
           }
         case 'ArrayTypeAnnotation':
         case 'ObjectTypeAnnotation':
+          return '';
         case 'StringEnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'Int32EnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'MixedTypeAnnotation':
         default:
           // TODO: Implement diffProps for complex types
