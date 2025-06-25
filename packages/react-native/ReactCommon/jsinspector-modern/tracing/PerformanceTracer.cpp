@@ -28,18 +28,20 @@ PerformanceTracer::PerformanceTracer()
 
 bool PerformanceTracer::startTracing() {
   {
-    std::lock_guard lock(mutex_);
-    if (tracing_) {
+    std::lock_guard lock(tracingMutex_);
+    if (isTracing()) {
       return false;
     }
-
     tracing_ = true;
   }
 
   reportProcess(processId_, "React Native");
 
   {
-    std::lock_guard lock(mutex_);
+    std::lock_guard lock(tracingMutex_);
+    if (!isTracing()) {
+      return false;
+    }
     buffer_.push_back(TraceEvent{
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
@@ -49,16 +51,17 @@ bool PerformanceTracer::startTracing() {
         .tid = oscompat::getCurrentThreadId(),
         .args = folly::dynamic::object("data", folly::dynamic::object()),
     });
-
-    return true;
   }
+
+  return true;
 }
 
 bool PerformanceTracer::stopTracing() {
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard lock(tracingMutex_);
+  if (!isTracing()) {
     return false;
   }
+  tracing_ = false;
 
   // This is synthetic Trace Event, which should not be represented on a
   // timeline. CDT is not using Profile or ProfileChunk events for determining
@@ -75,8 +78,8 @@ bool PerformanceTracer::stopTracing() {
       .tid = oscompat::getCurrentThreadId(),
   });
 
+  // Potential increments of this counter are covered by tracing_ atomic flag.
   performanceMeasureCount_ = 0;
-  tracing_ = false;
   return true;
 }
 
@@ -84,7 +87,7 @@ void PerformanceTracer::collectEvents(
     const std::function<void(const folly::dynamic& eventsChunk)>&
         resultCallback,
     uint16_t chunkSize) {
-  std::lock_guard lock(mutex_);
+  std::lock_guard lock(tracingMutex_);
 
   if (buffer_.empty()) {
     return;
@@ -110,12 +113,12 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     HighResTimeStamp start) {
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
     return;
   }
 
@@ -134,12 +137,7 @@ void PerformanceTracer::reportMeasure(
     HighResTimeStamp start,
     HighResDuration duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
-  if (!tracing_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
@@ -152,10 +150,16 @@ void PerformanceTracer::reportMeasure(
         folly::dynamic::object("detail", folly::toJson(devtoolsObject));
   }
 
-  ++performanceMeasureCount_;
   auto currentThreadId = oscompat::getCurrentThreadId();
+
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
+    return;
+  }
+  auto eventId = ++performanceMeasureCount_;
+
   buffer_.push_back(TraceEvent{
-      .id = performanceMeasureCount_,
+      .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'b',
@@ -165,7 +169,7 @@ void PerformanceTracer::reportMeasure(
       .args = beginEventArgs,
   });
   buffer_.push_back(TraceEvent{
-      .id = performanceMeasureCount_,
+      .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'e',
@@ -176,12 +180,12 @@ void PerformanceTracer::reportMeasure(
 }
 
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
     return;
   }
 
@@ -201,12 +205,12 @@ void PerformanceTracer::reportJavaScriptThread() {
 }
 
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
     return;
   }
 
@@ -238,12 +242,12 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
 void PerformanceTracer::reportEventLoopTask(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
     return;
   }
 
@@ -261,12 +265,12 @@ void PerformanceTracer::reportEventLoopTask(
 void PerformanceTracer::reportEventLoopMicrotasks(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!tracing_) {
+  if (!isTracing()) {
     return;
   }
 
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(tracingMutex_);
+  if (!isTracing()) {
     return;
   }
 
