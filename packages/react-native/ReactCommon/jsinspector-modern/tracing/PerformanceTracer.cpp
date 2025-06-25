@@ -87,27 +87,29 @@ void PerformanceTracer::collectEvents(
     const std::function<void(const folly::dynamic& eventsChunk)>&
         resultCallback,
     uint16_t chunkSize) {
-  std::lock_guard lock(tracingMutex_);
+  std::vector<TraceEvent> localBuffer;
+  {
+    std::lock_guard lock(tracingMutex_);
+    buffer_.swap(localBuffer);
+  }
 
-  if (buffer_.empty()) {
+  if (localBuffer.empty()) {
     return;
   }
 
-  auto traceEvents = folly::dynamic::array();
-  for (const auto& event : buffer_) {
+  auto serializedTraceEvents = folly::dynamic::array();
+  for (auto&& event : localBuffer) {
     // Emit trace events
-    traceEvents.push_back(serializeTraceEvent(event));
+    serializedTraceEvents.push_back(serializeTraceEvent(std::move(event)));
 
-    if (traceEvents.size() == chunkSize) {
-      resultCallback(traceEvents);
-      traceEvents = folly::dynamic::array();
+    if (serializedTraceEvents.size() == chunkSize) {
+      resultCallback(serializedTraceEvents);
+      serializedTraceEvents = folly::dynamic::array();
     }
   }
-  if (!traceEvents.empty()) {
-    resultCallback(traceEvents);
+  if (!serializedTraceEvents.empty()) {
+    resultCallback(serializedTraceEvents);
   }
-
-  buffer_.clear();
 }
 
 void PerformanceTracer::reportMark(
@@ -326,7 +328,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
 }
 
 folly::dynamic PerformanceTracer::serializeTraceEvent(
-    const TraceEvent& event) const {
+    TraceEvent&& event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {
@@ -334,13 +336,13 @@ folly::dynamic PerformanceTracer::serializeTraceEvent(
     snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
     result["id"] = buffer.data();
   }
-  result["name"] = event.name;
-  result["cat"] = event.cat;
+  result["name"] = std::move(event.name);
+  result["cat"] = std::move(event.cat);
   result["ph"] = std::string(1, event.ph);
   result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
   result["pid"] = event.pid;
   result["tid"] = event.tid;
-  result["args"] = event.args;
+  result["args"] = std::move(event.args);
   if (event.dur.has_value()) {
     result["dur"] = highResDurationToTracingClockDuration(event.dur.value());
   }
