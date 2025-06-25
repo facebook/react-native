@@ -32,10 +32,10 @@ const {styleText} = require('util');
 
 const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/typescript/renameDefaultExportedIdentifiers'),
+  require('./transforms/typescript/stripUnstableApis'),
 ];
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
-  require('./transforms/typescript/stripUnstableApis'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
   require('./transforms/typescript/removeUndefinedFromOptionalMembers'),
