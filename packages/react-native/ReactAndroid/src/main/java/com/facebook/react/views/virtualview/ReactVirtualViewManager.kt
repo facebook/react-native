@@ -9,6 +9,7 @@ package com.facebook.react.views.virtualview
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
@@ -36,6 +37,19 @@ internal class ReactVirtualViewManager :
   override fun setInitialHidden(view: ReactVirtualView, value: Boolean) {
     if (view.mode == null) {
       view.mode = if (value) VirtualViewMode.Hidden else VirtualViewMode.Visible
+    }
+  }
+
+  @ReactProp(name = "renderState")
+  override fun setRenderState(view: ReactVirtualView, value: Int) {
+    // If disabled, `renderState` will always be `VirtualViewRenderState.Unknown`.
+    if (ReactNativeFeatureFlags.enableVirtualViewRenderState()) {
+      view.renderState =
+          when (value) {
+            1 -> VirtualViewRenderState.Rendered
+            2 -> VirtualViewRenderState.None
+            else -> VirtualViewRenderState.Unknown
+          }
     }
   }
 

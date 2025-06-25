@@ -448,6 +448,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewRenderState: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables reading render state when dispatching VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     enableVirtualViewWindowFocusDetection: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c887a11347802fd246b76f1ccfd7eb9>>
+ * @generated SignedSource<<122fa0ad54c810e7fa844309a9b4fbd6>>
  */
 
 /**
@@ -111,6 +111,8 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
+
+  bool enableVirtualViewRenderState(jsi::Runtime& runtime);
 
   bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 

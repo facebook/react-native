@@ -33,6 +33,7 @@ internal class ReactVirtualView(context: Context) :
     View.OnLayoutChangeListener {
 
   internal var mode: VirtualViewMode? = null
+  internal var renderState: VirtualViewRenderState = VirtualViewRenderState.Unknown
   internal var modeChangeEmitter: ModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
@@ -267,7 +268,18 @@ internal class ReactVirtualView(context: Context) :
         "VirtualView::mode change $oldMode -> $newMode, nativeID=$nativeId")
     when (newMode) {
       VirtualViewMode.Visible -> {
-        emitSyncModeChange(VirtualViewMode.Visible)
+        if (renderState == VirtualViewRenderState.Unknown) {
+          // Feature flag is disabled, so use the former logic.
+          emitSyncModeChange(VirtualViewMode.Visible)
+        } else {
+          // If the previous mode was prerender and the result of dispatching that event was
+          // committed, we do not need to dispatch an event for visible.
+          val wasPrerenderCommitted =
+              oldMode == VirtualViewMode.Prerender && renderState == VirtualViewRenderState.Rendered
+          if (!wasPrerenderCommitted) {
+            emitSyncModeChange(VirtualViewMode.Visible)
+          }
+        }
       }
       VirtualViewMode.Prerender -> {
         if (oldMode != VirtualViewMode.Visible) {
