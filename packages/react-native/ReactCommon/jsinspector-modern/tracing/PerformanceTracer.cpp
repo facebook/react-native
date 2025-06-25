@@ -94,7 +94,7 @@ void PerformanceTracer::collectEvents(
   }
 
   auto traceEvents = folly::dynamic::array();
-  for (auto event : buffer_) {
+  for (const auto& event : buffer_) {
     // Emit trace events
     traceEvents.push_back(serializeTraceEvent(event));
 
