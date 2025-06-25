@@ -38,7 +38,7 @@ const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/typescript/stripUnstableApis'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
-  require('./transforms/removeUndefinedFromOptionalMembers'),
+  require('./transforms/typescript/removeUndefinedFromOptionalMembers'),
   require('./transforms/typescript/organizeDeclarations'),
 ];
 
