@@ -13,7 +13,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
@@ -58,9 +57,7 @@ function createAnimatedProps(
           // we propagate the flattened `style` object to the `props` object.
           const flatStyle = flattenStyle(value as $FlowFixMe);
           node = AnimatedStyle.from(flatStyle, allowlist?.style, value);
-          if (ReactNativeFeatureFlags.alwaysFlattenAnimatedStyles()) {
-            staticValue = flatStyle;
-          }
+          staticValue = flatStyle;
         }
       } else if (value instanceof AnimatedNode) {
         node = value;
@@ -164,9 +161,7 @@ export default class AnimatedProps extends AnimatedNode {
           maybeNode.__replaceAnimatedNodeWithValues(mutableStyle);
           props[key] = maybeNode.__getValueForStyle(mutableStyle);
         } else {
-          if (ReactNativeFeatureFlags.alwaysFlattenAnimatedStyles()) {
-            props[key] = flatStaticStyle;
-          }
+          props[key] = flatStaticStyle;
         }
       } else if (maybeNode instanceof AnimatedNode) {
         props[key] = maybeNode.__getValue();
