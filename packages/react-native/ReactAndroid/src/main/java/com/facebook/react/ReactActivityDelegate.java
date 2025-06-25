@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.Window;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
@@ -122,11 +123,16 @@ public class ReactActivityDelegate {
         () -> {
           String mainComponentName = getMainComponentName();
           final Bundle launchOptions = composeLaunchOptions();
-          if (WindowUtilKt.isEdgeToEdgeFeatureFlagOn() && mActivity != null) {
-            WindowUtilKt.enableEdgeToEdge(mActivity.getWindow());
-          }
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
-            mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+          if (mActivity != null) {
+            Window window = mActivity.getWindow();
+            if (window != null) {
+              if (WindowUtilKt.isEdgeToEdgeFeatureFlagOn()) {
+                WindowUtilKt.enableEdgeToEdge(window);
+              }
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
+                window.setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
+              }
+            }
           }
           if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
             mReactDelegate =
