@@ -17,6 +17,12 @@ const ReactNativeStyleAttributes =
 const resolveAssetSource = require('../Image/resolveAssetSource').default;
 const processBackgroundImage =
   require('../StyleSheet/processBackgroundImage').default;
+const processBackgroundSize =
+  require('../StyleSheet/processBackgroundSize').default;
+const processBackgroundPosition =
+  require('../StyleSheet/processBackgroundPosition').default;
+const processBackgroundRepeat =
+  require('../StyleSheet/processBackgroundRepeat').default;
 const processColor = require('../StyleSheet/processColor').default;
 const processColorArray = require('../StyleSheet/processColorArray').default;
 const processFilter = require('../StyleSheet/processFilter').default;
@@ -203,6 +209,12 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
       return processFilter;
     case 'BackgroundImage':
       return processBackgroundImage;
+    case 'BackgroundSize':
+      return processBackgroundSize;
+    case 'BackgroundPosition':
+      return processBackgroundPosition;
+    case 'BackgroundRepeat':
+      return processBackgroundRepeat;
     case 'ImageSource':
       return resolveAssetSource;
     case 'BoxShadow':
