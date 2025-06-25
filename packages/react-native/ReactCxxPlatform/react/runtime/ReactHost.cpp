@@ -144,6 +144,8 @@ void ReactHost::createReactInstance() {
       devServerHelper_ = std::make_shared<DevServerHelper>(
           reactInstanceConfig_.appId,
           reactInstanceConfig_.deviceName,
+          reactInstanceConfig_.devServerHost,
+          reactInstanceConfig_.devServerPort,
           httpClientFactory,
           [this](
               const std::string& moduleName,
