@@ -132,8 +132,12 @@ function generatePropsDiffString(
               throw new Error('Received unknown ReservedPropTypeAnnotation');
           }
         case 'ArrayTypeAnnotation':
-        case 'ObjectTypeAnnotation':
           return '';
+        case 'ObjectTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'StringEnumTypeAnnotation':
           return `
   if (${prop.name} != oldProps->${prop.name}) {
