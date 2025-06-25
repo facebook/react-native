@@ -152,6 +152,10 @@ function generatePropsDiffString(
     result["${prop.name}"] = toDynamic(${prop.name});
   }`;
         case 'MixedTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
         default:
           // TODO: Implement diffProps for complex types
           return '';
