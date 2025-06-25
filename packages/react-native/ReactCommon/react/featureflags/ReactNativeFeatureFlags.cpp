@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ad9c01a715c11edb67626cd3e801144d>>
+ * @generated SignedSource<<e95ca3707afa85dbcd17a351872da3b3>>
  */
 
 /**
@@ -108,6 +108,10 @@ bool ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
+bool ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS() {
+  return getAccessor().enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {

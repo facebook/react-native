@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cc5f6693461c87f75b2cad6b38c4d896>>
+ * @generated SignedSource<<194e0f47db33d3b9167f58ed186a331c>>
  * @flow strict
  * @noformat
  */
@@ -71,6 +71,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
+  enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
@@ -269,6 +270,10 @@ export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeF
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
+/**
+ * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
+ */
+export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */

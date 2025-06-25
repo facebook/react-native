@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b50329bf9cb735978e08c721fc7c29ce>>
+ * @generated SignedSource<<61381e3eb65214c519a01283366a53c6>>
  */
 
 /**
@@ -143,6 +143,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
+   */
+  RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
