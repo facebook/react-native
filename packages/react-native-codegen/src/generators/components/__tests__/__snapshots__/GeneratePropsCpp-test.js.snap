@@ -349,6 +349,9 @@ folly::dynamic DimensionPropNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (marginBack != oldProps->marginBack) {
+    result[\\"marginBack\\"] = toDynamic(marginBack);
+  }
   return result;
 }
 #endif
