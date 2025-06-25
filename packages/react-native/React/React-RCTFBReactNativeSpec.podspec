@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "FBReactNativeSpec/**/*.{c,h,m,mm,cpp}"
+  s.source_files           = podspec_sources("FBReactNativeSpec/**/*.{c,h,m,mm,cpp}", "FBReactNativeSpec/**/*.{h}")
   s.exclude_files          = "FBReactNativeSpec/react/renderer/components",
   s.compiler_flags         = new_arch_flags
   s.header_dir             = 'FBReactNativeSpec'
@@ -63,7 +63,7 @@ Pod::Spec.new do |s|
   add_rn_third_party_dependencies(s)
 
   s.subspec "components" do |ss|
-    ss.source_files         = "FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{m,mm,cpp,h}"
+    ss.source_files         = podspec_sources("FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{m,mm,cpp,h}", "FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{h}")
     ss.header_dir           = "react/renderer/components/FBReactNativeSpec"
 
     add_dependency(ss, "React-featureflags")

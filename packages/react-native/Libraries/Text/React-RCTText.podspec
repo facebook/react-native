@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{h,m,mm}"
+  s.source_files           = podspec_sources("**/*.{h,m,mm}", "**/*.h")
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
   s.framework              = ["MobileCoreServices"]

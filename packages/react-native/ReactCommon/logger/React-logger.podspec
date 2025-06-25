@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.header_dir             = "logger"
 
   add_rn_third_party_dependencies(s)
