@@ -14,6 +14,7 @@
 #include <react/timing/primitives.h>
 
 #include <folly/dynamic.h>
+#include <atomic>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -47,9 +48,7 @@ class PerformanceTracer {
    * avoid doing expensive work (like formatting strings) if tracing is not
    * enabled.
    */
-  bool isTracing() const {
-    // This is not thread safe but it's only a performance optimization. The
-    // call to report marks and measures is already thread safe.
+  inline bool isTracing() const {
     return tracing_;
   }
 
@@ -135,12 +134,14 @@ class PerformanceTracer {
 
   folly::dynamic serializeTraceEvent(const TraceEvent& event) const;
 
-  bool tracing_{false};
-
   uint64_t processId_;
-  uint32_t performanceMeasureCount_{0};
+
+  std::atomic<bool> tracing_{false};
+  std::atomic<uint32_t> performanceMeasureCount_{0};
+
   std::vector<TraceEvent> buffer_;
-  std::mutex mutex_;
+  // Protects buffer_ operations and tracing_ modifications.
+  std::mutex tracingMutex_;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
