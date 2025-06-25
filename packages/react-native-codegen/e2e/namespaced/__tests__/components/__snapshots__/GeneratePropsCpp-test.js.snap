@@ -532,7 +532,7 @@ folly::dynamic ImagePropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
   if (thumbImage != oldProps->thumbImage) {
-    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+    result[\\"thumbImage\\"] = toDynamic(thumbImage);
   }
   return result;
 }
@@ -740,7 +740,7 @@ folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
   if (thumbImage != oldProps->thumbImage) {
-    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+    result[\\"thumbImage\\"] = toDynamic(thumbImage);
   }
     
   if (color != oldProps->color) {
