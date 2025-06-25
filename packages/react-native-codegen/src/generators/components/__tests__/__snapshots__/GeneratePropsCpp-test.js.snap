@@ -40,6 +40,10 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     arrayOfMixed(convertRawProp(context, rawProps, \\"arrayOfMixed\\", sourceProps.arrayOfMixed, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ArrayPropsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ArrayPropsNativeComponent\\";
+}
+
 folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ArrayPropsNativeComponentProps();
@@ -137,6 +141,10 @@ ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
     nativePrimitives(convertRawProp(context, rawProps, \\"nativePrimitives\\", sourceProps.nativePrimitives, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ArrayPropsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ArrayPropsNativeComponent\\";
+}
+
 folly::dynamic ArrayPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ArrayPropsNativeComponentProps();
@@ -186,6 +194,10 @@ BooleanPropNativeComponentProps::BooleanPropNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName BooleanPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"BooleanPropNativeComponent\\";
+}
+
 folly::dynamic BooleanPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = BooleanPropNativeComponentProps();
@@ -235,6 +247,10 @@ ColorPropNativeComponentProps::ColorPropNativeComponentProps(
     tintColor(convertRawProp(context, rawProps, \\"tintColor\\", sourceProps.tintColor, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ColorPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ColorPropNativeComponent\\";
+}
+
 folly::dynamic ColorPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ColorPropNativeComponentProps();
@@ -284,6 +300,10 @@ CommandNativeComponentProps::CommandNativeComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName CommandNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"CommandNativeComponent\\";
+}
+
 folly::dynamic CommandNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = CommandNativeComponentProps();
@@ -330,6 +350,10 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName CommandNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"CommandNativeComponent\\";
+}
+
 folly::dynamic CommandNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = CommandNativeComponentProps();
@@ -380,6 +404,10 @@ DimensionPropNativeComponentProps::DimensionPropNativeComponentProps(
     marginBack(convertRawProp(context, rawProps, \\"marginBack\\", sourceProps.marginBack, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName DimensionPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"DimensionPropNativeComponent\\";
+}
+
 folly::dynamic DimensionPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = DimensionPropNativeComponentProps();
@@ -434,6 +462,10 @@ DoublePropNativeComponentProps::DoublePropNativeComponentProps(
     blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName DoublePropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"DoublePropNativeComponent\\";
+}
+
 folly::dynamic DoublePropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = DoublePropNativeComponentProps();
@@ -503,6 +535,10 @@ EventsNestedObjectNativeComponentProps::EventsNestedObjectNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EventsNestedObjectNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"EventsNestedObjectNativeComponent\\";
+}
+
 folly::dynamic EventsNestedObjectNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EventsNestedObjectNativeComponentProps();
@@ -552,6 +588,10 @@ EventsNativeComponentProps::EventsNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EventsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"EventsNativeComponent\\";
+}
+
 folly::dynamic EventsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EventsNativeComponentProps();
@@ -601,6 +641,10 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName InterfaceOnlyComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"InterfaceOnlyComponent\\";
+}
+
 folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = InterfaceOnlyComponentProps();
@@ -647,6 +691,10 @@ ExcludedAndroidComponentProps::ExcludedAndroidComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ExcludedAndroidComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ExcludedAndroidComponent\\";
+}
+
 folly::dynamic ExcludedAndroidComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ExcludedAndroidComponentProps();
@@ -693,6 +741,10 @@ ExcludedAndroidIosComponentProps::ExcludedAndroidIosComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ExcludedAndroidIosComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ExcludedAndroidIosComponent\\";
+}
+
 folly::dynamic ExcludedAndroidIosComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ExcludedAndroidIosComponentProps();
@@ -739,6 +791,10 @@ ExcludedIosComponentProps::ExcludedIosComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ExcludedIosComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ExcludedIosComponent\\";
+}
+
 folly::dynamic ExcludedIosComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ExcludedIosComponentProps();
@@ -761,6 +817,10 @@ MultiFileIncludedNativeComponentProps::MultiFileIncludedNativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiFileIncludedNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiFileIncludedNativeComponent\\";
+}
+
 folly::dynamic MultiFileIncludedNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiFileIncludedNativeComponentProps();
@@ -815,6 +875,10 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
     blurRadius6(convertRawProp(context, rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, {0.0})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName FloatPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"FloatPropNativeComponent\\";
+}
+
 folly::dynamic FloatPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = FloatPropNativeComponentProps();
@@ -885,6 +949,10 @@ ImagePropNativeComponentProps::ImagePropNativeComponentProps(
     thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ImagePropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ImagePropNativeComponent\\";
+}
+
 folly::dynamic ImagePropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ImagePropNativeComponentProps();
@@ -934,6 +1002,10 @@ InsetsPropNativeComponentProps::InsetsPropNativeComponentProps(
     contentInset(convertRawProp(context, rawProps, \\"contentInset\\", sourceProps.contentInset, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName InsetsPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"InsetsPropNativeComponent\\";
+}
+
 folly::dynamic InsetsPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = InsetsPropNativeComponentProps();
@@ -983,6 +1055,10 @@ Int32EnumPropsNativeComponentProps::Int32EnumPropsNativeComponentProps(
     maxInterval(convertRawProp(context, rawProps, \\"maxInterval\\", sourceProps.maxInterval, {Int32EnumPropsNativeComponentMaxInterval::MaxInterval0})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName Int32EnumPropsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"Int32EnumPropsNativeComponent\\";
+}
+
 folly::dynamic Int32EnumPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = Int32EnumPropsNativeComponentProps();
@@ -1034,6 +1110,10 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     progress3(convertRawProp(context, rawProps, \\"progress3\\", sourceProps.progress3, {10})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName IntegerPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"IntegerPropNativeComponent\\";
+}
+
 folly::dynamic IntegerPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = IntegerPropNativeComponentProps();
@@ -1091,6 +1171,10 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName InterfaceOnlyComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"InterfaceOnlyComponent\\";
+}
+
 folly::dynamic InterfaceOnlyComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = InterfaceOnlyComponentProps();
@@ -1141,6 +1225,10 @@ MixedPropNativeComponentProps::MixedPropNativeComponentProps(
     mixedProp(convertRawProp(context, rawProps, \\"mixedProp\\", sourceProps.mixedProp, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MixedPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MixedPropNativeComponent\\";
+}
+
 folly::dynamic MixedPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MixedPropNativeComponentProps();
@@ -1194,6 +1282,10 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
     point(convertRawProp(context, rawProps, \\"point\\", sourceProps.point, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ImageColorPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ImageColorPropNativeComponent\\";
+}
+
 folly::dynamic ImageColorPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ImageColorPropNativeComponentProps();
@@ -1255,6 +1347,10 @@ NoPropsNoEventsComponentProps::NoPropsNoEventsComponentProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName NoPropsNoEventsComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"NoPropsNoEventsComponent\\";
+}
+
 folly::dynamic NoPropsNoEventsComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = NoPropsNoEventsComponentProps();
@@ -1302,6 +1398,10 @@ ObjectPropsProps::ObjectPropsProps(
     objectProp(convertRawProp(context, rawProps, \\"objectProp\\", sourceProps.objectProp, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ObjectPropsProps::getDiffPropsImplementationTarget() const {
+  return \\"ObjectProps\\";
+}
+
 folly::dynamic ObjectPropsProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ObjectPropsProps();
@@ -1351,6 +1451,10 @@ PointPropNativeComponentProps::PointPropNativeComponentProps(
     startPoint(convertRawProp(context, rawProps, \\"startPoint\\", sourceProps.startPoint, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName PointPropNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"PointPropNativeComponent\\";
+}
+
 folly::dynamic PointPropNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = PointPropNativeComponentProps();
@@ -1400,6 +1504,10 @@ StringEnumPropsNativeComponentProps::StringEnumPropsNativeComponentProps(
     alignment(convertRawProp(context, rawProps, \\"alignment\\", sourceProps.alignment, {StringEnumPropsNativeComponentAlignment::Center})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName StringEnumPropsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"StringEnumPropsNativeComponent\\";
+}
+
 folly::dynamic StringEnumPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = StringEnumPropsNativeComponentProps();
@@ -1450,6 +1558,10 @@ StringPropComponentProps::StringPropComponentProps(
     accessibilityRole(convertRawProp(context, rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName StringPropComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"StringPropComponent\\";
+}
+
 folly::dynamic StringPropComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = StringPropComponentProps();
@@ -1503,6 +1615,10 @@ MultiFile1NativeComponentProps::MultiFile1NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiFile1NativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiFile1NativeComponent\\";
+}
+
 folly::dynamic MultiFile1NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiFile1NativeComponentProps();
@@ -1528,6 +1644,10 @@ MultiFile2NativeComponentProps::MultiFile2NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiFile2NativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiFile2NativeComponent\\";
+}
+
 folly::dynamic MultiFile2NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiFile2NativeComponentProps();
@@ -1577,6 +1697,10 @@ MultiComponent1NativeComponentProps::MultiComponent1NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiComponent1NativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiComponent1NativeComponent\\";
+}
+
 folly::dynamic MultiComponent1NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiComponent1NativeComponentProps();
@@ -1602,6 +1726,10 @@ MultiComponent2NativeComponentProps::MultiComponent2NativeComponentProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {true})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiComponent2NativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiComponent2NativeComponent\\";
+}
+
 folly::dynamic MultiComponent2NativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiComponent2NativeComponentProps();

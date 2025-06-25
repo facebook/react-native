@@ -165,6 +165,10 @@ function generatePropsDiffString(
 
   return `
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ${className}::getDiffPropsImplementationTarget() const {
+  return "${componentName}";
+}
+
 folly::dynamic ${className}::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ${className}();

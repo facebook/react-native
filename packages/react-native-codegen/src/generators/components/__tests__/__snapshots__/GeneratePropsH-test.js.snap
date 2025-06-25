@@ -282,6 +282,8 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::vector<folly::dynamic> arrayOfMixed{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -379,6 +381,8 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
   std::vector<ArrayPropsNativeComponentNativePrimitivesStruct> nativePrimitives{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -416,6 +420,8 @@ class BooleanPropNativeComponentProps final : public ViewProps {
   bool disabled{false};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -454,6 +460,8 @@ class ColorPropNativeComponentProps final : public ViewProps {
   SharedColor tintColor{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -491,6 +499,8 @@ class CommandNativeComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -528,6 +538,8 @@ class CommandNativeComponentProps final : public ViewProps {
   std::string accessibilityHint{\\"\\"};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -567,6 +579,8 @@ class DimensionPropNativeComponentProps final : public ViewProps {
   YGValue marginBack{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -609,6 +623,8 @@ class DoublePropNativeComponentProps final : public ViewProps {
   double blurRadius6{0.0};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -646,6 +662,8 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
   bool disabled{false};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -683,6 +701,8 @@ class EventsNativeComponentProps final : public ViewProps {
   bool disabled{false};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -720,6 +740,8 @@ class InterfaceOnlyComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -757,6 +779,8 @@ class ExcludedAndroidComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -794,6 +818,8 @@ class ExcludedAndroidIosComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -831,6 +857,8 @@ class ExcludedIosComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -845,6 +873,8 @@ class MultiFileIncludedNativeComponentProps final : public ViewProps {
   bool disabled{true};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -887,6 +917,8 @@ class FloatPropNativeComponentProps final : public ViewProps {
   Float blurRadius6{0.0};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -925,6 +957,8 @@ class ImagePropNativeComponentProps final : public ViewProps {
   ImageSource thumbImage{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -963,6 +997,8 @@ class InsetsPropNativeComponentProps final : public ViewProps {
   EdgeInsets contentInset{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1037,6 +1073,8 @@ class Int32EnumPropsNativeComponentProps final : public ViewProps {
   Int32EnumPropsNativeComponentMaxInterval maxInterval{Int32EnumPropsNativeComponentMaxInterval::MaxInterval0};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1076,6 +1114,8 @@ class IntegerPropNativeComponentProps final : public ViewProps {
   int progress3{10};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1113,6 +1153,8 @@ class InterfaceOnlyComponentProps final : public ViewProps {
   std::string accessibilityHint{\\"\\"};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1150,6 +1192,8 @@ class MixedPropNativeComponentProps final : public ViewProps {
   folly::dynamic mixedProp{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1193,6 +1237,8 @@ class ImageColorPropNativeComponentProps final : public ViewProps {
   Point point{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1230,6 +1276,8 @@ class NoPropsNoEventsComponentProps final : public ViewProps {
   
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1648,6 +1696,8 @@ class ObjectPropsProps final : public ViewProps {
   ObjectPropsObjectPropStruct objectProp{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1686,6 +1736,8 @@ class PointPropNativeComponentProps final : public ViewProps {
   Point startPoint{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1747,6 +1799,8 @@ class StringEnumPropsNativeComponentProps final : public ViewProps {
   StringEnumPropsNativeComponentAlignment alignment{StringEnumPropsNativeComponentAlignment::Center};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1785,6 +1839,8 @@ class StringPropComponentProps final : public ViewProps {
   std::string accessibilityRole{};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1822,6 +1878,8 @@ class MultiFile1NativeComponentProps final : public ViewProps {
   bool disabled{false};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1836,6 +1894,8 @@ class MultiFile2NativeComponentProps final : public ViewProps {
   bool disabled{true};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1873,6 +1933,8 @@ class MultiComponent1NativeComponentProps final : public ViewProps {
   bool disabled{false};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
@@ -1887,6 +1949,8 @@ class MultiComponent2NativeComponentProps final : public ViewProps {
   bool disabled{true};
 
   #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
 };
