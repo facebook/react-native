@@ -324,6 +324,36 @@ void consoleAssert(
 #include "ForwardingConsoleMethods.def"
 #undef FORWARDING_CONSOLE_METHOD
 
+/**
+ * Call innerFn and forward any arguments to the original console method
+ * named methodName, if possible.
+ */
+auto forwardToOriginalConsole(
+    std::shared_ptr<jsi::Object> originalConsole,
+    const char* methodName,
+    CallableAsHostFunction auto innerFn) {
+  return [originalConsole = std::move(originalConsole),
+          innerFn = std::move(innerFn),
+          methodName](
+             jsi::Runtime& runtime,
+             const jsi::Value& thisVal,
+             const jsi::Value* args,
+             size_t count) {
+    jsi::Value retVal = innerFn(runtime, thisVal, args, count);
+    if (originalConsole) {
+      auto val = originalConsole->getProperty(runtime, methodName);
+      if (val.isObject()) {
+        auto obj = val.getObject(runtime);
+        if (obj.isFunction(runtime)) {
+          auto func = obj.getFunction(runtime);
+          func.callWithThis(runtime, *originalConsole, args, count);
+        }
+      }
+    }
+    return std::move(retVal);
+  };
+};
+
 } // namespace
 
 void RuntimeTarget::installConsoleHandler() {
@@ -369,33 +399,6 @@ void RuntimeTarget::installConsoleHandler() {
         };
 
     /**
-     * Call innerFn and forward any arguments to the original console method
-     * named methodName, if possible.
-     */
-    auto forwardToOriginalConsole = [originalConsole](
-                                        const char* methodName,
-                                        CallableAsHostFunction auto innerFn) {
-      return [originalConsole, innerFn = std::move(innerFn), methodName](
-                 jsi::Runtime& runtime,
-                 const jsi::Value& thisVal,
-                 const jsi::Value* args,
-                 size_t count) {
-        jsi::Value retVal = innerFn(runtime, thisVal, args, count);
-        if (originalConsole) {
-          auto val = originalConsole->getProperty(runtime, methodName);
-          if (val.isObject()) {
-            auto obj = val.getObject(runtime);
-            if (obj.isFunction(runtime)) {
-              auto func = obj.getFunction(runtime);
-              func.callWithThis(runtime, *originalConsole, args, count);
-            }
-          }
-        }
-        return retVal;
-      };
-    };
-
-    /**
      * Install a console method with the given name and body. The body receives
      * the usual JSI host function parameters plus a ConsoleState reference, a
      * reference to the RuntimeTargetDelegate for sending messages to the
@@ -413,6 +416,7 @@ void RuntimeTarget::installConsoleHandler() {
               jsi::PropNameID::forAscii(runtime, methodName),
               0,
               forwardToOriginalConsole(
+                  originalConsole,
                   methodName,
                   [body = std::move(body), state, delegateExecutorSync](
                       jsi::Runtime& runtime,
