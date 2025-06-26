@@ -28,18 +28,18 @@ PerformanceTracer::PerformanceTracer()
 
 bool PerformanceTracer::startTracing() {
   {
-    std::lock_guard lock(tracingMutex_);
-    if (isTracing()) {
+    std::lock_guard lock(mutex_);
+    if (tracingAtomic_) {
       return false;
     }
-    tracing_ = true;
+    tracingAtomic_ = true;
   }
 
   reportProcess(processId_, "React Native");
 
   {
-    std::lock_guard lock(tracingMutex_);
-    if (!isTracing()) {
+    std::lock_guard lock(mutex_);
+    if (!tracingAtomic_) {
       return false;
     }
     buffer_.emplace_back(TraceEvent{
@@ -57,11 +57,11 @@ bool PerformanceTracer::startTracing() {
 }
 
 bool PerformanceTracer::stopTracing() {
-  std::lock_guard lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard lock(mutex_);
+  if (!tracingAtomic_) {
     return false;
   }
-  tracing_ = false;
+  tracingAtomic_ = false;
 
   // This is synthetic Trace Event, which should not be represented on a
   // timeline. CDT is not using Profile or ProfileChunk events for determining
@@ -78,7 +78,6 @@ bool PerformanceTracer::stopTracing() {
       .tid = oscompat::getCurrentThreadId(),
   });
 
-  // Potential increments of this counter are covered by tracing_ atomic flag.
   performanceMeasureCount_ = 0;
   return true;
 }
@@ -89,7 +88,7 @@ void PerformanceTracer::collectEvents(
     uint16_t chunkSize) {
   std::vector<TraceEvent> localBuffer;
   {
-    std::lock_guard lock(tracingMutex_);
+    std::lock_guard lock(mutex_);
     buffer_.swap(localBuffer);
   }
 
@@ -115,12 +114,12 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     HighResTimeStamp start) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
@@ -139,7 +138,7 @@ void PerformanceTracer::reportMeasure(
     HighResTimeStamp start,
     HighResDuration duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
@@ -154,8 +153,8 @@ void PerformanceTracer::reportMeasure(
 
   auto currentThreadId = oscompat::getCurrentThreadId();
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
   auto eventId = ++performanceMeasureCount_;
@@ -182,12 +181,12 @@ void PerformanceTracer::reportMeasure(
 }
 
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
@@ -207,12 +206,12 @@ void PerformanceTracer::reportJavaScriptThread() {
 }
 
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
@@ -244,12 +243,12 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
 void PerformanceTracer::reportEventLoopTask(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
@@ -267,12 +266,12 @@ void PerformanceTracer::reportEventLoopTask(
 void PerformanceTracer::reportEventLoopMicrotasks(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!isTracing()) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard<std::mutex> lock(tracingMutex_);
-  if (!isTracing()) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
