@@ -10,9 +10,19 @@
 
 'use strict';
 
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+
 import {StyleSheet, Text, View} from 'react-native';
 
-function BackgroundImageBox({style, children, testID}) {
+function BackgroundImageBox({
+  style,
+  children,
+  testID,
+}: {
+  style?: ViewStyleProp,
+  children?: React.Node,
+  testID?: string,
+}) {
   return (
     <View style={[styles.box, style]} testID={testID}>
       {children}
@@ -409,8 +419,8 @@ exports.examples = [
             ],
             experimental_backgroundPosition: [
               {
-                x: 'center',
-                y: 'center',
+                top: '50%',
+                left: '50%',
               },
             ],
             experimental_backgroundSize: [
