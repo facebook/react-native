@@ -10,68 +10,13 @@
 
 /*:: import type {BuildFlavor} from './types'; */
 
+const {getHeaderFilesFromPodspecs} = require('./headers');
 const {createFolderIfNotExists, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
 
 const frameworkLog = createLogger('XCFramework');
-
-// These are the headers that are ignored by the modulemap.
-// The modulemap is required only for Swift files that needs to import the React framework.
-// We want to ignore all the headers that contains some C++ symbol, as they will not build with Swift.
-const HEADERFILE_IGNORE_LIST = [
-  'RCTCxxMethod.h',
-  'RCTComponentViewClassDescriptor.h',
-  'RCTActivityIndicatorViewManager.h',
-  'RCTComponentViewDescriptor.h',
-  'RCTComponentViewFactory.h',
-  'RCTComponentViewProtocol.h',
-  'RCTComponentViewRegistry.h',
-  'RCTConstants.h',
-  'RCTConversions.h',
-  'RCTConvert+CoreLocation.h',
-  'RCTConvert+Text.h',
-  'RCTConvert+Transform.h',
-  'RCTFabricComponentsPlugins.h',
-  'RCTFabricModalHostViewController.h',
-  'RCTFabricSurface.h',
-  'RCTFollyConvert.h',
-  'RCTLegacyViewManagerInteropCoordinatorAdapter.h',
-  'RCTLinearGradient.h',
-  'RCTRadialGradient.h',
-  'RCTMountingManager.h',
-  'RCTMountingTransactionObserving.h',
-  'RCTParagraphComponentAccessibilityProvider.h',
-  'RuntimeExecutor.h',
-  'RCTSurfacePresenter.h',
-  'RCTSurfacePresenterBridgeAdapter.h',
-  '*View.h',
-  '*ViewProtocol.h',
-  '*ComponentView.h',
-  'RCTViewAccessibilityElement.h',
-  'RCTImageManager*.h',
-  'RCTImagePrimitivesConversions.h',
-  'RCTSyncImageManager.h',
-  'CallbackWrapper.h',
-  'LongLivedObject.h',
-  'Bridging.h',
-  'RCTLegacyViewManagerInteropCoordinator.h',
-  'conversions.h',
-  'Float.h',
-  'Geometry.h',
-  'ObjCTimerRegistry.h',
-  'RCTContextContainerHandling.h',
-  'RCTHost*.h',
-  'ReactCdp.h',
-  'RCTInstance.h',
-  'JsArgumentHelpers-inl.h',
-  'RCTJscInstance.h',
-  'RCTJSThreadManager.h',
-  'YGEnums.h',
-  'YGNode.h',
-];
 
 function buildXCFrameworks(
   rootFolder /*: string */,
@@ -88,7 +33,15 @@ function buildXCFrameworks(
     'React.xcframework',
   );
   // Delete all target platform folders (everything but the Headers and Modules folders)
-  cleanPlatformFolders(outputPath);
+  try {
+    fs.rmSync(outputPath, {recursive: true, force: true});
+  } catch (error) {
+    frameworkLog(
+      `Error deleting folder: ${outputPath}. Check if the folder exists.`,
+      'error',
+    );
+    return;
+  }
 
   // Build the XCFrameworks by using each framework folder as input
   const frameworks = frameworkFolders
@@ -113,21 +66,80 @@ function buildXCFrameworks(
     return;
   }
 
-  // Copy header files from the headers folder that we used to build the swift package
-  const outputHeaderFiles = copyHeaderFiles(
-    path.join(buildFolder, 'Headers'),
-    outputPath,
-    true,
-  );
+  // Use the header files from podspecs
+  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
 
-  // Create the umbrella header file
-  const umbrellaHeaderFile = createUmbrellaHeaderFile(
-    outputPath,
-    outputHeaderFiles,
-  );
+  // Delete header files to the output path
+  const outputHeadersPath = path.join(outputPath, 'Headers');
 
-  // Create the module map file
-  const moduleMapFile = createModuleMapFile(outputPath, umbrellaHeaderFile);
+  // Store umbrella headers keyed on podspec names
+  const umbrellaHeaders /*: {[key: string]: string} */ = {};
+  const copiedHeaderFilesWithPodspecNames /*: {[key: string]: string[]} */ = {};
+
+  // Enumerate podspecs and copy headers, create umbrella headers and module map file
+  Object.keys(podSpecsWithHeaderFiles).forEach(podspec => {
+    const headerFiles = podSpecsWithHeaderFiles[podspec];
+    if (headerFiles.length > 0) {
+      // Get podspec name without directory and extension and make sure it is a valid identifier
+      // by replacing any non-alphanumeric characters with an underscore.
+      const podSpecName = path
+        .basename(podspec, '.podspec')
+        .replace(/[^a-zA-Z0-9_]/g, '_');
+
+      // Create a folder for the podspec in the output headers path
+      const podSpecFolder = path.join(outputHeadersPath, podSpecName);
+      createFolderIfNotExists(podSpecFolder);
+
+      // Copy each header file to the podspec folder
+      copiedHeaderFilesWithPodspecNames[podSpecName] = headerFiles.map(
+        headerFile => {
+          // Header files shall be flattened into the podSpecFoldder:
+          const targetFile = path.join(
+            podSpecFolder,
+            path.basename(headerFile),
+          );
+          fs.copyFileSync(headerFile, targetFile);
+          return targetFile;
+        },
+      );
+      // Create umbrella header file for the podspec
+      const umbrellaHeaderFilename = path.join(
+        podSpecFolder,
+        podSpecName + '-umbrella.h',
+      );
+
+      // const didCreateUmbrellaFile = createUmbrellaHeaderFile(
+      //   podSpecName,
+      //   umbrellaHeaderFilename,
+      //   copiedHeaderFilesWithPodspecNames[podSpecName],
+      // );
+
+      // // Store the umbrella header filename in the umbrellaHeaders object
+      // if (didCreateUmbrellaFile) {
+      //   umbrellaHeaders[podSpecName] = umbrellaHeaderFilename;
+      // }
+
+      if (
+        podSpecName === 'React_Core' ||
+        podSpecName === 'React_RCTAppDelegate'
+      ) {
+        if (podSpecName === 'React_Core') {
+          fs.writeFileSync(umbrellaHeaderFilename, REACT_CORE_UMBRELLA_HEADER);
+        } else {
+          fs.writeFileSync(
+            umbrellaHeaderFilename,
+            RCT_APP_DELEGATE_UMBRELLA_HEADER,
+          );
+        }
+
+        // Store the umbrella header filename in the umbrellaHeaders object
+        umbrellaHeaders[podSpecName] = umbrellaHeaderFilename;
+      }
+    }
+  });
+
+  // Create the module map file using the header files in podSpecsWithHeaderFiles
+  const moduleMapFile = createModuleMapFile(outputPath, umbrellaHeaders);
   if (!moduleMapFile) {
     frameworkLog(
       'Failed to create module map file. The XCFramework may not work correctly. Stopping.',
@@ -136,19 +148,19 @@ function buildXCFrameworks(
     return;
   }
 
-  // Get the platforms in the framework folder and copy modulemaps and headers into each platform folder
   linkArchFolders(
     outputPath,
     moduleMapFile,
-    umbrellaHeaderFile,
-    outputHeaderFiles,
+    umbrellaHeaders,
+    copiedHeaderFilesWithPodspecNames,
   );
 
   // Copy Symbols to symbols folder
   const symbolPaths = frameworkFolders.map(framework =>
     path.join(framework, `..`, `..`, `React.framework.dSYM`),
   );
-  console.log('Copying symbols to symbols folder...');
+
+  frameworkLog('Copying symbols to symbols folder...');
   const symbolOutput = path.join(outputPath, '..', 'Symbols');
   symbolPaths.forEach(symbol => {
     const destination = extractDestinationFromPath(symbol);
@@ -165,79 +177,63 @@ function buildXCFrameworks(
 function linkArchFolders(
   outputPath /*:string*/,
   moduleMapFile /*:string*/,
-  umbrellaHeaderFile /*:string*/,
-  outputHeaderFiles /*: Array<string> */,
+  umbrellaHeaderFiles /*:{[key: string]: string}*/,
+  outputHeaderFiles /*: {[key: string]: string[]} */,
 ) {
   frameworkLog('Linking modules and headers to platform folders...');
-  const headerRootFolder = path.dirname(umbrellaHeaderFile);
 
-  fs.readdirSync(outputPath)
+  // Enumerate all platform folders in the output path
+  const platformFolders = fs
+    .readdirSync(outputPath)
+    .map(folder => path.join(outputPath, folder))
     .filter(folder => {
-      const folderPath = path.join(outputPath, folder);
       return (
-        fs.statSync(folderPath).isDirectory() &&
-        folder !== 'Headers' &&
-        folder !== 'Modules'
+        fs.statSync(folder).isDirectory() &&
+        !folder.endsWith('Headers') &&
+        !folder.endsWith('Modules')
       );
-    })
-    .forEach(folder => {
-      // Get full platform folder path
-      const platformFolder = path.join(outputPath, folder);
-      // Link the Modules folder into the platform folder
-      const targetModulesFolder = path.join(
-        platformFolder,
-        'React.Framework',
-        'Modules',
+    });
+
+  platformFolders.forEach(platformFolder => {
+    // Link the Modules folder into the platform folder
+    const targetModulesFolder = path.join(
+      platformFolder,
+      'React.Framework',
+      'Modules',
+    );
+    createFolderIfNotExists(targetModulesFolder);
+
+    try {
+      fs.linkSync(
+        moduleMapFile,
+        path.join(targetModulesFolder, path.basename(moduleMapFile)),
       );
-      createFolderIfNotExists(targetModulesFolder);
+    } catch (error) {
+      frameworkLog(
+        `Error copying module map file: ${error.message}. Check if the file exists at ${moduleMapFile}.`,
+        'error',
+      );
+    }
+    // Copy headers folder into the platform folder
+    const targetHeadersFolder = path.join(
+      platformFolder,
+      'React.Framework',
+      'Headers',
+    );
+
+    // Link umbreall / header files into the platform folder
+    Object.keys(umbrellaHeaderFiles).forEach(podSpecName => {
+      const umbrellaHeaderFile = umbrellaHeaderFiles[podSpecName];
+
+      // Create the target folder for the umbrella header file
+      const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
+      createFolderIfNotExists(targetPodSpecFolder);
+      // Link the umbrella header file to the target folder
       try {
         fs.linkSync(
-          moduleMapFile,
-          path.join(targetModulesFolder, path.basename(moduleMapFile)),
+          umbrellaHeaderFile,
+          path.join(targetPodSpecFolder, path.basename(umbrellaHeaderFile)),
         );
-      } catch (error) {
-        frameworkLog(
-          `Error copying module map file: ${error.message}. Check if the file exists at ${moduleMapFile}.`,
-          'error',
-        );
-      }
-      // Copy headers folder into the platform folder
-      const targetHeadersFolder = path.join(
-        platformFolder,
-        'React.Framework',
-        'Headers',
-      );
-      // Link header files into the platform folder
-      outputHeaderFiles.forEach(headerFile => {
-        // Get the relative path of the header file based on the root folder
-        const relativePath = path.relative(headerRootFolder, headerFile);
-        // Create the target folder for the header file
-        const targetFolder = path.join(
-          targetHeadersFolder,
-          path.dirname(relativePath),
-        );
-        // Create the target folder if it doesn't exist
-        createFolderIfNotExists(targetFolder);
-        // Link the header file to the target folder
-        try {
-          fs.linkSync(
-            headerFile,
-            path.join(targetFolder, path.basename(headerFile)),
-          );
-        } catch (error) {
-          frameworkLog(
-            `Error linking header file: ${error.message}. Check if the file exists.`,
-            'error',
-          );
-        }
-      });
-      // Link the umbrella header file to the target headers folder
-      try {
-        const targetUmbrellaPath = path.join(
-          targetHeadersFolder,
-          'React-umbrella.h',
-        );
-        fs.linkSync(umbrellaHeaderFile, targetUmbrellaPath);
       } catch (error) {
         frameworkLog(
           `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
@@ -245,159 +241,36 @@ function linkArchFolders(
         );
       }
     });
-}
 
-function copyHeaderFiles(
-  headersSourceFolder /*: string */,
-  outputPath /*: string */,
-  cleanOutputPath /*: boolean */ = false,
-) {
-  // Re-create headers folder in the output XCFramework
-  const headersTargetFolder = path.join(outputPath, 'Headers');
-  if (cleanOutputPath && fs.existsSync(headersTargetFolder)) {
-    // Delete the headers folder if it exists
-    try {
-      fs.rmSync(headersTargetFolder, {recursive: true, force: true});
-    } catch (error) {
-      frameworkLog(
-        `Error deleting headers folder: ${error.message}. Check if the folder exists.`,
-        'warning',
-      );
-    }
-  }
-  createFolderIfNotExists(headersTargetFolder);
-
-  // Now we can copy headers to the headers folder. We need to create the same folder structure as in the
-  // header files inside the Headers folder:
-  frameworkLog('Copying header files to: ' + headersTargetFolder);
-  const headerFiles = glob.sync('**/*.{h,hpp}', {
-    cwd: headersSourceFolder,
-    absolute: true,
+    Object.keys(outputHeaderFiles).forEach(podSpecName => {
+      outputHeaderFiles[podSpecName].forEach(headerFile => {
+        // Create the target folder for the umbrella header file
+        const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
+        createFolderIfNotExists(targetPodSpecFolder);
+        // Link the header file to the target folder - here we might have a few files with the same name
+        // since we're flattening the imports. Yoga has two files - these can be ignored.
+        const targetHeaderFile = path.join(
+          targetPodSpecFolder,
+          path.basename(headerFile),
+        );
+        if (!fs.existsSync(targetHeaderFile)) {
+          try {
+            fs.linkSync(headerFile, targetHeaderFile);
+          } catch (error) {
+            frameworkLog(
+              `Error linking header file: ${error.message}. Check if the file exists.`,
+              'error',
+            );
+          }
+        }
+      });
+    });
   });
-
-  const outputHeaderFiles /*: Array<string> */ = [];
-  headerFiles.forEach(headerFile => {
-    // The headerFile is a full path to a header file. We need to get the relative path based on the
-    // rootpath parameter.
-    const relativePath = path.relative(headersSourceFolder, headerFile);
-    const targetFolder = path.join(
-      headersTargetFolder,
-      path.dirname(relativePath),
-    );
-    const targetFile = path.join(headersTargetFolder, relativePath);
-    createFolderIfNotExists(targetFolder);
-    try {
-      // Check if the file contains c++ code
-      fs.copyFileSync(headerFile, targetFile);
-      outputHeaderFiles.push(targetFile);
-    } catch (error) {
-      frameworkLog(
-        `Error copying header file: ${error.message}. Check if the file exists.`,
-        'warning',
-      );
-    }
-  });
-
-  return outputHeaderFiles;
-}
-
-function createUmbrellaHeaderFile(
-  outputPath /*: string */,
-  headerFiles /*: Array<string> */,
-) /*: string */ {
-  // Create the umbrella header file
-  const umbrellaHeaderPath = path.join(outputPath, 'Headers');
-  const umbrellaHeaderFile = path.join(umbrellaHeaderPath, 'React-umbrella.h');
-
-  frameworkLog('Creating umbrella header file: ' + umbrellaHeaderFile);
-
-  // Create the umbrella header file
-  let umbrellaHeader = `
-// Generated by React Native
-// Do not edit this file directly. It is generated by the React Native build process.
-
-#ifdef __OBJC__
-#import <UIKit/UIKit.h>
-#else
-#ifndef FOUNDATION_EXPORT
-#if defined(__cplusplus)
-#define FOUNDATION_EXPORT extern "C"
-#else
-#define FOUNDATION_EXPORT extern
-#endif
-#endif
-#endif
-
-`;
-  headerFiles.forEach(headerFile => {
-    if (!isCppHeaderFile(headerFile) && !isHeaderFileIgnored(headerFile)) {
-      // The headerFile is a full path to a header file. We need to get the relative path based on the
-      // rootpath parameter.
-      const relativePath = path.relative(umbrellaHeaderPath, headerFile);
-      umbrellaHeader += `#import "${relativePath}"\n`;
-    }
-  });
-  umbrellaHeader += '\n';
-
-  // Write out the umbrella header file
-  try {
-    fs.writeFileSync(umbrellaHeaderFile, umbrellaHeader);
-  } catch (error) {
-    frameworkLog(
-      `Error creating umbrella header file: ${error.message}. Check if the file exists.`,
-      'warning',
-    );
-  }
-
-  return umbrellaHeaderFile;
-}
-
-// This regex matches some C++ construct that might be present in a header file.
-// To uniquely identify them. We need to exclude headers with C++ constructs from the module map
-// otherwise Swift won't be able to import the React.xcframework
-const cppHeaderRegex =
-  /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::|NS_ENUM\s*\([^)]*\)|NS_OPTIONS\s*\([^)]*\)|typedef\s+enum|static\s+const|@interface|static\s+inline/;
-
-function isCppHeaderFile(headerFilePath /*: string */) /*: boolean */ {
-  // Check if there is a cpp or mm file with the same name
-  const fileName = path.basename(headerFilePath, path.extname(headerFilePath));
-  const dirName = path.dirname(headerFilePath);
-
-  const checkFileExists = (extension /*: string */) /*: boolean */ => {
-    const cppFilePath = path.join(dirName, fileName + extension);
-    if (fs.existsSync(cppFilePath)) {
-      const fileStat = fs.statSync(cppFilePath);
-      return fileStat.isFile();
-    }
-    return false;
-  };
-  if (checkFileExists('.cpp') || checkFileExists('.mm')) {
-    // If there is a cpp or mm file with the same name, we assume it is a C++ header file
-    return true;
-  }
-  // Check if the file contains c++ code
-  const fileContent = fs.readFileSync(headerFilePath, 'utf8');
-  return cppHeaderRegex.test(fileContent);
-}
-
-function isHeaderFileIgnored(headerFile /*: string */) /*: boolean */ {
-  // Check if the header file is in the ignore list
-  return HEADERFILE_IGNORE_LIST.some(pattern =>
-    // Glob match the header file name to the ignore list
-    glob
-      .sync(pattern, {
-        cwd: path.dirname(headerFile),
-        absolute: true,
-      })
-      .some(ignoredHeaderFile => {
-        return path.basename(headerFile) === path.basename(ignoredHeaderFile);
-      }),
-  );
 }
 
 function createModuleMapFile(
   outputPath /*: string */,
-  umbrellaPath /*: string */,
+  umbrellaHeaders /*: {[key: string]: string} */,
 ) {
   // Create/get the module map folder
   const moduleMapFolder = path.join(outputPath, 'Modules');
@@ -405,49 +278,19 @@ function createModuleMapFile(
 
   // Create the module map file
   const moduleMapFile = path.join(moduleMapFolder, 'module.modulemap');
+
   frameworkLog('Creating module map file: ' + moduleMapFile);
-  const moduleMapContent = `framework module React {
-    umbrella header "${path.basename(umbrellaPath)}"
-    export *
-    module * { export * }
-}`;
 
   try {
-    fs.writeFileSync(moduleMapFile, moduleMapContent);
+    fs.writeFileSync(moduleMapFile, RN_MODULEMAP);
     return moduleMapFile;
   } catch (error) {
     frameworkLog(
       `Error creating module map file: ${error.message}. Check if the file exists.`,
-      'warning',
+      'error',
     );
     return null;
   }
-}
-
-function cleanPlatformFolders(outputPath /*:string*/) {
-  if (!fs.existsSync(outputPath)) {
-    return;
-  }
-  const targetPlatformFolders = fs.readdirSync(outputPath).filter(folder => {
-    const folderPath = path.join(outputPath, folder);
-    return (
-      fs.statSync(folderPath).isDirectory() &&
-      folder !== 'Headers' &&
-      folder !== 'Modules'
-    );
-  });
-  targetPlatformFolders.forEach(folder => {
-    const folderPath = path.join(outputPath, folder);
-    frameworkLog('Deleting folder: ' + folderPath);
-    try {
-      fs.rmSync(folderPath, {recursive: true, force: true});
-    } catch (error) {
-      frameworkLog(
-        `Error deleting folder: ${folderPath}. Check if the folder exists.`,
-        'warning',
-      );
-    }
-  });
 }
 
 function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
@@ -472,7 +315,7 @@ function signXCFramework(
   identity /*: string */,
   xcframeworkPath /*: string */,
 ) {
-  console.log('Signing XCFramework...');
+  frameworkLog('Signing XCFramework...');
   const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
   execSync(command, {stdio: 'inherit'});
 }
@@ -480,3 +323,332 @@ function signXCFramework(
 module.exports = {
   buildXCFrameworks,
 };
+
+const REACT_CORE_UMBRELLA_HEADER = `
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
+
+#import "React/CoreModulesPlugins.h"
+#import "React/RCTAccessibilityManager+Internal.h"
+#import "React/RCTAccessibilityManager.h"
+#import "React/RCTActionSheetManager.h"
+#import "React/RCTAlertController.h"
+#import "React/RCTAlertManager.h"
+#import "React/RCTAppearance.h"
+#import "React/RCTAppState.h"
+#import "React/RCTClipboard.h"
+#import "React/RCTDeviceInfo.h"
+#import "React/RCTDevLoadingView.h"
+#import "React/RCTDevMenu.h"
+#import "React/RCTDevSettings.h"
+#import "React/RCTDevToolsRuntimeSettingsModule.h"
+#import "React/RCTEventDispatcher.h"
+#import "React/RCTExceptionsManager.h"
+#import "React/RCTFPSGraph.h"
+#import "React/RCTI18nManager.h"
+#import "React/RCTKeyboardObserver.h"
+#import "React/RCTLogBox.h"
+#import "React/RCTLogBoxView.h"
+#import "React/RCTPlatform.h"
+#import "React/RCTRedBox.h"
+#import "React/RCTSourceCode.h"
+#import "React/RCTStatusBarManager.h"
+#import "React/RCTTiming.h"
+#import "React/RCTWebSocketModule.h"
+#import "React/RCTAssert.h"
+#import "React/RCTBridge+Inspector.h"
+#import "React/RCTBridge+Private.h"
+#import "React/RCTBridge.h"
+#import "React/RCTBridgeConstants.h"
+#import "React/RCTBridgeDelegate.h"
+#import "React/RCTBridgeMethod.h"
+#import "React/RCTBridgeModule.h"
+#import "React/RCTBridgeModuleDecorator.h"
+#import "React/RCTBridgeProxy+Cxx.h"
+#import "React/RCTBridgeProxy.h"
+#import "React/RCTBundleManager.h"
+#import "React/RCTBundleURLProvider.h"
+#import "React/RCTCallInvoker.h"
+#import "React/RCTCallInvokerModule.h"
+#import "React/RCTComponentEvent.h"
+#import "React/RCTConstants.h"
+#import "React/RCTConvert.h"
+#import "React/RCTCxxConvert.h"
+#import "React/RCTDefines.h"
+#import "React/RCTDisplayLink.h"
+#import "React/RCTErrorCustomizer.h"
+#import "React/RCTErrorInfo.h"
+#import "React/RCTEventDispatcherProtocol.h"
+#import "React/RCTFrameUpdate.h"
+#import "React/RCTImageSource.h"
+#import "React/RCTInitializing.h"
+#import "React/RCTInvalidating.h"
+#import "React/RCTJavaScriptExecutor.h"
+#import "React/RCTJavaScriptLoader.h"
+#import "React/RCTJSStackFrame.h"
+#import "React/RCTJSThread.h"
+#import "React/RCTKeyCommands.h"
+#import "React/RCTLog.h"
+#import "React/RCTManagedPointer.h"
+#import "React/RCTMockDef.h"
+#import "React/RCTModuleData.h"
+#import "React/RCTModuleMethod.h"
+#import "React/RCTMultipartDataTask.h"
+#import "React/RCTMultipartStreamReader.h"
+#import "React/RCTNullability.h"
+#import "React/RCTParserUtils.h"
+#import "React/RCTPerformanceLogger.h"
+#import "React/RCTPerformanceLoggerLabels.h"
+#import "React/RCTPLTag.h"
+#import "React/RCTRedBoxSetEnabled.h"
+#import "React/RCTReloadCommand.h"
+#import "React/RCTRootContentView.h"
+#import "React/RCTRootView.h"
+#import "React/RCTRootViewDelegate.h"
+#import "React/RCTRootViewInternal.h"
+#import "React/RCTTouchEvent.h"
+#import "React/RCTTouchHandler.h"
+#import "React/RCTTurboModuleRegistry.h"
+#import "React/RCTURLRequestDelegate.h"
+#import "React/RCTURLRequestHandler.h"
+#import "React/RCTUtils.h"
+#import "React/RCTUtilsUIOverride.h"
+#import "React/RCTVersion.h"
+#import "React/RCTSurface.h"
+#import "React/RCTSurfaceDelegate.h"
+#import "React/RCTSurfaceProtocol.h"
+#import "React/RCTSurfaceRootShadowView.h"
+#import "React/RCTSurfaceRootShadowViewDelegate.h"
+#import "React/RCTSurfaceRootView.h"
+#import "React/RCTSurfaceStage.h"
+#import "React/RCTSurfaceView+Internal.h"
+#import "React/RCTSurfaceView.h"
+#import "React/RCTSurfaceHostingProxyRootView.h"
+#import "React/RCTSurfaceHostingView.h"
+#import "React/RCTSurfaceSizeMeasureMode.h"
+#import "React/FBXXHashUtils.h"
+#import "React/RCTLocalizedString.h"
+#import "React/RCTEventEmitter.h"
+#import "React/RCTI18nUtil.h"
+#import "React/RCTLayoutAnimation.h"
+#import "React/RCTLayoutAnimationGroup.h"
+#import "React/RCTRedBoxExtraDataViewController.h"
+#import "React/RCTSurfacePresenterStub.h"
+#import "React/RCTUIManager.h"
+#import "React/RCTUIManagerObserverCoordinator.h"
+#import "React/RCTUIManagerUtils.h"
+#import "React/RCTMacros.h"
+#import "React/RCTProfile.h"
+#import "React/RCTActivityIndicatorView.h"
+#import "React/RCTActivityIndicatorViewManager.h"
+#import "React/RCTAnimationType.h"
+#import "React/RCTAutoInsetsProtocol.h"
+#import "React/RCTBorderCurve.h"
+#import "React/RCTBorderDrawing.h"
+#import "React/RCTBorderStyle.h"
+#import "React/RCTComponent.h"
+#import "React/RCTComponentData.h"
+#import "React/RCTConvert+CoreLocation.h"
+#import "React/RCTConvert+Transform.h"
+#import "React/RCTCursor.h"
+#import "React/RCTDebuggingOverlay.h"
+#import "React/RCTDebuggingOverlayManager.h"
+#import "React/RCTFont.h"
+#import "React/RCTLayout.h"
+#import "React/RCTModalHostView.h"
+#import "React/RCTModalHostViewController.h"
+#import "React/RCTModalHostViewManager.h"
+#import "React/RCTModalManager.h"
+#import "React/RCTPointerEvents.h"
+#import "React/RCTRootShadowView.h"
+#import "React/RCTShadowView+Internal.h"
+#import "React/RCTShadowView+Layout.h"
+#import "React/RCTShadowView.h"
+#import "React/RCTSwitch.h"
+#import "React/RCTSwitchManager.h"
+#import "React/RCTTextDecorationLineType.h"
+#import "React/RCTView.h"
+#import "React/RCTViewManager.h"
+#import "React/RCTViewUtils.h"
+#import "React/RCTWrapperViewController.h"
+#import "React/RCTRefreshableProtocol.h"
+#import "React/RCTRefreshControl.h"
+#import "React/RCTRefreshControlManager.h"
+#import "React/RCTSafeAreaShadowView.h"
+#import "React/RCTSafeAreaView.h"
+#import "React/RCTSafeAreaViewLocalData.h"
+#import "React/RCTSafeAreaViewManager.h"
+#import "React/RCTScrollableProtocol.h"
+#import "React/RCTScrollContentShadowView.h"
+#import "React/RCTScrollContentView.h"
+#import "React/RCTScrollContentViewManager.h"
+#import "React/RCTScrollEvent.h"
+#import "React/RCTScrollView.h"
+#import "React/RCTScrollViewManager.h"
+#import "React/UIView+Private.h"
+#import "React/UIView+React.h"
+#import "React/RCTDevLoadingViewProtocol.h"
+#import "React/RCTDevLoadingViewSetEnabled.h"
+#import "React/RCTInspectorDevServerHelper.h"
+#import "React/RCTInspectorNetworkHelper.h"
+#import "React/RCTInspectorUtils.h"
+#import "React/RCTPackagerClient.h"
+#import "React/RCTPackagerConnection.h"
+#import "React/RCTPausedInDebuggerOverlayController.h"
+#import "React/RCTInspector.h"
+#import "React/RCTInspectorPackagerConnection.h"
+#import "React/RCTAnimationDriver.h"
+#import "React/RCTDecayAnimation.h"
+#import "React/RCTEventAnimation.h"
+#import "React/RCTFrameAnimation.h"
+#import "React/RCTSpringAnimation.h"
+#import "React/RCTAdditionAnimatedNode.h"
+#import "React/RCTAnimatedNode.h"
+#import "React/RCTColorAnimatedNode.h"
+#import "React/RCTDiffClampAnimatedNode.h"
+#import "React/RCTDivisionAnimatedNode.h"
+#import "React/RCTInterpolationAnimatedNode.h"
+#import "React/RCTModuloAnimatedNode.h"
+#import "React/RCTMultiplicationAnimatedNode.h"
+#import "React/RCTObjectAnimatedNode.h"
+#import "React/RCTPropsAnimatedNode.h"
+#import "React/RCTStyleAnimatedNode.h"
+#import "React/RCTSubtractionAnimatedNode.h"
+#import "React/RCTTrackingAnimatedNode.h"
+#import "React/RCTTransformAnimatedNode.h"
+#import "React/RCTValueAnimatedNode.h"
+#import "React/RCTAnimationPlugins.h"
+#import "React/RCTAnimationUtils.h"
+#import "React/RCTNativeAnimatedModule.h"
+#import "React/RCTNativeAnimatedNodesManager.h"
+#import "React/RCTNativeAnimatedTurboModule.h"
+#import "React/RCTBlobManager.h"
+#import "React/RCTFileReaderModule.h"
+#import "React/RCTAnimatedImage.h"
+#import "React/RCTBundleAssetImageLoader.h"
+#import "React/RCTDisplayWeakRefreshable.h"
+#import "React/RCTGIFImageDecoder.h"
+#import "React/RCTImageBlurUtils.h"
+#import "React/RCTImageCache.h"
+#import "React/RCTImageDataDecoder.h"
+#import "React/RCTImageEditingManager.h"
+#import "React/RCTImageLoader.h"
+#import "React/RCTImageLoaderLoggable.h"
+#import "React/RCTImageLoaderProtocol.h"
+#import "React/RCTImageLoaderWithAttributionProtocol.h"
+#import "React/RCTImagePlugins.h"
+#import "React/RCTImageShadowView.h"
+#import "React/RCTImageStoreManager.h"
+#import "React/RCTImageURLLoader.h"
+#import "React/RCTImageURLLoaderWithAttribution.h"
+#import "React/RCTImageUtils.h"
+#import "React/RCTImageView.h"
+#import "React/RCTImageViewManager.h"
+#import "React/RCTLocalAssetImageLoader.h"
+#import "React/RCTResizeMode.h"
+#import "React/RCTUIImageViewAnimated.h"
+#import "React/RCTLinkingManager.h"
+#import "React/RCTLinkingPlugins.h"
+#import "React/RCTDataRequestHandler.h"
+#import "React/RCTFileRequestHandler.h"
+#import "React/RCTHTTPRequestHandler.h"
+#import "React/RCTInspectorNetworkReporter.h"
+#import "React/RCTNetworking.h"
+#import "React/RCTNetworkPlugins.h"
+#import "React/RCTNetworkTask.h"
+#import "React/RCTPushNotificationManager.h"
+#import "React/RCTPushNotificationPlugins.h"
+#import "React/RCTSettingsManager.h"
+#import "React/RCTSettingsPlugins.h"
+#import "React/RCTBaseTextShadowView.h"
+#import "React/RCTBaseTextViewManager.h"
+#import "React/RCTRawTextShadowView.h"
+#import "React/RCTRawTextViewManager.h"
+#import "React/RCTConvert+Text.h"
+#import "React/RCTTextAttributes.h"
+#import "React/RCTTextTransform.h"
+#import "React/NSTextStorage+FontScaling.h"
+#import "React/RCTDynamicTypeRamp.h"
+#import "React/RCTTextShadowView.h"
+#import "React/RCTTextView.h"
+#import "React/RCTTextViewManager.h"
+#import "React/RCTMultilineTextInputView.h"
+#import "React/RCTMultilineTextInputViewManager.h"
+#import "React/RCTUITextView.h"
+#import "React/RCTBackedTextInputDelegate.h"
+#import "React/RCTBackedTextInputDelegateAdapter.h"
+#import "React/RCTBackedTextInputViewProtocol.h"
+#import "React/RCTBaseTextInputShadowView.h"
+#import "React/RCTBaseTextInputView.h"
+#import "React/RCTBaseTextInputViewManager.h"
+#import "React/RCTInputAccessoryShadowView.h"
+#import "React/RCTInputAccessoryView.h"
+#import "React/RCTInputAccessoryViewContent.h"
+#import "React/RCTInputAccessoryViewManager.h"
+#import "React/RCTTextSelection.h"
+#import "React/RCTSinglelineTextInputView.h"
+#import "React/RCTSinglelineTextInputViewManager.h"
+#import "React/RCTUITextField.h"
+#import "React/RCTVirtualTextShadowView.h"
+#import "React/RCTVirtualTextView.h"
+#import "React/RCTVirtualTextViewManager.h"
+#import "React/RCTVibration.h"
+#import "React/RCTVibrationPlugins.h"
+#import "React/RCTReconnectingWebSocket.h"
+
+FOUNDATION_EXPORT double ReactVersionNumber;
+FOUNDATION_EXPORT const unsigned char ReactVersionString[];
+
+        `;
+const RCT_APP_DELEGATE_UMBRELLA_HEADER = `
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
+
+#import "RCTAppDelegate.h"
+#import "RCTAppSetupUtils.h"
+#import "RCTArchConfiguratorProtocol.h"
+#import "RCTDefaultReactNativeFactoryDelegate.h"
+#import "RCTDependencyProvider.h"
+#import "RCTJSRuntimeConfiguratorProtocol.h"
+#import "RCTReactNativeFactory.h"
+#import "RCTRootViewFactory.h"
+#import "RCTUIConfiguratorProtocol.h"
+
+FOUNDATION_EXPORT double React_RCTAppDelegateVersionNumber;
+FOUNDATION_EXPORT const unsigned char React_RCTAppDelegateVersionString[];
+
+`;
+
+const RN_MODULEMAP = `
+framework module React {
+  umbrella header "React_Core/React_Core-umbrella.h"
+  export *
+  module * { export * }
+}
+
+
+framework module React_RCTAppDelegate {
+    umbrella header "React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h"
+    export *
+    module * { export * }
+}
+
+`;
