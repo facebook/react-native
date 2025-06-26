@@ -113,17 +113,6 @@ function buildXCFrameworks(
         podSpecName + '-umbrella.h',
       );
 
-      // const didCreateUmbrellaFile = createUmbrellaHeaderFile(
-      //   podSpecName,
-      //   umbrellaHeaderFilename,
-      //   copiedHeaderFilesWithPodspecNames[podSpecName],
-      // );
-
-      // // Store the umbrella header filename in the umbrellaHeaders object
-      // if (didCreateUmbrellaFile) {
-      //   umbrellaHeaders[podSpecName] = umbrellaHeaderFilename;
-      // }
-
       if (
         podSpecName === 'React_Core' ||
         podSpecName === 'React_RCTAppDelegate'
@@ -144,7 +133,7 @@ function buildXCFrameworks(
   });
 
   // Create the module map file using the header files in podSpecsWithHeaderFiles
-  const moduleMapFile = createModuleMapFile(outputPath, umbrellaHeaders);
+  const moduleMapFile = createModuleMapFile(outputPath);
   if (!moduleMapFile) {
     frameworkLog(
       'Failed to create module map file. The XCFramework may not work correctly. Stopping.',
@@ -273,10 +262,7 @@ function linkArchFolders(
   });
 }
 
-function createModuleMapFile(
-  outputPath /*: string */,
-  umbrellaHeaders /*: {[key: string]: string} */,
-) {
+function createModuleMapFile(outputPath /*: string */) {
   // Create/get the module map folder
   const moduleMapFolder = path.join(outputPath, 'Modules');
   createFolderIfNotExists(moduleMapFolder);
