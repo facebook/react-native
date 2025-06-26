@@ -83,24 +83,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
+
   public var statusBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
-      if (isEdgeToEdgeFeatureFlagOn) {
-        field = true
-      } else {
-        field = value
-        createNewDialog = true
-      }
+      field = value
+      createNewDialog = !isEdgeToEdgeFeatureFlagOn
     }
 
   public var navigationBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
-      if (isEdgeToEdgeFeatureFlagOn) {
-        field = true
-      } else {
-        field = value
-        createNewDialog = true
-      }
+      field = value
+      createNewDialog = !isEdgeToEdgeFeatureFlagOn
     }
 
   public var animationType: String? = null
