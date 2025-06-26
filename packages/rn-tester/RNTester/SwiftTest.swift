@@ -6,7 +6,11 @@
  */
 
 // The SwiftTest here in rn-tester acts as a guard to make sure that we can build React-Core clang module and import from Swift.
+
 import React
+import React_RCTAppDelegate
+
+let p: RCTReactNativeFactory? = nil
 
 func getReactNativeVersion() -> String {
   let version = RCTGetReactNativeVersion()
