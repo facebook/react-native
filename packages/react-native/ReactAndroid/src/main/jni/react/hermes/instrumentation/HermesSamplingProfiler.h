@@ -11,9 +11,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 
-namespace facebook {
-namespace jsi {
-namespace jni {
+namespace facebook::jsi::jni {
 
 namespace jni = ::facebook::jni;
 
@@ -33,8 +31,6 @@ class HermesSamplingProfiler : public jni::JavaClass<HermesSamplingProfiler> {
   HermesSamplingProfiler();
 };
 
-} // namespace jni
-} // namespace jsi
-} // namespace facebook
+} // namespace facebook::jsi::jni
 
 #endif /* HERMESSAMPLINGPROFILER_H_ */
