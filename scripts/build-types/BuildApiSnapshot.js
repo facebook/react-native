@@ -40,6 +40,7 @@ const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/typescript/sortUnions'),
   require('./transforms/typescript/removeUndefinedFromOptionalMembers'),
   require('./transforms/typescript/organizeDeclarations'),
+  require('./transforms/typescript/versionExportedApis'),
 ];
 
 async function buildAPISnapshot(validate: boolean) {
@@ -74,7 +75,7 @@ async function buildAPISnapshot(validate: boolean) {
 
   console.log(styleText('yellow', '  >') + ' Applying additional transforms');
   const apiSnapshot = apiSnapshotTemplate(
-    await getCleanedUpRollup(tempDirectory),
+    await getProcessedSnapshotResult(tempDirectory),
   ) as string;
 
   console.log(styleText('yellow', '  >') + ' Removing temp dir');
@@ -226,7 +227,9 @@ async function rewriteLocalImports(
   );
 }
 
-async function getCleanedUpRollup(tempDirectory: string) {
+async function getProcessedSnapshotResult(
+  tempDirectory: string,
+): Promise<string> {
   const rollupPath = path.join(
     tempDirectory,
     'react-native',
@@ -246,13 +249,13 @@ async function getCleanedUpRollup(tempDirectory: string) {
     postTransforms,
   );
 
-  const formattedRollup = prettier.format(transformedRollup, {
-    parser: 'typescript',
-    semi: false,
-    trailingComma: 'all',
-  });
-
-  return formattedRollup;
+  return prettier
+    .format(transformedRollup, {
+      parser: 'typescript',
+      semi: false,
+      trailingComma: 'all',
+    })
+    .trimEnd();
 }
 
 async function generateConfigFiles(tempDirectory: string) {
