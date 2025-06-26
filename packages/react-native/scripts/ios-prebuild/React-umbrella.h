@@ -191,8 +191,6 @@
 #import "React/RCTPointerEvents.h"
 #import "React/RCTProfile.h"
 #import "React/RCTPropsAnimatedNode.h"
-#import "React/RCTPushNotificationManager.h"
-#import "React/RCTPushNotificationPlugins.h"
 #import "React/RCTRawTextShadowView.h"
 #import "React/RCTRawTextViewManager.h"
 #import "React/RCTReconnectingWebSocket.h"
