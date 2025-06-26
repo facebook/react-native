@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<442cbf571b5654c5d322ca1b5542db7d>>
+ * @generated SignedSource<<f5a7da2d8775ac1defa4037efd984504>>
  */
 
 /**
@@ -155,6 +155,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
+   */
+  @JvmStatic
+  public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
