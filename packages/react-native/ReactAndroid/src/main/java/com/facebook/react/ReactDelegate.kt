@@ -195,8 +195,7 @@ public open class ReactDelegate {
       shouldForwardToReactInstance: Boolean
   ) {
     if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        reactHost != null &&
-        shouldForwardToReactInstance) {
+        reactHost != null) {
       reactHost?.onActivityResult(activity, requestCode, resultCode, data)
     } else {
       if (reactNativeHost?.hasInstance() == true && shouldForwardToReactInstance) {
