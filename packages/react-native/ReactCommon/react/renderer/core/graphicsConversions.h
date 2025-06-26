@@ -43,9 +43,6 @@ inline void fromRawValue(
 inline int toAndroidRepr(const SharedColor& color) {
   return *color;
 }
-inline folly::dynamic toDynamic(const SharedColor& color) {
-  return *color;
-}
 #endif
 
 inline std::string toString(const SharedColor& value) {

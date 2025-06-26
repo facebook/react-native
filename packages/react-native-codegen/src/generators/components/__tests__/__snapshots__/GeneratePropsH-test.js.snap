@@ -179,7 +179,7 @@ struct ArrayPropsNativeComponentArrayStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
-    
+    result[\\"object\\"] = ::facebook::react::toDynamic(object);
     return result;
   }
 #endif
@@ -325,9 +325,9 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
-    
-    
-    
+    result[\\"colors\\"] = ::facebook::react::toDynamic(colors);
+    result[\\"srcs\\"] = ::facebook::react::toDynamic(srcs);
+    result[\\"points\\"] = ::facebook::react::toDynamic(points);
     return result;
   }
 #endif
@@ -1316,7 +1316,7 @@ struct ObjectPropsObjectPropObjectArrayPropStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
-    
+    result[\\"array\\"] = ::facebook::react::toDynamic(array);
     return result;
   }
 #endif
@@ -1503,7 +1503,7 @@ struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
 
   folly::dynamic toDynamic() const {
     folly::dynamic result = folly::dynamic::object();
-    
+    result[\\"arrayProp\\"] = ::facebook::react::toDynamic(arrayProp);
     return result;
   }
 #endif

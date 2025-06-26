@@ -756,8 +756,6 @@ function generateStruct(
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
           return `result["${name}"] = ${name};`;
-        case 'ArrayTypeAnnotation':
-          return '';
         case 'MixedTypeAnnotation':
           // MixedTypeAnnotation does not support prop diffing codegen
           return '';
