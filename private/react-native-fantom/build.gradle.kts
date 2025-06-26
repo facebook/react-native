@@ -181,6 +181,8 @@ val configureFantomTester by
               "-B",
               testerBuildDir.toString(),
               "-DCMAKE_BUILD_TYPE=Debug",
+              "-DCMAKE_C_COMPILER=/usr/bin/clang",
+              "-DCMAKE_CXX_COMPILER=/usr/bin/clang++",
               "-DFANTOM_CODEGEN_DIR=$buildDir/codegen",
               "-DFANTOM_THIRD_PARTY_DIR=$buildDir/third-party",
               "-DREACT_ANDROID_DIR=$reactAndroidDir",
