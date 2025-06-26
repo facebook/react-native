@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 #import <react/renderer/graphics/BackgroundSize.h>
 #import <react/renderer/graphics/BackgroundPosition.h>
 #import <react/renderer/graphics/BackgroundRepeat.h>
