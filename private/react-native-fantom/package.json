@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "main": "src/index.js",
   "description": "Internal integration testing and benchmarking tool for React Native",
+  "scripts": {
+    "build": "./build.sh"
+  },
   "peerDependencies": {
     "jest": "^29.7.0",
     "jest-snapshot": "^29.7.0"
