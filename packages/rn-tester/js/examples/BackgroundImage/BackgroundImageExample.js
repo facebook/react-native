@@ -21,7 +21,7 @@ function BackgroundImageBox({
 }: {
   style?: ViewStyleProp,
   children?: React.Node,
-  testID?: string,
+  testID: string,
 }) {
   return (
     <View style={[styles.box, style]} testID={testID}>
@@ -87,6 +87,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
               }}
+              testID="background-image-angle-1"
             />
           </View>
           <View style={styles.col}>
@@ -96,6 +97,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(90deg, #a8edea, #fed6e3)',
               }}
+              testID="background-image-angle-2"
             />
           </View>
           <View style={styles.col}>
@@ -105,6 +107,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(180deg, #ffecd2, #fcb69f)',
               }}
+              testID="background-image-angle-3"
             />
           </View>
         </View>
@@ -124,6 +127,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(to right, #ff6b6b, #4ecdc4, #45b7d1)',
               }}
+              testID="background-image-multiple-colors-1"
             />
           </View>
           <View style={styles.col}>
@@ -133,6 +137,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(to bottom, #667eea, #764ba2, #f093fb, #f5576c)',
               }}
+              testID="background-image-multiple-colors-2"
             />
           </View>
           <View style={styles.col}>
@@ -142,6 +147,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)',
               }}
+              testID="background-image-multiple-colors-3"
             />
           </View>
         </View>
@@ -161,6 +167,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'radial-gradient(circle, #ff6b6b, #4ecdc4)',
               }}
+              testID="background-image-radial-1"
             />
           </View>
           <View style={styles.col}>
@@ -170,6 +177,7 @@ exports.examples = [
                 experimental_backgroundImage:
                   'radial-gradient(ellipse, #a8edea, #fed6e3)',
               }}
+              testID="background-image-radial-2"
             />
           </View>
         </View>
@@ -194,6 +202,7 @@ exports.examples = [
                   experimental_backgroundRepeat: 'repeat',
                   experimental_backgroundSize: '20px 20px',
                 }}
+                testID="background-image-repeat-1"
               />
             </View>
             <View style={styles.col}>
@@ -207,6 +216,7 @@ exports.examples = [
                   experimental_backgroundRepeat: 'space',
                   experimental_backgroundSize: '50px 50px',
                 }}
+                testID="background-image-repeat-2"
               />
             </View>
           </View>
@@ -222,6 +232,7 @@ exports.examples = [
                   experimental_backgroundRepeat: 'round',
                   experimental_backgroundSize: '60px 60px',
                 }}
+                testID="background-image-repeat-3"
               />
             </View>
             <View style={styles.col}>
@@ -236,6 +247,7 @@ exports.examples = [
                   experimental_backgroundSize: '100px 100px',
                   backgroundColor: 'purple',
                 }}
+                testID="background-image-repeat-4"
               />
             </View>
           </View>
@@ -260,6 +272,7 @@ exports.examples = [
                 experimental_backgroundSize: '50px 50px',
                 borderWidth: 1,
               }}
+              testID="background-image-position-1"
             />
           </View>
           <View style={styles.col}>
@@ -273,6 +286,7 @@ exports.examples = [
                 borderWidth: 1,
                 experimental_backgroundSize: '50px 50px',
               }}
+              testID="background-image-position-2"
             />
           </View>
           <View style={styles.col}>
@@ -286,6 +300,7 @@ exports.examples = [
                 borderWidth: 1,
                 experimental_backgroundSize: '50px 50px',
               }}
+              testID="background-image-position-3"
             />
           </View>
         </View>
@@ -348,6 +363,7 @@ exports.examples = [
                 experimental_backgroundSize: 'cover',
                 borderRadius: 20,
               }}
+              testID="background-image-borders-1"
             />
           </View>
           <View style={styles.col}>
@@ -360,6 +376,7 @@ exports.examples = [
                 borderWidth: 10,
                 borderColor: 'red',
               }}
+              testID="background-image-borders-2"
             />
           </View>
           <View style={styles.col}>
@@ -374,6 +391,7 @@ exports.examples = [
                 borderBottomLeftRadius: 30,
                 borderBottomRightRadius: 40,
               }}
+              testID="background-image-borders-3"
             />
           </View>
           <View style={styles.col}>
@@ -388,6 +406,7 @@ exports.examples = [
                 borderBottomWidth: 20,
                 borderBottomColor: 'blue',
               }}
+              testID="background-image-borders-4"
             />
           </View>
         </View>
