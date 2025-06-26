@@ -530,13 +530,18 @@ public class FabricUIManager
       ReadableMapBuffer paragraphAttributes,
       float width,
       float height) {
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
     return (NativeArray)
         TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
             PixelUtil.toPixelFromDIP(width),
-            PixelUtil.toPixelFromDIP(height));
+            PixelUtil.toPixelFromDIP(height),
+            textViewManager instanceof ReactTextViewManagerCallback
+                ? (ReactTextViewManagerCallback) textViewManager
+                : null);
   }
 
   public int getColor(int surfaceId, String[] resourcePaths) {
