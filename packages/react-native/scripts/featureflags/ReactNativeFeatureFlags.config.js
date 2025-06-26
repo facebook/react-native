@@ -511,6 +511,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    preparedTextCacheSize: {
+      defaultValue: 200,
+      metadata: {
+        dateAdded: '2025-06-25',
+        description: 'Number cached PreparedLayouts in TextLayoutManager cache',
+        expectedReleaseValue: 200,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

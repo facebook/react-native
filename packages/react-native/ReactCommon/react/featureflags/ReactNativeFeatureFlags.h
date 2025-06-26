@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<61381e3eb65214c519a01283366a53c6>>
+ * @generated SignedSource<<d724d9cfe69141b40f95df5308894f50>>
  */
 
 /**
@@ -258,6 +258,11 @@ class ReactNativeFeatureFlags {
    * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
+
+  /**
+   * Number cached PreparedLayouts in TextLayoutManager cache
+   */
+  RN_EXPORT static double preparedTextCacheSize();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

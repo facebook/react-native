@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e95ca3707afa85dbcd17a351872da3b3>>
+ * @generated SignedSource<<2206721fac3452fd4d9ca3053cc7bc32>>
  */
 
 /**
@@ -200,6 +200,10 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
 
 bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
+}
+
+double ReactNativeFeatureFlags::preparedTextCacheSize() {
+  return getAccessor().preparedTextCacheSize();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

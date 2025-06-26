@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<543998b20611a8f6adb0840784d1a5a7>>
+ * @generated SignedSource<<d2194efcd4c936cd2820fc028ce1733c>>
  * @flow strict
  * @noformat
  */
@@ -69,6 +69,7 @@ export interface Spec extends TurboModule {
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
+  +preparedTextCacheSize?: () => number;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
