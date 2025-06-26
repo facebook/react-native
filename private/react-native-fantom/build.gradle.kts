@@ -15,6 +15,24 @@ plugins {
   alias(libs.plugins.download)
 }
 
+// This is the version of CMake we're requesting to the Android SDK to use.
+// If missing it will be downloaded automatically. Only CMake versions shipped with the
+// Android SDK are supported (you can find them listed in the SDK Manager of Android Studio).
+val cmakeVersion = System.getenv("CMAKE_VERSION") ?: "3.30.5"
+val cmakePath = "${getSDKPath()}/cmake/$cmakeVersion"
+val cmakeBinaryPath = "${cmakePath}/bin/cmake"
+val ndkBuildJobs = Runtime.getRuntime().availableProcessors().toString()
+
+fun getSDKPath(): String {
+  val androidSdkRoot = System.getenv("ANDROID_SDK_ROOT")
+  val androidHome = System.getenv("ANDROID_HOME")
+  return when {
+    !androidSdkRoot.isNullOrBlank() -> androidSdkRoot
+    !androidHome.isNullOrBlank() -> androidHome
+    else -> throw IllegalStateException("Neither ANDROID_SDK_ROOT nor ANDROID_HOME is set.")
+  }
+}
+
 val FOLLY_VERSION = libs.versions.folly.get()
 val GFLAGS_VERSION = libs.versions.gflags.get()
 val NLOHMANNJSON_VERSION = libs.versions.nlohmannjson.get()
@@ -27,15 +45,24 @@ val downloadsDir =
       File("$buildDir/downloads")
     }
 val thirdParty = File("$buildDir/third-party")
+val reportsDir = File("$buildDir/reports")
 val reactNativeRootDir = projectDir.parentFile.parentFile
-val reactAndroidBuildDir = File("$reactNativeRootDir/packages/react-native/ReactAndroid/build")
-val reactAndroidDownloasdDir =
-    File("$reactNativeRootDir/packages/react-native/ReactAndroid/build/downloads")
+val reactNativeDir = File("$reactNativeRootDir/packages/react-native")
+val reactAndroidDir = File("$reactNativeDir/ReactAndroid")
+val reactAndroidBuildDir = File("$reactAndroidDir/build")
+val reactAndroidDownloasdDir = File("$reactAndroidBuildDir/downloads")
+
+val testerDir = File("$projectDir/tester")
+val testerBuildDir = File("$buildDir/tester")
+val testerBuildOutputFileTree =
+    fileTree(testerBuildDir.toString())
+        .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
 val createNativeDepsDirectories by
     tasks.registering {
       downloadsDir.mkdirs()
       thirdParty.mkdirs()
+      reportsDir.mkdirs()
     }
 
 val downloadFollyDest = File(reactAndroidDownloasdDir, "folly-${FOLLY_VERSION}.tar.gz")
@@ -136,4 +163,49 @@ val prepareNative3pDependencies by
 val prepareAllDependencies by
     tasks.registering {
       dependsOn(prepareRNCodegen, prepareHermesDependencies, prepareNative3pDependencies)
+    }
+
+val configureFantomTester by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(prepareAllDependencies)
+      workingDir(testerDir)
+      inputs.dir(testerDir)
+      outputs.files(testerBuildOutputFileTree)
+      val cmdArgs =
+          mutableListOf(
+              cmakeBinaryPath,
+              // Suppress all warnings as this is the Hermes build and we can't fix them.
+              "--log-level=ERROR",
+              "-S",
+              ".",
+              "-B",
+              testerBuildDir.toString(),
+              "-DCMAKE_BUILD_TYPE=Debug",
+              "-DFANTOM_CODEGEN_DIR=$buildDir/codegen",
+              "-DFANTOM_THIRD_PARTY_DIR=$buildDir/third-party",
+              "-DREACT_ANDROID_DIR=$reactAndroidDir",
+              "-DREACT_COMMON_DIR=$reactNativeDir/ReactCommon",
+              "-DREACT_CXX_PLATFORM_DIR=$reactNativeDir/ReactCxxPlatform",
+              "-DREACT_THIRD_PARTY_NDK_DIR=$reactAndroidBuildDir/third-party-ndk")
+      commandLine(cmdArgs)
+      standardOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.log"))
+      errorOutputFile.set(project.file("$buildDir/reports/configure-fantom_tester.error.log"))
+    }
+
+val buildFantomTester by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(configureFantomTester)
+      workingDir(testerDir)
+      inputs.files(testerBuildOutputFileTree)
+      commandLine(
+          cmakeBinaryPath,
+          "--build",
+          testerBuildDir.toString(),
+          "--target",
+          "fantom_tester",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutputFile.set(project.file("$buildDir/reports/build-fantom_tester.log"))
+      errorOutputFile.set(project.file("$buildDir/reports/build-fantom_tester.error.log"))
     }
