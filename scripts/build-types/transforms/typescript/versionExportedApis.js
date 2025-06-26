@@ -35,6 +35,7 @@ function createVersionExportedApis(
       Program(path) {
         const declarations = new Map<string, BabelNode>();
         const dependencyGraph = new Map<string, Array<string>>();
+        const namespaceAliases = new Map<string, string>();
         const computedHashes = new Map<string, string>();
 
         // Collect all type declarations and build dependency graph
@@ -58,6 +59,35 @@ function createVersionExportedApis(
           }
         }
 
+        // Build mapping of namespace exports aliased to local types
+        for (const nodePath of path.get('body')) {
+          const node = nodePath.node;
+          if (t.isTSModuleDeclaration(node) && node.body) {
+            const namespaceName = node.id.name;
+
+            // $FlowIgnore[prop-missing]
+            for (const item of node.body.body) {
+              if (t.isExportNamedDeclaration(item) && item.specifiers) {
+                for (const specifier of item.specifiers) {
+                  if (
+                    t.isExportSpecifier(specifier) &&
+                    specifier.local &&
+                    specifier.exported
+                  ) {
+                    const localName = specifier.local.name;
+                    const exportedName = specifier.exported.name;
+                    namespaceAliases.set(
+                      // $FlowIgnore[incompatible-type]
+                      `${namespaceName}.${exportedName}`,
+                      localName,
+                    );
+                  }
+                }
+              }
+            }
+          }
+        }
+
         // Helper to recursively collect all dependencies for a type
         const getAllDependencies = (
           typeName: string,
@@ -67,13 +97,12 @@ function createVersionExportedApis(
           if (visited.has(typeName)) {
             return visited;
           }
-
           visited.add(typeName);
           const directDeps = dependencyGraph.get(typeName) || [];
-
           const indent = '  '.repeat(depth);
 
-          for (const dep of directDeps) {
+          for (let dep of directDeps) {
+            dep = namespaceAliases.get(dep) ?? dep;
             if (declarations.has(dep) && !visited.has(dep)) {
               debug(`${indent}- Found dependency: ${dep}`);
               getAllDependencies(dep, visited, depth + 1);
@@ -138,7 +167,9 @@ function createVersionExportedApis(
             }
             visited.add(name);
             const deps = dependencyGraph.get(name) || [];
-            const internalDeps = deps.filter(dep => declarations.has(dep));
+            const internalDeps = deps
+              .map(dep => namespaceAliases.get(dep) ?? dep)
+              .filter(dep => declarations.has(dep));
             if (internalDeps.length > 0) {
               result.push(`${name}→[${internalDeps.join(',')}]`);
               internalDeps.forEach(dep => traverse(dep, depth + 1));
