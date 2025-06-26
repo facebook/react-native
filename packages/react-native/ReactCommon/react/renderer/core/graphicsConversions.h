@@ -24,6 +24,10 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 
+#ifdef RN_SERIALIZABLE_STATE
+#include <yoga/Yoga.h>
+#endif
+
 namespace facebook::react {
 
 #pragma mark - Color
@@ -61,6 +65,27 @@ inline std::string toString(const SharedColor& value) {
 #pragma mark - Geometry
 
 #ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const YGValue& dimension) {
+  switch (dimension.unit) {
+    case YGUnitUndefined:
+      return nullptr;
+    case YGUnitAuto:
+      return "auto";
+    case YGUnitMaxContent:
+      return "max-content";
+    case YGUnitFitContent:
+      return "fit-content";
+    case YGUnitStretch:
+      return "stretch";
+    case YGUnitPoint:
+      return dimension.value;
+    case YGUnitPercent:
+      return std::format("{}%", dimension.value);
+  }
+
+  return nullptr;
+}
+
 inline folly::dynamic toDynamic(const Point& point) {
   folly::dynamic pointResult = folly::dynamic::object();
   pointResult["x"] = point.x;

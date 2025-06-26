@@ -123,8 +123,10 @@ function generatePropsDiffString(
     result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'DimensionPrimitive':
-              // TODO: Implement diffProps for complex types
-              return '';
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
             default:
               (typeAnnotation.name: empty);
               throw new Error('Received unknown ReservedPropTypeAnnotation');
