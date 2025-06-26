@@ -93,6 +93,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
   if (!_mode.has_value()) {
     _mode = newViewProps.initialHidden ? RCTVirtualViewModeHidden : RCTVirtualViewModeVisible;
+    self.hidden = newViewProps.initialHidden && !sIsAccessibilityUsed;
   }
 
   // If disabled, `_renderState` will always be `RCTVirtualViewRenderStateUnknown`.
@@ -125,6 +126,42 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
   return nil;
 }
 
+/**
+ * Static flag that tracks whether accessibility services are being used.
+ * When accessibility is detected, virtual views will remain visible even when
+ * they would normally be hidden when off-screen, ensuring that accessibility
+ * features will work correctly.
+ */
+static BOOL sIsAccessibilityUsed = NO;
+
+- (void)_unhideIfNeeded
+{
+  if (!sIsAccessibilityUsed) {
+    // accessibility is detected for the first time. Make views visible.
+    sIsAccessibilityUsed = YES;
+  }
+
+  if (self.hidden) {
+    self.hidden = NO;
+  }
+}
+
+- (NSInteger)accessibilityElementCount
+{
+  // From empirical testing, method `accessibilityElementCount` is called lazily only
+  // when accessibility is used.
+  [self _unhideIfNeeded];
+  return [super accessibilityElementCount];
+}
+
+- (NSArray<id<UIFocusItem>> *)focusItemsInRect:(CGRect)rect
+{
+  // From empirical testing, method `focusItemsInRect:` is called lazily only
+  // when keyboard navigation is used.
+  [self _unhideIfNeeded];
+  return [super focusItemsInRect:rect];
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -135,6 +172,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
       _lastParentScrollViewComponentView == nil,
       @"_lastParentScrollViewComponentView should already have been cleared in didMoveToWindow.");
 
+  self.hidden = NO;
   _mode.reset();
   _targetRect.reset();
 }
@@ -243,6 +281,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
   switch (newMode) {
     case RCTVirtualViewModeVisible:
+      self.hidden = NO;
       if (_renderState == RCTVirtualViewRenderStateUnknown) {
         // Feature flag is disabled, so use the former logic.
         [self dispatchSyncModeChange:event];
@@ -257,11 +296,13 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
       }
       break;
     case RCTVirtualViewModePrerender:
+      self.hidden = !sIsAccessibilityUsed;
       if (!oldMode.has_value() || oldMode != RCTVirtualViewModeVisible) {
         [self dispatchAsyncModeChange:event];
       }
       break;
     case RCTVirtualViewModeHidden:
+      self.hidden = YES;
       [self dispatchAsyncModeChange:event];
       break;
   }
