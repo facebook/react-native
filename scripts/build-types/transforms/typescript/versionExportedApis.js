@@ -27,244 +27,285 @@ const debug = require('debug')('build-types:transforms:versionExportedApis');
  * The approach also allows this implementation to be updated in future
  * without causing structural changes elsewhere in the API snapshot.
  */
-const visitor: PluginObj<mixed> = {
-  visitor: {
-    Program(path) {
-      const declarations = new Map<string, BabelNode>();
-      const dependencyGraph = new Map<string, Array<string>>();
-      const computedHashes = new Map<string, string>();
+function createVersionExportedApis(
+  outputDebugAnnotations: boolean = false,
+): PluginObj<mixed> {
+  return {
+    visitor: {
+      Program(path) {
+        const declarations = new Map<string, BabelNode>();
+        const dependencyGraph = new Map<string, Array<string>>();
+        const computedHashes = new Map<string, string>();
 
-      // Collect all type declarations and build dependency graph
-      for (const nodePath of path.get('body')) {
-        const node = nodePath.node;
-        const typeName = node.id?.name;
-        if (
-          (t.isTSDeclareFunction(node) ||
-            t.isTSTypeAliasDeclaration(node) ||
-            t.isTSInterfaceDeclaration(node) ||
-            t.isTSEnumDeclaration(node) ||
-            t.isClassDeclaration(node) ||
-            t.isTSModuleDeclaration(node)) &&
-          typeName != null
-        ) {
-          declarations.set(typeName, node);
-          dependencyGraph.set(
-            typeName,
-            Array.from(getTypeReferencesForNode(node)),
-          );
-        }
-      }
-
-      // Helper to recursively collect all dependencies for a type
-      const getAllDependencies = (
-        typeName: string,
-        visited: Set<string> = new Set(),
-        depth: number = 0,
-      ): Set<string> => {
-        if (visited.has(typeName)) {
-          return visited;
-        }
-
-        visited.add(typeName);
-        const directDeps = dependencyGraph.get(typeName) || [];
-
-        const indent = '  '.repeat(depth);
-
-        for (const dep of directDeps) {
-          if (declarations.has(dep) && !visited.has(dep)) {
-            debug(`${indent}- Found dependency: ${dep}`);
-            getAllDependencies(dep, visited, depth + 1);
-          } else if (!declarations.has(dep)) {
-            debug(`${indent}- External dependency: ${dep}`);
+        // Collect all type declarations and build dependency graph
+        for (const nodePath of path.get('body')) {
+          const node = nodePath.node;
+          const typeName = node.id?.name;
+          if (
+            (t.isTSDeclareFunction(node) ||
+              t.isTSTypeAliasDeclaration(node) ||
+              t.isTSInterfaceDeclaration(node) ||
+              t.isTSEnumDeclaration(node) ||
+              t.isClassDeclaration(node) ||
+              t.isTSModuleDeclaration(node)) &&
+            typeName != null
+          ) {
+            declarations.set(typeName, node);
+            dependencyGraph.set(
+              typeName,
+              Array.from(getTypeReferencesForNode(node)),
+            );
           }
         }
 
-        return visited;
-      };
-
-      // Helper to generate a stable hash for a type and all local dependencies
-      const generateTypeHash = (typeName: string): string => {
-        const cached = computedHashes.get(typeName);
-        if (cached != null) {
-          return cached;
-        }
-
-        debug(`\n[GENERATE HASH] Analyzing dependencies for ${typeName}`);
-        const allDeps = getAllDependencies(typeName);
-        allDeps.delete(typeName); // Remove self from dependencies
-
-        const sortedDeps = Array.from(allDeps).sort();
-        const hasher = createHash('sha256');
-
-        // Add the type's own code to the hash
-        const typeDecl = declarations.get(typeName);
-        if (typeDecl) {
-          const {code} = generate(typeDecl);
-          hasher.update(code);
-          debug(`\n[HASH INPUT] Type ${typeName}:\n${code}\n`);
-        }
-
-        // Add code for each dependency to the hash
-        for (const dep of sortedDeps) {
-          const depDecl = declarations.get(dep);
-          if (depDecl) {
-            const {code} = generate(depDecl);
-            hasher.update(code);
-            debug(`[HASH INPUT] Dependency ${dep} for ${typeName}:\n${code}\n`);
+        // Helper to recursively collect all dependencies for a type
+        const getAllDependencies = (
+          typeName: string,
+          visited: Set<string> = new Set(),
+          depth: number = 0,
+        ): Set<string> => {
+          if (visited.has(typeName)) {
+            return visited;
           }
-        }
 
-        const hash = hasher.digest('hex').slice(0, 8);
-        debug(`[HASH RESULT] ${typeName}: ${hash}`);
-        computedHashes.set(typeName, hash);
-        return hash;
-      };
+          visited.add(typeName);
+          const directDeps = dependencyGraph.get(typeName) || [];
 
-      // Process export block and annotate with dependencies hash
-      for (const nodePath of path.get('body')) {
-        if (
-          t.isExportNamedDeclaration(nodePath.node) &&
-          !nodePath.node.declaration &&
-          nodePath.node.specifiers != null
-        ) {
-          const specifiers = nodePath.node.specifiers.map(specifier => {
-            // $FlowIgnore[incompatible-type] nodePath is refined above
-            // $FlowIgnore[incompatible-use]
-            const name: string = specifier.exported.name;
-            if (declarations.has(name)) {
-              const hash = generateTypeHash(name);
-              return t.addComment(specifier, 'trailing', ` ${hash}`, true);
+          const indent = '  '.repeat(depth);
+
+          for (const dep of directDeps) {
+            if (declarations.has(dep) && !visited.has(dep)) {
+              debug(`${indent}- Found dependency: ${dep}`);
+              getAllDependencies(dep, visited, depth + 1);
+            } else if (!declarations.has(dep)) {
+              debug(`${indent}- External dependency: ${dep}`);
             }
-            return specifier;
-          });
-          // $FlowIgnore[prop-missing]
-          // $FlowIgnore[incompatible-type]
-          nodePath.node.specifiers = specifiers;
+          }
+
+          return visited;
+        };
+
+        // Helper to generate a stable hash for a type and all local dependencies
+        const generateTypeHash = (typeName: string): string => {
+          const cached = computedHashes.get(typeName);
+          if (cached != null) {
+            return cached;
+          }
+
+          debug(`\n[GENERATE HASH] Analyzing dependencies for ${typeName}`);
+          const allDeps = getAllDependencies(typeName);
+          allDeps.delete(typeName); // Remove self from dependencies
+
+          const sortedDeps = Array.from(allDeps).sort();
+          const hasher = createHash('sha256');
+
+          // Add the type's own code to the hash
+          const typeDecl = declarations.get(typeName);
+          if (typeDecl) {
+            const {code} = generate(typeDecl);
+            hasher.update(code);
+            debug(`\n[HASH INPUT] Type ${typeName}:\n${code}\n`);
+          }
+
+          // Add code for each dependency to the hash
+          for (const dep of sortedDeps) {
+            const depDecl = declarations.get(dep);
+            if (depDecl) {
+              const {code} = generate(depDecl);
+              hasher.update(code);
+              debug(
+                `[HASH INPUT] Dependency ${dep} for ${typeName}:\n${code}\n`,
+              );
+            }
+          }
+
+          const hash = hasher.digest('hex').slice(0, 8);
+          debug(`[HASH RESULT] ${typeName}: ${hash}`);
+          computedHashes.set(typeName, hash);
+          return hash;
+        };
+
+        // Helper to get a compact representation of the dependency tree
+        const getCompactDependencyTree = (
+          typeName: string,
+          maxDepth: number = 2,
+        ): string => {
+          const result = [];
+          const visited = new Set<string>();
+          const traverse = (name: string, depth: number = 0): void => {
+            if (depth > maxDepth || visited.has(name)) {
+              return;
+            }
+            visited.add(name);
+            const deps = dependencyGraph.get(name) || [];
+            const internalDeps = deps.filter(dep => declarations.has(dep));
+            if (internalDeps.length > 0) {
+              result.push(`${name}→[${internalDeps.join(',')}]`);
+              internalDeps.forEach(dep => traverse(dep, depth + 1));
+            }
+          };
+          traverse(typeName);
+          return result.join(';');
+        };
+
+        // Process export block and annotate with dependencies hash
+        for (const nodePath of path.get('body')) {
+          if (
+            t.isExportNamedDeclaration(nodePath.node) &&
+            !nodePath.node.declaration &&
+            nodePath.node.specifiers != null
+          ) {
+            const specifiers = nodePath.node.specifiers.map(specifier => {
+              // $FlowIgnore[incompatible-type] nodePath is refined above
+              // $FlowIgnore[incompatible-use]
+              const name: string = specifier.exported.name;
+              if (declarations.has(name)) {
+                const hash = generateTypeHash(name);
+                let comment = ` ${hash}`;
+
+                if (outputDebugAnnotations) {
+                  const deps = getAllDependencies(name);
+                  deps.delete(name);
+                  const depTree = getCompactDependencyTree(name);
+                  comment +=
+                    `, Deps: [${Array.from(deps).join(', ')}]` +
+                    `, Total: ${deps.size}` +
+                    (depTree.length ? `, Tree: ${depTree}` : '');
+                }
+
+                return t.addComment(specifier, 'trailing', comment, true);
+              }
+              return specifier;
+            });
+            // $FlowIgnore[prop-missing]
+            // $FlowIgnore[incompatible-type]
+            nodePath.node.specifiers = specifiers;
+          }
+        }
+      },
+    },
+  };
+
+  /**
+   * Collect all direct type references from a TypeScript AST node.
+   */
+  function getTypeReferencesForNode(
+    node: BabelNode,
+    refs: Set<string> = new Set(),
+  ): Set<string> {
+    if (!node) {
+      return refs;
+    }
+
+    // Handle type references
+    if (t.isTSTypeReference(node) && node.typeName) {
+      refs.add(extractQualifiedName(node.typeName));
+    }
+
+    // Handle interface extends
+    if (t.isTSInterfaceDeclaration(node) && node.extends) {
+      for (const extend of node.extends) {
+        if (extend.expression) {
+          refs.add(extractQualifiedName(extend.expression));
         }
       }
-    },
-  },
-};
+    }
 
-/**
- * Collect all direct type references from a TypeScript AST node.
- */
-function getTypeReferencesForNode(
-  node: BabelNode,
-  refs: Set<string> = new Set(),
-): Set<string> {
-  if (!node) {
+    // Handle class extends and implements
+    if (t.isClassDeclaration(node)) {
+      if (node.superClass && node.superClass.type === 'Identifier') {
+        refs.add(node.superClass.name);
+      }
+
+      if (node.implements) {
+        for (const impl of node.implements) {
+          if (impl.expression) {
+            refs.add(extractQualifiedName(impl.expression));
+          }
+        }
+      }
+    }
+
+    // Handle type parameters
+    if (node.typeParameters && node.typeParameters.params) {
+      for (const param of node.typeParameters.params) {
+        getTypeReferencesForNode(param, refs);
+        if (param.constraint) {
+          getTypeReferencesForNode(param.constraint, refs);
+        }
+        if (param.default) {
+          getTypeReferencesForNode(param.default, refs);
+        }
+      }
+    }
+
+    // Handle indexed access types (`T['key']`)
+    if (t.isTSIndexedAccessType(node)) {
+      getTypeReferencesForNode(node.objectType, refs);
+      getTypeReferencesForNode(node.indexType, refs);
+    }
+
+    // Handle conditional types (`T extends U ? X : Y`)
+    if (t.isTSConditionalType(node)) {
+      getTypeReferencesForNode(node.checkType, refs);
+      getTypeReferencesForNode(node.extendsType, refs);
+      getTypeReferencesForNode(node.trueType, refs);
+      getTypeReferencesForNode(node.falseType, refs);
+    }
+
+    // Handle mapped types (`{ [K in keyof T]: X }`)
+    if (t.isTSMappedType(node)) {
+      if (node.typeParameter && node.typeParameter.constraint) {
+        getTypeReferencesForNode(node.typeParameter.constraint, refs);
+      }
+      if (node.typeAnnotation) {
+        getTypeReferencesForNode(node.typeAnnotation, refs);
+      }
+    }
+
+    // Recursively traverse all properties
+    for (const key in node) {
+      // $FlowIgnore[invalid-computed-prop]
+      const value = node[key];
+      if (Array.isArray(value)) {
+        value.forEach(item => getTypeReferencesForNode(item, refs));
+      } else if (typeof value === 'object' && value !== null) {
+        getTypeReferencesForNode(value, refs);
+      }
+    }
+
     return refs;
   }
 
-  // Handle type references
-  if (t.isTSTypeReference(node) && node.typeName) {
-    refs.add(extractQualifiedName(node.typeName));
-  }
-
-  // Handle interface extends
-  if (t.isTSInterfaceDeclaration(node) && node.extends) {
-    for (const extend of node.extends) {
-      if (extend.expression) {
-        refs.add(extractQualifiedName(extend.expression));
-      }
-    }
-  }
-
-  // Handle class extends and implements
-  if (t.isClassDeclaration(node)) {
-    if (node.superClass && node.superClass.type === 'Identifier') {
-      refs.add(node.superClass.name);
+  function extractQualifiedName(
+    node: BabelNodeIdentifier | BabelNodeTSQualifiedName,
+  ): string {
+    if (t.isIdentifier(node)) {
+      return node.name;
     }
 
-    if (node.implements) {
-      for (const impl of node.implements) {
-        if (impl.expression) {
-          refs.add(extractQualifiedName(impl.expression));
+    if (t.isTSQualifiedName(node)) {
+      let fullName = '';
+      let current = node;
+
+      while (t.isTSQualifiedName(current)) {
+        if (current.right && current.right.name) {
+          fullName = '.' + current.right.name + fullName;
         }
+        // $FlowIgnore[prop-missing]
+        // $FlowIgnore[incompatible-type]
+        current = current.left;
+      }
+
+      if (t.isIdentifier(current) && current.name) {
+        return current.name + fullName;
       }
     }
-  }
 
-  // Handle type parameters
-  if (node.typeParameters && node.typeParameters.params) {
-    for (const param of node.typeParameters.params) {
-      getTypeReferencesForNode(param, refs);
-      if (param.constraint) {
-        getTypeReferencesForNode(param.constraint, refs);
-      }
-      if (param.default) {
-        getTypeReferencesForNode(param.default, refs);
-      }
-    }
+    throw new Error(
+      `Failed to parse type name from node of type: ${node.type}. Expected Identifier or TSQualifiedName.`,
+    );
   }
-
-  // Handle indexed access types (`T['key']`)
-  if (t.isTSIndexedAccessType(node)) {
-    getTypeReferencesForNode(node.objectType, refs);
-    getTypeReferencesForNode(node.indexType, refs);
-  }
-
-  // Handle conditional types (`T extends U ? X : Y`)
-  if (t.isTSConditionalType(node)) {
-    getTypeReferencesForNode(node.checkType, refs);
-    getTypeReferencesForNode(node.extendsType, refs);
-    getTypeReferencesForNode(node.trueType, refs);
-    getTypeReferencesForNode(node.falseType, refs);
-  }
-
-  // Handle mapped types (`{ [K in keyof T]: X }`)
-  if (t.isTSMappedType(node)) {
-    if (node.typeParameter && node.typeParameter.constraint) {
-      getTypeReferencesForNode(node.typeParameter.constraint, refs);
-    }
-    if (node.typeAnnotation) {
-      getTypeReferencesForNode(node.typeAnnotation, refs);
-    }
-  }
-
-  // Recursively traverse all properties
-  for (const key in node) {
-    // $FlowIgnore[invalid-computed-prop]
-    const value = node[key];
-    if (Array.isArray(value)) {
-      value.forEach(item => getTypeReferencesForNode(item, refs));
-    } else if (typeof value === 'object' && value !== null) {
-      getTypeReferencesForNode(value, refs);
-    }
-  }
-
-  return refs;
 }
 
-function extractQualifiedName(
-  node: BabelNodeIdentifier | BabelNodeTSQualifiedName,
-): string {
-  if (t.isIdentifier(node)) {
-    return node.name;
-  }
-
-  if (t.isTSQualifiedName(node)) {
-    let fullName = '';
-    let current = node;
-
-    while (t.isTSQualifiedName(current)) {
-      if (current.right && current.right.name) {
-        fullName = '.' + current.right.name + fullName;
-      }
-      // $FlowIgnore[prop-missing]
-      // $FlowIgnore[incompatible-type]
-      current = current.left;
-    }
-
-    if (t.isIdentifier(current) && current.name) {
-      return current.name + fullName;
-    }
-  }
-
-  throw new Error(
-    `Failed to parse type name from node of type: ${node.type}. Expected Identifier or TSQualifiedName.`,
-  );
-}
-
-module.exports = visitor;
+module.exports = createVersionExportedApis;
