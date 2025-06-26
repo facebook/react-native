@@ -35,16 +35,25 @@ const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
   require('./transforms/typescript/stripUnstableApis'),
 ];
 
-const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+const postTransforms = (
+  options: BuildApiSnapshotOptions,
+): $ReadOnlyArray<PluginObj<mixed>> => [
   require('./transforms/typescript/simplifyTypes'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
   require('./transforms/typescript/removeUndefinedFromOptionalMembers'),
   require('./transforms/typescript/organizeDeclarations'),
-  require('./transforms/typescript/versionExportedApis'),
+  require('./transforms/typescript/versionExportedApis')(
+    options.debugVersionAnnotations,
+  ),
 ];
 
-async function buildAPISnapshot(validate: boolean) {
+type BuildApiSnapshotOptions = $ReadOnly<{
+  validate: boolean,
+  debugVersionAnnotations: boolean,
+}>;
+
+async function buildAPISnapshot(options: BuildApiSnapshotOptions) {
   console.log(
     styleText('yellow', '  >') + ' Creating temp dir for api-extractor',
   );
@@ -76,7 +85,7 @@ async function buildAPISnapshot(validate: boolean) {
 
   console.log(styleText('yellow', '  >') + ' Applying additional transforms');
   const apiSnapshot = apiSnapshotTemplate(
-    await getProcessedSnapshotResult(tempDirectory),
+    await getProcessedSnapshotResult(tempDirectory, options),
   ) as string;
 
   console.log(styleText('yellow', '  >') + ' Removing temp dir');
@@ -87,7 +96,7 @@ async function buildAPISnapshot(validate: boolean) {
     'ReactNativeApi.d.ts',
   );
 
-  if (validate) {
+  if (options.validate) {
     console.log(
       '\n' +
         styleText(
@@ -230,6 +239,7 @@ async function rewriteLocalImports(
 
 async function getProcessedSnapshotResult(
   tempDirectory: string,
+  options: BuildApiSnapshotOptions,
 ): Promise<string> {
   const rollupPath = path.join(
     tempDirectory,
@@ -247,7 +257,7 @@ async function getProcessedSnapshotResult(
 
   const transformedRollup = await applyBabelTransformsSeq(
     cleanedRollup,
-    postTransforms,
+    postTransforms(options),
   );
 
   return prettier
