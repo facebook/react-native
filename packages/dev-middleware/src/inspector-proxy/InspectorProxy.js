@@ -22,6 +22,7 @@ import type {
 import type {IncomingMessage, ServerResponse} from 'http';
 
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
+import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import Device from './Device';
 import EventLoopPerfTracker from './EventLoopPerfTracker';
 import InspectorProxyHeartbeat from './InspectorProxyHeartbeat';
@@ -249,13 +250,15 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
     const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
     const webSocketDebuggerUrl = `${webSocketScheme}://${webSocketUrlWithoutProtocol}`;
-
-    // For now, `/json/list` returns the legacy built-in `devtools://` URL, to
-    // preserve existing handling by Flipper. This may return a placeholder in
-    // future -- please use the `/open-debugger` endpoint.
-    const devtoolsFrontendUrl =
-      `devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&${webSocketScheme}=` +
-      encodeURIComponent(webSocketUrlWithoutProtocol);
+    const devtoolsFrontendUrl = getDevToolsFrontendUrl(
+      this.#experiments,
+      webSocketDebuggerUrl,
+      this.#serverBaseUrl.origin,
+      {
+        relative: true,
+        useFuseboxEntryPoint: page.capabilities.prefersFuseboxFrontend,
+      },
+    );
 
     return {
       id: `${deviceId}-${page.id}`,
