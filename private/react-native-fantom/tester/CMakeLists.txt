@@ -7,35 +7,20 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(fantom_tester)
+
+include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+include(Deps)
+
 find_library(LIB_HERMES libhermes
   NAMES hermes
   HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/API/hermes
   REQUIRED)
-# Ensure the library path is correct and the library exists
-if(NOT LIB_HERMES)
-  message(FATAL_ERROR "libhermes not found at the specified path.")
-endif()
-# Check if the found library is a framework (macOS specific)
-get_filename_component(LIB_EXT ${LIB_HERMES} EXT)
-if(LIB_EXT STREQUAL ".framework")
-  # For frameworks, we need to use a different approach
-  add_library(hermes-engine::libhermes INTERFACE IMPORTED)
-  set_target_properties(hermes-engine::libhermes PROPERTIES
-    INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
-else()
-  # For regular libraries, use ALIAS as before
-  add_library(hermes-engine::libhermes ALIAS ${LIB_HERMES})
-endif()
-
+add_library(hermes-engine::libhermes INTERFACE IMPORTED)
+set_target_properties(hermes-engine::libhermes PROPERTIES
+  INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
 find_package(OpenSSL REQUIRED)
-
-include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
-
-include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
-
-include(Deps)
 
 # Boost in NDK is not compatible with desktop build
 add_third_party_subdir(boost)
