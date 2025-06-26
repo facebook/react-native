@@ -12,6 +12,7 @@
 
 import type {NativeSyntheticEvent} from '../Types/CoreEventTypes';
 import type {PlatformConfig} from './AnimatedPlatformConfig';
+import type {EventMapping} from './NativeAnimatedModule';
 
 import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../ReactNative/RendererProxy';
@@ -37,7 +38,7 @@ export function attachNativeEventImpl(
 ): {detach: () => void} {
   // Find animated values in `argMapping` and create an array representing their
   // key path inside the `nativeEvent` object. Ex.: ['contentOffset', 'x'].
-  const eventMappings = [];
+  const eventMappings: Array<EventMapping> = [];
 
   const traverse = (value: mixed, path: Array<string>) => {
     if (value instanceof AnimatedValue) {

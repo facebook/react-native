@@ -31,8 +31,8 @@ type CompositeKey = {
 
 type CompositeKeyComponent =
   | AnimatedNode
-  | Array<CompositeKeyComponent | null>
-  | {[string]: CompositeKeyComponent};
+  | $ReadOnlyArray<CompositeKeyComponent | null>
+  | $ReadOnly<{[string]: CompositeKeyComponent}>;
 
 type $ReadOnlyCompositeKey = $ReadOnly<{
   style?: $ReadOnly<{[string]: CompositeKeyComponent}>,

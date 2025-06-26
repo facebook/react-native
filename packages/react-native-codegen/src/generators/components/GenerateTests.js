@@ -81,8 +81,8 @@ TEST(${componentName}_${testName}, etc) {
 function getTestCasesForProp(
   propName: string,
   typeAnnotation: PropTypeAnnotation,
-) {
-  const cases = [];
+): Array<TestCase> {
+  const cases: Array<TestCase> = [];
   if (typeAnnotation.type === 'StringEnumTypeAnnotation') {
     typeAnnotation.options.forEach(option =>
       cases.push({
