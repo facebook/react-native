@@ -16,7 +16,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,11 +41,8 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
@@ -69,13 +65,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private static final String STATE_CHECKED = "checked";
 
   private final View mView;
-  private List<View> mAxOrderViews;
   private Handler mHandler;
   private final HashMap<Integer, String> mAccessibilityActionsMap;
-
-  @Nullable
-  private AccessibilityManager.AccessibilityStateChangeListener accessibilityStateChangeListener =
-      null;
 
   @Nullable View mAccessibilityLabelledBy;
 
@@ -116,7 +107,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     // problems, so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
-            || view.getTag(R.id.accessibility_order) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
@@ -142,7 +132,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return mView;
   }
 
-  private void populateAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+  @Override
+  public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+    super.onInitializeAccessibilityNodeInfo(host, info);
+
     if (host.getTag(R.id.accessibility_state_expanded) != null) {
       final boolean accessibilityStateExpanded =
           (boolean) host.getTag(R.id.accessibility_state_expanded);
@@ -257,52 +250,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (missingTextAndDescription && hasContentToAnnounce) {
       info.setContentDescription(getTalkbackDescription(host, info));
     }
-  }
-
-  @Override
-  public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
-    super.onInitializeAccessibilityNodeInfo(host, info);
-    // If we set an accessibility order then all the focusing logic should go through our custom
-    // virtual view tree hierarchy and ignore the default path
-    ReadableArray axOrderIds = (ReadableArray) mView.getTag(R.id.accessibility_order);
-    if (axOrderIds != null && axOrderIds.size() != 0) {
-      info.setContentDescription("");
-      info.setFocusable(false);
-
-      AccessibilityManager am =
-          (AccessibilityManager) host.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-
-      if (accessibilityStateChangeListener == null && am != null) {
-        AccessibilityManager.AccessibilityStateChangeListener newAccessibilityStateChangeListener =
-            enabled -> {
-              if (!enabled) {
-                ReactAxOrderHelper.restoreSubtreeFocusability(host);
-                host.setTag(R.id.accessibility_order_dirty, true);
-              }
-            };
-
-        am.addAccessibilityStateChangeListener(newAccessibilityStateChangeListener);
-        accessibilityStateChangeListener = newAccessibilityStateChangeListener;
-      }
-
-      Boolean isAxOrderDirty = (Boolean) mView.getTag(R.id.accessibility_order_dirty);
-      if (isAxOrderDirty != null && isAxOrderDirty) {
-        List<String> axOrderIdsList = new ArrayList<>();
-        Set<String> axOrderSet = new HashSet<>();
-        for (int i = 0; i < axOrderIds.size(); i++) {
-          String id = axOrderIds.getString(i);
-          if (id != null) {
-            axOrderIdsList.add(id);
-            axOrderSet.add(id);
-          }
-        }
-
-        mAxOrderViews = ReactAxOrderHelper.processAxOrderTree(mView, axOrderIdsList, axOrderSet);
-      }
-      return;
-    }
-
-    populateAccessibilityNodeInfo(host, info);
   }
 
   @Override
@@ -475,61 +422,17 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   protected int getVirtualViewAt(float x, float y) {
-    if (mAxOrderViews == null) {
-      return HOST_ID;
-    }
-
-    int closestViewId = HOST_ID;
-    int smallestArea = Integer.MAX_VALUE;
-
-    for (int i = 0; i < mAxOrderViews.size(); i++) {
-      Rect bounds = ReactAxOrderHelper.getVirtualViewBounds(mView, mAxOrderViews.get(i));
-      if (bounds.contains((int) x, (int) y)) {
-        int area = bounds.width() * bounds.height();
-        if (area < smallestArea) {
-          smallestArea = area;
-          closestViewId = i;
-        }
-      }
-    }
-
-    return closestViewId;
+    return INVALID_ID;
   }
 
   @Override
-  protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
-    if (mAxOrderViews != null && !mAxOrderViews.isEmpty()) {
-      for (int i = 0; i < mAxOrderViews.size(); i++) {
-        virtualViewIds.add(i);
-      }
-    }
-  }
+  protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {}
 
   @Override
   protected void onPopulateNodeForVirtualView(
       int virtualViewId, @NonNull AccessibilityNodeInfoCompat node) {
-    if (mView.getTag(R.id.accessibility_order) != null) {
-      if (mAxOrderViews.size() <= virtualViewId) {
-        node.setContentDescription("");
-        node.setBoundsInParent(new Rect(0, 0, 1, 1));
-        return;
-      }
-
-      View virtualView = mAxOrderViews.get(virtualViewId);
-
-      node.setContentDescription("");
-      if (virtualView == mView) {
-        if (mView.getContentDescription() != null) {
-          node.setContentDescription(mView.getContentDescription());
-        }
-
-        populateAccessibilityNodeInfo(mView, node);
-        node.setBoundsInParent(new Rect(0, 0, mView.getWidth(), mView.getHeight()));
-      } else {
-        node.setBoundsInParent(ReactAxOrderHelper.getVirtualViewBounds(mView, virtualView));
-      }
-      node.addChild(virtualView);
-    }
+    node.setContentDescription("");
+    node.setBoundsInParent(new Rect(0, 0, 1, 1));
   }
 
   @Override
@@ -540,10 +443,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
-    if (mView.getTag(R.id.accessibility_order) != null) {
-      return super.getAccessibilityNodeProvider(host);
-    }
-
     return null;
   }
 
@@ -1119,19 +1018,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       } else {
         return (AccessibilityRole) view.getTag(R.id.accessibility_role);
       }
-    }
-  }
-
-  // In case a view with accessibilityOrder is unmounted we need a way to clean up the listener on
-  // this delegate
-  public void cleanUp() {
-    if (accessibilityStateChangeListener != null) {
-      AccessibilityManager am =
-          (AccessibilityManager) mView.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
-      if (am != null) {
-        am.removeAccessibilityStateChangeListener(accessibilityStateChangeListener);
-      }
-      accessibilityStateChangeListener = null;
     }
   }
 }
