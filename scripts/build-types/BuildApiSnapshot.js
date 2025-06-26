@@ -36,6 +36,7 @@ const inputFilesPostTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
 ];
 
 const postTransforms: $ReadOnlyArray<PluginObj<mixed>> = [
+  require('./transforms/typescript/simplifyTypes'),
   require('./transforms/typescript/sortProperties'),
   require('./transforms/typescript/sortUnions'),
   require('./transforms/typescript/removeUndefinedFromOptionalMembers'),
