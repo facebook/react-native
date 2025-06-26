@@ -144,7 +144,7 @@ function publishPackage(
 
   const otpFlag = otp != null ? ` --otp ${otp}` : '';
   const accessFlag = access != null ? ` --access ${access}` : '';
-  const options = execOptions
+  const options /*: ExecOptsSync */ = execOptions
     ? {...execOptions, cwd: packagePath}
     : {cwd: packagePath};
 

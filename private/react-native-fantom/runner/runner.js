@@ -119,7 +119,7 @@ async function processRNTesterCommandResult(
 
   await result.done;
 
-  const getResultWithOutput = () => ({
+  const getResultWithOutput = (): AsyncCommandResult => ({
     ...result,
     stdout: stdoutChunks.join(''),
     stderr: stderrChunks.join(''),

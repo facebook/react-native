@@ -122,7 +122,7 @@ describe('elementsThatOverlapOffsets', function () {
   });
 });
 
-function fakeProps(length: number) {
+function fakeProps(length: number): CellMetricProps {
   return {
     data: new Array<void>(length).fill({} as $FlowFixMe),
     getItem() {

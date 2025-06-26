@@ -10,6 +10,7 @@
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -231,7 +232,7 @@ const Switch: component(
     const _disabled =
       disabled != null ? disabled : accessibilityState?.disabled;
 
-    const _accessibilityState =
+    const _accessibilityState: ?AccessibilityState =
       _disabled !== accessibilityState?.disabled
         ? {...accessibilityState, disabled: _disabled}
         : accessibilityState;

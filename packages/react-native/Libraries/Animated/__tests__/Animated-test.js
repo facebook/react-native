@@ -376,8 +376,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
       expect(anim1.start).not.toBeCalled();
       expect(anim2.start).not.toBeCalled();
@@ -402,8 +401,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      Animated.sequence([anim1, anim2]).start(cb);
+      Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]).start(cb);
 
       anim1.start.mock.calls[0][0]({finished: false});
 
@@ -417,8 +415,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
       seq.start(cb);
       seq.stop();
 
@@ -436,8 +433,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
       seq.start(cb);
 
@@ -460,8 +456,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.sequence([anim1, anim2]);
+      const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
       seq.start(cb);
       anim1.start.mock.calls[0][0]({finished: true});
@@ -487,8 +482,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation);
+      const loop = Animated.loop(animation as $FlowFixMe);
 
       expect(animation.start).not.toBeCalled();
 
@@ -519,8 +513,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation, {iterations: -1});
+      const loop = Animated.loop(animation as $FlowFixMe, {iterations: -1});
 
       expect(animation.start).not.toBeCalled();
 
@@ -551,8 +544,10 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation, {anotherKey: 'value'});
+      const loop = Animated.loop(
+        animation as $FlowFixMe,
+        {anotherKey: 'value'} as $FlowFixMe,
+      );
 
       expect(animation.start).not.toBeCalled();
 
@@ -583,8 +578,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation, {iterations: 3});
+      const loop = Animated.loop(animation as $FlowFixMe, {iterations: 3});
 
       expect(animation.start).not.toBeCalled();
 
@@ -615,8 +609,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation, {iterations: 1});
+      const loop = Animated.loop(animation as $FlowFixMe, {iterations: 1});
 
       expect(animation.start).not.toBeCalled();
 
@@ -637,8 +630,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation, {iterations: 0});
+      const loop = Animated.loop(animation as $FlowFixMe, {iterations: 0});
 
       expect(animation.start).not.toBeCalled();
 
@@ -656,8 +648,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      Animated.loop(animation).start(cb);
+      Animated.loop(animation as $FlowFixMe).start(cb);
       expect(animation.start).toBeCalled();
       expect(animation.reset).toHaveBeenCalledTimes(1);
       expect(cb).not.toBeCalled();
@@ -680,8 +671,7 @@ describe('Animated', () => {
       };
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const loop = Animated.loop(animation);
+      const loop = Animated.loop(animation as $FlowFixMe);
       loop.start(cb);
       loop.stop();
 
@@ -703,8 +693,10 @@ describe('Animated', () => {
     };
     const cb = jest.fn();
 
-    // $FlowFixMe[prop-missing]
-    const loop = Animated.loop(animation, {resetBeforeIteration: false});
+    const loop = Animated.loop(
+      animation as $FlowFixMe,
+      {resetBeforeIteration: false} as $FlowFixMe,
+    );
 
     expect(animation.start).not.toBeCalled();
 
@@ -730,8 +722,7 @@ describe('Animated', () => {
   it('restarts sequence normally in a loop if resetBeforeIteration is false', () => {
     const anim1 = {start: jest.fn(), stop: jest.fn()};
     const anim2 = {start: jest.fn(), stop: jest.fn()};
-    // $FlowFixMe[prop-missing]
-    const seq = Animated.sequence([anim1, anim2]);
+    const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
     // $FlowFixMe[prop-missing]
     const loop = Animated.loop(seq, {resetBeforeIteration: false});
@@ -761,9 +752,7 @@ describe('Animated', () => {
     it('works with an empty element in array', () => {
       const anim1 = {start: jest.fn()};
       const cb = jest.fn();
-      // $FlowFixMe[incompatible-call]
-      // $FlowFixMe[prop-missing]
-      Animated.parallel([null, anim1]).start(cb);
+      Animated.parallel([null as $FlowFixMe, anim1 as $FlowFixMe]).start(cb);
 
       expect(anim1.start).toBeCalled();
       anim1.start.mock.calls[0][0]({finished: true});
@@ -776,9 +765,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      // $FlowFixMe[prop-missing]
-      const par = Animated.parallel([anim1, anim2]);
+      const par = Animated.parallel([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
       expect(anim1.start).not.toBeCalled();
       expect(anim2.start).not.toBeCalled();
@@ -801,8 +788,7 @@ describe('Animated', () => {
       const anim2 = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.parallel([anim1, anim2]);
+      const seq = Animated.parallel([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
       seq.start(cb);
       seq.stop();
 
@@ -823,8 +809,11 @@ describe('Animated', () => {
       const anim3 = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
 
-      // $FlowFixMe[prop-missing]
-      const seq = Animated.parallel([anim1, anim2, anim3]);
+      const seq = Animated.parallel([
+        anim1 as $FlowFixMe,
+        anim2 as $FlowFixMe,
+        anim3 as $FlowFixMe,
+      ]);
       seq.start(cb);
 
       anim1.start.mock.calls[0][0]({finished: false});
@@ -851,8 +840,7 @@ describe('Animated', () => {
     it('should call anim after delay in sequence', () => {
       const anim = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
-      // $FlowFixMe[prop-missing]
-      Animated.sequence([Animated.delay(1000), anim]).start(cb);
+      Animated.sequence([Animated.delay(1000), anim as $FlowFixMe]).start(cb);
       jest.runAllTimers();
       expect(anim.start.mock.calls.length).toBe(1);
       expect(cb).not.toBeCalled();
