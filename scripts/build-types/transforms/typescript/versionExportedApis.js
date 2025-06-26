@@ -11,6 +11,8 @@
 import type {PluginObj} from '@babel/core';
 
 const generate = require('@babel/generator').default;
+const {parse} = require('@babel/parser');
+const traverse = require('@babel/traverse').default;
 const t = require('@babel/types');
 const {createHash} = require('crypto');
 const debug = require('debug')('build-types:transforms:versionExportedApis');
@@ -35,6 +37,7 @@ function createVersionExportedApis(
       Program(path) {
         const declarations = new Map<string, BabelNode>();
         const dependencyGraph = new Map<string, Array<string>>();
+        const exportedIdentifiers: Set<string> = new Set();
         const namespaceAliases = new Map<string, string>();
         const computedHashes = new Map<string, string>();
 
@@ -56,6 +59,17 @@ function createVersionExportedApis(
               typeName,
               Array.from(getTypeReferencesForNode(node)),
             );
+          }
+        }
+
+        // Collect all exported identifiers
+        for (const nodePath of path.get('body')) {
+          if (nodePath.isExportNamedDeclaration() && nodePath.node.specifiers) {
+            nodePath.node.specifiers.forEach(specifier => {
+              if (specifier.type === 'ExportSpecifier') {
+                exportedIdentifiers.add(specifier.local.name);
+              }
+            });
           }
         }
 
@@ -114,6 +128,29 @@ function createVersionExportedApis(
           return visited;
         };
 
+        // Helper to get the stable hash input for a single AST node
+        const getHashInputForNode = (node: BabelNode): string => {
+          const code = generate(node).code;
+
+          const ast = parse(code, {
+            sourceType: 'module',
+            plugins: ['typescript'],
+            allowUndeclaredExports: true,
+          });
+          traverse(ast, {
+            Identifier(nodePath) {
+              if (
+                declarations.has(nodePath.node.name) &&
+                !exportedIdentifiers.has(nodePath.node.name)
+              ) {
+                // Replace local (unexported) identifiers with a constant name
+                nodePath.node.name = '__INTERNAL';
+              }
+            },
+          });
+          return generate(ast).code;
+        };
+
         // Helper to generate a stable hash for a type and all local dependencies
         const generateTypeHash = (typeName: string): string => {
           const cached = computedHashes.get(typeName);
@@ -131,7 +168,7 @@ function createVersionExportedApis(
           // Add the type's own code to the hash
           const typeDecl = declarations.get(typeName);
           if (typeDecl) {
-            const {code} = generate(typeDecl);
+            const code = getHashInputForNode(typeDecl);
             hasher.update(code);
             debug(`\n[HASH INPUT] Type ${typeName}:\n${code}\n`);
           }
@@ -140,7 +177,7 @@ function createVersionExportedApis(
           for (const dep of sortedDeps) {
             const depDecl = declarations.get(dep);
             if (depDecl) {
-              const {code} = generate(depDecl);
+              const code = getHashInputForNode(depDecl);
               hasher.update(code);
               debug(
                 `[HASH INPUT] Dependency ${dep} for ${typeName}:\n${code}\n`,
@@ -161,7 +198,7 @@ function createVersionExportedApis(
         ): string => {
           const result = [];
           const visited = new Set<string>();
-          const traverse = (name: string, depth: number = 0): void => {
+          const traverseDeps = (name: string, depth: number = 0): void => {
             if (depth > maxDepth || visited.has(name)) {
               return;
             }
@@ -172,10 +209,10 @@ function createVersionExportedApis(
               .filter(dep => declarations.has(dep));
             if (internalDeps.length > 0) {
               result.push(`${name}→[${internalDeps.join(',')}]`);
-              internalDeps.forEach(dep => traverse(dep, depth + 1));
+              internalDeps.forEach(dep => traverseDeps(dep, depth + 1));
             }
           };
-          traverse(typeName);
+          traverseDeps(typeName);
           return result.join(';');
         };
 
