@@ -34,6 +34,7 @@ import {
   printConsoleLog,
   runBuck2,
   runBuck2Sync,
+  runCommand,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -44,6 +45,7 @@ import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
+import type {TestSnapshotResults} from '../runtime/snapshotContext';
 
 const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
 fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
@@ -151,22 +153,34 @@ function generateBytecodeBundle({
   isOptimizedMode: boolean,
   hermesVariant: HermesVariant,
 }): void {
-  const hermesCompilerCommandResult = runBuck2Sync(
-    [
-      'run',
-      ...getBuckModesForPlatform(isOptimizedMode),
-      ...getBuckOptionsForHermes(hermesVariant),
-      getHermesCompilerTarget(hermesVariant),
-      '--',
-      '-emit-binary',
-      isOptimizedMode ? '-O' : null,
-      '-max-diagnostic-width',
-      '80',
-      '-out',
-      bytecodePath,
-      sourcePath,
-    ].filter(Boolean),
-  );
+  const hermescArgs = [
+    '-emit-binary',
+    isOptimizedMode ? '-O' : null,
+    '-max-diagnostic-width',
+    '80',
+    '-out',
+    bytecodePath,
+    sourcePath,
+  ].filter(Boolean);
+  const hermesCompilerCommandResult = false
+    ? runCommand(
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'packages/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+        ),
+        hermescArgs,
+      )
+    : runBuck2Sync([
+        'run',
+        ...getBuckModesForPlatform(isOptimizedMode),
+        ...getBuckOptionsForHermes(hermesVariant),
+        getHermesCompilerTarget(hermesVariant),
+        '--',
+        ...hermescArgs,
+      ]);
 
   if (hermesCompilerCommandResult.status !== 0) {
     throw new Error(getDebugInfoFromCommandResult(hermesCompilerCommandResult));
@@ -215,6 +229,27 @@ module.exports = async function runTest(
   const testResultsByConfig = [];
 
   for (const testConfig of testConfigs) {
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.mode === FantomTestConfigMode.Optimized
+    ) {
+      testResultsByConfig.push([
+        {
+          ancestorTitles: ['"@fantom_mode opt" in docblock'],
+          duration: 0,
+          failureDetails: [] as Array<Error>,
+          failureMessages: [] as Array<string>,
+          fullName: 'Optimized mode is not yet supoprted in OSS',
+          numPassingAsserts: 0,
+          snapshotResults: {} as TestSnapshotResults,
+          status: 'pending' as 'passed' | 'failed' | 'pending',
+          testFilePath: testPath,
+          title: 'Optimized mode is not yet supoprted in OSS',
+        },
+      ]);
+      continue;
+    }
+
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
       setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
@@ -261,28 +296,46 @@ module.exports = async function runTest(
       });
     }
 
-    const rnTesterCommandResult = runBuck2(
-      [
-        'run',
-        ...getBuckModesForPlatform(
-          testConfig.mode === FantomTestConfigMode.Optimized,
-        ),
-        ...getBuckOptionsForHermes(testConfig.hermesVariant),
-        '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
-        '--',
-        '--bundlePath',
-        testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-          ? testJSBundlePath
-          : testBytecodeBundlePath,
-        '--featureFlags',
-        JSON.stringify(testConfig.flags.common),
-        '--minLogLevel',
-        EnvironmentOptions.printCLIOutput ? 'info' : 'error',
-      ],
-      {
-        withFDB: EnvironmentOptions.enableCppDebugging,
-      },
-    );
+    const rnTesterCommandArgs = [
+      '--bundlePath',
+      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+        ? testJSBundlePath
+        : testBytecodeBundlePath,
+      '--featureFlags',
+      JSON.stringify(testConfig.flags.common),
+      '--minLogLevel',
+      EnvironmentOptions.printCLIOutput ? 'info' : 'error',
+    ];
+
+    const rnTesterCommandResult = EnvironmentOptions.isOSS
+      ? runCommand(
+          path.join(
+            __dirname,
+            '..',
+            'tester',
+            'build',
+            testConfig.mode === FantomTestConfigMode.Optimized
+              ? 'release'
+              : 'debug',
+            'fantom_tester',
+          ),
+          rnTesterCommandArgs,
+        )
+      : runBuck2(
+          [
+            'run',
+            ...getBuckModesForPlatform(
+              testConfig.mode === FantomTestConfigMode.Optimized,
+            ),
+            ...getBuckOptionsForHermes(testConfig.hermesVariant),
+            '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
+            '--',
+            ...rnTesterCommandArgs,
+          ],
+          {
+            withFDB: EnvironmentOptions.enableCppDebugging,
+          },
+        );
 
     const processedResult = await processRNTesterCommandResult(
       rnTesterCommandResult,

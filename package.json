@@ -32,7 +32,8 @@
     "test-typescript": "tsc -p packages/react-native/types/tsconfig.json",
     "test-generated-typescript": "tsc -p packages/react-native/types_generated/tsconfig.test.json",
     "test": "jest",
-    "fantom": "JS_DIR='..' yarn jest --config private/react-native-fantom/config/jest.config.js",
+    "fantom": "JS_DIR='..' FANTOM_LOG_COMMANDS=1 yarn jest --config private/react-native-fantom/config/jest.config.js",
+    "fantom:oss": "FANTOM_FORCE_OSS_BUILD=1 FANTOM_LOG_COMMANDS=1 yarn jest --config private/react-native-fantom/config/jest.config.js",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
     "update-lock": "npx yarn-deduplicate"
   },
