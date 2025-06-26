@@ -34,6 +34,9 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.style.BackgroundImageLayer
+import com.facebook.react.uimanager.style.BackgroundPosition
+import com.facebook.react.uimanager.style.BackgroundRepeat
+import com.facebook.react.uimanager.style.BackgroundSize
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderStyle
 import com.facebook.react.uimanager.style.LogicalEdge
@@ -112,6 +115,63 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         BackgroundStyleApplicator.setBackgroundImage(view, backgroundImageLayers)
       } else {
         BackgroundStyleApplicator.setBackgroundImage(view, null)
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_SIZE, customType = "BackgroundSize")
+  public open fun setBackgroundSize(view: ReactViewGroup, backgroundSize: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundSize != null && backgroundSize.size() > 0) {
+        val backgroundSizes = ArrayList<BackgroundSize>(backgroundSize.size())
+        for (i in 0 until backgroundSize.size()) {
+          val backgroundSizeValue = backgroundSize.getDynamic(i)
+          val parsedBackgroundSize = BackgroundSize.parse(backgroundSizeValue);
+          if (parsedBackgroundSize != null) {
+            backgroundSizes.add(parsedBackgroundSize)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundSize(view, backgroundSizes)
+      }
+    } else {
+      BackgroundStyleApplicator.setBackgroundSize(view, null)
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_POSITION, customType = "BackgroundPosition")
+  public open fun setBackgroundPosition(view: ReactViewGroup, backgroundPosition: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundPosition != null && backgroundPosition.size() > 0) {
+        val backgroundPositions = ArrayList<BackgroundPosition>(backgroundPosition.size())
+        for (i in 0 until backgroundPosition.size()) {
+          val backgroundPositionMap = backgroundPosition.getMap(i)
+          val parsedBackgroundPosition = BackgroundPosition.parse(backgroundPositionMap)
+          if (parsedBackgroundPosition != null) {
+            backgroundPositions.add(parsedBackgroundPosition)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundPosition(view, backgroundPositions)
+      } else {
+        BackgroundStyleApplicator.setBackgroundPosition(view, null)
+      }
+    }
+  }
+
+  @ReactProp(name = ViewProps.BACKGROUND_REPEAT, customType = "BackgroundRepeat")
+  public open fun setBackgroundRepeat(view: ReactViewGroup, backgroundRepeat: ReadableArray?) {
+    if (ViewUtil.getUIManagerType(view) == UIManagerType.FABRIC) {
+      if (backgroundRepeat != null && backgroundRepeat.size() > 0) {
+        val backgroundRepeats = ArrayList<BackgroundRepeat>(backgroundRepeat.size())
+        for (i in 0 until backgroundRepeat.size()) {
+          val backgroundRepeatMap = backgroundRepeat.getMap(i)
+          val parsedBackgroundRepeat = BackgroundRepeat.parse(backgroundRepeatMap)
+          if (parsedBackgroundRepeat != null) {
+            backgroundRepeats.add(parsedBackgroundRepeat)
+          }
+        }
+        BackgroundStyleApplicator.setBackgroundRepeat(view, backgroundRepeats)
+      } else {
+        BackgroundStyleApplicator.setBackgroundRepeat(view, null)
       }
     }
   }

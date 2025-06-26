@@ -1438,7 +1438,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
     Shader compositeShader = null;
     for (BackgroundImageLayer backgroundImageLayer : mBackgroundImageLayers) {
-      Shader currentShader = backgroundImageLayer.getShader(getBounds());
+      Shader currentShader = backgroundImageLayer.getShader(new RectF(getBounds()));
       if (currentShader == null) {
         continue;
       }
