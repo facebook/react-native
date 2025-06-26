@@ -858,8 +858,17 @@ folly::dynamic ObjectPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (objectProp != oldProps->objectProp) {
+    result[\\"objectProp\\"] = toDynamic(objectProp);
+  }
     
+  if (objectArrayProp != oldProps->objectArrayProp) {
+    result[\\"objectArrayProp\\"] = toDynamic(objectArrayProp);
+  }
     
+  if (objectPrimitiveRequiredProp != oldProps->objectPrimitiveRequiredProp) {
+    result[\\"objectPrimitiveRequiredProp\\"] = toDynamic(objectPrimitiveRequiredProp);
+  }
   return result;
 }
 #endif
