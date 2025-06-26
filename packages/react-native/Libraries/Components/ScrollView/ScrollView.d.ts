@@ -678,7 +678,7 @@ export interface ScrollViewProps
    * It's implemented using onLayout handler attached to the content container which this ScrollView renders.
    *
    */
-  onContentSizeChange?: ((w: number, h: number) => void) | undefined;
+  onContentSizeChange?: ((contentWidth: number, contentHeight: number) => void) | undefined;
 
   /**
    * Fires at most once per frame during scrolling.
