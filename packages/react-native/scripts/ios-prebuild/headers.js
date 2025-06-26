@@ -72,312 +72,338 @@ function getHeaderFilesFromPodspecs(
   return headers;
 }
 
-function includeHeaderFileInUmbrellaFile(
-  headerFilePath /*: string */,
-) /*: boolean */ {
-  // Check if there is a cpp or mm file with the same name
-  // const fileName = path.basename(headerFilePath, path.extname(headerFilePath));
-  // const dirName = path.dirname(headerFilePath);
+const REACT_CORE_UMBRELLA_HEADER = `
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
 
-  // const checkFileExists = (extension /*: string */) /*: boolean */ => {
-  //   const cppFilePath = path.join(dirName, fileName + extension);
-  //   if (fs.existsSync(cppFilePath)) {
-  //     const fileStat = fs.statSync(cppFilePath);
-  //     return fileStat.isFile();
-  //   }
-  //   return false;
-  // };
-  // if (checkFileExists('.cpp') || checkFileExists('.mm')) {
-  //   // If there is a cpp or mm file with the same name, we assume it is a C++ header file
-  //   return true;
-  // }
-  // Check if the file contains c++ code
-  // const fileContent = fs.readFileSync(headerFilePath, 'utf8');
-  // return cppHeaderRegex.test(fileContent);
-  return HEADERFILE_WHITE_LIST.includes(path.basename(headerFilePath));
+#import "React/CoreModulesPlugins.h"
+#import "React/RCTAccessibilityManager+Internal.h"
+#import "React/RCTAccessibilityManager.h"
+#import "React/RCTActionSheetManager.h"
+#import "React/RCTAlertController.h"
+#import "React/RCTAlertManager.h"
+#import "React/RCTAppearance.h"
+#import "React/RCTAppState.h"
+#import "React/RCTClipboard.h"
+#import "React/RCTDeviceInfo.h"
+#import "React/RCTDevLoadingView.h"
+#import "React/RCTDevMenu.h"
+#import "React/RCTDevSettings.h"
+#import "React/RCTDevToolsRuntimeSettingsModule.h"
+#import "React/RCTEventDispatcher.h"
+#import "React/RCTExceptionsManager.h"
+#import "React/RCTFPSGraph.h"
+#import "React/RCTI18nManager.h"
+#import "React/RCTKeyboardObserver.h"
+#import "React/RCTLogBox.h"
+#import "React/RCTLogBoxView.h"
+#import "React/RCTPlatform.h"
+#import "React/RCTRedBox.h"
+#import "React/RCTSourceCode.h"
+#import "React/RCTStatusBarManager.h"
+#import "React/RCTTiming.h"
+#import "React/RCTWebSocketModule.h"
+#import "React/RCTAssert.h"
+#import "React/RCTBridge+Inspector.h"
+#import "React/RCTBridge+Private.h"
+#import "React/RCTBridge.h"
+#import "React/RCTBridgeConstants.h"
+#import "React/RCTBridgeDelegate.h"
+#import "React/RCTBridgeMethod.h"
+#import "React/RCTBridgeModule.h"
+#import "React/RCTBridgeModuleDecorator.h"
+#import "React/RCTBridgeProxy+Cxx.h"
+#import "React/RCTBridgeProxy.h"
+#import "React/RCTBundleManager.h"
+#import "React/RCTBundleURLProvider.h"
+#import "React/RCTCallInvoker.h"
+#import "React/RCTCallInvokerModule.h"
+#import "React/RCTComponentEvent.h"
+#import "React/RCTConstants.h"
+#import "React/RCTConvert.h"
+#import "React/RCTCxxConvert.h"
+#import "React/RCTDefines.h"
+#import "React/RCTDisplayLink.h"
+#import "React/RCTErrorCustomizer.h"
+#import "React/RCTErrorInfo.h"
+#import "React/RCTEventDispatcherProtocol.h"
+#import "React/RCTFrameUpdate.h"
+#import "React/RCTImageSource.h"
+#import "React/RCTInitializing.h"
+#import "React/RCTInvalidating.h"
+#import "React/RCTJavaScriptExecutor.h"
+#import "React/RCTJavaScriptLoader.h"
+#import "React/RCTJSStackFrame.h"
+#import "React/RCTJSThread.h"
+#import "React/RCTKeyCommands.h"
+#import "React/RCTLog.h"
+#import "React/RCTManagedPointer.h"
+#import "React/RCTMockDef.h"
+#import "React/RCTModuleData.h"
+#import "React/RCTModuleMethod.h"
+#import "React/RCTMultipartDataTask.h"
+#import "React/RCTMultipartStreamReader.h"
+#import "React/RCTNullability.h"
+#import "React/RCTParserUtils.h"
+#import "React/RCTPerformanceLogger.h"
+#import "React/RCTPerformanceLoggerLabels.h"
+#import "React/RCTPLTag.h"
+#import "React/RCTRedBoxSetEnabled.h"
+#import "React/RCTReloadCommand.h"
+#import "React/RCTRootContentView.h"
+#import "React/RCTRootView.h"
+#import "React/RCTRootViewDelegate.h"
+#import "React/RCTRootViewInternal.h"
+#import "React/RCTTouchEvent.h"
+#import "React/RCTTouchHandler.h"
+#import "React/RCTTurboModuleRegistry.h"
+#import "React/RCTURLRequestDelegate.h"
+#import "React/RCTURLRequestHandler.h"
+#import "React/RCTUtils.h"
+#import "React/RCTUtilsUIOverride.h"
+#import "React/RCTVersion.h"
+#import "React/RCTSurface.h"
+#import "React/RCTSurfaceDelegate.h"
+#import "React/RCTSurfaceProtocol.h"
+#import "React/RCTSurfaceRootShadowView.h"
+#import "React/RCTSurfaceRootShadowViewDelegate.h"
+#import "React/RCTSurfaceRootView.h"
+#import "React/RCTSurfaceStage.h"
+#import "React/RCTSurfaceView+Internal.h"
+#import "React/RCTSurfaceView.h"
+#import "React/RCTSurfaceHostingProxyRootView.h"
+#import "React/RCTSurfaceHostingView.h"
+#import "React/RCTSurfaceSizeMeasureMode.h"
+#import "React/FBXXHashUtils.h"
+#import "React/RCTLocalizedString.h"
+#import "React/RCTEventEmitter.h"
+#import "React/RCTI18nUtil.h"
+#import "React/RCTLayoutAnimation.h"
+#import "React/RCTLayoutAnimationGroup.h"
+#import "React/RCTRedBoxExtraDataViewController.h"
+#import "React/RCTSurfacePresenterStub.h"
+#import "React/RCTUIManager.h"
+#import "React/RCTUIManagerObserverCoordinator.h"
+#import "React/RCTUIManagerUtils.h"
+#import "React/RCTMacros.h"
+#import "React/RCTProfile.h"
+#import "React/RCTActivityIndicatorView.h"
+#import "React/RCTActivityIndicatorViewManager.h"
+#import "React/RCTAnimationType.h"
+#import "React/RCTAutoInsetsProtocol.h"
+#import "React/RCTBorderCurve.h"
+#import "React/RCTBorderDrawing.h"
+#import "React/RCTBorderStyle.h"
+#import "React/RCTComponent.h"
+#import "React/RCTComponentData.h"
+#import "React/RCTConvert+CoreLocation.h"
+#import "React/RCTConvert+Transform.h"
+#import "React/RCTCursor.h"
+#import "React/RCTDebuggingOverlay.h"
+#import "React/RCTDebuggingOverlayManager.h"
+#import "React/RCTFont.h"
+#import "React/RCTLayout.h"
+#import "React/RCTModalHostView.h"
+#import "React/RCTModalHostViewController.h"
+#import "React/RCTModalHostViewManager.h"
+#import "React/RCTModalManager.h"
+#import "React/RCTPointerEvents.h"
+#import "React/RCTRootShadowView.h"
+#import "React/RCTShadowView+Internal.h"
+#import "React/RCTShadowView+Layout.h"
+#import "React/RCTShadowView.h"
+#import "React/RCTSwitch.h"
+#import "React/RCTSwitchManager.h"
+#import "React/RCTTextDecorationLineType.h"
+#import "React/RCTView.h"
+#import "React/RCTViewManager.h"
+#import "React/RCTViewUtils.h"
+#import "React/RCTWrapperViewController.h"
+#import "React/RCTRefreshableProtocol.h"
+#import "React/RCTRefreshControl.h"
+#import "React/RCTRefreshControlManager.h"
+#import "React/RCTSafeAreaShadowView.h"
+#import "React/RCTSafeAreaView.h"
+#import "React/RCTSafeAreaViewLocalData.h"
+#import "React/RCTSafeAreaViewManager.h"
+#import "React/RCTScrollableProtocol.h"
+#import "React/RCTScrollContentShadowView.h"
+#import "React/RCTScrollContentView.h"
+#import "React/RCTScrollContentViewManager.h"
+#import "React/RCTScrollEvent.h"
+#import "React/RCTScrollView.h"
+#import "React/RCTScrollViewManager.h"
+#import "React/UIView+Private.h"
+#import "React/UIView+React.h"
+#import "React/RCTDevLoadingViewProtocol.h"
+#import "React/RCTDevLoadingViewSetEnabled.h"
+#import "React/RCTInspectorDevServerHelper.h"
+#import "React/RCTInspectorNetworkHelper.h"
+#import "React/RCTInspectorUtils.h"
+#import "React/RCTPackagerClient.h"
+#import "React/RCTPackagerConnection.h"
+#import "React/RCTPausedInDebuggerOverlayController.h"
+#import "React/RCTInspector.h"
+#import "React/RCTInspectorPackagerConnection.h"
+#import "React/RCTAnimationDriver.h"
+#import "React/RCTDecayAnimation.h"
+#import "React/RCTEventAnimation.h"
+#import "React/RCTFrameAnimation.h"
+#import "React/RCTSpringAnimation.h"
+#import "React/RCTAdditionAnimatedNode.h"
+#import "React/RCTAnimatedNode.h"
+#import "React/RCTColorAnimatedNode.h"
+#import "React/RCTDiffClampAnimatedNode.h"
+#import "React/RCTDivisionAnimatedNode.h"
+#import "React/RCTInterpolationAnimatedNode.h"
+#import "React/RCTModuloAnimatedNode.h"
+#import "React/RCTMultiplicationAnimatedNode.h"
+#import "React/RCTObjectAnimatedNode.h"
+#import "React/RCTPropsAnimatedNode.h"
+#import "React/RCTStyleAnimatedNode.h"
+#import "React/RCTSubtractionAnimatedNode.h"
+#import "React/RCTTrackingAnimatedNode.h"
+#import "React/RCTTransformAnimatedNode.h"
+#import "React/RCTValueAnimatedNode.h"
+#import "React/RCTAnimationPlugins.h"
+#import "React/RCTAnimationUtils.h"
+#import "React/RCTNativeAnimatedModule.h"
+#import "React/RCTNativeAnimatedNodesManager.h"
+#import "React/RCTNativeAnimatedTurboModule.h"
+#import "React/RCTBlobManager.h"
+#import "React/RCTFileReaderModule.h"
+#import "React/RCTAnimatedImage.h"
+#import "React/RCTBundleAssetImageLoader.h"
+#import "React/RCTDisplayWeakRefreshable.h"
+#import "React/RCTGIFImageDecoder.h"
+#import "React/RCTImageBlurUtils.h"
+#import "React/RCTImageCache.h"
+#import "React/RCTImageDataDecoder.h"
+#import "React/RCTImageEditingManager.h"
+#import "React/RCTImageLoader.h"
+#import "React/RCTImageLoaderLoggable.h"
+#import "React/RCTImageLoaderProtocol.h"
+#import "React/RCTImageLoaderWithAttributionProtocol.h"
+#import "React/RCTImagePlugins.h"
+#import "React/RCTImageShadowView.h"
+#import "React/RCTImageStoreManager.h"
+#import "React/RCTImageURLLoader.h"
+#import "React/RCTImageURLLoaderWithAttribution.h"
+#import "React/RCTImageUtils.h"
+#import "React/RCTImageView.h"
+#import "React/RCTImageViewManager.h"
+#import "React/RCTLocalAssetImageLoader.h"
+#import "React/RCTResizeMode.h"
+#import "React/RCTUIImageViewAnimated.h"
+#import "React/RCTLinkingManager.h"
+#import "React/RCTLinkingPlugins.h"
+#import "React/RCTDataRequestHandler.h"
+#import "React/RCTFileRequestHandler.h"
+#import "React/RCTHTTPRequestHandler.h"
+#import "React/RCTInspectorNetworkReporter.h"
+#import "React/RCTNetworking.h"
+#import "React/RCTNetworkPlugins.h"
+#import "React/RCTNetworkTask.h"
+#import "React/RCTPushNotificationManager.h"
+#import "React/RCTPushNotificationPlugins.h"
+#import "React/RCTSettingsManager.h"
+#import "React/RCTSettingsPlugins.h"
+#import "React/RCTBaseTextShadowView.h"
+#import "React/RCTBaseTextViewManager.h"
+#import "React/RCTRawTextShadowView.h"
+#import "React/RCTRawTextViewManager.h"
+#import "React/RCTConvert+Text.h"
+#import "React/RCTTextAttributes.h"
+#import "React/RCTTextTransform.h"
+#import "React/NSTextStorage+FontScaling.h"
+#import "React/RCTDynamicTypeRamp.h"
+#import "React/RCTTextShadowView.h"
+#import "React/RCTTextView.h"
+#import "React/RCTTextViewManager.h"
+#import "React/RCTMultilineTextInputView.h"
+#import "React/RCTMultilineTextInputViewManager.h"
+#import "React/RCTUITextView.h"
+#import "React/RCTBackedTextInputDelegate.h"
+#import "React/RCTBackedTextInputDelegateAdapter.h"
+#import "React/RCTBackedTextInputViewProtocol.h"
+#import "React/RCTBaseTextInputShadowView.h"
+#import "React/RCTBaseTextInputView.h"
+#import "React/RCTBaseTextInputViewManager.h"
+#import "React/RCTInputAccessoryShadowView.h"
+#import "React/RCTInputAccessoryView.h"
+#import "React/RCTInputAccessoryViewContent.h"
+#import "React/RCTInputAccessoryViewManager.h"
+#import "React/RCTTextSelection.h"
+#import "React/RCTSinglelineTextInputView.h"
+#import "React/RCTSinglelineTextInputViewManager.h"
+#import "React/RCTUITextField.h"
+#import "React/RCTVirtualTextShadowView.h"
+#import "React/RCTVirtualTextView.h"
+#import "React/RCTVirtualTextViewManager.h"
+#import "React/RCTVibration.h"
+#import "React/RCTVibrationPlugins.h"
+#import "React/RCTReconnectingWebSocket.h"
+
+FOUNDATION_EXPORT double ReactVersionNumber;
+FOUNDATION_EXPORT const unsigned char ReactVersionString[];
+
+        `;
+const RCT_APP_DELEGATE_UMBRELLA_HEADER = `
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
+
+#import "RCTAppDelegate.h"
+#import "RCTAppSetupUtils.h"
+#import "RCTArchConfiguratorProtocol.h"
+#import "RCTDefaultReactNativeFactoryDelegate.h"
+#import "RCTDependencyProvider.h"
+#import "RCTJSRuntimeConfiguratorProtocol.h"
+#import "RCTReactNativeFactory.h"
+#import "RCTRootViewFactory.h"
+#import "RCTUIConfiguratorProtocol.h"
+
+FOUNDATION_EXPORT double React_RCTAppDelegateVersionNumber;
+FOUNDATION_EXPORT const unsigned char React_RCTAppDelegateVersionString[];
+
+`;
+
+const RN_MODULEMAP = `
+framework module React {
+  umbrella header "React_Core/React_Core-umbrella.h"
+  export *
+  module * { export * }
 }
 
-// These are the headers that are included in umbrella files
-const HEADERFILE_WHITE_LIST = [
-  'RCTArchConfiguratorProtocol.h',
-  'RCTJSRuntimeConfiguratorProtocol.h',
-  'RCTDependencyProvider.h',
-  'RCTUIConfiguratorProtocol.h',
-  'RCTAppDelegate.h',
-  'RCTAppSetupUtils.h',
-  'RCTDefaultReactNativeFactoryDelegate.h',
-  'RCTReactNativeFactory.h',
-  'RCTRootViewFactory.h',
-  'CoreModulesPlugins.h',
-  'RCTAccessibilityManager+Internal.h',
-  'RCTAccessibilityManager.h',
-  'RCTActionSheetManager.h',
-  'RCTAlertController.h',
-  'RCTAlertManager.h',
-  'RCTAppearance.h',
-  'RCTAppState.h',
-  'RCTClipboard.h',
-  'RCTDeviceInfo.h',
-  'RCTDevLoadingView.h',
-  'RCTDevMenu.h',
-  'RCTDevSettings.h',
-  'RCTDevToolsRuntimeSettingsModule.h',
-  'RCTEventDispatcher.h',
-  'RCTExceptionsManager.h',
-  'RCTFPSGraph.h',
-  'RCTI18nManager.h',
-  'RCTKeyboardObserver.h',
-  'RCTLogBox.h',
-  'RCTLogBoxView.h',
-  'RCTPlatform.h',
-  'RCTRedBox.h',
-  'RCTSourceCode.h',
-  'RCTStatusBarManager.h',
-  'RCTTiming.h',
-  'RCTWebSocketModule.h',
-  'RCTAssert.h',
-  'RCTBridge+Inspector.h',
-  'RCTBridge+Private.h',
-  'RCTBridge.h',
-  'RCTBridgeConstants.h',
-  'RCTBridgeDelegate.h',
-  'RCTBridgeMethod.h',
-  'RCTBridgeModule.h',
-  'RCTBridgeModuleDecorator.h',
-  'RCTBridgeProxy+Cxx.h',
-  'RCTBridgeProxy.h',
-  'RCTBundleManager.h',
-  'RCTBundleURLProvider.h',
-  'RCTCallInvoker.h',
-  'RCTCallInvokerModule.h',
-  'RCTComponentEvent.h',
-  'RCTConstants.h',
-  'RCTConvert.h',
-  'RCTCxxConvert.h',
-  'RCTDefines.h',
-  'RCTDisplayLink.h',
-  'RCTErrorCustomizer.h',
-  'RCTErrorInfo.h',
-  'RCTEventDispatcherProtocol.h',
-  'RCTFrameUpdate.h',
-  'RCTImageSource.h',
-  'RCTInitializing.h',
-  'RCTInvalidating.h',
-  'RCTJavaScriptExecutor.h',
-  'RCTJavaScriptLoader.h',
-  'RCTJSStackFrame.h',
-  'RCTJSThread.h',
-  'RCTKeyCommands.h',
-  'RCTLog.h',
-  'RCTManagedPointer.h',
-  'RCTMockDef.h',
-  'RCTModuleData.h',
-  'RCTModuleMethod.h',
-  'RCTMultipartDataTask.h',
-  'RCTMultipartStreamReader.h',
-  'RCTNullability.h',
-  'RCTParserUtils.h',
-  'RCTPerformanceLogger.h',
-  'RCTPerformanceLoggerLabels.h',
-  'RCTPLTag.h',
-  'RCTRedBoxSetEnabled.h',
-  'RCTReloadCommand.h',
-  'RCTRootContentView.h',
-  'RCTRootView.h',
-  'RCTRootViewDelegate.h',
-  'RCTRootViewInternal.h',
-  'RCTTouchEvent.h',
-  'RCTTouchHandler.h',
-  'RCTTurboModuleRegistry.h',
-  'RCTURLRequestDelegate.h',
-  'RCTURLRequestHandler.h',
-  'RCTUtils.h',
-  'RCTUtilsUIOverride.h',
-  'RCTVersion.h',
-  'RCTSurface.h',
-  'RCTSurfaceDelegate.h',
-  'RCTSurfaceProtocol.h',
-  'RCTSurfaceRootShadowView.h',
-  'RCTSurfaceRootShadowViewDelegate.h',
-  'RCTSurfaceRootView.h',
-  'RCTSurfaceStage.h',
-  'RCTSurfaceView+Internal.h',
-  'RCTSurfaceView.h',
-  'RCTSurfaceHostingProxyRootView.h',
-  'RCTSurfaceHostingView.h',
-  'RCTSurfaceSizeMeasureMode.h',
-  'FBXXHashUtils.h',
-  'RCTLocalizedString.h',
-  'RCTEventEmitter.h',
-  'RCTI18nUtil.h',
-  'RCTLayoutAnimation.h',
-  'RCTLayoutAnimationGroup.h',
-  'RCTRedBoxExtraDataViewController.h',
-  'RCTSurfacePresenterStub.h',
-  'RCTUIManager.h',
-  'RCTUIManagerObserverCoordinator.h',
-  'RCTUIManagerUtils.h',
-  'RCTMacros.h',
-  'RCTProfile.h',
-  'RCTActivityIndicatorView.h',
-  'RCTActivityIndicatorViewManager.h',
-  'RCTAnimationType.h',
-  'RCTAutoInsetsProtocol.h',
-  'RCTBorderCurve.h',
-  'RCTBorderDrawing.h',
-  'RCTBorderStyle.h',
-  'RCTComponent.h',
-  'RCTComponentData.h',
-  'RCTConvert+CoreLocation.h',
-  'RCTConvert+Transform.h',
-  'RCTCursor.h',
-  'RCTDebuggingOverlay.h',
-  'RCTDebuggingOverlayManager.h',
-  'RCTFont.h',
-  'RCTLayout.h',
-  'RCTModalHostView.h',
-  'RCTModalHostViewController.h',
-  'RCTModalHostViewManager.h',
-  'RCTModalManager.h',
-  'RCTPointerEvents.h',
-  'RCTRootShadowView.h',
-  'RCTShadowView+Internal.h',
-  'RCTShadowView+Layout.h',
-  'RCTShadowView.h',
-  'RCTSwitch.h',
-  'RCTSwitchManager.h',
-  'RCTTextDecorationLineType.h',
-  'RCTView.h',
-  'RCTViewManager.h',
-  'RCTViewUtils.h',
-  'RCTWrapperViewController.h',
-  'RCTRefreshableProtocol.h',
-  'RCTRefreshControl.h',
-  'RCTRefreshControlManager.h',
-  'RCTSafeAreaShadowView.h',
-  'RCTSafeAreaView.h',
-  'RCTSafeAreaViewLocalData.h',
-  'RCTSafeAreaViewManager.h',
-  'RCTScrollableProtocol.h',
-  'RCTScrollContentShadowView.h',
-  'RCTScrollContentView.h',
-  'RCTScrollContentViewManager.h',
-  'RCTScrollEvent.h',
-  'RCTScrollView.h',
-  'RCTScrollViewManager.h',
-  'UIView+Private.h',
-  'UIView+React.h',
-  'RCTDevLoadingViewProtocol.h',
-  'RCTDevLoadingViewSetEnabled.h',
-  'RCTInspectorDevServerHelper.h',
-  'RCTInspectorNetworkHelper.h',
-  'RCTInspectorUtils.h',
-  'RCTPackagerClient.h',
-  'RCTPackagerConnection.h',
-  'RCTPausedInDebuggerOverlayController.h',
-  'RCTInspector.h',
-  'RCTInspectorPackagerConnection.h',
-  'RCTAnimationDriver.h',
-  'RCTDecayAnimation.h',
-  'RCTEventAnimation.h',
-  'RCTFrameAnimation.h',
-  'RCTSpringAnimation.h',
-  'RCTAdditionAnimatedNode.h',
-  'RCTAnimatedNode.h',
-  'RCTColorAnimatedNode.h',
-  'RCTDiffClampAnimatedNode.h',
-  'RCTDivisionAnimatedNode.h',
-  'RCTInterpolationAnimatedNode.h',
-  'RCTModuloAnimatedNode.h',
-  'RCTMultiplicationAnimatedNode.h',
-  'RCTObjectAnimatedNode.h',
-  'RCTPropsAnimatedNode.h',
-  'RCTStyleAnimatedNode.h',
-  'RCTSubtractionAnimatedNode.h',
-  'RCTTrackingAnimatedNode.h',
-  'RCTTransformAnimatedNode.h',
-  'RCTValueAnimatedNode.h',
-  'RCTAnimationPlugins.h',
-  'RCTAnimationUtils.h',
-  'RCTNativeAnimatedModule.h',
-  'RCTNativeAnimatedNodesManager.h',
-  'RCTNativeAnimatedTurboModule.h',
-  'RCTBlobManager.h',
-  'RCTFileReaderModule.h',
-  'RCTAnimatedImage.h',
-  'RCTBundleAssetImageLoader.h',
-  'RCTDisplayWeakRefreshable.h',
-  'RCTGIFImageDecoder.h',
-  'RCTImageBlurUtils.h',
-  'RCTImageCache.h',
-  'RCTImageDataDecoder.h',
-  'RCTImageEditingManager.h',
-  'RCTImageLoader.h',
-  'RCTImageLoaderLoggable.h',
-  'RCTImageLoaderProtocol.h',
-  'RCTImageLoaderWithAttributionProtocol.h',
-  'RCTImagePlugins.h',
-  'RCTImageShadowView.h',
-  'RCTImageStoreManager.h',
-  'RCTImageURLLoader.h',
-  'RCTImageURLLoaderWithAttribution.h',
-  'RCTImageUtils.h',
-  'RCTImageView.h',
-  'RCTImageViewManager.h',
-  'RCTLocalAssetImageLoader.h',
-  'RCTResizeMode.h',
-  'RCTUIImageViewAnimated.h',
-  'RCTLinkingManager.h',
-  'RCTLinkingPlugins.h',
-  'RCTDataRequestHandler.h',
-  'RCTFileRequestHandler.h',
-  'RCTHTTPRequestHandler.h',
-  'RCTInspectorNetworkReporter.h',
-  'RCTNetworking.h',
-  'RCTNetworkPlugins.h',
-  'RCTNetworkTask.h',
-  'RCTPushNotificationManager.h',
-  'RCTPushNotificationPlugins.h',
-  'RCTSettingsManager.h',
-  'RCTSettingsPlugins.h',
-  'RCTBaseTextShadowView.h',
-  'RCTBaseTextViewManager.h',
-  'RCTRawTextShadowView.h',
-  'RCTRawTextViewManager.h',
-  'RCTConvert+Text.h',
-  'RCTTextAttributes.h',
-  'RCTTextTransform.h',
-  'NSTextStorage+FontScaling.h',
-  'RCTDynamicTypeRamp.h',
-  'RCTTextShadowView.h',
-  'RCTTextView.h',
-  'RCTTextViewManager.h',
-  'RCTMultilineTextInputView.h',
-  'RCTMultilineTextInputViewManager.h',
-  'RCTUITextView.h',
-  'RCTBackedTextInputDelegate.h',
-  'RCTBackedTextInputDelegateAdapter.h',
-  'RCTBackedTextInputViewProtocol.h',
-  'RCTBaseTextInputShadowView.h',
-  'RCTBaseTextInputView.h',
-  'RCTBaseTextInputViewManager.h',
-  'RCTInputAccessoryShadowView.h',
-  'RCTInputAccessoryView.h',
-  'RCTInputAccessoryViewContent.h',
-  'RCTInputAccessoryViewManager.h',
-  'RCTTextSelection.h',
-  'RCTSinglelineTextInputView.h',
-  'RCTSinglelineTextInputViewManager.h',
-  'RCTUITextField.h',
-  'RCTVirtualTextShadowView.h',
-  'RCTVirtualTextView.h',
-  'RCTVirtualTextViewManager.h',
-  'RCTVibration.h',
-  'RCTVibrationPlugins.h',
-  'RCTReconnectingWebSocket.h',
-];
+
+framework module React_RCTAppDelegate {
+    umbrella header "React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h"
+    export *
+    module * { export * }
+}
+
+`;
 
 module.exports = {
   getHeaderFilesFromPodspecs,
-  includeHeaderFileInUmbrellaFile,
+  RN_MODULEMAP,
+  RCT_APP_DELEGATE_UMBRELLA_HEADER,
+  REACT_CORE_UMBRELLA_HEADER,
 };
