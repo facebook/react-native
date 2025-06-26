@@ -55,11 +55,17 @@ export type SectionBase<SectionItemT, SectionT = DefaultVirtualizedSectionT> = {
   ...
 };
 
-type RequiredProps<ItemT, SectionT = DefaultVirtualizedSectionT> = {
+type RequiredVirtualizedSectionListProps<
+  ItemT,
+  SectionT = DefaultVirtualizedSectionT,
+> = {
   sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
 };
 
-type OptionalProps<ItemT, SectionT = DefaultVirtualizedSectionT> = {
+type OptionalVirtualizedSectionListProps<
+  ItemT,
+  SectionT = DefaultVirtualizedSectionT,
+> = {
   /**
    * Default renderer for every item in every section.
    */
@@ -104,8 +110,8 @@ export type VirtualizedSectionListProps<
   ItemT,
   SectionT = DefaultVirtualizedSectionT,
 > = {
-  ...RequiredProps<ItemT, SectionT>,
-  ...OptionalProps<ItemT, SectionT>,
+  ...RequiredVirtualizedSectionListProps<ItemT, SectionT>,
+  ...OptionalVirtualizedSectionListProps<ItemT, SectionT>,
   ...Omit<VirtualizedListProps, 'data' | 'renderItem'>,
 };
 export type ScrollToLocationParamsType = {

@@ -16,7 +16,7 @@ import requireNativeComponent from '../../Libraries/ReactNative/requireNativeCom
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type Options = $ReadOnly<{
+type NativeComponentOptions = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
@@ -33,7 +33,7 @@ export type NativeComponentType<T: {...}> = HostComponent<T>;
 // from a file suffixed with NativeComponent.js.
 function codegenNativeComponent<Props: {...}>(
   componentName: string,
-  options?: Options,
+  options?: NativeComponentOptions,
 ): NativeComponentType<Props> {
   if (global.RN$Bridgeless === true && __DEV__) {
     console.warn(

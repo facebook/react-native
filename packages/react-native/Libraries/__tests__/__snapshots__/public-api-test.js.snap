@@ -3307,7 +3307,7 @@ declare export default typeof TouchableHighlight;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableNativeFeedback.js 1`] = `
-"type TVProps = {
+"type TouchableNativeFeedbackTVProps = {
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3317,7 +3317,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 };
 export type TouchableNativeFeedbackProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableNativeFeedbackTVProps,
   background?: ?(
     | $ReadOnly<{
         type: \\"ThemeAttrAndroid\\",
@@ -3377,7 +3377,7 @@ declare export default typeof TouchableNativeFeedback;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableOpacity.js 1`] = `
-"export type TVProps = $ReadOnly<{
+"export type TouchableOpacityTVProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3392,7 +3392,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
 }>;
 export type TouchableOpacityProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 declare const Touchable: component(
@@ -4850,7 +4850,7 @@ exports[`public API should not change unintentionally Libraries/LayoutAnimation/
   LayoutAnimationProperty,
   LayoutAnimationAnimationConfig as LayoutAnimationAnim,
 } from \\"../Renderer/shims/ReactNativeTypes\\";
-export type LayoutAnimationConfig = LayoutAnimationConfig_;
+export type { LayoutAnimationConfig } from \\"../Renderer/shims/ReactNativeTypes\\";
 export type LayoutAnimationTypes = $ReadOnly<{
   [type in LayoutAnimationType]: type,
 }>;
@@ -4940,10 +4940,10 @@ declare export default typeof FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"type RequiredProps<ItemT> = {
+"type RequiredFlatListProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
-type OptionalProps<ItemT> = {
+type OptionalFlatListProps<ItemT> = {
   renderItem?: ?ListRenderItem<ItemT>,
   columnWrapperStyle?: ViewStyleProp,
   extraData?: any,
@@ -4967,8 +4967,8 @@ type OptionalProps<ItemT> = {
   strictMode?: boolean,
 };
 type FlatListBaseProps<ItemT> = {
-  ...RequiredProps<ItemT>,
-  ...OptionalProps<ItemT>,
+  ...RequiredFlatListProps<ItemT>,
+  ...OptionalFlatListProps<ItemT>,
 };
 export type FlatListProps<ItemT> = {
   ...Omit<
@@ -5031,7 +5031,7 @@ export type {
   SectionData as SectionListData,
   ScrollToLocationParamsType as SectionListScrollParams,
 };
-type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+type RequiredSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
 };
 export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
@@ -5042,7 +5042,7 @@ export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
 export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
   info: SectionListRenderItemInfo<ItemT, SectionT>
 ) => React.Node | null;
-type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+type OptionalSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: SectionListRenderItem<ItemT, SectionT>,
   extraData?: any,
   initialNumToRender?: ?number,
@@ -5056,8 +5056,8 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
     VirtualizedSectionListProps<ItemT, SectionT>,
     \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<ItemT, SectionT>,
-  ...OptionalProps<ItemT, SectionT>,
+  ...RequiredSectionListProps<ItemT, SectionT>,
+  ...OptionalSectionListProps<ItemT, SectionT>,
 };
 declare export default class SectionList<
   ItemT = any,
@@ -5143,14 +5143,14 @@ declare export const keyExtractor: KeyExtractorType;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedList.js 1`] = `
 "type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
-declare const VirtualizedList: VirtualizedListType;
+declare const VirtualizedListComponent: VirtualizedListType;
 export type {
   ListRenderItemInfo,
   ListRenderItem,
   Separators,
   VirtualizedListProps,
 } from \\"@react-native/virtualized-lists\\";
-declare export default typeof VirtualizedList;
+declare export default typeof VirtualizedListComponent;
 "
 `;
 
@@ -7841,7 +7841,7 @@ exports[`public API should not change unintentionally Libraries/Text/TextProps.j
   bottom: number,
   right: number,
 }>;
-type PointerEventProps = $ReadOnly<{
+type TextPointerEventProps = $ReadOnly<{
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
@@ -7902,7 +7902,7 @@ type TextBaseProps = $ReadOnly<{
   testID?: ?string,
 }>;
 export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+  ...TextPointerEventProps,
   ...TextPropsIOS,
   ...TextPropsAndroid,
   ...TextBaseProps,
@@ -8637,18 +8637,18 @@ declare export default typeof binaryToBase64;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/codegenNativeCommands.js 1`] = `
-"type Options<T = string> = $ReadOnly<{
+"type NativeCommandsOptions<T = string> = $ReadOnly<{
   supportedCommands: $ReadOnlyArray<T>,
 }>;
 declare function codegenNativeCommands<T: interface {}>(
-  options: Options<$Keys<T>>
+  options: NativeCommandsOptions<$Keys<T>>
 ): T;
 declare export default typeof codegenNativeCommands;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/codegenNativeComponent.js 1`] = `
-"type Options = $ReadOnly<{
+"type NativeComponentOptions = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
@@ -8657,7 +8657,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/codege
 export type NativeComponentType<T: { ... }> = HostComponent<T>;
 declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
-  options?: Options
+  options?: NativeComponentOptions
 ): NativeComponentType<Props>;
 declare export default typeof codegenNativeComponent;
 "

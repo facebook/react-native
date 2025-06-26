@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  LayoutAnimationConfig as LayoutAnimationConfig_,
+  LayoutAnimationConfig,
   LayoutAnimationProperty,
   LayoutAnimationType,
 } from '../Renderer/shims/ReactNativeTypes';
@@ -29,7 +29,7 @@ export type {
 } from '../Renderer/shims/ReactNativeTypes';
 
 // Reexport type
-export type LayoutAnimationConfig = LayoutAnimationConfig_;
+export type {LayoutAnimationConfig} from '../Renderer/shims/ReactNativeTypes';
 
 export type LayoutAnimationTypes = $ReadOnly<{
   [type in LayoutAnimationType]: type,

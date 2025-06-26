@@ -33,14 +33,14 @@ const invariant = require('invariant');
 const VirtualizedList = VirtualizedLists.VirtualizedList;
 const defaultKeyExtractor = VirtualizedLists.keyExtractor;
 
-type RequiredProps<ItemT> = {
+type RequiredFlatListProps<ItemT> = {
   /**
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
-type OptionalProps<ItemT> = {
+type OptionalFlatListProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -178,8 +178,8 @@ function isArrayLike(data: mixed): boolean {
 }
 
 type FlatListBaseProps<ItemT> = {
-  ...RequiredProps<ItemT>,
-  ...OptionalProps<ItemT>,
+  ...RequiredFlatListProps<ItemT>,
+  ...OptionalFlatListProps<ItemT>,
 };
 
 export type FlatListProps<ItemT> = {

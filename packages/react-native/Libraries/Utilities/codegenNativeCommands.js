@@ -10,11 +10,13 @@
 
 const {dispatchCommand} = require('../ReactNative/RendererProxy');
 
-type Options<T = string> = $ReadOnly<{
+type NativeCommandsOptions<T = string> = $ReadOnly<{
   supportedCommands: $ReadOnlyArray<T>,
 }>;
 
-function codegenNativeCommands<T: interface {}>(options: Options<$Keys<T>>): T {
+function codegenNativeCommands<T: interface {}>(
+  options: NativeCommandsOptions<$Keys<T>>,
+): T {
   const commandObj: {[$Keys<T>]: (...$ReadOnlyArray<mixed>) => void} = {};
 
   options.supportedCommands.forEach(command => {
