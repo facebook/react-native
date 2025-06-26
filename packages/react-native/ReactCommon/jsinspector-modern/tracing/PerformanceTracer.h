@@ -49,7 +49,7 @@ class PerformanceTracer {
    * enabled.
    */
   inline bool isTracing() const {
-    return tracing_;
+    return tracingAtomic_;
   }
 
   /**
@@ -140,14 +140,30 @@ class PerformanceTracer {
    */
   folly::dynamic serializeTraceEvent(TraceEvent&& event) const;
 
-  uint64_t processId_;
+  const uint64_t processId_;
 
-  std::atomic<bool> tracing_{false};
-  std::atomic<uint32_t> performanceMeasureCount_{0};
+  /**
+   * The flag is atomic in order to enable any thread to read it (via
+   * isTracing()) without holding the mutex.
+   * Within this class, both reads and writes MUST be protected by the mutex to
+   * avoid false positives and data races.
+   */
+  std::atomic<bool> tracingAtomic_{false};
+  /**
+   * The counter for recorded User Timing "measure" events.
+   * Used for generating unique IDs for each measure event inside a specific
+   * Trace.
+   * Does not need to be atomic, because it is always accessed within the mutex
+   * lock.
+   */
+  uint32_t performanceMeasureCount_{0};
 
   std::vector<TraceEvent> buffer_;
-  // Protects buffer_ operations and tracing_ modifications.
-  std::mutex tracingMutex_;
+  /**
+   * Protects data members of this class for concurrent access, including
+   * the tracingAtomic_, in order to eliminate potential "logic" races.
+   */
+  std::mutex mutex_;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
