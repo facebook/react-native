@@ -10,10 +10,7 @@
 
 'use strict';
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import RNTesterText from '../../components/RNTesterText';
-import React from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 function BackgroundImageBox({style, children, testID}) {
   return (
@@ -62,7 +59,7 @@ exports.examples = [
             experimental_backgroundImage: 'linear-gradient(#e66465, #9198e5)',
           }}
           testID="background-image-basic">
-          <RNTesterText style={styles.text}>Basic</RNTesterText>
+          <Text style={styles.text}>Basic</Text>
         </BackgroundImageBox>
       );
     },
@@ -74,7 +71,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <View style={styles.col}>
-            <RNTesterText>45deg</RNTesterText>
+            <Text>45deg</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -83,7 +80,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>90deg</RNTesterText>
+            <Text>90deg</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -92,7 +89,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>180deg</RNTesterText>
+            <Text>180deg</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -111,7 +108,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <View style={styles.col}>
-            <RNTesterText>3 colors</RNTesterText>
+            <Text>3 colors</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -120,7 +117,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>4 colors</RNTesterText>
+            <Text>4 colors</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -129,7 +126,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>Rainbow</RNTesterText>
+            <Text>Rainbow</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -148,7 +145,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <View style={styles.col}>
-            <RNTesterText>Circle</RNTesterText>
+            <Text>Circle</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -157,7 +154,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>Ellipse</RNTesterText>
+            <Text>Ellipse</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -174,10 +171,10 @@ exports.examples = [
     name: 'repeat',
     render(): React.Node {
       return (
-        <ScrollView>
+        <View>
           <View style={styles.row}>
             <View style={styles.col}>
-              <RNTesterText>repeat</RNTesterText>
+              <Text>repeat</Text>
               <BackgroundImageBox
                 style={{
                   width: 200,
@@ -190,7 +187,7 @@ exports.examples = [
               />
             </View>
             <View style={styles.col}>
-              <RNTesterText>space</RNTesterText>
+              <Text>space</Text>
               <BackgroundImageBox
                 style={{
                   width: 200,
@@ -205,7 +202,7 @@ exports.examples = [
           </View>
           <View style={styles.row}>
             <View style={styles.col}>
-              <RNTesterText>round</RNTesterText>
+              <Text>round</Text>
               <BackgroundImageBox
                 style={{
                   width: 200,
@@ -218,7 +215,7 @@ exports.examples = [
               />
             </View>
             <View style={styles.col}>
-              <RNTesterText>no-repeat</RNTesterText>
+              <Text>no-repeat</Text>
               <BackgroundImageBox
                 style={{
                   width: 200,
@@ -232,7 +229,7 @@ exports.examples = [
               />
             </View>
           </View>
-        </ScrollView>
+        </View>
       );
     },
   },
@@ -243,7 +240,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <View style={styles.col}>
-            <RNTesterText>center</RNTesterText>
+            <Text>center</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -256,7 +253,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>25% 75%</RNTesterText>
+            <Text>25% 75%</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -269,7 +266,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>right bottom</RNTesterText>
+            <Text>right bottom</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -333,7 +330,7 @@ exports.examples = [
       return (
         <View style={styles.row}>
           <View style={styles.col}>
-            <RNTesterText>borderRadius</RNTesterText>
+            <Text>borderRadius</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -344,7 +341,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>borderWidth + borderColor</RNTesterText>
+            <Text>borderWidth + borderColor</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -356,7 +353,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>non uniform borderRadius</RNTesterText>
+            <Text>non uniform borderRadius</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
@@ -370,7 +367,7 @@ exports.examples = [
             />
           </View>
           <View style={styles.col}>
-            <RNTesterText>non uniform borderWidth</RNTesterText>
+            <Text>non uniform borderWidth</Text>
             <BackgroundImageBox
               style={{
                 experimental_backgroundImage:
