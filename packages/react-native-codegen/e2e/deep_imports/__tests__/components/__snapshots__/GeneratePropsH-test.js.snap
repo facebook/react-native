@@ -360,6 +360,12 @@ static inline std::string toString(const EnumPropNativeComponentViewAlignment &v
     case EnumPropNativeComponentViewAlignment::BottomRight: return \\"bottom-right\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const EnumPropNativeComponentViewAlignment &value) {
+  return toString(value);
+}
+#endif
 enum class EnumPropNativeComponentViewIntervals { Intervals0 = 0, Intervals15 = 15, Intervals30 = 30, Intervals60 = 60 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, EnumPropNativeComponentViewIntervals &result) {
@@ -390,6 +396,17 @@ static inline std::string toString(const EnumPropNativeComponentViewIntervals &v
     case EnumPropNativeComponentViewIntervals::Intervals60: return \\"60\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const EnumPropNativeComponentViewIntervals &value) {
+  switch (value) {
+    case EnumPropNativeComponentViewIntervals::Intervals0: return 0;
+    case EnumPropNativeComponentViewIntervals::Intervals15: return 15;
+    case EnumPropNativeComponentViewIntervals::Intervals30: return 30;
+    case EnumPropNativeComponentViewIntervals::Intervals60: return 60;
+  }
+}
+#endif
 
 class EnumPropNativeComponentViewProps final : public ViewProps {
  public:
@@ -798,6 +815,12 @@ static inline std::string toString(const ObjectPropsNativeComponentStringEnumPro
     case ObjectPropsNativeComponentStringEnumProp::Large: return \\"large\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentStringEnumProp &value) {
+  return toString(value);
+}
+#endif
 enum class ObjectPropsNativeComponentIntEnumProp { IntEnumProp0 = 0, IntEnumProp1 = 1 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentIntEnumProp &result) {
@@ -820,6 +843,15 @@ static inline std::string toString(const ObjectPropsNativeComponentIntEnumProp &
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return \\"1\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsNativeComponentIntEnumProp::IntEnumProp0: return 0;
+    case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return 1;
+  }
+}
+#endif
 struct ObjectPropsNativeComponentObjectPropStruct {
   std::string stringProp{\\"\\"};
   bool booleanProp{false};

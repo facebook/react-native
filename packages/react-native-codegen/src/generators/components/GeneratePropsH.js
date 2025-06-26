@@ -115,6 +115,12 @@ static inline std::string toString(const ${enumName} &value) {
     ${toCases}
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${enumName} &value) {
+  return toString(value);
+}
+#endif
 `.trim();
 
 const IntEnumTemplate = ({
@@ -122,11 +128,13 @@ const IntEnumTemplate = ({
   values,
   fromCases,
   toCases,
+  toDynamicCases,
 }: {
   enumName: string,
   values: string,
   fromCases: string,
   toCases: string,
+  toDynamicCases: string,
 }) =>
   `
 enum class ${enumName} { ${values} };
@@ -144,6 +152,14 @@ static inline std::string toString(const ${enumName} &value) {
     ${toCases}
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${enumName} &value) {
+  switch (value) {
+    ${toDynamicCases}
+  }
+}
+#endif
 `.trim();
 
 const StructTemplate = ({
@@ -401,6 +417,16 @@ function generateIntEnum(
       )
       .join('\n' + '    ');
 
+    const toDynamicCases = values
+      .map(
+        value =>
+          `case ${enumName}::${toIntEnumValueName(
+            prop.name,
+            value,
+          )}: return ${value};`,
+      )
+      .join('\n' + '    ');
+
     const valueVariables = values
       .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
       .join(', ');
@@ -410,6 +436,7 @@ function generateIntEnum(
       values: valueVariables,
       fromCases,
       toCases,
+      toDynamicCases,
     });
   }
 
