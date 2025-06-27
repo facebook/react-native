@@ -242,17 +242,8 @@ CommitStatus ShadowTree::commit(
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
-  CommitMode commitMode;
-  auto oldRevision = ShadowTreeRevision{};
-  auto newRevision = ShadowTreeRevision{};
-
-  {
-    commitMode = commitMode_;
-    oldRevision = currentRevision_;
-  }
-
-  const auto& oldRootShadowNode = oldRevision.rootShadowNode;
-  auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
+  const auto& oldRootShadowNode = currentRevision_.rootShadowNode;
+  auto newRootShadowNode = transaction(*oldRootShadowNode);
 
   if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
@@ -285,37 +276,31 @@ CommitStatus ShadowTree::commit(
   telemetry.unsetAsThreadLocal();
   telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
+  auto newRevisionNumber = currentRevision_.number + 1;
+
   {
-    if (currentRevision_.number != oldRevision.number) {
-      return CommitStatus::Failed;
-    }
-
-    auto newRevisionNumber = currentRevision_.number + 1;
-
-    {
-      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
-      updateMountedFlag(
-          currentRevision_.rootShadowNode->getChildren(),
-          newRootShadowNode->getChildren(),
-          commitOptions.source);
-    }
-
-    telemetry.didCommit();
-    telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
-
-    // Seal the shadow node so it can no longer be mutated
-    // Does nothing in release.
-    newRootShadowNode->sealRecursive();
-
-    newRevision = ShadowTreeRevision{
-        std::move(newRootShadowNode), newRevisionNumber, telemetry};
-
-    currentRevision_ = newRevision;
+    std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
+    updateMountedFlag(
+        currentRevision_.rootShadowNode->getChildren(),
+        newRootShadowNode->getChildren(),
+        commitOptions.source);
   }
+
+  telemetry.didCommit();
+  telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
+
+  // Seal the shadow node so it can no longer be mutated
+  // Does nothing in release.
+  newRootShadowNode->sealRecursive();
+
+  const auto newRevision = ShadowTreeRevision{
+      std::move(newRootShadowNode), newRevisionNumber, telemetry};
+
+  currentRevision_ = newRevision;
 
   emitLayoutEvents(affectedLayoutableNodes);
 
-  if (commitMode == CommitMode::Normal) {
+  if (commitMode_ == CommitMode::Normal) {
     mount(std::move(newRevision), commitOptions.mountSynchronously);
   }
 
