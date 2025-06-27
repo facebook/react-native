@@ -109,8 +109,7 @@ lastResort(const char* tag, const char* msg, const char* arg = nullptr) {
 #endif
 }
 
-namespace facebook {
-namespace gloginit {
+namespace facebook::gloginit {
 
 void initialize(const char* tag) {
   static std::once_flag flag{};
@@ -137,5 +136,4 @@ void initialize(const char* tag) {
   }
 }
 
-} // namespace gloginit
-} // namespace facebook
+} // namespace facebook::gloginit

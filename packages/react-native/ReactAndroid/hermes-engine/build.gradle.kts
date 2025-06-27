@@ -186,6 +186,24 @@ val prepareHeadersForPrefab by
       into(prefabHeadersDir)
     }
 
+val buildHermesLib by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(buildHermesC)
+      workingDir(hermesDir)
+      inputs.files(hermesBuildOutputFileTree)
+      commandLine(
+          cmakeBinaryPath,
+          "--build",
+          hermesBuildDir.toString(),
+          "--target",
+          "libhermes",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutputFile.set(project.file("$buildDir/build-hermes-lib.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermes-lib.error.log"))
+    }
+
 fun windowsAwareCommandLine(vararg commands: String): List<String> {
   val result =
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {

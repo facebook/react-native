@@ -16,8 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-
 Pod::Spec.new do |s|
   s.name                   = "ReactCommon"
   s.module_name            = "ReactCommon"
@@ -48,23 +46,23 @@ Pod::Spec.new do |s|
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "React-logger", version
-    if using_hermes
+    if use_hermes()
       ss.dependency "hermes-engine"
     end
 
     ss.subspec "bridging" do |sss|
       sss.dependency           "React-jsi", version
-      sss.source_files         = "react/bridging/**/*.{cpp,h}"
+      sss.source_files         = podspec_sources("react/bridging/**/*.{cpp,h}", "react/bridging/**/*.h")
       sss.exclude_files        = "react/bridging/tests"
       sss.header_dir           = "react/bridging"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
-      if using_hermes
+      if use_hermes()
         sss.dependency "hermes-engine"
       end
     end
 
     ss.subspec "core" do |sss|
-      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
+      sss.source_files = podspec_sources("react/nativemodule/core/ReactCommon/**/*.{cpp,h}", "react/nativemodule/core/ReactCommon/**/*.h")
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"" }
       sss.dependency "React-debug", version
       sss.dependency "React-featureflags", version

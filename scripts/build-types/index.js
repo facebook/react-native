@@ -18,6 +18,7 @@ const {parseArgs, styleText} = require('util');
 const config = {
   options: {
     debug: {type: 'boolean'},
+    'debug-version-annotations': {type: 'boolean'},
     help: {type: 'boolean'},
     withSnapshot: {type: 'boolean'},
     validate: {type: 'boolean'},
@@ -26,7 +27,13 @@ const config = {
 
 async function main() {
   const {
-    values: {debug: debugEnabled, help, withSnapshot, validate},
+    values: {
+      debug: debugEnabled,
+      'debug-version-annotations': debugVersionAnnotations,
+      help,
+      withSnapshot,
+      validate,
+    },
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
@@ -38,9 +45,23 @@ async function main() {
   Build generated TypeScript types for react-native.
 
   Options:
+    --debug           Enable debug logging.
+    --debug-version-annotations
+                      Outputs debug info alongside versioned type hashes as
+                      part of the API snapshot contents.
     --withSnapshot    [Experimental] Include API snapshot generation.
+    --validate        Validate if the current API snapshot on disk is up to
+                      date. Exits with an error if differences are detected.
     `);
     process.exitCode = 0;
+    return;
+  }
+
+  if (validate && !withSnapshot) {
+    console.error(
+      "build-types: '--validate' can only be used with '--withSnapshot'.",
+    );
+    process.exitCode = 2;
     return;
   }
 
@@ -52,24 +73,18 @@ async function main() {
     '\n' +
       styleText(
         ['bold', 'inverse'],
-        'Building generated react-native package types',
+        ' Building generated react-native package types ',
       ) +
       '\n',
   );
-
   await buildGeneratedTypes();
 
   if (withSnapshot) {
     console.log(
-      '\n' +
-        styleText(
-          ['bold', 'inverse', 'yellow'],
-          'EXPERIMENTAL - Building API snapshot',
-        ) +
+      styleText(['bold', 'inverse'], ' [Experimental] Building API snapshot ') +
         '\n',
     );
-
-    await buildApiSnapshot(validate);
+    await buildApiSnapshot({validate, debugVersionAnnotations});
   }
 }
 

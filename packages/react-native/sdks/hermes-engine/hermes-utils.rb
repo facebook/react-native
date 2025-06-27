@@ -230,8 +230,22 @@ def download_hermes_tarball(react_native_path, tarball_url, version, configurati
 end
 
 def nightly_tarball_url(version)
-    params = "r=snapshots\&g=com.facebook.react\&a=react-native-artifacts\&c=hermes-ios-debug\&e=tar.gz\&v=#{version}-SNAPSHOT"
-    return resolve_url_redirects("http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}")
+  artifact_coordinate = "react-native-artifacts"
+  artifact_name = "hermes-ios-debug.tar.gz"
+  xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
+
+  response = Net::HTTP.get_response(URI(xml_url))
+  if response.is_a?(Net::HTTPSuccess)
+    xml = REXML::Document.new(response.body)
+    timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
+    build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
+    full_version = "#{version}-#{timestamp}-#{build_number}"
+    final_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/#{artifact_coordinate}-#{full_version}-#{artifact_name}"
+
+    return final_url
+  else
+    return ""
+  end
 end
 
 def resolve_url_redirects(url)

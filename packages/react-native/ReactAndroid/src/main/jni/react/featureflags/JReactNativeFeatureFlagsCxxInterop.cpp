@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bb0b241f561c9c443d6453fa259d0a5d>>
+ * @generated SignedSource<<04d1e45bd61df19a284947523172bf4a>>
  */
 
 /**
@@ -54,6 +54,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedEnabled");
+    return method(javaProvider_);
+  }
+
+  bool cxxNativeAnimatedRemoveJsSync() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
     return method(javaProvider_);
   }
 
@@ -159,12 +165,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIntersectionObserverEventLoopIntegration");
-    return method(javaProvider_);
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
@@ -264,6 +264,18 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewDebugFeatures() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewDebugFeatures");
+    return method(javaProvider_);
+  }
+
+  bool enableVirtualViewRenderState() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewRenderState");
+    return method(javaProvider_);
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewWindowFocusDetection");
     return method(javaProvider_);
   }
 
@@ -370,6 +382,11 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
@@ -455,11 +472,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -543,6 +555,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
 bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
@@ -656,6 +678,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
+        "cxxNativeAnimatedRemoveJsSync",
+        JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
+      makeNativeMethod(
         "disableMainQueueSyncDispatchIOS",
         JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS),
       makeNativeMethod(
@@ -707,9 +732,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
       makeNativeMethod(
-        "enableIntersectionObserverEventLoopIntegration",
-        JReactNativeFeatureFlagsCxxInterop::enableIntersectionObserverEventLoopIntegration),
-      makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
@@ -760,6 +782,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
+      makeNativeMethod(
+        "enableVirtualViewRenderState",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState),
+      makeNativeMethod(
+        "enableVirtualViewWindowFocusDetection",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

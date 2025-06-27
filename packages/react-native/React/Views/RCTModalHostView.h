@@ -24,6 +24,7 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL allowSwipeDismissal;
 
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;

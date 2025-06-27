@@ -10,66 +10,37 @@
 
 /*:: import type {BuildFlavor} from './types'; */
 
-const {createFolderIfNotExists, createLogger} = require('./utils');
-const {execSync} = require('child_process');
+const headers = require('./headers');
+const utils = require('./utils');
+const childProcess = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
+
+const {execSync} = childProcess;
+const {getHeaderFilesFromPodspecs} = headers;
+const {createFolderIfNotExists, createLogger} = utils;
 
 const frameworkLog = createLogger('XCFramework');
 
-// These are the headers that are ignored by the modulemap.
-// The modulemap is required only for Swift files that needs to import the React framework.
-// We want to ignore all the headers that contains some C++ symbol, as they will not build with Swift.
-const HEADERFILE_IGNORE_LIST = [
-  'RCTCxxMethod.h',
-  'RCTComponentViewClassDescriptor.h',
-  'RCTActivityIndicatorViewManager.h',
-  'RCTComponentViewDescriptor.h',
-  'RCTComponentViewFactory.h',
-  'RCTComponentViewProtocol.h',
-  'RCTComponentViewRegistry.h',
-  'RCTConstants.h',
-  'RCTConversions.h',
-  'RCTConvert+CoreLocation.h',
-  'RCTConvert+Text.h',
-  'RCTConvert+Transform.h',
-  'RCTFabricComponentsPlugins.h',
-  'RCTFabricModalHostViewController.h',
-  'RCTFabricSurface.h',
-  'RCTFollyConvert.h',
-  'RCTLegacyViewManagerInteropCoordinatorAdapter.h',
-  'RCTLinearGradient.h',
-  'RCTRadialGradient.h',
-  'RCTMountingManager.h',
-  'RCTMountingTransactionObserving.h',
-  'RCTParagraphComponentAccessibilityProvider.h',
-  'RuntimeExecutor.h',
-  'RCTSurfacePresenter.h',
-  'RCTSurfacePresenterBridgeAdapter.h',
-  '*View.h',
-  '*ViewProtocol.h',
-  '*ComponentView.h',
-  'RCTViewAccessibilityElement.h',
-  'RCTImageManager*.h',
-  'RCTImagePrimitivesConversions.h',
-  'RCTSyncImageManager.h',
-  'CallbackWrapper.h',
-  'LongLivedObject.h',
-  'Bridging.h',
-  'RCTLegacyViewManagerInteropCoordinator.h',
-  'conversions.h',
-  'Float.h',
-  'Geometry.h',
-  'ObjCTimerRegistry.h',
-  'RCTContextContainerHandling.h',
-  'RCTHost*.h',
-  'ReactCdp.h',
-  'RCTInstance.h',
-  'JsArgumentHelpers-inl.h',
-  'RCTJscInstance.h',
-  'RCTJSThreadManager.h',
-];
+/**
+ * Path to the React umbrella header file.
+ * This umbrella header contains ONLY the list of headers that are accessible by Swift, so no C++ construct are allowed in the headers.
+ */
+const REACT_CORE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
+  __dirname,
+  'React-umbrella.h',
+);
+
+/**
+ * Path to the React umbrella header file.
+ * This umbrella header contains ONLY the list of headers that are accessible by Swift, so no C++ construct are allowed in the headers.
+ */
+const RCT_APP_DELEGATE_UMBRELLA_HEADER_PATH /*: string*/ = path.join(
+  __dirname,
+  'React_RCTAppDelegate-umbrella.h',
+);
+
+const RN_MODULEMAP_PATH /*: string*/ = path.join(__dirname, 'module.modulemap');
 
 function buildXCFrameworks(
   rootFolder /*: string */,
@@ -86,7 +57,15 @@ function buildXCFrameworks(
     'React.xcframework',
   );
   // Delete all target platform folders (everything but the Headers and Modules folders)
-  cleanPlatformFolders(outputPath);
+  try {
+    fs.rmSync(outputPath, {recursive: true, force: true});
+  } catch (error) {
+    frameworkLog(
+      `Error deleting folder: ${outputPath}. Check if the folder exists.`,
+      'error',
+    );
+    return;
+  }
 
   // Build the XCFrameworks by using each framework folder as input
   const frameworks = frameworkFolders
@@ -106,31 +85,99 @@ function buildXCFrameworks(
   } catch (error) {
     frameworkLog(
       `Error building XCFramework: ${error.message}. Check if the build was successful.`,
-      'warning',
+      'error',
     );
+    return;
   }
 
-  // Copy header files from the headers folder that we used to build the swift package
-  const outputHeaderFiles = copyHeaderFiles(
-    path.join(buildFolder, 'Headers'),
-    outputPath,
-    true,
-  );
+  // Use the header files from podspecs
+  const podSpecsWithHeaderFiles = getHeaderFilesFromPodspecs(rootFolder);
 
-  // Create the umbrella header file
-  const umbrellaHeaderFile = createUmbrellaHeaderFile(
-    outputPath,
-    outputHeaderFiles,
-  );
+  // Delete header files to the output path
+  const outputHeadersPath = path.join(outputPath, 'Headers');
 
-  // Create the module map file
-  createModuleMapFile(outputPath, umbrellaHeaderFile);
+  // Store umbrella headers keyed on podspec names
+  const umbrellaHeaders /*: {[key: string]: string} */ = {};
+  const copiedHeaderFilesWithPodspecNames /*: {[key: string]: string[]} */ = {};
+
+  // Enumerate podspecs and copy headers, create umbrella headers and module map file
+  Object.keys(podSpecsWithHeaderFiles).forEach(podspec => {
+    const headerFiles = podSpecsWithHeaderFiles[podspec];
+    if (headerFiles.length > 0) {
+      // Get podspec name without directory and extension and make sure it is a valid identifier
+      // by replacing any non-alphanumeric characters with an underscore.
+      const podSpecName = path
+        .basename(podspec, '.podspec')
+        .replace(/[^a-zA-Z0-9_]/g, '_');
+
+      // Create a folder for the podspec in the output headers path
+      const podSpecFolder = path.join(outputHeadersPath, podSpecName);
+      createFolderIfNotExists(podSpecFolder);
+
+      // Copy each header file to the podspec folder
+      copiedHeaderFilesWithPodspecNames[podSpecName] = headerFiles.map(
+        headerFile => {
+          // Header files shall be flattened into the podSpecFoldder:
+          const targetFile = path.join(
+            podSpecFolder,
+            path.basename(headerFile),
+          );
+          fs.copyFileSync(headerFile, targetFile);
+          return targetFile;
+        },
+      );
+      // Create umbrella header file for the podspec
+      const umbrellaHeaderFilename = path.join(
+        podSpecFolder,
+        podSpecName + '-umbrella.h',
+      );
+
+      if (
+        podSpecName === 'React_Core' ||
+        podSpecName === 'React_RCTAppDelegate'
+      ) {
+        if (podSpecName === 'React_Core') {
+          // Copy the React-umbrella.h file to the umbrella header filename
+          fs.copyFileSync(
+            REACT_CORE_UMBRELLA_HEADER_PATH,
+            umbrellaHeaderFilename,
+          );
+        } else {
+          fs.copyFileSync(
+            RCT_APP_DELEGATE_UMBRELLA_HEADER_PATH,
+            umbrellaHeaderFilename,
+          );
+        }
+
+        // Store the umbrella header filename in the umbrellaHeaders object
+        umbrellaHeaders[podSpecName] = umbrellaHeaderFilename;
+      }
+    }
+  });
+
+  // Create the module map file using the header files in podSpecsWithHeaderFiles
+  const moduleMapFile = createModuleMapFile(outputPath);
+  if (!moduleMapFile) {
+    frameworkLog(
+      'Failed to create module map file. The XCFramework may not work correctly. Stopping.',
+      'error',
+    );
+    return;
+  }
+
+  linkArchFolders(
+    outputPath,
+    moduleMapFile,
+    umbrellaHeaders,
+    copiedHeaderFilesWithPodspecNames,
+  );
 
   // Copy Symbols to symbols folder
   const symbolPaths = frameworkFolders.map(framework =>
     path.join(framework, `..`, `..`, `React.framework.dSYM`),
   );
-  console.log('Copying symbols to symbols folder...');
+
+  frameworkLog('Copying symbols to symbols folder...');
   const symbolOutput = path.join(outputPath, '..', 'Symbols');
   symbolPaths.forEach(symbol => {
     const destination = extractDestinationFromPath(symbol);
@@ -144,200 +191,120 @@ function buildXCFrameworks(
   }
 }
 
-function copyHeaderFiles(
-  headersSourceFolder /*: string */,
-  outputPath /*: string */,
-  cleanOutputPath /*: boolean */ = false,
+function linkArchFolders(
+  outputPath /*:string*/,
+  moduleMapFile /*:string*/,
+  umbrellaHeaderFiles /*:{[key: string]: string}*/,
+  outputHeaderFiles /*: {[key: string]: string[]} */,
 ) {
-  // Re-create headers folder in the output XCFramework
-  const headersTargetFolder = path.join(outputPath, 'Headers');
-  if (cleanOutputPath && fs.existsSync(headersTargetFolder)) {
-    // Delete the headers folder if it exists
+  frameworkLog('Linking modules and headers to platform folders...');
+
+  // Enumerate all platform folders in the output path
+  const platformFolders = fs
+    .readdirSync(outputPath)
+    .map(folder => path.join(outputPath, folder))
+    .filter(folder => {
+      return (
+        fs.statSync(folder).isDirectory() &&
+        !folder.endsWith('Headers') &&
+        !folder.endsWith('Modules')
+      );
+    });
+
+  platformFolders.forEach(platformFolder => {
+    // Link the Modules folder into the platform folder
+    const targetModulesFolder = path.join(
+      platformFolder,
+      'React.Framework',
+      'Modules',
+    );
+    createFolderIfNotExists(targetModulesFolder);
+
     try {
-      fs.rmSync(headersTargetFolder, {recursive: true, force: true});
+      fs.linkSync(
+        moduleMapFile,
+        path.join(targetModulesFolder, path.basename(moduleMapFile)),
+      );
     } catch (error) {
       frameworkLog(
-        `Error deleting headers folder: ${error.message}. Check if the folder exists.`,
-        'warning',
+        `Error copying module map file: ${error.message}. Check if the file exists at ${moduleMapFile}.`,
+        'error',
       );
     }
-  }
-  createFolderIfNotExists(headersTargetFolder);
-
-  // Now we can copy headers to the headers folder. We need to create the same folder structure as in the
-  // header files inside the Headers folder:
-  frameworkLog('Copying header files to: ' + headersTargetFolder);
-  const headerFiles = glob.sync('**/*.{h,hpp}', {
-    cwd: headersSourceFolder,
-    absolute: true,
-  });
-
-  const outputHeaderFiles /*: Array<string> */ = [];
-  headerFiles.forEach(headerFile => {
-    // The headerFile is a full path to a header file. We need to get the relative path based on the
-    // rootpath parameter.
-    const relativePath = path.relative(headersSourceFolder, headerFile);
-    const targetFolder = path.join(
-      headersTargetFolder,
-      path.dirname(relativePath),
+    // Copy headers folder into the platform folder
+    const targetHeadersFolder = path.join(
+      platformFolder,
+      'React.Framework',
+      'Headers',
     );
-    const targetFile = path.join(headersTargetFolder, relativePath);
-    createFolderIfNotExists(targetFolder);
-    try {
-      // Check if the file contains c++ code
-      fs.copyFileSync(headerFile, targetFile);
-      outputHeaderFiles.push(targetFile);
-    } catch (error) {
-      frameworkLog(
-        `Error copying header file: ${error.message}. Check if the file exists.`,
-        'warning',
-      );
-    }
+
+    // Link umbrella / header files into the platform folder
+    Object.keys(umbrellaHeaderFiles).forEach(podSpecName => {
+      const umbrellaHeaderFile = umbrellaHeaderFiles[podSpecName];
+
+      // Create the target folder for the umbrella header file
+      const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
+      createFolderIfNotExists(targetPodSpecFolder);
+      // Link the umbrella header file to the target folder
+      try {
+        fs.linkSync(
+          umbrellaHeaderFile,
+          path.join(targetPodSpecFolder, path.basename(umbrellaHeaderFile)),
+        );
+      } catch (error) {
+        frameworkLog(
+          `Error linking umbrella header file: ${error.message}. Check if the file exists.`,
+          'error',
+        );
+      }
+    });
+
+    Object.keys(outputHeaderFiles).forEach(podSpecName => {
+      outputHeaderFiles[podSpecName].forEach(headerFile => {
+        // Create the target folder for the umbrella header file
+        const targetPodSpecFolder = path.join(targetHeadersFolder, podSpecName);
+        createFolderIfNotExists(targetPodSpecFolder);
+        // Link the header file to the target folder - here we might have a few files with the same name
+        // since we're flattening the imports. Yoga has two files - these can be ignored.
+        const targetHeaderFile = path.join(
+          targetPodSpecFolder,
+          path.basename(headerFile),
+        );
+        if (!fs.existsSync(targetHeaderFile)) {
+          try {
+            fs.linkSync(headerFile, targetHeaderFile);
+          } catch (error) {
+            frameworkLog(
+              `Error linking header file: ${error.message}. Check if the file exists.`,
+              'error',
+            );
+          }
+        }
+      });
+    });
   });
-
-  return outputHeaderFiles;
 }
 
-function createUmbrellaHeaderFile(
-  outputPath /*: string */,
-  headerFiles /*: Array<string> */,
-) /*: string */ {
-  // Create the umbrella header file
-  const umbrellaHeaderPath = path.join(outputPath, 'Headers');
-  const umbrellaHeaderFile = path.join(umbrellaHeaderPath, 'React-umbrella.h');
-
-  frameworkLog('Creating umbrella header file: ' + umbrellaHeaderFile);
-
-  // Create the umbrella header file
-  let umbrellaHeader = `
-// Generated by React Native
-// Do not edit this file directly. It is generated by the React Native build process.
-
-#ifdef __OBJC__
-#import <UIKit/UIKit.h>
-#else
-#ifndef FOUNDATION_EXPORT
-#if defined(__cplusplus)
-#define FOUNDATION_EXPORT extern "C"
-#else
-#define FOUNDATION_EXPORT extern
-#endif
-#endif
-#endif
-
-`;
-  headerFiles.forEach(headerFile => {
-    if (!isCppHeaderFile(headerFile) && !isHeaderFileIgnored(headerFile)) {
-      // The headerFile is a full path to a header file. We need to get the relative path based on the
-      // rootpath parameter.
-      const relativePath = path.relative(umbrellaHeaderPath, headerFile);
-      umbrellaHeader += `#import "${relativePath}"\n`;
-    }
-  });
-  umbrellaHeader += '\n';
-
-  // Write out the umbrella header file
-  try {
-    fs.writeFileSync(umbrellaHeaderFile, umbrellaHeader);
-  } catch (error) {
-    frameworkLog(
-      `Error creating umbrella header file: ${error.message}. Check if the file exists.`,
-      'warning',
-    );
-  }
-
-  return umbrellaHeaderFile;
-}
-
-const cppHeaderRegex = /(#include|#import)\s*<[^.>]+>|\bnamespace\s+[\w:]+::/;
-
-function isCppHeaderFile(headerFilePath /*: string */) /*: boolean */ {
-  // Check if there is a cpp or mm file with the same name
-  const fileName = path.basename(headerFilePath, path.extname(headerFilePath));
-  const dirName = path.dirname(headerFilePath);
-
-  const checkFileExists = (extension /*: string */) /*: boolean */ => {
-    const cppFilePath = path.join(dirName, fileName + extension);
-    if (fs.existsSync(cppFilePath)) {
-      const fileStat = fs.statSync(cppFilePath);
-      return fileStat.isFile();
-    }
-    return false;
-  };
-  if (checkFileExists('.cpp') || checkFileExists('.mm')) {
-    // If there is a cpp or mm file with the same name, we assume it is a C++ header file
-    return true;
-  }
-  // Check if the file contains c++ code
-  const fileContent = fs.readFileSync(headerFilePath, 'utf8');
-  return cppHeaderRegex.test(fileContent);
-}
-
-function isHeaderFileIgnored(headerFile /*: string */) /*: boolean */ {
-  // Check if the header file is in the ignore list
-  return HEADERFILE_IGNORE_LIST.some(pattern =>
-    // Glob match the header file name to the ignore list
-    glob
-      .sync(pattern, {
-        cwd: path.dirname(headerFile),
-        absolute: true,
-      })
-      .some(ignoredHeaderFile => {
-        return path.basename(headerFile) === path.basename(ignoredHeaderFile);
-      }),
-  );
-}
-
-function createModuleMapFile(
-  outputPath /*: string */,
-  umbrellaPath /*: string */,
-) {
+function createModuleMapFile(outputPath /*: string */) {
   // Create/get the module map folder
   const moduleMapFolder = path.join(outputPath, 'Modules');
   createFolderIfNotExists(moduleMapFolder);
 
   // Create the module map file
   const moduleMapFile = path.join(moduleMapFolder, 'module.modulemap');
+
   frameworkLog('Creating module map file: ' + moduleMapFile);
-  const moduleMapContent = `module React {
-    umbrella header "../Headers/${path.basename(umbrellaPath)}"
-    export *
-    module * { export * }
-}`;
 
   try {
-    fs.writeFileSync(moduleMapFile, moduleMapContent);
+    fs.copyFileSync(RN_MODULEMAP_PATH, moduleMapFile);
+    return moduleMapFile;
   } catch (error) {
     frameworkLog(
       `Error creating module map file: ${error.message}. Check if the file exists.`,
-      'warning',
+      'error',
     );
+    return null;
   }
-}
-function cleanPlatformFolders(outputPath /*:string*/) {
-  if (!fs.existsSync(outputPath)) {
-    return;
-  }
-  const targetPlatformFolders = fs.readdirSync(outputPath).filter(folder => {
-    const folderPath = path.join(outputPath, folder);
-    return (
-      fs.statSync(folderPath).isDirectory() &&
-      folder !== 'Headers' &&
-      folder !== 'Modules'
-    );
-  });
-  targetPlatformFolders.forEach(folder => {
-    const folderPath = path.join(outputPath, folder);
-    frameworkLog('Deleting folder: ' + folderPath);
-    try {
-      fs.rmSync(folderPath, {recursive: true, force: true});
-    } catch (error) {
-      frameworkLog(
-        `Error deleting folder: ${folderPath}. Check if the folder exists.`,
-        'warning',
-      );
-    }
-  });
 }
 
 function extractDestinationFromPath(symbolPath /*: string */) /*: string */ {
@@ -362,7 +329,7 @@ function signXCFramework(
   identity /*: string */,
   xcframeworkPath /*: string */,
 ) {
-  console.log('Signing XCFramework...');
+  frameworkLog('Signing XCFramework...');
   const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
   execSync(command, {stdio: 'inherit'});
 }

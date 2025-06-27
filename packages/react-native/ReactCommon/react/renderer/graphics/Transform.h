@@ -91,13 +91,6 @@ struct Transform {
   std::array<Float, 16> matrix{
       {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
 
-  /**
-   * For debugging only. Prints out the matrix.
-   */
-#if RN_DEBUG_STRING_CONVERTIBLE
-  static void print(const Transform& t, std::string prefix);
-#endif
-
   /*
    * Given a TransformOperation, return the proper transform.
    */

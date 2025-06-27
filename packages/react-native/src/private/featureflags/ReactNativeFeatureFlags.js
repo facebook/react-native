@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2d919062947b9901b37a01cbf5c8670>>
+ * @generated SignedSource<<cc5f6693461c87f75b2cad6b38c4d896>>
  * @flow strict
  * @noformat
  */
@@ -53,6 +53,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
@@ -70,7 +71,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
@@ -88,6 +88,8 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
+  enableVirtualViewRenderState: Getter<boolean>,
+  enableVirtualViewWindowFocusDetection: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
@@ -196,6 +198,10 @@ export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
+ * Removes JS sync at end of native animation
+ */
+export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
+/**
  * Disable sync dispatch on the main queue on iOS
  */
 export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
@@ -264,10 +270,6 @@ export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeF
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
- */
-export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', true);
-/**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
 export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnAndroid', false);
@@ -335,6 +337,14 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  * Enables VirtualView debug features such as logging and overlays.
  */
 export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagGetter('enableVirtualViewDebugFeatures', false);
+/**
+ * Enables reading render state when dispatching VirtualView events.
+ */
+export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGetter('enableVirtualViewRenderState', false);
+/**
+ * Enables window focus detection for prioritizing VirtualView events.
+ */
+export const enableVirtualViewWindowFocusDetection: Getter<boolean> = createNativeFlagGetter('enableVirtualViewWindowFocusDetection', false);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */

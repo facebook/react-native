@@ -56,11 +56,6 @@ internal object ReactSoftExceptionLogger {
   }
 
   @JvmStatic
-  fun clearListeners(): Unit {
-    listeners.clear()
-  }
-
-  @JvmStatic
   fun logSoftExceptionVerbose(@CategoryMode category: String, cause: Throwable): Unit {
     logSoftException("${category}|${cause.javaClass.simpleName}:${cause.message}", cause)
   }

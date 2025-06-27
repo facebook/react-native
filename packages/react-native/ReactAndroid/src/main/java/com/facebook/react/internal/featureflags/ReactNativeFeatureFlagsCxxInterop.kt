@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6ddd7c2e829c427e7d6b07bc588cd8c>>
+ * @generated SignedSource<<27e8fa8139901c1decaba5bfcbced221>>
  */
 
 /**
@@ -33,6 +33,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMainQueueSyncDispatchIOS(): Boolean
 
@@ -68,8 +70,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableIntersectionObserverEventLoopIntegration(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
@@ -103,6 +103,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewDebugFeatures(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableVirtualViewWindowFocusDetection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

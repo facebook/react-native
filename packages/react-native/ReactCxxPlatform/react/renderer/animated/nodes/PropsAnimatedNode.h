@@ -43,7 +43,7 @@ class PropsAnimatedNode final : public AnimatedNode {
  private:
   std::mutex propsMutex_;
   folly::dynamic props_;
-  const bool layoutStyleUpdated_;
+  bool layoutStyleUpdated_{false};
 
   Tag connectedViewTag_{animated::undefinedAnimatedNodeIdentifier};
 };

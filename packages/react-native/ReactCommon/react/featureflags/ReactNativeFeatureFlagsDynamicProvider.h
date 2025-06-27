@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e0fefd464f6f7f693eaad1b72441d1a>>
+ * @generated SignedSource<<d687ab3e4ed98a83bca6b2a3bd65cd84>>
  */
 
 /**
@@ -70,6 +70,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedEnabled();
+  }
+
+  bool cxxNativeAnimatedRemoveJsSync() override {
+    auto value = values_["cxxNativeAnimatedRemoveJsSync"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
   }
 
   bool disableMainQueueSyncDispatchIOS() override {
@@ -225,15 +234,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
   }
 
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    auto value = values_["enableIntersectionObserverEventLoopIntegration"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableIntersectionObserverEventLoopIntegration();
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     auto value = values_["enableLayoutAnimationsOnAndroid"];
     if (!value.isNull()) {
@@ -385,6 +385,24 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableVirtualViewDebugFeatures();
+  }
+
+  bool enableVirtualViewRenderState() override {
+    auto value = values_["enableVirtualViewRenderState"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableVirtualViewRenderState();
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    auto value = values_["enableVirtualViewWindowFocusDetection"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableVirtualViewWindowFocusDetection();
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

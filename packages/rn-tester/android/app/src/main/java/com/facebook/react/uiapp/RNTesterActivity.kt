@@ -68,7 +68,7 @@ internal class RNTesterActivity : ReactActivity() {
 
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
-    getReactDelegate()?.getReactRootView()?.let { rootView ->
+    getReactDelegate()?.reactRootView?.let { rootView ->
       val insetsType: Int =
           WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
 

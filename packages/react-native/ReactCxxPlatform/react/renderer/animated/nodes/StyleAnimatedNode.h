@@ -22,13 +22,13 @@ class StyleAnimatedNode final : public AnimatedNode {
       Tag tag,
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
-  void update() override;
+  void collectViewUpdates(folly::dynamic& props);
 
-  const folly::dynamic& getProps() const noexcept {
-    return props_;
+  bool isLayoutStyleUpdated() const noexcept {
+    return layoutStyleUpdated_;
   }
 
  private:
-  folly::dynamic props_;
+  bool layoutStyleUpdated_;
 };
 } // namespace facebook::react

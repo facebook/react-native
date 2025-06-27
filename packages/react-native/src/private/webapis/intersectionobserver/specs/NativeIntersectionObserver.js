@@ -31,7 +31,7 @@ export type NativeIntersectionObserverObserveOptions = {
   rootThresholds?: ?$ReadOnlyArray<number>,
 };
 
-export type NativeIntersectionObserverToken = mixed;
+export opaque type NativeIntersectionObserverToken = mixed;
 
 export interface Spec extends TurboModule {
   // TODO(T223605846): Remove legacy observe method

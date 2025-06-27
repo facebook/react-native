@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<892db232156970e8241d1f1ddde3a745>>
+ * @generated SignedSource<<fce6841e89beec5be32b76fc0941ef95>>
  */
 
 /**
@@ -28,6 +28,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
 
@@ -63,8 +65,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip public fun enableIntersectionObserverEventLoopIntegration(): Boolean
-
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
@@ -98,6 +98,10 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
 
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 

@@ -42,11 +42,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         "jsijniprofiler" -> {
           "hermestooling"
         }
-        "jscexecutor",
-        "jscruntime",
-        "jscinstance" -> {
-          "jsctooling"
-        }
         else -> input
       }
 
@@ -56,10 +51,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
       "hermes_executor" -> libhermes_executor_so()
       "hermesinstancejni" -> libhermesinstancejni_so()
       "hermestooling" -> libhermestooling_so()
-      "jscexecutor" -> libjscexecutor_so()
-      "jscinstance" -> libjscinstance_so()
-      "jscruntime" -> libjscruntime_so()
-      "jsctooling" -> libjsctooling_so()
       "jsijniprofiler" -> libjsijniprofiler_so()
       "jsinspector" -> libjsinspector_so()
       "mapbufferjni" -> libmapbufferjni_so()
@@ -84,14 +75,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
   public external fun libhermesinstancejni_so(): Int
 
   public external fun libhermestooling_so(): Int
-
-  public external fun libjscexecutor_so(): Int
-
-  public external fun libjscinstance_so(): Int
-
-  public external fun libjscruntime_so(): Int
-
-  public external fun libjsctooling_so(): Int
 
   public external fun libjsijniprofiler_so(): Int
 

@@ -22,7 +22,7 @@
     "dtsRollup": {
       "enabled": true,
       "untrimmedFilePath": "",
-      "alphaTrimmedFilePath": "<projectFolder>/dist/api-rollup.d.ts"
+      "alphaTrimmedFilePath": "<projectFolder>/dist/ReactNativeApi.d.ts"
     },
     "tsdocMetadata": {
       "enabled": false

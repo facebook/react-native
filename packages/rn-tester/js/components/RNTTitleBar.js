@@ -11,7 +11,7 @@
 import RNTesterDocumentationURL from './RNTesterDocumentationURL';
 import {type RNTesterTheme} from './RNTesterTheme';
 import * as React from 'react';
-import {Platform, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View} from 'react-native';
 
 const HeaderIOS = ({
   children,
@@ -25,20 +25,16 @@ const HeaderIOS = ({
   theme: RNTesterTheme,
 }) => {
   return (
-    <SafeAreaView>
-      <View
-        style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
-        <View style={styles.headerCenter}>
-          <Text style={{...styles.title, color: theme.LabelColor}}>
-            {title}
-          </Text>
-          {documentationURL && (
-            <RNTesterDocumentationURL documentationURL={documentationURL} />
-          )}
-        </View>
-        {children != null && <View>{children}</View>}
+    <View
+      style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
+      <View style={styles.headerCenter}>
+        <Text style={{...styles.title, color: theme.LabelColor}}>{title}</Text>
+        {documentationURL && (
+          <RNTesterDocumentationURL documentationURL={documentationURL} />
+        )}
       </View>
-    </SafeAreaView>
+      {children != null && <View>{children}</View>}
+    </View>
   );
 };
 
@@ -54,17 +50,15 @@ const HeaderAndroid = ({
   theme: RNTesterTheme,
 }) => {
   return (
-    <SafeAreaView>
-      <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
-        <View style={styles.toolbarCenter}>
-          <Text style={[styles.title, {color: theme.LabelColor}]}>{title}</Text>
-          {documentationURL && (
-            <RNTesterDocumentationURL documentationURL={documentationURL} />
-          )}
-        </View>
-        {children != null && <View>{children}</View>}
+    <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
+      <View style={styles.toolbarCenter}>
+        <Text style={[styles.title, {color: theme.LabelColor}]}>{title}</Text>
+        {documentationURL && (
+          <RNTesterDocumentationURL documentationURL={documentationURL} />
+        )}
       </View>
-    </SafeAreaView>
+      {children != null && <View>{children}</View>}
+    </View>
   );
 };
 
@@ -104,6 +98,7 @@ const styles = StyleSheet.create({
   header: {
     height: 40,
     flexDirection: 'row',
+    marginTop: Platform.OS === 'ios' ? 50 : 0,
   },
   headerCenter: {
     flex: 1,

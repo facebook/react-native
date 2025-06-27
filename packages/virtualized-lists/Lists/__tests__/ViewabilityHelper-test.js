@@ -8,13 +8,15 @@
  * @format
  */
 
+import type {CellMetricProps} from '../ListMetricsAggregator';
+
 import ViewabilityHelper from '../ViewabilityHelper';
 
 let rowFrames: ?{
   [string]: $ReadOnly<{height: number, y: number}>,
 };
 let data;
-const props = {
+const props: CellMetricProps = {
   data,
   getItem: () => {
     throw new Error('Unexpected call to `getItem`.');
@@ -486,7 +488,7 @@ describe('onUpdate', function () {
     // This test assures we round down the calculations of the item cell layout
     // to avoid cases of imprecison when measuring layout
     const helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
-    const testProps = {
+    const testProps: CellMetricProps = {
       getItem: () => {
         throw new Error('Unexpected call to `getItem`.');
       },

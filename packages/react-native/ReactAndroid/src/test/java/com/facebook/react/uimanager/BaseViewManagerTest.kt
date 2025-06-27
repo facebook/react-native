@@ -93,4 +93,21 @@ class BaseViewManagerTest {
     view.onFocusChangeListener.onFocusChange(view, true)
     verify(originalFocusListener, times(1)).onFocusChange(view, true)
   }
+
+  @Test
+  fun testDroppingViewInstanceRestoresFocusChangeListener() {
+    val originalFocusListener = mock<OnFocusChangeListener>()
+    view.onFocusChangeListener = originalFocusListener
+    viewManager.addEventEmitters(themedReactContext, view)
+    Assertions.assertThat(view.onFocusChangeListener).isNotEqualTo(originalFocusListener)
+
+    view.onFocusChangeListener.onFocusChange(view, true)
+    verify(originalFocusListener, times(1)).onFocusChange(view, true)
+    Assertions.assertThat(originalFocusListener).isNotEqualTo(view.onFocusChangeListener)
+
+    viewManager.onDropViewInstance(view)
+    view.onFocusChangeListener.onFocusChange(view, true)
+    verify(originalFocusListener, times(2)).onFocusChange(view, true)
+    Assertions.assertThat(originalFocusListener).isEqualTo(view.onFocusChangeListener)
+  }
 }

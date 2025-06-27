@@ -37,11 +37,12 @@ internal class LongStreamingStats {
     }
 
     len++
-    if (len == 1) {
-      average = n.toDouble()
-    } else {
-      average = (average / (len / (len - 1))) + (n / len)
-    }
+    average =
+        if (len == 1) {
+          n.toDouble()
+        } else {
+          (average / (len / (len - 1))) + (n / len)
+        }
 
     max = (if (n > max) n else max)
   }

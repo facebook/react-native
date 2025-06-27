@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65d21b40786d625e15440e7aeb70e0ee>>
+ * @generated SignedSource<<95e236c60bfd2353e91b8ed025040cac>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool animatedShouldSignalBatch();
   bool cxxNativeAnimatedEnabled();
+  bool cxxNativeAnimatedRemoveJsSync();
   bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
@@ -52,7 +53,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
-  bool enableIntersectionObserverEventLoopIntegration();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueCoordinatorOnIOS();
@@ -70,6 +70,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool enableVirtualViewDebugFeatures();
+  bool enableVirtualViewRenderState();
+  bool enableVirtualViewWindowFocusDetection();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
@@ -95,11 +97,12 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 52> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 54> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
+  std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
@@ -117,7 +120,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
-  std::atomic<std::optional<bool>> enableIntersectionObserverEventLoopIntegration_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueCoordinatorOnIOS_;
@@ -135,6 +137,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
+  std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
+  std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;

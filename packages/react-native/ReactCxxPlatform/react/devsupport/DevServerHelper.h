@@ -16,13 +16,6 @@
 
 namespace facebook::react {
 
-namespace {
-
-constexpr std::string_view DEFAULT_DEV_SERVER_HOST = "localhost";
-constexpr uint32_t DEFAULT_DEV_SERVER_PORT = 8081;
-
-} // namespace
-
 class DevServerHelper {
  public:
   enum class DownloadProgressStatus : short { STARTED, FAILED, FINISHED };
@@ -31,6 +24,8 @@ class DevServerHelper {
   DevServerHelper(
       std::string appId,
       std::string deviceName,
+      std::string devServerHost,
+      uint32_t devServerPort,
       const HttpClientFactory& httpClientFactory,
       JavaScriptModuleCallback javaScriptModuleCallback) noexcept;
   ~DevServerHelper() noexcept = default;
@@ -56,6 +51,8 @@ class DevServerHelper {
  private:
   std::string appId_;
   std::string deviceName_;
+  std::string devServerHost_;
+  uint32_t devServerPort_;
   std::unique_ptr<IHttpClient> httpClient_;
   JavaScriptModuleCallback javaScriptModuleCallback_;
   std::string deviceId_;

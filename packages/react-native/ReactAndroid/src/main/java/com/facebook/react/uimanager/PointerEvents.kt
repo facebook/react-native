@@ -29,13 +29,12 @@ public enum class PointerEvents {
   public companion object {
 
     @JvmStatic
-    public fun parsePointerEvents(pointerEventsStr: String?): PointerEvents {
-      if (pointerEventsStr == null) {
-        return AUTO
-      } else {
-        return PointerEvents.valueOf(pointerEventsStr.uppercase(Locale.US).replace("-", "_"))
-      }
-    }
+    public fun parsePointerEvents(pointerEventsStr: String?): PointerEvents =
+        if (pointerEventsStr == null) {
+          AUTO
+        } else {
+          PointerEvents.valueOf(pointerEventsStr.uppercase(Locale.US).replace("-", "_"))
+        }
 
     @JvmStatic
     public fun canBeTouchTarget(pointerEvents: PointerEvents): Boolean {

@@ -357,15 +357,6 @@ SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
 }
 #endif
 
-static folly::dynamic toDynamic(
-    const std::vector<std::string>& acceptDragAndDropTypes) {
-  folly::dynamic acceptDragAndDropTypesArray = folly::dynamic::array();
-  for (const auto& acceptDragAndDropType : acceptDragAndDropTypes) {
-    acceptDragAndDropTypesArray.push_back(acceptDragAndDropType);
-  }
-  return acceptDragAndDropTypesArray;
-}
-
 ComponentName AndroidTextInputProps::getDiffPropsImplementationTarget() const {
   return "TextInput";
 }

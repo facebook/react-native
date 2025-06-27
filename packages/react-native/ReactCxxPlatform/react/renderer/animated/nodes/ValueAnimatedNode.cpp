@@ -53,8 +53,6 @@ double ValueAnimatedNode::getOffset() const noexcept {
 bool ValueAnimatedNode::setOffset(double offset) noexcept {
   if (offset_ != offset) {
     offset_ = offset;
-
-    onValueUpdate();
     return true;
   }
   return true;
@@ -65,13 +63,13 @@ double ValueAnimatedNode::getValue() const noexcept {
 }
 
 void ValueAnimatedNode::flattenOffset() noexcept {
-  setRawValue(value_ + getOffset());
-  setOffset(0.0f);
+  value_ = value_ + offset_;
+  offset_ = 0;
 }
 
 void ValueAnimatedNode::extractOffset() noexcept {
-  setOffset(value_ + getOffset());
-  setRawValue(0.0f);
+  offset_ += value_;
+  value_ = 0;
 }
 
 void ValueAnimatedNode::onValueUpdate() noexcept {

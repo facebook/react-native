@@ -7,7 +7,7 @@
 
 #import <React/RCTImageUtils.h>
 
-#import <tgmath.h>
+#import <cmath>
 
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/UTCoreTypes.h>

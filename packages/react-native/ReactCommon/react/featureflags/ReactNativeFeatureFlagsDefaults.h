@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e1407d3b1acb945f6991c0cdbb13eebc>>
+ * @generated SignedSource<<434949abb158475ec4304517eb5c4eb8>>
  */
 
 /**
@@ -36,6 +36,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedEnabled() override {
+    return false;
+  }
+
+  bool cxxNativeAnimatedRemoveJsSync() override {
     return false;
   }
 
@@ -107,10 +111,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    return true;
-  }
-
   bool enableLayoutAnimationsOnAndroid() override {
     return false;
   }
@@ -176,6 +176,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableVirtualViewDebugFeatures() override {
+    return false;
+  }
+
+  bool enableVirtualViewRenderState() override {
+    return false;
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
     return false;
   }
 

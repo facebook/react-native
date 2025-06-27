@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<96d8201a39879e04c384303d1087a0b0>>
+ * @generated SignedSource<<ad9c01a715c11edb67626cd3e801144d>>
  */
 
 /**
@@ -36,6 +36,10 @@ bool ReactNativeFeatureFlags::animatedShouldSignalBatch() {
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
   return getAccessor().cxxNativeAnimatedEnabled();
+}
+
+bool ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() {
+  return getAccessor().cxxNativeAnimatedRemoveJsSync();
 }
 
 bool ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS() {
@@ -106,10 +110,6 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
 }
 
-bool ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration() {
-  return getAccessor().enableIntersectionObserverEventLoopIntegration();
-}
-
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
   return getAccessor().enableLayoutAnimationsOnAndroid();
 }
@@ -176,6 +176,14 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
 
 bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
   return getAccessor().enableVirtualViewDebugFeatures();
+}
+
+bool ReactNativeFeatureFlags::enableVirtualViewRenderState() {
+  return getAccessor().enableVirtualViewRenderState();
+}
+
+bool ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection() {
+  return getAccessor().enableVirtualViewWindowFocusDetection();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

@@ -108,7 +108,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    * @param url the URL to open
    */
   override fun openURL(url: String?, promise: Promise) {
-    if (url == null || url.isEmpty()) {
+    if (url.isNullOrEmpty()) {
       promise.reject(JSApplicationIllegalArgumentException("Invalid URL: $url"))
       return
     }
@@ -131,7 +131,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    * @param promise a promise that is always resolved with a boolean argument
    */
   override fun canOpenURL(url: String?, promise: Promise) {
-    if (url == null || url.isEmpty()) {
+    if (url.isNullOrEmpty()) {
       promise.reject(JSApplicationIllegalArgumentException("Invalid URL: $url"))
       return
     }
@@ -189,7 +189,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    * @param extras An array of extras [{ String, String | Number | Boolean }]
    */
   override fun sendIntent(action: String?, extras: ReadableArray?, promise: Promise) {
-    if (action == null || action.isEmpty()) {
+    if (action.isNullOrEmpty()) {
       promise.reject(JSApplicationIllegalArgumentException("Invalid Action: $action."))
       return
     }
@@ -214,7 +214,6 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
             ReadableType.String -> {
               intent.putExtra(name, map.getString(EXTRA_MAP_KEY_FOR_VALUE))
             }
-
             ReadableType.Number -> {
               // We cannot know from JS if is an Integer or Double
               // See: https://github.com/facebook/react-native/issues/4141
@@ -222,11 +221,9 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
               val number = map.getDouble(EXTRA_MAP_KEY_FOR_VALUE)
               intent.putExtra(name, number)
             }
-
             ReadableType.Boolean -> {
               intent.putExtra(name, map.getBoolean(EXTRA_MAP_KEY_FOR_VALUE))
             }
-
             else -> {
               promise.reject(
                   JSApplicationIllegalArgumentException("Extra type for $name not supported."))

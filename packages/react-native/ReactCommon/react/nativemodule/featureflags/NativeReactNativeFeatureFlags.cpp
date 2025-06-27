@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56704140bc822ee33a8686ad3e132b41>>
+ * @generated SignedSource<<d7f41c584e2e9b862f0eedf3e963cab1>>
  */
 
 /**
@@ -57,6 +57,11 @@ bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
+}
+
+bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
 }
 
 bool NativeReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS(
@@ -144,11 +149,6 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool NativeReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration();
-}
-
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -232,6 +232,16 @@ bool NativeReactNativeFeatureFlags::enableViewRecyclingForView(
 bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
+}
+
+bool NativeReactNativeFeatureFlags::enableVirtualViewRenderState(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
+}
+
+bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(

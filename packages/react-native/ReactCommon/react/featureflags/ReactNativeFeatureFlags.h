@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25b3585f3648fe156fab4a5abbf32e60>>
+ * @generated SignedSource<<b50329bf9cb735978e08c721fc7c29ce>>
  */
 
 /**
@@ -53,6 +53,11 @@ class ReactNativeFeatureFlags {
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
+
+  /**
+   * Removes JS sync at end of native animation
+   */
+  RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
 
   /**
    * Disable sync dispatch on the main queue on iOS
@@ -140,11 +145,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
-   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
-   */
-  RN_EXPORT static bool enableIntersectionObserverEventLoopIntegration();
-
-  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
@@ -228,6 +228,16 @@ class ReactNativeFeatureFlags {
    * Enables VirtualView debug features such as logging and overlays.
    */
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
+
+  /**
+   * Enables reading render state when dispatching VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewRenderState();
+
+  /**
+   * Enables window focus detection for prioritizing VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

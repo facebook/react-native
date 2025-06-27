@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8cb9eb082005be480c39272ffc7dde03>>
+ * @generated SignedSource<<166a7cc18f83861c6c4d7f96a55c5843>>
  */
 
 /**
@@ -23,6 +23,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var commonTestFlagCache: Boolean? = null
   private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
+  private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
@@ -40,7 +41,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
-  private var enableIntersectionObserverEventLoopIntegrationCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
@@ -58,6 +58,8 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
+  private var enableVirtualViewRenderStateCache: Boolean? = null
+  private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
@@ -96,6 +98,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedEnabled()
       cxxNativeAnimatedEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun cxxNativeAnimatedRemoveJsSync(): Boolean {
+    var cached = cxxNativeAnimatedRemoveJsSyncCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.cxxNativeAnimatedRemoveJsSync()
+      cxxNativeAnimatedRemoveJsSyncCache = cached
     }
     return cached
   }
@@ -253,15 +264,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableIntersectionObserverEventLoopIntegration(): Boolean {
-    var cached = enableIntersectionObserverEventLoopIntegrationCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableIntersectionObserverEventLoopIntegration()
-      enableIntersectionObserverEventLoopIntegrationCache = cached
-    }
-    return cached
-  }
-
   override fun enableLayoutAnimationsOnAndroid(): Boolean {
     var cached = enableLayoutAnimationsOnAndroidCache
     if (cached == null) {
@@ -411,6 +413,24 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewDebugFeatures()
       enableVirtualViewDebugFeaturesCache = cached
+    }
+    return cached
+  }
+
+  override fun enableVirtualViewRenderState(): Boolean {
+    var cached = enableVirtualViewRenderStateCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewRenderState()
+      enableVirtualViewRenderStateCache = cached
+    }
+    return cached
+  }
+
+  override fun enableVirtualViewWindowFocusDetection(): Boolean {
+    var cached = enableVirtualViewWindowFocusDetectionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewWindowFocusDetection()
+      enableVirtualViewWindowFocusDetectionCache = cached
     }
     return cached
   }

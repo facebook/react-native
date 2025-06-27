@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<898d5acbbe56a09ea10e9423accd69fd>>
+ * @generated SignedSource<<122fa0ad54c810e7fa844309a9b4fbd6>>
  */
 
 /**
@@ -42,6 +42,8 @@ class NativeReactNativeFeatureFlags
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
+  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
+
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
@@ -76,8 +78,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
-  bool enableIntersectionObserverEventLoopIntegration(jsi::Runtime& runtime);
-
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
@@ -111,6 +111,10 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
+
+  bool enableVirtualViewRenderState(jsi::Runtime& runtime);
+
+  bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 

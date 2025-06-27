@@ -136,7 +136,7 @@ export type EventConfig<T> = {
   useNativeDriver: boolean,
   platformConfig?: PlatformConfig,
 };
-declare export function attachNativeEvent(
+declare export function attachNativeEventImpl(
   viewRef: any,
   eventName: string,
   argMapping: $ReadOnlyArray<?Mapping>,
@@ -166,7 +166,10 @@ declare export default {
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js.flow 1`] = `
-"export { default as FlatList } from \\"./components/AnimatedFlatList\\";
+"export type { DecayAnimationConfig } from \\"./animations/DecayAnimation\\";
+export type { SpringAnimationConfig } from \\"./animations/SpringAnimation\\";
+export type { TimingAnimationConfig } from \\"./animations/TimingAnimation\\";
+export { default as FlatList } from \\"./components/AnimatedFlatList\\";
 export { default as Image } from \\"./components/AnimatedImage\\";
 export { default as ScrollView } from \\"./components/AnimatedScrollView\\";
 export { default as SectionList } from \\"./components/AnimatedSectionList\\";
@@ -185,6 +188,7 @@ export type { default as AnimatedNode } from \\"./nodes/AnimatedNode\\";
 export type { default as AnimatedAddition } from \\"./nodes/AnimatedAddition\\";
 export type { default as AnimatedDiffClamp } from \\"./nodes/AnimatedDiffClamp\\";
 export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
+export type { InterpolationConfigType as InterpolationConfig } from \\"./nodes/AnimatedInterpolation\\";
 export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
 export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
 export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
@@ -222,53 +226,53 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   reset: () => void,
   ...
 };
-declare const add: (
+declare const addImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedAddition;
-declare const subtract: (
+declare const subtractImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedSubtraction;
-declare const divide: (
+declare const divideImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedDivision;
-declare const multiply: (
+declare const multiplyImpl: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedMultiplication;
-declare const modulo: (a: AnimatedNode, modulus: number) => AnimatedModulo;
-declare const diffClamp: (
+declare const moduloImpl: (a: AnimatedNode, modulus: number) => AnimatedModulo;
+declare const diffClampImpl: (
   a: AnimatedNode,
   min: number,
   max: number
 ) => AnimatedDiffClamp;
-declare const spring: (
+declare const springImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig
 ) => CompositeAnimation;
-declare const timing: (
+declare const timingImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig
 ) => CompositeAnimation;
-declare const decay: (
+declare const decayImpl: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig
 ) => CompositeAnimation;
-declare const sequence: (
+declare const sequenceImpl: (
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
 type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-declare const parallel: (
+declare const parallelImpl: (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig
 ) => CompositeAnimation;
-declare const delay: (time: number) => CompositeAnimation;
-declare const stagger: (
+declare const delayImpl: (time: number) => CompositeAnimation;
+declare const staggerImpl: (
   time: number,
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
@@ -277,19 +281,19 @@ type LoopAnimationConfig = {
   resetBeforeIteration?: boolean,
   ...
 };
-declare const loop: (
+declare const loopImpl: (
   animation: CompositeAnimation,
   $$PARAM_1$$?: LoopAnimationConfig
 ) => CompositeAnimation;
-declare function forkEvent(
+declare function forkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): AnimatedEvent | Function;
-declare function unforkEvent(
+declare function unforkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: <T>(
+declare const eventImpl: <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig<T>
 ) => any;
@@ -309,25 +313,25 @@ declare export default {
   Color: typeof AnimatedColor,
   Interpolation: typeof AnimatedInterpolation,
   Node: typeof AnimatedNode,
-  decay: typeof decay,
-  timing: typeof timing,
-  spring: typeof spring,
-  add: typeof add,
-  subtract: typeof subtract,
-  divide: typeof divide,
-  multiply: typeof multiply,
-  modulo: typeof modulo,
-  diffClamp: typeof diffClamp,
-  delay: typeof delay,
-  sequence: typeof sequence,
-  parallel: typeof parallel,
-  stagger: typeof stagger,
-  loop: typeof loop,
-  event: typeof event,
+  decay: typeof decayImpl,
+  timing: typeof timingImpl,
+  spring: typeof springImpl,
+  add: typeof addImpl,
+  subtract: typeof subtractImpl,
+  divide: typeof divideImpl,
+  multiply: typeof multiplyImpl,
+  modulo: typeof moduloImpl,
+  diffClamp: typeof diffClampImpl,
+  delay: typeof delayImpl,
+  sequence: typeof sequenceImpl,
+  parallel: typeof parallelImpl,
+  stagger: typeof staggerImpl,
+  loop: typeof loopImpl,
+  event: typeof eventImpl,
   createAnimatedComponent: typeof createAnimatedComponent,
-  attachNativeEvent: typeof attachNativeEvent,
-  forkEvent: typeof forkEvent,
-  unforkEvent: typeof unforkEvent,
+  attachNativeEvent: typeof attachNativeEventImpl,
+  forkEvent: typeof forkEventImpl,
+  unforkEvent: typeof unforkEventImpl,
   Event: typeof AnimatedEvent,
 };
 "
@@ -628,10 +632,9 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedScrollView.js 1`] = `
-"type AnimatedScrollViewProps = React.ElementConfig<typeof ScrollView>;
-type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
+"type AnimatedScrollViewInstance = React.ElementRef<typeof ScrollView>;
 declare const AnimatedScrollView: AnimatedComponentType<
-  AnimatedScrollViewProps,
+  ScrollViewProps,
   AnimatedScrollViewInstance,
 >;
 declare export default typeof AnimatedScrollView;
@@ -648,7 +651,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedText.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof Text>,
+  TextProps,
   React.ElementRef<typeof Text>,
 >;
 "
@@ -656,7 +659,7 @@ exports[`public API should not change unintentionally Libraries/Animated/compone
 
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedView.js 1`] = `
 "declare export default AnimatedComponentType<
-  React.ElementConfig<typeof View>,
+  ViewProps,
   React.ElementRef<typeof View>,
 >;
 "
@@ -695,9 +698,7 @@ type NonAnimatedProps =
   | \\"disabled\\"
   | \\"accessibilityLabel\\";
 type PassThroughProps = $ReadOnly<{
-  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-    typeof View,
-  > | null,
+  passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 export type AnimatedProps<Props: { ... }> = {
   [K in keyof Props]: K extends NonAnimatedProps
@@ -1538,10 +1539,10 @@ exports[`public API should not change unintentionally Libraries/Components/Butto
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
 }>;
-declare const Touchable:
+declare const NativeTouchable:
   | typeof TouchableNativeFeedback
   | typeof TouchableOpacity;
-type ButtonRef = React.ElementRef<typeof Touchable>;
+type ButtonRef = React.ElementRef<typeof NativeTouchable>;
 declare const Button: component(
   ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
@@ -1757,8 +1758,7 @@ declare export default typeof LayoutConformanceNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
-"type ViewStyleProp = React.ElementConfig<typeof View>[\\"style\\"];
-export type { PressableAndroidRippleConfig };
+"export type { PressableAndroidRippleConfig };
 export type PressableStateCallbackType = $ReadOnly<{
   pressed: boolean,
 }>;
@@ -1932,11 +1932,11 @@ export { default } from \\"../../../src/private/specs_DEPRECATED/components/RCTS
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
-"declare const exported: component(
+"declare const SafeAreaView: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 );
-declare export default typeof exported;
+declare export default typeof SafeAreaView;
 "
 `;
 
@@ -3307,7 +3307,7 @@ declare export default typeof TouchableHighlight;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableNativeFeedback.js 1`] = `
-"type TVProps = {
+"type TouchableNativeFeedbackTVProps = {
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3317,7 +3317,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 };
 export type TouchableNativeFeedbackProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableNativeFeedbackTVProps,
   background?: ?(
     | $ReadOnly<{
         type: \\"ThemeAttrAndroid\\",
@@ -3377,7 +3377,7 @@ declare export default typeof TouchableNativeFeedback;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableOpacity.js 1`] = `
-"export type TVProps = $ReadOnly<{
+"export type TouchableOpacityTVProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3392,7 +3392,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
 }>;
 export type TouchableOpacityProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 declare const Touchable: component(
@@ -3515,7 +3515,7 @@ declare export default typeof ReactNativeViewAttributes;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/View.js 1`] = `
-"declare export default component(
+"declare export default component View(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
@@ -3685,7 +3685,6 @@ export type AccessibilityProps = $ReadOnly<{
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   \\"aria-label\\"?: ?Stringish,
-  experimental_accessibilityOrder?: ?Array<string>,
   accessibilityRole?: ?AccessibilityRole,
   role?: ?Role,
   accessibilityState?: ?AccessibilityState,
@@ -3833,6 +3832,7 @@ type ViewBaseProps = $ReadOnly<{
   hitSlop?: ?EdgeInsetsOrSizeProp,
   pointerEvents?: ?(\\"auto\\" | \\"box-none\\" | \\"box-only\\" | \\"none\\"),
   removeClippedSubviews?: ?boolean,
+  experimental_accessibilityOrder?: ?Array<string>,
 }>;
 export type ViewProps = $ReadOnly<{
   ...DirectEventProps,
@@ -4179,11 +4179,11 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
 type EmitterSubscription = EventSubscription;
 export type { EventSubscription, EmitterSubscription };
 export type NativeEventSubscription = EventSubscription;
-type UnsafeObject = Object;
+type UnsafeNativeEventObject = Object;
 declare export default class NativeEventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(nativeModule?: ?NativeModule): void;
@@ -4850,7 +4850,7 @@ exports[`public API should not change unintentionally Libraries/LayoutAnimation/
   LayoutAnimationProperty,
   LayoutAnimationAnimationConfig as LayoutAnimationAnim,
 } from \\"../Renderer/shims/ReactNativeTypes\\";
-export type LayoutAnimationConfig = LayoutAnimationConfig_;
+export type { LayoutAnimationConfig } from \\"../Renderer/shims/ReactNativeTypes\\";
 export type LayoutAnimationTypes = $ReadOnly<{
   [type in LayoutAnimationType]: type,
 }>;
@@ -4859,13 +4859,13 @@ export type LayoutAnimationProperties = $ReadOnly<{
 }>;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
-declare function setEnabled(value: boolean): void;
+declare function setLayoutAnimationEnabled(value: boolean): void;
 declare function configureNext(
   config: LayoutAnimationConfig,
   onAnimationDidEnd?: OnAnimationDidEndCallback,
   onAnimationDidFail?: OnAnimationDidFailCallback
 ): void;
-declare function create(
+declare function createLayoutAnimation(
   duration: number,
   type?: LayoutAnimationType,
   property?: LayoutAnimationProperty
@@ -4877,7 +4877,7 @@ declare const Presets: {
 };
 declare const LayoutAnimation: {
   configureNext: typeof configureNext,
-  create: typeof create,
+  create: typeof createLayoutAnimation,
   Types: LayoutAnimationTypes,
   Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
@@ -4885,7 +4885,7 @@ declare const LayoutAnimation: {
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   linear: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   spring: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
-  setEnabled: typeof setEnabled,
+  setEnabled: typeof setLayoutAnimationEnabled,
 };
 declare export default typeof LayoutAnimation;
 "
@@ -4940,11 +4940,10 @@ declare export default typeof FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"declare const VirtualizedList: typeof VirtualizedLists.VirtualizedList;
-type RequiredProps<ItemT> = {
+"type RequiredFlatListProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
-type OptionalProps<ItemT> = {
+type OptionalFlatListProps<ItemT> = {
   renderItem?: ?ListRenderItem<ItemT>,
   columnWrapperStyle?: ViewStyleProp,
   extraData?: any,
@@ -4968,10 +4967,9 @@ type OptionalProps<ItemT> = {
   strictMode?: boolean,
 };
 type FlatListBaseProps<ItemT> = {
-  ...RequiredProps<ItemT>,
-  ...OptionalProps<ItemT>,
+  ...RequiredFlatListProps<ItemT>,
+  ...OptionalFlatListProps<ItemT>,
 };
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 export type FlatListProps<ItemT> = {
   ...Omit<
     VirtualizedListProps,
@@ -5033,7 +5031,7 @@ export type {
   SectionData as SectionListData,
   ScrollToLocationParamsType as SectionListScrollParams,
 };
-type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+type RequiredSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
 };
 export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
@@ -5044,7 +5042,7 @@ export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
 export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
   info: SectionListRenderItemInfo<ItemT, SectionT>
 ) => React.Node | null;
-type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+type OptionalSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: SectionListRenderItem<ItemT, SectionT>,
   extraData?: any,
   initialNumToRender?: ?number,
@@ -5058,8 +5056,8 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
     VirtualizedSectionListProps<ItemT, SectionT>,
     \\"getItem\\" | \\"getItemCount\\" | \\"renderItem\\" | \\"keyExtractor\\",
   >,
-  ...RequiredProps<ItemT, SectionT>,
-  ...OptionalProps<ItemT, SectionT>,
+  ...RequiredSectionListProps<ItemT, SectionT>,
+  ...OptionalSectionListProps<ItemT, SectionT>,
 };
 declare export default class SectionList<
   ItemT = any,
@@ -5145,14 +5143,14 @@ declare export const keyExtractor: KeyExtractorType;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedList.js 1`] = `
 "type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
-declare const VirtualizedList: VirtualizedListType;
+declare const VirtualizedListComponent: VirtualizedListType;
 export type {
   ListRenderItemInfo,
   ListRenderItem,
   Separators,
   VirtualizedListProps,
 } from \\"@react-native/virtualized-lists\\";
-declare export default typeof VirtualizedList;
+declare export default typeof VirtualizedListComponent;
 "
 `;
 
@@ -5689,6 +5687,7 @@ export type ModalPropsIOS = {
   >,
   onDismiss?: ?() => void,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
+  allowSwipeDismissal?: ?boolean,
 };
 export type ModalPropsAndroid = {
   hardwareAccelerated?: ?boolean,
@@ -6146,7 +6145,7 @@ type PermissionsType = $ReadOnly<{
 }>;
 export type PermissionStatus = \\"granted\\" | \\"denied\\" | \\"never_ask_again\\";
 export type Permission = $Values<PermissionsType>;
-declare class PermissionsAndroid {
+declare class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType;
   RESULTS: $ReadOnly<{
     DENIED: \\"denied\\",
@@ -6167,7 +6166,7 @@ declare class PermissionsAndroid {
     permissions: Array<Permission>
   ): Promise<{ [permission: Permission]: PermissionStatus, ... }>;
 }
-declare const PermissionsAndroidInstance: PermissionsAndroid;
+declare const PermissionsAndroidInstance: PermissionsAndroidImpl;
 declare export default typeof PermissionsAndroidInstance;
 "
 `;
@@ -6433,8 +6432,8 @@ declare export default typeof AppContainer;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
-"type Task = (taskData: any) => Promise<void>;
-export type TaskProvider = () => Task;
+"type HeadlessTask = (taskData: any) => Promise<void>;
+export type TaskProvider = () => HeadlessTask;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -7842,7 +7841,7 @@ exports[`public API should not change unintentionally Libraries/Text/TextProps.j
   bottom: number,
   right: number,
 }>;
-type PointerEventProps = $ReadOnly<{
+type TextPointerEventProps = $ReadOnly<{
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
@@ -7903,7 +7902,7 @@ type TextBaseProps = $ReadOnly<{
   testID?: ?string,
 }>;
 export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+  ...TextPointerEventProps,
   ...TextPropsIOS,
   ...TextPropsAndroid,
   ...TextBaseProps,
@@ -8364,7 +8363,7 @@ declare export default typeof NativeDevLoadingView;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeDeviceInfo.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
-declare export default typeof NativeDeviceInfo;
+export { default } from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
 "
 `;
 
@@ -8638,27 +8637,27 @@ declare export default typeof binaryToBase64;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/codegenNativeCommands.js 1`] = `
-"type Options<T = string> = $ReadOnly<{
+"type NativeCommandsOptions<T = string> = $ReadOnly<{
   supportedCommands: $ReadOnlyArray<T>,
 }>;
 declare function codegenNativeCommands<T: interface {}>(
-  options: Options<$Keys<T>>
+  options: NativeCommandsOptions<$Keys<T>>
 ): T;
 declare export default typeof codegenNativeCommands;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/codegenNativeComponent.js 1`] = `
-"type Options = $ReadOnly<{
+"type NativeComponentOptions = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<\\"iOS\\" | \\"android\\">,
 }>;
-export type NativeComponentType<T> = HostComponent<T>;
+export type NativeComponentType<T: { ... }> = HostComponent<T>;
 declare function codegenNativeComponent<Props: { ... }>(
   componentName: string,
-  options?: Options
+  options?: NativeComponentOptions
 ): NativeComponentType<Props>;
 declare export default typeof codegenNativeComponent;
 "
@@ -8960,12 +8959,12 @@ declare export default ErrorUtils;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/emitter/EventEmitter.js 1`] = `
-"type UnsafeObject = Object;
+"type UnsafeEventObject = Object;
 export interface EventSubscription {
   remove(): void;
 }
 export interface IEventEmitter<
-  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -8981,8 +8980,8 @@ export interface IEventEmitter<
 }
 declare export default class EventEmitter<
   TEventToArgsMap: $ReadOnly<
-    Record<string, $ReadOnlyArray<UnsafeObject>>,
-  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+    Record<string, $ReadOnlyArray<UnsafeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
   constructor(): void;
@@ -9062,6 +9061,8 @@ export type {
 export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
 export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
 export type {
+  ScrollViewImperativeMethods,
+  ScrollViewScrollToOptions,
   ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
@@ -9348,6 +9349,11 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from \\"./Libraries/ReactPrivate/ReactNativePrivateInterface\\";
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from \\"./src/private/components/virtualview/VirtualView\\";
+export type { ModeChangeEvent } from \\"./src/private/components/virtualview/VirtualView\\";
 "
 `;
 

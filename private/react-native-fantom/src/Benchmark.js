@@ -172,20 +172,12 @@ export function suite(
 
 function printBenchmarkResults(bench: Bench) {
   const {fantomConfigSummary} = getConstants();
-  const longestTaskNameLength = bench.tasks.reduce(
-    (maxLength, task) => Math.max(maxLength, task.name.length),
-    0,
-  );
-  const separatorWidth = 137 + longestTaskNameLength - 'Task name'.length;
   const benchmarkName =
     (bench.name ?? 'Benchmark') +
     (fantomConfigSummary ? ` (${fantomConfigSummary})` : '');
 
-  console.log('-'.repeat(separatorWidth));
-  console.log(
-    `| ${benchmarkName}${' '.repeat(separatorWidth - (4 + benchmarkName.length))} |`,
-  );
-  console.log('-'.repeat(separatorWidth));
+  console.log('');
+  console.log(`### ${benchmarkName} ###`);
   console.table(nullthrows(bench.table()));
-  console.log('-'.repeat(separatorWidth) + '\n');
+  console.log('');
 }
