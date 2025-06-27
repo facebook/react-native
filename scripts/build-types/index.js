@@ -20,7 +20,7 @@ const config = {
     debug: {type: 'boolean'},
     'debug-version-annotations': {type: 'boolean'},
     help: {type: 'boolean'},
-    withSnapshot: {type: 'boolean'},
+    'skip-snapshot': {type: 'boolean'},
     validate: {type: 'boolean'},
   },
 };
@@ -31,7 +31,7 @@ async function main() {
       debug: debugEnabled,
       'debug-version-annotations': debugVersionAnnotations,
       help,
-      withSnapshot,
+      'skip-snapshot': skipSnapshot,
       validate,
     },
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
@@ -49,19 +49,11 @@ async function main() {
     --debug-version-annotations
                       Outputs debug info alongside versioned type hashes as
                       part of the API snapshot contents.
-    --withSnapshot    [Experimental] Include API snapshot generation.
+    --skip-snapshot   Skip API snapshot generation.
     --validate        Validate if the current API snapshot on disk is up to
                       date. Exits with an error if differences are detected.
     `);
     process.exitCode = 0;
-    return;
-  }
-
-  if (validate && !withSnapshot) {
-    console.error(
-      "build-types: '--validate' can only be used with '--withSnapshot'.",
-    );
-    process.exitCode = 2;
     return;
   }
 
@@ -79,10 +71,9 @@ async function main() {
   );
   await buildGeneratedTypes();
 
-  if (withSnapshot) {
+  if (!skipSnapshot) {
     console.log(
-      styleText(['bold', 'inverse'], ' [Experimental] Building API snapshot ') +
-        '\n',
+      styleText(['bold', 'inverse'], ' Building API snapshot ') + '\n',
     );
     await buildApiSnapshot({validate, debugVersionAnnotations});
   }
