@@ -235,26 +235,9 @@ std::shared_ptr<const MountingCoordinator> ShadowTree::getMountingCoordinator()
 CommitStatus ShadowTree::commit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  [[maybe_unused]] int attempts = 0;
-
-  while (true) {
-    attempts++;
-
-    auto status = tryCommit(transaction, commitOptions);
-    if (status != CommitStatus::Failed) {
-      return status;
-    }
-
-    // After multiple attempts, we failed to commit the transaction.
-    // Something internally went terribly wrong.
-    react_native_assert(attempts < 1024);
-  }
-}
-
-CommitStatus ShadowTree::tryCommit(
-    const ShadowTreeCommitTransaction& transaction,
-    const CommitOptions& commitOptions) const {
   TraceSection s("ShadowTree::commit");
+
+  std::unique_lock lock(commitMutex_);
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
@@ -264,8 +247,6 @@ CommitStatus ShadowTree::tryCommit(
   auto newRevision = ShadowTreeRevision{};
 
   {
-    // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -305,9 +286,6 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
   {
-    // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_);
-
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
     }
