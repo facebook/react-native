@@ -158,7 +158,9 @@ TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
     : contextContainer_(contextContainer),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
-      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
+      lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),
+      preparedTextCache_(static_cast<size_t>(
+          ReactNativeFeatureFlags::preparedTextCacheSize())) {}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -297,9 +299,6 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
-  const auto& fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
   static auto prepareTextLayout =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
           ->getMethod<JPreparedLayout::javaobject(
@@ -311,25 +310,32 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat)>("prepareTextLayout");
 
-  auto attributedStringMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(attributedString));
-  auto paragraphAttributesMB =
-      JReadableMapBuffer::createWithContents(toMapBuffer(paragraphAttributes));
+  return preparedTextCache_.get(
+      {.attributedString = attributedString,
+       .paragraphAttributes = paragraphAttributes,
+       .layoutConstraints = layoutConstraints},
+      [&] {
+        const auto& fabricUIManager =
+            contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
+        auto attributedStringMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(attributedString));
+        auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
+            toMapBuffer(paragraphAttributes));
 
-  // T222682416: We don't have any global cache here. We should investigate
-  // whether that is desirable
-  return {jni::make_global(prepareTextLayout(
-      fabricUIManager,
-      layoutContext.surfaceId,
-      attributedStringMB.get(),
-      paragraphAttributesMB.get(),
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height))};
+        auto minimumSize = layoutConstraints.minimumSize;
+        auto maximumSize = layoutConstraints.maximumSize;
+
+        return PreparedLayout{jni::make_global(prepareTextLayout(
+            fabricUIManager,
+            layoutContext.surfaceId,
+            attributedStringMB.get(),
+            paragraphAttributesMB.get(),
+            minimumSize.width,
+            maximumSize.width,
+            minimumSize.height,
+            maximumSize.height))};
+      });
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(

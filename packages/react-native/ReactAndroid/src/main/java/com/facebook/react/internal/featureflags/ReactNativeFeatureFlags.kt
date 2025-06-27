@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f5a7da2d8775ac1defa4037efd984504>>
+ * @generated SignedSource<<697babc37818f427f02fd3ab4c53febd>>
  */
 
 /**
@@ -293,6 +293,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
+
+  /**
+   * Number cached PreparedLayouts in TextLayoutManager cache
+   */
+  @JvmStatic
+  public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
