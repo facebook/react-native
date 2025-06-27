@@ -148,29 +148,29 @@ public class com/facebook/react/ReactDelegate {
 	public fun <init> (Landroid/app/Activity;Lcom/facebook/react/ReactNativeHost;Ljava/lang/String;Landroid/os/Bundle;)V
 	public fun <init> (Landroid/app/Activity;Lcom/facebook/react/ReactNativeHost;Ljava/lang/String;Landroid/os/Bundle;Z)V
 	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
-	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
-	public fun getReactHost ()Lcom/facebook/react/ReactHost;
-	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
-	public fun getReactRootView ()Lcom/facebook/react/ReactRootView;
-	protected fun isFabricEnabled ()Z
-	public fun loadApp ()V
-	public fun loadApp (Ljava/lang/String;)V
-	public fun onActivityResult (IILandroid/content/Intent;Z)V
-	public fun onBackPressed ()Z
-	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun onKeyDown (ILandroid/view/KeyEvent;)Z
-	public fun onKeyLongPress (I)Z
-	public fun onNewIntent (Landroid/content/Intent;)Z
-	public fun onUserLeaveHint ()V
-	public fun onWindowFocusChanged (Z)V
-	public fun reload ()V
-	public fun setReactRootView (Lcom/facebook/react/ReactRootView;)V
-	public fun setReactSurface (Lcom/facebook/react/interfaces/fabric/ReactSurface;)V
-	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
-	public fun unloadApp ()V
+	public final fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public final fun getReactHost ()Lcom/facebook/react/ReactHost;
+	public final fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
+	public final fun getReactRootView ()Lcom/facebook/react/ReactRootView;
+	protected final fun isFabricEnabled ()Z
+	public final fun loadApp ()V
+	public final fun loadApp (Ljava/lang/String;)V
+	public final fun onActivityResult (IILandroid/content/Intent;Z)V
+	public final fun onBackPressed ()Z
+	public final fun onConfigurationChanged (Landroid/content/res/Configuration;)V
+	public final fun onHostDestroy ()V
+	public final fun onHostPause ()V
+	public final fun onHostResume ()V
+	public final fun onKeyDown (ILandroid/view/KeyEvent;)Z
+	public final fun onKeyLongPress (I)Z
+	public final fun onNewIntent (Landroid/content/Intent;)Z
+	public final fun onUserLeaveHint ()V
+	public final fun onWindowFocusChanged (Z)V
+	public final fun reload ()V
+	public final fun setReactRootView (Lcom/facebook/react/ReactRootView;)V
+	public final fun setReactSurface (Lcom/facebook/react/interfaces/fabric/ReactSurface;)V
+	public final fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
+	public final fun unloadApp ()V
 }
 
 public class com/facebook/react/ReactFragment : androidx/fragment/app/Fragment, com/facebook/react/modules/core/PermissionAwareActivity {
