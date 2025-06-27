@@ -307,10 +307,36 @@ function createVersionExportedApis(
       }
     }
 
+    // Handle export specifiers which can be present in namespaces
+    if (t.isExportSpecifier(node)) {
+      if (node.local && node.local.name) {
+        refs.add(node.local.name);
+      }
+    }
+
     // Handle indexed access types (`T['key']`)
     if (t.isTSIndexedAccessType(node)) {
       getTypeReferencesForNode(node.objectType, refs);
       getTypeReferencesForNode(node.indexType, refs);
+    }
+
+    // Handle union types (`T | U`)
+    if (t.isTSUnionType(node)) {
+      for (const member of node.types) {
+        getTypeReferencesForNode(member, refs);
+      }
+    }
+
+    // Handle intersection types (`T & U`)
+    if (t.isTSIntersectionType(node)) {
+      for (const member of node.types) {
+        getTypeReferencesForNode(member, refs);
+      }
+    }
+
+    // Handle type operators (`keyof T`)
+    if (t.isTSTypeOperator(node)) {
+      getTypeReferencesForNode(node.typeAnnotation, refs);
     }
 
     // Handle conditional types (`T extends U ? X : Y`)
