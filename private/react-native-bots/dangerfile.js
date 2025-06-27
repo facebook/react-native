@@ -11,6 +11,8 @@
 'use strict';
 
 const {danger, fail, warn} = require('danger');
+const fs = require('fs');
+const path = require('path');
 
 const body = danger.github.pr.body?.toLowerCase() ?? '';
 
@@ -27,6 +29,25 @@ const isFromPhabricator = body_contains('differential revision:');
 
 // Provides advice if a summary section is missing, or body is too short
 const includesSummary = body_contains('## summary', 'summary:');
+
+const snapshot_output = JSON.parse(
+  fs.readFileSync(
+    path.join(
+      process.env.RUNNER_TEMP,
+      'diff-js-api-breaking-changes/output.json',
+    ),
+    'utf8',
+  ),
+);
+if (snapshot_output && snapshot_output.result !== 'NON_BREAKING') {
+  const title = ':exclamation: JavaScript API change detected';
+  const idea =
+    'This PR commits an update to ReactNativeApi.d.ts, indicating a change to React Native&#39;s public JavaScript API. ' +
+    'Please include a clear changelog message. ' +
+    'This change will be subject to extra review.\n\n' +
+    `This change was flagged as: <code>${snapshot_output.result}</code>`;
+  warn(`${title} - <i>${idea}</i>`);
+}
 
 const hasNoUsefulBody =
   !danger.github.pr.body || danger.github.pr.body.length < 50;
