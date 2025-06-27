@@ -526,11 +526,14 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
-  // `linearGradient`
-  if (oldViewProps.backgroundImage != newViewProps.backgroundImage) {
+  // `backgroundImage`
+  if (oldViewProps.backgroundImage != newViewProps.backgroundImage
+      || oldViewProps.backgroundPosition != newViewProps.backgroundPosition
+      || oldViewProps.backgroundRepeat != newViewProps.backgroundRepeat
+      || oldViewProps.backgroundSize != newViewProps.backgroundSize) {
     needsInvalidateLayer = YES;
   }
-
+  
   // `boxShadow`
   if (oldViewProps.boxShadow != newViewProps.boxShadow) {
     needsInvalidateLayer = YES;
