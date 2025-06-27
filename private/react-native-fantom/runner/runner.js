@@ -239,7 +239,10 @@ module.exports = async function runTest(
       continue;
     }
 
-    if (testConfig.hermesVariant !== HermesVariantEnum.Hermes) {
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.hermesVariant !== HermesVariantEnum.Hermes
+    ) {
       testResultsByConfig.push([
         {
           ancestorTitles: [
