@@ -28,8 +28,10 @@ using DimensionsPayload = NativeDeviceInfoDimensionsPayload<
     std::optional<DisplayMetricsAndroid>,
     std::optional<DisplayMetricsAndroid>>;
 
-using DeviceInfoConstants =
-    NativeDeviceInfoDeviceInfoConstants<DimensionsPayload, std::optional<bool>>;
+using DeviceInfoConstants = NativeDeviceInfoDeviceInfoConstants<
+    DimensionsPayload,
+    std::optional<bool>,
+    std::optional<bool>>;
 
 template <>
 struct Bridging<DisplayMetrics>

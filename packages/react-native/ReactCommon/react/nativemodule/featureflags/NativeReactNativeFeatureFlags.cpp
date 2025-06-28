@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f462bca84c5fc361a92b288155b491b>>
+ * @generated SignedSource<<563e9d9ae11c6ec231664126666e9922>>
  */
 
 /**
@@ -149,6 +149,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
+}
+
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -234,6 +239,16 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
+bool NativeReactNativeFeatureFlags::enableVirtualViewRenderState(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
+}
+
+bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
+}
+
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -247,6 +262,11 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
 bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
+}
+
+double NativeReactNativeFeatureFlags::preparedTextCacheSize(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

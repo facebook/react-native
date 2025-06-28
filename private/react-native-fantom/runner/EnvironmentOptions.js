@@ -15,3 +15,5 @@ export const logCommands: boolean = Boolean(process.env.FANTOM_LOG_COMMANDS);
 export const enableCppDebugging: boolean = Boolean(
   process.env.FANTOM_ENABLE_CPP_DEBUGGING,
 );
+
+export const isOSS: boolean = Boolean(process.env.FANTOM_FORCE_OSS_BUILD);

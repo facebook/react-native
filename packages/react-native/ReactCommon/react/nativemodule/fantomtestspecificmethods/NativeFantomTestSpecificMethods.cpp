@@ -11,7 +11,9 @@
 
 #include "internal/FantomForcedCloneCommitHook.h"
 
+#if RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeFantomTestSpecificMethodsModuleProvider(
@@ -42,5 +44,9 @@ void NativeFantomTestSpecificMethods::registerForcedCloneCommitHook(
   auto& uiManager = getUIManagerFromRuntime(runtime);
   uiManager.registerCommitHook(*fantomForcedCloneCommitHook_);
 }
+
+void NativeFantomTestSpecificMethods::takeFunctionAndNoop(
+    jsi::Runtime& runtime,
+    jsi::Function function) {}
 
 } // namespace facebook::react

@@ -80,7 +80,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
           object : Callback {
             override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
-              if (results.size > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+              if (results.isNotEmpty() && results[0] == PackageManager.PERMISSION_GRANTED) {
                 promise.resolve(GRANTED)
               } else {
                 val callbackActivity = args[1] as PermissionAwareActivity

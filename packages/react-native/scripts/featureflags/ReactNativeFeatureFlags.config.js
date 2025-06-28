@@ -269,6 +269,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableInteropViewManagerClassLookUpOptimizationIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-17',
+        description:
+          'This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -448,6 +459,26 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewRenderState: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables reading render state when dispatching VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableVirtualViewWindowFocusDetection: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables window focus detection for prioritizing VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -476,6 +507,16 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    preparedTextCacheSize: {
+      defaultValue: 200,
+      metadata: {
+        dateAdded: '2025-06-25',
+        description: 'Number cached PreparedLayouts in TextLayoutManager cache',
+        expectedReleaseValue: 200,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',

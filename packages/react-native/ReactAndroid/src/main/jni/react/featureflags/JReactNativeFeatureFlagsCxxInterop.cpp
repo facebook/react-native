@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8d441d64e8e04ebbfe611edb4a96b97>>
+ * @generated SignedSource<<53e68ed98b80c867e3045902e1618c9b>>
  */
 
 /**
@@ -165,6 +165,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableInteropViewManagerClassLookUpOptimizationIOS");
+    return method(javaProvider_);
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnAndroid");
@@ -267,6 +273,18 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool enableVirtualViewRenderState() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewRenderState");
+    return method(javaProvider_);
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewWindowFocusDetection");
+    return method(javaProvider_);
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMappingOfEventPrioritiesBetweenFabricAndReact");
@@ -282,6 +300,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fuseboxNetworkInspectionEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxNetworkInspectionEnabled");
+    return method(javaProvider_);
+  }
+
+  double preparedTextCacheSize() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("preparedTextCacheSize");
     return method(javaProvider_);
   }
 
@@ -460,6 +484,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -545,6 +574,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures(
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -558,6 +597,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
+}
+
+double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
@@ -710,6 +754,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
       makeNativeMethod(
+        "enableInteropViewManagerClassLookUpOptimizationIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),
+      makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
       makeNativeMethod(
@@ -761,6 +808,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableVirtualViewDebugFeatures",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewDebugFeatures),
       makeNativeMethod(
+        "enableVirtualViewRenderState",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewRenderState),
+      makeNativeMethod(
+        "enableVirtualViewWindowFocusDetection",
+        JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection),
+      makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
       makeNativeMethod(
@@ -769,6 +822,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
+      makeNativeMethod(
+        "preparedTextCacheSize",
+        JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

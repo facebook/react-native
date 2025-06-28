@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee714ff865ecd52f3644451aaa1e1d2a>>
+ * @generated SignedSource<<db43e2975566cc6f34af1a5337b383ee>>
  */
 
 /**
@@ -78,6 +78,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
+  bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
+
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
@@ -112,11 +114,17 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
 
+  bool enableVirtualViewRenderState(jsi::Runtime& runtime);
+
+  bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
+
+  double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

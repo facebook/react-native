@@ -105,7 +105,7 @@ function reportException(
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(data.message);
+    console.error(e);
   }
 
   if (__DEV__) {

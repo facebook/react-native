@@ -12,6 +12,7 @@ import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
+import android.view.ViewTreeObserver
 import androidx.annotation.VisibleForTesting
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
@@ -32,9 +33,16 @@ internal class ReactVirtualView(context: Context) :
     View.OnLayoutChangeListener {
 
   internal var mode: VirtualViewMode? = null
+  internal var renderState: VirtualViewRenderState = VirtualViewRenderState.Unknown
   internal var modeChangeEmitter: ModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
+  internal val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
+
+  private val onWindowFocusChangeListener =
+      ViewTreeObserver.OnWindowFocusChangeListener {
+        dispatchOnModeChangeIfNeeded(checkRectChange = false)
+      }
 
   private var parentScrollView: View? = null
 
@@ -79,6 +87,9 @@ internal class ReactVirtualView(context: Context) :
           ReactScrollViewHelper.addLayoutChangeListener(this)
         }
     debugLog("onAttachedToWindow")
+    if (detectWindowFocus) {
+      viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
     dispatchOnModeChangeIfNeeded(checkRectChange = false)
   }
 
@@ -86,6 +97,9 @@ internal class ReactVirtualView(context: Context) :
     super.onDetachedFromWindow()
     ReactScrollViewHelper.removeScrollListener(this)
     ReactScrollViewHelper.removeLayoutChangeListener(this)
+    if (detectWindowFocus) {
+      viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
     cleanupLayoutListeners()
   }
 
@@ -185,7 +199,15 @@ internal class ReactVirtualView(context: Context) :
 
     val newMode: VirtualViewMode
     if (rectsOverlap(targetRect, thresholdRect)) {
-      newMode = VirtualViewMode.Visible
+      if (detectWindowFocus) {
+        if (hasWindowFocus()) {
+          newMode = VirtualViewMode.Visible
+        } else {
+          newMode = VirtualViewMode.Prerender
+        }
+      } else {
+        newMode = VirtualViewMode.Visible
+      }
     } else {
       var prerender = false
       if (prerenderRatio > 0.0) {
@@ -246,7 +268,18 @@ internal class ReactVirtualView(context: Context) :
         "VirtualView::mode change $oldMode -> $newMode, nativeID=$nativeId")
     when (newMode) {
       VirtualViewMode.Visible -> {
-        emitSyncModeChange(VirtualViewMode.Visible)
+        if (renderState == VirtualViewRenderState.Unknown) {
+          // Feature flag is disabled, so use the former logic.
+          emitSyncModeChange(VirtualViewMode.Visible)
+        } else {
+          // If the previous mode was prerender and the result of dispatching that event was
+          // committed, we do not need to dispatch an event for visible.
+          val wasPrerenderCommitted =
+              oldMode == VirtualViewMode.Prerender && renderState == VirtualViewRenderState.Rendered
+          if (!wasPrerenderCommitted) {
+            emitSyncModeChange(VirtualViewMode.Visible)
+          }
+        }
       }
       VirtualViewMode.Prerender -> {
         if (oldMode != VirtualViewMode.Visible) {

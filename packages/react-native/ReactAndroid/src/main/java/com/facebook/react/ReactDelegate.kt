@@ -111,7 +111,8 @@ public open class ReactDelegate {
 
   public fun onHostResume() {
     if (activity !is DefaultHardwareBackBtnHandler) {
-      throw ClassCastException("Host Activity does not implement DefaultHardwareBackBtnHandler")
+      throw ClassCastException(
+          "Host Activity `${activity.javaClass.simpleName}` does not implement DefaultHardwareBackBtnHandler")
     }
     if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
         reactHost != null) {

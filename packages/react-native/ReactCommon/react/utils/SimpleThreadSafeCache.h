@@ -20,6 +20,9 @@ concept CacheGeneratorFunction = std::invocable<GeneratorT> &&
 
 /*
  * Simple thread-safe LRU cache.
+ *
+ * TODO T228961279: The maxSize template parameter should be removed, since it
+ * may be overriden by the constructor.
  */
 template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {

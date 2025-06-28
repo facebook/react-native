@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
         s.header_mappings_dir     = './'
     end
 
-    s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
+    s.source_files = podspec_sources("ReactCommon/**/*.{mm,cpp,h}", "ReactCommon/**/*.{h}")
 
     s.dependency "ReactCommon/turbomodule/core"
     s.dependency "ReactCommon/turbomodule/bridging"

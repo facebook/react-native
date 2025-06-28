@@ -16,6 +16,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -71,6 +72,10 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   private List<View> mAxOrderViews;
   private Handler mHandler;
   private final HashMap<Integer, String> mAccessibilityActionsMap;
+
+  @Nullable
+  private AccessibilityManager.AccessibilityStateChangeListener accessibilityStateChangeListener =
+      null;
 
   @Nullable View mAccessibilityLabelledBy;
 
@@ -256,10 +261,29 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+    super.onInitializeAccessibilityNodeInfo(host, info);
     // If we set an accessibility order then all the focusing logic should go through our custom
     // virtual view tree hierarchy and ignore the default path
     ReadableArray axOrderIds = (ReadableArray) mView.getTag(R.id.accessibility_order);
     if (axOrderIds != null && axOrderIds.size() != 0) {
+      info.setContentDescription("");
+      info.setFocusable(false);
+
+      AccessibilityManager am =
+          (AccessibilityManager) host.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+      if (accessibilityStateChangeListener == null && am != null) {
+        AccessibilityManager.AccessibilityStateChangeListener newAccessibilityStateChangeListener =
+            enabled -> {
+              if (!enabled) {
+                ReactAxOrderHelper.restoreSubtreeFocusability(host);
+                host.setTag(R.id.accessibility_order_dirty, true);
+              }
+            };
+
+        am.addAccessibilityStateChangeListener(newAccessibilityStateChangeListener);
+        accessibilityStateChangeListener = newAccessibilityStateChangeListener;
+      }
 
       Boolean isAxOrderDirty = (Boolean) mView.getTag(R.id.accessibility_order_dirty);
       if (isAxOrderDirty != null && isAxOrderDirty) {
@@ -278,7 +302,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    super.onInitializeAccessibilityNodeInfo(host, info);
     populateAccessibilityNodeInfo(host, info);
   }
 
@@ -1096,6 +1119,19 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       } else {
         return (AccessibilityRole) view.getTag(R.id.accessibility_role);
       }
+    }
+  }
+
+  // In case a view with accessibilityOrder is unmounted we need a way to clean up the listener on
+  // this delegate
+  public void cleanUp() {
+    if (accessibilityStateChangeListener != null) {
+      AccessibilityManager am =
+          (AccessibilityManager) mView.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+      if (am != null) {
+        am.removeAccessibilityStateChangeListener(accessibilityStateChangeListener);
+      }
+      accessibilityStateChangeListener = null;
     }
   }
 }

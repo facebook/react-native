@@ -9,6 +9,7 @@ require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
 require_relative './cocoapods/rndependencies.rb'
+require_relative './cocoapods/rncore.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -19,6 +20,7 @@ require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
 require_relative './cocoapods/privacy_manifest_utils.rb'
 require_relative './cocoapods/spm.rb'
+require_relative './cocoapods/rncore.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
@@ -105,6 +107,9 @@ def use_react_native! (
   # Update ReactNativeDependencies so that we can easily switch between source and prebuilt
   ReactNativeDependenciesUtils.setup_react_native_dependencies(prefix, react_native_version)
 
+  # Update ReactNativeCoreUtils so that we can easily switch between source and prebuilt
+  ReactNativeCoreUtils.setup_rncore(prefix, react_native_version)
+
   Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
   # The Pods which should be included in all projects
@@ -112,6 +117,9 @@ def use_react_native! (
   pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+  end
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
   pod 'React-RCTRuntime', :path => "#{prefix}/React/Runtime"
@@ -166,6 +174,8 @@ def use_react_native! (
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
+  setup_fabric!(:react_native_path => prefix)
+  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
     pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
@@ -176,9 +186,18 @@ def use_react_native! (
     pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
     pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
   else
+    # Install prebuilt React Native Core and React Native Dependencies
+    ReactNativeCoreUtils.rncore_log("Using React Native Core and React Native Dependencies prebuilt versions.")
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
+
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+      pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+    end
   end
 
+  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  # Not needed, but run_codegen expects this to be set.
   folly_config = get_folly_config()
   run_codegen!(
     app_path,
@@ -192,15 +211,6 @@ def use_react_native! (
     :package_json_file => File.join(__dir__, "..", "package.json"),
     :folly_version => folly_config[:version]
   )
-
-  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-
-  # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
-  # If the New Arch is turned off, we will use the Old Renderer, though.
-  # RNTester always installed Fabric, this change is required to make the template work.
-  setup_fabric!(:react_native_path => prefix)
-  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
@@ -263,6 +273,22 @@ end
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   folly_config = get_folly_config()
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
+end
+
+# This function is used by podspecs that needs to use the prebuilt sources for React Native.
+# It returns the sources to use for the podspec.
+#
+# Parameters:
+# - original_sources: The original sources of the podspec
+# - sources_for_prebuilds: The sources to use for prebuilt pods
+#
+# Returns: The sources to use for the podspec
+def podspec_sources(original_sources, sources_for_prebuilds)
+  if ReactNativeCoreUtils.build_rncore_from_source()
+    return original_sources
+  else
+    return sources_for_prebuilds
+  end
 end
 
 

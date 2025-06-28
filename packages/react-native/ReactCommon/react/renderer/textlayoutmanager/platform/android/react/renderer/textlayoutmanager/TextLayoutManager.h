@@ -95,6 +95,11 @@ class TextLayoutManager {
   std::shared_ptr<const ContextContainer> contextContainer_;
   TextMeasureCache textMeasureCache_;
   LineMeasureCache lineMeasureCache_;
+  SimpleThreadSafeCache<
+      PreparedTextCacheKey,
+      PreparedLayout,
+      -1 /* Set dynamically*/>
+      preparedTextCache_;
 };
 
 } // namespace facebook::react

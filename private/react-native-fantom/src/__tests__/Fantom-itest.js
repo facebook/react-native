@@ -475,7 +475,7 @@ describe('Fantom', () => {
         expect(
           root
             .getRenderedOutput({
-              props: ['!width'],
+              props: ['^(?!width$).*$'],
             })
             .toJSX(),
         ).toEqual(<rn-view height="100.000000" />);

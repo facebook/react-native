@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dee97293bfeab942c9cd0ba8622a5f86>>
+ * @generated SignedSource<<697babc37818f427f02fd3ab4c53febd>>
  */
 
 /**
@@ -157,6 +157,12 @@ public object ReactNativeFeatureFlags {
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
+   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
+   */
+  @JvmStatic
+  public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   @JvmStatic
@@ -259,6 +265,18 @@ public object ReactNativeFeatureFlags {
   public fun enableVirtualViewDebugFeatures(): Boolean = accessor.enableVirtualViewDebugFeatures()
 
   /**
+   * Enables reading render state when dispatching VirtualView events.
+   */
+  @JvmStatic
+  public fun enableVirtualViewRenderState(): Boolean = accessor.enableVirtualViewRenderState()
+
+  /**
+   * Enables window focus detection for prioritizing VirtualView events.
+   */
+  @JvmStatic
+  public fun enableVirtualViewWindowFocusDetection(): Boolean = accessor.enableVirtualViewWindowFocusDetection()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -275,6 +293,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
+
+  /**
+   * Number cached PreparedLayouts in TextLayoutManager cache
+   */
+  @JvmStatic
+  public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

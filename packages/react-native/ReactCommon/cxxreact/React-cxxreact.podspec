@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.exclude_files          = "SampleCxxModule.*"
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",

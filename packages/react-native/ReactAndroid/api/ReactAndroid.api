@@ -3659,6 +3659,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public static final field TOP_ACCESSIBILITY_ACTION_EVENT Ljava/lang/String;
 	public static final field sActionIdMap Ljava/util/HashMap;
 	public fun <init> (Landroid/view/View;ZI)V
+	public fun cleanUp ()V
 	public static fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 	public fun getAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 	protected fun getHostView ()Landroid/view/View;
@@ -4217,10 +4218,11 @@ public abstract interface class com/facebook/react/uimanager/StateWrapper {
 	public abstract fun updateState (Lcom/facebook/react/bridge/WritableMap;)V
 }
 
-public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/react/bridge/ReactContext {
+public final class com/facebook/react/uimanager/ThemedReactContext : com/facebook/react/bridge/ReactContext {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;I)V
+	public synthetic fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Landroid/content/Context;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun addLifecycleEventListener (Lcom/facebook/react/bridge/LifecycleEventListener;)V
 	public fun destroy ()V
 	public fun getCatalystInstance ()Lcom/facebook/react/bridge/CatalystInstance;
@@ -4229,14 +4231,14 @@ public class com/facebook/react/uimanager/ThemedReactContext : com/facebook/reac
 	public fun getJSCallInvokerHolder ()Lcom/facebook/react/turbomodule/core/interfaces/CallInvokerHolder;
 	public fun getJSModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/JavaScriptModule;
 	public fun getJavaScriptContextHolder ()Lcom/facebook/react/bridge/JavaScriptContextHolder;
-	public fun getModuleName ()Ljava/lang/String;
+	public final fun getModuleName ()Ljava/lang/String;
 	public fun getNativeModule (Ljava/lang/Class;)Lcom/facebook/react/bridge/NativeModule;
 	public fun getNativeModule (Ljava/lang/String;)Lcom/facebook/react/bridge/NativeModule;
 	public fun getNativeModules ()Ljava/util/Collection;
-	public fun getReactApplicationContext ()Lcom/facebook/react/bridge/ReactApplicationContext;
+	public final fun getReactApplicationContext ()Lcom/facebook/react/bridge/ReactApplicationContext;
 	public fun getSourceURL ()Ljava/lang/String;
-	public fun getSurfaceID ()Ljava/lang/String;
-	public fun getSurfaceId ()I
+	public final fun getSurfaceID ()Ljava/lang/String;
+	public final fun getSurfaceId ()I
 	public fun handleException (Ljava/lang/Exception;)V
 	public fun hasActiveCatalystInstance ()Z
 	public fun hasActiveReactInstance ()Z
@@ -4339,20 +4341,20 @@ public abstract interface class com/facebook/react/uimanager/UIImplementation$La
 	public abstract fun onLayoutUpdated (Lcom/facebook/react/uimanager/ReactShadowNode;)V
 }
 
-public class com/facebook/react/uimanager/UIManagerHelper {
+public final class com/facebook/react/uimanager/UIManagerHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/UIManagerHelper;
 	public static final field PADDING_BOTTOM_INDEX I
 	public static final field PADDING_END_INDEX I
 	public static final field PADDING_START_INDEX I
 	public static final field PADDING_TOP_INDEX I
-	public fun <init> ()V
-	public static fun getDefaultTextInputPadding (Landroid/content/Context;)[F
-	public static fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public static fun getEventDispatcherForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public static fun getReactContext (Landroid/view/View;)Lcom/facebook/react/bridge/ReactContext;
-	public static fun getSurfaceId (Landroid/content/Context;)I
-	public static fun getSurfaceId (Landroid/view/View;)I
-	public static fun getUIManager (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
-	public static fun getUIManagerForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
+	public static final fun getDefaultTextInputPadding (Landroid/content/Context;)[F
+	public static final fun getEventDispatcher (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
+	public static final fun getEventDispatcherForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/uimanager/events/EventDispatcher;
+	public static final fun getReactContext (Landroid/view/View;)Lcom/facebook/react/bridge/ReactContext;
+	public static final fun getSurfaceId (Landroid/content/Context;)I
+	public static final fun getSurfaceId (Landroid/view/View;)I
+	public static final fun getUIManager (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
+	public static final fun getUIManagerForReactTag (Lcom/facebook/react/bridge/ReactContext;I)Lcom/facebook/react/bridge/UIManager;
 }
 
 public class com/facebook/react/uimanager/UIManagerModule : com/facebook/react/bridge/ReactContextBaseJavaModule, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/OnBatchCompleteListener, com/facebook/react/bridge/UIManager {
@@ -4866,20 +4868,6 @@ public abstract interface class com/facebook/react/uimanager/events/EventDispatc
 	public abstract fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
 }
 
-public class com/facebook/react/uimanager/events/EventDispatcherImpl : com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/uimanager/events/EventDispatcher {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun dispatchAllEvents ()V
-	public fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
-	public fun onCatalystInstanceDestroyed ()V
-	public fun onHostDestroy ()V
-	public fun onHostPause ()V
-	public fun onHostResume ()V
-	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-}
-
 public abstract interface class com/facebook/react/uimanager/events/EventDispatcherListener {
 	public abstract fun onEventDispatch (Lcom/facebook/react/uimanager/events/Event;)V
 }
@@ -5303,6 +5291,7 @@ public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/fa
 
 public abstract interface class com/facebook/react/viewmanagers/VirtualViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setInitialHidden (Landroid/view/View;Z)V
+	public abstract fun setRenderState (Landroid/view/View;I)V
 }
 
 public final class com/facebook/react/views/drawer/ReactDrawerLayout : androidx/drawerlayout/widget/DrawerLayout {
@@ -6682,5 +6671,10 @@ public class com/facebook/react/views/view/ReactViewManager : com/facebook/react
 }
 
 public final class com/facebook/react/views/view/ReactViewManager$Companion {
+}
+
+public final class com/facebook/react/views/view/WindowUtilKt {
+	public static final fun isEdgeToEdgeFeatureFlagOn ()Z
+	public static final fun setEdgeToEdgeFeatureFlagOn ()V
 }
 

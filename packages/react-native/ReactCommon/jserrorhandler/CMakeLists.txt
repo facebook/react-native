@@ -15,10 +15,12 @@ add_library(
         ${js_error_handler_SRC}
 )
 target_include_directories(jserrorhandler PUBLIC .)
+react_native_android_selector(marbufferjni marbufferjni "")
 target_link_libraries(jserrorhandler
         jsi
+        callinvoker
         folly_runtime
-        mapbufferjni
+        ${mapbufferjni}
         react_featureflags
 )
 target_compile_reactnative_options(jserrorhandler PRIVATE)

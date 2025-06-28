@@ -27,11 +27,11 @@
   "license": "MIT",
   "engines": {
     "node": ">= 22.14.0",
-    "electron": ">=36.2.0"
+    "electron": ">=36.3.0"
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "electron": "36.2.0"
+    "electron": "36.3.0"
   },
   "devDependencies": {
     "semver": "^7.1.3"

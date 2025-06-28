@@ -18,7 +18,7 @@
  * --yarnBinary [path] - path to yarn binary, defaults to yarn
  */
 
-const {echo, exec, exit} = require('shelljs');
+const {execSync} = require('child_process');
 const argv = require('yargs').argv;
 
 const numberOfMaxWorkers = argv.maxWorkers || 1;
@@ -29,29 +29,29 @@ const FLOW_BINARY = argv.flowBinary;
 const YARN_BINARY = argv.yarnBinary || 'yarn';
 
 function describe(message) {
-  echo(`\n\n>>>>> ${message}\n\n\n`);
+  console.log(`\n\n>>>>> ${message}\n\n\n`);
 }
 
 try {
-  echo('Executing JavaScript tests');
+  console.log('Executing JavaScript tests');
 
   describe('Test: feature flags codegen');
-  if (exec(`${YARN_BINARY} run featureflags --verify-unchanged`).code) {
-    echo('Failed to run featureflags check.');
+  if (execSync(`${YARN_BINARY} run featureflags --verify-unchanged`).code) {
+    console.log('Failed to run featureflags check.');
     exitCode = 1;
     throw Error(exitCode);
   }
 
   describe('Test: eslint');
-  if (exec(`${YARN_BINARY} run lint`).code) {
-    echo('Failed to run eslint.');
+  if (execSync(`${YARN_BINARY} run lint`).code) {
+    console.log('Failed to run eslint.');
     exitCode = 1;
     throw Error(exitCode);
   }
 
   describe('Test: No JS build artifacts');
-  if (exec(`${YARN_BINARY} run build --validate`).code) {
-    echo('Failed, there are build artifacts in this commit.');
+  if (execSync(`${YARN_BINARY} run build --validate`).code) {
+    console.log('Failed, there are build artifacts in this commit.');
     exitCode = 1;
     throw Error(exitCode);
   }
@@ -61,8 +61,8 @@ try {
     FLOW_BINARY == null
       ? `${YARN_BINARY} run flow-check`
       : `${FLOW_BINARY} check`;
-  if (exec(flowCommand).code) {
-    echo('Failed to run flow.');
+  if (execSync(flowCommand).code) {
+    console.log('Failed to run flow.');
     exitCode = 1;
     throw Error(exitCode);
   }
@@ -77,40 +77,39 @@ try {
 
   describe('Test: Build @react-native/codegen');
   if (
-    exec(`${YARN_BINARY} --cwd ./packages/react-native-codegen run build`).code
+    execSync(`${YARN_BINARY} --cwd ./packages/react-native-codegen run build`)
+      .code
   ) {
-    echo('Failed to build @react-native/codegen.');
+    console.log('Failed to build @react-native/codegen.');
     exitCode = 1;
     throw Error(exitCode);
   }
   describe('Test: Build @react-native/codegen-typescript-test');
   if (
-    exec(
+    execSync(
       `${YARN_BINARY} --cwd ./private/react-native-codegen-typescript-test run build`,
     ).code
   ) {
-    echo('Failed to build @react-native/codegen-typescript-test.');
+    console.log('Failed to build @react-native/codegen-typescript-test.');
     exitCode = 1;
     throw Error(exitCode);
   }
 
-  // TODO: Improve handling of `exec` (e.g. check `signal`). Also, why use `shelljs`?
-
   describe('Test: Jest');
   if (
-    exec(
+    execSync(
       `${JEST_BINARY} --maxWorkers=${numberOfMaxWorkers} --ci --reporters="default" --reporters="jest-junit"`,
     ).code
   ) {
-    echo('Failed to run JavaScript tests.');
-    echo('Most likely the code is broken.');
+    console.log('Failed to run JavaScript tests.');
+    console.log('Most likely the code is broken.');
     exitCode = 1;
     throw Error(exitCode);
   }
 
   describe('Test: TypeScript tests');
-  if (exec(`${YARN_BINARY} run test-typescript`).code) {
-    echo('Failed to run TypeScript tests.');
+  if (execSync(`${YARN_BINARY} run test-typescript`).code) {
+    console.log('Failed to run TypeScript tests.');
     exitCode = 1;
     throw Error(exitCode);
   }
@@ -118,6 +117,6 @@ try {
   exitCode = 0;
 } finally {
   // Do cleanup here
-  echo('Finished.');
+  console.log('Finished.');
 }
-exit(exitCode);
+process.exit(exitCode);

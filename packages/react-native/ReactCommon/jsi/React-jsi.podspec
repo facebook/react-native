@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES"
   }
 
-  s.source_files  = "**/*.{cpp,h}"
+  s.source_files  = podspec_sources("**/*.{cpp,h}", "**/*.h")
   files_to_exclude = [
                       "jsi/jsilib-posix.cpp",
                       "jsi/jsilib-windows.cpp",

@@ -229,7 +229,8 @@ function _processUpdate() {
  */
 const InteractionManager = (
   ReactNativeFeatureFlags.disableInteractionManager()
-    ? require('./InteractionManagerStub').default
+    ? // $FlowFixMe[incompatible-variance]
+      require('./InteractionManagerStub').default
     : InteractionManagerImpl
 ) as typeof InteractionManagerImpl;
 

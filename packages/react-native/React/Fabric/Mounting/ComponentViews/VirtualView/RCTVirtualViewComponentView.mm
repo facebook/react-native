@@ -32,6 +32,12 @@ typedef NS_ENUM(NSInteger, RCTVirtualViewMode) {
   RCTVirtualViewModeHidden = 2,
 };
 
+typedef NS_ENUM(NSInteger, RCTVirtualViewRenderState) {
+  RCTVirtualViewRenderStateUnknown = 0,
+  RCTVirtualViewRenderStateRendered = 1,
+  RCTVirtualViewRenderStateNone = 2,
+};
+
 /**
  * Checks whether one CGRect overlaps with another CGRect.
  *
@@ -67,6 +73,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 @implementation RCTVirtualViewComponentView {
   RCTScrollViewComponentView *_lastParentScrollViewComponentView;
   std::optional<enum RCTVirtualViewMode> _mode;
+  enum RCTVirtualViewRenderState _renderState;
   std::optional<CGRect> _targetRect;
 }
 
@@ -74,6 +81,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 {
   if (self = [super initWithFrame:frame]) {
     _props = VirtualViewShadowNode::defaultSharedProps();
+    _renderState = RCTVirtualViewRenderStateUnknown;
   }
 
   return self;
@@ -81,9 +89,26 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
+  const auto &newViewProps = static_cast<const VirtualViewProps &>(*props);
+
   if (!_mode.has_value()) {
-    const auto &newViewProps = static_cast<const VirtualViewProps &>(*props);
     _mode = newViewProps.initialHidden ? RCTVirtualViewModeHidden : RCTVirtualViewModeVisible;
+    self.hidden = newViewProps.initialHidden && !sIsAccessibilityUsed;
+  }
+
+  // If disabled, `_renderState` will always be `RCTVirtualViewRenderStateUnknown`.
+  if (ReactNativeFeatureFlags::enableVirtualViewRenderState()) {
+    switch (newViewProps.renderState) {
+      case 1:
+        _renderState = RCTVirtualViewRenderStateRendered;
+        break;
+      case 2:
+        _renderState = RCTVirtualViewRenderStateNone;
+        break;
+      default:
+        _renderState = RCTVirtualViewRenderStateUnknown;
+        break;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -101,6 +126,42 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
   return nil;
 }
 
+/**
+ * Static flag that tracks whether accessibility services are being used.
+ * When accessibility is detected, virtual views will remain visible even when
+ * they would normally be hidden when off-screen, ensuring that accessibility
+ * features will work correctly.
+ */
+static BOOL sIsAccessibilityUsed = NO;
+
+- (void)_unhideIfNeeded
+{
+  if (!sIsAccessibilityUsed) {
+    // accessibility is detected for the first time. Make views visible.
+    sIsAccessibilityUsed = YES;
+  }
+
+  if (self.hidden) {
+    self.hidden = NO;
+  }
+}
+
+- (NSInteger)accessibilityElementCount
+{
+  // From empirical testing, method `accessibilityElementCount` is called lazily only
+  // when accessibility is used.
+  [self _unhideIfNeeded];
+  return [super accessibilityElementCount];
+}
+
+- (NSArray<id<UIFocusItem>> *)focusItemsInRect:(CGRect)rect
+{
+  // From empirical testing, method `focusItemsInRect:` is called lazily only
+  // when keyboard navigation is used.
+  [self _unhideIfNeeded];
+  return [super focusItemsInRect:rect];
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
@@ -111,6 +172,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
       _lastParentScrollViewComponentView == nil,
       @"_lastParentScrollViewComponentView should already have been cleared in didMoveToWindow.");
 
+  self.hidden = NO;
   _mode.reset();
   _targetRect.reset();
 }
@@ -219,14 +281,28 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
   switch (newMode) {
     case RCTVirtualViewModeVisible:
-      [self dispatchSyncModeChange:event];
+      self.hidden = NO;
+      if (_renderState == RCTVirtualViewRenderStateUnknown) {
+        // Feature flag is disabled, so use the former logic.
+        [self dispatchSyncModeChange:event];
+      } else {
+        // If the previous mode was prerender and the result of dispatching that event was committed, we do not need to
+        // dispatch an event for visible.
+        const auto wasPrerenderCommitted = oldMode.has_value() && oldMode == RCTVirtualViewModePrerender &&
+            _renderState == RCTVirtualViewRenderStateRendered;
+        if (!wasPrerenderCommitted) {
+          [self dispatchSyncModeChange:event];
+        }
+      }
       break;
     case RCTVirtualViewModePrerender:
+      self.hidden = !sIsAccessibilityUsed;
       if (!oldMode.has_value() || oldMode != RCTVirtualViewModeVisible) {
         [self dispatchAsyncModeChange:event];
       }
       break;
     case RCTVirtualViewModeHidden:
+      self.hidden = YES;
       [self dispatchAsyncModeChange:event];
       break;
   }
