@@ -235,43 +235,15 @@ std::shared_ptr<const MountingCoordinator> ShadowTree::getMountingCoordinator()
 CommitStatus ShadowTree::commit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  [[maybe_unused]] int attempts = 0;
-
-  while (true) {
-    attempts++;
-
-    auto status = tryCommit(transaction, commitOptions);
-    if (status != CommitStatus::Failed) {
-      return status;
-    }
-
-    // After multiple attempts, we failed to commit the transaction.
-    // Something internally went terribly wrong.
-    react_native_assert(attempts < 1024);
-  }
-}
-
-CommitStatus ShadowTree::tryCommit(
-    const ShadowTreeCommitTransaction& transaction,
-    const CommitOptions& commitOptions) const {
   TraceSection s("ShadowTree::commit");
+
+  std::unique_lock lock(commitMutex_);
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
 
-  CommitMode commitMode;
-  auto oldRevision = ShadowTreeRevision{};
-  auto newRevision = ShadowTreeRevision{};
-
-  {
-    // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_);
-    commitMode = commitMode_;
-    oldRevision = currentRevision_;
-  }
-
-  const auto& oldRootShadowNode = oldRevision.rootShadowNode;
-  auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
+  const auto& oldRootShadowNode = currentRevision_.rootShadowNode;
+  auto newRootShadowNode = transaction(*oldRootShadowNode);
 
   if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
@@ -304,40 +276,31 @@ CommitStatus ShadowTree::tryCommit(
   telemetry.unsetAsThreadLocal();
   telemetry.didLayout(static_cast<int>(affectedLayoutableNodes.size()));
 
+  auto newRevisionNumber = currentRevision_.number + 1;
+
   {
-    // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_);
-
-    if (currentRevision_.number != oldRevision.number) {
-      return CommitStatus::Failed;
-    }
-
-    auto newRevisionNumber = currentRevision_.number + 1;
-
-    {
-      std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
-      updateMountedFlag(
-          currentRevision_.rootShadowNode->getChildren(),
-          newRootShadowNode->getChildren(),
-          commitOptions.source);
-    }
-
-    telemetry.didCommit();
-    telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
-
-    // Seal the shadow node so it can no longer be mutated
-    // Does nothing in release.
-    newRootShadowNode->sealRecursive();
-
-    newRevision = ShadowTreeRevision{
-        std::move(newRootShadowNode), newRevisionNumber, telemetry};
-
-    currentRevision_ = newRevision;
+    std::scoped_lock dispatchLock(EventEmitter::DispatchMutex());
+    updateMountedFlag(
+        currentRevision_.rootShadowNode->getChildren(),
+        newRootShadowNode->getChildren(),
+        commitOptions.source);
   }
+
+  telemetry.didCommit();
+  telemetry.setRevisionNumber(static_cast<int>(newRevisionNumber));
+
+  // Seal the shadow node so it can no longer be mutated
+  // Does nothing in release.
+  newRootShadowNode->sealRecursive();
+
+  const auto newRevision = ShadowTreeRevision{
+      std::move(newRootShadowNode), newRevisionNumber, telemetry};
+
+  currentRevision_ = newRevision;
 
   emitLayoutEvents(affectedLayoutableNodes);
 
-  if (commitMode == CommitMode::Normal) {
+  if (commitMode_ == CommitMode::Normal) {
     mount(std::move(newRevision), commitOptions.mountSynchronously);
   }
 

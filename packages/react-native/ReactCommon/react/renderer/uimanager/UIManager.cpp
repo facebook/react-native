@@ -522,7 +522,7 @@ ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
     // We don't want to add a way to access a stored pointer to a root node
     // because this `findShadowNodeByTag` is deprecated. It is only added
     // to make migration to the new architecture easier.
-    shadowTree.tryCommit(
+    shadowTree.commit(
         [&](const RootShadowNode& oldRootShadowNode) {
           rootShadowNode = &oldRootShadowNode;
           return nullptr;
