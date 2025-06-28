@@ -9,6 +9,7 @@ package com.facebook.react.uimanager.style
 
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.Shader
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
@@ -42,6 +43,6 @@ public class BackgroundImageLayer() {
     }
   }
 
-  public fun getShader(bounds: Rect): Shader =
-      gradient.getShader(bounds.width().toFloat(), bounds.height().toFloat())
+  public fun getShader(bounds: RectF): Shader =
+      gradient.getShader(bounds.width(), bounds.height())
 }
