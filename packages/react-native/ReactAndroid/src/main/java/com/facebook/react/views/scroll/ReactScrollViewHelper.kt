@@ -261,7 +261,7 @@ public object ReactScrollViewHelper {
     // Register the listeners for the fling animator if there isn't any
     val flingAnimator = scrollView.getFlingAnimator()
     if (flingAnimator.listeners == null || flingAnimator.listeners.size == 0) {
-      registerFlingAnimator<T>(scrollView)
+      registerFlingAnimator(scrollView)
     }
     val scrollState = scrollView.reactScrollViewScrollState
     scrollState.setFinalAnimatedPositionScroll(x, y)
@@ -400,7 +400,7 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
-                updateFabricScrollState<T>(scrollView)
+                updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
@@ -456,9 +456,9 @@ public object ReactScrollViewHelper {
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollX, finalAnimatedPositionScroll.x, velocityX), // startX
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollY, finalAnimatedPositionScroll.y, velocityY), // startY
         velocityX, // velocityX
         velocityY, // velocityY
