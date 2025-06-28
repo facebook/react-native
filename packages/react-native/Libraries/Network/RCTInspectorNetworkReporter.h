@@ -57,7 +57,7 @@
  *
  * - Corresponds to `Network.loadingFailed` in CDP.
  */
-+ (void)reportRequestFailed:(NSNumber *)requestId;
++ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(BOOL)cancelled;
 
 /**
  * Store response body preview. This is an optional reporting method, and is a
