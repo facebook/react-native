@@ -558,6 +558,20 @@ RCT_EXPORT_MODULE()
     }
   }
 
+  if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+    id responseDataForPreview;
+    if ([responseType isEqualToString:@"blob"]) {
+      responseDataForPreview = data;
+    } else if ([responseData isKindOfClass:[NSString class]]) {
+      responseDataForPreview = responseData;
+    }
+    bool base64Encoded = [responseType isEqualToString:@"base64"] || [responseType isEqualToString:@"blob"];
+
+    [RCTInspectorNetworkReporter maybeStoreResponseBody:task.requestID
+                                                   data:responseDataForPreview
+                                          base64Encoded:base64Encoded];
+  }
+
   [self sendEventWithName:@"didReceiveNetworkData" body:@[ task.requestID, responseData ]];
 }
 
