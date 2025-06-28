@@ -22,6 +22,8 @@ class NativeFantomTestSpecificMethods
 
   void registerForcedCloneCommitHook(jsi::Runtime& runtime);
 
+  void takeFunctionAndNoop(jsi::Runtime& runtime, jsi::Function callback);
+
  private:
   std::shared_ptr<FantomForcedCloneCommitHook> fantomForcedCloneCommitHook_{};
 };

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77750d9d71424a12867ade6d627b957c>>
+ * @generated SignedSource<<04ec71486d4052ac5ec1c6362bfd143c>>
  */
 
 /**
@@ -111,6 +111,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
+    return false;
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     return false;
   }
@@ -179,6 +183,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableVirtualViewRenderState() override {
+    return false;
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -189,6 +201,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fuseboxNetworkInspectionEnabled() override {
     return false;
+  }
+
+  double preparedTextCacheSize() override {
+    return 200.0;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

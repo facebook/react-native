@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {ColorValue} from 'react-native';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
@@ -196,7 +198,7 @@ function PlatformColorsExample() {
 }
 
 function FallbackColorsExample() {
-  let color = {};
+  let color: {label?: string, color?: ColorValue} = {};
   if (Platform.OS === 'ios') {
     color = {
       label: "PlatformColor('bogus', 'systemGreenColor')",

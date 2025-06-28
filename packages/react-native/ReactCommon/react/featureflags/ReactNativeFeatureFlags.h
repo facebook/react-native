@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c80472950cb864b029873b4e64acc976>>
+ * @generated SignedSource<<d724d9cfe69141b40f95df5308894f50>>
  */
 
 /**
@@ -145,6 +145,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
 
   /**
+   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
+   */
+  RN_EXPORT static bool enableInteropViewManagerClassLookUpOptimizationIOS();
+
+  /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
    */
   RN_EXPORT static bool enableLayoutAnimationsOnAndroid();
@@ -230,6 +235,16 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewDebugFeatures();
 
   /**
+   * Enables reading render state when dispatching VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewRenderState();
+
+  /**
+   * Enables window focus detection for prioritizing VirtualView events.
+   */
+  RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -243,6 +258,11 @@ class ReactNativeFeatureFlags {
    * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
+
+  /**
+   * Number cached PreparedLayouts in TextLayoutManager cache
+   */
+  RN_EXPORT static double preparedTextCacheSize();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

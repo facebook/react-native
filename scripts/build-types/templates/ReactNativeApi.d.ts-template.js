@@ -33,6 +33,8 @@ function apiSnapshotTemplate(source: string): string {
 // values and types that can be imported from the react-native package.
 // ----------------------------------------------------------------------------
 
+/* eslint-disable redundant-undefined/redundant-undefined */
+
 ${source}
 `,
   );

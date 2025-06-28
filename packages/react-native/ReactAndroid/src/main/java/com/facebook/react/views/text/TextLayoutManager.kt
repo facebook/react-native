@@ -1007,7 +1007,8 @@ internal object TextLayoutManager {
       attributedString: MapBuffer,
       paragraphAttributes: MapBuffer,
       width: Float,
-      height: Float
+      height: Float,
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?
   ): WritableArray {
     val layout =
         createLayoutForMeasurement(
@@ -1018,7 +1019,7 @@ internal object TextLayoutManager {
             YogaMeasureMode.EXACTLY,
             height,
             YogaMeasureMode.EXACTLY,
-            null /* TODO T226571550: Fix measureLines with ReactTextViewManagerCallback */)
+            reactTextViewManagerCallback)
     return FontMetricsUtil.getFontMetrics(layout.text, layout, context)
   }
 

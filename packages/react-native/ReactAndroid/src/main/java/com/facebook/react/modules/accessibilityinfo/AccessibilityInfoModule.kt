@@ -121,14 +121,13 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
 
   private val isInvertColorsEnabledValue: Boolean
-    get() {
-      try {
-        return Settings.Secure.getInt(
-            contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
-      } catch (e: Settings.SettingNotFoundException) {
-        return false
-      }
-    }
+    get() =
+        try {
+          Settings.Secure.getInt(
+              contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
+        } catch (e: Settings.SettingNotFoundException) {
+          false
+        }
 
   private val isGrayscaleEnabledValue: Boolean
     get() {

@@ -10,6 +10,10 @@
 
 import AnimatedImplementation from './AnimatedImplementation';
 
+export type {DecayAnimationConfig} from './animations/DecayAnimation';
+export type {SpringAnimationConfig} from './animations/SpringAnimation';
+export type {TimingAnimationConfig} from './animations/TimingAnimation';
+
 export {default as FlatList} from './components/AnimatedFlatList';
 export {default as Image} from './components/AnimatedImage';
 export {default as ScrollView} from './components/AnimatedScrollView';
@@ -33,6 +37,7 @@ export type {default as AnimatedNode} from './nodes/AnimatedNode';
 export type {default as AnimatedAddition} from './nodes/AnimatedAddition';
 export type {default as AnimatedDiffClamp} from './nodes/AnimatedDiffClamp';
 export type {default as AnimatedDivision} from './nodes/AnimatedDivision';
+export type {InterpolationConfigType as InterpolationConfig} from './nodes/AnimatedInterpolation';
 export type {default as AnimatedModulo} from './nodes/AnimatedModulo';
 export type {default as AnimatedMultiplication} from './nodes/AnimatedMultiplication';
 export type {default as AnimatedSubtraction} from './nodes/AnimatedSubtraction';

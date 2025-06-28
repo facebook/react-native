@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <tgmath.h>
-
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>

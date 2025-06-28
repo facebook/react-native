@@ -110,7 +110,7 @@ function warmUpRNTesterCLI(isOptimizedMode: boolean): void {
   const buildRNTesterCommandResult = runBuck2Sync([
     'build',
     ...getBuckModesForPlatform(isOptimizedMode),
-    '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
+    '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
   ]);
 
   if (buildRNTesterCommandResult.status !== 0) {

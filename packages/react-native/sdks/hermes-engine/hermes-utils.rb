@@ -234,9 +234,9 @@ def nightly_tarball_url(version)
   artifact_name = "hermes-ios-debug.tar.gz"
   xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-  response = Net::HTTP.get(URI(xml_url))
-  if response.kind_of? Net::HTTPSuccess
-    xml = REXML::Document.new(response)
+  response = Net::HTTP.get_response(URI(xml_url))
+  if response.is_a?(Net::HTTPSuccess)
+    xml = REXML::Document.new(response.body)
     timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
     build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
     full_version = "#{version}-#{timestamp}-#{build_number}"

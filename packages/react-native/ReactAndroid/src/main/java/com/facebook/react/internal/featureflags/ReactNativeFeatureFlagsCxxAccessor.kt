@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c46464d2d10ac0c8a6b7869ae5b3cd2b>>
+ * @generated SignedSource<<275296a2e051e0ae2a17d80836ae9ee1>>
  */
 
 /**
@@ -41,6 +41,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
@@ -58,9 +59,12 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
+  private var enableVirtualViewRenderStateCache: Boolean? = null
+  private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
+  private var preparedTextCacheSizeCache: Double? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -262,6 +266,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean {
+    var cached = enableInteropViewManagerClassLookUpOptimizationIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableInteropViewManagerClassLookUpOptimizationIOS()
+      enableInteropViewManagerClassLookUpOptimizationIOSCache = cached
+    }
+    return cached
+  }
+
   override fun enableLayoutAnimationsOnAndroid(): Boolean {
     var cached = enableLayoutAnimationsOnAndroidCache
     if (cached == null) {
@@ -415,6 +428,24 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableVirtualViewRenderState(): Boolean {
+    var cached = enableVirtualViewRenderStateCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewRenderState()
+      enableVirtualViewRenderStateCache = cached
+    }
+    return cached
+  }
+
+  override fun enableVirtualViewWindowFocusDetection(): Boolean {
+    var cached = enableVirtualViewWindowFocusDetectionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableVirtualViewWindowFocusDetection()
+      enableVirtualViewWindowFocusDetectionCache = cached
+    }
+    return cached
+  }
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
     var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
     if (cached == null) {
@@ -438,6 +469,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxNetworkInspectionEnabled()
       fuseboxNetworkInspectionEnabledCache = cached
+    }
+    return cached
+  }
+
+  override fun preparedTextCacheSize(): Double {
+    var cached = preparedTextCacheSizeCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.preparedTextCacheSize()
+      preparedTextCacheSizeCache = cached
     }
     return cached
   }

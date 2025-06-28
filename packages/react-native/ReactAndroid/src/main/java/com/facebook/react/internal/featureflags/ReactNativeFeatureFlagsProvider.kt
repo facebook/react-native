@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2ab95a5f7bf0dfc52428a90bee2fc10>>
+ * @generated SignedSource<<10197755f82d5b7251563ce1517c8fac>>
  */
 
 /**
@@ -65,6 +65,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
+  @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
+
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
@@ -99,11 +101,17 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
+
+  @DoNotStrip public fun preparedTextCacheSize(): Double
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

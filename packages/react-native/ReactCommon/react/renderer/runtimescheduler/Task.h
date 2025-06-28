@@ -11,6 +11,7 @@
 #include <jsi/jsi.h>
 #include <react/timing/primitives.h>
 
+#include <cstdint>
 #include <optional>
 #include <variant>
 
@@ -41,6 +42,7 @@ struct Task final : public jsi::NativeState {
   SchedulerPriority priority;
   std::optional<std::variant<jsi::Function, RawCallback>> callback;
   HighResTimeStamp expirationTime;
+  uint64_t id;
 
   jsi::Value execute(jsi::Runtime& runtime, bool didUserCallbackTimeout);
 };

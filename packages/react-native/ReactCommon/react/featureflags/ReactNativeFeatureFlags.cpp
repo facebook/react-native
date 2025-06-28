@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b6a9adef957abb86845ab3720fd8968>>
+ * @generated SignedSource<<2206721fac3452fd4d9ca3053cc7bc32>>
  */
 
 /**
@@ -110,6 +110,10 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
 }
 
+bool ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS() {
+  return getAccessor().enableInteropViewManagerClassLookUpOptimizationIOS();
+}
+
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
   return getAccessor().enableLayoutAnimationsOnAndroid();
 }
@@ -178,6 +182,14 @@ bool ReactNativeFeatureFlags::enableVirtualViewDebugFeatures() {
   return getAccessor().enableVirtualViewDebugFeatures();
 }
 
+bool ReactNativeFeatureFlags::enableVirtualViewRenderState() {
+  return getAccessor().enableVirtualViewRenderState();
+}
+
+bool ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection() {
+  return getAccessor().enableVirtualViewWindowFocusDetection();
+}
+
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
@@ -188,6 +200,10 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
 
 bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
   return getAccessor().fuseboxNetworkInspectionEnabled();
+}
+
+double ReactNativeFeatureFlags::preparedTextCacheSize() {
+  return getAccessor().preparedTextCacheSize();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

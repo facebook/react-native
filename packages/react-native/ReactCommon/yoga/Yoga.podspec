@@ -51,7 +51,7 @@ Pod::Spec.new do |spec|
   # E.g. when publishing this spec to a spec repo.
   source_files = 'yoga/**/*.{cpp,h}'
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
-  spec.source_files = source_files
+  spec.source_files = podspec_sources(source_files, "yoga/**/*.h")
   spec.header_mappings_dir = 'yoga'
 
   public_header_files = 'yoga/*.h'

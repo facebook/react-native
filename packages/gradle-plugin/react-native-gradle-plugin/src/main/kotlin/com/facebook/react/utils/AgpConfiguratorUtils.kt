@@ -11,6 +11,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
+import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
@@ -39,6 +40,8 @@ internal object AgpConfiguratorUtils {
                     project.isNewArchEnabled(extension).toString())
                 ext.defaultConfig.buildConfigField(
                     "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
+                ext.defaultConfig.buildConfigField(
+                    "boolean", "IS_EDGE_TO_EDGE_ENABLED", project.isEdgeToEdgeEnabled.toString())
               }
         }
     project.pluginManager.withPlugin("com.android.application", action)

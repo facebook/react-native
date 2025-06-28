@@ -22,7 +22,7 @@ export type NativeModeChangeEvent = $ReadOnly<{
   /**
    * Virtualization mode of the target view.
    *
-   * - `0`: Target view is visible. (default)
+   * - `0`: Target view is visible.
    * - `1`: Target view is hidden, but can be prerendered.
    * - `2`: Target view is hidden.
    *
@@ -62,10 +62,26 @@ export type NativeModeChangeEvent = $ReadOnly<{
 type VirtualViewNativeProps = $ReadOnly<{
   ...ViewProps,
 
-  // Whether the initial mode should be `Hidden`.
+  /**
+   * Whether the initial mode should be `Hidden`.
+   */
   initialHidden?: boolean,
 
-  // Events
+  /**
+   * Render state of children.
+   *
+   * - `0`: Reserved to represent unknown future values.
+   * - `1`: Children are rendered.
+   * - `2`: Children are not rendered.
+   *
+   * WORKAROUND: As of this writing, codegen doesn't support enums, so we need
+   * to convert `number` into an enum in `VirtualView`.
+   */
+  renderState: Int32,
+
+  /**
+   * See `NativeModeChangeEvent`.
+   */
   onModeChange?: ?DirectEventHandler<NativeModeChangeEvent>,
 }>;
 

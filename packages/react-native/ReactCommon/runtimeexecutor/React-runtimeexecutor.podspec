@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  s.source_files           = podspec_sources(["ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"], ["ReactCommon/*.h", "platform/ios/**/*.h"])
   s.header_dir             = "ReactCommon"
 
   if ENV['USE_FRAMEWORKS']

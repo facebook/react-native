@@ -10,7 +10,6 @@ package com.facebook.react.uimanager
 import android.graphics.Color
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
-import java.util.Arrays
 
 /** Keys for props that need to be shared across multiple classes. */
 public object ViewProps {
@@ -206,7 +205,7 @@ public object ViewProps {
           Spacing.RIGHT)
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
-          Arrays.asList(
+          listOf(
               ALIGN_SELF,
               ALIGN_ITEMS,
               COLLAPSABLE,

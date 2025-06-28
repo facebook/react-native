@@ -13,6 +13,10 @@
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/HostPlatformColor.h>
 
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
+#endif
+
 namespace facebook::react {
 
 /*
@@ -66,6 +70,12 @@ SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 SharedColor clearColor();
 SharedColor blackColor();
 SharedColor whiteColor();
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const SharedColor& sharedColor) {
+  return *sharedColor;
+}
+#endif
 
 } // namespace facebook::react
 

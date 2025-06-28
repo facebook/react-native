@@ -495,6 +495,14 @@ let reactRCTNetwork = RNTarget(
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
+/// React-RCTVibration.podspec
+let reactRCTVibration = RNTarget(
+  name: .reactRCTVibration,
+  path: "Libraries/Vibration",
+  linkedFrameworks: ["AudioToolbox"],
+  dependencies: [.yoga, .jsi, .reactTurboModuleCore]
+)
+
 /// React-RCTAppDelegate.podspec
 let reactAppDelegate = RNTarget(
   name: .reactAppDelegate,
@@ -560,6 +568,7 @@ let targets = [
   reactRCTText,
   reactRCTBlob,
   reactRCTNetwork,
+  reactRCTVibration,
   reactRCTLinking,
   reactCoreModules,
   reactTurboModuleBridging,
@@ -731,6 +740,7 @@ extension String {
   static let reactRCTText = "React-RCTText"
   static let reactRCTBlob = "React-RCTBlob"
   static let reactRCTNetwork = "React-RCTNetwork"
+  static let reactRCTVibration = "React-RCTVibration"
   static let reactRCTActionSheet = "React-RCTActionSheet" // Empty target
   static let reactRCTLinking = "React-RCTLinking"
   static let reactCoreModules = "React-CoreModules"

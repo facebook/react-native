@@ -13,6 +13,8 @@ import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import kotlin.math.pow
+import kotlin.math.sin
 
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
@@ -27,8 +29,8 @@ internal class SimpleSpringInterpolator @JvmOverloads constructor(springDamping:
       // We need to replace this equation with the right Factor that accounts for damping and
       // friction
       (1 +
-              Math.pow(2.0, (-10 * input).toDouble()) *
-                  Math.sin((input - _springDamping / 4) * Math.PI * 2 / _springDamping))
+              2.0.pow((-10 * input).toDouble()) *
+                  sin((input - _springDamping / 4) * Math.PI * 2 / _springDamping))
           .toFloat()
 
   companion object {

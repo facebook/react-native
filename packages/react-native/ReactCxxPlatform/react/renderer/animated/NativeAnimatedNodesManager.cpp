@@ -743,6 +743,9 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
       (layoutStyleUpdated || forceFabricCommit ||
        directManipulationCallback_ == nullptr)) {
     mergeObjects(updateViewProps_[viewTag], props);
+
+    // Must call direct manipulation to set final values on components.
+    mergeObjects(updateViewPropsDirect_[viewTag], props);
   } else if (directManipulationCallback_ != nullptr) {
     mergeObjects(updateViewPropsDirect_[viewTag], props);
   }
@@ -811,12 +814,6 @@ bool NativeAnimatedNodesManager::commitProps() {
 
   if (fabricCommitCallback_ != nullptr) {
     if (!updateViewProps_.empty()) {
-      // Must call direct manipulation to set final values on components.
-      if (directManipulationCallback_ != nullptr) {
-        for (const auto& [viewTag, props] : updateViewProps_) {
-          directManipulationCallback_(viewTag, folly::dynamic(props));
-        }
-      }
       fabricCommitCallback_(updateViewProps_);
       updateViewProps_.clear();
     }

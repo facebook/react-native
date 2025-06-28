@@ -26,6 +26,13 @@ export enum VirtualViewMode {
   Hidden = 2,
 }
 
+// @see VirtualViewNativeComponent
+export enum VirtualViewRenderState {
+  Unknown = 0,
+  Rendered = 1,
+  None = 2,
+}
+
 export type Rect = $ReadOnly<{
   x: number,
   y: number,
@@ -83,26 +90,23 @@ function createVirtualView(initialState: State): VirtualViewComponent {
               thresholdRect: event.nativeEvent.thresholdRect,
             });
 
-      switch (mode) {
-        case VirtualViewMode.Visible: {
+      match (mode) {
+        VirtualViewMode.Visible => {
           setState(NotHidden);
           emitModeChange?.();
-          break;
         }
-        case VirtualViewMode.Prerender: {
+        VirtualViewMode.Prerender => {
           startTransition(() => {
             setState(NotHidden);
             emitModeChange?.();
           });
-          break;
         }
-        case VirtualViewMode.Hidden: {
+        VirtualViewMode.Hidden => {
           const {height} = event.nativeEvent.targetRect;
           startTransition(() => {
             setState(height as HiddenHeight);
             emitModeChange?.();
           });
-          break;
         }
       }
     };
@@ -112,6 +116,11 @@ function createVirtualView(initialState: State): VirtualViewComponent {
         initialHidden={initialHidden}
         nativeID={nativeID}
         ref={ref}
+        renderState={
+          (isHidden
+            ? VirtualViewRenderState.None
+            : VirtualViewRenderState.Rendered) as number
+        }
         style={
           isHidden
             ? StyleSheet.compose(style, {

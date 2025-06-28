@@ -27,8 +27,8 @@ import NativeFantom, {
 import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
-const schedulerPriorityImmediate =
-  nativeRuntimeScheduler.unstable_ImmediatePriority;
+const {unstable_scheduleCallback, unstable_ImmediatePriority} =
+  nativeRuntimeScheduler;
 
 export type RootConfig = {
   viewportWidth?: number,
@@ -131,7 +131,7 @@ export type {Root};
 
 export {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
-const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
+const DEFAULT_TASK_PRIORITY = unstable_ImmediatePriority;
 
 /**
  * Schedules a task to run on the event loop.
@@ -154,7 +154,7 @@ const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
  * ```
  */
 export function scheduleTask(task: () => void | Promise<void>) {
-  nativeRuntimeScheduler.unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
+  unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
 }
 
 let flushingQueue = false;

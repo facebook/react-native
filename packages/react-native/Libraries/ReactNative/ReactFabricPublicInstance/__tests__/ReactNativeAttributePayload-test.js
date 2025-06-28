@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PartialAttributeConfiguration as AttributeConfiguration} from '../../../Renderer/shims/ReactNativeTypes';
+import type {AttributeConfiguration} from '../../../Renderer/shims/ReactNativeTypes';
 
 const {create, diff} = require('../ReactNativeAttributePayload');
 
