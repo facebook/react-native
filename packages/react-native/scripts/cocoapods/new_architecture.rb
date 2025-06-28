@@ -178,7 +178,12 @@ class NewArchitectureHelper
                 next if should_skip
 
                 # Read the file as a plist
-                info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                begin
+                    info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                rescue StandardError => e
+                    Pod::UI.warn("Failed to read Info.plist at #{infoPlistFile}: #{e.message}")
+                    next
+                end
                 # Check if it contains the RCTNewArchEnabled key
                 if info_plist["RCTNewArchEnabled"] and info_plist["RCTNewArchEnabled"] == new_arch_enabled
                     next
