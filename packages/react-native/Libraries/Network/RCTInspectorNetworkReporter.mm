@@ -7,6 +7,7 @@
 
 #import "RCTInspectorNetworkReporter.h"
 
+#import <React/RCTLog.h>
 #import <jsinspector-modern/network/NetworkReporter.h>
 
 using namespace facebook::react::jsinspector_modern;
@@ -42,6 +43,13 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 } // namespace
 #endif
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+
+// Dictionary to buffer incremental response bodies (CDP debugging active only)
+static NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil;
+
+#endif
+
 @implementation RCTInspectorNetworkReporter {
 }
 
@@ -62,6 +70,18 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
       requestId.stringValue.UTF8String, requestInfo, encodedDataLength, std::nullopt);
 }
 
++ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request
+{
+  Headers headersMap;
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process additional request info for CDP reporting
+  headersMap = convertNSDictionaryToHeaders(request.allHTTPHeaderFields);
+#endif
+
+  NetworkReporter::getInstance().reportConnectionTiming(requestId.stringValue.UTF8String, headersMap);
+}
+
 + (void)reportResponseStart:(NSNumber *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
@@ -80,9 +100,94 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
       requestId.stringValue.UTF8String, responseInfo, response.expectedContentLength);
 }
 
++ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data
+{
+  NetworkReporter::getInstance().reportDataReceived(requestId.stringValue.UTF8String, (int)data.length, std::nullopt);
+}
+
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength
 {
   NetworkReporter::getInstance().reportResponseEnd(requestId.stringValue.UTF8String, encodedDataLength);
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Check for buffered response body and flush to NetworkReporter
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if (responseBuffers) {
+    NSMutableString *buffer = responseBuffers[requestId];
+    if (buffer) {
+      if (networkReporter.isDebuggingEnabled() && buffer.length > 0) {
+        networkReporter.storeResponseBody(requestId.stringValue.UTF8String, [buffer UTF8String], false);
+      }
+      [responseBuffers removeObjectForKey:requestId];
+    }
+  }
+#endif
+}
+
++ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(bool)cancelled
+{
+  NetworkReporter::getInstance().reportRequestFailed(requestId.stringValue.UTF8String, cancelled);
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Clear buffer for request
+  if (responseBuffers) {
+    [responseBuffers removeObjectForKey:requestId];
+  }
+#endif
+}
+
++ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(id)data base64Encoded:(bool)base64Encoded
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process response body and report to NetworkReporter
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if ([data isKindOfClass:[NSData class]] && [(NSData *)data length] > 0) {
+    @try {
+      NSString *encodedString = [(NSData *)data base64EncodedStringWithOptions:0];
+      if (encodedString) {
+        networkReporter.storeResponseBody(requestId.stringValue.UTF8String, encodedString.UTF8String, base64Encoded);
+      } else {
+        RCTLogWarn(@"Failed to encode response data for request %@", requestId);
+      }
+    } @catch (NSException *exception) {
+      RCTLogWarn(@"Exception while encoding response data: %@", exception.reason);
+    }
+  } else if ([data isKindOfClass:[NSString class]] && [(NSString *)data length] > 0) {
+    networkReporter.storeResponseBody(requestId.stringValue.UTF8String, [(NSString *)data UTF8String], base64Encoded);
+  }
+#endif
+}
+
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Buffer incremental response body contents
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if (!responseBuffers) {
+    responseBuffers = [NSMutableDictionary dictionary];
+  }
+
+  // Get or create buffer for this requestId
+  NSMutableString *buffer = responseBuffers[requestId];
+  if (!buffer) {
+    buffer = [NSMutableString string];
+    responseBuffers[requestId] = buffer;
+  }
+
+  [buffer appendString:data];
+#endif
 }
 
 @end
