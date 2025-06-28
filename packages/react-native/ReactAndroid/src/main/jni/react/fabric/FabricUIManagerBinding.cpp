@@ -281,10 +281,7 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
   for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
        ++it) {
     auto& ancestor = *it;
-    if (ancestor.first.get().getTraits().check(
-            ShadowNodeTraits::Trait::FormsStackingContext)) {
-      ancestorTags.push_back(ancestor.first.get().getTag());
-    }
+    ancestorTags.push_back(ancestor.first.get().getTag());
   }
 
   jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
