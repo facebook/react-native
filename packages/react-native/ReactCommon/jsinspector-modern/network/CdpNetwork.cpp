@@ -94,6 +94,18 @@ folly::dynamic RequestWillBeSentParams::toDynamic() const {
   return params;
 }
 
+folly::dynamic RequestWillBeSentExtraInfoParams::toDynamic() const {
+  folly::dynamic params = folly::dynamic::object;
+
+  params["requestId"] = requestId;
+  params["associatedCookies"] = folly::dynamic::array;
+  params["headers"] = headersToDynamic(headers);
+  params["connectTiming"] =
+      folly::dynamic::object("requestTime", connectTiming.requestTime);
+
+  return params;
+}
+
 folly::dynamic ResponseReceivedParams::toDynamic() const {
   folly::dynamic params = folly::dynamic::object;
 
@@ -103,6 +115,17 @@ folly::dynamic ResponseReceivedParams::toDynamic() const {
   params["type"] = type;
   params["response"] = response.toDynamic();
   params["hasExtraInfo"] = hasExtraInfo;
+
+  return params;
+}
+
+folly::dynamic DataReceivedParams::toDynamic() const {
+  folly::dynamic params = folly::dynamic::object;
+
+  params["requestId"] = requestId;
+  params["timestamp"] = timestamp;
+  params["dataLength"] = dataLength;
+  params["encodedDataLength"] = encodedDataLength;
 
   return params;
 }

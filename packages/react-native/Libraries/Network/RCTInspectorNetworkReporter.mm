@@ -70,6 +70,18 @@ static NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil
       requestId.stringValue.UTF8String, requestInfo, encodedDataLength, std::nullopt);
 }
 
++ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request
+{
+  Headers headersMap;
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process additional request info for CDP reporting
+  headersMap = convertNSDictionaryToHeaders(request.allHTTPHeaderFields);
+#endif
+
+  NetworkReporter::getInstance().reportConnectionTiming(requestId.stringValue.UTF8String, headersMap);
+}
+
 + (void)reportResponseStart:(NSNumber *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
@@ -86,6 +98,11 @@ static NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil
 
   NetworkReporter::getInstance().reportResponseStart(
       requestId.stringValue.UTF8String, responseInfo, response.expectedContentLength);
+}
+
++ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data
+{
+  NetworkReporter::getInstance().reportDataReceived(requestId.stringValue.UTF8String, (int)data.length, std::nullopt);
 }
 
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength

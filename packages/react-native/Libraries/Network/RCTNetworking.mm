@@ -648,6 +648,7 @@ RCT_EXPORT_MODULE()
         ];
 
         if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+          [RCTInspectorNetworkReporter reportDataReceived:task.requestID data:data];
           [RCTInspectorNetworkReporter maybeStoreResponseBodyIncremental:task.requestID data:responseString];
         }
         [weakSelf sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
@@ -701,6 +702,7 @@ RCT_EXPORT_MODULE()
       [RCTInspectorNetworkReporter reportRequestStart:task.requestID
                                               request:request
                                     encodedDataLength:task.response.expectedContentLength];
+      [RCTInspectorNetworkReporter reportConnectionTiming:task.requestID request:task.request];
     }
   }
 

@@ -32,6 +32,17 @@
          encodedDataLength:(int)encodedDataLength;
 
 /**
+ * Report timestamp for sending the network request, and (in a debug build)
+ * provide final headers to be reported via CDP.
+ *
+ * - Corresponds to `Network.requestWillBeSentExtraInfo` in CDP.
+ * - Corresponds to `PerformanceResourceTiming.domainLookupStart`,
+ *   `PerformanceResourceTiming.connectStart`. Defined as "immediately before
+ *   the browser starts to establish the connection to the server".
+ */
++ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request;
+
+/**
  * Report when HTTP response headers have been received, corresponding to
  * when the first byte of the response is available.
  *
@@ -42,6 +53,13 @@
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
                     headers:(NSDictionary<NSString *, NSString *> *)headers;
+
+/**
+ * Report when additional chunks of the response body have been received.
+ *
+ * Corresponds to `Network.dataReceived` in CDP.
+ */
++ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data;
 
 /**
  * Report when a network request is complete and we are no longer receiving
