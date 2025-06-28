@@ -683,6 +683,31 @@ describe('Animated', () => {
       expect(animation.reset).toHaveBeenCalledTimes(1);
       expect(cb).toBeCalledWith({finished: false});
     });
+
+    it('stops looping native animations', () => {
+      const value = new Animated.Value(0);
+      const animation = Animated.timing(value, {
+        toValue: 1,
+        useNativeDriver: true,
+      });
+
+      jest.spyOn(animation, '_startNativeLoop');
+      jest.spyOn(animation, 'stop');
+
+      const callback = jest.fn();
+
+      const loop = Animated.loop(animation);
+      loop.start(callback);
+
+      expect(animation._startNativeLoop).toBeCalledTimes(1);
+      expect(animation.stop).not.toBeCalled();
+      expect(callback).not.toBeCalled();
+
+      loop.stop();
+
+      expect(animation.stop).toBeCalled();
+      expect(callback).toBeCalledWith({finished: false});
+    });
   });
 
   it('does not reset animation in a loop if resetBeforeIteration is false', () => {
