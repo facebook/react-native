@@ -15,7 +15,10 @@ import type {
   PerformanceEntryList,
   PerformanceEntryType,
 } from './PerformanceEntry';
-import type {DetailType, PerformanceMarkOptions} from './UserTiming';
+import type {
+  PerformanceMarkOptions,
+  PerformanceMeasureOptions,
+} from './UserTiming';
 
 import DOMException from '../errors/DOMException';
 import {setPlatformObject} from '../webidl/PlatformObjects';
@@ -37,13 +40,6 @@ declare var global: {
 
 const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
-
-export type PerformanceMeasureOptions = {
-  detail?: DetailType,
-  start?: DOMHighResTimeStamp,
-  duration?: DOMHighResTimeStamp,
-  end?: DOMHighResTimeStamp,
-};
 
 const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
   ['mark', 'measure'];

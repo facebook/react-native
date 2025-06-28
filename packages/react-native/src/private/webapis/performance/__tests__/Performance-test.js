@@ -289,4 +289,30 @@ describe('Performance', () => {
 
     expect(Array.from(eventCounts.values())).toStrictEqual([2, 3, 6]);
   });
+
+  it('detail field is defined as null by default', () => {
+    expect(performance.mark('mark').detail).toBeNull();
+    expect(performance.measure('measure').detail).toBeNull();
+    performance.clearMarks();
+    performance.clearMeasures();
+
+    expect(performance.mark('mark', {}).detail).toBeNull();
+    expect(performance.measure('measure', {start: 0}).detail).toBeNull();
+    performance.clearMarks();
+    performance.clearMeasures();
+
+    expect(performance.mark('mark', {detail: null}).detail).toBeNull();
+    expect(
+      performance.measure('measure', {start: 0, detail: null}).detail,
+    ).toBeNull();
+    performance.clearMarks();
+    performance.clearMeasures();
+
+    expect(performance.mark('mark', {detail: false}).detail).not.toBeNull();
+    expect(
+      performance.measure('measure', {start: 0, detail: false}).detail,
+    ).not.toBeNull();
+    performance.clearMarks();
+    performance.clearMeasures();
+  });
 });
