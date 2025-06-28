@@ -20,7 +20,7 @@ internal class SoundManagerModule(reactContext: ReactApplicationContext?) :
     NativeSoundManagerSpec(reactContext) {
   override fun playTouchSound() {
     val audioManager =
-        getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK)
   }
 

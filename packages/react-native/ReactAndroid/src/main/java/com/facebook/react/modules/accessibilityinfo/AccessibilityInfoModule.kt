@@ -54,7 +54,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendReduceMotionChangeEvent()
           }
         }
@@ -67,7 +67,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendHighTextContrastChangeEvent()
           }
         }
@@ -90,7 +90,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val appContext = context.applicationContext
     accessibilityManager =
         appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    contentResolver = getReactApplicationContext().getContentResolver()
+    contentResolver = reactApplicationContext.contentResolver
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue

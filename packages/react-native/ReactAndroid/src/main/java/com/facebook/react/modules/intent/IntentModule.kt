@@ -34,7 +34,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     synchronized(this) {
       pendingOpenURLPromises.clear()
       initialURLListener
-          ?.let { listener -> getReactApplicationContext().removeLifecycleEventListener(listener) }
+          ?.let { listener -> reactApplicationContext.removeLifecycleEventListener(listener) }
           .also { initialURLListener = null }
     }
     super.invalidate()
@@ -47,7 +47,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
    */
   override fun getInitialURL(promise: Promise) {
     try {
-      val currentActivity = getReactApplicationContext().getCurrentActivity()
+      val currentActivity = reactApplicationContext.getCurrentActivity()
       if (currentActivity == null) {
         waitForActivityAndGetInitialURL(promise)
         return
@@ -82,7 +82,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     initialURLListener =
         object : LifecycleEventListener {
           override fun onHostResume() {
-            getReactApplicationContext().removeLifecycleEventListener(this)
+            reactApplicationContext.removeLifecycleEventListener(this)
             synchronized(this@IntentModule) {
               for (pendingPromise in pendingOpenURLPromises) {
                 getInitialURL(pendingPromise)
@@ -96,7 +96,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
           override fun onHostDestroy() = Unit
         }
-    getReactApplicationContext().addLifecycleEventListener(initialURLListener)
+    reactApplicationContext.addLifecycleEventListener(initialURLListener)
   }
 
   /**

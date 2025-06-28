@@ -38,7 +38,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * permission had been granted, false otherwise. See [Activity.checkSelfPermission].
    */
   public override fun checkPermission(permission: String, promise: Promise): Unit {
-    val context = getReactApplicationContext().getBaseContext()
+    val context = reactApplicationContext.baseContext
     promise.resolve(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
   }
 
