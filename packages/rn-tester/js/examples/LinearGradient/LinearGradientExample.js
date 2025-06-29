@@ -290,4 +290,18 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Gradient with transparent color transition',
+    name: 'transparent-color-transition',
+    render(): React.Node {
+      return (
+        <GradientBox
+          style={{
+            experimental_backgroundImage:
+              'linear-gradient(to right, red, transparent)',
+          }}
+        />
+      );
+    },
+  },
 ];
