@@ -107,6 +107,18 @@ folly::dynamic ResponseReceivedParams::toDynamic() const {
   return params;
 }
 
+folly::dynamic LoadingFailedParams::toDynamic() const {
+  folly::dynamic params = folly::dynamic::object;
+
+  params["requestId"] = requestId;
+  params["timestamp"] = timestamp;
+  params["type"] = type;
+  params["errorText"] = errorText;
+  params["canceled"] = canceled;
+
+  return params;
+}
+
 folly::dynamic LoadingFinishedParams::toDynamic() const {
   folly::dynamic params = folly::dynamic::object;
 
