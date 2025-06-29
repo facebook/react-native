@@ -12,7 +12,6 @@
 #endif
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-#include <folly/dynamic.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
 #endif
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -21,6 +20,7 @@
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <chrono>
 #endif
+#include <glog/logging.h>
 #include <stdexcept>
 
 namespace facebook::react::jsinspector_modern {
@@ -270,6 +270,32 @@ void NetworkReporter::reportResponseEnd(
   frontendChannel_(
       cdp::jsonNotification("Network.loadingFinished", params.toDynamic()));
 #endif
+}
+
+void NetworkReporter::storeResponseBody(
+    const std::string& requestId,
+    const std::string& body,
+    bool base64Encoded) {
+  try {
+    std::lock_guard<std::mutex> lock(requestBodyMutex_);
+    requestBodyBuffer_.put(requestId, body, base64Encoded);
+  } catch (const std::runtime_error& e) {
+    LOG(WARNING) << "Failed to store CDP response body for requestId: "
+                 << requestId;
+  }
+}
+
+std::tuple<std::string, bool> NetworkReporter::getResponseBody(
+    const std::string& requestId) {
+  std::lock_guard<std::mutex> lock(requestBodyMutex_);
+  auto responseBody = requestBodyBuffer_.get(requestId);
+
+  if (!responseBody.has_value()) {
+    throw std::runtime_error("No preview found");
+  }
+
+  return std::tuple(
+      responseBody->get().data, responseBody->get().base64Encoded);
 }
 
 } // namespace facebook::react::jsinspector_modern
