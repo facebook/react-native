@@ -56,9 +56,7 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #else
           false,
 #endif
-      .networkInspectionEnabled =
-          ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-          ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
+      .networkInspectionEnabled = true,
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
