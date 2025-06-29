@@ -48,7 +48,7 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
   /*
    * Defines can the text be selected (and copied) or not.
    */
-  bool isSelectable{};
+  bool selectable{};
 
   bool onTextLayout{};
 
