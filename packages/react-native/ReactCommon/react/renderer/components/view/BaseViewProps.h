@@ -14,6 +14,9 @@
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/BackgroundImage.h>
+#include <react/renderer/graphics/BackgroundPosition.h>
+#include <react/renderer/graphics/BackgroundRepeat.h>
+#include <react/renderer/graphics/BackgroundSize.h>
 #include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
@@ -75,6 +78,15 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   // Background Image
   std::vector<BackgroundImage> backgroundImage{};
+
+  // Background Size
+  std::vector<BackgroundSize> backgroundSize{};
+
+  // Background Position
+  std::vector<BackgroundPosition> backgroundPosition{};
+
+  // Background Repeat
+  std::vector<BackgroundRepeat> backgroundRepeat{};
 
   // MixBlendMode
   BlendMode mixBlendMode{BlendMode::Normal};
