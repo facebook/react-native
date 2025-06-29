@@ -27676,7 +27676,6 @@ using EventPipe = std::function<void(
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& payload)>;
-using EventPipeConclusion = std::function<void(jsi::Runtime& runtime)>;
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/EventQueue.h}:
@@ -27710,7 +27709,6 @@ class EventQueueProcessor {
  public:
   EventQueueProcessor(
       EventPipe eventPipe,
-      EventPipeConclusion eventPipeConclusion,
       StatePipe statePipe,
       std::weak_ptr<EventLogger> eventLogger);
   void flushEvents(jsi::Runtime& runtime, std::vector<RawEvent>&& events) const;
@@ -35944,7 +35942,6 @@ class RuntimeSchedulerBase {
   virtual bool getShouldYield() noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual HighResTimeStamp now() const noexcept = 0;
-  virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
       SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
@@ -35988,7 +35985,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   bool getShouldYield() noexcept override;
   SchedulerPriority getCurrentPriorityLevel() const noexcept override;
   HighResTimeStamp now() const noexcept override;
-  void callExpiredTasks(jsi::Runtime& runtime) override;
   void scheduleRenderingUpdate(
       SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
@@ -36087,7 +36083,6 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   bool getShouldYield() noexcept override;
   SchedulerPriority getCurrentPriorityLevel() const noexcept override;
   HighResTimeStamp now() const noexcept override;
-  void callExpiredTasks(jsi::Runtime& runtime) override;
   void scheduleRenderingUpdate(
       SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
@@ -36151,7 +36146,6 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   bool getShouldYield() noexcept override;
   SchedulerPriority getCurrentPriorityLevel() const noexcept override;
   HighResTimeStamp now() const noexcept override;
-  void callExpiredTasks(jsi::Runtime& runtime) override;
   void scheduleRenderingUpdate(
       SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;

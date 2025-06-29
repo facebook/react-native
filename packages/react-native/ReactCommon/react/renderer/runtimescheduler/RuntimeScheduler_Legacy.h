@@ -110,16 +110,6 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    */
   HighResTimeStamp now() const noexcept override;
 
-  /*
-   * Expired task is a task that should have been already executed. Designed to
-   * be called in the event pipeline after an event is dispatched to React.
-   * React may schedule events with immediate priority which need to be handled
-   * before the next event is sent to React.
-   *
-   * Thread synchronization must be enforced externally.
-   */
-  void callExpiredTasks(jsi::Runtime& runtime) override;
-
   void scheduleRenderingUpdate(
       SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;

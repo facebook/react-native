@@ -75,11 +75,6 @@ Scheduler::Scheduler(
         runtime);
   };
 
-  auto eventPipeConclusion = [runtimeScheduler =
-                                  runtimeScheduler_](jsi::Runtime& runtime) {
-    runtimeScheduler->callExpiredTasks(runtime);
-  };
-
   auto statePipe = [uiManager](const StateUpdate& stateUpdate) {
     uiManager->updateState(stateUpdate);
   };
@@ -89,8 +84,7 @@ Scheduler::Scheduler(
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
-      EventQueueProcessor(
-          eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
+      EventQueueProcessor(eventPipe, statePipe, eventPerformanceLogger_),
       std::move(eventBeat),
       statePipe,
       eventPerformanceLogger_);
