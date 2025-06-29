@@ -19,6 +19,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNot
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /** Module that exposes Android Constants to JS. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
 internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     NativeDeviceInfoSpec(reactContext), LifecycleEventListener {

@@ -22,6 +22,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.module.annotations.ReactModule
 
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeDialogManagerAndroidSpec.NAME)
 public class DialogModule(reactContext: ReactApplicationContext?) :
     NativeDialogManagerAndroidSpec(reactContext), LifecycleEventListener {
@@ -70,6 +71,7 @@ public class DialogModule(reactContext: ReactApplicationContext?) :
     }
   }
 
+  @Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
   internal inner class AlertFragmentListener(private val callback: Callback) :
       DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
     private var callbackConsumed = false

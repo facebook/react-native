@@ -23,6 +23,7 @@ import com.facebook.react.modules.core.PermissionListener
 import java.util.ArrayList
 
 /** Module that exposes the Android M Permission system to JS. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativePermissionsAndroidSpec.NAME)
 public class PermissionsModule(reactContext: ReactApplicationContext?) :
     NativePermissionsAndroidSpec(reactContext), PermissionListener {

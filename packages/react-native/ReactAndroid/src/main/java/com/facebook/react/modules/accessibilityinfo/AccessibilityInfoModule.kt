@@ -59,6 +59,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
+
   // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
   private val highTextContrastObserver: ContentObserver =
       object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
