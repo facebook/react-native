@@ -1230,7 +1230,11 @@ public class ReactScrollView extends ScrollView
         float direction = Math.signum(mScroller.getFinalY() - mScroller.getStartY());
         float flingVelocityY = mScroller.getCurrVelocity() * direction;
 
-        mScroller.fling(getScrollX(), scrollY, 0, (int) flingVelocityY, 0, 0, 0, Integer.MAX_VALUE);
+        // Proposed fix to handle overscroll
+        int maxScrollY = computeVerticalScrollRange() - getHeight(); // Calculate the actual scrollable range
+        maxScrollY = Math.max(0, maxScrollY); // Calculate the max bound to prevent negative bounds
+
+        mScroller.fling(getScrollX(), scrollY, 0, (int) flingVelocityY, 0, 0, 0, maxScrollY);
       } else {
         scrollTo(getScrollX(), scrollY + (mScroller.getCurrX() - scrollerYBeforeTick));
       }
