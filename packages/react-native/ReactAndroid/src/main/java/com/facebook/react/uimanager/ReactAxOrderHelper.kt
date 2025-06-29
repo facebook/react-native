@@ -46,14 +46,8 @@ private object ReactAxOrderHelper {
 
       if (isIncluded && view.isFocusable) {
         axOrderViews[axOrderIds.indexOf(nativeId)].add(view)
-        if (parent != view) {
-          view.setTag(R.id.accessibility_order_parent, parent)
-        }
       } else if (isContained && view.isFocusable) {
         axOrderViews[axOrderIds.indexOf(containerId)].add(view)
-        if (parent != view) {
-          view.setTag(R.id.accessibility_order_parent, parent)
-        }
       }
 
       if (isNestedAxOrder) {

@@ -171,6 +171,20 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @Override
+  public void onDropViewInstance(@NonNull T view) {
+    super.onDropViewInstance(view);
+    AccessibilityDelegateCompat axDelegate = ViewCompat.getAccessibilityDelegate(view);
+
+    if (axDelegate instanceof ReactAccessibilityDelegate) {
+      ((ReactAccessibilityDelegate) axDelegate).cleanUp();
+    }
+
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view).setOnHierarchyChangeListener(null);
+    }
+  }
+
+  @Override
   protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {
     super.addEventEmitters(reactContext, view);
 
@@ -351,6 +365,9 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 @Override
                 public void onChildViewAdded(View parent, View child) {
                   view.setTag(R.id.accessibility_order_dirty, true);
+                  child.setTag(R.id.accessibility_order_parent, parent);
+                  ReactAccessibilityDelegate.setDelegate(
+                      child, child.isFocusable(), child.getImportantForAccessibility());
 
                   // We also want to listen to changes on the hierarchy of nested ViewGroups
                   if (child instanceof ViewGroup) {
