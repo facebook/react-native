@@ -16,6 +16,8 @@
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
 
@@ -735,3 +737,93 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_COMPONENT
+@implementation RCTShadowView
+@synthesize reactTag = _reactTag;
+@synthesize rootTag = _rootTag;
+
++ (YGConfigRef)yogaConfig
+{
+  return YGConfigNew();
+}
+
+- (NSNumber *)reactTagAtPoint:(CGPoint)point
+{
+  return [NSNumber numberWithInt:0];
+}
+
+- (BOOL)isReactRootView
+{
+  return NO;
+}
+
+- (NSArray<RCTShadowView *> *)reactSubviews
+{
+  return @[];
+}
+- (RCTShadowView *)reactSuperview
+{
+  return nil;
+}
+- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)atIndex
+{
+}
+- (void)removeReactSubview:(RCTShadowView *)subview
+{
+}
+
+- (void)setLocalData:(NSObject *)localData
+{
+}
+
+#pragma mark - Layout
+- (void)layoutWithMinimumSize:(CGSize)minimumSize
+                  maximumSize:(CGSize)maximumSize
+              layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
+                layoutContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics layoutContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
+{
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  return CGSizeMake(0, 0);
+}
+
+- (BOOL)canHaveSubviews
+{
+  return NO;
+}
+
+- (BOOL)isYogaLeafNode
+{
+  return NO;
+}
+
+- (void)didUpdateReactSubviews
+{
+}
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+}
+
+- (CGRect)measureLayoutRelativeToAncestor:(RCTShadowView *)ancestor
+{
+  return CGRectNull;
+}
+
+- (BOOL)viewIsDescendantOf:(RCTShadowView *)ancestor
+{
+  return NO;
+}
+
+@end
+#endif // RCT_FIT_RM_OLD_COMPONENT

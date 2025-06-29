@@ -7,6 +7,8 @@
 
 #import <React/RCTComponent.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,3 +29,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

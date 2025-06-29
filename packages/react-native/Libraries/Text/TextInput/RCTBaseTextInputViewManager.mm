@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextInputViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFont.h>
@@ -178,3 +180,5 @@ RCT_EXPORT_METHOD(setTextAndSelection
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
