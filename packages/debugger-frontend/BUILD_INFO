@@ -1,9 +1,9 @@
-@generated SignedSource<<634e06e29a06ec6a22c087e7f8b01796>>
-Git revision: 35c4630bd58bbcbc6f4c54c084b4e52994dc4940
+@generated SignedSource<<2380d7b145246b2c055afff374b9109f>>
+Git revision: 6ed747e66aa53bbd4e1e22f281e8cb62d7a60f96
 Built with --nohooks: false
 Is local checkout: false
 Remote URL: https://github.com/facebook/react-native-devtools-frontend
-Remote branch: main
+Remote branch: network-hide-request-initiator
 GN build args (overrides only): 
   is_official_build = true
 Git status in checkout:
