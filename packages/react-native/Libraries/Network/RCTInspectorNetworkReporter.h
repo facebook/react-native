@@ -53,8 +53,26 @@
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength;
 
 /**
+ * Report when a network request has failed.
+ *
+ * - Corresponds to `Network.loadingFailed` in CDP.
+ */
++ (void)reportRequestFailed:(NSNumber *)requestId;
+
+/**
  * Store response body preview. This is an optional reporting method, and is a
  * no-op if CDP debugging is disabled.
  */
 + (void)maybeStoreResponseBody:(NSNumber *)requestId data:(NSData *)data base64Encoded:(bool)base64Encoded;
+
+/**
+ * Incrementally store a response body preview, when a string response is
+ * received in chunks. Buffered contents will be flushed to `NetworkReporter`
+ * with `reportResponseEnd`.
+ *
+ * As with `maybeStoreResponseBody`, calling this method is optional and a
+ * no-op if CDP debugging is disabled.
+ */
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data;
+
 @end
