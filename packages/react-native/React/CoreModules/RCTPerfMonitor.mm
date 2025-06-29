@@ -300,6 +300,7 @@ RCT_EXPORT_MODULE()
   [RCTKeyWindow() addSubview:self.container];
 
   _uiDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(threadUpdate:)];
+  _uiDisplayLink.preferredFramesPerSecond = [UIScreen mainScreen].maximumFramesPerSecond;
   [_uiDisplayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
   self.container.frame =
