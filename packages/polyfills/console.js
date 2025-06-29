@@ -585,6 +585,7 @@ if (global.nativeLoggingHook) {
   }
 
   global.console = {
+    timeStamp: consoleTimeStampPolyfill,
     ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -597,7 +598,6 @@ if (global.nativeLoggingHook) {
     groupEnd: consoleGroupEndPolyfill,
     groupCollapsed: consoleGroupCollapsedPolyfill,
     assert: consoleAssertPolyfill,
-    timeStamp: consoleTimeStampPolyfill,
   };
 
   // TODO(T206796580): This was copy-pasted from ExceptionsManager.js
