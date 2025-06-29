@@ -558,6 +558,20 @@ RCT_EXPORT_MODULE()
     }
   }
 
+  if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+    id responseDataForPreview;
+    if ([responseType isEqualToString:@"blob"]) {
+      responseDataForPreview = data;
+    } else if ([responseData isKindOfClass:[NSString class]]) {
+      responseDataForPreview = responseData;
+    }
+    bool base64Encoded = [responseType isEqualToString:@"base64"] || [responseType isEqualToString:@"blob"];
+
+    [RCTInspectorNetworkReporter maybeStoreResponseBody:task.requestID
+                                                   data:responseDataForPreview
+                                          base64Encoded:base64Encoded];
+  }
+
   [self sendEventWithName:@"didReceiveNetworkData" body:@[ task.requestID, responseData ]];
 }
 
@@ -613,9 +627,9 @@ RCT_EXPORT_MODULE()
       incrementalDataBlock = ^(NSData *data, int64_t progress, int64_t total) {
         NSUInteger initialCarryLength = incrementalDataCarry.length;
 
-        NSString *responseString = [RCTNetworking decodeTextData:data
-                                                    fromResponse:task.response
-                                                   withCarryData:incrementalDataCarry];
+        id responseString = [RCTNetworking decodeTextData:data
+                                             fromResponse:task.response
+                                            withCarryData:incrementalDataCarry];
         if (!responseString) {
           RCTLogWarn(@"Received data was not a string, or was not a recognised encoding.");
           return;
@@ -629,6 +643,9 @@ RCT_EXPORT_MODULE()
           @(total)
         ];
 
+        if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+          [RCTInspectorNetworkReporter maybeStoreResponseBodyIncremental:task.requestID data:responseString];
+        }
         [weakSelf sendEventWithName:@"didReceiveNetworkIncrementalData" body:responseJSON];
       };
     } else {
@@ -654,7 +671,11 @@ RCT_EXPORT_MODULE()
         @[ task.requestID, RCTNullIfNil(error.localizedDescription), error.code == kCFURLErrorTimedOut ? @YES : @NO ];
 
     if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
-      [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
+      if (error) {
+        [RCTInspectorNetworkReporter reportRequestFailed:task.requestID];
+      } else {
+        [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
+      }
     }
     [strongSelf sendEventWithName:@"didCompleteNetworkResponse" body:responseJSON];
     [strongSelf->_tasksByRequestID removeObjectForKey:task.requestID];

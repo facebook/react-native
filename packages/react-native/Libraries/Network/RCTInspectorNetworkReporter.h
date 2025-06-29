@@ -20,13 +20,59 @@
  */
 @interface RCTInspectorNetworkReporter : NSObject
 
+/**
+ * Report a network request that is about to be sent.
+ *
+ * - Corresponds to `Network.requestWillBeSent` in CDP.
+ * - Corresponds to `PerformanceResourceTiming.requestStart` (specifically,
+ *   marking when the native request was initiated).
+ */
 + (void)reportRequestStart:(NSNumber *)requestId
                    request:(NSURLRequest *)request
          encodedDataLength:(int)encodedDataLength;
+
+/**
+ * Report when HTTP response headers have been received, corresponding to
+ * when the first byte of the response is available.
+ *
+ * - Corresponds to `Network.responseReceived` in CDP.
+ * - Corresponds to `PerformanceResourceTiming.responseStart`.
+ */
 + (void)reportResponseStart:(NSNumber *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
                     headers:(NSDictionary<NSString *, NSString *> *)headers;
+
+/**
+ * Report when a network request is complete and we are no longer receiving
+ * response data.
+ *
+ * - Corresponds to `Network.loadingFinished` in CDP.
+ * - Corresponds to `PerformanceResourceTiming.responseEnd`.
+ */
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength;
+
+/**
+ * Report when a network request has failed.
+ *
+ * - Corresponds to `Network.loadingFailed` in CDP.
+ */
++ (void)reportRequestFailed:(NSNumber *)requestId;
+
+/**
+ * Store response body preview. This is an optional reporting method, and is a
+ * no-op if CDP debugging is disabled.
+ */
++ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(NSData *)data base64Encoded:(bool)base64Encoded;
+
+/**
+ * Incrementally store a response body preview, when a string response is
+ * received in chunks. Buffered contents will be flushed to `NetworkReporter`
+ * with `reportResponseEnd`.
+ *
+ * As with `maybeStoreResponseBody`, calling this method is optional and a
+ * no-op if CDP debugging is disabled.
+ */
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data;
 
 @end

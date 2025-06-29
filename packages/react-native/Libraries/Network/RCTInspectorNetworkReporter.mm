@@ -7,6 +7,7 @@
 
 #import "RCTInspectorNetworkReporter.h"
 
+#import <React/RCTLog.h>
 #import <jsinspector-modern/network/NetworkReporter.h>
 
 using namespace facebook::react::jsinspector_modern;
@@ -40,6 +41,13 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 }
 
 } // namespace
+#endif
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+
+// Dictionary to buffer incremental response bodies (CDP debugging active only)
+static NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil;
+
 #endif
 
 @implementation RCTInspectorNetworkReporter {
@@ -83,6 +91,80 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength
 {
   NetworkReporter::getInstance().reportResponseEnd(requestId.stringValue.UTF8String, encodedDataLength);
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Check for buffered response body and flush to NetworkReporter
+  if (responseBuffers) {
+    NSMutableString *buffer = responseBuffers[requestId];
+    if (buffer) {
+      if (buffer.length > 0) {
+        NetworkReporter::getInstance().storeResponseBody(requestId.stringValue.UTF8String, [buffer UTF8String], false);
+      }
+      [responseBuffers removeObjectForKey:requestId];
+    }
+  }
+#endif
+}
+
+// TODO(T218584924): Implement and report to NetworkReporter
++ (void)reportRequestFailed:(NSNumber *)requestId
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Clear buffer for request
+  if (responseBuffers) {
+    [responseBuffers removeObjectForKey:requestId];
+  }
+#endif
+}
+
++ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(id)data base64Encoded:(bool)base64Encoded
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process response body and report to NetworkReporter
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if ([data isKindOfClass:[NSData class]] && [(NSData *)data length] > 0) {
+    @try {
+      NSString *encodedString = [(NSData *)data base64EncodedStringWithOptions:0];
+      if (encodedString) {
+        networkReporter.storeResponseBody(requestId.stringValue.UTF8String, encodedString.UTF8String, base64Encoded);
+      } else {
+        RCTLogWarn(@"Failed to encode response data for request %@", requestId);
+      }
+    } @catch (NSException *exception) {
+      RCTLogWarn(@"Exception while encoding response data: %@", exception.reason);
+    }
+  } else if ([data isKindOfClass:[NSString class]] && [(NSString *)data length] > 0) {
+    networkReporter.storeResponseBody(requestId.stringValue.UTF8String, [(NSString *)data UTF8String], base64Encoded);
+  }
+#endif
+}
+
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Buffer incremental response body contents
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if (!responseBuffers) {
+    responseBuffers = [NSMutableDictionary dictionary];
+  }
+
+  // Get or create buffer for this requestId
+  NSMutableString *buffer = responseBuffers[requestId];
+  if (!buffer) {
+    buffer = [NSMutableString string];
+    responseBuffers[requestId] = buffer;
+  }
+
+  [buffer appendString:data];
+#endif
 }
 
 @end
