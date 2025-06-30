@@ -109,7 +109,7 @@ internal class JavaModuleWrapper(
       val baseJavaModule = module
 
       Systrace.beginSection(TRACE_TAG_REACT, "module.getConstants")
-      val map = baseJavaModule.constants
+      val map = baseJavaModule.getConstants()
       Systrace.endSection(TRACE_TAG_REACT)
 
       Systrace.beginSection(TRACE_TAG_REACT, "create WritableNativeMap")

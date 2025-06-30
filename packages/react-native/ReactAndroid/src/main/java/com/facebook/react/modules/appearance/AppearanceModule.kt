@@ -17,6 +17,7 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.views.common.UiModeUtils
 
 /** Module that exposes the user's preferred color scheme. */
+@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @ReactModule(name = NativeAppearanceSpec.NAME)
 public class AppearanceModule
 @JvmOverloads
