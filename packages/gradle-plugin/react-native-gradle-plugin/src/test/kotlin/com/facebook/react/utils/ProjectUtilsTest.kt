@@ -12,6 +12,7 @@ import com.facebook.react.model.ModelCodegenConfig
 import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
+import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
@@ -98,7 +99,7 @@ class ProjectUtilsTest {
   }
 
   @Test
-  fun isNewArchEnabled_withDisabledViaProperty_returnsFalse() {
+  fun isHermesEnabled_withDisabledViaProperty_returnsFalse() {
     val project = createProject()
     project.extensions.extraProperties.set("hermesEnabled", "false")
     assertThat(project.isHermesEnabled).isFalse()
@@ -148,6 +149,32 @@ class ProjectUtilsTest {
     val extMap = mapOf("enableHermes" to "¯\\_(ツ)_/¯")
     project.extensions.extraProperties.set("react", extMap)
     assertThat(project.isHermesEnabled).isTrue()
+  }
+
+  @Test
+  fun isEdgeToEdgeEnabled_returnsFalseByDefault() {
+    assertThat(createProject().isEdgeToEdgeEnabled).isFalse()
+  }
+
+  @Test
+  fun isEdgeToEdgeEnabled_withDisabledViaProperty_returnsFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("edgeToEdgeEnabled", "false")
+    assertThat(project.isEdgeToEdgeEnabled).isFalse()
+  }
+
+  @Test
+  fun isEdgeToEdgeEnabled_withEnabledViaProperty_returnsTrue() {
+    val project = createProject()
+    project.extensions.extraProperties.set("edgeToEdgeEnabled", "true")
+    assertThat(project.isEdgeToEdgeEnabled).isTrue()
+  }
+
+  @Test
+  fun isEdgeToEdgeEnabled_withInvalidViaProperty_returnsFalse() {
+    val project = createProject()
+    project.extensions.extraProperties.set("edgeToEdgeEnabled", "¯\\_(ツ)_/¯")
+    assertThat(project.isEdgeToEdgeEnabled).isFalse()
   }
 
   @Test

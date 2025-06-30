@@ -23,6 +23,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DoNotInline
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
+import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
@@ -36,12 +37,13 @@ import kotlin.math.roundToInt
  * existing layout, previously generated for measurement by Fabric, to ensure consistency of
  * measurements, and avoid duplicate work.
  */
+@DoNotStrip
 internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), ReactCompoundView {
 
   private var clickableSpans: List<ClickableSpan> = emptyList()
   private var selection: TextSelection? = null
 
-  public var preparedLayout: PreparedLayout? = null
+  var preparedLayout: PreparedLayout? = null
     set(value) {
       if (field != value) {
         val lastSelection = selection
@@ -63,7 +65,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
   // T221698007: This is closest to existing behavior, but does not align with web. We may want to
   // change in the future if not too breaking.
-  public var overflow: Overflow = Overflow.HIDDEN
+  var overflow: Overflow = Overflow.HIDDEN
     set(value) {
       if (field != value) {
         field = value
@@ -71,10 +73,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
     }
 
-  public @ColorInt var selectionColor: Int? = null
+  @ColorInt var selectionColor: Int? = null
 
-  public val text: CharSequence?
-    get() = preparedLayout?.layout?.text
+  val text: CharSequence?
+    // Avoid mangling the getter name, to allow black box E2E tests to read text content via
+    // reflection
+    @DoNotStrip get() = preparedLayout?.layout?.text
 
   init {
     initView()
@@ -88,7 +92,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     preparedLayout = null
   }
 
-  public fun recycleView(): Unit {
+  fun recycleView(): Unit {
     initView()
     BackgroundStyleApplicator.reset(this)
     overflow = Overflow.HIDDEN
@@ -122,7 +126,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     // No-op
   }
 
-  public fun setSelection(start: Int, end: Int) {
+  fun setSelection(start: Int, end: Int) {
     val layout = checkNotNull(preparedLayout).layout
     if (start < 0 || end > layout.text.length || start >= end) {
       throw IllegalArgumentException(
@@ -143,7 +147,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     invalidate()
   }
 
-  public fun clearSelection() {
+  fun clearSelection() {
     selection = null
     invalidate()
   }
@@ -162,7 +166,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     val x = event.x.toInt()
     val y = event.y.toInt()
 
-    val clickableSpan = getClickableSpanInCoords(x, y)
+    val clickableSpan = getSpanInCoords(x, y, ClickableSpan::class.java)
 
     if (clickableSpan == null) {
       clearSelection()
@@ -182,15 +186,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     return true
   }
 
-  /**
-   * Get the clickable span that is at the exact coordinates
-   *
-   * @param x x-position of the click
-   * @param y y-position of the click
-   * @return a clickable span that's located where the click occurred, or: `null` if no clickable
-   *   span was located there
-   */
-  private fun getClickableSpanInCoords(x: Int, y: Int): ClickableSpan? {
+  private fun <T> getSpanInCoords(x: Int, y: Int, clazz: Class<T>): T? {
     val offset = getTextOffsetAt(x, y)
     if (offset < 0) {
       return null
@@ -198,17 +194,45 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
     val spanned = text as? Spanned ?: return null
 
-    val clickableSpans = spanned.getSpans(offset, offset, ClickableSpan::class.java)
-    if (clickableSpans.isNotEmpty()) {
-      return clickableSpans[0]
+    val spans = spanned.getSpans(offset, offset, clazz)
+    if (spans.isEmpty()) {
+      return null
+    }
+
+    // When we have multiple spans marked with SPAN_EXCLUSIVE_INCLUSIVE next to each other, both
+    // spans are returned by getSpans
+    check(spans.size <= 2)
+    for (span in spans) {
+      val spanFlags = spanned.getSpanFlags(span)
+      val inclusiveStart =
+          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+              (spanFlags and Spanned.SPAN_INCLUSIVE_EXCLUSIVE) != 0) {
+            spanned.getSpanStart(span)
+          } else {
+            spanned.getSpanStart(span) + 1
+          }
+      val inclusiveEnd =
+          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+              (spanFlags and Spanned.SPAN_EXCLUSIVE_INCLUSIVE) != 0) {
+            spanned.getSpanEnd(span)
+          } else {
+            spanned.getSpanEnd(span) - 1
+          }
+
+      if (offset >= inclusiveStart && offset <= inclusiveEnd) {
+        return span
+      }
     }
 
     return null
   }
 
   private fun getTextOffsetAt(x: Int, y: Int): Int {
+    val layoutX = x - paddingLeft
+    val layoutY = y - (paddingTop + (preparedLayout?.verticalOffset?.roundToInt() ?: 0))
+
     val layout = preparedLayout?.layout ?: return -1
-    val line = layout.getLineForVertical(y)
+    val line = layout.getLineForVertical(layoutY)
 
     val left: Float
     val right: Float
@@ -238,12 +262,12 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       right = if (rtl) layout.getParagraphRight(line).toFloat() else layout.getLineMax(line)
     }
 
-    if (x < left || x > right) {
+    if (layoutX < left || layoutX > right) {
       return -1
     }
 
     return try {
-      layout.getOffsetForHorizontal(line, x.toFloat())
+      layout.getOffsetForHorizontal(line, layoutX.toFloat())
     } catch (e: ArrayIndexOutOfBoundsException) {
       // This happens for bidi text on Android 7-8.
       // See
@@ -284,6 +308,10 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   // the cost of incorrect alpha blending.
   // TODO T225199534: Add support for "needsOffscreenAlphaCompositing" to Text
   override fun hasOverlappingRendering(): Boolean = false
+
+  override fun reactTagForTouch(touchX: Float, touchY: Float): Int =
+      getSpanInCoords(touchX.roundToInt(), touchY.roundToInt(), ReactTagSpan::class.java)?.reactTag
+          ?: id
 
   @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
   private object Api34Utils {
@@ -329,23 +357,6 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
       }
 
       return spans
-    }
-  }
-
-  override fun reactTagForTouch(touchX: Float, touchY: Float): Int {
-    val offset = getTextOffsetAt(touchX.roundToInt(), touchY.roundToInt())
-    if (offset < 0) {
-      return id
-    }
-
-    val spanned = text as? Spanned ?: return id
-    val reactSpans = spanned.getSpans(offset, offset, ReactTagSpan::class.java)
-    check(reactSpans.size <= 1)
-
-    return if (reactSpans.isNotEmpty()) {
-      reactSpans[0].reactTag
-    } else {
-      id
     }
   }
 }

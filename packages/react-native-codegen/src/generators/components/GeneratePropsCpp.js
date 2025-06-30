@@ -105,7 +105,7 @@ function generatePropsDiffString(
             case 'ImageSourcePrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = ${prop.name}.toDynamic();
+    result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
@@ -115,24 +115,47 @@ function generatePropsDiffString(
             case 'PointPrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
-    folly::dynamic pointResult = folly::dynamic::object();
-    pointResult["x"] = ${prop.name}.x;
-    pointResult["y"] = ${prop.name}.y;
-    result["${prop.name}"] = pointResult;
+    result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'EdgeInsetsPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
             case 'DimensionPrimitive':
-              // TODO: Implement diffProps for complex types
-              return '';
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
             default:
               (typeAnnotation.name: empty);
               throw new Error('Received unknown ReservedPropTypeAnnotation');
           }
         case 'ArrayTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'ObjectTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'StringEnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'Int32EnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'MixedTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
         default:
           // TODO: Implement diffProps for complex types
           return '';
@@ -142,6 +165,10 @@ function generatePropsDiffString(
 
   return `
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ${className}::getDiffPropsImplementationTarget() const {
+  return "${componentName}";
+}
+
 folly::dynamic ${className}::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ${className}();

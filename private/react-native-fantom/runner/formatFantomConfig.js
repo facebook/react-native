@@ -35,10 +35,12 @@ function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
   switch (hermesVariant) {
     case FantomTestConfigHermesVariant.Hermes:
       return 'hermes';
-    case FantomTestConfigHermesVariant.StaticHermes:
-      return 'hermes 🆕';
+    case FantomTestConfigHermesVariant.StaticHermesStable:
+      return 'shermes 🆕';
+    case FantomTestConfigHermesVariant.StaticHermesStaging:
+      return 'shermes ⏭️';
     case FantomTestConfigHermesVariant.StaticHermesExperimental:
-      return 'hermes 🧪';
+      return 'shermes 🧪';
   }
 }
 

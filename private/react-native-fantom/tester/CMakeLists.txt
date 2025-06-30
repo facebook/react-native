@@ -8,47 +8,223 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(fantom_tester)
 
-include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
 
-# Convert input paths to CMake format (with forward slashes)
-file(TO_CMAKE_PATH "${REACT_THIRD_PARTY_NDK_DIR}" REACT_THIRD_PARTY_NDK_DIR)
-file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+include(Deps)
 
-function(add_react_third_party_ndk_subdir relative_path)
-  add_subdirectory(${REACT_THIRD_PARTY_NDK_DIR}/${relative_path} ${relative_path})
-endfunction()
+find_library(LIB_HERMES libhermes
+  NAMES hermes
+  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/API/hermes
+  REQUIRED)
+add_library(hermes-engine::libhermes INTERFACE IMPORTED)
+set_target_properties(hermes-engine::libhermes PROPERTIES
+  INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
+find_package(OpenSSL REQUIRED)
 
-function(add_third_party_subdir relative_path)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party/${relative_path} ${relative_path})
-endfunction()
-
-function(add_react_common_subdir relative_path)
-  add_subdirectory(${REACT_COMMON_DIR}/${relative_path} src/${relative_path})
-endfunction()
+# Boost in NDK is not compatible with desktop build
+add_third_party_subdir(boost)
 
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
-# Boost in NDK is not compatible with desktop build
-add_third_party_subdir(boost)
 add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fast_float)
 add_react_third_party_ndk_subdir(fmt)
-add_react_third_party_ndk_subdir(folly)
+add_fantom_third_party_subdir(folly)
+add_fantom_third_party_subdir(gflags)
+add_fantom_third_party_subdir(nlohmann_json)
 
-# Common targets
+add_subdirectory(${FANTOM_CODEGEN_DIR} codegen)
+
+add_library(glog_init INTERFACE)
+
+add_react_common_subdir(callinvoker)
+add_react_common_subdir(cxxreact)
+add_react_common_subdir(devtoolsruntimesettings)
+add_react_common_subdir(hermes/executor)
+add_react_common_subdir(hermes/inspector-modern)
+add_react_common_subdir(jserrorhandler)
+add_react_common_subdir(jsi)
+add_react_common_subdir(jsiexecutor)
+add_react_common_subdir(jsinspector-modern)
+add_react_common_subdir(jsinspector-modern/cdp)
+add_react_common_subdir(jsinspector-modern/network)
+add_react_common_subdir(jsinspector-modern/tracing)
+add_react_common_subdir(jsitooling)
+add_react_common_subdir(logger)
+add_react_common_subdir(oscompat)
+add_react_common_subdir(react/bridging)
+add_react_common_subdir(react/debug)
+add_react_common_subdir(react/featureflags)
+add_react_common_subdir(react/nativemodule/core)
+add_react_common_subdir(react/nativemodule/cputime)
+add_react_common_subdir(react/nativemodule/defaults)
+add_react_common_subdir(react/nativemodule/devtoolsruntimesettings)
+add_react_common_subdir(react/nativemodule/dom)
+add_react_common_subdir(react/nativemodule/fantomtestspecificmethods)
+add_react_common_subdir(react/nativemodule/featureflags)
+add_react_common_subdir(react/nativemodule/idlecallbacks)
+add_react_common_subdir(react/nativemodule/intersectionobserver)
+add_react_common_subdir(react/nativemodule/microtasks)
+add_react_common_subdir(react/nativemodule/mutationobserver)
+add_react_common_subdir(react/nativemodule/webperformance)
+add_react_common_subdir(react/performance/timeline)
+add_react_common_subdir(react/renderer/attributedstring)
+add_react_common_subdir(react/renderer/bridging)
+add_react_common_subdir(react/renderer/componentregistry)
+add_react_common_subdir(react/renderer/componentregistry/native)
+add_react_common_subdir(react/renderer/components/image)
+add_react_common_subdir(react/renderer/components/legacyviewmanagerinterop)
+add_react_common_subdir(react/renderer/components/modal)
+add_react_common_subdir(react/renderer/components/root)
+add_react_common_subdir(react/renderer/components/scrollview)
+add_react_common_subdir(react/renderer/components/text)
+add_react_common_subdir(react/renderer/components/view)
+add_react_common_subdir(react/renderer/consistency)
+add_react_common_subdir(react/renderer/core)
+add_react_common_subdir(react/renderer/css)
+add_react_common_subdir(react/renderer/debug)
+add_react_common_subdir(react/renderer/dom)
+add_react_common_subdir(react/renderer/graphics)
+add_react_common_subdir(react/renderer/imagemanager)
+add_react_common_subdir(react/renderer/leakchecker)
+add_react_common_subdir(react/renderer/mapbuffer)
+add_react_common_subdir(react/renderer/mounting)
+add_react_common_subdir(react/renderer/observers/events)
+add_react_common_subdir(react/renderer/observers/intersection)
+add_react_common_subdir(react/renderer/observers/mutation)
+add_react_common_subdir(react/renderer/runtimescheduler)
+add_react_common_subdir(react/renderer/scheduler)
+add_react_common_subdir(react/renderer/telemetry)
+add_react_common_subdir(react/renderer/textlayoutmanager)
+add_react_common_subdir(react/renderer/uimanager)
+add_react_common_subdir(react/renderer/uimanager/consistency)
+add_react_common_subdir(react/runtime)
+add_react_common_subdir(react/runtime/hermes)
+add_react_common_subdir(react/timing)
+add_react_common_subdir(react/utils)
+add_react_common_subdir(reactperflogger)
+add_react_common_subdir(runtimeexecutor)
 add_react_common_subdir(yoga)
 
-file(GLOB SOURCES "src/*.cpp" "src/*.h")
+# This is a hack to make sure that libraries that depend on jni yoga are linked
+add_library(yoga ALIAS yogacore)
+
+add_react_cxx_platform_subdir(react/coremodules)
+add_react_cxx_platform_subdir(react/devsupport)
+add_react_cxx_platform_subdir(react/http)
+add_react_cxx_platform_subdir(react/io)
+add_react_cxx_platform_subdir(react/logging)
+add_react_cxx_platform_subdir(react/nativemodule)
+add_react_cxx_platform_subdir(react/profiling)
+add_react_cxx_platform_subdir(react/renderer/animated)
+add_react_cxx_platform_subdir(react/renderer/scheduler)
+add_react_cxx_platform_subdir(react/renderer/uimanager)
+add_react_cxx_platform_subdir(react/runtime)
+add_react_cxx_platform_subdir(react/threading)
+add_react_cxx_platform_subdir(react/utils)
+
+file(GLOB SOURCES src/*.cpp src/**/*.cpp)
 add_executable(fantom_tester ${SOURCES})
+
+target_include_directories(fantom_tester PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_link_libraries(fantom_tester
   PRIVATE
-    glog
+    # third-party
     boost
     double-conversion
-    fast_float
+    fmt
     folly_runtime
-    yogacore)
+    gflags
+    glog
+
+    # hermes
+    hermes-engine::libhermes
+
+    # codegen
+    react_codegen_rncore
+
+    # ReactCommon
+    bridgeless
+    bridgelesshermes
+    devtoolsruntimesettings
+    hermes_executor_common
+    hermes_inspector_modern
+    jserrorhandler
+    jsi
+    jsinspector
+    jsinspector_cdp
+    jsinspector_network
+    jsinspector_tracing
+    jsireact
+    jsitooling
+    logger
+    oscompat
+    react_bridging
+    react_cxxreact
+    react_debug
+    react_featureflags
+    react_nativemodule_core
+    react_nativemodule_cpu
+    react_nativemodule_defaults
+    react_nativemodule_devtoolsruntimesettings
+    react_nativemodule_dom
+    react_nativemodule_fantomspecificmethods
+    react_nativemodule_featureflags
+    react_nativemodule_idlecallbacks
+    react_nativemodule_intersectionobserver
+    react_nativemodule_microtasks
+    react_nativemodule_mutationobserver
+    react_nativemodule_webperformance
+    react_performance_timeline
+    react_renderer_attributedstring
+    react_renderer_componentregistry
+    react_renderer_consistency
+    react_renderer_core
+    react_renderer_css
+    react_renderer_debug
+    react_renderer_dom
+    react_renderer_graphics
+    react_renderer_imagemanager
+    react_renderer_leakchecker
+    react_renderer_mapbuffer
+    react_renderer_mounting
+    react_renderer_observers_events
+    react_renderer_observers_intersection
+    react_renderer_observers_mutation
+    react_renderer_runtimescheduler
+    react_renderer_scheduler
+    react_renderer_telemetry
+    react_renderer_textlayoutmanager
+    react_renderer_uimanager
+    react_renderer_uimanager_consistency
+    react_utils
+    reactperflogger
+    rrc_legacyviewmanagerinterop
+    rrc_image
+    rrc_modal
+    rrc_native
+    rrc_root
+    rrc_scrollview
+    rrc_text
+    rrc_view
+    runtimeexecutor
+    yogacore
+
+    # ReactCxxPlatform
+    react_cxx_platform_react_coremodules
+    react_cxx_platform_react_devsupport
+    react_cxx_platform_react_http
+    react_cxx_platform_react_io
+    react_cxx_platform_react_logging
+    react_cxx_platform_react_profiling
+    react_cxx_platform_react_renderer_animated
+    react_cxx_platform_react_renderer_scheduler
+    react_cxx_platform_react_runtime
+    react_cxx_platform_react_threading
+    react_cxx_platform_react_utils
+)
 
 target_compile_options(fantom_tester
   PRIVATE

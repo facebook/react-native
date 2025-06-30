@@ -10,7 +10,6 @@ package com.facebook.react.fabric
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.events.BatchEventDispatchedListener
@@ -20,7 +19,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockedStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
@@ -33,7 +31,6 @@ class FabricUIManagerTest {
   private lateinit var viewManagerRegistry: ViewManagerRegistry
   private lateinit var batchEventDispatchedListener: BatchEventDispatchedListener
   private lateinit var underTest: FabricUIManager
-  private lateinit var featureFlags: MockedStatic<ReactNativeFeatureFlags>
 
   @Before
   fun setup() {

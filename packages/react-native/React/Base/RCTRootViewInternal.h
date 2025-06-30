@@ -7,6 +7,8 @@
 
 #import <React/RCTRootView.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 /**
  * The interface provides a set of functions that allow other internal framework
  * classes to change the RCTRootViews's internal state.
@@ -22,3 +24,5 @@
 - (void)contentViewInvalidated;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

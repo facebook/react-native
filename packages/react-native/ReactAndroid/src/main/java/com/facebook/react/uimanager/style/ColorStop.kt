@@ -26,7 +26,7 @@ internal class ColorStop(var color: Int? = null, val position: LengthPercentage?
 internal class ProcessedColorStop(var color: Int? = null, val position: Float? = null)
 
 internal object ColorStopUtils {
-  public fun getFixedColorStops(
+  fun getFixedColorStops(
       colorStops: List<ColorStop>,
       gradientLineLength: Float
   ): List<ProcessedColorStop> {

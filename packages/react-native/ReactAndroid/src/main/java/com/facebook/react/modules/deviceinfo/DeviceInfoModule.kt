@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritableMap
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /** Module that exposes Android Constants to JS. */
 @ReactModule(name = NativeDeviceInfoSpec.NAME)
@@ -34,7 +35,11 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
     previousDisplayMetrics = displayMetrics.copy()
-    return mapOf("Dimensions" to displayMetrics.toHashMap())
+
+    return mapOf(
+        "Dimensions" to displayMetrics.toHashMap(),
+        "isEdgeToEdge" to isEdgeToEdgeFeatureFlagOn,
+    )
   }
 
   override fun onHostResume() {
@@ -74,7 +79,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactApplicationContext.removeLifecycleEventListener(this)
   }
 
-  public companion object {
-    public const val NAME: String = NativeDeviceInfoSpec.NAME
+  companion object {
+    const val NAME: String = NativeDeviceInfoSpec.NAME
   }
 }

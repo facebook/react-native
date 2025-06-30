@@ -6,6 +6,7 @@
  */
 
 #include <jsinspector-modern/RuntimeTarget.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <concepts>
 #include <deque>
@@ -324,6 +325,156 @@ void consoleAssert(
 #include "ForwardingConsoleMethods.def"
 #undef FORWARDING_CONSOLE_METHOD
 
+/*
+ * Attempt to call String() on the given value.
+ */
+std::optional<std::string> stringifyJsiValue(
+    const jsi::Value& value,
+    jsi::Runtime& runtime) {
+  auto String = runtime.global().getPropertyAsFunction(runtime, "String");
+  return String.call(runtime, value).asString(runtime).utf8(runtime);
+};
+
+/**
+ * Call innerFn and forward any arguments to the original console method
+ * named methodName, if possible.
+ */
+auto forwardToOriginalConsole(
+    std::shared_ptr<jsi::Object> originalConsole,
+    const char* methodName,
+    CallableAsHostFunction auto innerFn) {
+  return [originalConsole = std::move(originalConsole),
+          innerFn = std::move(innerFn),
+          methodName](
+             jsi::Runtime& runtime,
+             const jsi::Value& thisVal,
+             const jsi::Value* args,
+             size_t count) {
+    jsi::Value retVal = innerFn(runtime, thisVal, args, count);
+    if (originalConsole) {
+      auto val = originalConsole->getProperty(runtime, methodName);
+      if (val.isObject()) {
+        auto obj = val.getObject(runtime);
+        if (obj.isFunction(runtime)) {
+          auto func = obj.getFunction(runtime);
+          func.callWithThis(runtime, *originalConsole, args, count);
+        }
+      }
+    }
+    return std::move(retVal);
+  };
+};
+
+/**
+ * Recording a marker on a timeline of the Performance instrumentation.
+ * No actual logging is provided by definition.
+ * https://developer.mozilla.org/en-US/docs/Web/API/console/timeStamp_static
+ * https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
+ */
+void consoleTimeStamp(
+    jsi::Runtime& runtime,
+    const jsi::Value* arguments,
+    size_t argumentsCount) {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  if (!performanceTracer.isTracing() || argumentsCount == 0) {
+    // If not tracing, just early return to avoid the cost of parsing.
+    return;
+  }
+
+  const jsi::Value& labelArgument = arguments[0];
+  std::string label;
+  if (labelArgument.isString()) {
+    label = labelArgument.asString(runtime).utf8(runtime);
+  } else {
+    auto maybeStringifiedLabel = stringifyJsiValue(labelArgument, runtime);
+    if (maybeStringifiedLabel) {
+      label = std::move(*maybeStringifiedLabel);
+    } else {
+      // Do not record this entry: unable to reliably stringify the label.
+      return;
+    }
+  }
+
+  auto now = HighResTimeStamp::now();
+  std::optional<tracing::ConsoleTimeStampEntry> start;
+  if (argumentsCount >= 2) {
+    const jsi::Value& startArgument = arguments[1];
+    if (startArgument.isNumber()) {
+      start =
+          HighResTimeStamp::fromDOMHighResTimeStamp(startArgument.asNumber());
+    } else if (startArgument.isString()) {
+      start = startArgument.asString(runtime).utf8(runtime);
+    } else if (startArgument.isUndefined()) {
+      start = now;
+    }
+  }
+
+  std::optional<tracing::ConsoleTimeStampEntry> end;
+  if (argumentsCount >= 3) {
+    const jsi::Value& endArgument = arguments[2];
+    if (endArgument.isNumber()) {
+      end = HighResTimeStamp::fromDOMHighResTimeStamp(endArgument.asNumber());
+    } else if (endArgument.isString()) {
+      end = endArgument.asString(runtime).utf8(runtime);
+    } else if (endArgument.isUndefined()) {
+      end = now;
+    }
+  }
+
+  std::optional<std::string> trackName;
+  std::optional<std::string> trackGroup;
+  std::optional<tracing::ConsoleTimeStampColor> color;
+  if (argumentsCount >= 4) {
+    const jsi::Value& trackNameArgument = arguments[3];
+    if (trackNameArgument.isString()) {
+      trackName = trackNameArgument.asString(runtime).utf8(runtime);
+    }
+  }
+  if (argumentsCount >= 5) {
+    const jsi::Value& trackGroupArgument = arguments[4];
+    if (trackGroupArgument.isString()) {
+      trackGroup = trackGroupArgument.asString(runtime).utf8(runtime);
+    }
+  }
+  if (argumentsCount >= 6) {
+    const jsi::Value& colorArgument = arguments[5];
+    if (colorArgument.isString()) {
+      color = tracing::getConsoleTimeStampColorFromString(
+          colorArgument.asString(runtime).utf8(runtime));
+    }
+  }
+
+  performanceTracer.reportTimeStamp(
+      label, start, end, trackName, trackGroup, color);
+}
+
+/*
+ * Installs console.timeStamp and manages the forwarding to the original console
+ * object, if available.
+ */
+void installConsoleTimeStamp(
+    jsi::Runtime& runtime,
+    std::shared_ptr<jsi::Object> originalConsole,
+    jsi::Object& consoleObject) {
+  consoleObject.setProperty(
+      runtime,
+      "timeStamp",
+      jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "timeStamp"),
+          0,
+          forwardToOriginalConsole(
+              originalConsole,
+              "timeStamp",
+              [](jsi::Runtime& runtime,
+                 const jsi::Value& /*thisVal*/,
+                 const jsi::Value* args,
+                 size_t count) {
+                consoleTimeStamp(runtime, args, count);
+                return jsi::Value::undefined();
+              })));
+}
+
 } // namespace
 
 void RuntimeTarget::installConsoleHandler() {
@@ -369,33 +520,6 @@ void RuntimeTarget::installConsoleHandler() {
         };
 
     /**
-     * Call innerFn and forward any arguments to the original console method
-     * named methodName, if possible.
-     */
-    auto forwardToOriginalConsole = [originalConsole](
-                                        const char* methodName,
-                                        CallableAsHostFunction auto innerFn) {
-      return [originalConsole, innerFn = std::move(innerFn), methodName](
-                 jsi::Runtime& runtime,
-                 const jsi::Value& thisVal,
-                 const jsi::Value* args,
-                 size_t count) {
-        jsi::Value retVal = innerFn(runtime, thisVal, args, count);
-        if (originalConsole) {
-          auto val = originalConsole->getProperty(runtime, methodName);
-          if (val.isObject()) {
-            auto obj = val.getObject(runtime);
-            if (obj.isFunction(runtime)) {
-              auto func = obj.getFunction(runtime);
-              func.callWithThis(runtime, *originalConsole, args, count);
-            }
-          }
-        }
-        return retVal;
-      };
-    };
-
-    /**
      * Install a console method with the given name and body. The body receives
      * the usual JSI host function parameters plus a ConsoleState reference, a
      * reference to the RuntimeTargetDelegate for sending messages to the
@@ -413,6 +537,7 @@ void RuntimeTarget::installConsoleHandler() {
               jsi::PropNameID::forAscii(runtime, methodName),
               0,
               forwardToOriginalConsole(
+                  originalConsole,
                   methodName,
                   [body = std::move(body), state, delegateExecutorSync](
                       jsi::Runtime& runtime,
@@ -465,6 +590,11 @@ void RuntimeTarget::installConsoleHandler() {
      * console.assert
      */
     installConsoleMethod("assert", consoleAssert);
+
+    /**
+     * console.timeStamp
+     */
+    installConsoleTimeStamp(runtime, originalConsole, console);
 
     // Install forwarding console methods.
 #define FORWARDING_CONSOLE_METHOD(name, type) \

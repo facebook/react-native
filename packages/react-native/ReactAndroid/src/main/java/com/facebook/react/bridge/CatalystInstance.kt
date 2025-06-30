@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
-import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
@@ -53,7 +52,7 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
   public val isDestroyed: Boolean
 
   /** Initialize all the native modules */
-  @VisibleForTesting public fun initialize()
+  public fun initialize()
 
   public val reactQueueConfiguration: ReactQueueConfiguration
 
@@ -83,14 +82,14 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
 
   /**
    * Removes a NotThreadSafeBridgeIdleDebugListener previously added with
-   * [ ][.addBridgeIdleDebugListener]
+   * [addBridgeIdleDebugListener]
    */
   public fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener)
 
   /** This method registers the file path of an additional JS segment by its ID. */
   public fun registerSegment(segmentId: Int, path: String)
 
-  @VisibleForTesting public fun setGlobalVariable(propName: String, jsonValue: String)
+  public fun setGlobalVariable(propName: String, jsonValue: String)
 
   /**
    * Do not use this anymore. Use [runtimeExecutor] instead. Get the C pointer (as a long) to the

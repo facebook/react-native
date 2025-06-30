@@ -99,8 +99,15 @@ for (const file of schemaFiles) {
         }
       }
 
-      modules[specName] = module;
-      specNameToFile[specName] = file;
+      if (
+        module.type === 'Component' &&
+        schema.libraryName === 'FBReactNativeSpec'
+      ) {
+        continue;
+      } else {
+        modules[specName] = module;
+        specNameToFile[specName] = file;
+      }
     }
   }
 }

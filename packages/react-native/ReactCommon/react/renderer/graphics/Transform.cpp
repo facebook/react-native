@@ -15,19 +15,6 @@
 
 namespace facebook::react {
 
-#if RN_DEBUG_STRING_CONVERTIBLE
-void Transform::print(const Transform& t, std::string prefix) {
-  LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
-             << t.matrix[2] << " " << t.matrix[3] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[4] << " " << t.matrix[5] << " "
-             << t.matrix[6] << " " << t.matrix[7] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[8] << " " << t.matrix[9] << " "
-             << t.matrix[10] << " " << t.matrix[11] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[12] << " " << t.matrix[13] << " "
-             << t.matrix[14] << " " << t.matrix[15] << " ]";
-}
-#endif
-
 Transform Transform::Identity() {
   return {};
 }
@@ -315,11 +302,11 @@ Transform Transform::Interpolate(
 }
 
 bool Transform::isVerticalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(1, 1), -1.0f);
+  return floatEquality(transform.at(1, 1), static_cast<Float>(-1.0f));
 }
 
 bool Transform::isHorizontalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(0, 0), -1.0f);
+  return floatEquality(transform.at(0, 0), static_cast<Float>(-1.0f));
 }
 
 bool Transform::operator==(const Transform& rhs) const {

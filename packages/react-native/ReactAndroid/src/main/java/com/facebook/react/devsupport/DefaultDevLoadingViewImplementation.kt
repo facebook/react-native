@@ -107,9 +107,6 @@ public class DefaultDevLoadingViewImplementation(
     }
   }
 
-  private val context: Context?
-    get() = reactInstanceDevHelper.currentActivity
-
   public companion object {
     private var isEnabled = true
 

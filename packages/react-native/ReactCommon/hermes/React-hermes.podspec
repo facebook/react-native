@@ -26,8 +26,10 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "executor/*.{cpp,h}",
-                             "inspector-modern/chrome/*.{cpp,h}",
+  s.source_files           = podspec_sources(["executor/*.{cpp,h}",
+                              "inspector-modern/chrome/*.{cpp,h}"],
+                              ["executor/*.h",
+                              "inspector-modern/chrome/*.h"])
   s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/hermes-engine/destroot/include\" \"$(PODS_TARGET_SRCROOT)/..\"",

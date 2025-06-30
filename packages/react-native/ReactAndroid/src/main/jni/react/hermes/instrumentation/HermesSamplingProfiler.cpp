@@ -9,9 +9,7 @@
 
 #include <hermes/hermes.h>
 
-namespace facebook {
-namespace jsi {
-namespace jni {
+namespace facebook::jsi::jni {
 
 void HermesSamplingProfiler::enable(jni::alias_ref<jclass>) {
   auto* hermesAPI =
@@ -43,6 +41,4 @@ void HermesSamplingProfiler::registerNatives() {
   });
 }
 
-} // namespace jni
-} // namespace jsi
-} // namespace facebook
+} // namespace facebook::jsi::jni

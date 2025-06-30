@@ -13,9 +13,6 @@ export GITHUB_REPO=-react-native
 
   echo flow
   npm run flow-check --silent --json
-
-  echo google-java-format
-  node scripts/lint-java.js --diff
 } | node private/react-native-bots/code-analysis-bot.js
 
 STATUS=$?

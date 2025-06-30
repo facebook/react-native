@@ -320,6 +320,13 @@ void Scheduler::uiManagerShouldSynchronouslyUpdateViewOnUIThread(
   }
 }
 
+void Scheduler::uiManagerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidUpdateShadowTree(tagToProps);
+  }
+}
+
 void Scheduler::uiManagerShouldAddEventListener(
     std::shared_ptr<const EventListener> listener) {
   addEventListener(listener);

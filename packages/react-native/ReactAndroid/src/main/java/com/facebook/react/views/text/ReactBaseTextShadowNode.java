@@ -110,7 +110,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (child instanceof ReactRawTextShadowNode) {
         String childText = ((ReactRawTextShadowNode) child).getText();
         if (childText != null) {
-          sb.append(TextTransform.applyNonNull(childText, textAttributes.textTransform));
+          sb.append(TextTransform.apply(childText, textAttributes.textTransform));
         }
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
@@ -265,7 +265,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      sb.append(TextTransform.applyNonNull(text, textShadowNode.mTextAttributes.textTransform));
+      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.textTransform));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);

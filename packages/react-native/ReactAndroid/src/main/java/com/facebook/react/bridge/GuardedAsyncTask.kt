@@ -25,7 +25,7 @@ protected constructor(private val exceptionHandler: JSExceptionHandler) :
   protected constructor(reactContext: ReactContext) : this(reactContext.exceptionHandler)
 
   @Deprecated("AsyncTask is deprecated.")
-  override protected final fun doInBackground(vararg params: Params): Void? {
+  protected final override fun doInBackground(vararg params: Params): Void? {
     try {
       doInBackgroundGuarded(*params)
     } catch (e: RuntimeException) {

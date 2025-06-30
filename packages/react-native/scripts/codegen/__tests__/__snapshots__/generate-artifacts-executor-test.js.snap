@@ -412,6 +412,9 @@ use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 folly_compiler_flags = Helpers::Constants.folly_config[:compiler_flags]
 boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 
+header_search_paths = []
+framework_search_paths = []
+
 header_search_paths = [
   \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
   \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
@@ -420,7 +423,6 @@ header_search_paths = [
   \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
   \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
 ]
-framework_search_paths = []
 
 if use_frameworks
   ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
@@ -436,7 +438,7 @@ if use_frameworks
     .each { |search_path|
       header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
     }
-end
+  end
 
 Pod::Spec.new do |s|
   s.name                = \\"ReactCodegen\\"
@@ -887,6 +889,9 @@ use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 folly_compiler_flags = Helpers::Constants.folly_config[:compiler_flags]
 boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 
+header_search_paths = []
+framework_search_paths = []
+
 header_search_paths = [
   \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
   \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
@@ -895,7 +900,6 @@ header_search_paths = [
   \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
   \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
 ]
-framework_search_paths = []
 
 if use_frameworks
   ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
@@ -911,7 +915,7 @@ if use_frameworks
     .each { |search_path|
       header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
     }
-end
+  end
 
 Pod::Spec.new do |s|
   s.name                = \\"ReactCodegen\\"

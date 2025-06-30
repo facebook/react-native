@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<892db232156970e8241d1f1ddde3a745>>
+ * @generated SignedSource<<10197755f82d5b7251563ce1517c8fac>>
  */
 
 /**
@@ -28,6 +28,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
+
+  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
 
@@ -63,7 +65,7 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip public fun enableIntersectionObserverEventLoopIntegration(): Boolean
+  @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -99,11 +101,17 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
+
+  @DoNotStrip public fun preparedTextCacheSize(): Double
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

@@ -20,8 +20,7 @@
 // jsArgAs... methods at the end simple to use should be most common, but any
 // non-detail method can be used when needed.
 
-namespace facebook {
-namespace xplat {
+namespace facebook::xplat {
 
 class JsArgumentException : public std::logic_error {
  public:
@@ -118,7 +117,6 @@ inline std::string jsArgAsString(const folly::dynamic& args, size_t n) {
   return jsArgN(args, n, &folly::dynamic::asString);
 }
 
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat
 
 #include <cxxreact/JsArgumentHelpers-inl.h>

@@ -29,7 +29,7 @@ internal class DrawerStateChangedEvent : Event<DrawerStateChangedEvent> {
 
   override fun getEventName(): String = EVENT_NAME
 
-  protected override fun getEventData(): WritableMap {
+  override fun getEventData(): WritableMap {
     val eventData: WritableMap = Arguments.createMap()
     eventData.putInt("drawerState", getDrawerState())
     return eventData

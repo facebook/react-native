@@ -162,7 +162,7 @@ AccessibilityProps::AccessibilityProps(
                     rawProps,
                     "accessibilityRespondsToUserInteraction",
                     sourceProps.accessibilityRespondsToUserInteraction,
-                    {})),
+                    true)),
       onAccessibilityTap(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.onAccessibilityTap

@@ -13,6 +13,7 @@
 export type PlatformType = 'iOS' | 'android';
 
 export type SchemaType = $ReadOnly<{
+  libraryName?: string,
   modules: $ReadOnly<{
     [hasteModuleName: string]: ComponentSchema | NativeModuleSchema,
   }>,

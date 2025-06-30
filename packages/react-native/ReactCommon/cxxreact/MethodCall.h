@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <map>
 #include <string>
 #include <vector>
@@ -32,3 +34,5 @@ struct MethodCall {
 std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

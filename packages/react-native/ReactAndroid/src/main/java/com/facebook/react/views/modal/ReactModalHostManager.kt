@@ -29,7 +29,7 @@ internal class ReactModalHostManager :
 
   override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
 
   override fun onDropViewInstance(view: ReactModalHostView) {
@@ -85,15 +85,15 @@ internal class ReactModalHostManager :
   @ReactProp(name = "identifier")
   override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
+  @ReactProp(name = "allowSwipeDismissal")
+  override fun setAllowSwipeDismissal(view: ReactModalHostView, value: Boolean): Unit = Unit
+
   override fun setTestId(view: ReactModalHostView, value: String?) {
     super.setTestId(view, value)
     view.setDialogRootViewGroupTestId(value)
   }
 
-  protected override fun addEventEmitters(
-      reactContext: ThemedReactContext,
-      view: ReactModalHostView
-  ) {
+  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactModalHostView) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
@@ -115,7 +115,7 @@ internal class ReactModalHostManager :
         put("topOrientationChange", mapOf("registrationName" to "onOrientationChange"))
       }
 
-  protected override fun onAfterUpdateTransaction(view: ReactModalHostView) {
+  override fun onAfterUpdateTransaction(view: ReactModalHostView) {
     super.onAfterUpdateTransaction(view)
     view.showOrUpdate()
   }

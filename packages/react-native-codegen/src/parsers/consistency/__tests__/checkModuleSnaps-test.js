@@ -18,7 +18,10 @@ const flowFixtures = require('../../flow/modules/__test_fixtures__/fixtures.js')
 const tsFixtures = require('../../typescript/modules/__test_fixtures__/fixtures.js');
 const {compareSnaps, compareTsArraySnaps} = require('../compareSnaps.js');
 
-const flowExtraCases = ['PROMISE_WITH_COMMONLY_USED_TYPES'];
+const flowExtraCases = [
+  'NATIVE_MODULE_WITH_OPAQUE_TYPES',
+  'PROMISE_WITH_COMMONLY_USED_TYPES',
+];
 const tsExtraCases = [
   'NATIVE_MODULE_WITH_ARRAY2_WITH_ALIAS',
   'NATIVE_MODULE_WITH_ARRAY2_WITH_UNION_AND_TOUPLE',

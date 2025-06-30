@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <React/RCTInvalidating.h>
 #import <React/RCTRootView.h>
 #import <React/RCTView.h>
@@ -30,3 +32,5 @@
               sizeFlexibility:(RCTRootViewSizeFlexibility)sizeFlexibility NS_DESIGNATED_INITIALIZER;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

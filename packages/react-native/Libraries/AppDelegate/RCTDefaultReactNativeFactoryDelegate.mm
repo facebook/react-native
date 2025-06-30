@@ -9,10 +9,8 @@
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
-#if USE_HERMES
+#if USE_THIRD_PARTY_JSC != 1
 #import <React/RCTHermesInstanceFactory.h>
-#elif USE_THIRD_PARTY_JSC != 1
-#import <React/RCTJscInstanceFactory.h>
 #endif
 
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
@@ -45,12 +43,8 @@
 
 - (JSRuntimeFactoryRef)createJSRuntimeFactory
 {
-#if USE_HERMES
+#if USE_THIRD_PARTY_JSC != 1
   return jsrt_create_hermes_factory();
-#elif USE_THIRD_PARTY_JSC != 1
-  return jsrt_create_jsc_factory();
-#else
-  return nullptr;
 #endif
 }
 

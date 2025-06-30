@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
 
-  s.source_files           = "**/*.{c,m,mm,cpp}"
+  s.source_files           = podspec_sources("**/*.{c,m,mm,cpp}", "**/*.h")
 
   s.ios.exclude_files      = "PlatformStubs/**/*"
   exclude_files            = ["RCTStatusBarManager.mm"]

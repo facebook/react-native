@@ -27,6 +27,8 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 @interface RCTSurface () <RCTSurfaceRootShadowViewDelegate, RCTUIManagerObserver>
 @end
 
@@ -604,3 +606,69 @@
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+@implementation RCTSurface
+@synthesize stage;
+@synthesize moduleName;
+@synthesize delegate;
+@synthesize rootViewTag;
+@synthesize properties;
+@synthesize rootTag;
+@synthesize intrinsicSize;
+
+- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge
+                            moduleName:(nonnull NSString *)moduleName
+                     initialProperties:(nonnull NSDictionary *)initialProperties
+{
+  return self;
+}
+
+- (void)setSize:(CGSize)size
+{
+}
+
+- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout
+{
+  return NO;
+}
+
+- (void)mountReactComponentWithBridge:(nonnull RCTBridge *)bridge
+                           moduleName:(nonnull NSString *)moduleName
+                               params:(nonnull NSDictionary *)params
+{
+}
+
+- (void)unmountReactComponentWithBridge:(nonnull RCTBridge *)bridge rootViewTag:(nonnull NSNumber *)rootViewTag
+{
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+}
+
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize viewportOffset:(CGPoint)viewportOffset
+{
+}
+
+- (nonnull RCTSurfaceView *)view
+{
+  return nil;
+}
+
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
+{
+  return {};
+}
+
+- (void)start
+{
+}
+
+- (void)stop
+{
+}
+
+@end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

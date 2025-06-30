@@ -95,7 +95,7 @@ public abstract class Event<T : Event<T>> {
    * Two events will only ever try to be coalesced if they have the same event name, view id, and
    * coalescing key.
    */
-  public open fun coalesce(otherEvent: Event<T>?): Event<T>? =
+  public open fun coalesce(otherEvent: Event<*>?): Event<*>? =
       if (timestampMs >= otherEvent?.timestampMs ?: 0) this else otherEvent
 
   /**

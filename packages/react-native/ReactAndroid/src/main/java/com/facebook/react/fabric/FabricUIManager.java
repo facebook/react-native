@@ -530,13 +530,18 @@ public class FabricUIManager
       ReadableMapBuffer paragraphAttributes,
       float width,
       float height) {
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
     return (NativeArray)
         TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
             PixelUtil.toPixelFromDIP(width),
-            PixelUtil.toPixelFromDIP(height));
+            PixelUtil.toPixelFromDIP(height),
+            textViewManager instanceof ReactTextViewManagerCallback
+                ? (ReactTextViewManagerCallback) textViewManager
+                : null);
   }
 
   public int getColor(int surfaceId, String[] resourcePaths) {
@@ -1317,7 +1322,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void willMountItems(@Nullable List<MountItem> mountItems) {
+    public void willMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.willMountItems(FabricUIManager.this);
       }
@@ -1326,7 +1331,7 @@ public class FabricUIManager
     @UiThread
     @ThreadConfined(UI)
     @Override
-    public void didMountItems(@Nullable List<MountItem> mountItems) {
+    public void didMountItems(@Nullable List<? extends MountItem> mountItems) {
       for (UIManagerListener listener : mListeners) {
         listener.didMountItems(FabricUIManager.this);
       }

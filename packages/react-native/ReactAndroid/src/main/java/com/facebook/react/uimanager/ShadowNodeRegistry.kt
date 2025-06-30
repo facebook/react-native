@@ -92,7 +92,7 @@ internal class ShadowNodeRegistry {
   inner class SingleThreadAsserter {
     private var thread: Thread? = null
 
-    public fun assertNow() {
+    fun assertNow() {
       val currentThread = Thread.currentThread()
       if (thread == null) {
         thread = currentThread

@@ -13,6 +13,7 @@ import type AnimatedNode from '../nodes/AnimatedNode';
 import type AnimatedValue from '../nodes/AnimatedValue';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedProps from '../nodes/AnimatedProps';
 
 export type EndResult = {
@@ -149,8 +150,15 @@ export default class Animation {
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
-            if (this.__isLooping === true) {
-              return;
+            if (
+              !(
+                ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+                ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()
+              )
+            ) {
+              if (this.__isLooping === true) {
+                return;
+              }
             }
 
             // Once the JS side node is synced with the updated values, trigger an

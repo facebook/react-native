@@ -21,7 +21,7 @@ import type AnimatedValue from './nodes/AnimatedValue';
 
 import createAnimatedPropsHook from '../../src/private/animated/createAnimatedPropsHook';
 import composeStyles from '../../src/private/styles/composeStyles';
-import View from '../Components/View/View';
+import {type ViewProps} from '../Components/View/ViewPropTypes';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useMemo} from 'react';
@@ -60,9 +60,7 @@ type NonAnimatedProps =
   | 'disabled'
   | 'accessibilityLabel';
 type PassThroughProps = $ReadOnly<{
-  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-    typeof View,
-  > | null,
+  passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
 export type AnimatedProps<Props: {...}> = {

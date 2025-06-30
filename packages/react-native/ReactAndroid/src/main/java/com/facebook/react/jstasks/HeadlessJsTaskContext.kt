@@ -132,7 +132,7 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
    * Finish a JS task. Doesn't actually stop the task on the JS side, only removes it from the list
    * of active tasks and notifies listeners.
    *
-   * @param taskId the unique id returned by [.startTask].
+   * @param taskId the unique id returned by [startTask].
    */
   @Synchronized
   public fun finishTask(taskId: Int) {

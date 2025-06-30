@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <atomic>
 #include <functional>
 #include <map>
@@ -135,3 +137,5 @@ class NativeToJsBridge {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

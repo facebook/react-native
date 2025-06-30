@@ -68,6 +68,9 @@ class SchedulerDelegate {
       Tag tag,
       const folly::dynamic& props) = 0;
 
+  virtual void schedulerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) = 0;
+
   virtual ~SchedulerDelegate() noexcept = default;
 };
 

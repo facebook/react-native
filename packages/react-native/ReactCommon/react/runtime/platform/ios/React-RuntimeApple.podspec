@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "ReactCommon/*.{mm,h}"
+  s.source_files           = podspec_sources("ReactCommon/*.{mm,h}", "ReactCommon/*.{h}")
   s.header_dir             = "ReactCommon"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                 "USE_HEADERMAP" => "YES",
@@ -62,15 +62,12 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_third_party_jsc()
+    s.exclude_files = ["ReactCommon/RCTHermesInstance.{mm,h}", "ReactCommon/RCTJscInstance.{mm,h}"]
+  else
     s.dependency "hermes-engine"
     add_dependency(s, "React-RuntimeHermes")
     s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
-  elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
-    s.exclude_files = ["ReactCommon/RCTHermesInstance.{mm,h}", "ReactCommon/RCTJscInstance.{mm,h}"]
-  else
-    s.dependency "React-jsc"
-    s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"
   end
 
   add_rn_third_party_dependencies(s)

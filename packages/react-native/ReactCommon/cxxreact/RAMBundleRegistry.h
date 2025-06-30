@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -52,3 +54,5 @@ class RN_EXPORT RAMBundleRegistry {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

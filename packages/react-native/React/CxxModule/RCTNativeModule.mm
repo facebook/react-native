@@ -7,6 +7,8 @@
 
 #import "RCTNativeModule.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <Foundation/Foundation.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
@@ -235,3 +237,5 @@ static MethodCallResult invokeInner(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

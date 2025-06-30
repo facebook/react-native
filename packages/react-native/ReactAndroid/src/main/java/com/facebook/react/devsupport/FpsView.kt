@@ -33,7 +33,7 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
     textView = findViewById<View>(R.id.fps_text) as TextView
     frameCallback = FpsDebugFrameCallback(reactContext!!)
     fpsMonitorRunnable = FPSMonitorRunnable()
-    setCurrentFPS(0.0, 0.0, 0, 0)
+    setCurrentFPS(0.0, 0.0, 0, 0, frameCallback.isRunningOnFabric)
   }
 
   override fun onAttachedToWindow() {
@@ -53,16 +53,21 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
       currentFPS: Double,
       currentJSFPS: Double,
       droppedUIFrames: Int,
-      total4PlusFrameStutters: Int
+      total4PlusFrameStutters: Int,
+      runningOnFabric: Boolean
   ) {
-    val fpsString =
+    var fpsString =
         String.format(
             Locale.US,
-            "UI: %.1f fps\n%d dropped so far\n%d stutters (4+) so far\nJS: %.1f fps",
+            "UI: %.1f fps\n%d dropped so far\n%d stutters (4+) so far",
             currentFPS,
             droppedUIFrames,
-            total4PlusFrameStutters,
-            currentJSFPS)
+            total4PlusFrameStutters)
+    if (!runningOnFabric) {
+      // The JS FPS is only relevant for the legacy architecture, as Fabric we don't use
+      // BridgeIdleDebugListener to track JS frame drops.
+      fpsString += String.format(Locale.US, "\nJS: %.1f fps", currentJSFPS)
+    }
     textView.text = fpsString
     FLog.d(ReactConstants.TAG, fpsString)
   }
@@ -80,7 +85,11 @@ internal class FpsView(reactContext: ReactContext?) : FrameLayout(reactContext!!
       totalFramesDropped += frameCallback.expectedNumFrames - frameCallback.numFrames
       total4PlusFrameStutters += frameCallback.get4PlusFrameStutters()
       setCurrentFPS(
-          frameCallback.fps, frameCallback.jsFPS, totalFramesDropped, total4PlusFrameStutters)
+          frameCallback.fps,
+          frameCallback.jsFPS,
+          totalFramesDropped,
+          total4PlusFrameStutters,
+          frameCallback.isRunningOnFabric)
       frameCallback.reset()
       postDelayed(this, UPDATE_INTERVAL_MS.toLong())
     }
