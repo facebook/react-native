@@ -118,6 +118,12 @@ using namespace facebook::react;
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  if (_state) {
+    const auto &imageRequest = _state->getData().getImageRequest();
+    auto &observerCoordinator = imageRequest.getObserverCoordinator();
+    observerCoordinator.reset();
+  }
+
   [self _setStateAndResubscribeImageResponseObserver:nullptr];
   _imageView.image = nil;
 }
