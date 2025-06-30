@@ -40,6 +40,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.fabric.ComponentFactory
@@ -130,7 +131,10 @@ internal class ReactInstance(
             context, jsTimerExecutor, ReactChoreographer.getInstance(), devSupportManager)
 
     // Notify JS if profiling is enabled
-    val isProfiling = BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(Systrace.TRACE_TAG_REACT)
+    val isProfiling =
+        BuildConfig.ENABLE_PERFETTO ||
+            Systrace.isTracing(Systrace.TRACE_TAG_REACT) ||
+            getIsProfilingBuild()
 
     mHybridData =
         initHybrid(
