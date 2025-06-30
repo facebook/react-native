@@ -569,6 +569,11 @@ RCT_EXPORT_MODULE()
   RCTAssertThread(_methodQueue, @"sendRequest: must be called on request queue");
   __weak __typeof(self) weakSelf = self;
   __block RCTNetworkTask *task;
+  __block UIBackgroundTaskIdentifier bgTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+      [task cancel];
+      [[UIApplication sharedApplication] endBackgroundTask:bgTaskIdentifier];
+  }];
+
   RCTURLRequestProgressBlock uploadProgressBlock = ^(int64_t progress, int64_t total) {
     NSArray *responseJSON = @[ task.requestID, @((double)progress), @((double)total) ];
     [weakSelf sendEventWithName:@"didSendNetworkData" body:responseJSON];
@@ -641,6 +646,7 @@ RCT_EXPORT_MODULE()
 
   RCTURLRequestCompletionBlock completionBlock = ^(NSURLResponse *response, NSData *data, NSError *error) {
     __typeof(self) strongSelf = weakSelf;
+    [[UIApplication sharedApplication] endBackgroundTask:bgTaskIdentifier];
     if (!strongSelf) {
       return;
     }
