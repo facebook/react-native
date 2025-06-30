@@ -1022,7 +1022,6 @@ namespace JS {
 }
 @protocol NativeSampleTurboModuleNullableAndOptionalSpec <RCTBridgeModule, RCTTurboModule>
 
-@optional
 - (void)voidFunc;
 - (NSNumber * _Nullable)getBool:(NSNumber *)arg;
 - (NSNumber * _Nullable)getNumber:(NSNumber *)arg;
@@ -1123,7 +1122,6 @@ namespace JS {
 }
 @protocol NativeSampleTurboModuleOptionalSpec <RCTBridgeModule, RCTTurboModule>
 
-@optional
 - (void)voidFunc;
 - (NSNumber *)getBool:(NSNumber *)arg;
 - (NSNumber *)getNumber:(NSNumber *)arg;
