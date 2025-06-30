@@ -1,6 +1,6 @@
 {
   "name": "@react-native/community-cli-plugin",
-  "version": "0.80.0",
+  "version": "0.80.1",
   "description": "Core CLI commands for React Native",
   "keywords": [
     "react-native",
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@react-native/dev-middleware": "0.80.0",
+    "@react-native/dev-middleware": "0.80.1",
     "chalk": "^4.0.0",
     "debug": "^4.4.0",
     "invariant": "^2.2.4",
