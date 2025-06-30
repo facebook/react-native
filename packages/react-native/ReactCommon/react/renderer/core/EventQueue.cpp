@@ -65,7 +65,7 @@ void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
   enqueueEvent(std::move(rawEvent));
 }
 
-void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
+void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const {
   {
     std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
@@ -76,8 +76,12 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
     }
     stateUpdateQueue_.push_back(std::move(stateUpdate));
   }
-
-  onEnqueue();
+  
+  if (flushSync) {
+    flushStateUpdates();
+  } else {
+    onEnqueue();
+  }
 }
 
 void EventQueue::onEnqueue() const {
