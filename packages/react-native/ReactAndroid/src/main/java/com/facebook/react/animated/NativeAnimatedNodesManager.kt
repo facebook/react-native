@@ -105,9 +105,8 @@ public class NativeAnimatedNodesManager(
       throw JSApplicationIllegalArgumentException(
           "createAnimatedNode: Animated node [$tag] already exists")
     }
-    val type = config.getString("type")
     val node =
-        when (type) {
+        when (val type = config.getString("type")) {
           "style" -> StyleAnimatedNode(config, this)
           "value" -> ValueAnimatedNode(config)
           "color" -> ColorAnimatedNode(config, this, checkNotNull(reactApplicationContext))
@@ -239,9 +238,8 @@ public class NativeAnimatedNodesManager(
       return
     }
 
-    val type = animationConfig.getString("type")
     val animation =
-        when (type) {
+        when (val type = animationConfig.getString("type")) {
           "frames" -> FrameBasedAnimationDriver(animationConfig)
           "spring" -> SpringAnimation(animationConfig)
           "decay" -> DecayAnimation(animationConfig)
