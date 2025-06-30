@@ -88,14 +88,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
     get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = !isEdgeToEdgeFeatureFlagOn
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var navigationBarTranslucent: Boolean = false
     get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = !isEdgeToEdgeFeatureFlagOn
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var animationType: String? = null
