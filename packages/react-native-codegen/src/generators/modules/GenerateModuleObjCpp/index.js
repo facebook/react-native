@@ -57,7 +57,7 @@ const ModuleDeclarationTemplate = ({
         }
     }
   }
-  let protocolMethodsBody = requiredMethods.join('\n')
+  let protocolMethodsBody = requiredMethods.join('\n');
   if (optionalMethods.length > 0) {
     if (protocolMethodsBody === '') {
       protocolMethodsBody += optionalMethods.join('\n');
