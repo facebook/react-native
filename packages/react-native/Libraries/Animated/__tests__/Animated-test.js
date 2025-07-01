@@ -247,10 +247,6 @@ describe('Animated', () => {
     });
 
     it('renders animated and primitive style correctly', () => {
-      ReactNativeFeatureFlags.override({
-        alwaysFlattenAnimatedStyles: () => true,
-      });
-
       const anim = new Animated.Value(0);
       const staticProps = {
         style: [
