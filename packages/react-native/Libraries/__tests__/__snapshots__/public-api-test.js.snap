@@ -7308,6 +7308,39 @@ type RadialGradientValue = {
   }>,
 };
 export type BackgroundImageValue = LinearGradientValue | RadialGradientValue;
+export type BackgroundSizeValue =
+  | {
+      x: string | number,
+      y: string | number,
+    }
+  | \\"cover\\"
+  | \\"contain\\";
+export type BackgroundRepeatKeyword =
+  | \\"repeat\\"
+  | \\"space\\"
+  | \\"round\\"
+  | \\"no-repeat\\";
+export type BackgroundPositionValue =
+  | {
+      top: number | string,
+      left: number | string,
+    }
+  | {
+      top: number | string,
+      right: number | string,
+    }
+  | {
+      bottom: number | string,
+      left: number | string,
+    }
+  | {
+      bottom: number | string,
+      right: number | string,
+    };
+export type BackgroundRepeatValue = {
+  x: BackgroundRepeatKeyword,
+  y: BackgroundRepeatKeyword,
+};
 export type BoxShadowValue = {
   offsetX: number | string,
   offsetY: number | string,
@@ -7380,6 +7413,13 @@ export type ____ViewStyle_InternalBase = $ReadOnly<{
   filter?: $ReadOnlyArray<FilterFunction> | string,
   mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<BackgroundImageValue> | string,
+  experimental_backgroundSize?: $ReadOnlyArray<BackgroundSizeValue> | string,
+  experimental_backgroundPosition?:
+    | $ReadOnlyArray<BackgroundPositionValue>
+    | string,
+  experimental_backgroundRepeat?:
+    | $ReadOnlyArray<BackgroundRepeatValue>
+    | string,
   isolation?: \\"auto\\" | \\"isolate\\",
 }>;
 export type ____ViewStyle_InternalCore = $ReadOnly<{
@@ -7704,6 +7744,27 @@ type ParsedBackgroundImageValue =
 declare export default function processBackgroundImage(
   backgroundImage: ?($ReadOnlyArray<BackgroundImageValue> | string)
 ): $ReadOnlyArray<ParsedBackgroundImageValue>;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundPosition.js 1`] = `
+"declare export default function processBackgroundPosition(
+  backgroundPosition: ?($ReadOnlyArray<BackgroundPositionValue> | string)
+): $ReadOnlyArray<BackgroundPositionValue>;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundRepeat.js 1`] = `
+"declare export default function processBackgroundRepeat(
+  backgroundRepeat: ?($ReadOnlyArray<BackgroundRepeatValue> | string)
+): $ReadOnlyArray<BackgroundRepeatValue>;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundSize.js 1`] = `
+"declare export default function processBackgroundSize(
+  backgroundSize: ?($ReadOnlyArray<BackgroundSizeValue> | string)
+): $ReadOnlyArray<BackgroundSizeValue>;
 "
 `;
 
