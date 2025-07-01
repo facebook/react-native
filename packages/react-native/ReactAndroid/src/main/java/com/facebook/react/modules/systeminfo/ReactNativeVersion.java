@@ -17,6 +17,6 @@ public class ReactNativeVersion {
   public static final Map<String, Object> VERSION = MapBuilder.<String, Object>of(
       "major", 0,
       "minor", 79,
-      "patch", 4,
+      "patch", 5,
       "prerelease", null);
 }
