@@ -56,6 +56,15 @@ try {
     throw Error(exitCode);
   }
 
+  describe('Test: Validate JS API snapshot');
+  if (execSync(`${YARN_BINARY} run build-types --validate`).code) {
+    echo(
+      'JS API snapshot validation failed. Please run `yarn build-types` to update the snapshot.',
+    );
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: Flow check');
   const flowCommand =
     FLOW_BINARY == null
