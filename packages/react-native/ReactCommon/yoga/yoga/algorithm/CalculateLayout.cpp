@@ -415,6 +415,12 @@ static void measureNodeWithoutChildren(
       Dimension::Height);
 }
 
+inline bool isFixedSize(float dim, SizingMode sizingMode) {
+  return sizingMode == SizingMode::StretchFit ||
+      (yoga::isDefined(dim) && sizingMode == SizingMode::FitContent &&
+       dim <= 0.0);
+}
+
 static bool measureNodeWithFixedSize(
     yoga::Node* const node,
     const Direction direction,
@@ -424,12 +430,8 @@ static bool measureNodeWithFixedSize(
     const SizingMode heightSizingMode,
     const float ownerWidth,
     const float ownerHeight) {
-  if ((yoga::isDefined(availableWidth) &&
-       widthSizingMode == SizingMode::FitContent && availableWidth <= 0.0f) ||
-      (yoga::isDefined(availableHeight) &&
-       heightSizingMode == SizingMode::FitContent && availableHeight <= 0.0f) ||
-      (widthSizingMode == SizingMode::StretchFit &&
-       heightSizingMode == SizingMode::StretchFit)) {
+  if (isFixedSize(availableWidth, widthSizingMode) &&
+      isFixedSize(availableHeight, heightSizingMode)) {
     node->setLayoutMeasuredDimension(
         boundAxis(
             node,
