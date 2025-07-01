@@ -11,7 +11,6 @@
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
-import NativeReactNativeFeatureFlags from '../../../src/private/featureflags/specs/NativeReactNativeFeatureFlags';
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
 import processBoxShadow from '../../StyleSheet/processBoxShadow';
@@ -123,13 +122,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  filter:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
-      : {
-          process: processFilter,
-        },
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processFilter},
 
   /**
    * MixBlendMode
@@ -144,13 +139,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  boxShadow:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? true
-      : {
-          process: processBoxShadow,
-        },
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processBoxShadow},
 
   /**
    * Linear Gradient
