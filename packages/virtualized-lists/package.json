@@ -1,6 +1,6 @@
 {
   "name": "@react-native/virtualized-lists",
-  "version": "0.79.5",
+  "version": "0.79.4",
   "description": "Virtualized lists for React Native.",
   "license": "MIT",
   "repository": {
