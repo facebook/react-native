@@ -1,6 +1,6 @@
 {
   "name": "@react-native/typescript-config",
-  "version": "0.79.4",
+  "version": "0.79.5",
   "description": "Default TypeScript configuration for React Native apps",
   "license": "MIT",
   "repository": {
