@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f9118c510588cd6a5f0402870b53eaf>>
+ * @generated SignedSource<<64031717f4d9751ee98fd4d304bad937>>
  */
 
 /**
@@ -76,6 +76,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
+  bool hideOffscreenVirtualViewsOnIOS();
   double preparedTextCacheSize();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
@@ -99,7 +100,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 56> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 57> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
@@ -145,6 +146,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
+  std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;

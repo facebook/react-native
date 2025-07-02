@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53e68ed98b80c867e3045902e1618c9b>>
+ * @generated SignedSource<<5374ad1a8a8e0be6f88982093a597591>>
  */
 
 /**
@@ -300,6 +300,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool fuseboxNetworkInspectionEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxNetworkInspectionEnabled");
+    return method(javaProvider_);
+  }
+
+  bool hideOffscreenVirtualViewsOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("hideOffscreenVirtualViewsOnIOS");
     return method(javaProvider_);
   }
 
@@ -599,6 +605,11 @@ bool JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled(
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::preparedTextCacheSize();
@@ -822,6 +833,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fuseboxNetworkInspectionEnabled",
         JReactNativeFeatureFlagsCxxInterop::fuseboxNetworkInspectionEnabled),
+      makeNativeMethod(
+        "hideOffscreenVirtualViewsOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS),
       makeNativeMethod(
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
