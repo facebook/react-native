@@ -38,7 +38,7 @@ export type EdgeInsetsValue = {
   bottom: number,
 };
 
-export type DimensionValue = number | string | 'auto' | null;
+export type DimensionValue = number | 'auto' | null;
 
 export type CursorValue = 'auto' | 'pointer';
 
