@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<04ec71486d4052ac5ec1c6362bfd143c>>
+ * @generated SignedSource<<6b0ec1695ee6a479068ad29945c64d7f>>
  */
 
 /**
@@ -200,6 +200,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fuseboxNetworkInspectionEnabled() override {
+    return false;
+  }
+
+  bool hideOffscreenVirtualViewsOnIOS() override {
     return false;
   }
 

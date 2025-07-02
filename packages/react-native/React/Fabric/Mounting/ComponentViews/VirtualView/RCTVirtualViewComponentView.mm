@@ -93,7 +93,9 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
   if (!_mode.has_value()) {
     _mode = newViewProps.initialHidden ? RCTVirtualViewModeHidden : RCTVirtualViewModeVisible;
-    self.hidden = newViewProps.initialHidden && !sIsAccessibilityUsed;
+    if (ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS()) {
+      self.hidden = newViewProps.initialHidden && !sIsAccessibilityUsed;
+    }
   }
 
   // If disabled, `_renderState` will always be `RCTVirtualViewRenderStateUnknown`.
@@ -281,7 +283,6 @@ static BOOL sIsAccessibilityUsed = NO;
 
   switch (newMode) {
     case RCTVirtualViewModeVisible:
-      self.hidden = NO;
       if (_renderState == RCTVirtualViewRenderStateUnknown) {
         // Feature flag is disabled, so use the former logic.
         [self dispatchSyncModeChange:event];
@@ -296,15 +297,27 @@ static BOOL sIsAccessibilityUsed = NO;
       }
       break;
     case RCTVirtualViewModePrerender:
-      self.hidden = !sIsAccessibilityUsed;
       if (!oldMode.has_value() || oldMode != RCTVirtualViewModeVisible) {
         [self dispatchAsyncModeChange:event];
       }
       break;
     case RCTVirtualViewModeHidden:
-      self.hidden = YES;
       [self dispatchAsyncModeChange:event];
       break;
+  }
+
+  if (ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS()) {
+    switch (newMode) {
+      case RCTVirtualViewModeVisible:
+        self.hidden = NO;
+        break;
+      case RCTVirtualViewModePrerender:
+        self.hidden = !sIsAccessibilityUsed;
+        break;
+      case RCTVirtualViewModeHidden:
+        self.hidden = YES;
+        break;
+    }
   }
 }
 

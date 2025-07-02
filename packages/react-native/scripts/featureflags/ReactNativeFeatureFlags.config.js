@@ -511,6 +511,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    hideOffscreenVirtualViewsOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-30',
+        description:
+          'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     preparedTextCacheSize: {
       defaultValue: 200,
       metadata: {
