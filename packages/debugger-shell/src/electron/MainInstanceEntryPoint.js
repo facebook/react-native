@@ -10,6 +10,7 @@
 
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
 const {BrowserWindow, app, shell, ipcMain} = require('electron') as any;
+const path = require('path');
 const util = require('util');
 
 const windowMetadata = new WeakMap<
@@ -68,6 +69,8 @@ function handleLaunchArgs(argv: string[]) {
       partition: 'persist:react-native-devtools',
       preload: require.resolve('./preload.js'),
     },
+    // Icon for Linux
+    icon: path.join(__dirname, 'resources', 'icon.png'),
   });
 
   // Open links in the default browser instead of in new Electron windows.
@@ -90,7 +93,7 @@ function handleLaunchArgs(argv: string[]) {
 }
 
 app.whenReady().then(() => {
-  handleLaunchArgs(process.argv.slice(2));
+  handleLaunchArgs(process.argv.slice(app.isPackaged ? 1 : 2));
 
   app.on(
     'second-instance',

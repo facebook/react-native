@@ -8,7 +8,7 @@
   ],
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/debugger-shell#readme",
   "bugs": "https://github.com/facebook/react-native/issues",
-  "main": "./src/node/index.js",
+  "main": "./src/index.js",
   "exports": {
     ".": {
       "node": "./src/node/index.js",

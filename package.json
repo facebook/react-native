@@ -49,6 +49,7 @@
     "@babel/plugin-transform-regenerator": "^7.24.7",
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-flow": "^7.24.7",
+    "@electron/packager": "^18.3.6",
     "@jest/create-cache-key-function": "^29.7.0",
     "@microsoft/api-extractor": "^7.52.2",
     "@react-native/metro-babel-transformer": "0.80.0-main",
