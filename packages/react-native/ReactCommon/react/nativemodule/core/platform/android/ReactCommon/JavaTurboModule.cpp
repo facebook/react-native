@@ -989,15 +989,18 @@ void JavaTurboModule::setEventEmitterCallback(
         *eventEmitterMap_[eventName].get());
   };
 
-  jvalue arg;
-  arg.l = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
+  // Patch from https://github.com/facebook/react-native/pull/51695 to fix https://github.com/facebook/react-native/issues/51628#issuecomment-2922391662
+  auto callback = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
                                                   eventEmitterLookup)](
                                                  folly::dynamic args) {
             auto eventName = args.at(0).asString();
             auto eventArgs = args.size() > 1 ? args.at(1) : nullptr;
             eventEmitterLookup(eventName).emit(std::move(eventArgs));
-          }).release();
-  env->CallVoidMethod(instance, cachedMethodId, arg);
-}
+          });
+  jvalue args[1];
+  args[0].l = callback.release();
+  // CallVoidMethod is replaced with CallVoidMethodA as it's unsafe on 32bit and causes crashes
+  // https://github.com/facebook/react-native/issues/51628
+  env->CallVoidMethodA(instance, cachedMethodId, args);}
 
 } // namespace facebook::react
