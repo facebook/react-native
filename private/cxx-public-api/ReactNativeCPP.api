@@ -18029,7 +18029,6 @@ std::pair<Float, Float> calculateAnimationProgress(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.h}:
 namespace facebook::react {
-using SharedAttributedString = std::shared_ptr<const AttributedString>;
 class AttributedString : public Sealable, public DebugStringConvertible {
  public:
   class Fragment {
