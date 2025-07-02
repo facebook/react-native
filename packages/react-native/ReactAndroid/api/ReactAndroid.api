@@ -4428,13 +4428,6 @@ public abstract interface class com/facebook/react/uimanager/UIManagerModule$Cus
 	public abstract fun resolveCustomEventName (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/UIManagerModuleConstantsHelper {
-	public fun <init> ()V
-	public static fun createConstants (Ljava/util/List;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
-	public static fun createConstantsForViewManager (Lcom/facebook/react/uimanager/ViewManager;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;Ljava/util/Map;)Ljava/util/Map;
-	public static fun getDefaultExportableEventTypes ()Ljava/util/Map;
-}
-
 public abstract interface class com/facebook/react/uimanager/UIManagerModuleListener {
 	public abstract fun willDispatchViewUpdates (Lcom/facebook/react/uimanager/UIManagerModule;)V
 }
