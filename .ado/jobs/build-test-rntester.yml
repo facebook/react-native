@@ -16,20 +16,20 @@ parameters:
         packager_platform: 'macos'
         new_arch_enabled: '1'
         use_hermes: '0'
-      # - name: macos_oldarch_hermes
-      #   friendly_name: 'macOS, Old Arch, Hermes'
-      #   sdk: macosx
-      #   scheme: RNTester-macOS
-      #   packager_platform: 'macos'
-      #   new_arch_enabled: '1'
-      #   use_hermes: '1'
-      # - name: macos_newarch_hermes
-      #   friendly_name: 'macOS, New Arch, Hermes'
-      #   sdk: macosx
-      #   scheme: RNTester-macOS
-      #   packager_platform: 'macos'
-      #   new_arch_enabled: '1'
-      #   use_hermes: '1'
+      - name: macos_oldarch_hermes
+        friendly_name: 'macOS, Old Arch, Hermes'
+        sdk: macosx
+        scheme: RNTester-macOS
+        packager_platform: 'macos'
+        new_arch_enabled: '1'
+        use_hermes: '1'
+      - name: macos_newarch_hermes
+        friendly_name: 'macOS, New Arch, Hermes'
+        sdk: macosx
+        scheme: RNTester-macOS
+        packager_platform: 'macos'
+        new_arch_enabled: '1'
+        use_hermes: '1'
       - name: ios_oldarch_jsc
         friendly_name: 'iOS, Old Arch, JSC'
         sdk: iphonesimulator
@@ -44,20 +44,20 @@ parameters:
         packager_platform: 'ios'
         new_arch_enabled: '1'
         use_hermes: '0'
-      # - name: ios_oldarch_hermes
-      #   friendly_name: 'iOS, Old Arch, Hermes'
-      #   sdk: iphonesimulator
-      #   scheme: RNTester
-      #   packager_platform: 'ios'
-      #   new_arch_enabled: '1'
-      #   use_hermes: '1'
-      # - name: ios_newarch_hermes
-      #   friendly_name: 'iOS, New Arch, Hermes'
-      #   sdk: iphonesimulator
-      #   scheme: RNTester
-      #   packager_platform: 'ios'
-      #   new_arch_enabled: '1'
-      #   use_hermes: '1'
+      - name: ios_oldarch_hermes
+        friendly_name: 'iOS, Old Arch, Hermes'
+        sdk: iphonesimulator
+        scheme: RNTester
+        packager_platform: 'ios'
+        new_arch_enabled: '1'
+        use_hermes: '1'
+      - name: ios_newarch_hermes
+        friendly_name: 'iOS, New Arch, Hermes'
+        sdk: iphonesimulator
+        scheme: RNTester
+        packager_platform: 'ios'
+        new_arch_enabled: '1'
+        use_hermes: '1'
       - name: xros_oldarch_jsc
         friendly_name: 'xrOS, Old Arch, JSC'
         sdk: xrsimulator

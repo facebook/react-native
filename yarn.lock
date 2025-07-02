@@ -12257,6 +12257,7 @@ __metadata:
   peerDependencies:
     "@types/react": ^18.2.6
     react: ^18.2.0
+    react-native: 0.76.9
   peerDependenciesMeta:
     "@types/react":
       optional: true

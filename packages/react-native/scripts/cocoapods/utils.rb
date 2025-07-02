@@ -194,16 +194,22 @@ class ReactNativePodsUtils
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
+        # [macOS
+        # Since some RN projects might combine multiple platforms into the same Xcode project,
+        # we'll be much more forgiving with the pod name matching in react-native-macos.
+        # Could be upstreamed as part of https://github.com/microsoft/react-native-macos/issues/2526.
+        valid_suffixes = ["", "-iOS", "-macOS", "-visionOS"]
+        # macOS]
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
-            if pod_name.to_s == target_pod_name
+            if valid_suffixes.any? { |suffix| pod_name.to_s == "#{target_pod_name}#{suffix}" } # [macOS]
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
-                            config.build_settings[settings_name] ||= '$(inherited) '
-                            config.build_settings[settings_name] << settings_value
-                        end
+                    if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
+                        config.build_settings[settings_name] ||= '$(inherited) '
+                        config.build_settings[settings_name] << settings_value
                     end
                 end
             end
+        end
     end
 
     def self.fix_library_search_path(config)

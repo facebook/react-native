@@ -107,5 +107,6 @@ end
 # visionOS]
 
 post_install do |installer|
+  $RN_PLATFORMS = %w[iOS macOS visionOS] # [macOS]
   react_native_post_install(installer, @prefix_path, :mac_catalyst_enabled => false)
 end

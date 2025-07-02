@@ -16,13 +16,12 @@ react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-# [macOS
-rn_version = package['version']
-version = findLastestVersionWithArtifact(rn_version) || rn_version
-# macOS]
+version = findMatchingHermesVersion(package) # [macOS] Use special logic instead of just package['version']
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
+
+version = version || package['version'] # [macOS] If version is nil, fall back to package version so CocoaPods doesn't fail
 
 Pod::Spec.new do |spec|
   spec.name        = "hermes-engine"
