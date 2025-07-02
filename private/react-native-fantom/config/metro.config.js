@@ -34,7 +34,10 @@ const config /*: InputConfigT */ = {
   },
   resolver: {
     blockList: /\/RendererProxy\.fb\.js$/, // Disable dependency injection for the renderer
-    sourceExts: ['fb.js', ...rnTesterConfig.resolver.sourceExts],
+    sourceExts:
+      JS_DIR != null
+        ? ['fb.js', ...rnTesterConfig.resolver.sourceExts]
+        : rnTesterConfig.resolver.sourceExts,
     nodeModulesPaths:
       JS_DIR != null ? [path.join(JS_DIR, 'public', 'node_modules')] : [],
     hasteImplModulePath: path.resolve(__dirname, 'hasteImpl.js'),
@@ -55,6 +58,7 @@ const config /*: InputConfigT */ = {
     // We need to wrap the default transformer so we can run it from source
     // using babel-register.
     babelTransformerPath: path.resolve(__dirname, 'metro-babel-transformer.js'),
+    hermesParser: true,
   },
   serializer: {
     // Force an empty list so Metro doesn't inject InitializeCore in tests.

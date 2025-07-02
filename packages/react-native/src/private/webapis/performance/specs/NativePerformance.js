@@ -39,7 +39,7 @@ export type RawPerformanceEntry = {
   responseStatus?: number,
 };
 
-export type OpaqueNativeObserverHandle = mixed;
+export opaque type OpaqueNativeObserverHandle = mixed;
 
 export type NativeBatchedObserverCallback = () => void;
 export type NativePerformanceMarkResult = number;

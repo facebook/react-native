@@ -18,12 +18,12 @@ public open class BaseActivityEventListener : ActivityEventListener {
       ReplaceWith("onActivityResult(activity, requestCode, resultCode, data)"))
   public open fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = Unit
 
-  override public fun onActivityResult(
+  public override fun onActivityResult(
       activity: Activity,
       requestCode: Int,
       resultCode: Int,
       data: Intent?
   ): Unit = Unit
 
-  override public fun onNewIntent(intent: Intent): Unit = Unit
+  public override fun onNewIntent(intent: Intent): Unit = Unit
 }

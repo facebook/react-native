@@ -40,6 +40,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.fabric.ComponentFactory
@@ -67,6 +68,7 @@ import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.util.RNLog
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 import com.facebook.systrace.SystraceMessage
@@ -129,7 +131,10 @@ internal class ReactInstance(
             context, jsTimerExecutor, ReactChoreographer.getInstance(), devSupportManager)
 
     // Notify JS if profiling is enabled
-    val isProfiling = BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(Systrace.TRACE_TAG_REACT)
+    val isProfiling =
+        BuildConfig.ENABLE_PERFETTO ||
+            Systrace.isTracing(Systrace.TRACE_TAG_REACT) ||
+            getIsProfilingBuild()
 
     mHybridData =
         initHybrid(
@@ -542,7 +547,18 @@ internal class ReactInstance(
         for (reactPackage in reactPackages) {
           if (reactPackage is ViewManagerOnDemandReactPackage) {
             val names = reactPackage.getViewManagerNames(context)
-            uniqueNames.addAll(names)
+            // We need to null check here because some Java implementation of the
+            // `ViewManagerOnDemandReactPackage` interface could still return null even
+            // if the method is marked as returning a non-nullable collection in Kotlin.
+            // See https://github.com/facebook/react-native/issues/52014
+            @Suppress("SENSELESS_COMPARISON")
+            if (names == null) {
+              RNLog.w(
+                  context,
+                  "The ReactPackage called: `${reactPackage.javaClass.simpleName}` is returning null for getViewManagerNames(). This is violating the signature of the method. That method should be updated to return an empty collection.")
+            } else {
+              uniqueNames.addAll(names)
+            }
           }
         }
         return uniqueNames

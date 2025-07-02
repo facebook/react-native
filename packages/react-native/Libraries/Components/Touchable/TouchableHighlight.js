@@ -9,6 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 import View from '../../Components/View/View';
@@ -30,6 +31,9 @@ type AndroidProps = $ReadOnly<{
 }>;
 
 type IOSProps = $ReadOnly<{
+  /**
+   * @deprecated Use `focusable` instead
+   */
   hasTVPreferredFocus?: ?boolean,
 }>;
 
@@ -306,7 +310,7 @@ class TouchableHighlightImpl extends React.Component<
     const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
       this.state.pressability.getEventHandlers();
 
-    const accessibilityState =
+    const accessibilityState: ?AccessibilityState =
       this.props.disabled != null
         ? {
             ...this.props.accessibilityState,

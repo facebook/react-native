@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e1407d3b1acb945f6991c0cdbb13eebc>>
+ * @generated SignedSource<<6b0ec1695ee6a479068ad29945c64d7f>>
  */
 
 /**
@@ -36,6 +36,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedEnabled() override {
+    return false;
+  }
+
+  bool cxxNativeAnimatedRemoveJsSync() override {
     return false;
   }
 
@@ -107,8 +111,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableIntersectionObserverEventLoopIntegration() override {
-    return true;
+  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
+    return false;
   }
 
   bool enableLayoutAnimationsOnAndroid() override {
@@ -179,6 +183,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableVirtualViewRenderState() override {
+    return false;
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -189,6 +201,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fuseboxNetworkInspectionEnabled() override {
     return false;
+  }
+
+  bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
+  double preparedTextCacheSize() override {
+    return 200.0;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

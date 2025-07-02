@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c40e490481c50d2f19830366f50aad5>>
+ * @generated SignedSource<<8e198a0a6b815c6ff06766301b1c0e87>>
  */
 
 /**
@@ -47,6 +47,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedEnabled(): Boolean = accessor.cxxNativeAnimatedEnabled()
+
+  /**
+   * Removes JS sync at end of native animation
+   */
+  @JvmStatic
+  public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
 
   /**
    * Disable sync dispatch on the main queue on iOS
@@ -151,10 +157,10 @@ public object ReactNativeFeatureFlags {
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
 
   /**
-   * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
+   * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
    */
   @JvmStatic
-  public fun enableIntersectionObserverEventLoopIntegration(): Boolean = accessor.enableIntersectionObserverEventLoopIntegration()
+  public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = accessor.enableInteropViewManagerClassLookUpOptimizationIOS()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -259,6 +265,18 @@ public object ReactNativeFeatureFlags {
   public fun enableVirtualViewDebugFeatures(): Boolean = accessor.enableVirtualViewDebugFeatures()
 
   /**
+   * Enables reading render state when dispatching VirtualView events.
+   */
+  @JvmStatic
+  public fun enableVirtualViewRenderState(): Boolean = accessor.enableVirtualViewRenderState()
+
+  /**
+   * Enables window focus detection for prioritizing VirtualView events.
+   */
+  @JvmStatic
+  public fun enableVirtualViewWindowFocusDetection(): Boolean = accessor.enableVirtualViewWindowFocusDetection()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -275,6 +293,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
+
+  /**
+   * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
+   */
+  @JvmStatic
+  public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * Number cached PreparedLayouts in TextLayoutManager cache
+   */
+  @JvmStatic
+  public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

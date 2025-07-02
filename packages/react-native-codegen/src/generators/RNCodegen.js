@@ -73,9 +73,9 @@ const ALL_GENERATORS = {
   generateViewConfigJs: generateViewConfigJs.generate,
 };
 
-type FilesOutput = Map<string, string>;
+export type FilesOutput = Map<string, string>;
 
-type GenerateFunction = (
+export type GenerateFunction = (
   libraryName: string,
   schema: SchemaType,
   packageName?: string,
@@ -83,11 +83,11 @@ type GenerateFunction = (
   headerPrefix?: string,
 ) => FilesOutput;
 
-type LibraryGeneratorsFunctions = $ReadOnly<{
+export type LibraryGeneratorsFunctions = $ReadOnly<{
   [string]: Array<GenerateFunction>,
 }>;
 
-type LibraryOptions = $ReadOnly<{
+export type LibraryOptions = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
@@ -97,13 +97,13 @@ type LibraryOptions = $ReadOnly<{
   libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
-type SchemasOptions = $ReadOnly<{
+export type SchemasOptions = $ReadOnly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
   supportedApplePlatforms?: {[string]: {[string]: boolean}},
 }>;
 
-type LibraryGenerators =
+export type LibraryGenerators =
   | 'componentsAndroid'
   | 'componentsIOS'
   | 'descriptors'
@@ -116,14 +116,14 @@ type LibraryGenerators =
   | 'modulesCxx'
   | 'modulesIOS';
 
-type SchemasGenerators = 'providerIOS';
+export type SchemasGenerators = 'providerIOS';
 
-type LibraryConfig = $ReadOnly<{
+export type LibraryConfig = $ReadOnly<{
   generators: Array<LibraryGenerators>,
   test?: boolean,
 }>;
 
-type SchemasConfig = $ReadOnly<{
+export type SchemasConfig = $ReadOnly<{
   generators: Array<SchemasGenerators>,
   test?: boolean,
 }>;

@@ -569,6 +569,11 @@ function consoleAssertPolyfill(expression, label) {
   }
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/console/timeStamp_static.
+// Non-standard API for recording markers on a timeline of the Performance instrumentation.
+// The actual logging is not provided by definition.
+function consoleTimeStampPolyfill() {}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   // Preserve the original `console` as `originalConsole`
@@ -580,6 +585,7 @@ if (global.nativeLoggingHook) {
   }
 
   global.console = {
+    timeStamp: consoleTimeStampPolyfill,
     ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -694,6 +700,7 @@ if (global.nativeLoggingHook) {
     profile: stub,
     profileEnd: stub,
     table: stub,
+    timeStamp: stub,
   };
 
   Object.defineProperty(console, '_isPolyfilled', {

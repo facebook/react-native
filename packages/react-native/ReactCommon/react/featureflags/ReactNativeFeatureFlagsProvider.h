@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2418719950b4918f5cc2324ef3ed7daa>>
+ * @generated SignedSource<<b3e7491b7cc4bfc06996714d9615e356>>
  */
 
 /**
@@ -28,6 +28,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool commonTestFlag() = 0;
   virtual bool animatedShouldSignalBatch() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
+  virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
   virtual bool disableMainQueueSyncDispatchIOS() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool disableTextLayoutManagerCacheAndroid() = 0;
@@ -45,7 +46,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableFontScaleChangesUpdatingLayout() = 0;
   virtual bool enableIOSTextBaselineOffsetPerLine() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
-  virtual bool enableIntersectionObserverEventLoopIntegration() = 0;
+  virtual bool enableInteropViewManagerClassLookUpOptimizationIOS() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableMainQueueCoordinatorOnIOS() = 0;
@@ -63,9 +64,13 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
   virtual bool enableVirtualViewDebugFeatures() = 0;
+  virtual bool enableVirtualViewRenderState() = 0;
+  virtual bool enableVirtualViewWindowFocusDetection() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
+  virtual bool hideOffscreenVirtualViewsOnIOS() = 0;
+  virtual double preparedTextCacheSize() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool updateRuntimeShadowNodeReferencesOnCommit() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65d21b40786d625e15440e7aeb70e0ee>>
+ * @generated SignedSource<<64031717f4d9751ee98fd4d304bad937>>
  */
 
 /**
@@ -35,6 +35,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool animatedShouldSignalBatch();
   bool cxxNativeAnimatedEnabled();
+  bool cxxNativeAnimatedRemoveJsSync();
   bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
@@ -52,7 +53,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
-  bool enableIntersectionObserverEventLoopIntegration();
+  bool enableInteropViewManagerClassLookUpOptimizationIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableMainQueueCoordinatorOnIOS();
@@ -70,9 +71,13 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
   bool enableVirtualViewDebugFeatures();
+  bool enableVirtualViewRenderState();
+  bool enableVirtualViewWindowFocusDetection();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
+  bool hideOffscreenVirtualViewsOnIOS();
+  double preparedTextCacheSize();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
@@ -95,11 +100,12 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 52> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 57> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> animatedShouldSignalBatch_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
+  std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
@@ -117,7 +123,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
-  std::atomic<std::optional<bool>> enableIntersectionObserverEventLoopIntegration_;
+  std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableMainQueueCoordinatorOnIOS_;
@@ -135,9 +141,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
   std::atomic<std::optional<bool>> enableVirtualViewDebugFeatures_;
+  std::atomic<std::optional<bool>> enableVirtualViewRenderState_;
+  std::atomic<std::optional<bool>> enableVirtualViewWindowFocusDetection_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
+  std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
+  std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;

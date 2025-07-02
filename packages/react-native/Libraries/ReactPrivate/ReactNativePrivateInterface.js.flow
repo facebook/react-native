@@ -8,7 +8,7 @@
  * @format
  */
 
-import typeof {createPublicTextInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
+import typeof {createPublicTextInstance as createPublicTextInstanceT} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
 
 export type {
   HostInstance as PublicInstance,
@@ -21,7 +21,7 @@ export type {
 } from '../../src/private/types/HostInstance';
 
 export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
-export type PublicTextInstance = ReturnType<createPublicTextInstance>;
+export type PublicTextInstance = ReturnType<createPublicTextInstanceT>;
 
 export {default as BatchedBridge} from '../BatchedBridge/BatchedBridge';
 export {default as ExceptionsManager} from '../Core/ExceptionsManager';

@@ -27,12 +27,4 @@ internal object LayoutDirectionUtil {
         YogaDirection.RTL -> View.LAYOUT_DIRECTION_RTL
         else -> View.LAYOUT_DIRECTION_INHERIT
       }
-
-  @JvmStatic
-  fun toYogaFromAndroid(direction: Int): YogaDirection =
-      when (direction) {
-        View.LAYOUT_DIRECTION_LTR -> YogaDirection.LTR
-        View.LAYOUT_DIRECTION_RTL -> YogaDirection.RTL
-        else -> YogaDirection.INHERIT
-      }
 }

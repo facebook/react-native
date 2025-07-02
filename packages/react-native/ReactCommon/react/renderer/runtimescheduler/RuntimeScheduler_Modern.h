@@ -179,11 +179,9 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
   void scheduleEventLoop();
-  void runEventLoop(jsi::Runtime& runtime, bool onlyExpired);
+  void runEventLoop(jsi::Runtime& runtime);
 
-  std::shared_ptr<Task> selectTask(
-      HighResTimeStamp currentTime,
-      bool onlyExpired);
+  std::shared_ptr<Task> selectTask();
 
   void scheduleTask(std::shared_ptr<Task> task);
 
@@ -193,10 +191,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * In the future, this will include other steps in the Web event loop, like
    * updating the UI in native, executing resize observer callbacks, etc.
    */
-  void runEventLoopTick(
-      jsi::Runtime& runtime,
-      Task& task,
-      HighResTimeStamp taskStartTime);
+  void runEventLoopTick(jsi::Runtime& runtime, Task& task);
 
   void executeTask(
       jsi::Runtime& runtime,

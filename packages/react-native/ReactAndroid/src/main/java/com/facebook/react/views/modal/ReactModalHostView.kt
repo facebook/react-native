@@ -37,10 +37,11 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -52,8 +53,11 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.disableEdgeToEdge
+import com.facebook.react.views.view.enableEdgeToEdge
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.react.views.view.setSystemBarsTranslucency
+import com.facebook.yoga.annotations.DoNotStrip
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -68,6 +72,7 @@ import com.facebook.react.views.view.setSystemBarsTranslucency
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
+@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
@@ -78,16 +83,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
+
   public var statusBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var navigationBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var animationType: String? = null
@@ -123,6 +131,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
+    initStatusBarHeight(context)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -374,9 +383,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       }
 
       // Navigation bar cannot be translucent without status bar being translucent too
-      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
-
-      if (!navigationBarTranslucent) {
+      if (navigationBarTranslucent) {
+        dialogWindow.enableEdgeToEdge()
+      } else {
+        dialogWindow.disableEdgeToEdge()
         dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
       }
 
@@ -391,8 +401,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       // This is to prevent a crash from the following error, without a clear repro steps:
       // java.lang.IllegalArgumentException: View=DecorView@c94931b[XxxActivity] not attached to
       // window manager
-      FLog.e(
-          ReactConstants.TAG, "ReactModalHostView: error while setting window flags: ", e.message)
+      FLog.e(TAG, "ReactModalHostView: error while setting window flags: ", e.message)
     }
   }
 
@@ -412,6 +421,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
           WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
       val dialogWindowInsetsController =
           WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
+
+      if (isEdgeToEdgeFeatureFlagOn) {
+        activityWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        dialogWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
 
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
@@ -463,6 +479,26 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private companion object {
     private const val TAG = "ReactModalHost"
+
+    // We store the status bar height to be able to properly position
+    // the modal on the first render.
+    private var statusBarHeight = 0
+
+    private fun initStatusBarHeight(reactContext: ReactContext) {
+      statusBarHeight = getStatusBarHeightPx(reactContext.currentActivity)
+    }
+
+    @JvmStatic
+    @DoNotStrip
+    private fun getScreenDisplayMetricsWithoutInsets(): Long {
+      val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
+      return encodeFloatsToLong(
+          displayMetrics.widthPixels.toFloat().pxToDp(),
+          (displayMetrics.heightPixels - statusBarHeight).toFloat().pxToDp())
+    }
+
+    private fun encodeFloatsToLong(width: Float, height: Float): Long =
+        (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
   }
 
   /**
@@ -478,6 +514,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
    */
   public class DialogRootViewGroup internal constructor(context: Context) :
       ReactViewGroup(context), RootView {
+
     internal var stateWrapper: StateWrapper? = null
     internal var eventDispatcher: EventDispatcher? = null
 

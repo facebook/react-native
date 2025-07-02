@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e3127b8ec6d869938b4faa447c105782>>
+ * @generated SignedSource<<a38c875fb5fb14ab2cb644806d27844d>>
  * @flow strict
  * @noformat
  */
@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +animatedShouldSignalBatch?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
+  +cxxNativeAnimatedRemoveJsSync?: () => boolean;
   +disableMainQueueSyncDispatchIOS?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
   +disableTextLayoutManagerCacheAndroid?: () => boolean;
@@ -45,7 +46,7 @@ export interface Spec extends TurboModule {
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
-  +enableIntersectionObserverEventLoopIntegration?: () => boolean;
+  +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableMainQueueCoordinatorOnIOS?: () => boolean;
@@ -63,9 +64,13 @@ export interface Spec extends TurboModule {
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
+  +enableVirtualViewRenderState?: () => boolean;
+  +enableVirtualViewWindowFocusDetection?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
+  +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +preparedTextCacheSize?: () => number;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;

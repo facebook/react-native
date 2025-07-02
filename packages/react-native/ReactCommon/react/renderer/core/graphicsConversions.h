@@ -24,6 +24,10 @@
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 
+#ifdef RN_SERIALIZABLE_STATE
+#include <yoga/Yoga.h>
+#endif
+
 namespace facebook::react {
 
 #pragma mark - Color
@@ -39,9 +43,6 @@ inline void fromRawValue(
 inline int toAndroidRepr(const SharedColor& color) {
   return *color;
 }
-inline folly::dynamic toDynamic(const SharedColor& color) {
-  return *color;
-}
 #endif
 
 inline std::string toString(const SharedColor& value) {
@@ -50,15 +51,45 @@ inline std::string toString(const SharedColor& value) {
   std::snprintf(
       buffer.data(),
       buffer.size(),
-      "rgba(%.0f, %.0f, %.0f, %.0f)",
+      "rgba(%.0f, %.0f, %.0f, %g)",
       components.red * 255.f,
       components.green * 255.f,
       components.blue * 255.f,
-      components.alpha * 255.f);
+      components.alpha);
   return buffer.data();
 }
 
 #pragma mark - Geometry
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const YGValue& dimension) {
+  switch (dimension.unit) {
+    case YGUnitUndefined:
+      return nullptr;
+    case YGUnitAuto:
+      return "auto";
+    case YGUnitMaxContent:
+      return "max-content";
+    case YGUnitFitContent:
+      return "fit-content";
+    case YGUnitStretch:
+      return "stretch";
+    case YGUnitPoint:
+      return dimension.value;
+    case YGUnitPercent:
+      return std::format("{}%", dimension.value);
+  }
+
+  return nullptr;
+}
+
+inline folly::dynamic toDynamic(const Point& point) {
+  folly::dynamic pointResult = folly::dynamic::object();
+  pointResult["x"] = point.x;
+  pointResult["y"] = point.y;
+  return pointResult;
+}
+#endif
 
 inline void fromRawValue(
     const PropsParserContext& context,
@@ -168,6 +199,17 @@ inline void fromRawValue(
     LOG(ERROR) << "Unsupported EdgeInsets type";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
+}
+#endif
 
 inline void fromRawValue(
     const PropsParserContext& context,

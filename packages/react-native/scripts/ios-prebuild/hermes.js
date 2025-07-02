@@ -8,7 +8,7 @@
  * @format
  */
 
-const {createLogger} = require('./utils');
+const {computeNightlyTarballURL, createLogger} = require('./utils');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -188,29 +188,18 @@ function getTarballUrl(
   return `${mavenRepoUrl}/${namespace}/react-native-artifacts/${version}/react-native-artifacts-${version}-hermes-ios-${buildType.toLowerCase()}.tar.gz`;
 }
 
-function getNightlyTarballUrl(
+async function getNightlyTarballUrl(
   version /*: string */,
   buildType /*: BuildFlavor */,
-) /*: string */ {
-  const params = `r=snapshots&g=com.facebook.react&a=react-native-artifacts&c=hermes-ios-${buildType.toLowerCase()}&e=tar.gz&v=${version}-SNAPSHOT`;
-  return `https://oss.sonatype.org/service/local/artifact/maven/redirect?${params}`;
-}
-
-/**
- * Resolves URL redirects using fetch instead of curl
- */
-async function resolveUrlRedirects(url /*: string */) /*: Promise<string> */ {
-  try {
-    const response /*: Response */ = await fetch(url, {
-      method: 'HEAD',
-      redirect: 'follow',
-    });
-
-    return response.url;
-  } catch (e) {
-    hermesLog(`Failed to resolve URL redirects\n${e}`, 'error');
-    return url;
-  }
+) /*: Promise<string> */ {
+  const artifactCoordinate = 'react-native-artifacts';
+  const artifactName = `hermes-ios-${buildType.toLowerCase()}.tar.gz`;
+  return await computeNightlyTarballURL(
+    version,
+    buildType,
+    artifactCoordinate,
+    artifactName,
+  );
 }
 
 /**
@@ -249,9 +238,7 @@ async function hermesSourceType(
   }
 
   // For nightly tarball, we need to resolve redirects first
-  const nightlyUrl = await resolveUrlRedirects(
-    getNightlyTarballUrl(version, buildType),
-  );
+  const nightlyUrl = await getNightlyTarballUrl(version, buildType);
   if (await hermesArtifactExists(nightlyUrl)) {
     hermesLog('Using download prebuild nightly tarball');
     return HermesEngineSourceTypes.DOWNLOAD_PREBUILT_NIGHTLY_TARBALL;
@@ -313,9 +300,7 @@ async function downloadPrebuiltNightlyTarball(
   buildType /*: BuildFlavor */,
   artifactsPath /*: string*/,
 ) /*: Promise<string> */ {
-  const url = await resolveUrlRedirects(
-    getNightlyTarballUrl(version, buildType),
-  );
+  const url = await getNightlyTarballUrl(version, buildType);
   hermesLog(`Using nightly tarball from URL: ${url}`);
   return downloadHermesTarball(url, version, buildType, artifactsPath);
 }

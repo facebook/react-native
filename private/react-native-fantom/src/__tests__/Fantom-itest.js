@@ -475,7 +475,7 @@ describe('Fantom', () => {
         expect(
           root
             .getRenderedOutput({
-              props: ['!width'],
+              props: ['^(?!width$).*$'],
             })
             .toJSX(),
         ).toEqual(<rn-view height="100.000000" />);
@@ -535,14 +535,14 @@ describe('Fantom', () => {
             {
               children: 'JSX is ',
               props: {
-                foregroundColor: 'rgba(255, 0, 0, 255)',
+                foregroundColor: 'rgba(255, 0, 0, 1)',
               },
               type: 'Text',
             },
             {
               children: 'easy!',
               props: {
-                foregroundColor: 'rgba(0, 0, 255, 255)',
+                foregroundColor: 'rgba(0, 0, 255, 1)',
               },
               type: 'Text',
             },

@@ -8,11 +8,9 @@
 #pragma once
 
 #include <concepts>
+#include <list>
 #include <mutex>
-#include <optional>
-#include <type_traits>
-
-#include <folly/container/EvictingCacheMap.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
@@ -22,12 +20,15 @@ concept CacheGeneratorFunction = std::invocable<GeneratorT> &&
 
 /*
  * Simple thread-safe LRU cache.
+ *
+ * TODO T228961279: The maxSize template parameter should be removed, since it
+ * may be overriden by the constructor.
  */
 template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
  public:
-  SimpleThreadSafeCache() : map_{maxSize} {}
-  SimpleThreadSafeCache(unsigned long size) : map_{size} {}
+  SimpleThreadSafeCache() : maxSize_(maxSize) {}
+  SimpleThreadSafeCache(unsigned long size) : maxSize_{size} {}
 
   /*
    * Returns a value from the map with a given key.
@@ -38,14 +39,23 @@ class SimpleThreadSafeCache {
   ValueT get(const KeyT& key, CacheGeneratorFunction<ValueT> auto generator)
       const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
-    if (iterator == map_.end()) {
-      auto value = generator();
-      map_.set(key, value);
-      return value;
+
+    if (auto it = map_.find(key); it != map_.end()) {
+      // Move accessed item to front of list
+      list_.splice(list_.begin(), list_, it->second);
+      return it->second->second;
     }
 
-    return iterator->second;
+    auto value = generator();
+    // Add new value to front of list and map
+    list_.emplace_front(key, value);
+    map_[key] = list_.begin();
+    if (list_.size() > maxSize_) {
+      // Evict least recently used item (back of list)
+      map_.erase(list_.back().first);
+      list_.pop_back();
+    }
+    return value;
   }
 
   /*
@@ -55,26 +65,24 @@ class SimpleThreadSafeCache {
    */
   std::optional<ValueT> get(const KeyT& key) const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
-    if (iterator == map_.end()) {
-      return {};
+
+    if (auto it = map_.find(key); it != map_.end()) {
+      // Move accessed item to front of list
+      list_.splice(list_.begin(), list_, it->second);
+      return it->second->second;
     }
 
-    return iterator->second;
-  }
-
-  /*
-   * Sets a key-value pair in the LRU cache.
-   * Can be called from any thread.
-   */
-  void set(const KeyT& key, const ValueT& value) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    map_.set(std::move(key), std::move(value));
+    return ValueT{};
   }
 
  private:
-  mutable folly::EvictingCacheMap<KeyT, ValueT> map_;
+  using EntryT = std::pair<KeyT, ValueT>;
+  using iterator = typename std::list<EntryT>::iterator;
+
+  size_t maxSize_;
   mutable std::mutex mutex_;
+  mutable std::list<EntryT> list_;
+  mutable std::unordered_map<KeyT, iterator> map_;
 };
 
 } // namespace facebook::react

@@ -14,8 +14,8 @@ jobs:
         with:
           repo-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           days-before-stale: 180
-          stale-issue-message: 'This issue is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
-          stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
+          stale-issue-message: 'This issue is stale because it has been open for 180 days with no activity. It will be closed in 7 days unless you comment on it or remove the "Stale" label.'
+          stale-pr-message: 'This PR is stale because it has been open for 180 days with no activity. It will be closed in 7 days unless you comment on it or remove the "Stale" label.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 7 days with no activity.'
           exempt-issue-labels: 'Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro'

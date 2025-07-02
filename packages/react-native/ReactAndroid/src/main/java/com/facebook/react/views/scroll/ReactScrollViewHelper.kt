@@ -32,6 +32,8 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.math.abs
+import kotlin.math.max
 
 /** Helper class that deals with emitting Scroll Events. */
 public object ReactScrollViewHelper {
@@ -115,7 +117,7 @@ public object ReactScrollViewHelper {
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
     if (scrollEventType == ScrollEventType.SCROLL &&
-        scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
+        scrollView.scrollEventThrottle >= max(17, now - scrollView.lastScrollDispatchTime)) {
       // Scroll events are throttled.
       return
     }
@@ -259,7 +261,7 @@ public object ReactScrollViewHelper {
     // Register the listeners for the fling animator if there isn't any
     val flingAnimator = scrollView.getFlingAnimator()
     if (flingAnimator.listeners == null || flingAnimator.listeners.size == 0) {
-      registerFlingAnimator<T>(scrollView)
+      registerFlingAnimator(scrollView)
     }
     val scrollState = scrollView.reactScrollViewScrollState
     scrollState.setFinalAnimatedPositionScroll(x, y)
@@ -284,7 +286,7 @@ public object ReactScrollViewHelper {
       velocity: Int
   ): Int where T : HasFlingAnimator?, T : HasScrollState?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
-    val velocityDirectionMask = if (velocity != 0) velocity / Math.abs(velocity) else 0
+    val velocityDirectionMask = if (velocity != 0) velocity / abs(velocity) else 0
     val isMovingTowardsAnimatedValue =
         velocityDirectionMask * (postAnimationValue - currentValue) > 0
 
@@ -398,7 +400,7 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
-                updateFabricScrollState<T>(scrollView)
+                updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
@@ -454,9 +456,9 @@ public object ReactScrollViewHelper {
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollX, finalAnimatedPositionScroll.x, velocityX), // startX
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollY, finalAnimatedPositionScroll.y, velocityY), // startY
         velocityX, // velocityX
         velocityY, // velocityY

@@ -21,23 +21,19 @@ import com.facebook.react.R
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 
-internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
-  public constructor(
-      view: View,
-      originalFocus: Boolean,
-      originalImportantForAccessibility: Int
-  ) : super(view, originalFocus, originalImportantForAccessibility) {
+internal class ReactTextViewAccessibilityDelegate(
+    view: View,
+    originalFocus: Boolean,
+    originalImportantForAccessibility: Int
+) : ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility) {
+  private var accessibilityLinks: AccessibilityLinks? = null
+
+  init {
     accessibilityLinks = hostView.getTag(R.id.accessibility_links) as AccessibilityLinks?
   }
 
-  private var accessibilityLinks: AccessibilityLinks? = null
-
-  public companion object {
-    public fun setDelegate(
-        view: View,
-        originalFocus: Boolean,
-        originalImportantForAccessibility: Int
-    ) {
+  companion object {
+    fun setDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems,so leave it alone.
       if (!ViewCompat.hasAccessibilityDelegate(view) &&
@@ -55,11 +51,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       }
     }
 
-    public fun resetDelegate(
-        view: View,
-        originalFocus: Boolean,
-        originalImportantForAccessibility: Int
-    ) {
+    fun resetDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
       ViewCompat.setAccessibilityDelegate(
           view,
           ReactTextViewAccessibilityDelegate(
@@ -280,7 +272,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
     return null
   }
 
-  public class AccessibilityLinks(text: Spanned) {
+  class AccessibilityLinks(text: Spanned) {
     private val links: List<AccessibleLink>
 
     init {
@@ -306,7 +298,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       links = accessibleLinks
     }
 
-    public fun getLinkById(id: Int): AccessibleLink? {
+    fun getLinkById(id: Int): AccessibleLink? {
       for (link in links) {
         if (link.id == id) {
           return link
@@ -316,7 +308,7 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       return null
     }
 
-    public fun getLinkBySpanPos(start: Int, end: Int): AccessibleLink? {
+    fun getLinkBySpanPos(start: Int, end: Int): AccessibleLink? {
       for (link in links) {
         if (link.start == start && link.end == end) {
           return link
@@ -326,15 +318,15 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
       return null
     }
 
-    public fun size(): Int {
+    fun size(): Int {
       return links.size
     }
 
-    public class AccessibleLink {
-      public var description: String? = null
-      public var start: Int = 0
-      public var end: Int = 0
-      public var id: Int = 0
+    class AccessibleLink {
+      var description: String? = null
+      var start: Int = 0
+      var end: Int = 0
+      var id: Int = 0
     }
   }
 }

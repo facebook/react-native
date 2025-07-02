@@ -11,9 +11,12 @@
 #include <react/bridging/Promise.h>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace facebook::react {
+
+class IImageLoader;
 
 using ImageSize = NativeImageLoaderAndroidImageSize<double, double>;
 
@@ -24,8 +27,11 @@ struct Bridging<ImageSize>
 class ImageLoaderModule
     : public NativeImageLoaderAndroidCxxSpec<ImageLoaderModule> {
  public:
-  explicit ImageLoaderModule(std::shared_ptr<CallInvoker> jsInvoker)
-      : NativeImageLoaderAndroidCxxSpec(jsInvoker) {}
+  explicit ImageLoaderModule(
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::weak_ptr<IImageLoader> imageLoader = std::weak_ptr<IImageLoader>())
+      : NativeImageLoaderAndroidCxxSpec(jsInvoker),
+        imageLoader_(std::move(imageLoader)) {}
 
   jsi::Object getConstants(jsi::Runtime& rt);
   void abortRequest(jsi::Runtime& rt, int32_t requestId);
@@ -43,6 +49,9 @@ class ImageLoaderModule
   jsi::Object queryCache(
       jsi::Runtime& rt,
       const std::vector<std::string>& uris);
+
+ private:
+  std::weak_ptr<IImageLoader> imageLoader_;
 };
 
 } // namespace facebook::react

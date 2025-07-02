@@ -139,7 +139,6 @@ vendor/
 /packages/react-native/React/FBReactNativeSpec/
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/
-/packages/react-native/ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /**/RCTThirdPartyFabricComponentsProvider.*
 
@@ -176,3 +175,6 @@ fix_*.patch
 
 # [Experimental] Generated TS type definitions
 /packages/**/types_generated/
+
+/packages/debugger-shell/build/
+/packages/*/dist/

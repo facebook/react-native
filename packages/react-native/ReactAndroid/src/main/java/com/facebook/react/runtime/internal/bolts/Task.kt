@@ -260,7 +260,7 @@ public class Task<TResult> : TaskInterface<TResult> {
 
     @JvmStatic
     internal fun <TResult> create(): TaskCompletionSource<TResult> {
-      return TaskCompletionSource<TResult>()
+      return TaskCompletionSource()
     }
 
     /** Creates a completed task with the given value. */

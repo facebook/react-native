@@ -9,9 +9,139 @@
 #import <React/RCTAnimationUtils.h>
 #import <React/RCTConversions.h>
 #import <react/utils/FloatComparison.h>
+#include <optional>
 #import <vector>
 
 using namespace facebook::react;
+
+namespace {
+
+struct Line;
+
+struct LineSegment {
+  CGPoint p1;
+  CGPoint p2;
+
+  LineSegment(CGPoint p1, CGPoint p2) : p1(p1), p2(p2) {}
+
+  LineSegment(CGPoint p1, CGFloat m, CGFloat distance);
+
+  CGFloat getLength() const
+  {
+    CGFloat dx = p2.x - p1.x;
+    CGFloat dy = p2.y - p1.y;
+    return sqrt(dx * dx + dy * dy);
+  }
+
+  CGFloat getDistance() const
+  {
+    return p1.x <= p2.x ? getLength() : -getLength();
+  }
+
+  CGPoint getMidpoint() const
+  {
+    return CGPointMake((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
+  }
+
+  CGFloat getSlope() const
+  {
+    CGFloat dx = p2.x - p1.x;
+    if (floatEquality(dx, 0.0)) {
+      return std::numeric_limits<CGFloat>::infinity();
+    }
+    return (p2.y - p1.y) / dx;
+  }
+
+  CGFloat getPerpendicularSlope() const
+  {
+    CGFloat slope = getSlope();
+    if (std::isinf(slope)) {
+      return 0.0;
+    }
+    if (floatEquality(slope, 0.0)) {
+      return -std::numeric_limits<CGFloat>::infinity();
+    }
+    return -1 / slope;
+  }
+
+  Line toLine() const;
+
+  LineSegment perpendicularBisector() const
+  {
+    CGPoint midpoint = getMidpoint();
+    CGFloat perpSlope = getPerpendicularSlope();
+    CGFloat dist = getDistance();
+    return {LineSegment(midpoint, perpSlope, -dist / 2).p2, LineSegment(midpoint, perpSlope, dist / 2).p2};
+  }
+
+  LineSegment multiplied(CGSize multipliers) const
+  {
+    return {
+        CGPointMake(p1.x * multipliers.width, p1.y * multipliers.height),
+        CGPointMake(p2.x * multipliers.width, p2.y * multipliers.height)};
+  }
+
+  LineSegment divided(CGSize divisors) const
+  {
+    return multiplied(CGSizeMake(1 / divisors.width, 1 / divisors.height));
+  }
+};
+
+struct Line {
+  CGFloat m;
+  CGFloat b;
+
+  Line(CGFloat m, CGFloat b) : m(m), b(b) {}
+  Line(CGFloat m, CGPoint p) : m(m), b(p.y - m * p.x) {}
+  Line(CGPoint p1, CGPoint p2) : m(LineSegment(p1, p2).getSlope()), b(p1.y - m * p1.x) {}
+
+  CGFloat y(CGFloat x) const
+  {
+    return m * x + b;
+  }
+
+  CGPoint point(CGFloat x) const
+  {
+    return CGPointMake(x, y(x));
+  }
+
+  std::optional<CGPoint> intersection(const Line &other) const
+  {
+    CGFloat n = other.m;
+    CGFloat c = other.b;
+    if (floatEquality(m, n)) {
+      return std::nullopt;
+    }
+    CGFloat x = (c - b) / (m - n);
+    return point(x);
+  }
+};
+
+LineSegment::LineSegment(CGPoint p1, CGFloat m, CGFloat distance) : p1(p1)
+{
+  Line line(m, p1);
+  CGPoint measuringPoint = line.point(p1.x + 1);
+  LineSegment measuringSegment(p1, measuringPoint);
+  CGFloat measuringDeltaH = measuringSegment.getDistance();
+  CGFloat deltaX = !floatEquality(measuringDeltaH, 0.0) ? distance / measuringDeltaH : 0.0;
+  p2 = line.point(p1.x + deltaX);
+}
+
+Line LineSegment::toLine() const
+{
+  return {p1, p2};
+}
+
+CGSize calculateMultipliers(CGSize bounds)
+{
+  if (bounds.height <= bounds.width) {
+    return CGSizeMake(1, bounds.width / bounds.height);
+  } else {
+    return CGSizeMake(bounds.height / bounds.width, 1);
+  }
+}
+
+} // namespace
 
 static std::optional<Float> resolveColorStopPosition(ValueUnit position, CGFloat gradientLineLength)
 {
@@ -52,21 +182,21 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     auto leftDist = offset - offsetLeft;
     auto rightDist = offsetRight - offset;
     auto totalDist = offsetRight - offsetLeft;
-    SharedColor leftSharedColor = colorStops[x - 1].color;
-    SharedColor rightSharedColor = colorStops[x + 1].color;
+    const SharedColor &leftSharedColor = colorStops[x - 1].color;
+    const SharedColor &rightSharedColor = colorStops[x + 1].color;
 
-    if (facebook::react::floatEquality(leftDist, rightDist)) {
+    if (floatEquality(leftDist, rightDist)) {
       colorStops.erase(colorStops.begin() + x);
       --indexOffset;
       continue;
     }
 
-    if (facebook::react::floatEquality(leftDist, .0f)) {
+    if (floatEquality(leftDist, 0.0)) {
       colorStops[x].color = rightSharedColor;
       continue;
     }
 
-    if (facebook::react::floatEquality(rightDist, .0f)) {
+    if (floatEquality(rightDist, 0.0)) {
       colorStops[x].color = leftSharedColor;
       continue;
     }
@@ -120,7 +250,7 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
       auto green = (interpolatedColor >> 8) & 0xFF;
       auto blue = interpolatedColor & 0xFF;
 
-      newStop.color = facebook::react::colorFromRGBA(red, green, blue, alpha);
+      newStop.color = colorFromRGBA(red, green, blue, alpha);
     }
 
     // Replace the color hint with new color stops
@@ -200,5 +330,48 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     }
   }
   return processColorTransitionHints(fixedColorStops);
+}
+
+// CAGradientLayer linear gradient squishes the non-square gradient to square gradient.
+// This function fixes the "squished" effect.
+// See https://stackoverflow.com/a/43176174 for more information.
++ (std::pair<CGPoint, CGPoint>)pointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
+                                                             endPoint:(CGPoint)endPoint
+                                                               bounds:(CGSize)bounds
+{
+  if (floatEquality(startPoint.x, endPoint.x) || floatEquality(startPoint.y, endPoint.y)) {
+    // Apple's implementation of horizontal and vertical gradients works just fine
+    return {startPoint, endPoint};
+  }
+
+  LineSegment startEnd(startPoint, endPoint);
+  LineSegment ab = startEnd.multiplied({bounds.width, bounds.height});
+  const CGPoint a = ab.p1;
+  const CGPoint b = ab.p2;
+
+  LineSegment cd = ab.perpendicularBisector();
+
+  CGSize multipliers = calculateMultipliers(bounds);
+  LineSegment lineSegmentCD = cd.multiplied(multipliers);
+
+  LineSegment lineSegmentEF = lineSegmentCD.perpendicularBisector();
+
+  LineSegment ef = lineSegmentEF.divided(multipliers);
+
+  Line efLine = ef.toLine();
+
+  Line aParallelLine(cd.getSlope(), a);
+  Line bParallelLine(cd.getSlope(), b);
+
+  std::optional<CGPoint> g_opt = efLine.intersection(aParallelLine);
+  std::optional<CGPoint> h_opt = efLine.intersection(bParallelLine);
+
+  if (g_opt && h_opt) {
+    LineSegment gh(*g_opt, *h_opt);
+    LineSegment result = gh.divided({bounds.width, bounds.height});
+    return {result.p1, result.p2};
+  }
+
+  return {startPoint, endPoint};
 }
 @end

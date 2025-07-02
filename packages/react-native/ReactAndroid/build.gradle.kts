@@ -88,8 +88,6 @@ val preparePrefab by
                       // hermes_executor
                       // This prefab targets is used by Expo & Reanimated
                       Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
-                      // jscexecutor
-                      Pair("../ReactCommon/jsc/", "jsc/"),
                       // fabricjni
                       Pair("src/main/jni/react/fabric", "react/fabric/"),
                       // glog
@@ -237,10 +235,6 @@ val preparePrefab by
                   "hermestooling",
                   // hermes_executor
                   Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")),
-              PrefabPreprocessingEntry(
-                  "jsctooling",
-                  // jsc
-                  Pair("../ReactCommon/jsc/", "jsc/")),
           ))
       outputDir.set(prefabHeadersDir)
     }
@@ -535,7 +529,6 @@ android {
             "reactnative",
             "jsi",
             "hermestooling",
-            "jsctooling",
         )
       }
     }
@@ -584,10 +577,9 @@ android {
     resources.excludes.add("META-INF/LICENSE")
     // We intentionally don't want to bundle any JS Runtime inside the Android AAR
     // we produce. The reason behind this is that we want to allow users to pick the
-    // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
+    // JS engine by specifying a dependency on either `hermes-engine` or other engines
     // that will include the necessary .so files to load.
     jniLibs.excludes.add("**/libhermes.so")
-    jniLibs.excludes.add("**/libjsc.so")
   }
 
   buildFeatures {
@@ -600,7 +592,6 @@ android {
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
     create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
     create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
-    create("jsctooling") { headers = File(prefabHeadersDir, "jsctooling").absolutePath }
   }
 
   publishing {
@@ -645,10 +636,9 @@ dependencies {
   compileOnly(libs.javax.annotation.api)
   api(libs.javax.inject)
 
-  // It's up to the consumer to decide if hermes/jsc should be included or not.
-  // Therefore hermes-engine and jsc are compileOnly dependencies.
+  // It's up to the consumer to decide if hermes or other engines should be included or not.
+  // Therefore hermes-engine is a compileOnly dependencies.
   compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
-  compileOnly(libs.jsc.android)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)

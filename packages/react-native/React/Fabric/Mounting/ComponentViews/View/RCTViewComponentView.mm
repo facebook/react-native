@@ -1215,7 +1215,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
         result = [NSMutableString string];
       }
       if (result.length > 0) {
-        [result appendString:@" "];
+        [result appendString:@", "];
       }
       [result appendString:label];
     }
@@ -1230,7 +1230,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return label;
   }
 
-  return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  if (self.isAccessibilityElement) {
+    return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  }
+  return nil;
 }
 
 - (NSString *)accessibilityLabelForCoopting

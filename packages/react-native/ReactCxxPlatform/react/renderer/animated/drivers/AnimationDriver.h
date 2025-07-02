@@ -42,10 +42,6 @@ class AnimationDriver {
     return animatedValueTag_;
   }
 
-  inline std::optional<AnimationEndCallback> endCallback() noexcept {
-    return endCallback_;
-  }
-
   bool getIsComplete() const noexcept {
     return isComplete_;
   }

@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}"
+  s.source_files           = podspec_sources("Fabric/**/*.{c,h,m,mm,S,cpp}", "Fabric/**/*.{h}")
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
   s.compiler_flags         = new_arch_flags
@@ -99,7 +99,7 @@ Pod::Spec.new do |s|
   add_rn_third_party_dependencies(s)
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = "Tests/**/*.{mm}"
+    test_spec.source_files = podspec_sources("Tests/**/*.{mm}", "")
     test_spec.framework = "XCTest"
   end
 end

@@ -11,7 +11,7 @@ Specifically, it reduces the runtime JavaScript API of `react-native` into two o
 - **Generated TypeScript types**\
 Public user types for react-native, shipped to npm\
 `packages/react-native/types_generated/`
-- **‌Public API snapshot (experimental)**\
+- **‌Public API snapshot**\
 Snapshot file of the public API shape, used by maintainers\
 `packages/react-native/ReactNativeApi.d.ts`
 
@@ -29,11 +29,11 @@ Snapshot file of the public API shape, used by maintainers\
 > API snapshot generation is currently **experimental**, and will be folded into the default behaviour when ready.
 
 ```sh
-# Build types
-yarn build-types
+# Build types + API snapshot
+yarn build-types [--validate]
 
-# Build types + API snapshot (experimental)
-yarn build-types --withSnapshot [--validate]
+# Build types without API snapshot
+yarn build-types --skip-snapshot
 ```
 
 #### Configuration
@@ -54,7 +54,7 @@ Directory providing TypeScript user types for the `react-native` package, distri
 - Preserves doc comments.
 - Preserves source file names (for go to definition).
 
-### Public API snapshot (experimental)
+### Public API snapshot
 
 `ReactNative.d.ts`
 

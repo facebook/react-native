@@ -78,7 +78,7 @@ class NativeAnimatedNodesManager {
 
   std::optional<double> getValue(Tag tag) noexcept;
 
-  // graph
+#pragma mark - Graph
 
   void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
 
@@ -96,13 +96,19 @@ class NativeAnimatedNodesManager {
 
   void setAnimatedNodeValue(Tag tag, double value);
 
-  // drivers
+  void flattenAnimatedNodeOffset(Tag tag);
+
+  void extractAnimatedNodeOffsetOp(Tag tag);
+
+  void setAnimatedNodeOffset(Tag tag, double offset);
+
+#pragma mark - Drivers
 
   void startAnimatingNode(
       int animationId,
       Tag animatedNodeTag,
-      const folly::dynamic& config,
-      const std::optional<AnimationEndCallback>& endCallback) noexcept;
+      folly::dynamic config,
+      std::optional<AnimationEndCallback> endCallback) noexcept;
 
   void stopAnimation(
       int animationId,
@@ -121,7 +127,8 @@ class NativeAnimatedNodesManager {
   std::shared_ptr<EventEmitterListener> getEventEmitterListener() noexcept {
     return ensureEventEmitterListener();
   }
-  // listeners
+
+#pragma mark - Listeners
 
   void startListeningToAnimatedNodeValue(
       Tag tag,
@@ -207,7 +214,13 @@ class NativeAnimatedNodesManager {
   std::mutex uiTasksMutex_;
   std::vector<UiTask> operations_;
 
-  bool isGestureAnimationInProgress_{false};
+  /*
+   * Tracks whether a event-driven animation is currently in progress.
+   * This is set to true when an event handler triggers an animation,
+   * and reset to false when UI tick results in no changes to UI from
+   * animations.
+   */
+  bool isEventAnimationInProgress_{false};
 
   // React context required to commit props onto Component View
   DirectManipulationCallback directManipulationCallback_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2d919062947b9901b37a01cbf5c8670>>
+ * @generated SignedSource<<69c0cc67b17635347f3619462252a912>>
  * @flow strict
  * @noformat
  */
@@ -29,7 +29,6 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
-  alwaysFlattenAnimatedStyles: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
@@ -53,6 +52,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
+  cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
@@ -70,7 +70,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFontScaleChangesUpdatingLayout: Getter<boolean>,
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
-  enableIntersectionObserverEventLoopIntegration: Getter<boolean>,
+  enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
@@ -88,9 +88,13 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
   enableVirtualViewDebugFeatures: Getter<boolean>,
+  enableVirtualViewRenderState: Getter<boolean>,
+  enableVirtualViewWindowFocusDetection: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
+  hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
+  preparedTextCacheSize: Getter<number>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -108,11 +112,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
  * JS-only flag for testing. Do NOT modify.
  */
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
-
-/**
- * Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.
- */
-export const alwaysFlattenAnimatedStyles: Getter<boolean> = createJavaScriptFlagGetter('alwaysFlattenAnimatedStyles', false);
 
 /**
  * Enables an experimental flush-queue debouncing in Animated.js.
@@ -196,6 +195,10 @@ export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
 /**
+ * Removes JS sync at end of native animation
+ */
+export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
+/**
  * Disable sync dispatch on the main queue on iOS
  */
 export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
@@ -264,9 +267,9 @@ export const enableIOSTextBaselineOffsetPerLine: Getter<boolean> = createNativeF
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
 /**
- * Integrates IntersectionObserver in the Event Loop in the new architecture, to dispatch the initial notifications for observations in the "Update the rendering" step.
+ * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
  */
-export const enableIntersectionObserverEventLoopIntegration: Getter<boolean> = createNativeFlagGetter('enableIntersectionObserverEventLoopIntegration', true);
+export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
@@ -336,6 +339,14 @@ export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGette
  */
 export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagGetter('enableVirtualViewDebugFeatures', false);
 /**
+ * Enables reading render state when dispatching VirtualView events.
+ */
+export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGetter('enableVirtualViewRenderState', false);
+/**
+ * Enables window focus detection for prioritizing VirtualView events.
+ */
+export const enableVirtualViewWindowFocusDetection: Getter<boolean> = createNativeFlagGetter('enableVirtualViewWindowFocusDetection', false);
+/**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
 export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> = createNativeFlagGetter('fixMappingOfEventPrioritiesBetweenFabricAndReact', false);
@@ -347,6 +358,14 @@ export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fu
  * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
+/**
+ * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
+ */
+export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagGetter('hideOffscreenVirtualViewsOnIOS', false);
+/**
+ * Number cached PreparedLayouts in TextLayoutManager cache
+ */
+export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 200);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

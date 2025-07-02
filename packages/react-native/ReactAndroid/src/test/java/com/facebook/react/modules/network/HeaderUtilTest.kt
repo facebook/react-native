@@ -17,7 +17,6 @@ class HeaderUtilTest {
     const val NUMBERS_TEST = "0123456789"
     const val SPECIALS_TEST = "!@#$%^&*()-=_+{}[]\\|;:'\",.<>/?"
     const val ALPHABET_TEST = "abcdefghijklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWHYZ"
-    const val VALUE_BANNED_SYMBOLS_TEST = "���name�����������\u007f\u001f"
     const val NAME_BANNED_SYMBOLS_TEST = "���name�����������\u007f\u0020\u001f"
     const val BANNED_TEST_EXPECTED = "name"
   }

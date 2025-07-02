@@ -35,6 +35,7 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
+#import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
@@ -406,8 +407,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   // DisplayLink is used to call timer callbacks.
   _displayLink = [RCTDisplayLink new];
 
+  auto &inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   ReactInstance::JSRuntimeFlags options = {
-      .isProfiling = false, .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};
+      .isProfiling = inspectorFlags.getIsProfilingBuild(),
+      .runtimeDiagnosticFlags = [RCTInstanceRuntimeDiagnosticFlags() UTF8String]};
   _reactInstance->initializeRuntime(options, [=](jsi::Runtime &runtime) {
     __strong __typeof(self) strongSelf = weakSelf;
     if (!strongSelf) {

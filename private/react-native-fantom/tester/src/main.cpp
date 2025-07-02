@@ -8,17 +8,16 @@
 #include <glog/logging.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h>
-#include <yoga/YGEnums.h>
-#include <yoga/YGValue.h>
-#include <format>
-#include <iostream>
 #include <memory>
+#include "AppSettings.h"
+#include "TesterAppDelegate.h"
 
 using namespace facebook::react;
 
 static void setUpLogging() {
   google::InitGoogleLogging("react-native-fantom");
   FLAGS_logtostderr = true;
+  FLAGS_minloglevel = AppSettings::minLogLevel;
 }
 
 static void setUpFeatureFlags() {
@@ -27,19 +26,26 @@ static void setUpFeatureFlags() {
   dynamicFeatureFlags["enableBridgelessArchitecture"] = true;
   dynamicFeatureFlags["cxxNativeAnimatedEnabled"] = true;
 
+  if (AppSettings::dynamicFeatureFlags.has_value()) {
+    dynamicFeatureFlags.update(AppSettings::dynamicFeatureFlags.value());
+  }
+
   ReactNativeFeatureFlags::override(
       std::make_unique<ReactNativeFeatureFlagsDynamicProvider>(
           dynamicFeatureFlags));
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+  AppSettings::init(argc, argv);
+
   setUpLogging();
 
   setUpFeatureFlags();
 
-  LOG(INFO) << "Hello, I am fantom_tester using glog!";
-  LOG(INFO) << std::format(
-      "[Yoga] undefined == zero: {}", YGValueZero == YGValueUndefined);
+  auto appDelegate = TesterAppDelegate(ReactInstanceConfig{
+      .appId = "com.meta.reactnative.fantom", .deviceName = "RN Fantom"});
+
+  appDelegate.loadScript(AppSettings::defaultBundlePath, "");
 
   return 0;
 }

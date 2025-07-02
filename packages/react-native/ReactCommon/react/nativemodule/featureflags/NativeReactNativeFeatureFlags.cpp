@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<56704140bc822ee33a8686ad3e132b41>>
+ * @generated SignedSource<<43723a2c8249878ff3f6485767f5e73c>>
  */
 
 /**
@@ -57,6 +57,11 @@ bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
+}
+
+bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
 }
 
 bool NativeReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS(
@@ -144,9 +149,9 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
-bool NativeReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration(
+bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableIntersectionObserverEventLoopIntegration();
+  return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
@@ -234,6 +239,16 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewDebugFeatures(
   return ReactNativeFeatureFlags::enableVirtualViewDebugFeatures();
 }
 
+bool NativeReactNativeFeatureFlags::enableVirtualViewRenderState(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewRenderState();
+}
+
+bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
+}
+
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -247,6 +262,16 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
 bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled();
+}
+
+bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
+double NativeReactNativeFeatureFlags::preparedTextCacheSize(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

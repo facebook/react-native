@@ -21,6 +21,7 @@ import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
@@ -189,57 +190,55 @@ public class SurfaceMountingManager {
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
-        () -> {
-          // The CPU has ticked since `addRootView` was called, so the surface could technically
-          // have already stopped here.
-          if (isStopped()) {
-            return;
+        new GuardedRunnable(Assertions.assertNotNull(mThemedReactContext)) {
+          @Override
+          public void runGuarded() {
+            // The CPU has ticked since `addRootView` was called, so the surface could technically
+            // have already stopped here.
+            if (isStopped()) {
+              return;
+            }
+
+            if (rootView.getId() == mSurfaceId) {
+              ReactSoftExceptionLogger.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Race condition in addRootView detected. Trying to set an id of ["
+                          + mSurfaceId
+                          + "] on the RootView, but that id has already been set. "));
+            } else if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                      + " tag: [%d]",
+                  rootView.getId(),
+                  mSurfaceId);
+              // This behavior can not be guaranteed in hybrid apps that have a native android layer
+              // over which reactRootViews are added and the native views need to have ids on them
+              // in order to work. Hence this can cause unnecessary crashes at runtime for hybrid
+              // apps. So converting this to a soft exception such that pure react-native devs can
+              // still see the warning while hybrid apps continue to run without crashes
+              ReactSoftExceptionLogger.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Trying to add a root view with an explicit id already set. React Native uses"
+                          + " the id field to track react tags and will overwrite this field. If"
+                          + " that is fine, explicitly overwrite the id field to View.NO_ID before"
+                          + " calling addRootView."));
+            }
+            rootView.setId(mSurfaceId);
+
+            if (rootView instanceof ReactRoot) {
+              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+            }
+
+            executeMountItemsOnViewAttach();
+
+            // By doing this after `executeMountItemsOnViewAttach`, we ensure that any operations
+            // scheduled while processing this queue are also added to the queue, instead of being
+            // processed immediately through the queue in `MountItemDispatcher`.
+            mRootViewAttached = true;
           }
-
-          if (rootView.getId() == mSurfaceId) {
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new IllegalViewOperationException(
-                    "Race condition in addRootView detected. Trying to set an id of ["
-                        + mSurfaceId
-                        + "] on the RootView, but that id has already been set. "));
-          } else if (rootView.getId() != View.NO_ID) {
-            FLog.e(
-                TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
-                    + " tag: [%d]",
-                rootView.getId(),
-                mSurfaceId);
-            // This behavior can not be guaranteed in hybrid apps that have a native android layer
-            // over
-            // which reactRootViews are added and the native views need to have ids on them in order
-            // to
-            // work.
-            // Hence this can cause unnecessary crashes at runtime for hybrid apps.
-            // So converting this to a soft exception such that pure react-native devs can still see
-            // the
-            // warning while hybrid apps continue to run without crashes
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new IllegalViewOperationException(
-                    "Trying to add a root view with an explicit id already set. React Native uses"
-                        + " the id field to track react tags and will overwrite this field. If that"
-                        + " is fine, explicitly overwrite the id field to View.NO_ID before calling"
-                        + " addRootView."));
-          }
-          rootView.setId(mSurfaceId);
-
-          if (rootView instanceof ReactRoot) {
-            ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
-          }
-
-          executeMountItemsOnViewAttach();
-
-          // By doing this after `executeMountItemsOnViewAttach`, we ensure
-          // that any operations scheduled while processing this queue are
-          // also added to the queue, instead of being processed immediately
-          // through the queue in `MountItemDispatcher`.
-          mRootViewAttached = true;
         };
 
     if (UiThreadUtil.isOnUiThread()) {

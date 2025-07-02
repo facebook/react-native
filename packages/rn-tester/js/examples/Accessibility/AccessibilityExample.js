@@ -25,6 +25,7 @@ import {
   Image,
   ImageBackground,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Switch,
@@ -104,6 +105,10 @@ const styles = StyleSheet.create({
   smallBoxSize: {
     width: 25,
     height: 25,
+  },
+  bigBoxSize: {
+    width: 100,
+    height: 100,
   },
   link: {
     color: 'blue',
@@ -1657,83 +1662,392 @@ function AccessibilityOrderExample(): React.Node {
   return (
     <>
       <RNTesterText style={{marginBottom: 8}}>
-        accessibilityOrder=['e', 'ca', 'b', 'a', 'c', 'd']
+        Basic accessibility order: accessibilityOrder=['b', 'c', 'a']
       </RNTesterText>
       <View
-        style={{flexDirection: 'row', gap: 10}}
-        experimental_accessibilityOrder={['e', 'ca', 'b', 'a', 'c', 'd']}>
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
         <View
+          accessible={true}
           nativeID="a"
+          accessibilityLabel="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="b"
+          accessibilityLabel="b"
           style={[{backgroundColor: 'green'}, styles.boxSize]}
         />
         <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order disables components not in the order:
+        accessibilityOrder=['b', 'c', 'a']
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
+        <View
+          accessible={true}
+          nativeID="a"
+          accessibilityLabel="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}
+        />
+        <RNTesterText accessible={true} style={{width: 50}}>
+          Not in the order :P
+        </RNTesterText>
+        <View
+          accessible={true}
           nativeID="b"
+          accessibilityLabel="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <Pressable
+          accessible={true}
           style={[{backgroundColor: 'orange'}, styles.boxSize]}>
+          <RNTesterText>I am a pressable</RNTesterText>
+        </Pressable>
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order won't enable non-accessible components in the order:
+        accessibilityOrder=['b', 'c', 'a']
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
+        <View
+          accessible={true}
+          nativeID="a"
+          accessibilityLabel="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="b"
+          accessibilityLabel="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          nativeID="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order can reference containers: accessibilityOrder=['b',
+        'c', 'a']
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
+        <View
+          nativeID="a"
+          style={[
+            {backgroundColor: 'red', flexWrap: 'wrap', flexDirection: 'row'},
+            styles.boxSize,
+          ]}>
           <View
             accessible={true}
-            nativeID="ba"
-            accessibilityLabel="ba"
-            style={[{backgroundColor: 'teal'}, styles.smallBoxSize]}
+            accessibilityLabel="1st Child of a"
+            style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
           />
           <View
             accessible={true}
-            nativeID="bb"
-            accessibilityLabel="bb"
-            style={[{backgroundColor: 'ivory'}, styles.smallBoxSize]}
+            accessibilityLabel="2nd Child of a"
+            style={[{backgroundColor: 'white'}, styles.smallBoxSize]}
           />
+          <View
+            accessible={true}
+            accessibilityLabel="3rd Child of a"
+            style={[{backgroundColor: 'brown'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            accessibilityLabel="4th Child of a"
+            style={[{backgroundColor: 'maroon'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="b"
+          accessibilityLabel="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order can reference other accessibilityOrders:
+        accessibilityOrder=['b', 'c', 'a']. a's accessibilityOrder=[4, 2, 1, 3]
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
+        <View
+          nativeID="a"
+          accessibilityLabel="a"
+          experimental_accessibilityOrder={['4', '2', '1', '3']}
+          style={[
+            {backgroundColor: 'red', flexWrap: 'wrap', flexDirection: 'row'},
+            styles.boxSize,
+          ]}>
+          <View
+            accessible={true}
+            nativeID="1"
+            accessibilityLabel="1"
+            style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="2"
+            accessibilityLabel="2"
+            style={[{backgroundColor: 'white'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="3"
+            accessibilityLabel="3"
+            style={[{backgroundColor: 'brown'}, styles.smallBoxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="4"
+            accessibilityLabel="4"
+            style={[{backgroundColor: 'maroon'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="b"
+          accessibilityLabel="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order cannot order the root, but it can still be
+        accessible: accessibilityOrder=['b', 'c', 'root', 'a'].
+      </RNTesterText>
+      <View
+        accessible={true}
+        nativeID="root"
+        accessibilityLabel="root"
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'root', 'a']}>
+        <View
+          accessible={true}
+          nativeID="a"
+          accessibilityLabel="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="b"
+          accessibilityLabel="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order can reference parents and their decendants in any
+        order: accessibilityOrder=[child 2, child 1, child 2.3, child 3.2, child
+        4, child 2.4, parent, child 2.1]
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={[
+          'child2',
+          'child1',
+          'child2.3',
+          'child3.2',
+          'child4',
+          'child2.4',
+          'parent',
+          'child2.1',
+        ]}>
+        <View
+          accessible={true}
+          nativeID="parent"
+          accessibilityLabel="parent"
+          style={[
+            {backgroundColor: 'orange', flexWrap: 'wrap', flexDirection: 'row'},
+            styles.bigBoxSize,
+          ]}>
+          <View
+            accessible={true}
+            nativeID="child1"
+            accessibilityLabel="child1"
+            style={[{backgroundColor: 'red'}, styles.boxSize]}
+          />
+          <View
+            accessible={true}
+            nativeID="child2"
+            accessibilityLabel="child2"
+            style={[
+              {
+                backgroundColor: 'green',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+              },
+              styles.boxSize,
+            ]}>
+            <View
+              accessible={true}
+              nativeID="child2.1"
+              accessibilityLabel="child2.1"
+              style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
+            />
+            <View
+              accessible={true}
+              nativeID="child2.2"
+              accessibilityLabel="child2.2"
+              style={[{backgroundColor: 'white'}, styles.smallBoxSize]}
+            />
+            <View
+              accessible={true}
+              nativeID="child2.3"
+              accessibilityLabel="child2.3"
+              style={[{backgroundColor: 'brown'}, styles.smallBoxSize]}
+            />
+            <View
+              accessible={true}
+              nativeID="child2.4"
+              accessibilityLabel="child2.4"
+              style={[{backgroundColor: 'maroon'}, styles.smallBoxSize]}
+            />
+          </View>
+          <View
+            accessible={true}
+            nativeID="child3"
+            accessibilityLabel="child3"
+            style={[
+              {
+                backgroundColor: 'yellow',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+              },
+              styles.boxSize,
+            ]}>
+            <View
+              accessible={true}
+              nativeID="child3.1"
+              accessibilityLabel="child3.1"
+              style={[{backgroundColor: 'olive'}, styles.smallBoxSize]}
+            />
+            <View
+              accessible={true}
+              nativeID="child3.2"
+              accessibilityLabel="child3.2"
+              style={[{backgroundColor: 'red'}, styles.smallBoxSize]}
+            />
+          </View>
+          <View
+            accessible={true}
+            nativeID="child4"
+            accessibilityLabel="child4"
+            style={[{backgroundColor: 'teal'}, styles.boxSize]}
+          />
+        </View>
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order will still co-opt labels even if they are not in the
+        order: accessibilityOrder=[b, c, a]
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['b', 'c', 'a']}>
+        <View
+          accessible={true}
+          nativeID="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}>
+          <View
+            accessible={true}
+            accessibilityLabel="I am a view with a label that got co-opted"
+            style={[{backgroundColor: 'blue'}, styles.smallBoxSize]}
+          />
+        </View>
+        <View
+          accessible={true}
+          nativeID="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}>
+          <RNTesterText accessible={true} style={{fontSize: 10}}>
+            I am co-opted by my parent!!
+          </RNTesterText>
         </View>
         <View
           accessible={true}
           nativeID="c"
           accessibilityLabel="c"
-          style={[{backgroundColor: 'indianred'}, styles.boxSize]}>
-          <View
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}>
+          <RNTesterText
             accessible={true}
-            nativeID="ca"
-            accessibilityLabel="ca"
-            style={[{backgroundColor: 'lime'}, styles.smallBoxSize]}
-          />
-          <View
-            accessible={true}
-            nativeID="cb"
-            accessibilityLabel="cb"
-            style={[{backgroundColor: 'blueviolet'}, styles.smallBoxSize]}
-          />
+            style={{color: 'black', fontSize: 10}}>
+            I won't get co-opted because my parent has a label
+          </RNTesterText>
         </View>
+      </View>
+      <RNTesterText style={{marginBottom: 8}}>
+        Accessibility order let's you focus links, but the text needs to be
+        included: accessibilityOrder=[c, a, b, text]
+      </RNTesterText>
+      <View
+        style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
+        experimental_accessibilityOrder={['c', 'a', 'b', 'text']}>
         <View
-          experimental_accessibilityOrder={['dc', 'da', 'db']}
-          nativeID="d"
-          style={{
-            backgroundColor: 'fuchsia',
-            ...styles.boxSize,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-          }}>
-          <View
-            accessible={true}
-            nativeID="da"
-            accessibilityLabel="da"
-            style={[{backgroundColor: 'black'}, styles.smallBoxSize]}
-          />
-          <View
-            accessible={true}
-            nativeID="db"
-            accessibilityLabel="db"
-            style={[{backgroundColor: 'lightslategray'}, styles.smallBoxSize]}
-          />
-          <View
-            accessible={true}
-            nativeID="dc"
-            accessibilityLabel="dc"
-            style={[{backgroundColor: 'khaki'}, styles.smallBoxSize]}
-          />
+          accessible={true}
+          nativeID="a"
+          style={[{backgroundColor: 'red'}, styles.boxSize]}
+        />
+        <View
+          accessible={true}
+          nativeID="b"
+          style={[{backgroundColor: 'green'}, styles.boxSize]}>
+          <RNTesterText style={{fontSize: 10}} nativeID="text">
+            I am a{' '}
+            <RNTesterText accessibilityRole="link" style={styles.link}>
+              link!
+            </RNTesterText>
+          </RNTesterText>
         </View>
         <View
           accessible={true}
-          nativeID="e"
-          accessibilityLabel="e"
-          style={[{backgroundColor: 'deepskyblue'}, styles.boxSize]}
-        />
+          nativeID="c"
+          accessibilityLabel="c"
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}>
+          <RNTesterText
+            accessible={true}
+            style={{color: 'black', fontSize: 10}}>
+            I am a{' '}
+            <RNTesterText accessibilityRole="link" style={styles.link}>
+              non-discoverable link!
+            </RNTesterText>
+          </RNTesterText>
+        </View>
       </View>
     </>
   );
@@ -1774,7 +2088,9 @@ function TextLinkExample(): React.Node {
 
 function LabelCooptingExample(): React.Node {
   return (
-    <View style={{gap: 10}} experimental_accessibilityOrder={['a', 'b', 'c']}>
+    <View
+      style={{gap: 10}}
+      experimental_accessibilityOrder={['a', 'a.5', 'b', 'c']}>
       <View
         accessible={true}
         nativeID="a"
@@ -1787,6 +2103,17 @@ function LabelCooptingExample(): React.Node {
           This View is accessible and it will coopt this text. This text is not
           accessible because it got coopted!
         </RNTesterText>
+      </View>
+      <View
+        accessible={true}
+        nativeID="a.5"
+        style={{backgroundColor: 'darkseagreen', padding: 10, borderRadius: 5}}>
+        <RNTesterText>I am some text that will get coopted</RNTesterText>
+        <View
+          accessibilityLabel="I am a view with a label that got coopted"
+          style={[{backgroundColor: 'tan'}, styles.smallBoxSize]}
+        />
+        <RNTesterText>I am also some text that will get coopted</RNTesterText>
       </View>
       <View
         accessible={true}

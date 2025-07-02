@@ -18,7 +18,7 @@ import kotlin.text.StringBuilder
 @Suppress("UNUSED_PARAMETER")
 internal object Systrace {
 
-  public const val TRACE_TAG_REACT: Long = 0L
+  const val TRACE_TAG_REACT: Long = 0L
 
   @JvmStatic fun registerListener(listener: TraceListener?): Unit = Unit
 

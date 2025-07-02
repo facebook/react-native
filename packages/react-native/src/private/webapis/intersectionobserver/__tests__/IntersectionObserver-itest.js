@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags enableIntersectionObserverEventLoopIntegration:*
  * @fantom_flags utilizeTokensInIntersectionObserver:*
  * @flow strict-local
  * @format
@@ -1534,58 +1533,54 @@ describe('IntersectionObserver', () => {
       });
     }
 
-    if (
-      ReactNativeFeatureFlags.enableIntersectionObserverEventLoopIntegration()
-    ) {
-      it('should NOT report multiple entries when observing a target that exists and we modify it later in the same tick', () => {
-        const root = Fantom.createRoot({
-          viewportWidth: 1000,
-          viewportHeight: 1000,
-        });
-
-        const nodeRef = createRef<HostInstance>();
-
-        function TestComponent() {
-          const [showView, setShowView] = useState(true);
-
-          return showView ? (
-            <View
-              onClick={() => {
-                observer.observe(ensureReactNativeElement(nodeRef.current));
-                setShowView(false);
-              }}
-              style={{width: 100, height: 100, backgroundColor: 'red'}}
-              ref={nodeRef}
-            />
-          ) : null;
-        }
-
-        Fantom.runTask(() => {
-          root.render(<TestComponent />);
-        });
-
-        const node = ensureReactNativeElement(nodeRef.current);
-
-        expect(node.isConnected).toBe(true);
-
-        const intersectionObserverCallback = jest.fn();
-
-        Fantom.runTask(() => {
-          observer = new IntersectionObserver(intersectionObserverCallback);
-        });
-
-        // We use a discrete event to make sure React processes the update in the
-        // same task.
-        Fantom.dispatchNativeEvent(node, 'click');
-
-        expect(node.isConnected).toBe(false);
-
-        expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
-        const [entries] = intersectionObserverCallback.mock.lastCall;
-        expect(entries.length).toBe(1);
-        expect(entries[0].isIntersecting).toBe(false);
+    it('should NOT report multiple entries when observing a target that exists and we modify it later in the same tick', () => {
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
       });
-    }
+
+      const nodeRef = createRef<HostInstance>();
+
+      function TestComponent() {
+        const [showView, setShowView] = useState(true);
+
+        return showView ? (
+          <View
+            onClick={() => {
+              observer.observe(ensureReactNativeElement(nodeRef.current));
+              setShowView(false);
+            }}
+            style={{width: 100, height: 100, backgroundColor: 'red'}}
+            ref={nodeRef}
+          />
+        ) : null;
+      }
+
+      Fantom.runTask(() => {
+        root.render(<TestComponent />);
+      });
+
+      const node = ensureReactNativeElement(nodeRef.current);
+
+      expect(node.isConnected).toBe(true);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+      });
+
+      // We use a discrete event to make sure React processes the update in the
+      // same task.
+      Fantom.dispatchNativeEvent(node, 'click');
+
+      expect(node.isConnected).toBe(false);
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
+      const [entries] = intersectionObserverCallback.mock.lastCall;
+      expect(entries.length).toBe(1);
+      expect(entries[0].isIntersecting).toBe(false);
+    });
 
     describe('rootThreshold', () => {
       it('should report partial intersecting initial state correctly', () => {
@@ -2366,44 +2361,40 @@ describe('IntersectionObserver', () => {
       expect(callback).not.toHaveBeenCalled();
     });
 
-    if (
-      ReactNativeFeatureFlags.enableIntersectionObserverEventLoopIntegration()
-    ) {
-      it('should not dispatch pending entries when disconnecting', () => {
-        const root = Fantom.createRoot({
-          viewportWidth: 1000,
-          viewportHeight: 1000,
-        });
-
-        const nodeRef = createRef<HostInstance>();
-
-        Fantom.runTask(() => {
-          root.render(<View ref={nodeRef} style={{width: 100, height: 100}} />);
-        });
-
-        const node = ensureReactNativeElement(nodeRef.current);
-
-        const intersectionObserverCallback = jest.fn();
-
-        Fantom.runTask(() => {
-          observer = new IntersectionObserver(intersectionObserverCallback);
-
-          // At the end of the current tick, we schedule the execution of the
-          // intersection observer callback with the initial state of the
-          // target.
-          observer.observe(node);
-
-          // This is executed in the next tick, before the intersection observer
-          // callback is called.
-          Fantom.scheduleTask(() => {
-            expect(intersectionObserverCallback).not.toHaveBeenCalled();
-
-            observer.disconnect();
-          });
-        });
-
-        expect(intersectionObserverCallback).toHaveBeenCalledTimes(0);
+    it('should not dispatch pending entries when disconnecting', () => {
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
       });
-    }
+
+      const nodeRef = createRef<HostInstance>();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={nodeRef} style={{width: 100, height: 100}} />);
+      });
+
+      const node = ensureReactNativeElement(nodeRef.current);
+
+      const intersectionObserverCallback = jest.fn();
+
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(intersectionObserverCallback);
+
+        // At the end of the current tick, we schedule the execution of the
+        // intersection observer callback with the initial state of the
+        // target.
+        observer.observe(node);
+
+        // This is executed in the next tick, before the intersection observer
+        // callback is called.
+        Fantom.scheduleTask(() => {
+          expect(intersectionObserverCallback).not.toHaveBeenCalled();
+
+          observer.disconnect();
+        });
+      });
+
+      expect(intersectionObserverCallback).toHaveBeenCalledTimes(0);
+    });
   });
 });

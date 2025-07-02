@@ -19,7 +19,9 @@ include(
     ":packages:react-native:ReactAndroid:hermes-engine",
     ":packages:react-native:ReactAndroid:external-artifacts",
     ":packages:rn-tester:android:app",
-    ":packages:rn-tester:android:app:benchmark")
+    ":packages:rn-tester:android:app:benchmark",
+    ":private:react-native-fantom",
+)
 
 includeBuild("packages/gradle-plugin/")
 

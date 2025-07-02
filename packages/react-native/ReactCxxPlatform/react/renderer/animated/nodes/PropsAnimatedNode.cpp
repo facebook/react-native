@@ -12,7 +12,6 @@
 #include "PropsAnimatedNode.h"
 
 #include <react/debug/react_native_assert.h>
-#include <react/renderer/animated/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
 #include <react/renderer/animated/nodes/StyleAnimatedNode.h>
@@ -31,12 +30,8 @@ bool isLayoutStyleUpdated(
       if (node->type() == AnimatedNodeType::Style) {
         if (const auto& styleNode =
                 manager.getAnimatedNode<StyleAnimatedNode>(nodeTag)) {
-          auto& styleNodeProps = styleNode->getProps();
-          for (const auto& styleNodeProp : styleNodeProps.items()) {
-            if (getDirectManipulationAllowlist().count(
-                    styleNodeProp.first.asString()) == 0u) {
-              return true;
-            }
+          if (styleNode->isLayoutStyleUpdated()) {
+            return true;
           }
         }
       }
@@ -53,9 +48,7 @@ PropsAnimatedNode::PropsAnimatedNode(
     const folly::dynamic& config,
     NativeAnimatedNodesManager& manager)
     : AnimatedNode(tag, config, manager, AnimatedNodeType::Props),
-      props_(folly::dynamic::object()),
-      layoutStyleUpdated_(isLayoutStyleUpdated(getConfig()["props"], manager)) {
-}
+      props_(folly::dynamic::object()) {}
 
 void PropsAnimatedNode::connectToView(Tag viewTag) {
   react_native_assert(
@@ -130,11 +123,7 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
         case AnimatedNodeType::Style: {
           if (const auto& styleNode =
                   manager_->getAnimatedNode<StyleAnimatedNode>(nodeTag)) {
-            styleNode->update();
-            auto& styleNodeProps = styleNode->getProps();
-            for (const auto& styleNodeProp : styleNodeProps.items()) {
-              props_.insert(styleNodeProp.first.c_str(), styleNodeProp.second);
-            }
+            styleNode->collectViewUpdates(props_);
           }
         } break;
         case AnimatedNodeType::Props:
@@ -144,6 +133,8 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
       }
     }
   }
+
+  layoutStyleUpdated_ = isLayoutStyleUpdated(getConfig()["props"], *manager_);
 
   manager_->schedulePropsCommit(
       connectedViewTag_, props_, layoutStyleUpdated_, forceFabricCommit);

@@ -21,17 +21,14 @@ import * as Benchmark from './Benchmark';
 import {getConstants} from './Constants';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import {LogBox} from 'react-native';
-import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
-let globalSurfaceIdCounter = 1;
-
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
-const schedulerPriorityImmediate =
-  nativeRuntimeScheduler.unstable_ImmediatePriority;
+const {unstable_scheduleCallback, unstable_ImmediatePriority} =
+  nativeRuntimeScheduler;
 
 export type RootConfig = {
   viewportWidth?: number,
@@ -49,7 +46,7 @@ const DEFAULT_VIEWPORT_HEIGHT = 844;
 const DEFAULT_DEVICE_PIXEL_RATIO = 3;
 
 class Root {
-  #surfaceId: number;
+  #surfaceId: RootTag;
   #viewportWidth: number;
   #viewportHeight: number;
   #viewportOffsetX: number;
@@ -57,17 +54,21 @@ class Root {
   #devicePixelRatio: number;
   #document: ?ReactNativeDocument;
 
-  #hasRendered: boolean = false;
-
   constructor(config?: RootConfig) {
-    this.#surfaceId = globalSurfaceIdCounter;
     this.#viewportWidth = config?.viewportWidth ?? DEFAULT_VIEWPORT_WIDTH;
     this.#viewportHeight = config?.viewportHeight ?? DEFAULT_VIEWPORT_HEIGHT;
     this.#devicePixelRatio =
       config?.devicePixelRatio ?? DEFAULT_DEVICE_PIXEL_RATIO;
-    globalSurfaceIdCounter += 10;
     this.#viewportOffsetX = config?.viewportOffsetX ?? 0;
     this.#viewportOffsetY = config?.viewportOffsetY ?? 0;
+
+    this.#surfaceId = NativeFantom.startSurface(
+      this.#viewportWidth,
+      this.#viewportHeight,
+      this.#devicePixelRatio,
+      this.#viewportOffsetX,
+      this.#viewportOffsetY,
+    );
   }
 
   // $FlowExpectedError[unsafe-getters-setters]
@@ -88,29 +89,19 @@ class Root {
       );
     }
 
-    if (!this.#hasRendered) {
-      NativeFantom.startSurface(
-        this.#surfaceId,
-        this.#viewportWidth,
-        this.#viewportHeight,
-        this.#devicePixelRatio,
-        this.#viewportOffsetX,
-        this.#viewportOffsetY,
-      );
-      this.#hasRendered = true;
-    }
-
     // Require Fabric lazily to prevent it from running InitializeCore before the test
     // has a change to do its environment setup.
     const ReactFabric =
       require('react-native/Libraries/Renderer/shims/ReactFabric').default;
-    ReactFabric.render(element, this.#surfaceId, null, true);
+
+    // $FlowExpectedError[incompatible-cast]
+    const surfaceIdIsNumber = this.#surfaceId as number;
+    ReactFabric.render(element, surfaceIdIsNumber, null, true);
 
     if (this.#document == null) {
-      // $FlowExpectedError[incompatible-type] We know that `getPublicInstanceFromRootTag` returns `ReactNativeDocument | null` in Fantom.
-      this.#document = ReactFabric.getPublicInstanceFromRootTag(
-        this.#surfaceId,
-      );
+      this.#document =
+        // $FlowExpectedError[incompatible-type] We know that `getPublicInstanceFromRootTag` returns `ReactNativeDocument | null` in Fantom.
+        ReactFabric.getPublicInstanceFromRootTag(surfaceIdIsNumber);
     }
   }
 
@@ -130,7 +121,7 @@ class Root {
   }
 
   getRootTag(): RootTag {
-    return createRootTag(this.#surfaceId);
+    return this.#surfaceId;
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
@@ -140,7 +131,7 @@ export type {Root};
 
 export {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
-const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
+const DEFAULT_TASK_PRIORITY = unstable_ImmediatePriority;
 
 /**
  * Schedules a task to run on the event loop.
@@ -163,7 +154,7 @@ const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
  * ```
  */
 export function scheduleTask(task: () => void | Promise<void>) {
-  nativeRuntimeScheduler.unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
+  unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
 }
 
 let flushingQueue = false;
@@ -226,9 +217,20 @@ export function unstable_produceFramesForDuration(milliseconds: number) {
  *
  * Note: This API is marked as unstable and may change in future versions.
  */
-export function unstable_getDirectManipulationProps(node: ReadOnlyNode): mixed {
+export function unstable_getDirectManipulationProps(
+  node: ReadOnlyNode,
+): $ReadOnly<{
+  [string]: mixed,
+}> {
   const shadowNode = getNativeNodeReference(node);
   return NativeFantom.getDirectManipulationProps(shadowNode);
+}
+
+export function unstable_getFabricUpdateProps(node: ReadOnlyNode): $ReadOnly<{
+  [string]: mixed,
+}> {
+  const shadowNode = getNativeNodeReference(node);
+  return NativeFantom.getFabricUpdateProps(shadowNode);
 }
 
 /**

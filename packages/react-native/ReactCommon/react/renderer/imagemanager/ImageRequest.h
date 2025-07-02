@@ -40,9 +40,20 @@ class ImageRequest final {
   ImageRequest(ImageRequest&& other) noexcept = default;
 
   /*
+   * Move assignment operator.
+   */
+  ImageRequest& operator=(ImageRequest&& other) noexcept = default;
+
+  /*
    * `ImageRequest` does not support copying by design.
    */
   ImageRequest(const ImageRequest& other) = delete;
+  ImageRequest& operator=(const ImageRequest& other) = delete;
+
+  /*
+   * Destructor
+   */
+  ~ImageRequest() = default;
 
   /*
    * Returns the Image Source associated with the request.

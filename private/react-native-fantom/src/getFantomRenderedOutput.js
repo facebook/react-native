@@ -8,8 +8,8 @@
  * @format
  */
 
-// $FlowExpectedError[untyped-import]
-import micromatch from 'micromatch';
+import type {RootTag} from 'react-native';
+
 import * as React from 'react';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
@@ -28,8 +28,7 @@ type FantomJsonObject = {
 type FantomJson = FantomJsonObject | $ReadOnlyArray<FantomJsonObject>;
 
 type FantomRenderedOutputConfig = {
-  // micromatch pattern to match prop names
-  // see usage examples in https://github.com/micromatch/micromatch#examples
+  // RegExp patterns to match prop names
   props?: $ReadOnlyArray<string>,
 };
 
@@ -86,24 +85,27 @@ class FantomRenderedOutput {
     props: FantomJsonObject['props'],
     config: FantomRenderedOutputConfig,
   ): FantomJsonObject['props'] {
-    if (config.props == null) {
+    const patterns = config.props;
+    if (patterns == null) {
       return {...props};
     }
 
-    return micromatch(Object.keys(props), config.props ?? []).reduce(
-      (acc, name) => {
-        acc[name] = props[name];
-        return acc;
-      },
-      {},
-    );
+    return Object.keys(props)
+      .filter(key => patterns.some(pattern => new RegExp(pattern).test(key)))
+      .reduce(
+        (acc, name) => {
+          acc[name] = props[name];
+          return acc;
+        },
+        {} as FantomJsonObject['props'],
+      );
   }
 }
 
 export type {FantomRenderedOutput};
 
 export default function getFantomRenderedOutput(
-  surfaceId: number,
+  surfaceId: RootTag,
   config: RenderOutputConfig,
 ): FantomRenderedOutput {
   const {

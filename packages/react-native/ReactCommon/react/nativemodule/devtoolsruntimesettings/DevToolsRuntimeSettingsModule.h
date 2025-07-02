@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "devtoolsruntimesettingscxx/DevToolsRuntimeSettings.h"
+#include <devtoolsruntimesettings/DevToolsRuntimeSettings.h>
 
 namespace facebook::react {
 

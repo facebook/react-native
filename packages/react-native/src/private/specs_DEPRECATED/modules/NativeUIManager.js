@@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type MeasureOnSuccessCallback = (
+export type NativeMeasureOnSuccessCallback = (
   x: number,
   y: number,
   width: number,
@@ -22,14 +22,14 @@ export type MeasureOnSuccessCallback = (
   pageY: number,
 ) => void;
 
-export type MeasureInWindowOnSuccessCallback = (
+export type NativeMeasureInWindowOnSuccessCallback = (
   x: number,
   y: number,
   width: number,
   height: number,
 ) => void;
 
-export type MeasureLayoutOnSuccessCallback = (
+export type NativeMeasureLayoutOnSuccessCallback = (
   left: number,
   top: number,
   width: number,
@@ -87,7 +87,10 @@ export interface Spec extends TurboModule {
    *
    * @deprecated Use `ref.measure` instead.
    */
-  +measure: (reactTag: number, callback: MeasureOnSuccessCallback) => void;
+  +measure: (
+    reactTag: number,
+    callback: NativeMeasureOnSuccessCallback,
+  ) => void;
   /**
    * Determines the location of the given view in the window and returns the
    * values via an async callback. If the React root view is embedded in
@@ -107,7 +110,7 @@ export interface Spec extends TurboModule {
    */
   +measureInWindow: (
     reactTag: number,
-    callback: MeasureInWindowOnSuccessCallback,
+    callback: NativeMeasureInWindowOnSuccessCallback,
   ) => void;
   +viewIsDescendantOf: (
     reactTag: number,
@@ -128,7 +131,7 @@ export interface Spec extends TurboModule {
     reactTag: number,
     ancestorReactTag: number,
     errorCallback: (error: Object) => void,
-    callback: MeasureLayoutOnSuccessCallback,
+    callback: NativeMeasureLayoutOnSuccessCallback,
   ) => void;
   +measureLayoutRelativeToParent: (
     reactTag: number,
