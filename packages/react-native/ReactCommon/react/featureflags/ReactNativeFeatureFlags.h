@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2faa0be111dc874380e977b74aa36254>>
+ * @generated SignedSource<<20809734183aa7bfd7aad9b8d01ea080>>
  */
 
 /**
@@ -83,6 +83,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
+
+  /**
+   * Enables various optimizations throughout the path of measuring text on Android.
+   */
+  RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
