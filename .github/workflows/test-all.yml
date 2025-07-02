@@ -1,20 +1,5 @@
 name: Test All
 
-# ENERGY OPTIMIZATION SUMMARY:
-# This workflow has been optimized to reduce energy consumption via:
-# 1. ✅ Combined test_js and lint jobs (-2 jobs, -1 checkout, -2 Node setups)
-# 2. ✅ Consolidated 3 iOS RNTester jobs into 1 matrix job (-2 jobs, -2 checkouts)  
-# 3. ✅ Shared environment caching eliminates 6+ redundant Node/yarn setups
-# 4. ✅ Centralized E2E branch logic removes 4 duplicate conditionals
-# 5. ✅ Artifact caching reduces repeated downloads across 8+ E2E jobs
-# 
-# ENERGY IMPACT:
-# - Jobs reduced: 27 → 26 (-3.7%)
-# - Checkout operations: 21 → 20 (-4.8%) 
-# - Node.js setups: ~8 → 1 shared (-87.5%)
-# - Estimated energy reduction: 12-15% through eliminated redundancy
-# - Estimated CI time reduction: 10-18% through improved caching
-
 on:
   workflow_dispatch:
     inputs:
