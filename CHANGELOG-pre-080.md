@@ -1,5 +1,11 @@
 # Changelog (pre 0.80)
 
+## v0.79.5
+
+### Fixed
+
+- **Flow:** Publish top-level Flow types for `react-native` ([fbbd20dd63](https://github.com/facebook/react-native/commit/fbbd20dd632acd72d2abe861dd4a0e6e98437cf2) by [@buschco](https://github.com/buschco))
+
 ## v0.79.4
 
 ### Fixed
