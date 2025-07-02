@@ -65,7 +65,7 @@ inline std::string toString(const SharedColor& value) {
 inline folly::dynamic toDynamic(const YGValue& dimension) {
   switch (dimension.unit) {
     case YGUnitUndefined:
-      return nullptr;
+      return "undefined";
     case YGUnitAuto:
       return "auto";
     case YGUnitMaxContent:
