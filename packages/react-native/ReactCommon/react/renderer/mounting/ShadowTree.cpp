@@ -223,7 +223,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock lock(commitMutex_);
+  std::unique_lock lock(commitMutex_);
   return commitMode_;
 }
 
@@ -308,7 +308,7 @@ CommitStatus ShadowTree::commit(
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock lock(commitMutex_);
+  std::unique_lock lock(commitMutex_);
   return currentRevision_;
 }
 
