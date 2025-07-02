@@ -317,3 +317,879 @@
 - **Text:** Correctly announce "link" on nested text if its the entire text element ([bffb414291](https://github.com/facebook/react-native/commit/bffb414291cfbd3d6e3e51448dd68b7bddddf658) by [@joevilches](https://github.com/joevilches))
 - **Text:** Selection range not respected when changing text or selection when selection is forced ([d32ea66e6a](https://github.com/facebook/react-native/commit/d32ea66e6a945dd84092532401b265b12d482668) by Olivier Bouillet)
 - **TextInput:** Fix TextInput `onContentSizeChange` event being dispatched only once on iOS on the new architecture ([5fd5188172](https://github.com/facebook/react-native/commit/5fd51881727b2d86f87abf04db032940ac0ec8c4) by [@j-piasecki](https://github.com/j-piasecki))
+
+## v0.79.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0795)
+
+## v0.79.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0794)
+
+## v0.79.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0793)
+
+## v0.79.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0792)
+
+## v0.79.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0791)
+
+## v0.79.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0790)
+
+## v0.78.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0782)
+
+## v0.78.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0781)
+
+## v0.78.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0780)
+
+## v0.77.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0772)
+
+## v0.77.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0771)
+
+## v0.77.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0770)
+
+## v0.76.9
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0769)
+
+## v0.76.8
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0768)
+
+## v0.76.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0767)
+
+## v0.76.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0766)
+
+## v0.76.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0765)
+
+## v0.76.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0764)
+
+## v0.76.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0763)
+
+## v0.76.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0762)
+
+## v0.76.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0761)
+
+## v0.76.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0760)
+
+## v0.75.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0755)
+
+## v0.75.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0754)
+
+## v0.75.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0753)
+
+## v0.75.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0752)
+
+## v0.75.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0751)
+
+## v0.75.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0750)
+
+## v0.74.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0747)
+
+## v0.74.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0746)
+
+## v0.74.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0745)
+
+## v0.74.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0744)
+
+## v0.74.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0743)
+
+## v0.74.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0742)
+
+## v0.74.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0741)
+
+## v0.74.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0740)
+
+## v0.73.11
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07311)
+
+## v0.73.10
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07310)
+
+## v0.73.9
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0739)
+
+## v0.73.8
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0738)
+
+## v0.73.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0737)
+
+## v0.73.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0736)
+
+## v0.73.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0735)
+
+## v0.73.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0734)
+
+## v0.73.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0733)
+
+## v0.73.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0732)
+
+## v0.73.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0731)
+
+## v0.73.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0730)
+
+## v0.72.17
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07217)
+
+## v0.72.16
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07216)
+
+## v0.72.15
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07215)
+
+## v0.72.14
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07214)
+
+## v0.72.13
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07213)
+
+## v0.72.12
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07212)
+
+## v0.72.11
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07211)
+
+## v0.72.10
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07210)
+
+## v0.72.9
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0729)
+
+## v0.72.8
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0728)
+
+## v0.72.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0727)
+
+## v0.72.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0726)
+
+## v0.72.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0725)
+
+## v0.72.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0724)
+
+## v0.72.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0723)
+
+## v0.72.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0722)
+
+## v0.72.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0721)
+
+## v0.72.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0720)
+
+## v0.71.19
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07119)
+
+## v0.71.18
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07118)
+
+## v0.71.17
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07117)
+
+## v0.71.16
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07116)
+
+## v0.71.15
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07115)
+
+## v0.71.14
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07114)
+
+## v0.71.13
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07113)
+
+## v0.71.12
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07112)
+
+## v0.71.11
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07111)
+
+## v0.71.10
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07110)
+
+## v0.71.9
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0719)
+
+## v0.71.8
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0718)
+
+## v0.71.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0717)
+
+## v0.71.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0716)
+
+## v0.71.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0715)
+
+## v0.71.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0714)
+
+## v0.71.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0713)
+
+## v0.71.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0712)
+
+## v0.71.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0711)
+
+## v0.71.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0710)
+
+## v0.70.15
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07015)
+
+## v0.70.14
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07014)
+
+## v0.70.13
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07013)
+
+## v0.70.12
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07012)
+
+## v0.70.11
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07011)
+
+## v0.70.10
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v07010)
+
+## v0.70.9
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0709)
+
+## v0.70.8
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0708)
+
+## v0.70.7
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0707)
+
+## v0.70.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0706)
+
+## v0.70.5
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0705)
+
+## v0.70.4
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0704)
+
+## v0.70.3
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0703)
+
+## v0.70.2
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0702)
+
+## v0.70.1
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0701)
+
+## v0.70.0
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x#v0700)
+
+## v0.69.12
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v06912)
+
+## v0.69.11
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v06911)
+
+## v0.69.10
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v06910)
+
+## v0.69.9
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0699)
+
+## v0.69.8
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0698)
+
+## v0.69.7
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0697)
+
+## v0.69.6
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0696)
+
+## v0.69.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0695)
+
+## v0.69.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0694)
+
+## v0.69.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0693)
+
+## v0.69.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0692)
+
+## v0.69.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0691)
+
+## v0.69.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0690)
+
+## v0.68.7
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0687)
+
+## v0.68.6
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0686)
+
+## v0.68.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0685)
+
+## v0.68.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0684)
+
+## v0.68.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0683)
+
+## v0.68.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0682)
+
+## v0.68.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0681)
+
+## v0.68.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0680)
+
+## v0.67.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0675)
+
+## v0.67.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0674)
+
+## v0.67.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0673)
+
+## v0.67.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0672)
+
+## v0.67.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0671)
+
+## v0.67.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0670)
+
+## v0.66.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0665)
+
+## v0.66.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0664)
+
+## v0.66.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0663)
+
+## v0.66.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0662)
+
+## v0.66.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0661)
+
+## v0.66.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0660)
+
+## v0.65.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0653)
+
+## v0.65.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0652)
+
+## v0.65.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0651)
+
+## v0.65.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0650)
+
+## v0.64.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0644)
+
+## v0.64.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0643)
+
+## v0.64.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0642)
+
+## v0.64.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0641)
+
+## v0.64.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0640)
+
+## v0.63.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0635)
+
+## v0.63.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0634)
+
+## v0.63.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0633)
+
+## v0.63.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0632)
+
+## v0.63.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0631)
+
+## v0.63.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0630)
+
+## v0.62.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0623)
+
+## v0.62.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0622)
+
+## v0.62.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0621)
+
+## v0.62.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0620)
+
+## v0.61.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0615)
+
+## v0.61.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0614)
+
+## v0.61.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0613)
+
+## v0.61.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0612)
+
+## v0.61.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0611)
+
+## v0.61.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0610)
+
+## v0.60.6
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0606)
+
+## v0.60.5
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0605)
+
+## v0.60.4
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0604)
+
+## v0.60.3
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0603)
+
+## v0.60.2
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0602)
+
+## v0.60.1
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0601)
+
+## v0.60.0
+
+See [CHANGELOG-0.6x](./CHANGELOG-0.6x#v0600)
+
+## v0.59.10
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v05910)
+
+## v0.59.9
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0599)
+
+## v0.59.8
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0598)
+
+## v0.59.5
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0595)
+
+## v0.59.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0594)
+
+## v0.59.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0593)
+
+## v0.59.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0592)
+
+## v0.59.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0591)
+
+## v0.59.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0590)
+
+## v0.58.6
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0586)
+
+## v0.58.5
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0585)
+
+## v0.58.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0584)
+
+## v0.58.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0583)
+
+## v0.58.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0582)
+
+## v0.58.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0581)
+
+## v0.58.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0580)
+
+## v0.57.8
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0578)
+
+## v0.57.7
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0577)
+
+## v0.57.6
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0576)
+
+## v0.57.5
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0575)
+
+## v0.57.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0574)
+
+## v0.57.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0573)
+
+## v0.57.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0572)
+
+## v0.57.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0571)
+
+## v0.57.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0570)
+
+## v0.56.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0561)
+
+## v0.56.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0560)
+
+## v0.55.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0554)
+
+## v0.55.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0553)
+
+## v0.55.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0552)
+
+## v0.55.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0551)
+
+## v0.55.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0550)
+
+## v0.54.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0544)
+
+## v0.54.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0543)
+
+## v0.54.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0542)
+
+## v0.54.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0541)
+
+## v0.54.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0540)
+
+## v0.53.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0533)
+
+## v0.53.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0532)
+
+## v0.53.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0531)
+
+## v0.53.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0530)
+
+## v0.52.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0523)
+
+## v0.52.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0522)
+
+## v0.52.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0521)
+
+## v0.52.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0520)
+
+## v0.51.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0511)
+
+## v0.51.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0510)
+
+## v0.50.4
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0504)
+
+## v0.50.3
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0503)
+
+## v0.50.2
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0502)
+
+## v0.50.1
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0501)
+
+## v0.50.0
+
+See [CHANGELOG-0.5x](./CHANGELOG-0.5x#v0500)
