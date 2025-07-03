@@ -7,6 +7,9 @@
 
 #import "RCTInspectorNetworkReporter.h"
 
+#import "RCTNetworkConversions.h"
+
+#import <React/RCTLog.h>
 #import <jsinspector-modern/network/NetworkReporter.h>
 
 using namespace facebook::react::jsinspector_modern;
@@ -85,4 +88,31 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
   NetworkReporter::getInstance().reportResponseEnd(requestId.stringValue.UTF8String, encodedDataLength);
 }
 
++ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(id)data base64Encoded:(bool)base64Encoded
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process response body and report to NetworkReporter
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if ([data isKindOfClass:[NSData class]] && [(NSData *)data length] > 0) {
+    @try {
+      NSString *encodedString = [(NSData *)data base64EncodedStringWithOptions:0];
+      if (encodedString != nullptr) {
+        networkReporter.storeResponseBody(
+            requestId.stringValue.UTF8String, RCTStringViewFromNSString(encodedString), base64Encoded);
+      } else {
+        RCTLogWarn(@"Failed to encode response data for request %@", requestId);
+      }
+    } @catch (NSException *exception) {
+      RCTLogWarn(@"Exception while encoding response data: %@", exception.reason);
+    }
+  } else if ([data isKindOfClass:[NSString class]] && [(NSString *)data length] > 0) {
+    networkReporter.storeResponseBody(
+        requestId.stringValue.UTF8String, RCTStringViewFromNSString((NSString *)data), base64Encoded);
+  }
+#endif
+}
 @end
