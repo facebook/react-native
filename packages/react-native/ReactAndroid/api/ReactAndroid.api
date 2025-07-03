@@ -2738,7 +2738,6 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun isHotModuleReplacementEnabled ()Z
 	public abstract fun isJSDevModeEnabled ()Z
 	public abstract fun isJSMinifyEnabled ()Z
-	public abstract fun isStartSamplingProfilerOnInit ()Z
 	public abstract fun setAnimationFpsDebugEnabled (Z)V
 	public abstract fun setDeviceDebugEnabled (Z)V
 	public abstract fun setElementInspectorEnabled (Z)V
@@ -2746,7 +2745,6 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setHotModuleReplacementEnabled (Z)V
 	public abstract fun setJSDevModeEnabled (Z)V
 	public abstract fun setJSMinifyEnabled (Z)V
-	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 
 public final class com/facebook/react/modules/dialog/AlertFragment : androidx/fragment/app/DialogFragment, android/content/DialogInterface$OnClickListener {
