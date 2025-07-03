@@ -102,16 +102,19 @@ class NetworkReporter {
       const std::optional<ResponseInfo>& redirectResponse);
 
   /**
-   * Report detailed timing info, such as DNS lookup, when a request has
-   * started.
+   * Report timestamp for sending the network request, and (in a debug build)
+   * provide final headers to be reported via CDP.
    *
    * - Corresponds to `Network.requestWillBeSentExtraInfo` in CDP.
    * - Corresponds to `PerformanceResourceTiming.domainLookupStart`,
-   * `PerformanceResourceTiming.connectStart`.
+   *   `PerformanceResourceTiming.connectStart`. Defined as "immediately before
+   *   the browser starts to establish the connection to the server".
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-connectstart
    */
-  void reportConnectionTiming(const std::string& requestId);
+  void reportConnectionTiming(
+      const std::string& requestId,
+      const std::optional<Headers>& headers);
 
   /**
    * Report when HTTP response headers have been received, corresponding to
@@ -130,9 +133,13 @@ class NetworkReporter {
   /**
    * Report when additional chunks of the response body have been received.
    *
-   * Corresponds to `Network.dataReceived` in CDP.
+   * Corresponds to `Network.dataReceived` in CDP (used for progress bar
+   * rendering).
    */
-  void reportDataReceived(const std::string& requestId);
+  void reportDataReceived(
+      const std::string& requestId,
+      int dataLength,
+      const std::optional<int>& encodedDataLength);
 
   /**
    * Report when a network request is complete and we are no longer receiving
