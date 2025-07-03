@@ -8,10 +8,12 @@
 package com.facebook.react.utils
 
 import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY
 import java.io.File
 import java.net.URI
 import java.util.*
@@ -25,6 +27,12 @@ internal object DependencyUtils {
    * party libraries which are auto-linked.
    */
   fun configureRepositories(project: Project, reactNativeDir: File) {
+    val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
+    if (exclusiveEnterpriseRepository != null) {
+      project.logger.lifecycle(
+          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository")
+    }
+
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
@@ -33,6 +41,16 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("org.webkit") }
           }
         }
+
+        if (exclusiveEnterpriseRepository != null) {
+          // We remove all previously set repositories and only configure the proxy provided by the
+          // user.
+          rootProject.repositories.clear()
+          mavenRepoFromUrl(exclusiveEnterpriseRepository)
+          // We return here as we don't want to configure other repositories as well.
+          return@allprojects
+        }
+
         // We add the snapshot for users on nightlies.
         mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
           repo.content { it.excludeGroup("org.webkit") }
@@ -168,5 +186,14 @@ internal object DependencyUtils {
       project.repositories.maven {
         it.url = uri
         action(it)
+      }
+
+  internal fun Project.exclusiveEnterpriseRepository() =
+      when {
+        hasProperty(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        hasProperty(EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        else -> null
       }
 }

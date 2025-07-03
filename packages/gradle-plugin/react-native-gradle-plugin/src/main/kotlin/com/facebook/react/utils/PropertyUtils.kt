@@ -23,6 +23,12 @@ object PropertyUtils {
   const val SCOPED_REACT_NATIVE_ARCHITECTURES = "react.nativeArchitectures"
 
   /**
+   * Public property that allows to configure an enterprise repository proxy as exclusive repository
+   */
+  const val EXCLUSIVE_ENTEPRISE_REPOSITORY = "exclusiveEnterpriseRepository"
+  const val SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY = "react.exclusiveEnterpriseRepository"
+
+  /**
    * Internal Property that acts as a killswitch to configure the JDK version and align it for app
    * and all the libraries.
    */

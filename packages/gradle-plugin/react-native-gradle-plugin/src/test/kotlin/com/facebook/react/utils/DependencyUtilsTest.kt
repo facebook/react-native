@@ -10,6 +10,7 @@ package com.facebook.react.utils
 import com.facebook.react.tests.createProject
 import com.facebook.react.utils.DependencyUtils.configureDependencies
 import com.facebook.react.utils.DependencyUtils.configureRepositories
+import com.facebook.react.utils.DependencyUtils.exclusiveEnterpriseRepository
 import com.facebook.react.utils.DependencyUtils.getDependencySubstitutions
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromURI
 import com.facebook.react.utils.DependencyUtils.mavenRepoFromUrl
@@ -107,7 +108,24 @@ class DependencyUtilsTest {
     val project = createProject()
 
     configureRepositories(project, tempFolder.root)
+    assertThat(
+            project.repositories.firstOrNull {
+              it is MavenArtifactRepository && it.url == repositoryURI
+            })
+        .isNotNull()
+  }
 
+  @Test
+  fun configureRepositories_withExclusiveEnterpriseRepository_replacesAllRepositories() {
+    val repositoryURI = URI.create("https://maven.myfabolousorganization.it")
+
+    val project = createProject()
+    project.rootProject.extensions.extraProperties.set(
+        "exclusiveEnterpriseRepository", repositoryURI.toString())
+
+    configureRepositories(project, tempFolder.root)
+
+    assertThat(project.repositories).hasSize(1)
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
@@ -420,5 +438,29 @@ class DependencyUtilsTest {
     val mavenRepo = process.mavenRepoFromURI(repoFolder.toURI())
 
     assertThat(mavenRepo.url).isEqualTo(repoFolder.toURI())
+  }
+
+  @Test
+  fun exclusiveEnterpriseRepository_withScopedProperty() {
+    val project = createProject(tempFolder.root)
+    project.extensions.extraProperties.set(
+        "react.exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+    assertThat(project.exclusiveEnterpriseRepository())
+        .isEqualTo("https://maven.myfabolousorganization.it")
+  }
+
+  @Test
+  fun exclusiveEnterpriseRepository_withUnscopedProperty() {
+    val project = createProject(tempFolder.root)
+    project.extensions.extraProperties.set(
+        "exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+    assertThat(project.exclusiveEnterpriseRepository())
+        .isEqualTo("https://maven.myfabolousorganization.it")
+  }
+
+  @Test
+  fun exclusiveEnterpriseRepository_defaultIsTrue() {
+    val project = createProject(tempFolder.root)
+    assertThat(project.exclusiveEnterpriseRepository()).isNull()
   }
 }
