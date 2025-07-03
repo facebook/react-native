@@ -70,7 +70,7 @@ public object DefaultNewArchitectureEntryPoint {
   }
 
   @JvmStatic
-  public fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
+  internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
     ReactNativeFeatureFlags.override(featureFlags)
 
     privateFabricEnabled = featureFlags.enableFabricRenderer()
