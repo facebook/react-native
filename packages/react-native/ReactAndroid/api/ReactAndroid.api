@@ -5746,6 +5746,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun getFlingAnimator ()Landroid/animation/ValueAnimator;
 	public fun getFlingExtrapolatedDistance (I)I
 	public fun getLastScrollDispatchTime ()J
+	protected fun getOverScrollerFromParent ()Landroid/widget/OverScroller;
 	public fun getOverflow ()Ljava/lang/String;
 	public fun getOverflowInset ()Landroid/graphics/Rect;
 	public fun getPointerEvents ()Lcom/facebook/react/uimanager/PointerEvents;

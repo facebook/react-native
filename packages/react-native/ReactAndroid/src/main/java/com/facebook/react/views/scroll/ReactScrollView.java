@@ -165,7 +165,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Nullable
-  private OverScroller getOverScrollerFromParent() {
+  protected OverScroller getOverScrollerFromParent() {
     OverScroller scroller;
 
     if (!sTriedToGetScrollerField) {
