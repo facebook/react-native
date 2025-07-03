@@ -109,9 +109,10 @@ static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers
 #endif
 }
 
-// TODO(T218584924): Implement and report to NetworkReporter
-+ (void)reportRequestFailed:(NSNumber *)requestId
++ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(bool)cancelled
 {
+  NetworkReporter::getInstance().reportRequestFailed(requestId.stringValue.UTF8String, cancelled);
+
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: Clear buffer for request
   if (responseBuffers != nullptr) {
