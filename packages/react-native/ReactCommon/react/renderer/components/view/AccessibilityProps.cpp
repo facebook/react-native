@@ -250,6 +250,10 @@ AccessibilityProps::AccessibilityProps(
     } else {
       fromRawValue(context, *precedentRoleValue, accessibilityTraits);
     }
+  } else {
+    accessibilityRole = sourceProps.accessibilityRole;
+    role = sourceProps.role;
+    accessibilityTraits = sourceProps.accessibilityTraits;
   }
 }
 
