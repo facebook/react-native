@@ -7,14 +7,17 @@
 
 #pragma once
 
+#include "BoundedRequestBuffer.h"
 #include "NetworkTypes.h"
 
+#include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
 #include <atomic>
 #include <functional>
 #include <mutex>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 
 namespace facebook::react::jsinspector_modern {
@@ -75,6 +78,13 @@ class NetworkReporter {
    * Corresponds to `Network.disable` in CDP.
    */
   bool disableDebugging();
+
+  /**
+   * Returns whether network tracking over CDP is currently enabled.
+   */
+  inline bool isDebuggingEnabled() const {
+    return debuggingEnabled_.load(std::memory_order_acquire);
+  }
 
   /**
    * Report a network request that is about to be sent.
@@ -142,9 +152,31 @@ class NetworkReporter {
    */
   void reportResponseEnd(const std::string& requestId, int encodedDataLength);
 
- private:
-  FrontendChannel frontendChannel_;
+  /**
+   * Store the fetched response body for a text or image network response.
+   * These may be retrieved by CDP clients to to render a response preview via
+   * `Network.getReponseBody`.
+   *
+   * Reponse bodies are stored in a bounded buffer with a fixed maximum memory
+   * size, where oldest responses will be evicted if the buffer is exceeded.
+   *
+   * Should be called after checking \ref NetworkReporter::isDebuggingEnabled.
+   */
+  void storeResponseBody(
+      const std::string& requestId,
+      std::string_view body,
+      bool base64Encoded);
 
+  /**
+   * Retrieve a stored response body for a given request ID.
+   *
+   * \returns An optional tuple of [responseBody, base64Encoded]. Returns
+   * nullopt if no entry is found in the buffer.
+   */
+  std::optional<std::tuple<std::string, bool>> getResponseBody(
+      const std::string& requestId);
+
+ private:
   NetworkReporter() = default;
   NetworkReporter(const NetworkReporter&) = delete;
   NetworkReporter& operator=(const NetworkReporter&) = delete;
@@ -156,8 +188,14 @@ class NetworkReporter {
     return debuggingEnabled_.load(std::memory_order_relaxed);
   }
 
+  FrontendChannel frontendChannel_;
+
   std::unordered_map<std::string, ResourceTimingData> perfTimingsBuffer_{};
   std::mutex perfTimingsMutex_;
+
+  // Only populated when CDP debugging is enabled.
+  BoundedRequestBuffer requestBodyBuffer_{};
+  std::mutex requestBodyMutex_;
 };
 
 } // namespace facebook::react::jsinspector_modern
