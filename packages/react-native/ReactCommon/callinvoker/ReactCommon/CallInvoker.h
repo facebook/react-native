@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
-
 #include "SchedulerPriority.h"
+
+#include <functional>
+#include <string>
 
 namespace facebook::jsi {
 class Runtime;
