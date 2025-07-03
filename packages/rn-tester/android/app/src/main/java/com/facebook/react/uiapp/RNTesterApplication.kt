@@ -7,6 +7,7 @@
 
 package com.facebook.react.uiapp
 
+import com.alert.ForcedAlertPackage
 import android.app.Application
 import com.facebook.fbreact.specs.SampleLegacyModule
 import com.facebook.fbreact.specs.SampleTurboModule
@@ -49,6 +50,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
         return listOf(
             MainReactPackage(),
             PopupMenuPackage(),
+            ForcedAlertPackage(),
             OSSLibraryExamplePackage(),
             object : BaseReactPackage() {
               override fun getModule(
@@ -134,7 +136,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
     }
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      load()
+      load(bridgelessEnabled = false)
     }
 
     if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
