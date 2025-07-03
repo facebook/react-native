@@ -45,6 +45,13 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 } // namespace
 #endif
 
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+
+// Dictionary to buffer incremental response bodies (CDP debugging active only)
+static const NSMutableDictionary<NSNumber *, NSMutableString *> *responseBuffers = nil;
+
+#endif
+
 @implementation RCTInspectorNetworkReporter {
 }
 
@@ -86,6 +93,31 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength
 {
   NetworkReporter::getInstance().reportResponseEnd(requestId.stringValue.UTF8String, encodedDataLength);
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Check for buffered response body and flush to NetworkReporter
+  if (responseBuffers != nullptr) {
+    NSMutableString *buffer = responseBuffers[requestId];
+    if (buffer != nullptr) {
+      if (buffer.length > 0) {
+        NetworkReporter::getInstance().storeResponseBody(
+            requestId.stringValue.UTF8String, RCTStringViewFromNSString(buffer), false);
+      }
+      [responseBuffers removeObjectForKey:requestId];
+    }
+  }
+#endif
+}
+
+// TODO(T218584924): Implement and report to NetworkReporter
++ (void)reportRequestFailed:(NSNumber *)requestId
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Clear buffer for request
+  if (responseBuffers != nullptr) {
+    [responseBuffers removeObjectForKey:requestId];
+  }
+#endif
 }
 
 + (void)maybeStoreResponseBody:(NSNumber *)requestId data:(id)data base64Encoded:(bool)base64Encoded
@@ -115,4 +147,29 @@ std::string convertRequestBodyToStringTruncated(NSURLRequest *request)
   }
 #endif
 }
+
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data
+{
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Buffer incremental response body contents
+  auto &networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  if (responseBuffers == nullptr) {
+    responseBuffers = [NSMutableDictionary dictionary];
+  }
+
+  // Get or create buffer for this requestId
+  NSMutableString *buffer = responseBuffers[requestId];
+  if (buffer == nullptr) {
+    buffer = [NSMutableString string];
+    responseBuffers[requestId] = buffer;
+  }
+
+  [buffer appendString:data];
+#endif
+}
+
 @end
