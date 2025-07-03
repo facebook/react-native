@@ -63,6 +63,7 @@ Pod::Spec.new do |s|
   s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-jsi"
+  add_dependency(s, "React-SwiftUtils")
 
   add_dependency(s, "React-FabricImage")
   add_dependency(s, "React-Fabric", :additional_framework_paths => [
