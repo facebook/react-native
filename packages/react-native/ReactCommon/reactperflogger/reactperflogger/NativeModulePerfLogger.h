@@ -16,7 +16,7 @@ namespace facebook::react {
  */
 class NativeModulePerfLogger {
  public:
-  virtual ~NativeModulePerfLogger() {}
+  virtual ~NativeModulePerfLogger() = default;
 
   /**
    * NativeModule Initialization.

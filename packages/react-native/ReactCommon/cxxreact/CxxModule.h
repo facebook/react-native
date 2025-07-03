@@ -205,7 +205,7 @@ class CxxModule {
    * This may block, if necessary to complete cleanup before the
    * object is destroyed.
    */
-  virtual ~CxxModule() {}
+  virtual ~CxxModule() = default;
 
   /**
    * @return the name of this module. This will be the name used to {@code

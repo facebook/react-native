@@ -15,7 +15,7 @@ namespace facebook::react {
 
 class MessageQueueThread {
  public:
-  virtual ~MessageQueueThread() {}
+  virtual ~MessageQueueThread() = default;
   virtual void runOnQueue(std::function<void()>&&) = 0;
   // runOnQueueSync and quitSynchronous are dangerous.  They should only be
   // used for initialization and cleanup.
