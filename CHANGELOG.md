@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.80.1
+
+### Added
+
+- **Flow:** Publish top-level Flow types for `react-native` ([fbbd20dd63](https://github.com/facebook/react-native/commit/fbbd20dd632acd72d2abe861dd4a0e6e98437cf2) by [@buschco](https://github.com/buschco))
+- **Flow:** Fix typo when publishing Flow types for `react-native` ([50667eceb1](https://github.com/facebook/react-native/commit/50667eceb1be4771375d6a3cc2f4e42d4d8aad3a) by [@aswinandro](https://github.com/aswinandro))
+
+### Fixed
+
+- **jest:** Fix missing RefreshControlMock source in Jest preset ([6044e01460](https://github.com/facebook/react-native/commit/6044e01460a065845d4178f0fdc54a601ce4c07e) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+- **runtime:** Fix crash on ReactInstance due to null returned for getViewManagerNames ([f6b7bd93d8](https://github.com/facebook/react-native/commit/f6b7bd93d8d0d2095669144c8de438cf64d8e73f) by [@cortinico](https://github.com/cortinico))
+- **TurboModules:** Emitting event from turbo module crashes on 32bit android ([36ddf853c3](https://github.com/facebook/react-native/commit/36ddf853c381966645789bc814fc2f6bb4d74cd2) by [@vladimirivanoviliev](https://github.com/vladimirivanoviliev))
+
 ## v0.80.0
 
 ### Breaking
