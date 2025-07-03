@@ -114,13 +114,6 @@ class NetworkReporter {
   void reportConnectionTiming(const std::string& requestId);
 
   /**
-   * Report when a network request has failed.
-   *
-   * Corresponds to `Network.loadingFailed` in CDP.
-   */
-  void reportRequestFailed(const std::string& requestId) const;
-
-  /**
    * Report when HTTP response headers have been received, corresponding to
    * when the first byte of the response is available.
    *
@@ -151,6 +144,13 @@ class NetworkReporter {
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responseend
    */
   void reportResponseEnd(const std::string& requestId, int encodedDataLength);
+
+  /**
+   * Report when a network request has failed.
+   *
+   * Corresponds to `Network.loadingFailed` in CDP.
+   */
+  void reportRequestFailed(const std::string& requestId, bool cancelled) const;
 
   /**
    * Store the fetched response body for a text or image network response.
@@ -192,6 +192,9 @@ class NetworkReporter {
 
   std::unordered_map<std::string, ResourceTimingData> perfTimingsBuffer_{};
   std::mutex perfTimingsMutex_;
+
+  // Only populated when CDP debugging is enabled.
+  std::map<std::string, std::string> resourceTypeMap_{};
 
   // Only populated when CDP debugging is enabled.
   BoundedRequestBuffer requestBodyBuffer_{};
