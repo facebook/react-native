@@ -90,6 +90,19 @@ struct ResponseReceivedParams {
 };
 
 /**
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
+ */
+struct LoadingFailedParams {
+  std::string requestId;
+  double timestamp;
+  std::string type;
+  std::string errorText;
+  bool canceled;
+
+  folly::dynamic toDynamic() const;
+};
+
+/**
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFinished
  */
 struct LoadingFinishedParams {

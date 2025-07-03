@@ -437,8 +437,12 @@ RCT_EXPORT_MODULE()
     [task start];
 
     __weak RCTNetworkTask *weakTask = task;
+    NSNumber *requestId = [task.requestID copy];
     return ^{
       [weakTask cancel];
+      if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
+        [RCTInspectorNetworkReporter reportRequestFailed:requestId cancelled:YES];
+      }
       if (cancellationBlock) {
         cancellationBlock();
       }
@@ -672,7 +676,7 @@ RCT_EXPORT_MODULE()
 
     if (facebook::react::ReactNativeFeatureFlags::enableNetworkEventReporting()) {
       if (error != nullptr) {
-        [RCTInspectorNetworkReporter reportRequestFailed:task.requestID];
+        [RCTInspectorNetworkReporter reportRequestFailed:task.requestID cancelled:NO];
       } else {
         [RCTInspectorNetworkReporter reportResponseEnd:task.requestID encodedDataLength:data.length];
       }
