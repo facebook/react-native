@@ -58,7 +58,7 @@ source "$FBSOURCE_ROOT/xplat/js/env-utils/setup_env_base.sh"
 
 # Path to a version of clang and clang-format, these should be from a consistent version
 CLANG_PATH=$( \
-    buck2 targets --console=none --show-output fbcode//third-party-buck/platform010/build/llvm-fb/19:bin/clang \
+    buck2 build --console=none --show-output fbcode//third-party-buck/platform010/build/llvm-fb/19:bin/clang \
     | awk '{print $2}' \
     | xargs dirname \
 )
