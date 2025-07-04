@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
@@ -86,8 +85,11 @@ public class ReactActivityDelegate {
    * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
+   *
+   * @deprecated "Do not access {@link ReactNativeHost} directly. This class is going away in the
+   *     New Architecture. You should access {@link ReactHost} instead."
    */
-  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
+  @Deprecated
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
@@ -107,7 +109,10 @@ public class ReactActivityDelegate {
     return mReactDelegate;
   }
 
-  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
+  /**
+   * @deprecated @deprecated "Do not access {@link ReactInstanceManager} directly. This class is
+   *     going away in the New Architecture. You should access {@link ReactHost} instead."
+   */
   public ReactInstanceManager getReactInstanceManager() {
     return mReactDelegate.getReactInstanceManager();
   }

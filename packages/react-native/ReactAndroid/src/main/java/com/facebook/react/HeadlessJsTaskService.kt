@@ -112,6 +112,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
    * simply have a different mechanism for storing a `ReactNativeHost`, e.g. as a static field
    * somewhere.
    */
+  @Suppress("DEPRECATION")
   protected val reactNativeHost: ReactNativeHost
     get() = (application as ReactApplication).reactNativeHost
 

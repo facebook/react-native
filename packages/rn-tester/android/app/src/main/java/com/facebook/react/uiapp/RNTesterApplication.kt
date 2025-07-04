@@ -86,10 +86,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
-              override fun createNativeModules(
-                  reactContext: ReactApplicationContext
-              ): List<NativeModule> = emptyList()
-
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
                   listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
 

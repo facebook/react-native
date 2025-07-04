@@ -8,12 +8,10 @@
 package com.facebook.react.uimanager.common
 
 import androidx.annotation.IntDef
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 
 @Retention(AnnotationRetention.SOURCE)
 @Suppress("DEPRECATION")
 @IntDef(UIManagerType.DEFAULT, UIManagerType.LEGACY, UIManagerType.FABRIC)
-@DeprecatedInNewArchitecture
 public annotation class UIManagerType {
   public companion object {
     @Deprecated(
