@@ -96,6 +96,8 @@ export interface Spec extends TurboModule {
   ) => $ReadOnlyArray<RawPerformanceEntry>;
 
   +getSupportedPerformanceEntryTypes?: () => $ReadOnlyArray<RawPerformanceEntryType>;
+
+  +setCurrentTimeStampForTesting?: (timeStamp: number) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);
