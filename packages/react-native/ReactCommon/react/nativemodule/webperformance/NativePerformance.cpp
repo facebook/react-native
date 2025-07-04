@@ -134,13 +134,14 @@ NativePerformance::measureWithResult(
     jsi::Runtime& runtime,
     std::string name,
     HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
+    std::optional<HighResTimeStamp> endTime,
     std::optional<HighResDuration> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
   auto reporter = PerformanceEntryReporter::getInstance();
 
   HighResTimeStamp startTimeValue = startTime;
+
   // If the start time mark name is specified, it takes precedence over the
   // startTime parameter, which can be set to 0 by default from JavaScript.
   if (startMark) {
@@ -152,9 +153,7 @@ NativePerformance::measureWithResult(
     }
   }
 
-  HighResTimeStamp endTimeValue = endTime;
-  // If the end time mark name is specified, it takes precedence over the
-  // startTime parameter, which can be set to 0 by default from JavaScript.
+  HighResTimeStamp endTimeValue;
   if (endMark) {
     if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
       endTimeValue = *endMarkBufferedTime;
@@ -164,13 +163,15 @@ NativePerformance::measureWithResult(
     }
   } else if (duration) {
     endTimeValue = startTimeValue + *duration;
-  } else if (endTimeValue < startTimeValue) {
+  } else if (endTime) {
+    endTimeValue = *endTime;
+  } else {
     // The end time is not specified, take the current time, according to the
     // standard
     endTimeValue = now(runtime);
   }
 
-  auto entry = reporter->reportMeasure(name, startTime, endTime);
+  auto entry = reporter->reportMeasure(name, startTimeValue, endTimeValue);
   return std::tuple{entry.startTime, entry.duration};
 }
 

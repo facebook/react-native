@@ -101,7 +101,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       jsi::Runtime& rt,
       std::string name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
+      std::optional<HighResTimeStamp> endTime,
       std::optional<HighResDuration> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);

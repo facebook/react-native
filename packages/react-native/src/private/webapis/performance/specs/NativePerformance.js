@@ -61,7 +61,7 @@ export interface Spec extends TurboModule {
   +measureWithResult?: (
     name: string,
     startTime: number,
-    endTime: number,
+    endTime?: number,
     duration?: number,
     startMark?: string,
     endMark?: string,
