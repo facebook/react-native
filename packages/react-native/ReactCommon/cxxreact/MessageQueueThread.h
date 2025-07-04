@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <condition_variable>
 #include <functional>
-#include <mutex>
 
 namespace facebook::react {
 
