@@ -33,8 +33,47 @@ public object DefaultNewArchitectureEntryPoint {
 
   public var releaseLevel: ReleaseLevel = ReleaseLevel.STABLE
 
+  /**
+   * Loads the React Native New Architecture entry point with the default configuration.
+   *
+   * This will load the app with TurboModules, Fabric and Bridgeless by default.
+   */
   @JvmStatic
-  @JvmOverloads
+  public fun load() {
+    load(turboModulesEnabled = true, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+  ) {
+    load(turboModulesEnabled, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+      fabricEnabled: Boolean = true,
+  ) {
+    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
   public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
