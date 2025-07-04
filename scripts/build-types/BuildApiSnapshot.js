@@ -145,6 +145,8 @@ async function validateSnapshots(
       bColor: (line: string) => styleText(['green'], line),
     };
 
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-call]
     const diffResult = diff(prevSnapshot, newSnapshot, options);
     const rerunCommand = isGitRepo() ? 'yarn build-types' : 'js1 build-js-api';
     console.error(
