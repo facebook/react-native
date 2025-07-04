@@ -2887,16 +2887,10 @@ public final class com/facebook/react/modules/network/NetworkingModule : com/fac
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)V
 	public fun abortRequest (D)V
 	public fun addListener (Ljava/lang/String;)V
-	public final fun addRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
-	public final fun addResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
-	public final fun addUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
 	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
 	public fun initialize ()V
 	public fun invalidate ()V
 	public fun removeListeners (D)V
-	public final fun removeRequestBodyHandler (Lcom/facebook/react/modules/network/NetworkingModule$RequestBodyHandler;)V
-	public final fun removeResponseHandler (Lcom/facebook/react/modules/network/NetworkingModule$ResponseHandler;)V
-	public final fun removeUriHandler (Lcom/facebook/react/modules/network/NetworkingModule$UriHandler;)V
 	public fun sendRequest (Ljava/lang/String;Ljava/lang/String;DLcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZDZ)V
 	public final fun sendRequestInternal (Ljava/lang/String;Ljava/lang/String;ILcom/facebook/react/bridge/ReadableArray;Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;ZIZ)V
 	public static final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
@@ -2907,21 +2901,6 @@ public final class com/facebook/react/modules/network/NetworkingModule$Companion
 }
 
 public abstract interface class com/facebook/react/modules/network/NetworkingModule$CustomClientBuilder : com/facebook/react/modules/network/CustomClientBuilder {
-}
-
-public abstract interface class com/facebook/react/modules/network/NetworkingModule$RequestBodyHandler {
-	public abstract fun supports (Lcom/facebook/react/bridge/ReadableMap;)Z
-	public abstract fun toRequestBody (Lcom/facebook/react/bridge/ReadableMap;Ljava/lang/String;)Lokhttp3/RequestBody;
-}
-
-public abstract interface class com/facebook/react/modules/network/NetworkingModule$ResponseHandler {
-	public abstract fun supports (Ljava/lang/String;)Z
-	public abstract fun toResponseData (Lokhttp3/ResponseBody;)Lcom/facebook/react/bridge/WritableMap;
-}
-
-public abstract interface class com/facebook/react/modules/network/NetworkingModule$UriHandler {
-	public abstract fun fetch (Landroid/net/Uri;)Lcom/facebook/react/bridge/WritableMap;
-	public abstract fun supports (Landroid/net/Uri;Ljava/lang/String;)Z
 }
 
 public abstract interface class com/facebook/react/modules/network/OkHttpClientFactory {
