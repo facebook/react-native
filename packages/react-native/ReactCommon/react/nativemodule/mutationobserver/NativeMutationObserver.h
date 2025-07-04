@@ -20,7 +20,7 @@ using NativeMutationObserverObserveOptions =
         // mutationObserverId
         MutationObserverId,
         // targetShadowNode
-        ShadowNode::Shared,
+        std::shared_ptr<const ShadowNode>,
         // subtree
         bool>;
 
@@ -88,7 +88,7 @@ class NativeMutationObserver
   jsi::Value getPublicInstanceFromShadowNode(
       const ShadowNode& shadowNode) const;
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
-      const std::vector<ShadowNode::Shared>& shadowNodes) const;
+      const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const;
 };
 
 } // namespace facebook::react

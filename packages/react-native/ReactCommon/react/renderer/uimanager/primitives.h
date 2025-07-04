@@ -33,7 +33,7 @@ struct ShadowNodeListWrapper : public jsi::NativeState {
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     bool assignRuntimeShadowNodeReference = false) {
   // Wrap the shadow node so that we can update JS references from native
   auto wrappedShadowNode =
@@ -64,8 +64,9 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
       shadowNodeArray->reserve(jsArrayLen);
 
       for (size_t i = 0; i < jsArrayLen; i++) {
-        shadowNodeArray->push_back(Bridging<ShadowNode::Shared>::fromJs(
-            runtime, jsArray.getValueAtIndex(runtime, i)));
+        shadowNodeArray->push_back(
+            Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                runtime, jsArray.getValueAtIndex(runtime, i)));
       }
       return shadowNodeArray;
     } else {

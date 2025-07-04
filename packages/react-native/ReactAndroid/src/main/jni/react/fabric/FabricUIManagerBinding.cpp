@@ -200,7 +200,7 @@ jint FabricUIManagerBinding::findNextFocusableElement(
     jint parentTag,
     jint focusedTag,
     jint direction) {
-  ShadowNode::Shared nextNode;
+  std::shared_ptr<const ShadowNode> nextNode;
 
   std::optional<FocusDirection> focusDirection =
       FocusOrderingHelper::resolveFocusDirection(direction);
@@ -211,14 +211,14 @@ jint FabricUIManagerBinding::findNextFocusableElement(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared parentShadowNode =
+  std::shared_ptr<const ShadowNode> parentShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
 
   if (parentShadowNode == nullptr) {
     return -1;
   }
 
-  ShadowNode::Shared focusedShadowNode =
+  std::shared_ptr<const ShadowNode> focusedShadowNode =
       FocusOrderingHelper::findShadowNodeByTagRecursively(
           parentShadowNode, focusedTag);
 
@@ -260,9 +260,9 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared childShadowNode =
+  std::shared_ptr<const ShadowNode> childShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(childTag);
-  ShadowNode::Shared rootShadowNode =
+  std::shared_ptr<const ShadowNode> rootShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
 
   if (childShadowNode == nullptr || rootShadowNode == nullptr) {
