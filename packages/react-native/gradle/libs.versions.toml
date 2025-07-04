@@ -16,7 +16,6 @@ androidx-swiperefreshlayout = "1.1.0"
 androidx-test = "1.5.0"
 androidx-test-junit = "1.2.1"
 androidx-tracing = "1.1.0"
-androidx-window = "1.4.0"
 assertj = "3.21.0"
 binary-compatibility-validator = "0.13.2"
 download = "5.4.0"
@@ -64,7 +63,6 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
 androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "androidx-tracing" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
-androidx-window = { module = "androidx.window:window", version.ref = "androidx-window" }
 
 fbjni = { module = "com.facebook.fbjni:fbjni", version.ref = "fbjni" }
 fresco = { module = "com.facebook.fresco:fresco", version.ref = "fresco" }
