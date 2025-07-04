@@ -13,6 +13,7 @@
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
+#include <react/fabric/BigStringBufferWrapper.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/JRuntimeExecutor.h>
 #include <react/jni/JRuntimeScheduler.h>
@@ -58,12 +59,8 @@ class JReactInstance : public jni::HybridClass<JReactInstance> {
 
   static void registerNatives();
 
-  void loadJSBundleFromAssets(
-      jni::alias_ref<JAssetManager::javaobject> assetManager,
-      const std::string& assetURL);
-
-  void loadJSBundleFromFile(
-      const std::string& fileName,
+  void loadJSBundle(
+      jni::alias_ref<BigStringBufferWrapper::javaobject> scriptWrapper,
       const std::string& sourceURL);
 
   void callFunctionOnModule(
