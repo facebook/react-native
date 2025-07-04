@@ -38,6 +38,7 @@ class ExecError extends Error {
   constructor(cause /*: Error */) {
     super(cause.message, {cause});
     this.name = 'ExecError';
+    // test
   }
 }
 
