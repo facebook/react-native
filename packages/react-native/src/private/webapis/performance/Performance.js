@@ -38,12 +38,17 @@ declare var global: {
 const getCurrentTimeStamp: () => DOMHighResTimeStamp =
   NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
 
-export type PerformanceMeasureOptions = {
-  detail?: DetailType,
-  start?: DOMHighResTimeStamp,
-  duration?: DOMHighResTimeStamp,
-  end?: DOMHighResTimeStamp,
-};
+export type PerformanceMeasureOptions =
+  | {
+      detail?: DetailType,
+      start?: DOMHighResTimeStamp | string,
+      duration?: DOMHighResTimeStamp,
+    }
+  | {
+      detail?: DetailType,
+      start?: DOMHighResTimeStamp | string,
+      end?: DOMHighResTimeStamp | string,
+    };
 
 const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
   ['mark', 'measure'];
