@@ -193,6 +193,8 @@ class NativeCxxModuleExample
 
   void voidFunc(jsi::Runtime& rt);
 
+  AsyncPromise<> voidPromise(jsi::Runtime& rt);
+
   void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
   void emitCustomDeviceEvent(jsi::Runtime& rt, const std::string& eventName);
@@ -201,13 +203,13 @@ class NativeCxxModuleExample
 
   ObjectStruct getObjectThrows(jsi::Runtime& rt, ObjectStruct arg);
 
-  AsyncPromise<jsi::Value> promiseThrows(jsi::Runtime& rt);
+  AsyncPromise<> promiseThrows(jsi::Runtime& rt);
 
   void voidFuncAssert(jsi::Runtime& rt);
 
   ObjectStruct getObjectAssert(jsi::Runtime& rt, ObjectStruct arg);
 
-  AsyncPromise<jsi::Value> promiseAssert(jsi::Runtime& rt);
+  AsyncPromise<> promiseAssert(jsi::Runtime& rt);
 
  private:
   std::optional<AsyncCallback<std::string>> valueCallback_;
