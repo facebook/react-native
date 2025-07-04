@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b6d83d6ea0acbc13bce19d869699079>>
+ * @generated SignedSource<<a9d42c6be3cebafa43e5ec5621862046>>
  */
 
 /**
@@ -26,6 +26,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
@@ -129,6 +130,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.disableMountItemReorderingAndroid()
       disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean {
+    var cached = disableOldAndroidAttachmentMetricsWorkaroundsCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.disableOldAndroidAttachmentMetricsWorkarounds()
+      disableOldAndroidAttachmentMetricsWorkaroundsCache = cached
     }
     return cached
   }

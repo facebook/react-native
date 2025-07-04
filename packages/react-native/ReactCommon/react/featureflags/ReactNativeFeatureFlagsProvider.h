@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bdd21870bf567207ad837eb33ae4ca5b>>
+ * @generated SignedSource<<75d63a27e132fc9d69d107a74f063322>>
  */
 
 /**
@@ -31,6 +31,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
   virtual bool disableMainQueueSyncDispatchIOS() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
+  virtual bool disableOldAndroidAttachmentMetricsWorkarounds() = 0;
   virtual bool disableTextLayoutManagerCacheAndroid() = 0;
   virtual bool enableAccessibilityOrder() = 0;
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4a7c66f4603fc6a56018aba12c942ee>>
+ * @generated SignedSource<<fb875e09862ffa7fa4cec0b68dc30237>>
  */
 
 /**
@@ -65,6 +65,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
+   */
+  @JvmStatic
+  public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = accessor.disableOldAndroidAttachmentMetricsWorkarounds()
 
   /**
    * Turns off the global measurement cache used by TextLayoutManager on Android.

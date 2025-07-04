@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b75fccb46a36b07c692d890f0659f9a3>>
+ * @generated SignedSource<<5d5cba282c7a918f73a69b5986e72b04>>
  * @flow strict
  * @noformat
  */
@@ -57,6 +57,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
@@ -219,6 +220,10 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
+ * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
+ */
+export const disableOldAndroidAttachmentMetricsWorkarounds: Getter<boolean> = createNativeFlagGetter('disableOldAndroidAttachmentMetricsWorkarounds', true);
 /**
  * Turns off the global measurement cache used by TextLayoutManager on Android.
  */

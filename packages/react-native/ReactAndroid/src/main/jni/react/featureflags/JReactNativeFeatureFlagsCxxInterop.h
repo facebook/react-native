@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7bf09b9287dc649901b99ca3f250c28>>
+ * @generated SignedSource<<0847def6e26bf5206ba1d145efa6c4ad>>
  */
 
 /**
@@ -46,6 +46,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableMountItemReorderingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool disableOldAndroidAttachmentMetricsWorkarounds(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool disableTextLayoutManagerCacheAndroid(
