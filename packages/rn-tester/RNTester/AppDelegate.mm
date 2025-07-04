@@ -14,7 +14,6 @@
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-#import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
 
@@ -83,10 +82,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
-    return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
-  }
-
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }
