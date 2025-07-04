@@ -12,7 +12,8 @@
 
 namespace facebook::react {
 
-ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
+std::shared_ptr<const ShadowNode>
+PointerEventsProcessor::getShadowNodeFromEventTarget(
     jsi::Runtime& runtime,
     const EventTarget* target) {
   if (target != nullptr) {
@@ -28,7 +29,8 @@ ShadowNode::Shared PointerEventsProcessor::getShadowNodeFromEventTarget(
           if (stateNodeObj.hasProperty(runtime, "node")) {
             auto node = stateNodeObj.getProperty(runtime, "node");
             if (node.isObject()) {
-              return Bridging<ShadowNode::Shared>::fromJs(runtime, node);
+              return Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, node);
             }
           }
         }
@@ -62,7 +64,7 @@ static bool isAnyViewInPathToRootListeningToEvents(
   }
 
   // Retrieve the node's root & a list of nodes between the target and the root
-  auto owningRootShadowNode = ShadowNode::Shared{};
+  auto owningRootShadowNode = std::shared_ptr<const ShadowNode>{};
   uiManager.getShadowTreeRegistry().visit(
       shadowNode.getSurfaceId(),
       [&owningRootShadowNode](const ShadowTree& shadowTree) {
@@ -114,7 +116,7 @@ static PointerEventTarget retargetPointerEvent(
   return result;
 }
 
-static ShadowNode::Shared getCaptureTargetOverride(
+static std::shared_ptr<const ShadowNode> getCaptureTargetOverride(
     PointerIdentifier pointerId,
     CaptureTargetOverrideRegistry& registry) {
   auto pendingPointerItr = registry.find(pointerId);
@@ -200,7 +202,7 @@ static bool shouldEmitPointerEvent(
 }
 
 void PointerEventsProcessor::interceptPointerEvent(
-    const ShadowNode::Shared& target,
+    const std::shared_ptr<const ShadowNode>& target,
     const std::string& type,
     ReactEventPriority priority,
     const PointerEvent& event,
@@ -210,7 +212,7 @@ void PointerEventsProcessor::interceptPointerEvent(
   processPendingPointerCapture(event, eventDispatcher, uiManager);
 
   PointerEvent pointerEvent(event);
-  ShadowNode::Shared targetNode = target;
+  std::shared_ptr<const ShadowNode> targetNode = target;
 
   // Retarget the event if it has a pointer capture override target
   auto overrideTarget = getCaptureTargetOverride(
@@ -284,7 +286,7 @@ void PointerEventsProcessor::interceptPointerEvent(
 
 void PointerEventsProcessor::setPointerCapture(
     PointerIdentifier pointerId,
-    const ShadowNode::Shared& shadowNode) {
+    const std::shared_ptr<const ShadowNode>& shadowNode) {
   if (auto activePointer = getActivePointer(pointerId)) {
     // As per the spec this method should silently fail if the pointer in
     // question does not have any active buttons
@@ -321,7 +323,7 @@ void PointerEventsProcessor::releasePointerCapture(
 bool PointerEventsProcessor::hasPointerCapture(
     PointerIdentifier pointerId,
     const ShadowNode* shadowNode) {
-  ShadowNode::Shared pendingTarget = getCaptureTargetOverride(
+  std::shared_ptr<const ShadowNode> pendingTarget = getCaptureTargetOverride(
       pointerId, pendingPointerCaptureTargetOverrides_);
   if (pendingTarget != nullptr) {
     return pendingTarget->getTag() == shadowNode->getTag();
@@ -422,7 +424,7 @@ void PointerEventsProcessor::processPendingPointerCapture(
 
 void PointerEventsProcessor::handleIncomingPointerEventOnNode(
     const PointerEvent& event,
-    const ShadowNode::Shared& targetNode,
+    const std::shared_ptr<const ShadowNode>& targetNode,
     const DispatchEvent& eventDispatcher,
     const UIManager& uiManager) {
   // Get the hover tracker from the previous event (default to null if the

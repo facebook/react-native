@@ -22,7 +22,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
 
   void observe(
       MutationObserverId mutationObserverId,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       bool observeSubtree,
       const UIManager& uiManager);
 

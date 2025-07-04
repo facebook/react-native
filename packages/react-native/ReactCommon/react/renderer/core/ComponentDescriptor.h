@@ -93,8 +93,8 @@ class ComponentDescriptor {
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const = 0;
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from

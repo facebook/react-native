@@ -46,7 +46,7 @@ static void testShadowNodeTreeLifeCycle(
 
   PropsParserContext parserContext{-1, *contextContainer};
 
-  auto allNodes = std::vector<ShadowNode::Shared>{};
+  auto allNodes = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
@@ -194,7 +194,7 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
   PropsParserContext parserContext{-1, *contextContainer};
 
-  auto allNodes = std::vector<ShadowNode::Shared>{};
+  auto allNodes = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();

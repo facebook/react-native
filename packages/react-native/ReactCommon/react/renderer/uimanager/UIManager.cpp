@@ -172,8 +172,8 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 }
 
 void UIManager::appendChild(
-    const ShadowNode::Shared& parentShadowNode,
-    const ShadowNode::Shared& childShadowNode) const {
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
+    const std::shared_ptr<const ShadowNode>& childShadowNode) const {
   TraceSection s("UIManager::appendChild");
 
   auto& componentDescriptor = parentShadowNode->getComponentDescriptor();
@@ -208,7 +208,7 @@ void UIManager::completeSurface(
 }
 
 void UIManager::setIsJSResponder(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) const {
   if (delegate_ != nullptr) {
@@ -285,9 +285,9 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
   return shadowTree;
 }
 
-ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
+std::shared_ptr<const ShadowNode> UIManager::getNewestCloneOfShadowNode(
     const ShadowNode& shadowNode) const {
-  auto ancestorShadowNode = ShadowNode::Shared{};
+  auto ancestorShadowNode = std::shared_ptr<const ShadowNode>{};
   shadowTreeRegistry_.visit(
       shadowNode.getSurfaceId(), [&](const ShadowTree& shadowTree) {
         ancestorShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
@@ -295,9 +295,9 @@ ShadowNode::Shared UIManager::getNewestCloneOfShadowNode(
   return getShadowNodeInSubtree(shadowNode, ancestorShadowNode);
 }
 
-ShadowNode::Shared UIManager::getShadowNodeInSubtree(
+std::shared_ptr<const ShadowNode> UIManager::getShadowNodeInSubtree(
     const ShadowNode& shadowNode,
-    const ShadowNode::Shared& ancestorShadowNode) const {
+    const std::shared_ptr<const ShadowNode>& ancestorShadowNode) const {
   if (!ancestorShadowNode) {
     return nullptr;
   }
@@ -327,8 +327,8 @@ ShadowTreeRevisionProvider* UIManager::getShadowTreeRevisionProvider() {
   return lazyShadowTreeRevisionConsistencyManager_.get();
 }
 
-ShadowNode::Shared UIManager::findNodeAtPoint(
-    const ShadowNode::Shared& node,
+std::shared_ptr<const ShadowNode> UIManager::findNodeAtPoint(
+    const std::shared_ptr<const ShadowNode>& node,
     Point point) const {
   return LayoutableShadowNode::findNodeAtPoint(
       getNewestCloneOfShadowNode(*node), point);
@@ -342,7 +342,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 
   // We might store here an owning pointer to `ancestorShadowNode` to ensure
   // that the node is not deallocated during method execution lifetime.
-  auto owningAncestorShadowNode = ShadowNode::Shared{};
+  auto owningAncestorShadowNode = std::shared_ptr<const ShadowNode>{};
 
   if (ancestorShadowNode == nullptr) {
     shadowTreeRegistry_.visit(
@@ -414,7 +414,7 @@ void UIManager::updateState(const StateUpdate& stateUpdate) const {
 }
 
 void UIManager::dispatchCommand(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) const {
   if (delegate_ != nullptr) {
@@ -423,7 +423,7 @@ void UIManager::dispatchCommand(
 }
 
 void UIManager::setNativeProps_DEPRECATED(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     RawProps rawProps) const {
   auto& family = shadowNode->getFamily();
   if (family.nativeProps_DEPRECATED) {
@@ -472,7 +472,7 @@ void UIManager::setNativeProps_DEPRECATED(
 }
 
 void UIManager::sendAccessibilityEvent(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& eventType) {
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidSendAccessibilityEvent(shadowNode, eventType);
@@ -493,14 +493,15 @@ void UIManager::configureNextLayoutAnimation(
   }
 }
 
-static ShadowNode::Shared findShadowNodeByTagRecursively(
-    ShadowNode::Shared parentShadowNode,
+static std::shared_ptr<const ShadowNode> findShadowNodeByTagRecursively(
+    std::shared_ptr<const ShadowNode> parentShadowNode,
     Tag tag) {
   if (parentShadowNode->getTag() == tag) {
     return parentShadowNode;
   }
 
-  for (const ShadowNode::Shared& shadowNode : parentShadowNode->getChildren()) {
+  for (const std::shared_ptr<const ShadowNode>& shadowNode :
+       parentShadowNode->getChildren()) {
     auto result = findShadowNodeByTagRecursively(shadowNode, tag);
     if (result) {
       return result;
@@ -510,8 +511,9 @@ static ShadowNode::Shared findShadowNodeByTagRecursively(
   return nullptr;
 }
 
-ShadowNode::Shared UIManager::findShadowNodeByTag_DEPRECATED(Tag tag) const {
-  auto shadowNode = ShadowNode::Shared{};
+std::shared_ptr<const ShadowNode> UIManager::findShadowNodeByTag_DEPRECATED(
+    Tag tag) const {
+  auto shadowNode = std::shared_ptr<const ShadowNode>{};
 
   shadowTreeRegistry_.enumerate([&](const ShadowTree& shadowTree, bool& stop) {
     const RootShadowNode* rootShadowNode;
