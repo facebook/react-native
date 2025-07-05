@@ -63,7 +63,7 @@ describe('Performance', () => {
         startTime: 10,
       },
       {
-        duration: -10,
+        duration: 15,
         entryType: 'measure',
         name: 'measure-now-with-start-mark',
         startTime: 10,

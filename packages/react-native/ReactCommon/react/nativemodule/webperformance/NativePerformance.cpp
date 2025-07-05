@@ -117,15 +117,15 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return HighResTimeStamp::now();
+  return forcedCurrentTimeStamp_.value_or(HighResTimeStamp::now());
 }
 
 HighResTimeStamp NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
     std::optional<HighResTimeStamp> startTime) {
-  auto entry =
-      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+  auto entry = PerformanceEntryReporter::getInstance()->reportMark(
+      name, startTime.value_or(now(rt)));
   return entry.startTime;
 }
 
@@ -134,13 +134,14 @@ NativePerformance::measureWithResult(
     jsi::Runtime& runtime,
     std::string name,
     HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
+    std::optional<HighResTimeStamp> endTime,
     std::optional<HighResDuration> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
   auto reporter = PerformanceEntryReporter::getInstance();
 
   HighResTimeStamp startTimeValue = startTime;
+
   // If the start time mark name is specified, it takes precedence over the
   // startTime parameter, which can be set to 0 by default from JavaScript.
   if (startMark) {
@@ -152,9 +153,7 @@ NativePerformance::measureWithResult(
     }
   }
 
-  HighResTimeStamp endTimeValue = endTime;
-  // If the end time mark name is specified, it takes precedence over the
-  // startTime parameter, which can be set to 0 by default from JavaScript.
+  HighResTimeStamp endTimeValue;
   if (endMark) {
     if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
       endTimeValue = *endMarkBufferedTime;
@@ -164,13 +163,15 @@ NativePerformance::measureWithResult(
     }
   } else if (duration) {
     endTimeValue = startTimeValue + *duration;
-  } else if (endTimeValue < startTimeValue) {
+  } else if (endTime) {
+    endTimeValue = *endTime;
+  } else {
     // The end time is not specified, take the current time, according to the
     // standard
-    endTimeValue = reporter->getCurrentTimeStamp();
+    endTimeValue = now(runtime);
   }
 
-  auto entry = reporter->reportMeasure(name, startTime, endTime);
+  auto entry = reporter->reportMeasure(name, startTimeValue, endTimeValue);
   return std::tuple{entry.startTime, entry.duration};
 }
 
@@ -404,6 +405,14 @@ std::vector<PerformanceEntryType>
 NativePerformance::getSupportedPerformanceEntryTypes(jsi::Runtime& /*rt*/) {
   auto supportedEntryTypes = PerformanceEntryReporter::getSupportedEntryTypes();
   return {supportedEntryTypes.begin(), supportedEntryTypes.end()};
+}
+
+#pragma mark - Testing
+
+void NativePerformance::setCurrentTimeStampForTesting(
+    jsi::Runtime& /*rt*/,
+    HighResTimeStamp ts) {
+  forcedCurrentTimeStamp_ = ts;
 }
 
 } // namespace facebook::react

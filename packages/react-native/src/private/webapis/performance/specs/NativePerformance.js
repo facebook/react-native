@@ -61,7 +61,7 @@ export interface Spec extends TurboModule {
   +measureWithResult?: (
     name: string,
     startTime: number,
-    endTime: number,
+    endTime?: number,
     duration?: number,
     startMark?: string,
     endMark?: string,
@@ -96,6 +96,8 @@ export interface Spec extends TurboModule {
   ) => $ReadOnlyArray<RawPerformanceEntry>;
 
   +getSupportedPerformanceEntryTypes?: () => $ReadOnlyArray<RawPerformanceEntryType>;
+
+  +setCurrentTimeStampForTesting?: (timeStamp: number) => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);

@@ -130,13 +130,14 @@ const NativePerformanceMock = {
   measureWithResult: (
     name: string,
     startTime: number,
-    endTime: number,
+    endTime?: number,
     duration?: number,
     startMark?: string,
     endMark?: string,
   ): NativePerformanceMeasureResult => {
-    const start = startMark != null ? marks.get(startMark) : startTime;
-    const end = endMark != null ? marks.get(endMark) : endTime;
+    const start = startMark != null ? marks.get(startMark) : startTime ?? 0;
+    const end =
+      endMark != null ? marks.get(endMark) : endTime ?? performance.now();
 
     if (start === undefined) {
       throw new Error('startMark does not exist');
