@@ -117,15 +117,15 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return HighResTimeStamp::now();
+  return forcedCurrentTimeStamp_.value_or(HighResTimeStamp::now());
 }
 
 HighResTimeStamp NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
     std::optional<HighResTimeStamp> startTime) {
-  auto entry =
-      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+  auto entry = PerformanceEntryReporter::getInstance()->reportMark(
+      name, startTime.value_or(now(rt)));
   return entry.startTime;
 }
 
@@ -167,7 +167,7 @@ NativePerformance::measureWithResult(
   } else if (endTimeValue < startTimeValue) {
     // The end time is not specified, take the current time, according to the
     // standard
-    endTimeValue = reporter->getCurrentTimeStamp();
+    endTimeValue = now(runtime);
   }
 
   auto entry = reporter->reportMeasure(name, startTime, endTime);
@@ -404,6 +404,14 @@ std::vector<PerformanceEntryType>
 NativePerformance::getSupportedPerformanceEntryTypes(jsi::Runtime& /*rt*/) {
   auto supportedEntryTypes = PerformanceEntryReporter::getSupportedEntryTypes();
   return {supportedEntryTypes.begin(), supportedEntryTypes.end()};
+}
+
+#pragma mark - Testing
+
+void NativePerformance::setCurrentTimeStampForTesting(
+    jsi::Runtime& /*rt*/,
+    HighResTimeStamp ts) {
+  forcedCurrentTimeStamp_ = ts;
 }
 
 } // namespace facebook::react
