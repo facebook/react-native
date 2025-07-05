@@ -21,7 +21,6 @@ class EventQueueProcessor {
  public:
   EventQueueProcessor(
       EventPipe eventPipe,
-      EventPipeConclusion eventPipeConclusion,
       StatePipe statePipe,
       std::weak_ptr<EventLogger> eventLogger);
 
@@ -30,7 +29,6 @@ class EventQueueProcessor {
 
  private:
   const EventPipe eventPipe_;
-  const EventPipeConclusion eventPipeConclusion_;
   const StatePipe statePipe_;
   const std::weak_ptr<EventLogger> eventLogger_;
 

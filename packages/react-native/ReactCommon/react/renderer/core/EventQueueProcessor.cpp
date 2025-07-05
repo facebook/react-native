@@ -17,11 +17,9 @@ namespace facebook::react {
 
 EventQueueProcessor::EventQueueProcessor(
     EventPipe eventPipe,
-    EventPipeConclusion eventPipeConclusion,
     StatePipe statePipe,
     std::weak_ptr<EventLogger> eventLogger)
     : eventPipe_(std::move(eventPipe)),
-      eventPipeConclusion_(std::move(eventPipeConclusion)),
       statePipe_(std::move(statePipe)),
       eventLogger_(std::move(eventLogger)) {}
 
@@ -106,9 +104,6 @@ void EventQueueProcessor::flushEvents(
       hasContinuousEventStarted_ = true;
     }
   }
-
-  // We only run the "Conclusion" once per event group when batched.
-  eventPipeConclusion_(runtime);
 
   // No need to lock `EventEmitter::DispatchMutex()` here.
   // The mutex protects from a situation when the `instanceHandle` can be
