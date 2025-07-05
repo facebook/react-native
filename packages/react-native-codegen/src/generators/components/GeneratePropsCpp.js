@@ -85,6 +85,7 @@ function generatePropsDiffString(
         case 'StringTypeAnnotation':
         case 'Int32TypeAnnotation':
         case 'BooleanTypeAnnotation':
+        case 'MixedTypeAnnotation':
           return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = ${prop.name};
@@ -95,6 +96,14 @@ function generatePropsDiffString(
   if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
     result["${prop.name}"] = ${prop.name};
   }`;
+        case 'ArrayTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'StringEnumTypeAnnotation':
+        case 'Int32EnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'ReservedPropTypeAnnotation':
           switch (typeAnnotation.name) {
             case 'ColorPrimitive':
@@ -103,6 +112,9 @@ function generatePropsDiffString(
     result["${prop.name}"] = *${prop.name};
   }`;
             case 'ImageSourcePrimitive':
+            case 'PointPrimitive':
+            case 'EdgeInsetsPrimitive':
+            case 'DimensionPrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = toDynamic(${prop.name});
@@ -112,52 +124,11 @@ function generatePropsDiffString(
               throw new Error(
                 'ImageRequestPrimitive should not be used in Props',
               );
-            case 'PointPrimitive':
-              return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-            case 'EdgeInsetsPrimitive':
-              return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-            case 'DimensionPrimitive':
-              return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
             default:
               (typeAnnotation.name: empty);
               throw new Error('Received unknown ReservedPropTypeAnnotation');
           }
-        case 'ArrayTypeAnnotation':
-          return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-        case 'ObjectTypeAnnotation':
-          return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-        case 'StringEnumTypeAnnotation':
-          return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-        case 'Int32EnumTypeAnnotation':
-          return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = toDynamic(${prop.name});
-  }`;
-        case 'MixedTypeAnnotation':
-          return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = ${prop.name};
-  }`;
         default:
-          // TODO: Implement diffProps for complex types
           return '';
       }
     })
