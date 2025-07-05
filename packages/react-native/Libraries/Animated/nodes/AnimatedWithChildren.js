@@ -10,16 +10,69 @@
 
 'use strict';
 
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
-
-import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './AnimatedNode';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 const {connectAnimatedNodes, disconnectAnimatedNodes} =
   NativeAnimatedHelper.API;
 
 export default class AnimatedWithChildren extends AnimatedNode {
   _children: Array<AnimatedNode> = [];
+  _parents: Array<AnimatedNode> = [];
+
+  // Public method to add a child
+  addChild(child: AnimatedNode): void {
+    this.__addChild(child);
+  }
+
+  // Public method to remove a child
+  removeChild(child: AnimatedNode): void {
+    this.__removeChild(child);
+  }
+
+  __addChild(child: AnimatedNode): void {
+    if (this._children.length === 0) {
+      this.__attach();
+    }
+    this._children.push(child);
+    child.addParent(this); // Maintain bidirectional parent-child relationship
+    if (this.__isNative) {
+      child.__makeNative(this.__getPlatformConfig());
+      connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+    }
+  }
+
+  __removeChild(child: AnimatedNode): void {
+    const index = this._children.indexOf(child);
+    if (index === -1) {
+      console.warn("Trying to remove a child that doesn't exist");
+      return;
+    }
+    child.removeParent(this); // Remove parent reference from the child
+    if (this.__isNative && child.__isNative) {
+      disconnectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
+    }
+    this._children.splice(index, 1);
+    if (this._children.length === 0) {
+      this.__detach();
+    }
+  }
+
+  // New method to add a parent
+  addParent(parent: AnimatedNode): void {
+    if (!this._parents.includes(parent)) {
+      this._parents.push(parent);
+    }
+  }
+
+  // New method to remove a parent
+  removeParent(parent: AnimatedNode): void {
+    const index = this._parents.indexOf(parent);
+    if (index !== -1) {
+      this._parents.splice(index, 1);
+    }
+  }
 
   __makeNative(platformConfig: ?PlatformConfig) {
     if (!this.__isNative) {
@@ -38,33 +91,6 @@ export default class AnimatedWithChildren extends AnimatedNode {
     super.__makeNative(platformConfig);
   }
 
-  __addChild(child: AnimatedNode): void {
-    if (this._children.length === 0) {
-      this.__attach();
-    }
-    this._children.push(child);
-    if (this.__isNative) {
-      // Only accept "native" animated nodes as children
-      child.__makeNative(this.__getPlatformConfig());
-      connectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
-    }
-  }
-
-  __removeChild(child: AnimatedNode): void {
-    const index = this._children.indexOf(child);
-    if (index === -1) {
-      console.warn("Trying to remove a child that doesn't exist");
-      return;
-    }
-    if (this.__isNative && child.__isNative) {
-      disconnectAnimatedNodes(this.__getNativeTag(), child.__getNativeTag());
-    }
-    this._children.splice(index, 1);
-    if (this._children.length === 0) {
-      this.__detach();
-    }
-  }
-
   __getChildren(): $ReadOnlyArray<AnimatedNode> {
     return this._children;
   }
@@ -75,7 +101,6 @@ export default class AnimatedWithChildren extends AnimatedNode {
       const children = this._children;
       for (let ii = 0, length = children.length; ii < length; ii++) {
         const child = children[ii];
-        // $FlowFixMe[method-unbinding] added when improving typing for this parameters
         if (child.__getValue) {
           child.__callListeners(child.__getValue());
         }
