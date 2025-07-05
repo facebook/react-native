@@ -66,7 +66,7 @@ getPointerEventsProcessorFromRuntime(facebook::jsi::Runtime& runtime) {
 
 static std::vector<facebook::jsi::Value>
 getArrayOfInstanceHandlesFromShadowNodes(
-    const ShadowNode::ListOfShared& nodes,
+    const std::vector<std::shared_ptr<const ShadowNode>>& nodes,
     facebook::jsi::Runtime& runtime) {
   // JSI doesn't support adding elements to an array after creation,
   // so we need to accumulate the values in a vector and then create

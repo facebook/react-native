@@ -78,8 +78,9 @@ class ShadowNodeTest : public testing::Test {
         familyABB,
         traits);
 
-    auto nodeABChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeABA_, nodeABB_});
+    auto nodeABChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{nodeABA_, nodeABB_});
 
     auto familyAB = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 15,
@@ -107,8 +108,10 @@ class ShadowNodeTest : public testing::Test {
         familyAC,
         traits);
 
-    auto nodeAChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeAA_, nodeAB_, nodeAC_});
+    auto nodeAChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{
+                nodeAA_, nodeAB_, nodeAC_});
 
     auto familyA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 17,
