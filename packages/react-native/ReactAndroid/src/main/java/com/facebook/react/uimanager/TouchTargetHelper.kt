@@ -160,6 +160,21 @@ public object TouchTargetHelper {
     return currentView
   }
 
+  @JvmStatic
+  public fun isInZeroSizedZIndexContainer(view: View, rootViewGroup: ViewGroup): Boolean {
+    var parent = view.parent
+    while (parent != null && parent != rootViewGroup) {
+      if (parent is ReactZIndexedViewGroup) {
+        val viewGroup = parent as ViewGroup
+        if (viewGroup.width <= 0 || viewGroup.height <= 0) {
+          return true
+        }
+      }
+      parent = parent.parent
+    }
+    return false
+  }
+
   private enum class TouchTargetReturnType {
     /** Allow returning the view passed in through the parameters. */
     SELF,
@@ -308,7 +323,7 @@ public object TouchTargetHelper {
    * Returns the touch target View of the event given, or null if neither the given View nor any of
    * its descendants are the touch target.
    */
-  private fun findTouchTargetViewWithPointerEvents(
+  public fun findTouchTargetViewWithPointerEvents(
       eventCoords: FloatArray,
       view: View,
       pathAccumulator: MutableList<ViewTarget>? = null
