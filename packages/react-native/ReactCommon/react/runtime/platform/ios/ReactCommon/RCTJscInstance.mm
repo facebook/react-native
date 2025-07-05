@@ -8,8 +8,7 @@
 #import "RCTJscInstance.h"
 #include <jsc/JSCRuntime.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 RCTJscInstance::RCTJscInstance() {}
 
@@ -18,5 +17,4 @@ std::unique_ptr<JSRuntime> RCTJscInstance::createJSRuntime(std::shared_ptr<Messa
   return std::make_unique<JSIRuntimeHolder>(jsc::makeJSCRuntime());
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
