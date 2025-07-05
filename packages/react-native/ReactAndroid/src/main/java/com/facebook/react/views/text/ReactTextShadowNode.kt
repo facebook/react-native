@@ -66,14 +66,14 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
         }
     var layout = measureSpannedText(text, width, widthMode)
 
-    if (mAdjustsFontSizeToFit) {
-      val initialFontSize = mTextAttributes.effectiveFontSize
-      var currentFontSize = mTextAttributes.effectiveFontSize
+    if (adjustsFontSizeToFit) {
+      val initialFontSize = textAttributes.effectiveFontSize
+      var currentFontSize = textAttributes.effectiveFontSize
       // Minimum font size is 4pts to match the iOS implementation.
       val minimumFontSize =
-          max((mMinimumFontScale * initialFontSize), PixelUtil.toPixelFromDIP(4f)).toInt()
+          max((minimumFontScale * initialFontSize), PixelUtil.toPixelFromDIP(4f)).toInt()
       while (currentFontSize > minimumFontSize &&
-          (mNumberOfLines != ReactConstants.UNSET && layout.lineCount > mNumberOfLines ||
+          (numberOfLines != ReactConstants.UNSET && layout.lineCount > numberOfLines ||
               heightMode != YogaMeasureMode.UNDEFINED && layout.height > height)) {
         // TODO: We could probably use a smarter algorithm here. This will require 0(n)
         // measurements
@@ -111,8 +111,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
     }
 
     val lineCount =
-        if (mNumberOfLines == ReactConstants.UNSET) layout.lineCount
-        else min(mNumberOfLines.toDouble(), layout.lineCount.toDouble()).toInt()
+        if (numberOfLines == ReactConstants.UNSET) layout.lineCount
+        else min(numberOfLines.toDouble(), layout.lineCount.toDouble()).toInt()
 
     // Instead of using `layout.getWidth()` (which may yield a significantly larger width
     // for
@@ -175,7 +175,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     var width = width
     val textPaint = textPaintInstance
-    textPaint.textSize = mTextAttributes.effectiveFontSize.toFloat()
+    textPaint.textSize = textAttributes.effectiveFontSize.toFloat()
     val layout: Layout
     val boring = BoringLayout.isBoring(text, textPaint)
     val desiredWidth = if (boring == null) Layout.getDesiredWidth(text, textPaint) else Float.NaN
@@ -201,12 +201,12 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
           StaticLayout.Builder.obtain(text, 0, text.length, textPaint, hintWidth)
               .setAlignment(alignment)
               .setLineSpacing(0f, 1f)
-              .setIncludePad(mIncludeFontPadding)
-              .setBreakStrategy(mTextBreakStrategy)
-              .setHyphenationFrequency(mHyphenationFrequency)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency)
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        builder.setJustificationMode(mJustificationMode)
+        builder.setJustificationMode(justificationMode)
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true)
@@ -224,7 +224,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
               1f,
               0f,
               boring,
-              mIncludeFontPadding)
+              includeFontPadding)
     } else {
       // Is used for multiline, boring text and the width is known.
       // Android 11+ introduces changes in text width calculation which leads to cases
@@ -238,12 +238,12 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
           StaticLayout.Builder.obtain(text, 0, text.length, textPaint, width.toInt())
               .setAlignment(alignment)
               .setLineSpacing(0f, 1f)
-              .setIncludePad(mIncludeFontPadding)
-              .setBreakStrategy(mTextBreakStrategy)
-              .setHyphenationFrequency(mHyphenationFrequency)
+              .setIncludePad(includeFontPadding)
+              .setBreakStrategy(textBreakStrategy)
+              .setHyphenationFrequency(hyphenationFrequency)
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        builder.setJustificationMode(mJustificationMode)
+        builder.setJustificationMode(justificationMode)
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -255,9 +255,9 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
   }
 
   // Return text alignment according to LTR or RTL style
-  private val textAlign: Int
+  override val textAlign: Int
     get() {
-      var textAlign = mTextAlign
+      var textAlign = super.textAlign
       if (layoutDirection == YogaDirection.RTL) {
         if (textAlign == Gravity.RIGHT) {
           textAlign = Gravity.LEFT
@@ -300,14 +300,14 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
         ReactTextUpdate(
             text,
             ReactConstants.UNSET,
-            mContainsImages,
+            containsImages,
             getPadding(Spacing.START),
             getPadding(Spacing.TOP),
             getPadding(Spacing.END),
             getPadding(Spacing.BOTTOM),
             textAlign,
-            mTextBreakStrategy,
-            mJustificationMode)
+            textBreakStrategy,
+            justificationMode)
     uiViewOperationQueue.enqueueUpdateExtraData(reactTag, reactTextUpdate)
   }
 
@@ -319,7 +319,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
   override fun calculateLayoutOnChildren(): Iterable<ReactShadowNode<*>?>? {
     // Run flexbox on and return the descendants which are inline views.
 
-    if (mInlineViews.isNullOrEmpty()) return null
+    if (inlineViews.isNullOrEmpty()) return null
 
     val text: Spanned =
         checkNotNull(preparedSpannableText) {
@@ -329,7 +329,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
     val shadowNodes = mutableListOf<ReactShadowNode<*>?>()
 
     for (placeholder in placeholders) {
-      val child = mInlineViews?.get(placeholder.reactTag)
+      val child = inlineViews?.get(placeholder.reactTag)
       checkNotNull(child) { "Child is null" }
       child.calculateLayout()
       shadowNodes.add(child)

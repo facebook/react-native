@@ -265,18 +265,18 @@ internal object TextLayoutManager {
               SetSpanOperation(start, end, CustomLetterSpacingSpan(textAttributes.letterSpacing)))
         }
         ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.mFontSize)))
-        if (textAttributes.mFontStyle != ReactConstants.UNSET ||
-            textAttributes.mFontWeight != ReactConstants.UNSET ||
-            textAttributes.mFontFamily != null) {
+        if (textAttributes.fontStyle != ReactConstants.UNSET ||
+            textAttributes.fontWeight != ReactConstants.UNSET ||
+            textAttributes.fontFamily != null) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   CustomStyleSpan(
-                      textAttributes.mFontStyle,
-                      textAttributes.mFontWeight,
+                      textAttributes.fontStyle,
+                      textAttributes.fontWeight,
                       textAttributes.mFontFeatureSettings,
-                      textAttributes.mFontFamily,
+                      textAttributes.fontFamily,
                       context.assets)))
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
