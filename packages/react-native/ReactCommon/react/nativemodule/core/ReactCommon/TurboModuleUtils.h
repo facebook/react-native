@@ -35,23 +35,4 @@ jsi::Value createPromiseAsJSIValue(
     jsi::Runtime& rt,
     PromiseSetupFunctionType&& func);
 
-// Deprecated. Use AsyncCallback instead.
-class RAIICallbackWrapperDestroyer {
- public:
-  RAIICallbackWrapperDestroyer(std::weak_ptr<CallbackWrapper> callbackWrapper)
-      : callbackWrapper_(callbackWrapper) {}
-
-  ~RAIICallbackWrapperDestroyer() {
-    auto strongWrapper = callbackWrapper_.lock();
-    if (!strongWrapper) {
-      return;
-    }
-
-    strongWrapper->destroy();
-  }
-
- private:
-  std::weak_ptr<CallbackWrapper> callbackWrapper_;
-};
-
 } // namespace facebook::react

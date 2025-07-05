@@ -13,7 +13,8 @@ namespace facebook::react {
 
 namespace {
 
-ShadowNode::Shared findAndClone(const ShadowNode::Shared& node) {
+std::shared_ptr<const ShadowNode> findAndClone(
+    const std::shared_ptr<const ShadowNode>& node) {
   if (node->getProps()->nativeId == "to-be-cloned-in-the-commit-hook") {
     return node->clone({});
   }
@@ -43,7 +44,7 @@ void FantomForcedCloneCommitHook::commitHookWasUnregistered(
 
 RootShadowNode::Unshared FantomForcedCloneCommitHook::shadowTreeWillCommit(
     const ShadowTree& /*shadowTree*/,
-    const RootShadowNode::Shared& /*oldRootShadowNode*/,
+    const std::shared_ptr<const RootShadowNode>& /*oldRootShadowNode*/,
     const RootShadowNode::Unshared& newRootShadowNode) noexcept {
   auto result = findAndClone(newRootShadowNode);
 

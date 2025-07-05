@@ -98,7 +98,7 @@ jsi::Value NativeMutationObserver::getPublicInstanceFromShadowNode(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    const std::vector<ShadowNode::Shared>& shadowNodes) const {
+    const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 

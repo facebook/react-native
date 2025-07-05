@@ -249,7 +249,8 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           uiManager->setIsJSResponder(
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[0]),
               arguments[1].getBool(),
               arguments[2].getBool());
 
@@ -270,8 +271,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto node =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto node = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           auto locationX = (Float)arguments[1].getNumber();
           auto locationY = (Float)arguments[2].getNumber();
           auto onSuccessFunction =
@@ -316,7 +317,8 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+                  *Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                      runtime, arguments[0]),
                   count > 1 ? shadowNodeListFromValue(runtime, arguments[1])
                             : ShadowNode::emptySharedShadowNodeSharedList(),
                   RawProps()),
@@ -341,7 +343,8 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+                  *Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                      runtime, arguments[0]),
                   nullptr,
                   RawProps(runtime, arguments[1])),
               true);
@@ -368,7 +371,8 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+                  *Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                      runtime, arguments[0]),
                   hasChildrenArg
                       ? shadowNodeListFromValue(runtime, arguments[1])
                       : ShadowNode::emptySharedShadowNodeSharedList(),
@@ -391,8 +395,10 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           uiManager->appendChild(
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[1]));
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[0]),
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[1]));
           return jsi::Value::undefined();
         });
   }
@@ -428,8 +434,8 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[0]);
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[1]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[1]);
           shadowNodeList->push_back(shadowNode);
           return jsi::Value::undefined();
         });
@@ -499,8 +505,11 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           auto layoutMetrics = uiManager->getRelativeLayoutMetrics(
-              *Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[1]).get(),
+              *Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[0]),
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[1])
+                  .get(),
               {/* .includeTransform = */ false});
           auto frame = layoutMetrics.frame;
           auto result = jsi::Object(runtime);
@@ -527,7 +536,8 @@ jsi::Value UIManagerBinding::get(
 
           if (arguments[0].isObject()) {
             auto shadowNode =
-                Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+                Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                    runtime, arguments[0]);
             uiManager->dispatchCommand(
                 shadowNode,
                 stringFromValue(runtime, arguments[1]),
@@ -551,7 +561,8 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           uiManager->setNativeProps_DEPRECATED(
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[0]),
               RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();
@@ -572,10 +583,11 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           auto relativeToShadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[1]);
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[1]);
           auto onFailFunction =
               arguments[2].getObject(runtime).getFunction(runtime);
           auto onSuccessFunction =
@@ -622,8 +634,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           auto callbackFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
@@ -662,8 +674,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           auto callbackFunction =
               arguments[1].getObject(runtime).getFunction(runtime);
 
@@ -701,7 +713,8 @@ jsi::Value UIManagerBinding::get(
           validateArgumentCount(runtime, methodName, paramCount, count);
 
           uiManager->sendAccessibilityEvent(
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]),
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[0]),
               stringFromValue(runtime, arguments[1]));
 
           return jsi::Value::undefined();
@@ -801,8 +814,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           bool includeTransform = arguments[1].getBool();
 
           auto currentRevision =
@@ -841,10 +854,11 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           validateArgumentCount(runtime, methodName, paramCount, count);
 
-          auto shadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[0]);
+          auto shadowNode = Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+              runtime, arguments[0]);
           auto otherShadowNode =
-              Bridging<ShadowNode::Shared>::fromJs(runtime, arguments[1]);
+              Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                  runtime, arguments[1]);
 
           auto currentRevision =
               uiManager->getShadowTreeRevisionProvider()->getCurrentRevision(

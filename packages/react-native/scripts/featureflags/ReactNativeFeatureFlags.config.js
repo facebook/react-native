@@ -145,6 +145,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAndroidTextMeasurementOptimizations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-01',
+        description:
+          'Enables various optimizations throughout the path of measuring text on Android.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -652,6 +663,17 @@ const definitions: FeatureFlagDefinitions = {
 
   jsOnly: {
     ...testDefinitions.jsOnly,
+    alwaysFlattenAnimatedStyles: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-02',
+        description:
+          'Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {
@@ -681,6 +703,17 @@ const definitions: FeatureFlagDefinitions = {
           'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    deferFlatListFocusChangeRenderUpdate: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-02',
+        description:
+          'Use the deferred cell render update mechanism for focus change in FlatList.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

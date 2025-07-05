@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69c0cc67b17635347f3619462252a912>>
+ * @generated SignedSource<<b75fccb46a36b07c692d890f0659f9a3>>
  * @flow strict
  * @noformat
  */
@@ -29,9 +29,11 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
+  alwaysFlattenAnimatedStyles: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
+  deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
@@ -58,6 +60,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
+  enableAndroidTextMeasurementOptimizations: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
@@ -114,6 +117,11 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
 
 /**
+ * Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.
+ */
+export const alwaysFlattenAnimatedStyles: Getter<boolean> = createJavaScriptFlagGetter('alwaysFlattenAnimatedStyles', false);
+
+/**
  * Enables an experimental flush-queue debouncing in Animated.js.
  */
 export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldDebounceQueueFlush', false);
@@ -127,6 +135,11 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
  */
 export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('avoidStateUpdateInAnimatedPropsMemo', true);
+
+/**
+ * Use the deferred cell render update mechanism for focus change in FlatList.
+ */
+export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaScriptFlagGetter('deferFlatListFocusChangeRenderUpdate', false);
 
 /**
  * Disables InteractionManager and replaces its scheduler with `setImmediate`.
@@ -218,6 +231,10 @@ export const enableAccessibilityOrder: Getter<boolean> = createNativeFlagGetter(
  * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
+/**
+ * Enables various optimizations throughout the path of measuring text on Android.
+ */
+export const enableAndroidTextMeasurementOptimizations: Getter<boolean> = createNativeFlagGetter('enableAndroidTextMeasurementOptimizations', false);
 /**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
  */

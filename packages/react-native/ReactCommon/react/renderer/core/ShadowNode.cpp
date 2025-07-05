@@ -237,7 +237,7 @@ void ShadowNode::sealRecursive() const {
 
 #pragma mark - Mutating Methods
 
-void ShadowNode::appendChild(const ShadowNode::Shared& child) {
+void ShadowNode::appendChild(const std::shared_ptr<const ShadowNode>& child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
@@ -250,7 +250,7 @@ void ShadowNode::appendChild(const ShadowNode::Shared& child) {
 
 void ShadowNode::replaceChild(
     const ShadowNode& oldChild,
-    const ShadowNode::Shared& newChild,
+    const std::shared_ptr<const ShadowNode>& newChild,
     size_t suggestedIndex) {
   ensureUnsealed();
 
@@ -330,14 +330,14 @@ void ShadowNode::setRuntimeShadowNodeReference(
 }
 
 void ShadowNode::updateRuntimeShadowNodeReference(
-    const Shared& destinationShadowNode) const {
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode) const {
   if (auto reference = runtimeShadowNodeReference_.lock()) {
     reference->shadowNode = destinationShadowNode;
   }
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
-    const Shared& destinationShadowNode) const {
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode) const {
   destinationShadowNode->runtimeShadowNodeReference_ =
       runtimeShadowNodeReference_;
 
@@ -347,7 +347,7 @@ void ShadowNode::transferRuntimeShadowNodeReference(
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
-    const Shared& destinationShadowNode,
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
   if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
        useRuntimeShadowNodeReferenceUpdateOnThread) &&

@@ -84,7 +84,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
         .count();
   });
 
-  auto allNodes = std::vector<ShadowNode::Shared>{};
+  auto allNodes = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();

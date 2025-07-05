@@ -14,6 +14,7 @@ import android.os.Build
 import android.text.BoringLayout
 import android.text.Layout
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.StaticLayout
@@ -29,6 +30,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -310,6 +312,156 @@ internal object TextLayoutManager {
     }
   }
 
+  private class FragmentAttributes(
+      val props: TextAttributeProps,
+      val length: Int,
+      val reactTag: Int,
+      val isAttachment: Boolean,
+      val width: Double,
+      val height: Double
+  )
+
+  private fun buildSpannableFromFragmentsOptimized(
+      context: Context,
+      fragments: MapBuffer
+  ): Spannable {
+    val text = StringBuilder()
+    val parsedFragments = ArrayList<FragmentAttributes>(fragments.count)
+
+    for (i in 0 until fragments.count) {
+      val fragment = fragments.getMapBuffer(i)
+      val props = TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES))
+      val fragmentText = TextTransform.apply(fragment.getString(FR_KEY_STRING), props.textTransform)
+      text.append(fragmentText)
+      parsedFragments.add(
+          FragmentAttributes(
+              props = props,
+              length = fragmentText.length,
+              reactTag =
+                  if (fragment.contains(FR_KEY_REACT_TAG)) {
+                    fragment.getInt(FR_KEY_REACT_TAG)
+                  } else {
+                    View.NO_ID
+                  },
+              isAttachment =
+                  fragment.contains(FR_KEY_IS_ATTACHMENT) &&
+                      fragment.getBoolean(FR_KEY_IS_ATTACHMENT),
+              width =
+                  if (fragment.contains(FR_KEY_WIDTH)) {
+                    fragment.getDouble(FR_KEY_WIDTH)
+                  } else {
+                    Double.NaN
+                  },
+              height =
+                  if (fragment.contains(FR_KEY_HEIGHT)) {
+                    fragment.getDouble(FR_KEY_HEIGHT)
+                  } else {
+                    Double.NaN
+                  }))
+    }
+
+    val spannable = SpannableString(text)
+
+    var start = 0
+    for (fragment in parsedFragments) {
+      val end = start + fragment.length
+      val spanFlags =
+          if (start == 0) Spannable.SPAN_INCLUSIVE_INCLUSIVE else Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+
+      if (fragment.isAttachment) {
+        spannable.setSpan(
+            TextInlineViewPlaceholderSpan(
+                fragment.reactTag,
+                PixelUtil.toPixelFromSP(fragment.width).toInt(),
+                PixelUtil.toPixelFromSP(fragment.height).toInt()),
+            start,
+            end,
+            spanFlags)
+      } else {
+        val roleIsLink =
+            if (fragment.props.role != null)
+                (fragment.props.role == ReactAccessibilityDelegate.Role.LINK)
+            else
+                (fragment.props.accessibilityRole ==
+                    ReactAccessibilityDelegate.AccessibilityRole.LINK)
+
+        if (roleIsLink) {
+          spannable.setSpan(ReactClickableSpan(fragment.reactTag), start, end, spanFlags)
+        }
+
+        if (fragment.props.isColorSet) {
+          spannable.setSpan(ReactForegroundColorSpan(fragment.props.color), start, end, spanFlags)
+        }
+
+        if (fragment.props.isBackgroundColorSet) {
+          spannable.setSpan(
+              ReactBackgroundColorSpan(fragment.props.backgroundColor), start, end, spanFlags)
+        }
+
+        if (!fragment.props.opacity.isNaN()) {
+          spannable.setSpan(ReactOpacitySpan(fragment.props.opacity), start, end, spanFlags)
+        }
+
+        if (!fragment.props.letterSpacing.isNaN()) {
+          spannable.setSpan(
+              CustomLetterSpacingSpan(fragment.props.letterSpacing), start, end, spanFlags)
+        }
+
+        // TODO: Should this be using effectiveFontSize instead of fontSize?
+        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.mFontSize), start, end, spanFlags)
+
+        if (fragment.props.fontStyle != ReactConstants.UNSET ||
+            fragment.props.fontWeight != ReactConstants.UNSET ||
+            fragment.props.fontFamily != null) {
+          spannable.setSpan(
+              CustomStyleSpan(
+                  fragment.props.fontStyle,
+                  fragment.props.fontWeight,
+                  fragment.props.fontFeatureSettings,
+                  fragment.props.fontFamily,
+                  context.assets),
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (fragment.props.isUnderlineTextDecorationSet) {
+          spannable.setSpan(ReactUnderlineSpan(), start, end, spanFlags)
+        }
+
+        if (fragment.props.isLineThroughTextDecorationSet) {
+          spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
+        }
+
+        if ((fragment.props.textShadowOffsetDx != 0f ||
+            fragment.props.textShadowOffsetDy != 0f ||
+            fragment.props.textShadowRadius != 0f) &&
+            Color.alpha(fragment.props.textShadowColor) != 0) {
+          spannable.setSpan(
+              ShadowStyleSpan(
+                  fragment.props.textShadowOffsetDx,
+                  fragment.props.textShadowOffsetDy,
+                  fragment.props.textShadowRadius,
+                  fragment.props.textShadowColor),
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (!fragment.props.effectiveLineHeight.isNaN()) {
+          spannable.setSpan(
+              CustomLineHeightSpan(fragment.props.effectiveLineHeight), start, end, spanFlags)
+        }
+
+        spannable.setSpan(ReactTagSpan(fragment.reactTag), start, end, spanFlags)
+      }
+
+      start = end
+    }
+
+    return spannable
+  }
+
   fun getOrCreateSpannableForText(
       context: Context,
       attributedString: MapBuffer,
@@ -333,27 +485,36 @@ internal object TextLayoutManager {
       attributedString: MapBuffer,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
   ): Spannable {
-    val sb = SpannableStringBuilder()
+    if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+      val spannable =
+          buildSpannableFromFragmentsOptimized(
+              context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS))
 
-    // The [SpannableStringBuilder] implementation require setSpan operation to be called
-    // up-to-bottom, otherwise all the spannables that are within the region for which one may set
-    // a new spannable will be wiped out
-    val ops: MutableList<SetSpanOperation> = ArrayList()
+      reactTextViewManagerCallback?.onPostProcessSpannable(spannable)
+      return spannable
+    } else {
+      val sb = SpannableStringBuilder()
 
-    buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops)
+      // The [SpannableStringBuilder] implementation require setSpan operation to be called
+      // up-to-bottom, otherwise all the spannables that are within the region for which one may set
+      // a new spannable will be wiped out
+      val ops: MutableList<SetSpanOperation> = ArrayList()
 
-    // TODO T31905686: add support for inline Images
-    // While setting the Spans on the final text, we also check whether any of them are images.
-    for (priorityIndex in ops.indices) {
-      val op = ops[ops.size - priorityIndex - 1]
+      buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops)
 
-      // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priorityIndex} DOES matter.
-      op.execute(sb, priorityIndex)
+      // TODO T31905686: add support for inline Images
+      // While setting the Spans on the final text, we also check whether any of them are images.
+      for (priorityIndex in ops.indices) {
+        val op = ops[ops.size - priorityIndex - 1]
+
+        // Actual order of calling {@code execute} does NOT matter,
+        // but the {@code priorityIndex} DOES matter.
+        op.execute(sb, priorityIndex)
+      }
+
+      reactTextViewManagerCallback?.onPostProcessSpannable(sb)
+      return sb
     }
-
-    reactTextViewManagerCallback?.onPostProcessSpannable(sb)
-    return sb
   }
 
   private fun createLayout(

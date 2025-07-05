@@ -198,7 +198,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
   }
 
   EventLog dispatchPointerEvent(
-      const ShadowNode::Shared& target,
+      const std::shared_ptr<const ShadowNode>& target,
       std::string eventName,
       PointerEvent eventPayload) {
     EventLog eventLog;
