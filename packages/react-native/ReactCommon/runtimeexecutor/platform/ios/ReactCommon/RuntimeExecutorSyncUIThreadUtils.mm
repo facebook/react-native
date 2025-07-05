@@ -220,6 +220,8 @@ void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   }
 }
 
+// @nocommit: Are oss tests fixed?
+
 /**
  * This method is resilient to multiple javascript threads.
  * This can happen when multiple react instances interleave.
