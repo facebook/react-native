@@ -6,6 +6,7 @@ javapoet = "1.13.0"
 junit = "4.13.2"
 kotlin = "2.1.20"
 assertj = "3.25.1"
+ktfmt = "0.22.0"
 
 [libraries]
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -18,3 +19,4 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
