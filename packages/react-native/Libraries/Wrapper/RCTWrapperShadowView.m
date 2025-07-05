@@ -7,6 +7,8 @@
 
 #import "RCTWrapperShadowView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
@@ -132,3 +134,5 @@ static YGSize RCTWrapperShadowViewMeasure(
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

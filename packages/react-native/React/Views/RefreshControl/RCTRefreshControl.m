@@ -8,6 +8,8 @@
 #import "RCTRefreshControl.h"
 #import "RCTRefreshableProtocol.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTUtils.h"
 
 @interface RCTRefreshControl () <RCTRefreshableProtocol>
@@ -222,3 +224,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

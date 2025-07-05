@@ -7,6 +7,10 @@
 
 #import "RCTBaseTextViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTVirtualTextViewManager : RCTBaseTextViewManager
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
