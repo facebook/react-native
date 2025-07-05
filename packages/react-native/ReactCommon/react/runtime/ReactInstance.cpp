@@ -200,7 +200,7 @@ namespace {
 // Copied from JSIExecutor.cpp
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
 std::string simpleBasename(const std::string& path) {
-  size_t pos = path.rfind("/");
+  size_t pos = path.rfind('/');
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
 
