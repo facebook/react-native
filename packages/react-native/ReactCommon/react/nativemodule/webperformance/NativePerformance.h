@@ -101,7 +101,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       jsi::Runtime& rt,
       std::string name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
+      std::optional<HighResTimeStamp> endTime,
       std::optional<HighResDuration> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
@@ -184,6 +184,13 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
+
+#pragma mark - Testing
+
+  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
+
+ private:
+  std::optional<HighResTimeStamp> forcedCurrentTimeStamp_;
 };
 
 } // namespace facebook::react
