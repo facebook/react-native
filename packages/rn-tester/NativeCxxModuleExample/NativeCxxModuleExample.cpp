@@ -177,6 +177,12 @@ void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
   emitOnEvent(NativeCxxModuleExampleEnumNone::NA);
 }
 
+AsyncPromise<> NativeCxxModuleExample::voidPromise(jsi::Runtime& rt) {
+  AsyncPromise<> promise(rt, jsInvoker_);
+  promise.resolve();
+  return promise;
+}
+
 void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
   menuItem.onPress("value", true);
   if (menuItem.items) {
@@ -213,8 +219,7 @@ ObjectStruct NativeCxxModuleExample::getObjectThrows(
   throw std::runtime_error("Intentional exception from Cxx getObjectThrows");
 };
 
-AsyncPromise<jsi::Value> NativeCxxModuleExample::promiseThrows(
-    jsi::Runtime& rt) {
+AsyncPromise<> NativeCxxModuleExample::promiseThrows(jsi::Runtime& rt) {
   throw std::runtime_error("Intentional exception from Cxx promiseThrows");
 };
 
@@ -231,12 +236,11 @@ ObjectStruct NativeCxxModuleExample::getObjectAssert(
   return {};
 };
 
-AsyncPromise<jsi::Value> NativeCxxModuleExample::promiseAssert(
-    jsi::Runtime& rt) {
+AsyncPromise<> NativeCxxModuleExample::promiseAssert(jsi::Runtime& rt) {
   react_native_assert(false && "Intentional assert from Cxx promiseAssert");
 
   // Asserts disabled
-  auto promise = AsyncPromise<jsi::Value>(rt, jsInvoker_);
+  auto promise = AsyncPromise<>(rt, jsInvoker_);
   promise.reject("Asserts disabled");
   return promise;
 };
