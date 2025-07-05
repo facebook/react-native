@@ -43,7 +43,7 @@ static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
     }
   }
 
-  auto newChildren = ShadowNode::ListOfShared{};
+  auto newChildren = std::vector<std::shared_ptr<const ShadowNode>>{};
   if (!shadowNode.getChildren().empty()) {
     auto index = size_t{0};
     for (const auto& childNode : shadowNode.getChildren()) {
@@ -66,9 +66,11 @@ static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
-                               std::move(newChildren))
-                         : ShadowNodeFragment::childrenPlaceholder(),
+      areChildrenChanged
+          ? std::make_shared<
+                const std::vector<std::shared_ptr<const ShadowNode>>>(
+                std::move(newChildren))
+          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }
@@ -102,7 +104,7 @@ static std::shared_ptr<ShadowNode> progressState(
 
   auto& children = shadowNode.getChildren();
   auto& baseChildren = baseShadowNode.getChildren();
-  auto newChildren = ShadowNode::ListOfShared{};
+  auto newChildren = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   auto childrenSize = children.size();
   auto baseChildrenSize = baseChildren.size();
@@ -153,9 +155,11 @@ static std::shared_ptr<ShadowNode> progressState(
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
-                               std::move(newChildren))
-                         : ShadowNodeFragment::childrenPlaceholder(),
+      areChildrenChanged
+          ? std::make_shared<
+                const std::vector<std::shared_ptr<const ShadowNode>>>(
+                std::move(newChildren))
+          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }

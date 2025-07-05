@@ -41,10 +41,15 @@ class ShadowNode : public Sealable,
   // TODO(T223558094): delete this in the next version.
   using Unshared [[deprecated("Use std::shared_ptr<ShadowNode> instead")]] =
       std::shared_ptr<ShadowNode>;
-  using ListOfShared = std::vector<std::shared_ptr<const ShadowNode>>;
+  // TODO(T223558094): delete this in the next version.
+  using ListOfShared [[deprecated(
+      "Use std::vector<std::shared_ptr<const ShadowNode>> instead")]] =
+      std::vector<std::shared_ptr<const ShadowNode>>;
   using ListOfWeak = std::vector<std::weak_ptr<const ShadowNode>>;
-  using SharedListOfShared = std::shared_ptr<const ListOfShared>;
-  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+  using SharedListOfShared =
+      std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
+  using UnsharedListOfShared =
+      std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
   using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
 
   using AncestorList = std::vector<std::pair<
@@ -145,7 +150,7 @@ class ShadowNode : public Sealable,
   ShadowNodeTraits getTraits() const;
 
   const Props::Shared& getProps() const;
-  const ListOfShared& getChildren() const;
+  const std::vector<std::shared_ptr<const ShadowNode>>& getChildren() const;
   const SharedEventEmitter& getEventEmitter() const;
   jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
   Tag getTag() const;

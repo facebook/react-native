@@ -413,8 +413,9 @@ jsi::Value UIManagerBinding::get(
            const jsi::Value& /*thisValue*/,
            const jsi::Value* /*arguments*/,
            size_t /*count*/) -> jsi::Value {
-          auto shadowNodeList = std::make_shared<ShadowNode::ListOfShared>(
-              ShadowNode::ListOfShared({}));
+          auto shadowNodeList =
+              std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                  std::vector<std::shared_ptr<const ShadowNode>>({}));
           return valueFromShadowNodeList(runtime, shadowNodeList);
         });
   }

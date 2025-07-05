@@ -60,7 +60,8 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     auto jsArray = std::move(object).asArray(runtime);
     size_t jsArrayLen = jsArray.length(runtime);
     if (jsArrayLen > 0) {
-      auto shadowNodeArray = std::make_shared<ShadowNode::ListOfShared>();
+      auto shadowNodeArray =
+          std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
       shadowNodeArray->reserve(jsArrayLen);
 
       for (size_t i = 0; i < jsArrayLen; i++) {
@@ -71,8 +72,8 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
       return shadowNodeArray;
     } else {
       // TODO: return ShadowNode::emptySharedShadowNodeSharedList()
-      return std::make_shared<ShadowNode::ListOfShared>(
-          ShadowNode::ListOfShared({}));
+      return std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+          std::vector<std::shared_ptr<const ShadowNode>>({}));
       ;
     }
   } else {
@@ -95,7 +96,8 @@ inline static jsi::Value valueFromShadowNodeList(
 
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
     const ShadowNode::UnsharedListOfWeak& weakShadowNodeList) {
-  auto result = std::make_shared<ShadowNode::ListOfShared>();
+  auto result =
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   for (const auto& weakShadowNode : *weakShadowNodeList) {
     auto sharedShadowNode = weakShadowNode.lock();
     if (!sharedShadowNode) {
