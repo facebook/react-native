@@ -18,7 +18,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -33,10 +32,13 @@ import java.util.Collection;
  * delegate to the react instance. This subclass implements those methods, by delegating to the
  * CatalystInstance. If you need to create a ReactContext within an "bridge context", please create
  * BridgeReactContext.
+ *
+ * @deprecated This class is deprecated in the New Architecture and will be replaced by {@link
+ *     com.facebook.react.runtime.BridgelessReactContext}
  */
-@DeprecatedInNewArchitecture
 @VisibleForTesting
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated
 public class BridgeReactContext extends ReactApplicationContext {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
@@ -268,16 +270,16 @@ public class BridgeReactContext extends ReactApplicationContext {
     return null;
   }
 
-  @DeprecatedInNewArchitecture(
-      message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
-              + " encouraged usage.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *
    * @return The UIManager when CatalystInstance is active.
+   * @deprecated Do not use this method. Instead use {@link
+   *     com.facebook.react.uimanager.UIManagerHelper} method {@code getUIManager} to get the
+   *     UIManager instance from the current ReactContext.
    */
   @Override
+  @Deprecated
   public @Nullable UIManager getFabricUIManager() {
     return mCatalystInstance.getFabricUIManager();
   }

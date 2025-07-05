@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil.runOnUiThread
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
 import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -26,12 +25,17 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
  * A delegate for handling React Application support. This delegate is unaware whether it is used in
  * an [Activity] or a [android.app.Fragment].
  */
+@Suppress("DEPRECATION")
 public open class ReactDelegate {
   private val activity: Activity
   private var internalReactRootView: ReactRootView? = null
   private val mainComponentName: String?
   private var launchOptions: Bundle?
   private var doubleTapReloadRecognizer: DoubleTapReloadRecognizer?
+
+  @Deprecated(
+      "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
+      ReplaceWith("reactHost"))
   private var reactNativeHost: ReactNativeHost? = null
   public var reactHost: ReactHost? = null
     private set
@@ -380,7 +384,8 @@ public open class ReactDelegate {
     return false
   }
 
-  @DeprecatedInNewArchitecture(message = "Use reactHost")
+  @Deprecated(
+      "Do not access [ReactInstanceManager] directly. This class is going away in the New Architecture. You should use [ReactHost] instead.")
   public fun getReactInstanceManager(): ReactInstanceManager {
     val nonNullReactNativeHost =
         checkNotNull(reactNativeHost) {
