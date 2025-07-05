@@ -30,7 +30,7 @@ type PlatformConstants = {
 interface PlatformStatic {
   isTV: boolean;
   isTesting: boolean;
-  Version: number | string;
+  Version: number | string | undefined;
   constants: PlatformConstants;
 
   /**
@@ -94,6 +94,7 @@ interface PlatformWindowsOSStatic extends PlatformStatic {
 
 interface PlatformWebStatic extends PlatformStatic {
   OS: 'web';
+  Version: undefined;
 }
 
 export type Platform =
