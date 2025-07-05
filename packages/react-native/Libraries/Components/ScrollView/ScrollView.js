@@ -1892,7 +1892,14 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
 ): RefForwarder<TNativeInstance, TPublicInstance> {
   const state: RefForwarder<TNativeInstance, TPublicInstance> = {
     getForwardingRef: memoize(forwardedRef => {
+      let cleanup: ?() => void = null;
+
       return (nativeInstance: TNativeInstance | null): void => {
+        if (cleanup) {
+          cleanup();
+          cleanup = null;
+        }
+
         const publicInstance =
           nativeInstance == null ? null : mutator(nativeInstance);
 
@@ -1901,7 +1908,13 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
 
         if (forwardedRef != null) {
           if (typeof forwardedRef === 'function') {
-            forwardedRef(publicInstance);
+            const result = forwardedRef(publicInstance);
+            if (typeof result === 'function') {
+              cleanup = () => {
+                // $FlowFixMe[incompatible-use]
+                result();
+              };
+            }
           } else {
             forwardedRef.current = publicInstance;
           }
