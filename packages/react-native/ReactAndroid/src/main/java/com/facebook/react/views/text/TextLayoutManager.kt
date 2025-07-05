@@ -1102,7 +1102,8 @@ internal object TextLayoutManager {
       // There's a bug on Samsung devices where calling getPrimaryHorizontal on
       // the last offset in the layout will result in an endless loop. Work around
       // this bug by avoiding getPrimaryHorizontal in that case.
-      if (start == text.length - 1) {
+      if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
+          start == text.length - 1) {
         val endsWithNewLine = text.length > 0 && text[layout.getLineEnd(line) - 1] == '\n'
         val lineWidth = if (endsWithNewLine) layout.getLineMax(line) else layout.getLineWidth(line)
         placeholderLeftPosition =
@@ -1127,7 +1128,9 @@ internal object TextLayoutManager {
         placeholderLeftPosition =
             if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
             else layout.getSecondaryHorizontal(start)
-        if (isRtlParagraph && !isRtlChar) {
+        if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
+            isRtlParagraph &&
+            !isRtlChar) {
           // Adjust `placeholderLeftPosition` to work around an Android bug.
           // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
           // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
