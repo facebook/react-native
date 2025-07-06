@@ -228,7 +228,7 @@ internal object TextLayoutManager {
           TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES))
 
       sb.append(
-          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform))
+          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.textTransform))
 
       val end = sb.length
       val reactTag =
@@ -243,21 +243,31 @@ internal object TextLayoutManager {
                 TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt())))
       } else if (end >= start) {
         val roleIsLink =
-            if (textAttributes.mRole != null)
-                (textAttributes.mRole == ReactAccessibilityDelegate.Role.LINK)
+            if (textAttributes.role != null)
+                (textAttributes.role == ReactAccessibilityDelegate.Role.LINK)
             else
-                (textAttributes.mAccessibilityRole ==
+                (textAttributes.accessibilityRole ==
                     ReactAccessibilityDelegate.AccessibilityRole.LINK)
         if (roleIsLink) {
           ops.add(SetSpanOperation(start, end, ReactClickableSpan(reactTag)))
         }
-        if (textAttributes.mIsColorSet) {
-          ops.add(SetSpanOperation(start, end, ReactForegroundColorSpan(textAttributes.mColor)))
+        if (textAttributes.isColorSet) {
+          textAttributes.color?.let { ReactForegroundColorSpan(it) }?.let {
+            SetSpanOperation(start, end,
+              it
+            )
+          }?.let { ops.add(it) }
         }
-        if (textAttributes.mIsBackgroundColorSet) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, ReactBackgroundColorSpan(textAttributes.mBackgroundColor)))
+        if (textAttributes.isBackgroundColorSet) {
+          textAttributes.backgroundColor?.let { ReactBackgroundColorSpan(it) }?.let {
+            SetSpanOperation(
+              start, end, it
+            )
+          }?.let {
+            ops.add(
+              it
+            )
+          }
         }
         if (!textAttributes.opacity.isNaN()) {
           ops.add(SetSpanOperation(start, end, ReactOpacitySpan(textAttributes.opacity)))
@@ -266,40 +276,40 @@ internal object TextLayoutManager {
           ops.add(
               SetSpanOperation(start, end, CustomLetterSpacingSpan(textAttributes.letterSpacing)))
         }
-        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.mFontSize)))
-        if (textAttributes.mFontStyle != ReactConstants.UNSET ||
-            textAttributes.mFontWeight != ReactConstants.UNSET ||
-            textAttributes.mFontFamily != null) {
+        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.fontSize)))
+        if (textAttributes.fontStyle != ReactConstants.UNSET ||
+            textAttributes.fontWeight != ReactConstants.UNSET ||
+            textAttributes.fontFamily != null) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   CustomStyleSpan(
-                      textAttributes.mFontStyle,
-                      textAttributes.mFontWeight,
-                      textAttributes.mFontFeatureSettings,
-                      textAttributes.mFontFamily,
+                      textAttributes.fontStyle,
+                      textAttributes.fontWeight,
+                      textAttributes.fontFeatureSettings,
+                      textAttributes.fontFamily,
                       context.assets)))
         }
-        if (textAttributes.mIsUnderlineTextDecorationSet) {
+        if (textAttributes.isUnderlineTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
         }
-        if (textAttributes.mIsLineThroughTextDecorationSet) {
+        if (textAttributes.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
         }
-        if ((textAttributes.mTextShadowOffsetDx != 0f ||
-            textAttributes.mTextShadowOffsetDy != 0f ||
-            textAttributes.mTextShadowRadius != 0f) &&
-            Color.alpha(textAttributes.mTextShadowColor) != 0) {
+        if ((textAttributes.textShadowOffsetDx != 0f ||
+            textAttributes.textShadowOffsetDy != 0f ||
+            textAttributes.textShadowRadius != 0f) &&
+            Color.alpha(textAttributes.textShadowColor) != 0) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   ShadowStyleSpan(
-                      textAttributes.mTextShadowOffsetDx,
-                      textAttributes.mTextShadowOffsetDy,
-                      textAttributes.mTextShadowRadius,
-                      textAttributes.mTextShadowColor)))
+                      textAttributes.textShadowOffsetDx,
+                      textAttributes.textShadowOffsetDy,
+                      textAttributes.textShadowRadius,
+                      textAttributes.textShadowColor)))
         }
         if (!textAttributes.effectiveLineHeight.isNaN()) {
           ops.add(
@@ -390,12 +400,12 @@ internal object TextLayoutManager {
         }
 
         if (fragment.props.isColorSet) {
-          spannable.setSpan(ReactForegroundColorSpan(fragment.props.color), start, end, spanFlags)
+          spannable.setSpan(fragment.props.color?.let { ReactForegroundColorSpan(it) }, start, end, spanFlags)
         }
 
         if (fragment.props.isBackgroundColorSet) {
           spannable.setSpan(
-              ReactBackgroundColorSpan(fragment.props.backgroundColor), start, end, spanFlags)
+            fragment.props.backgroundColor?.let { ReactBackgroundColorSpan(it) }, start, end, spanFlags)
         }
 
         if (!fragment.props.opacity.isNaN()) {
@@ -408,7 +418,7 @@ internal object TextLayoutManager {
         }
 
         // TODO: Should this be using effectiveFontSize instead of fontSize?
-        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.mFontSize), start, end, spanFlags)
+        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.fontSize), start, end, spanFlags)
 
         if (fragment.props.fontStyle != ReactConstants.UNSET ||
             fragment.props.fontWeight != ReactConstants.UNSET ||
@@ -583,8 +593,8 @@ internal object TextLayoutManager {
       baseTextAttributes: TextAttributeProps,
       context: Context
   ) {
-    if (baseTextAttributes.effectiveFontSize != ReactConstants.UNSET) {
-      paint.textSize = baseTextAttributes.effectiveFontSize.toFloat()
+    if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
+      paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
 
     if (baseTextAttributes.fontStyle != ReactConstants.UNSET ||
