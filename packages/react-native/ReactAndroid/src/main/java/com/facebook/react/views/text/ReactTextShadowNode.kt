@@ -184,7 +184,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
     val unconstrainedWidth = widthMode == YogaMeasureMode.UNDEFINED || width < 0
 
     val alignment =
-        when (textAlign) {
+        when (_textAlign) {
           Gravity.LEFT -> Layout.Alignment.ALIGN_NORMAL
           Gravity.RIGHT -> Layout.Alignment.ALIGN_OPPOSITE
           Gravity.CENTER_HORIZONTAL -> Layout.Alignment.ALIGN_CENTER
@@ -255,7 +255,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
   }
 
   // Return text alignment according to LTR or RTL style
-  override val textAlign: Int
+  private val _textAlign: Int
     get() {
       var textAlign = super.textAlign
       if (layoutDirection == YogaDirection.RTL) {
@@ -305,7 +305,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
             getPadding(Spacing.TOP),
             getPadding(Spacing.END),
             getPadding(Spacing.BOTTOM),
-            textAlign,
+            _textAlign,
             textBreakStrategy,
             justificationMode)
     uiViewOperationQueue.enqueueUpdateExtraData(reactTag, reactTextUpdate)

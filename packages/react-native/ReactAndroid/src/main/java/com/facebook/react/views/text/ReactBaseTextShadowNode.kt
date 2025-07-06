@@ -65,8 +65,9 @@ import com.facebook.yoga.YogaUnit
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public abstract class ReactBaseTextShadowNode
 @JvmOverloads
-public constructor(protected var reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
-    LayoutShadowNode() {
+public constructor(
+    protected var reactTextViewManagerCallback: ReactTextViewManagerCallback? = null
+) : LayoutShadowNode() {
   // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
   protected fun spannedFromShadowNode(
       textShadowNode: ReactBaseTextShadowNode,
@@ -97,7 +98,7 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0)
 
     textShadowNode.containsImages = false
-    textShadowNode._inlineViews = inlineViews
+    textShadowNode.inlineViews = inlineViews
     var heightOfTallestInlineViewOrImage = Float.NaN
 
     // While setting the Spans on the final text, we also check whether any of them are inline views
@@ -148,18 +149,6 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
     return sb
   }
 
-  private var _textAlign: Int = Gravity.NO_GRAVITY
-  private var _numberOfLines: Int = ReactConstants.UNSET
-
-  private var _fontStyle: Int = ReactConstants.UNSET
-  private var _fontFamily: String? = null
-  private var _includeFontPadding: Boolean = true
-  private var _minimumFontScale: Float = 0f
-  private var _textShadowRadius: Float = 0f
-  private var _textShadowColor: Int = DEFAULT_TEXT_SHADOW_COLOR
-  // Only nullable if `supportsInlineViews` is `false`.
-  private var _inlineViews: Map<Int, ReactShadowNode<*>>? = null
-
   protected var textAttributes: TextAttributes = TextAttributes()
   protected var isColorSet: Boolean = false
   protected var color: Int = 0
@@ -167,34 +156,34 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
   protected var backgroundColor: Int = 0
   protected var accessibilityRole: AccessibilityRole? = null
   protected var role: ReactAccessibilityDelegate.Role? = null
-  protected val numberOfLines: Int
-    get() = _numberOfLines
+  protected var numberOfLines: Int = ReactConstants.UNSET
+    private set
 
   protected var textBreakStrategy: Int = Layout.BREAK_STRATEGY_HIGH_QUALITY
   protected var hyphenationFrequency: Int = Layout.HYPHENATION_FREQUENCY_NONE
   protected var justificationMode: Int =
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else Layout.JUSTIFICATION_MODE_NONE
 
-  protected open val textAlign: Int
-    // Return text alignment according to LTR or RTL style
+  // Return text alignment according to LTR or RTL style
+  protected var textAlign: Int = Gravity.NO_GRAVITY
     get() {
-      var textAlign = _textAlign
-      if (layoutDirection == YogaDirection.RTL) {
-        if (textAlign == Gravity.RIGHT) {
-          textAlign = Gravity.LEFT
-        } else if (textAlign == Gravity.LEFT) {
-          textAlign = Gravity.RIGHT
+      return if (layoutDirection == YogaDirection.RTL) {
+        when (field) {
+          Gravity.RIGHT -> Gravity.LEFT
+          Gravity.LEFT -> Gravity.RIGHT
+          else -> field
         }
+      } else {
+        field
       }
-      return textAlign
     }
+    private set
 
   /**
    * [fontStyle] can be [Typeface.NORMAL] or [Typeface.ITALIC]. [fontWeight] can be
    * [Typeface.NORMAL] or [Typeface.BOLD].
    */
-  protected val fontStyle: Int
-    get() = _fontStyle
+  protected var fontStyle: Int = ReactConstants.UNSET
 
   protected var fontWeight: Int = ReactConstants.UNSET
 
@@ -218,35 +207,37 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
    * <Text style={{fontFamily="serif"}}>Bold Text</Text>
    * </pre> *
    */
-  protected val fontFamily: String?
-    get() = _fontFamily
+  protected var fontFamily: String? = null
+    private set
 
   /** @see [android.graphics.Paint.setFontFeatureSettings] */
   protected var fontFeatureSettings: String? = null
 
-  protected val includeFontPadding: Boolean
-    get() = _includeFontPadding
+  protected var includeFontPadding: Boolean = true
+    private set
+
   protected var adjustsFontSizeToFit: Boolean = false
-  protected val minimumFontScale: Float
-    get() = _minimumFontScale
+  protected var minimumFontScale: Float = 0f
+    private set
 
   protected var textShadowOffsetDx: Float = 0f
   protected var textShadowOffsetDy: Float = 0f
-  protected val textShadowRadius: Float
-    get() = _textShadowRadius
-  protected val textShadowColor: Int
-    get() = _textShadowColor
+  protected var textShadowRadius: Float = 0f
+    private set
+
+  protected var textShadowColor: Int = DEFAULT_TEXT_SHADOW_COLOR
+    private set
 
   protected var isUnderlineTextDecorationSet: Boolean = false
   protected var isLineThroughTextDecorationSet: Boolean = false
   protected var containsImages: Boolean = false
 
-  protected val inlineViews: Map<Int, ReactShadowNode<*>>?
-    get() = _inlineViews
+  // Only nullable if `supportsInlineViews` is `false`.
+  protected var inlineViews: Map<Int, ReactShadowNode<*>>? = null
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = ReactConstants.UNSET)
   public fun setNumberOfLines(numberOfLines: Int) {
-    _numberOfLines = if (numberOfLines == 0) ReactConstants.UNSET else numberOfLines
+    this.numberOfLines = if (numberOfLines == 0) ReactConstants.UNSET else numberOfLines
     markUpdated()
   }
 
@@ -284,24 +275,24 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         justificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD
       }
-      _textAlign = Gravity.LEFT
+      this.textAlign = Gravity.LEFT
     } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         justificationMode = Layout.JUSTIFICATION_MODE_NONE
       }
 
-      if (textAlign == null || "auto" == textAlign) {
-        _textAlign = Gravity.NO_GRAVITY
-      } else if ("left" == textAlign) {
-        _textAlign = Gravity.LEFT
-      } else if ("right" == textAlign) {
-        _textAlign = Gravity.RIGHT
-      } else if ("center" == textAlign) {
-        _textAlign = Gravity.CENTER_HORIZONTAL
-      } else {
-        FLog.w(ReactConstants.TAG, "Invalid textAlign: $textAlign")
-        _textAlign = Gravity.NO_GRAVITY
-      }
+      this.textAlign =
+          when (textAlign) {
+            null,
+            "auto" -> Gravity.NO_GRAVITY
+            "left" -> Gravity.LEFT
+            "right" -> Gravity.RIGHT
+            "center" -> Gravity.CENTER_HORIZONTAL
+            else -> {
+              FLog.w(ReactConstants.TAG, "Invalid textAlign: $textAlign")
+              Gravity.NO_GRAVITY
+            }
+          }
     }
     markUpdated()
   }
@@ -314,9 +305,9 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public fun setColor(color: Int?) {
-    if (color != null) {
+    color?.let {
       isColorSet = true
-      this.color = color
+      this.color = it
     }
     markUpdated()
   }
@@ -328,9 +319,9 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
     // nodes get mapped to native views and native views get their background colors get set via
     // [BaseViewManager].
     if (isVirtual) {
-      if (color != null) {
+      color?.let {
         isBackgroundColorSet = true
-        backgroundColor = color
+        backgroundColor = it
       }
       markUpdated()
     }
@@ -354,7 +345,7 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public fun setFontFamily(fontFamily: String?) {
-    _fontFamily = fontFamily
+    this.fontFamily = fontFamily
     markUpdated()
   }
 
@@ -379,16 +370,16 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = ViewProps.FONT_STYLE)
   public fun setFontStyle(fontStyleString: String?) {
-    val fontStyle = parseFontStyle(fontStyleString)
-    if (fontStyle != _fontStyle) {
-      _fontStyle = fontStyle
+    val parsedFontStyle = parseFontStyle(fontStyleString)
+    if (parsedFontStyle != fontStyle) {
+      fontStyle = parsedFontStyle
       markUpdated()
     }
   }
 
   @ReactProp(name = ViewProps.INCLUDE_FONT_PADDING, defaultBoolean = true)
   public fun setIncludeFontPadding(includepad: Boolean) {
-    _includeFontPadding = includepad
+    includeFontPadding = includepad
   }
 
   @ReactProp(name = ViewProps.TEXT_DECORATION_LINE)
@@ -413,17 +404,17 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = ViewProps.TEXT_BREAK_STRATEGY)
   public open fun setTextBreakStrategy(textBreakStrategy: String?) {
-    if (textBreakStrategy == null || "highQuality" == textBreakStrategy) {
-      this.textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
-    } else if ("simple" == textBreakStrategy) {
-      this.textBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
-    } else if ("balanced" == textBreakStrategy) {
-      this.textBreakStrategy = Layout.BREAK_STRATEGY_BALANCED
-    } else {
-      FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: $textBreakStrategy")
-      this.textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
-    }
-
+    this.textBreakStrategy =
+        when (textBreakStrategy) {
+          null,
+          "highQuality" -> Layout.BREAK_STRATEGY_HIGH_QUALITY
+          "simple" -> Layout.BREAK_STRATEGY_SIMPLE
+          "balanced" -> Layout.BREAK_STRATEGY_BALANCED
+          else -> {
+            FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: $textBreakStrategy")
+            Layout.BREAK_STRATEGY_HIGH_QUALITY
+          }
+        }
     markUpdated()
   }
 
@@ -432,14 +423,12 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
     textShadowOffsetDx = 0f
     textShadowOffsetDy = 0f
 
-    if (offsetMap != null) {
-      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_WIDTH) &&
-          !offsetMap.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
-        textShadowOffsetDx = toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_WIDTH))
+    offsetMap?.let {
+      if (it.hasKey(PROP_SHADOW_OFFSET_WIDTH) && !it.isNull(PROP_SHADOW_OFFSET_WIDTH)) {
+        textShadowOffsetDx = toPixelFromDIP(it.getDouble(PROP_SHADOW_OFFSET_WIDTH))
       }
-      if (offsetMap.hasKey(PROP_SHADOW_OFFSET_HEIGHT) &&
-          !offsetMap.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
-        textShadowOffsetDy = toPixelFromDIP(offsetMap.getDouble(PROP_SHADOW_OFFSET_HEIGHT))
+      if (it.hasKey(PROP_SHADOW_OFFSET_HEIGHT) && !it.isNull(PROP_SHADOW_OFFSET_HEIGHT)) {
+        textShadowOffsetDy = toPixelFromDIP(it.getDouble(PROP_SHADOW_OFFSET_HEIGHT))
       }
     }
 
@@ -448,36 +437,34 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = PROP_SHADOW_RADIUS, defaultInt = 1)
   public fun setTextShadowRadius(textShadowRadius: Float) {
-    if (textShadowRadius != _textShadowRadius) {
-      _textShadowRadius = textShadowRadius
+    if (textShadowRadius != this.textShadowRadius) {
+      this.textShadowRadius = textShadowRadius
       markUpdated()
     }
   }
 
   @ReactProp(name = PROP_SHADOW_COLOR, defaultInt = DEFAULT_TEXT_SHADOW_COLOR, customType = "Color")
   public fun setTextShadowColor(textShadowColor: Int) {
-    if (textShadowColor != _textShadowColor) {
-      _textShadowColor = textShadowColor
+    if (textShadowColor != this.textShadowColor) {
+      this.textShadowColor = textShadowColor
       markUpdated()
     }
   }
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public fun setTextTransform(textTransform: String?) {
-    var textTransformEnum = TextTransform.UNSET
-    if (textTransform == null) {
-      textTransformEnum = TextTransform.UNSET
-    } else if ("none" == textTransform) {
-      textTransformEnum = TextTransform.NONE
-    } else if ("uppercase" == textTransform) {
-      textTransformEnum = TextTransform.UPPERCASE
-    } else if ("lowercase" == textTransform) {
-      textTransformEnum = TextTransform.LOWERCASE
-    } else if ("capitalize" == textTransform) {
-      textTransformEnum = TextTransform.CAPITALIZE
-    } else {
-      FLog.w(ReactConstants.TAG, "Invalid textTransform: $textTransform")
-    }
+    val textTransformEnum =
+        when (textTransform) {
+          null -> TextTransform.UNSET
+          "none" -> TextTransform.NONE
+          "uppercase" -> TextTransform.UPPERCASE
+          "lowercase" -> TextTransform.LOWERCASE
+          "capitalize" -> TextTransform.CAPITALIZE
+          else -> {
+            FLog.w(ReactConstants.TAG, "Invalid textTransform: $textTransform")
+            TextTransform.UNSET
+          }
+        }
     textAttributes.textTransform = textTransformEnum
     markUpdated()
   }
@@ -492,8 +479,8 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
 
   @ReactProp(name = ViewProps.MINIMUM_FONT_SCALE)
   public fun setMinimumFontScale(minimumFontScale: Float) {
-    if (minimumFontScale != _minimumFontScale) {
-      _minimumFontScale = minimumFontScale
+    if (minimumFontScale != this.minimumFontScale) {
+      this.minimumFontScale = minimumFontScale
       markUpdated()
     }
   }
@@ -532,10 +519,7 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
         val child: ReactShadowNode<*> = textShadowNode.getChildAt(i)
 
         if (child is ReactRawTextShadowNode) {
-          val childText = child.text
-          if (childText != null) {
-            sb.append(apply(childText, textAttributes.textTransform))
-          }
+          child.text?.let { sb.append(apply(it, textAttributes.textTransform)) }
         } else if (child is ReactBaseTextShadowNode) {
           buildSpannedFromShadowNode(
               child, sb, ops, textAttributes, supportsInlineViews, inlineViews, sb.length)
@@ -581,7 +565,7 @@ public constructor(protected var reactTextViewManagerCallback: ReactTextViewMana
           checkNotNull(inlineViews)[reactTag] = child
         } else {
           throw IllegalViewOperationException(
-              "Unexpected view type nested under a <Text> or <TextInput> node: " + child.javaClass)
+              "Unexpected view type nested under a <Text> or <TextInput> node: ${child.javaClass}")
         }
         child.markUpdateSeen()
         i++
