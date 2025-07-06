@@ -19,7 +19,6 @@ import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import java.util.Locale
 import org.assertj.core.api.Assertions
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,7 +34,6 @@ import org.robolectric.RuntimeEnvironment
 class BaseViewManagerTest {
   private lateinit var viewManager: BaseViewManager<ReactViewGroup, *>
   private lateinit var view: ReactViewGroup
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var themedReactContext: ThemedReactContext
 
   @Before
@@ -45,13 +43,6 @@ class BaseViewManagerTest {
     val context = BridgeReactContext(RuntimeEnvironment.getApplication())
     themedReactContext = ThemedReactContext(context, context, null, -1)
     view = ReactViewGroup(themedReactContext)
-    arguments = Mockito.mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createMap() }.thenAnswer { JavaOnlyArray() }
-  }
-
-  @After
-  fun tearDown() {
-    arguments.close()
   }
 
   @Test

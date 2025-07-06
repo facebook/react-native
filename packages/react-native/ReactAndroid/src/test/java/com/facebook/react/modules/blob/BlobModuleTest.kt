@@ -32,13 +32,9 @@ class BlobModuleTest {
   private lateinit var bytes: ByteArray
   private lateinit var blobId: String
   private lateinit var blobModule: BlobModule
-  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun prepareModules() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     bytes = ByteArray(120)
     Random.Default.nextBytes(bytes)
 
@@ -49,7 +45,6 @@ class BlobModuleTest {
   @After
   fun cleanUp() {
     blobModule.remove(blobId)
-    arguments.close()
   }
 
   @Test

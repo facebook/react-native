@@ -105,9 +105,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
       private val reactHost: ReactHostImpl,
       private val jsModuleInterface: Class<out JavaScriptModule>
   ) : InvocationHandler {
-    override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
-      val jsArgs: NativeArray =
-          if (args != null) Arguments.fromJavaArgs(args) else WritableNativeArray()
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
+      val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
       reactHost.callFunctionOnModule(
           JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface), method.name, jsArgs)
       return null
