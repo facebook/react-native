@@ -11,6 +11,10 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type Performance from '../Performance';
+import type {
+  PerformanceEntryJSON,
+  PerformanceEntryList,
+} from '../PerformanceEntry';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import DOMException from '../../errors/DOMException';
@@ -26,6 +30,10 @@ function getThrownError(fn: () => mixed): mixed {
     return e;
   }
   throw new Error('Expected function to throw');
+}
+
+function toJSON(entries: PerformanceEntryList): Array<PerformanceEntryJSON> {
+  return entries.map(entry => entry.toJSON());
 }
 
 describe('Performance', () => {
@@ -417,6 +425,313 @@ describe('Performance', () => {
       expect(measure.detail).toEqual(originalDetail);
       // TODO structuredClone
       // expect(measure.detail).not.toBe(originalDetail);
+    });
+  });
+
+  describe('getting and clearing marks and measures', () => {
+    it('provides access to all buffered entries ordered by startTime', () => {
+      performance.mark('baz', {startTime: 20});
+      performance.mark('bar', {startTime: 30});
+      performance.mark('foo', {startTime: 10});
+
+      performance.mark('foo', {startTime: 50}); // again
+
+      performance.measure('bar', {start: 20, duration: 40});
+      performance.measure('foo', {start: 10, duration: 40});
+
+      const expectedInitialEntries = [
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'baz',
+          startTime: 20,
+        },
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'bar',
+          startTime: 20,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'bar',
+          startTime: 30,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'foo',
+          startTime: 50,
+        },
+      ];
+
+      /*
+       * getEntries
+       */
+
+      expect(toJSON(performance.getEntries())).toEqual(expectedInitialEntries);
+
+      // Returns the same list again
+      expect(toJSON(performance.getEntries())).toEqual(expectedInitialEntries);
+
+      /*
+       * getEntriesByType
+       */
+
+      expect(toJSON(performance.getEntriesByType('mark'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.entryType === 'mark'),
+      );
+
+      // Returns the same list again
+      expect(toJSON(performance.getEntriesByType('mark'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.entryType === 'mark'),
+      );
+
+      expect(toJSON(performance.getEntriesByType('measure'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.entryType === 'measure'),
+      );
+
+      // Returns the same list again
+      expect(toJSON(performance.getEntriesByType('measure'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.entryType === 'measure'),
+      );
+
+      /*
+       * getEntriesByName
+       */
+
+      expect(toJSON(performance.getEntriesByName('foo'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.name === 'foo'),
+      );
+
+      // Returns the same list again
+      expect(toJSON(performance.getEntriesByName('foo'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.name === 'foo'),
+      );
+
+      expect(toJSON(performance.getEntriesByName('bar'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.name === 'bar'),
+      );
+
+      // Returns the same list again
+      expect(toJSON(performance.getEntriesByName('bar'))).toEqual(
+        expectedInitialEntries.filter(entry => entry.name === 'bar'),
+      );
+    });
+
+    it('clears entries as specified', () => {
+      performance.mark('baz', {startTime: 20});
+      performance.mark('bar', {startTime: 30});
+      performance.mark('foo', {startTime: 10});
+
+      performance.mark('foo', {startTime: 50}); // again
+
+      performance.measure('bar', {start: 20, duration: 40});
+      performance.measure('foo', {start: 10, duration: 40});
+
+      performance.clearMarks('foo');
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'baz',
+          startTime: 20,
+        },
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'bar',
+          startTime: 20,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'bar',
+          startTime: 30,
+        },
+      ]);
+
+      expect(toJSON(performance.getEntriesByType('mark'))).toEqual([
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'baz',
+          startTime: 20,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'bar',
+          startTime: 30,
+        },
+      ]);
+
+      expect(toJSON(performance.getEntriesByName('foo'))).toEqual([
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+      ]);
+
+      performance.clearMeasures('bar');
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'baz',
+          startTime: 20,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'bar',
+          startTime: 30,
+        },
+      ]);
+
+      expect(toJSON(performance.getEntriesByType('measure'))).toEqual([
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+      ]);
+
+      expect(toJSON(performance.getEntriesByName('bar'))).toEqual([
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'bar',
+          startTime: 30,
+        },
+      ]);
+
+      performance.clearMarks();
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 40,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+      ]);
+
+      expect(toJSON(performance.getEntriesByType('mark'))).toEqual([]);
+
+      performance.clearMeasures();
+
+      expect(toJSON(performance.getEntries())).toEqual([]);
+
+      expect(toJSON(performance.getEntriesByType('measure'))).toEqual([]);
+    });
+
+    it('handles consecutive adding and clearing (marks)', () => {
+      performance.mark('foo', {startTime: 10});
+      performance.mark('foo', {startTime: 20});
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'foo',
+          startTime: 20,
+        },
+      ]);
+
+      performance.clearMarks();
+
+      expect(toJSON(performance.getEntries())).toEqual([]);
+
+      performance.mark('foo', {startTime: 30});
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 0,
+          entryType: 'mark',
+          name: 'foo',
+          startTime: 30,
+        },
+      ]);
+
+      performance.clearMarks();
+
+      expect(toJSON(performance.getEntries())).toEqual([]);
+    });
+
+    it('handles consecutive adding and clearing (measures)', () => {
+      performance.measure('foo', {start: 10, end: 20});
+      performance.measure('foo', {start: 20, end: 30});
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 10,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 10,
+        },
+        {
+          duration: 10,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 20,
+        },
+      ]);
+
+      performance.clearMeasures();
+
+      expect(toJSON(performance.getEntries())).toEqual([]);
+
+      performance.measure('foo', {start: 30, end: 40});
+
+      expect(toJSON(performance.getEntries())).toEqual([
+        {
+          duration: 10,
+          entryType: 'measure',
+          name: 'foo',
+          startTime: 30,
+        },
+      ]);
+
+      performance.clearMeasures();
+
+      expect(toJSON(performance.getEntries())).toEqual([]);
     });
   });
 });
