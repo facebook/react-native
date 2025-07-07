@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtualview
+package com.facebook.react.views.virtual.view
 
 import android.app.Activity
 import android.content.Context
@@ -19,6 +19,8 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.scroll.ReactScrollView
+import com.facebook.react.views.virtual.VirtualViewMode
+import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

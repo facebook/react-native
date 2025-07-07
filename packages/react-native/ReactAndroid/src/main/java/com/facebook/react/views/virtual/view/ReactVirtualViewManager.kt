@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtualview
+package com.facebook.react.views.virtual.view
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
@@ -19,6 +19,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.viewmanagers.VirtualViewManagerDelegate
 import com.facebook.react.viewmanagers.VirtualViewManagerInterface
+import com.facebook.react.views.virtual.VirtualViewMode
+import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
+import com.facebook.react.views.virtual.VirtualViewRenderState
 
 @ReactModule(name = ReactVirtualViewManager.REACT_CLASS)
 internal class ReactVirtualViewManager :
