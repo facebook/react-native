@@ -22,7 +22,7 @@ internal class CallbackImpl(private val jsInstance: JSInstance, private val call
       throw RuntimeException(
           "Illegal callback invocation from native module. This callback type only permits a single invocation from native code.")
     }
-    jsInstance.invokeCallback(callbackId, Arguments.fromJavaArgs(args))
+    jsInstance.invokeCallback(callbackId, Arguments.fromJavaArgs(args as Array<Any?>))
     invoked = true
   }
 

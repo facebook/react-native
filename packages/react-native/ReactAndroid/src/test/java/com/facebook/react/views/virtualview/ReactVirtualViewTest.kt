@@ -20,9 +20,11 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.scroll.ReactScrollView
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -36,6 +38,7 @@ import org.robolectric.RobolectricTestRunner
 class ReactVirtualViewTest {
 
   private lateinit var context: Context
+  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
@@ -43,13 +46,18 @@ class ReactVirtualViewTest {
 
     context = Robolectric.buildActivity(Activity::class.java).create().get()
 
-    val arguments = mockStatic(Arguments::class.java)
+    arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
 
     val displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
     displayMetricsHolder
         .`when`<DisplayMetrics> { DisplayMetricsHolder.getWindowDisplayMetrics() }
         .thenAnswer { DisplayMetrics().apply { density = 1f } }
+  }
+
+  @After
+  fun tearDown() {
+    arguments.close()
   }
 
   @Test
