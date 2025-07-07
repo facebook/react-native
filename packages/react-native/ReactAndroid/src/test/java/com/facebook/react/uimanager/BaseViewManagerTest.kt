@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import android.view.View.OnFocusChangeListener
