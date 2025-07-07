@@ -1,4 +1,4 @@
-# scripts/build-types
+# scripts/js-api
 
 TypeScript build pipeline for React Native's JavaScript API.
 
@@ -24,9 +24,9 @@ Snapshot file of the public API shape, used by maintainers\
 
 ## Usage
 
-`yarn build-types` is designed to be run by maintainers with minimal arguments.
+#### Build generated types + API snapshot
 
-> API snapshot generation is currently **experimental**, and will be folded into the default behaviour when ready.
+Maintainers should run this script whenever making intentional API changes.
 
 ```sh
 # Build types + API snapshot
@@ -36,11 +36,28 @@ yarn build-types [--validate]
 yarn build-types --skip-snapshot
 ```
 
+#### Diff API snapshot compatibility
+
+This script is run by CI to compare changes to `ReactNativeApi.d.ts` between commits.
+
+```sh
+# Compare two versions of the API snapshot
+yarn js-api-diff <before.d.ts> <after.d.ts>
+```
+```json
+{
+  "result": "BREAKING",
+  "changedApis": [
+    "ViewStyle"
+  ]
+}
+```
+
 #### Configuration
 
-Sparse configuration options are defined and documented in `scripts/build-types/config.js`.
+Sparse configuration options are defined and documented in `scripts/js-api/config.js`.
 
-## About the two formats
+## About the two output formats
 
 ### Generated TypeScript types
 
@@ -63,4 +80,5 @@ Provides a human-readable, maintainable reference of the React Native's public J
 - Committed to the repo.
 - Strips `unstable_` and `experimental_` APIs.
 - Strips doc comments.
-- Strips source file names and some un-exported type names (WIP).
+- Strips source file names (types are merged into a single program).
+- Versions exported APIs with an 8 char SHA hash, which will be updated when any input type dependencies change shape.

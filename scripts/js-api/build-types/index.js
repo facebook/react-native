@@ -8,9 +8,9 @@
  * @format
  */
 
-require('../babel-register').registerForScript();
+require('../../babel-register').registerForScript();
 
-const buildApiSnapshot = require('./BuildApiSnapshot');
+const buildApiSnapshot = require('./buildApiSnapshot');
 const buildGeneratedTypes = require('./buildGeneratedTypes');
 const debug = require('debug');
 const {parseArgs, styleText} = require('util');
@@ -40,7 +40,7 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/build-types
+  Usage: node ./scripts/js-api/build-types
 
   Build generated TypeScript types for react-native.
 
