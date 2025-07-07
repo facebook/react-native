@@ -148,6 +148,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
             
             {{ packageImports }}
             
+            @SuppressWarnings("deprecation")
             public class PackageList {
               private Application application;
               private ReactNativeHost reactNativeHost;
