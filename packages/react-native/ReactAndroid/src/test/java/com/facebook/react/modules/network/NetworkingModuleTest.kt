@@ -46,15 +46,17 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.kotlin.withSettings
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import com.facebook.testutils.shadows.ShadowArguments
 
 /** Tests [NetworkingModule] */
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class NetworkingModuleTest {
 
   private lateinit var networkingModule: NetworkingModule
   private lateinit var httpClient: OkHttpClient
   private lateinit var context: ReactApplicationContext
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var okHttpCallUtil: MockedStatic<OkHttpCallUtil>
   private lateinit var requestBodyUtil: MockedStatic<RequestBodyUtil>
   private lateinit var requestArgumentCaptor: KArgumentCaptor<Request>
@@ -74,10 +76,6 @@ class NetworkingModuleTest {
 
     networkingModule = NetworkingModule(context, "", httpClient, null)
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     okHttpCallUtil = mockStatic(OkHttpCallUtil::class.java)
     requestArgumentCaptor = argumentCaptor()
   }
@@ -92,7 +90,6 @@ class NetworkingModuleTest {
 
   @After
   fun tearDown() {
-    arguments.close()
     okHttpCallUtil.close()
   }
 

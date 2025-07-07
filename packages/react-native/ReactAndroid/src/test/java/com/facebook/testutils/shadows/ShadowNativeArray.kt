@@ -19,20 +19,6 @@ import org.robolectric.shadow.api.Shadow
 open class ShadowNativeArray {
   var backingArray: JavaOnlyArray = JavaOnlyArray()
 
-  @Deprecated(
-      "Use ShadowReadableNativeArray",
-      ReplaceWith(
-          "ShadowReadableNativeArray", "com.facebook.testutils.shadows.ShadowReadableNativeArray"))
-  @Implements(ReadableNativeArray::class)
-  class Readable : ShadowNativeArray()
-
-  @Deprecated(
-      "Use ShadowWritableNativeArray",
-      ReplaceWith(
-          "ShadowWritableNativeArray", "com.facebook.testutils.shadows.ShadowWritableNativeArray"))
-  @Implements(WritableNativeArray::class)
-  class Writable : ShadowNativeArray()
-
   companion object {
     fun getContents(array: NativeArray): List<Any?> =
         (Shadow.extract(array) as ShadowNativeArray).backingArray.toArrayList()

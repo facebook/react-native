@@ -8,7 +8,6 @@
 package com.facebook.react.modules.blob
 
 import android.net.Uri
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
@@ -21,8 +20,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -32,13 +29,9 @@ class BlobModuleTest {
   private lateinit var bytes: ByteArray
   private lateinit var blobId: String
   private lateinit var blobModule: BlobModule
-  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun prepareModules() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     bytes = ByteArray(120)
     Random.Default.nextBytes(bytes)
 
@@ -49,7 +42,6 @@ class BlobModuleTest {
   @After
   fun cleanUp() {
     blobModule.remove(blobId)
-    arguments.close()
   }
 
   @Test

@@ -11,7 +11,6 @@ import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
@@ -41,9 +40,10 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import com.facebook.testutils.shadows.ShadowArguments
 
 @RunWith(RobolectricTestRunner::class)
-@Config(shadows = [ShadowSoLoader::class])
+@Config(shadows = [ShadowSoLoader::class, ShadowArguments::class])
 class TouchEventDispatchTest {
   private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
@@ -460,16 +460,12 @@ class TouchEventDispatchTest {
 
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var eventEmitter: FabricEventEmitter
-  private lateinit var arguments: MockedStatic<Arguments>
   private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
     val metrics = DisplayMetrics()
     metrics.xdpi = 1f
     metrics.ydpi = 1f
@@ -488,7 +484,6 @@ class TouchEventDispatchTest {
 
   @After
   fun tearDown() {
-    arguments.close()
     ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 

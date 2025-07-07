@@ -9,47 +9,37 @@ package com.facebook.react.modules.appstate
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
-import com.facebook.react.bridge.JavaOnlyArray
-import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.testutils.shadows.ShadowArguments
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.junit.runner.RunWith
 
+@Config(shadows = [ShadowArguments::class])
+@RunWith(RobolectricTestRunner::class)
 class AppStateModuleTest {
   private lateinit var appStateModule: AppStateModule
   private lateinit var reactContext: ReactApplicationContext
-  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
     reactContext = mock()
     appStateModule = AppStateModule(reactContext)
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray>(Arguments::createArray).thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap>(Arguments::createMap).thenAnswer { JavaOnlyMap() }
-
     // we check whether we have an active react instance before emitting an event,
     // therefore for the tests we need this returning `true`.
     whenever(reactContext.hasActiveReactInstance()).thenReturn(true)
-  }
-
-  @After
-  fun tearDown() {
-    arguments.close()
   }
 
   @Test
