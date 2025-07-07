@@ -112,7 +112,8 @@ inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& value) {
   auto shadowNodeList = shadowNodeListFromValue(runtime, value);
-  auto weakShadowNodeList = std::make_shared<ShadowNode::ListOfWeak>();
+  auto weakShadowNodeList =
+      std::make_shared<std::vector<std::weak_ptr<const ShadowNode>>>();
   for (const auto& shadowNode : *shadowNodeList) {
     weakShadowNodeList->push_back(shadowNode);
   }

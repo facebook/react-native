@@ -45,12 +45,16 @@ class ShadowNode : public Sealable,
   using ListOfShared [[deprecated(
       "Use std::vector<std::shared_ptr<const ShadowNode>> instead")]] =
       std::vector<std::shared_ptr<const ShadowNode>>;
-  using ListOfWeak = std::vector<std::weak_ptr<const ShadowNode>>;
+  // TODO(T223558094): delete this in the next version.
+  using ListOfWeak [[deprecated(
+      "Use std::vector<std::weak_ptr<const ShadowNode>> instead")]] =
+      std::vector<std::weak_ptr<const ShadowNode>>;
   using SharedListOfShared =
       std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
   using UnsharedListOfShared =
       std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
-  using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
+  using UnsharedListOfWeak =
+      std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>>;
 
   using AncestorList = std::vector<std::pair<
       std::reference_wrapper<const ShadowNode> /* parentNode */,
