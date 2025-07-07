@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtualview
+package com.facebook.react.views.virtual
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting

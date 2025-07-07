@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtualview
+package com.facebook.react.views.virtual
 
 internal enum class VirtualViewMode(val value: Int) {
   Visible(0),

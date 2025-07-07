@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtualview
+package com.facebook.react.views.virtual.view
 
 import android.content.Context
 import android.graphics.Rect
@@ -24,6 +24,8 @@ import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.scroll.ReactScrollViewHelper
 import com.facebook.react.views.scroll.ScrollEventType
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.virtual.VirtualViewMode
+import com.facebook.react.views.virtual.VirtualViewRenderState
 import com.facebook.systrace.Systrace
 
 internal class ReactVirtualView(context: Context) :
