@@ -26,6 +26,7 @@ private constructor(
     public const val DEFAULT_STACK_SIZE_BYTES: Long = 0
 
     @JvmStatic
+    @Deprecated("Use newBackgroundThreadSpec")
     public fun newUIBackgroundTreadSpec(name: String): MessageQueueThreadSpec =
         MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name)
 

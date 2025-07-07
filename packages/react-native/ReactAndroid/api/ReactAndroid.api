@@ -1561,28 +1561,26 @@ public abstract interface class com/facebook/react/bridge/queue/MessageQueueThre
 	public abstract fun assertIsOnThread ()V
 	public abstract fun assertIsOnThread (Ljava/lang/String;)V
 	public abstract fun callOnQueue (Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
-	public abstract fun getPerfStats ()Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;
+	public fun getPerfStats ()Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;
 	public abstract fun isIdle ()Z
 	public abstract fun isOnThread ()Z
 	public abstract fun quitSynchronous ()V
-	public abstract fun resetPerfStats ()V
+	public fun resetPerfStats ()V
 	public abstract fun runOnQueue (Ljava/lang/Runnable;)Z
 }
 
 public final class com/facebook/react/bridge/queue/MessageQueueThreadImpl : com/facebook/react/bridge/queue/MessageQueueThread {
 	public static final field Companion Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl$Companion;
-	public synthetic fun <init> (Ljava/lang/String;Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun assertIsOnThread ()V
 	public fun assertIsOnThread (Ljava/lang/String;)V
 	public fun callOnQueue (Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
 	public static final fun create (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;
 	public final fun getLooper ()Landroid/os/Looper;
 	public final fun getName ()Ljava/lang/String;
-	public fun getPerfStats ()Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;
 	public fun isIdle ()Z
 	public fun isOnThread ()Z
 	public fun quitSynchronous ()V
-	public fun resetPerfStats ()V
 	public fun runOnQueue (Ljava/lang/Runnable;)Z
 }
 
