@@ -159,7 +159,6 @@ describe('Performance', () => {
           startTime: 10,
         });
 
-        // $FlowFixMe[incompatible-call]
         const measure = performance.measure('measure-with-start-mark', {
           start: 'start-mark',
         });
@@ -179,7 +178,6 @@ describe('Performance', () => {
           startTime: 50,
         });
 
-        // $FlowFixMe[incompatible-call]
         const measure = performance.measure('measure-with-end-mark', {
           end: 'end-mark',
         });
@@ -205,7 +203,6 @@ describe('Performance', () => {
 
         const measure = performance.measure(
           'measure-with-start-mark-and-end-mark',
-          // $FlowFixMe[incompatible-call]
           {
             start: 'start-mark',
             end: 'end-mark',
@@ -263,7 +260,6 @@ describe('Performance', () => {
 
         const measure = performance.measure(
           'measure-with-start-mark-and-duration',
-          // $FlowFixMe[incompatible-call]
           {
             start: 'start-mark',
             duration: 30,
@@ -281,7 +277,6 @@ describe('Performance', () => {
       it('throws if the specified mark does NOT exist', () => {
         const missingStartMarkError = ensureInstance(
           getThrownError(() => {
-            // $FlowFixMe[incompatible-call]
             performance.measure('measure', {
               start: 'start',
               end: 'end',
@@ -299,7 +294,6 @@ describe('Performance', () => {
 
         const missingEndMarkError = ensureInstance(
           getThrownError(() => {
-            // $FlowFixMe[incompatible-call]
             performance.measure('measure', {
               start: 'start',
               end: 'end',
@@ -314,7 +308,6 @@ describe('Performance', () => {
 
         performance.mark('end');
         expect(() => {
-          // $FlowFixMe[incompatible-call]
           performance.measure('measure', {
             start: 'start',
             end: 'end',
