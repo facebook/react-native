@@ -35660,8 +35660,8 @@ StubViewTree buildStubViewTreeUsingDifferentiator(
 /// @src {packages/react-native/ReactCommon/react/renderer/mounting/updateMountedFlag.h}:
 namespace facebook::react {
 void updateMountedFlag(
-    const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& oldChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& newChildren,
     ShadowTreeCommitSource commitSource);
 }
 
@@ -37896,7 +37896,7 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     auto jsArray = std::move(object).asArray(runtime);
     size_t jsArrayLen = jsArray.length(runtime);
     if (jsArrayLen > 0) {
-      auto shadowNodeArray = std::make_shared<ShadowNode::ListOfShared>();
+      auto shadowNodeArray = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
       shadowNodeArray->reserve(jsArrayLen);
       for (size_t i = 0; i < jsArrayLen; i++) {
         shadowNodeArray->push_back(Bridging<ShadowNode::Shared>::fromJs(
@@ -37904,8 +37904,8 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
       }
       return shadowNodeArray;
     } else {
-      return std::make_shared<ShadowNode::ListOfShared>(
-          ShadowNode::ListOfShared({}));
+      return std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+          std::vector<std::shared_ptr<const ShadowNode>>({}));
       ;
     }
   } else {
@@ -37924,7 +37924,7 @@ inline static jsi::Value valueFromShadowNodeList(
 }
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
     const ShadowNode::UnsharedListOfWeak& weakShadowNodeList) {
-  auto result = std::make_shared<ShadowNode::ListOfShared>();
+  auto result = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   for (const auto& weakShadowNode : *weakShadowNodeList) {
     auto sharedShadowNode = weakShadowNode.lock();
     if (!sharedShadowNode) {
