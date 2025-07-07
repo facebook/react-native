@@ -178,7 +178,7 @@ let reactCxxReact = RNTarget(
   name: .reactCxxReact,
   path: "ReactCommon/cxxreact",
   searchPaths: [CallInvokerPath],
-  excludedPaths: ["tests", "SampleCXXModule.cpp"],
+  excludedPaths: ["tests"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
 
 )

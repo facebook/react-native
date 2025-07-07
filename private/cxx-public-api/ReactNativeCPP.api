@@ -9216,34 +9216,6 @@ struct RecoverableError : public std::exception {
 };
 } // namespace facebook::react
 
-/// @src {packages/react-native/ReactCommon/cxxreact/SampleCxxModule.h}:
-namespace facebook {
-namespace xplat {
-namespace samples {
-class Sample {
- public:
-  std::string hello();
-  double add(double a, double b);
-  std::string concat(const std::string& a, const std::string& b);
-  std::string repeat(int count, const std::string& str);
-  void save(std::map<std::string, std::string> dict);
-  std::map<std::string, std::string> load();
-  void call_later(int msec, std::function<void()> f);
-  void except();
-  double twice(double n);
-};
-class SampleCxxModule : public module::CxxModule {
- public:
-  SampleCxxModule(std::unique_ptr<Sample> sample);
-  std::string getName();
-  virtual auto getConstants() -> std::map<std::string, folly::dynamic>;
-  virtual auto getMethods() -> std::vector<Method>;
-};
-} // namespace samples
-} // namespace xplat
-} // namespace facebook
-extern "C" facebook::xplat::module::CxxModule* SampleCxxModule();
-
 /// @src {packages/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h}:
 namespace facebook {
 namespace xplat {
