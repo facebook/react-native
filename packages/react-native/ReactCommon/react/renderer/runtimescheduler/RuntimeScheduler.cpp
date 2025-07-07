@@ -97,10 +97,6 @@ void RuntimeScheduler::executeNowOnTheSameThread(RawCallback&& callback) {
   return runtimeSchedulerImpl_->executeNowOnTheSameThread(std::move(callback));
 }
 
-void RuntimeScheduler::callExpiredTasks(jsi::Runtime& runtime) {
-  return runtimeSchedulerImpl_->callExpiredTasks(runtime);
-}
-
 void RuntimeScheduler::scheduleRenderingUpdate(
     SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
