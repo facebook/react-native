@@ -81,6 +81,8 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
+  void clearEventCounts();
+
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
 

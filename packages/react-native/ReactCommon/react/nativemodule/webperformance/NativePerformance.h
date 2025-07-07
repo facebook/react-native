@@ -199,6 +199,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - Testing
 
   void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
+  void clearEventCountsForTesting(jsi::Runtime& rt);
 
  private:
   std::optional<HighResTimeStamp> forcedCurrentTimeStamp_;
