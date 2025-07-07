@@ -464,4 +464,8 @@ void NativePerformance::setCurrentTimeStampForTesting(
   forcedCurrentTimeStamp_ = ts;
 }
 
+void NativePerformance::clearEventCountsForTesting(jsi::Runtime& /*rt*/) {
+  PerformanceEntryReporter::getInstance()->clearEventCounts();
+}
+
 } // namespace facebook::react
