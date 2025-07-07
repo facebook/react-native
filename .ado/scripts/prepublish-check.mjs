@@ -3,9 +3,9 @@ import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as util from "node:util";
 
-const ADO_PUBLISH_PIPELINE = ".ado/templates/npm-publish-steps.yml";
 const NX_CONFIG_FILE = "nx.json";
 
+const NPM_DEFEAULT_REGISTRY = "https://registry.npmjs.org/"
 const NPM_TAG_NEXT = "next";
 const NPM_TAG_NIGHTLY = "nightly";
 const RNMACOS_LATEST = "react-native-macos@latest";
@@ -21,8 +21,18 @@ const RNMACOS_NEXT = "react-native-macos@next";
  *     };
  *   };
  * }} NxConfig;
- * @typedef {{ tag?: string; update?: boolean; verbose?: boolean; }} Options;
- * @typedef {{ npmTag: string; prerelease?: string; isNewTag?: boolean; }} TagInfo;
+ * @typedef {{
+ *   "mock-branch"?: string;
+ *   "skip-auth"?: boolean;
+ *   tag?: string;
+ *   update?: boolean;
+ *   verbose?: boolean;
+ * }} Options;
+ * @typedef {{
+ *   npmTag: string;
+ *   prerelease?: string;
+ *   isNewTag?: boolean;
+ * }} TagInfo;
  */
 
 /**
@@ -80,6 +90,38 @@ function loadNxConfig(configFile) {
   return JSON.parse(nx);
 }
 
+function verifyNpmAuth(registry = NPM_DEFEAULT_REGISTRY) {
+  const npmErrorRegex = /npm error code (\w+)/;
+  const spawnOptions = {
+    stdio: /** @type {const} */ ("pipe"),
+    shell: true,
+    windowsVerbatimArguments: true,
+  };
+
+  const whoamiArgs = ["whoami", "--registry", registry];
+  const whoami = spawnSync("npm", whoamiArgs, spawnOptions);
+  if (whoami.status !== 0) {
+    const error = whoami.stderr.toString();
+    const m = error.match(npmErrorRegex);
+    switch (m && m[1]) {
+      case "EINVALIDNPMTOKEN":
+        throw new Error(`Invalid auth token for npm registry: ${registry}`);
+      case "ENEEDAUTH":
+        throw new Error(`Missing auth token for npm registry: ${registry}`);
+      default:
+        throw new Error(error);
+    }
+  }
+
+  const tokenArgs = ["token", "list", "--registry", registry];
+  const token = spawnSync("npm", tokenArgs, spawnOptions);
+  if (token.status !== 0) {
+    const error = token.stderr.toString();
+    const m = error.match(npmErrorRegex);
+    throw new Error(m ? `Auth token for '${registry}' returned error code ${m[1]}` : error);
+  }
+}
+
 /**
  * Returns a numerical value for a given version string.
  * @param {string} version
@@ -91,15 +133,37 @@ function versionToNumber(version) {
 }
 
 /**
- * Returns the currently checked out branch. Note that this function prefers
- * predefined CI environment variables over local clone.
+ * Returns the target branch name. If not targetting any branches (e.g., when
+ * executing this script locally), `undefined` is returned.
+ * @returns {string | undefined}
+ */
+function getTargetBranch() {
+  // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables-devops-services
+  const adoTargetBranchName = process.env["SYSTEM_PULLREQUEST_TARGETBRANCH"];
+  return adoTargetBranchName?.replace(/^refs\/heads\//, "");
+}
+
+/**
+ * Returns the current branch name. In a pull request, the target branch name is
+ * returned.
+ * @param {Options} options
  * @returns {string}
  */
-function getCurrentBranch() {
+function getCurrentBranch(options) {
+  const adoTargetBranchName = getTargetBranch();
+  if (adoTargetBranchName) {
+    return adoTargetBranchName;
+  }
+
   // https://learn.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml#build-variables-devops-services
   const adoSourceBranchName = process.env["BUILD_SOURCEBRANCHNAME"];
   if (adoSourceBranchName) {
     return adoSourceBranchName.replace(/^refs\/heads\//, "");
+  }
+
+  const { "mock-branch": mockBranch } = options;
+  if (mockBranch) {
+    return mockBranch;
   }
 
   // Depending on how the repo was cloned, HEAD may not exist. We only use this
@@ -178,30 +242,14 @@ function getTagForStableBranch(branch, { tag }, log) {
 }
 
 /**
- * @param {string} file
- * @param {string} tag
- * @returns {void}
- */
-function verifyPublishPipeline(file, tag) {
-  const data = fs.readFileSync(file, { encoding: "utf-8" });
-  const m = data.match(/publishTag: '(latest|next|nightly|v\d+\.\d+-stable)'/);
-  if (!m) {
-    throw new Error(`${file}: Could not find npm publish tag`);
-  }
-
-  if (m[1] !== tag) {
-    throw new Error(`${file}: 'publishTag' must be set to '${tag}'`);
-  }
-}
-
-/**
  * Verifies the configuration and enables publishing on CI.
  * @param {NxConfig} config
  * @param {string} currentBranch
  * @param {TagInfo} tag
+ * @param {Options} options
  * @returns {asserts config is NxConfig["release"]}
  */
-function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNewTag }) {
+function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNewTag }, options) {
   /** @type {string[]} */
   const errors = [];
 
@@ -244,7 +292,7 @@ function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNe
       generatorOptions.fallbackCurrentVersionResolver = "disk";
     }
   } else if (typeof generatorOptions.fallbackCurrentVersionResolver === "string") {
-    errors.push("'release.version.generatorOptions.fallbackCurrentVersionResolver' must be unset");
+    errors.push("'release.version.generatorOptions.fallbackCurrentVersionResolver' must be removed");
     generatorOptions.fallbackCurrentVersionResolver = undefined;
   }
 
@@ -253,8 +301,16 @@ function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNe
     throw new Error("Nx Release is not correctly configured for the current branch");
   }
 
-  verifyPublishPipeline(ADO_PUBLISH_PIPELINE, tag);
-  enablePublishingOnAzurePipelines();
+  if (options["skip-auth"]) {
+    info("Skipped npm auth validation");
+  } else {
+    verifyNpmAuth();
+  }
+
+  // Don't enable publishing in PRs
+  if (!getTargetBranch()) {
+    enablePublishingOnAzurePipelines();
+  }
 }
 
 /**
@@ -262,7 +318,7 @@ function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNe
  * @returns {number}
  */
 function main(options) {
-  const branch = getCurrentBranch();
+  const branch = getCurrentBranch(options);
   if (!branch) {
     error("Could not get current branch");
     return 1;
@@ -273,10 +329,11 @@ function main(options) {
   const config = loadNxConfig(NX_CONFIG_FILE);
   try {
     if (isMainBranch(branch)) {
-      enablePublishing(config, branch, { npmTag: NPM_TAG_NIGHTLY, prerelease: NPM_TAG_NIGHTLY });
+      const info = { npmTag: NPM_TAG_NIGHTLY, prerelease: NPM_TAG_NIGHTLY };
+      enablePublishing(config, branch, info, options);
     } else if (isStableBranch(branch)) {
       const tag = getTagForStableBranch(branch, options, logger);
-      enablePublishing(config, branch, tag);
+      enablePublishing(config, branch, tag, options);
     }
   } catch (e) {
     if (options.update) {
@@ -296,6 +353,13 @@ function main(options) {
 const { values } = util.parseArgs({
   args: process.argv.slice(2),
   options: {
+    "mock-branch": {
+      type: "string",
+    },
+    "skip-auth": {
+      type: "boolean",
+      default: false,
+    },
     tag: {
       type: "string",
       default: NPM_TAG_NEXT,

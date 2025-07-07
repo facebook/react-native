@@ -1,0 +1,39 @@
+name: NPM Publish Dry Run
+
+on:
+  pull_request:
+    branches:
+      - main
+      - '*-stable'
+    paths-ignore:
+      - '*.md'
+
+jobs:
+  npm-publish-dry-run:
+    name: "NPM Publish (Dry Run)"
+    runs-on: ubuntu-24.04
+    env:
+      PUBLISH_TAG: 'latest'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Configure git
+        run: |
+          git config --global user.email "53619745+rnbot@users.noreply.github.com"
+          git config --global user.name "React-Native Bot"
+          git remote set-url origin https://rnbot:${{ secrets.GITHUB_TOKEN }}@github.com/microsoft/react-native-macos
+      - name: Install dependencies
+        run: yarn
+      - name: Verify release config
+        run: |
+          node .ado/scripts/prepublish-check.mjs --verbose --tag ${{ env.PUBLISH_TAG }}
+
+      - name: Version and publish packages (dry run)
+        run: |
+          echo "Target branch: ${{ github.base_ref }}"
+          yarn nx release --dry-run --verbose

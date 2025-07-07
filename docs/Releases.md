@@ -72,13 +72,7 @@ git push -u origin HEAD
 
 ## Marking a release candidate stable
 
-Prepare the publish pipeline:
-
-```sh
-sed -i '' "s/publishTag: 'next'/publishTag: 'latest'/" .ado/templates/npm-publish.yml
-```
-
-Update the release configuration:
+Prepare the release configuration:
 
 ```sh
 node .ado/scripts/prepublish-check.mjs --tag latest --update

@@ -1,0 +1,65 @@
+name: PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+    branches: [ "main", "*-stable", "release/*" ]
+
+concurrency:
+  # Ensure single build of a pull request. `main` should not be affected.
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lint-commit:
+    name: "Lint PR title"
+    permissions: {}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # We lint the PR title instead of the commit message to avoid script injection attacks.
+      # Using environment variables prevents potential security vulnerabilities as described in:
+      # https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#example-of-a-script-injection-attack
+      - name: Lint PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "$PR_TITLE" | npx @rnx-kit/commitlint-lite@2.0.0
+  npm-publish-dry-run:
+    name: "NPM Publish (Dry Run)"
+    permissions: {}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read publish tag from nx.json
+        id: config
+        run: |
+          PUBLISH_TAG=$(jq -r '.release.version.generatorOptions.currentVersionResolverMetadata.tag' nx.json)
+          echo "publishTag=$PUBLISH_TAG" >> $GITHUB_OUTPUT
+          echo "Using publish tag from nx.json: $PUBLISH_TAG"
+      - name: Configure git
+        run: |
+          git config --global user.email "53619745+rnbot@users.noreply.github.com"
+          git config --global user.name "React-Native Bot"
+          git remote set-url origin https://rnbot:${{ secrets.GITHUB_TOKEN }}@github.com/microsoft/react-native-macos
+      - name: Install dependencies
+        run: yarn
+      - name: Verify release config
+        run: |
+          node .ado/scripts/prepublish-check.mjs --verbose --skip-auth --tag ${{ steps.config.outputs.publishTag }}
+      - name: Version and publish packages (dry run)
+        run: |
+          echo "Target branch: ${{ github.base_ref }}"
+          yarn nx release --dry-run --verbose

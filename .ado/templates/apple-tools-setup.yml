@@ -1,7 +1,7 @@
 steps:
-  - task: NodeTool@0
+  - task: UseNode@1
     inputs:
-      versionSpec: '23.x'
+      version: '23.x'
 
   - script: |
       brew bundle --file .ado/Brewfile

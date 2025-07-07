@@ -27,8 +27,6 @@ stages:
     jobs:
       - template: /.ado/jobs/test-javascript.yml@self
 
-      - template: /.ado/jobs/npm-publish-dry-run.yml@self
-
   # - stage: Integration
   #   dependsOn: []
   #   jobs:

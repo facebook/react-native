@@ -1,0 +1,72 @@
+jobs:
+- job: NPMPublish
+  displayName: NPM Publish
+  pool:
+    name: cxeiss-ubuntu-20-04-large
+    image: cxe-ubuntu-20-04-1es-pt
+    os: linux
+  variables:
+    - name: BUILDSECMON_OPT_IN
+      value: true
+  timeoutInMinutes: 90
+  cancelTimeoutInMinutes: 5
+  templateContext:
+    outputs:
+      - output: pipelineArtifact
+        targetPath: $(System.DefaultWorkingDirectory)
+        artifactName: github-npm-js-publish
+  steps:
+    - checkout: self
+      clean: true
+      fetchFilter: blob:none
+      persistCredentials: true
+
+    - template: /.ado/templates/configure-git.yml@self
+
+    - script: |
+        PUBLISH_TAG=$(jq -r '.release.version.generatorOptions.currentVersionResolverMetadata.tag' nx.json)
+        echo "##vso[task.setvariable variable=publishTag]$PUBLISH_TAG"
+        echo "Using publish tag from nx.json: $PUBLISH_TAG"
+      displayName: Read publish tag from nx.json
+
+    - script: |
+        yarn install
+      displayName: Install npm dependencies
+
+    - script: |
+        node .ado/scripts/prepublish-check.mjs --verbose --skip-auth --tag $(publishTag)
+      displayName: Verify release config
+
+    - script: |
+        echo Target branch: $(System.PullRequest.TargetBranch)
+        yarn nx release --dry-run --verbose
+      displayName: Version and publish packages (dry run)
+      condition: and(succeeded(), ne(variables['publish_react_native_macos'], '1'))
+
+    # Disable Nightly publishing on the main branch
+    - ${{ if endsWith(variables['Build.SourceBranchName'], '-stable') }}:
+      - script: |
+          echo "//registry.npmjs.org/:_authToken=$(npmAuthToken)" > ~/.npmrc
+          node .ado/scripts/prepublish-check.mjs --verbose --tag $(publishTag)
+        displayName: Set and validate npm auth
+        condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
+
+      - script: |
+          git switch $(Build.SourceBranchName)
+          yarn nx release --skip-publish --verbose
+        env:
+          GITHUB_TOKEN: $(githubAuthToken)
+        displayName: Version Packages and Github Release
+        condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
+
+      - script: |
+          if [[ -f .rnm-publish ]]; then
+            yarn nx release publish --tag ${{ parameters['publishTag'] }} --excludeTaskDependencies 
+          fi
+        displayName: Publish packages
+        condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
+
+    - script: |
+        rm -f ~/.npmrc
+      displayName: Remove npmrc if it exists
+      condition: always()
