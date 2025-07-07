@@ -2,7 +2,7 @@
  * This file is generated, do not edit.
  * @generated
  *
- * @file_count 1202
+ * @file_count 1206
  * @generate-command: node tools/api/public-api.js
  */
 
@@ -968,19 +968,12 @@ static inline RCTResizeMode RCTResizeModeFromUIViewContentMode(UIViewContentMode
   switch (mode) {
     case UIViewContentModeScaleToFill:
       return RCTResizeModeStretch;
-      break;
     case UIViewContentModeScaleAspectFit:
       return RCTResizeModeContain;
-      break;
     case UIViewContentModeScaleAspectFill:
       return RCTResizeModeCover;
-      break;
-    case UIViewContentModeCenter:
-      return RCTResizeModeCenter;
-      break;
     case UIViewContentModeTopLeft:
       return RCTResizeModeNone;
-      break;
     case UIViewContentModeRedraw:
     case UIViewContentModeTop:
     case UIViewContentModeBottom:
@@ -990,6 +983,9 @@ static inline RCTResizeMode RCTResizeModeFromUIViewContentMode(UIViewContentMode
     case UIViewContentModeBottomLeft:
     case UIViewContentModeBottomRight:
       return RCTResizeModeRepeat;
+    case UIViewContentModeCenter:
+    default:
+      return RCTResizeModeCenter;
   }
 };
 @interface RCTConvert (RCTResizeMode)
@@ -1385,12 +1381,25 @@ RCT_EXTERN void RCTSetCustomNSURLSessionConfigurationProvider(NSURLSessionConfig
 + (void)reportRequestStart:(NSNumber *)requestId
                    request:(NSURLRequest *)request
          encodedDataLength:(int)encodedDataLength;
++ (void)reportConnectionTiming:(NSNumber *)requestId request:(NSURLRequest *)request;
 + (void)reportResponseStart:(NSNumber *)requestId
                    response:(NSURLResponse *)response
                  statusCode:(int)statusCode
                     headers:(NSDictionary<NSString *, NSString *> *)headers;
++ (void)reportDataReceived:(NSNumber *)requestId data:(NSData *)data;
 + (void)reportResponseEnd:(NSNumber *)requestId encodedDataLength:(int)encodedDataLength;
++ (void)reportRequestFailed:(NSNumber *)requestId cancelled:(BOOL)cancelled;
++ (void)maybeStoreResponseBody:(NSNumber *)requestId data:(NSData *)data base64Encoded:(bool)base64Encoded;
++ (void)maybeStoreResponseBodyIncremental:(NSNumber *)requestId data:(NSString *)data;
 @end
+
+/// @src {packages/react-native/Libraries/Network/RCTNetworkConversions.h}:
+NS_ASSUME_NONNULL_BEGIN
+inline std::string_view RCTStringViewFromNSString(NSString *string)
+{
+  return std::string_view{string.UTF8String, string.length};
+}
+NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Network/RCTNetworkPlugins.h}:
 #pragma GCC diagnostic push
@@ -2259,12 +2268,13 @@ typedef NS_ENUM(NSInteger, RCTFunctionType) {
 static inline const char *RCTFunctionDescriptorFromType(RCTFunctionType type)
 {
   switch (type) {
-    case RCTFunctionTypeNormal:
-      return "async";
     case RCTFunctionTypePromise:
       return "promise";
     case RCTFunctionTypeSync:
       return "sync";
+    case RCTFunctionTypeNormal:
+    default:
+      return "async";
   }
 };
 @protocol RCTBridgeMethod <NSObject>
@@ -4228,6 +4238,16 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
+/// @src {packages/react-native/React/Fabric/Mounting/ComponentViews/VirtualView/RCTVirtualViewComponentView.h}:
+NS_ASSUME_NONNULL_BEGIN
+@interface RCTVirtualViewComponentView : RCTViewComponentView
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
+@end
+NS_ASSUME_NONNULL_END
+
 /// @src {packages/react-native/React/Fabric/Mounting/RCTComponentViewClassDescriptor.h}:
 NS_ASSUME_NONNULL_BEGIN
 class RCTComponentViewClassDescriptor final {
@@ -4787,6 +4807,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (std::vector<facebook::react::ProcessedColorStop>)getFixedColorStops:
                                                         (const std::vector<facebook::react::ColorStop> &)colorStops
                                                     gradientLineLength:(CGFloat)gradientLineLength;
++ (std::pair<CGPoint, CGPoint>)pointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
+                                                             endPoint:(CGPoint)endPoint
+                                                               bounds:(CGSize)bounds;
++ (void)getColors:(NSMutableArray<id> *)colors
+      andLocations:(NSMutableArray<NSNumber *> *)locations
+    fromColorStops:(const std::vector<facebook::react::ProcessedColorStop> &)colorStops;
 @end
 NS_ASSUME_NONNULL_END
 
@@ -5372,6 +5398,7 @@ NS_ASSUME_NONNULL_END
 @property (nonatomic, assign, getter=isTransparent) BOOL transparent;
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL allowSwipeDismissal;
 @property (nonatomic, assign) BOOL statusBarTranslucent;
 @property (nonatomic, assign) BOOL hardwareAccelerated;
 @property (nonatomic, assign) BOOL animated;
@@ -5826,11 +5853,9 @@ typedef struct {
 @end
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/first-party/fbgloginit/fb/glog_init.h}:
-namespace facebook {
-namespace gloginit {
+namespace facebook::gloginit {
 void initialize(const char* tag = "ReactNativeJNI");
 }
-} // namespace facebook
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/first-party/jni-hack/jni.h}:
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/first-party/jni-hack/real/jni.h}
@@ -6474,16 +6499,16 @@ enum class FocusDirection {
 class FocusOrderingHelper {
  public:
   static void traverseAndUpdateNextFocusableElement(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& focusedShadowNode,
-      const ShadowNode::Shared& currNode,
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& focusedShadowNode,
+      const std::shared_ptr<const ShadowNode>& currNode,
       FocusDirection focusDirection,
       const UIManager& uimanager,
       Rect sourceRect,
       std::optional<Rect>& nextRect,
-      ShadowNode::Shared& nextNode);
-  static ShadowNode::Shared findShadowNodeByTagRecursively(
-      const ShadowNode::Shared& parentShadowNode,
+      std::shared_ptr<const ShadowNode>& nextNode);
+  static std::shared_ptr<const ShadowNode> findShadowNodeByTagRecursively(
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
       Tag tag);
   static std::optional<FocusDirection> resolveFocusDirection(int direction);
 };
@@ -6604,6 +6629,8 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool cxxNativeAnimatedEnabled(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool cxxNativeAnimatedRemoveJsSync(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool disableMainQueueSyncDispatchIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool disableMountItemReorderingAndroid(
@@ -6613,6 +6640,8 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableAccessibilityOrder(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableAccumulatedUpdatesInRawPropsAndroid(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableAndroidTextMeasurementOptimizations(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableBridgelessArchitecture(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6637,6 +6666,8 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableIOSTextBaselineOffsetPerLine(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableIOSViewClipToPaddingBox(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableInteropViewManagerClassLookUpOptimizationIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6672,11 +6703,19 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableVirtualViewDebugFeatures(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableVirtualViewRenderState(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableVirtualViewWindowFocusDetection(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fixMappingOfEventPrioritiesBetweenFabricAndReact(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxEnabledRelease(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool fuseboxNetworkInspectionEnabled(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool hideOffscreenVirtualViewsOnIOS(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static double preparedTextCacheSize(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool traceTurboModulePromiseRejectionsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6747,9 +6786,7 @@ class HermesMemoryDumper : public jni::JavaClass<HermesMemoryDumper> {
 } // namespace facebook
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/hermes/instrumentation/HermesSamplingProfiler.h}:
-namespace facebook {
-namespace jsi {
-namespace jni {
+namespace facebook::jsi::jni {
 namespace jni = ::facebook::jni;
 class HermesSamplingProfiler : public jni::JavaClass<HermesSamplingProfiler> {
  public:
@@ -6762,9 +6799,7 @@ class HermesSamplingProfiler : public jni::JavaClass<HermesSamplingProfiler> {
       std::string filename);
   static void registerNatives();
 };
-} // namespace jni
-} // namespace jsi
-} // namespace facebook
+} // namespace facebook::jsi::jni
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/CatalystInstanceImpl.h}:
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/JMessageQueueThread.h}
@@ -8255,7 +8290,6 @@ class UIConstantsProviderBinding
 
 /// @src {packages/react-native/ReactCommon/callinvoker/ReactCommon/CallInvoker.h}:
 /// @dep {packages/react-native/ReactCommon/callinvoker/ReactCommon/SchedulerPriority.h}
-
 namespace facebook::jsi {
 }
 namespace facebook::react {
@@ -8273,7 +8307,7 @@ class CallInvoker {
   virtual void invokeSync(std::function<void()>&& func) {
     invokeSync([func](jsi::Runtime&) { func(); });
   }
-  virtual ~CallInvoker() {}
+  virtual ~CallInvoker() = default;
 };
 using NativeMethodCallFunc = std::function<void()>;
 class NativeMethodCallInvoker {
@@ -8284,7 +8318,7 @@ class NativeMethodCallInvoker {
   virtual void invokeSync(
       const std::string& methodName,
       NativeMethodCallFunc&& func) = 0;
-  virtual ~NativeMethodCallInvoker() {}
+  virtual ~NativeMethodCallInvoker() = default;
 };
 } // namespace facebook::react
 
@@ -8302,9 +8336,7 @@ enum class SchedulerPriority : int {
 /// @src {packages/react-native/ReactCommon/cxxreact/CxxModule.h}:
 namespace facebook::react {
 }
-namespace facebook {
-namespace xplat {
-namespace module {
+namespace facebook::xplat::module {
 class CxxModule {
   class AsyncTagType {};
   class SyncTagType {};
@@ -8429,7 +8461,7 @@ class CxxModule {
           isPromise(false),
           syncFunc(std::move(afunc)) {}
   };
-  virtual ~CxxModule() {}
+  virtual ~CxxModule() = default;
   virtual std::string getName() = 0;
   virtual auto getConstants() -> std::map<std::string, folly::dynamic> {
     return {};
@@ -8442,9 +8474,7 @@ class CxxModule {
     return instance_;
   }
 };
-} // namespace module
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::module
 
 /// @src {packages/react-native/ReactCommon/cxxreact/CxxNativeModule.h}:
 namespace facebook::react {
@@ -8508,7 +8538,7 @@ namespace folly {
 }
 namespace facebook::react {
 struct InstanceCallback {
-  virtual ~InstanceCallback() {}
+  virtual ~InstanceCallback() = default;
   virtual void onBatchComplete() {}
   virtual void incrementPendingJSCalls() {}
   virtual void decrementPendingJSCalls() {}
@@ -8583,7 +8613,7 @@ class JSBigString {
   JSBigString() = default;
   JSBigString(const JSBigString&) = delete;
   JSBigString& operator=(const JSBigString&) = delete;
-  virtual ~JSBigString() {}
+  virtual ~JSBigString() = default;
   virtual bool isAscii() const = 0;
   virtual const char* c_str() const = 0;
   virtual size_t size() const = 0;
@@ -8674,7 +8704,7 @@ __attribute__((visibility("default"))) bool isHermesBytecodeBundle(
 namespace facebook::react {
 class ExecutorDelegate {
  public:
-  virtual ~ExecutorDelegate() {}
+  virtual ~ExecutorDelegate() = default;
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
   virtual void callNativeModules(
       JSExecutor& executor,
@@ -8691,7 +8721,7 @@ class JSExecutorFactory {
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) = 0;
-  virtual ~JSExecutorFactory() {}
+  virtual ~JSExecutorFactory() = default;
 };
 class __attribute__((visibility("default"))) JSExecutor {
  public:
@@ -8788,7 +8818,7 @@ class JSModulesUnbundle {
     std::string code;
   };
   JSModulesUnbundle() {}
-  virtual ~JSModulesUnbundle() {}
+  virtual ~JSModulesUnbundle() = default;
   virtual Module getModule(uint32_t moduleId) const = 0;
 };
 } // namespace facebook::react
@@ -8890,8 +8920,7 @@ typename detail::is_dynamic<T>::type& jsArgAsObject(T&& args, size_t n) {
 } // namespace facebook
 
 /// @src {packages/react-native/ReactCommon/cxxreact/JsArgumentHelpers.h}:
-namespace facebook {
-namespace xplat {
+namespace facebook::xplat {
 class JsArgumentException : public std::logic_error {
  public:
   JsArgumentException(const std::string& msg) : std::logic_error(msg) {}
@@ -8941,14 +8970,13 @@ inline double jsArgAsDouble(const folly::dynamic& args, size_t n) {
 inline std::string jsArgAsString(const folly::dynamic& args, size_t n) {
   return jsArgN(args, n, &folly::dynamic::asString);
 }
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat
 
 /// @src {packages/react-native/ReactCommon/cxxreact/MessageQueueThread.h}:
 namespace facebook::react {
 class MessageQueueThread {
  public:
-  virtual ~MessageQueueThread() {}
+  virtual ~MessageQueueThread() = default;
   virtual void runOnQueue(std::function<void()>&&) = 0;
   virtual void runOnQueueSync(std::function<void()>&&) = 0;
   virtual void quitSynchronous() = 0;
@@ -9046,7 +9074,7 @@ struct MethodDescriptor {
 using MethodCallResult = std::optional<folly::dynamic>;
 class NativeModule {
  public:
-  virtual ~NativeModule() {}
+  virtual ~NativeModule() = default;
   virtual std::string getName() = 0;
   virtual std::string getSyncMethodName(unsigned int methodId) = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;
@@ -9120,13 +9148,12 @@ class __attribute__((visibility("default"))) RAMBundleRegistry {
   RAMBundleRegistry& operator=(RAMBundleRegistry&&) = default;
   void registerBundle(uint32_t bundleId, std::string bundlePath);
   JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
-  virtual ~RAMBundleRegistry() {};
+  virtual ~RAMBundleRegistry() = default;
 };
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/cxxreact/ReactMarker.h}:
-namespace facebook::react {
-namespace ReactMarker {
+namespace facebook::react::ReactMarker {
 enum ReactMarkerId {
   APP_STARTUP_START,
   APP_STARTUP_STOP,
@@ -9184,8 +9211,7 @@ class __attribute__((visibility("default"))) StartupLogger {
 extern __attribute__((visibility("default"))) void logMarkerDone(
     const ReactMarkerId markerId,
     double markerTime);
-} // namespace ReactMarker
-} // namespace facebook::react
+} // namespace facebook::react::ReactMarker
 
 /// @src {packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h}:
 namespace facebook::react {
@@ -9217,9 +9243,7 @@ struct RecoverableError : public std::exception {
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/cxxreact/SharedProxyCxxModule.h}:
-namespace facebook {
-namespace xplat {
-namespace module {
+namespace facebook::xplat::module {
 class SharedProxyCxxModule : public CxxModule {
  public:
   explicit SharedProxyCxxModule(std::shared_ptr<CxxModule> shared)
@@ -9234,9 +9258,7 @@ class SharedProxyCxxModule : public CxxModule {
     return shared_->getMethods();
   }
 };
-} // namespace module
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat::module
 
 /// @src {packages/react-native/ReactCommon/cxxreact/SystraceSection.h}:
 /// @dep {packages/react-native/ReactCommon/cxxreact/TraceSection.h}
@@ -9380,11 +9402,9 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
 
 
 /// @src {packages/react-native/ReactCommon/jsc/JSCRuntime.h}:
-namespace facebook {
-namespace jsc {
+namespace facebook::jsc {
 std::unique_ptr<jsi::Runtime> makeJSCRuntime();
 }
-} // namespace facebook
 
 /// @src {packages/react-native/ReactCommon/jserrorhandler/JsErrorHandler.h}:
 namespace facebook::react {
@@ -12289,6 +12309,16 @@ struct IOReadResult {
     return obj;
   }
 };
+struct GetResponseBodyResult {
+  std::string body;
+  bool base64Encoded;
+  folly::dynamic toDynamic() const {
+    folly::dynamic params = folly::dynamic::object;
+    params["body"] = body;
+    params["base64Encoded"] = base64Encoded;
+    return params;
+  }
+};
 class NetworkRequestListener {
  public:
   NetworkRequestListener() = default;
@@ -12333,6 +12363,7 @@ class NetworkIOAgent {
       LoadNetworkResourceDelegate& delegate);
   void handleIoRead(const cdp::PreparsedRequest& req);
   void handleIoClose(const cdp::PreparsedRequest& req);
+  void handleGetResponseBody(const cdp::PreparsedRequest& req);
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
@@ -12647,6 +12678,16 @@ struct IOReadResult {
     return obj;
   }
 };
+struct GetResponseBodyResult {
+  std::string body;
+  bool base64Encoded;
+  folly::dynamic toDynamic() const {
+    folly::dynamic params = folly::dynamic::object;
+    params["body"] = body;
+    params["base64Encoded"] = base64Encoded;
+    return params;
+  }
+};
 class NetworkRequestListener {
  public:
   NetworkRequestListener() = default;
@@ -12691,6 +12732,7 @@ class NetworkIOAgent {
       LoadNetworkResourceDelegate& delegate);
   void handleIoRead(const cdp::PreparsedRequest& req);
   void handleIoClose(const cdp::PreparsedRequest& req);
+  void handleGetResponseBody(const cdp::PreparsedRequest& req);
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
@@ -13327,6 +13369,16 @@ struct IOReadResult {
     return obj;
   }
 };
+struct GetResponseBodyResult {
+  std::string body;
+  bool base64Encoded;
+  folly::dynamic toDynamic() const {
+    folly::dynamic params = folly::dynamic::object;
+    params["body"] = body;
+    params["base64Encoded"] = base64Encoded;
+    return params;
+  }
+};
 class NetworkRequestListener {
  public:
   NetworkRequestListener() = default;
@@ -13371,6 +13423,7 @@ class NetworkIOAgent {
       LoadNetworkResourceDelegate& delegate);
   void handleIoRead(const cdp::PreparsedRequest& req);
   void handleIoClose(const cdp::PreparsedRequest& req);
+  void handleGetResponseBody(const cdp::PreparsedRequest& req);
 };
 } // namespace facebook::react::jsinspector_modern
 
@@ -14054,6 +14107,24 @@ std::string jsonRequest(
     std::optional<folly::dynamic> params = std::nullopt);
 } // namespace facebook::react::jsinspector_modern::cdp
 
+/// @src {packages/react-native/ReactCommon/jsinspector-modern/network/BoundedRequestBuffer.h}:
+namespace facebook::react::jsinspector_modern {
+constexpr size_t REQUEST_BUFFER_MAX_SIZE_BYTES = 100 * 1024 * 1024;
+class BoundedRequestBuffer {
+ public:
+  struct ResponseBody {
+    std::string data;
+    bool base64Encoded;
+  };
+  bool put(
+      const std::string& requestId,
+      std::string_view data,
+      bool base64Encoded) noexcept;
+  std::shared_ptr<const ResponseBody> get(const std::string& requestId) const;
+  void clear();
+};
+} // namespace facebook::react::jsinspector_modern
+
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/network/CdpNetwork.h}:
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/network/NetworkTypes.h}
 namespace facebook::react::jsinspector_modern::cdp::network {
@@ -14077,6 +14148,9 @@ struct Response {
       int encodedDataLength);
   folly::dynamic toDynamic() const;
 };
+struct ConnectTiming {
+  double requestTime;
+};
 struct RequestWillBeSentParams {
   std::string requestId;
   std::string loaderId;
@@ -14089,6 +14163,12 @@ struct RequestWillBeSentParams {
   std::optional<Response> redirectResponse;
   folly::dynamic toDynamic() const;
 };
+struct RequestWillBeSentExtraInfoParams {
+  std::string requestId;
+  Headers headers;
+  ConnectTiming connectTiming;
+  folly::dynamic toDynamic() const;
+};
 struct ResponseReceivedParams {
   std::string requestId;
   std::string loaderId;
@@ -14096,6 +14176,21 @@ struct ResponseReceivedParams {
   std::string type;
   Response response;
   bool hasExtraInfo;
+  folly::dynamic toDynamic() const;
+};
+struct DataReceivedParams {
+  std::string requestId;
+  double timestamp;
+  int dataLength;
+  int encodedDataLength;
+  folly::dynamic toDynamic() const;
+};
+struct LoadingFailedParams {
+  std::string requestId;
+  double timestamp;
+  std::string type;
+  std::string errorText;
+  bool canceled;
   folly::dynamic toDynamic() const;
 };
 struct LoadingFinishedParams {
@@ -14115,6 +14210,7 @@ std::string mimeTypeFromHeaders(const Headers& headers);
 } // namespace facebook::react::jsinspector_modern
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/network/NetworkReporter.h}:
+/// @dep {packages/react-native/ReactCommon/jsinspector-modern/network/BoundedRequestBuffer.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/network/NetworkTypes.h}
 namespace facebook::react::jsinspector_modern {
 using FrontendChannel = std::function<void(std::string_view messageJson)>;
@@ -14133,25 +14229,43 @@ class NetworkReporter {
   void setFrontendChannel(FrontendChannel frontendChannel);
   bool enableDebugging();
   bool disableDebugging();
+  inline bool isDebuggingEnabled() const {
+    return debuggingEnabled_.load(std::memory_order_acquire);
+  }
   void reportRequestStart(
       const std::string& requestId,
       const RequestInfo& requestInfo,
       int encodedDataLength,
       const std::optional<ResponseInfo>& redirectResponse);
-  void reportConnectionTiming(const std::string& requestId);
-  void reportRequestFailed(const std::string& requestId) const;
+  void reportConnectionTiming(
+      const std::string& requestId,
+      const std::optional<Headers>& headers);
   void reportResponseStart(
       const std::string& requestId,
       const ResponseInfo& responseInfo,
       int encodedDataLength);
-  void reportDataReceived(const std::string& requestId);
+  void reportDataReceived(
+      const std::string& requestId,
+      int dataLength,
+      const std::optional<int>& encodedDataLength);
   void reportResponseEnd(const std::string& requestId, int encodedDataLength);
+  void reportRequestFailed(const std::string& requestId, bool cancelled) const;
+  void storeResponseBody(
+      const std::string& requestId,
+      std::string_view body,
+      bool base64Encoded);
+  std::optional<std::tuple<std::string, bool>> getResponseBody(
+      const std::string& requestId);
 };
   inline bool isDebuggingEnabledNoSync() const {
     return debuggingEnabled_.load(std::memory_order_relaxed);
   }
+  FrontendChannel frontendChannel_;
   std::unordered_map<std::string, ResourceTimingData> perfTimingsBuffer_{};
   std::mutex perfTimingsMutex_;
+  std::map<std::string, std::string> resourceTypeMap_{};
+  BoundedRequestBuffer requestBodyBuffer_{};
+  std::mutex requestBodyMutex_;
 };
 } // namespace facebook::react::jsinspector_modern
 
@@ -14223,6 +14337,75 @@ struct DevToolsTrackEntryPayload {
 };
 } // namespace facebook::react::jsinspector_modern
 
+/// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}:
+namespace facebook::react::jsinspector_modern::tracing {
+using ConsoleTimeStampEntry = std::variant<HighResTimeStamp, std::string>;
+enum class ConsoleTimeStampColor {
+  Primary,
+  PrimaryLight,
+  PrimaryDark,
+  Secondary,
+  SecondaryLight,
+  SecondaryDark,
+  Tertiary,
+  TertiaryLight,
+  TertiaryDark,
+  Error,
+};
+inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color) {
+  switch (color) {
+    case ConsoleTimeStampColor::Primary:
+      return "primary";
+    case ConsoleTimeStampColor::PrimaryLight:
+      return "primary-light";
+    case ConsoleTimeStampColor::PrimaryDark:
+      return "primary-dark";
+    case ConsoleTimeStampColor::Secondary:
+      return "secondary";
+    case ConsoleTimeStampColor::SecondaryLight:
+      return "secondary-light";
+    case ConsoleTimeStampColor::SecondaryDark:
+      return "secondary-dark";
+    case ConsoleTimeStampColor::Tertiary:
+      return "tertiary";
+    case ConsoleTimeStampColor::TertiaryLight:
+      return "tertiary-light";
+    case ConsoleTimeStampColor::TertiaryDark:
+      return "tertiary-dark";
+    case ConsoleTimeStampColor::Error:
+      return "error";
+    default:
+      throw std::runtime_error("Unknown ConsoleTimeStampColor");
+  }
+};
+inline std::optional<ConsoleTimeStampColor> getConsoleTimeStampColorFromString(
+    const std::string& str) {
+  if (str == "primary") {
+    return ConsoleTimeStampColor::Primary;
+  } else if (str == "primary-light") {
+    return ConsoleTimeStampColor::PrimaryLight;
+  } else if (str == "primary-dark") {
+    return ConsoleTimeStampColor::PrimaryDark;
+  } else if (str == "secondary") {
+    return ConsoleTimeStampColor::Secondary;
+  } else if (str == "secondary-light") {
+    return ConsoleTimeStampColor::SecondaryLight;
+  } else if (str == "secondary-dark") {
+    return ConsoleTimeStampColor::SecondaryDark;
+  } else if (str == "tertiary") {
+    return ConsoleTimeStampColor::Tertiary;
+  } else if (str == "tertiary-light") {
+    return ConsoleTimeStampColor::TertiaryLight;
+  } else if (str == "tertiary-dark") {
+    return ConsoleTimeStampColor::TertiaryDark;
+  } else if (str == "error") {
+    return ConsoleTimeStampColor::Error;
+  } else {
+    return std::nullopt;
+  }
+};
+}; // namespace facebook::react::jsinspector_modern::tracing
+
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/EventLoopReporter.h}:
 namespace facebook::react::jsinspector_modern::tracing {
 enum class EventLoopPhase {
@@ -14256,6 +14439,7 @@ struct InstanceTracingProfile {
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.h}:
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/CdpTracing.h}
+/// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h}
 namespace facebook::react::jsinspector_modern::tracing {
@@ -14264,8 +14448,8 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
   bool startTracing();
   bool stopTracing();
-  bool isTracing() const {
-    return tracing_;
+  inline bool isTracing() const {
+    return tracingAtomic_;
   }
   void collectEvents(
       const std::function<void(const folly::dynamic& eventsChunk)>&
@@ -14277,6 +14461,13 @@ class PerformanceTracer {
       HighResTimeStamp start,
       HighResDuration duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+  void reportTimeStamp(
+      std::string name,
+      std::optional<ConsoleTimeStampEntry> start = std::nullopt,
+      std::optional<ConsoleTimeStampEntry> end = std::nullopt,
+      std::optional<std::string> trackName = std::nullopt,
+      std::optional<std::string> trackGroup = std::nullopt,
+      std::optional<ConsoleTimeStampColor> color = std::nullopt);
   void reportProcess(uint64_t id, const std::string& name);
   void reportThread(uint64_t id, const std::string& name);
   void reportJavaScriptThread();
@@ -14292,7 +14483,6 @@ class PerformanceTracer {
       HighResTimeStamp chunkTimestamp,
       const TraceEventProfileChunk& traceEventProfileChunk);
 };
-  uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
@@ -14474,6 +14664,7 @@ struct RuntimeSamplingProfile {
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h}:
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/CdpTracing.h}
+/// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h}
 namespace facebook::react::jsinspector_modern::tracing {
@@ -14482,8 +14673,8 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
   bool startTracing();
   bool stopTracing();
-  bool isTracing() const {
-    return tracing_;
+  inline bool isTracing() const {
+    return tracingAtomic_;
   }
   void collectEvents(
       const std::function<void(const folly::dynamic& eventsChunk)>&
@@ -14495,6 +14686,13 @@ class PerformanceTracer {
       HighResTimeStamp start,
       HighResDuration duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+  void reportTimeStamp(
+      std::string name,
+      std::optional<ConsoleTimeStampEntry> start = std::nullopt,
+      std::optional<ConsoleTimeStampEntry> end = std::nullopt,
+      std::optional<std::string> trackName = std::nullopt,
+      std::optional<std::string> trackGroup = std::nullopt,
+      std::optional<ConsoleTimeStampColor> color = std::nullopt);
   void reportProcess(uint64_t id, const std::string& name);
   void reportThread(uint64_t id, const std::string& name);
   void reportJavaScriptThread();
@@ -14510,7 +14708,6 @@ class PerformanceTracer {
       HighResTimeStamp chunkTimestamp,
       const TraceEventProfileChunk& traceEventProfileChunk);
 };
-  uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
@@ -15718,8 +15915,12 @@ struct Bridging<std::unordered_map<std::string, Args...>>
 
 /// @src {packages/react-native/ReactCommon/react/bridging/Promise.h}:
 namespace facebook::react {
-template <typename T>
+template <typename... T>
 class AsyncPromise {
+  static_assert(
+      sizeof...(T) <= 1,
+      "AsyncPromise must have at most one argument");
+
  public:
   AsyncPromise(jsi::Runtime& rt, const std::shared_ptr<CallInvoker>& jsInvoker)
       : state_(std::make_shared<SharedState>()) {
@@ -15728,7 +15929,9 @@ class AsyncPromise {
         rt,
         bridging::toJs(
             rt,
-            [this](AsyncCallback<T> resolve, AsyncCallback<Error> reject) {
+            [this](
+                AsyncCallback<T...> resolve,
+                const AsyncCallback<Error>& reject) {
               state_->resolve = std::move(resolve);
               state_->reject = std::move(reject);
             },
@@ -15738,10 +15941,10 @@ class AsyncPromise {
     LongLivedObjectCollection::get(rt).add(promiseHolder);
     state_->promiseHolder = promiseHolder;
   }
-  void resolve(T value) {
+  void resolve(T... value) {
     std::lock_guard<std::mutex> lock(state_->mutex);
     if (state_->resolve) {
-      state_->resolve->call(std::move(value));
+      state_->resolve->call(std::forward<T>(value)...);
       state_->resolve.reset();
       state_->reject.reset();
     }
@@ -15770,14 +15973,14 @@ class AsyncPromise {
     }
     std::mutex mutex;
     std::weak_ptr<PromiseHolder> promiseHolder;
-    std::optional<AsyncCallback<T>> resolve;
+    std::optional<AsyncCallback<T...>> resolve;
     std::optional<AsyncCallback<Error>> reject;
   };
   std::shared_ptr<SharedState> state_;
 };
-template <typename T>
-struct Bridging<AsyncPromise<T>> {
-  static jsi::Object toJs(jsi::Runtime& rt, const AsyncPromise<T>& promise) {
+template <typename... T>
+struct Bridging<AsyncPromise<T...>> {
+  static jsi::Object toJs(jsi::Runtime& rt, const AsyncPromise<T...>& promise) {
     return promise.get(rt);
   }
 };
@@ -16073,8 +16276,7 @@ class TurboModuleBinding {
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModulePerfLogger.h}:
-namespace facebook::react {
-namespace TurboModulePerfLogger {
+namespace facebook::react::TurboModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger>&& logger);
 void disableLogging();
 void moduleDataCreateStart(const char* moduleName, int32_t id);
@@ -16145,13 +16347,10 @@ void asyncMethodCallExecutionFail(
     const char* moduleName,
     const char* methodName,
     int32_t id);
-} // namespace TurboModulePerfLogger
-} // namespace facebook::react
+} // namespace facebook::react::TurboModulePerfLogger
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleUtils.h}:
 namespace facebook::react {
-jsi::Object deepCopyJSIObject(jsi::Runtime& rt, const jsi::Object& obj);
-jsi::Array deepCopyJSIArray(jsi::Runtime& rt, const jsi::Array& arr);
 struct Promise : public LongLivedObject {
   Promise(jsi::Runtime& rt, jsi::Function resolve, jsi::Function reject);
   void resolve(const jsi::Value& result);
@@ -16164,18 +16363,6 @@ using PromiseSetupFunctionType =
 jsi::Value createPromiseAsJSIValue(
     jsi::Runtime& rt,
     PromiseSetupFunctionType&& func);
-class RAIICallbackWrapperDestroyer {
- public:
-  RAIICallbackWrapperDestroyer(std::weak_ptr<CallbackWrapper> callbackWrapper)
-      : callbackWrapper_(callbackWrapper) {}
-  ~RAIICallbackWrapperDestroyer() {
-    auto strongWrapper = callbackWrapper_.lock();
-    if (!strongWrapper) {
-      return;
-    }
-    strongWrapper->destroy();
-  }
-};
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleWithJSIBindings.h}:
@@ -16254,8 +16441,7 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTInteropTurboModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h}
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
  public:
   struct MethodDescriptor {
@@ -16284,8 +16470,7 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
       NSInvocation *inv,
       NSMutableArray *retainedObjectsForInvocation) override;
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h}:
 namespace facebook::react {
@@ -16565,58 +16750,62 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
   bool isConnected(jsi::Runtime& rt, jsi::Value nativeNodeReference);
   std::tuple<int, int, int, int> getBorderWidth(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
   std::tuple<double, double, double, double> getBoundingClientRect(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       bool includeTransform);
   std::tuple<int, int> getInnerSize(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
   std::tuple<double, double> getScrollPosition(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
   std::tuple<int, int> getScrollSize(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode);
-  std::string getTagName(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
-  std::string getTextContent(jsi::Runtime& rt, ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
+  std::string getTagName(
+      jsi::Runtime& rt,
+      std::shared_ptr<const ShadowNode> shadowNode);
+  std::string getTextContent(
+      jsi::Runtime& rt,
+      std::shared_ptr<const ShadowNode> shadowNode);
   bool hasPointerCapture(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       double pointerId);
   void releasePointerCapture(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       double pointerId);
   void setPointerCapture(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       double pointerId);
   std::tuple<jsi::Value, double, double> getOffset(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
   jsi::Value linkRootNode(
       jsi::Runtime& rt,
       SurfaceId surfaceId,
       jsi::Value instanceHandle);
   void measure(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       jsi::Function callback);
   void measureInWindow(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       jsi::Function callback);
   void measureLayout(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
-      ShadowNode::Shared relativeToShadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
+      std::shared_ptr<const ShadowNode> relativeToShadowNode,
       jsi::Function onFail,
       jsi::Function onSuccess);
   void setNativeProps(
       jsi::Runtime& rt,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       jsi::Value updatePayload);
 };
 } // namespace facebook::react
@@ -16630,6 +16819,7 @@ class NativeFantomTestSpecificMethods
   explicit NativeFantomTestSpecificMethods(
       std::shared_ptr<CallInvoker> jsInvoker);
   void registerForcedCloneCommitHook(jsi::Runtime& runtime);
+  void takeFunctionAndNoop(jsi::Runtime& runtime, jsi::Function callback);
 };
 };
 } // namespace facebook::react
@@ -16641,7 +16831,7 @@ struct FantomForcedCloneCommitHook : public UIManagerCommitHook {
   void commitHookWasUnregistered(const UIManager&) noexcept override;
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
-      const RootShadowNode::Shared& oldRootShadowNode,
+      const std::shared_ptr<const RootShadowNode>& oldRootShadowNode,
       const RootShadowNode::Unshared& newRootShadowNode) noexcept override;
 };
 } // namespace facebook::react
@@ -16658,11 +16848,13 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
   bool animatedShouldSignalBatch(jsi::Runtime& runtime);
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
+  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
   bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+  bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
   bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
@@ -16675,6 +16867,8 @@ class NativeReactNativeFeatureFlags
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
+  bool enableInteropViewManagerClassLookUpOptimizationIOS(
+      jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
@@ -16692,9 +16886,13 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
   bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
+  bool enableVirtualViewRenderState(jsi::Runtime& runtime);
+  bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
+  bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
+  double preparedTextCacheSize(jsi::Runtime& runtime);
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
@@ -16738,8 +16936,8 @@ using RectAsTuple = std::tuple<Float, Float, Float, Float>;
 using NativeIntersectionObserverObserveOptions =
     NativeIntersectionObserverNativeIntersectionObserverObserveOptions<
         NativeIntersectionObserverIntersectionObserverId,
-        std::optional<ShadowNode::Shared>,
-        ShadowNode::Shared,
+        std::optional<std::shared_ptr<const ShadowNode>>,
+        std::shared_ptr<const ShadowNode>,
         std::vector<Float>,
         std::optional<std::vector<Float>>>;
 template <>
@@ -16771,7 +16969,7 @@ class NativeIntersectionObserver
   void unobserve(
       jsi::Runtime& runtime,
       IntersectionObserverObserverId intersectionObserverId,
-      ShadowNode::Shared targetShadowNode);
+      std::shared_ptr<const ShadowNode> targetShadowNode);
   jsi::Object observeV2(
       jsi::Runtime& runtime,
       NativeIntersectionObserverObserveOptions options);
@@ -16807,7 +17005,7 @@ namespace facebook::react {
 using NativeMutationObserverObserveOptions =
     NativeMutationObserverNativeMutationObserverObserveOptions<
         MutationObserverId,
-        ShadowNode::Shared,
+        std::shared_ptr<const ShadowNode>,
         bool>;
 template <>
 struct Bridging<NativeMutationObserverObserveOptions>
@@ -16850,60 +17048,7 @@ class NativeMutationObserver
   jsi::Value getPublicInstanceFromShadowNode(
       const ShadowNode& shadowNode) const;
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
-      const std::vector<ShadowNode::Shared>& shadowNodes) const;
-};
-} // namespace facebook::react
-
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/ReactCommon/NativeSampleTurboCxxModuleSpecJSI.h}:
-namespace facebook::react {
-class JSI_EXPORT NativeSampleTurboCxxModuleSpecJSI : public TurboModule {
- protected:
-  NativeSampleTurboCxxModuleSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
-
- public:
-  virtual void voidFunc(jsi::Runtime& rt) = 0;
-  virtual bool getBool(jsi::Runtime& rt, bool arg) = 0;
-  virtual double getEnum(jsi::Runtime& rt, double arg) = 0;
-  virtual double getNumber(jsi::Runtime& rt, double arg) = 0;
-  virtual jsi::String getString(jsi::Runtime& rt, const jsi::String& arg) = 0;
-  virtual jsi::Array getArray(jsi::Runtime& rt, const jsi::Array& arg) = 0;
-  virtual jsi::Object getObject(jsi::Runtime& rt, const jsi::Object& arg) = 0;
-  virtual jsi::Object getValue(
-      jsi::Runtime& rt,
-      double x,
-      const jsi::String& y,
-      const jsi::Object& z) = 0;
-  virtual void getValueWithCallback(
-      jsi::Runtime& rt,
-      const jsi::Function& callback) = 0;
-  virtual jsi::Value getValueWithPromise(jsi::Runtime& rt, bool error) = 0;
-  virtual jsi::Object getConstants(jsi::Runtime& rt) = 0;
-};
-} // namespace facebook::react
-
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/ReactCommon/SampleTurboCxxModule.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/ReactCommon/NativeSampleTurboCxxModuleSpecJSI.h}
-
-namespace facebook::react {
-class SampleTurboCxxModule : public NativeSampleTurboCxxModuleSpecJSI {
- public:
-  SampleTurboCxxModule(std::shared_ptr<CallInvoker> jsInvoker);
-  void voidFunc(jsi::Runtime& rt) override;
-  bool getBool(jsi::Runtime& rt, bool arg) override;
-  double getEnum(jsi::Runtime& rt, double arg) override;
-  double getNumber(jsi::Runtime& rt, double arg) override;
-  jsi::String getString(jsi::Runtime& rt, const jsi::String& arg) override;
-  jsi::Array getArray(jsi::Runtime& rt, const jsi::Array& arg) override;
-  jsi::Object getObject(jsi::Runtime& rt, const jsi::Object& arg) override;
-  jsi::Object getValue(
-      jsi::Runtime& rt,
-      double x,
-      const jsi::String& y,
-      const jsi::Object& z) override;
-  void getValueWithCallback(jsi::Runtime& rt, const jsi::Function& callback)
-      override;
-  jsi::Value getValueWithPromise(jsi::Runtime& rt, bool error) override;
-  jsi::Object getConstants(jsi::Runtime& rt) override;
+      const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const;
 };
 } // namespace facebook::react
 
@@ -16937,9 +17082,6 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleLegacyModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleLegacyModule.h}
 
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleTurboCxxModule.h}
-
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTNativeSampleTurboModuleSpec.h}
 @interface RCTSampleTurboModule : NativeSampleTurboModuleSpecBase <NativeSampleTurboModuleSpec>
@@ -16948,17 +17090,11 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModulePlugin.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleTurboModulePlugin.h}
 
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/SampleTurboCxxModuleLegacyImpl.h}
-
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTNativeSampleTurboModuleSpec.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTNativeSampleTurboModuleSpec.h}
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleLegacyModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleLegacyModule.h}
-
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleTurboCxxModule.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboCxxModule.h}
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleTurboModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTNativeSampleTurboModuleSpec.h}
@@ -16969,7 +17105,33 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModulePlugin.h}
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/SampleTurboCxxModuleLegacyImpl.h}:
-/// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/SampleTurboCxxModuleLegacyImpl.h}
+namespace facebook::react {
+class SampleTurboCxxModuleLegacyImpl
+    : public facebook::xplat::module::CxxModule {
+ public:
+  SampleTurboCxxModuleLegacyImpl();
+  std::string getName() override;
+  std::map<std::string, folly::dynamic> getConstants() override;
+  std::vector<facebook::xplat::module::CxxModule::Method> getMethods() override;
+  void voidFunc();
+  bool getBool(bool arg);
+  double getEnum(double arg);
+  double getNumber(double arg);
+  std::string getString(const std::string& arg);
+  folly::dynamic getArray(const folly::dynamic& arg);
+  folly::dynamic getObject(const folly::dynamic& arg);
+  folly::dynamic getUnsafeObject(const folly::dynamic& arg);
+  double getRootTag(double arg);
+  folly::dynamic
+  getValue(double x, const std::string& y, const folly::dynamic& z);
+  void getValueWithCallback(
+      const facebook::xplat::module::CxxModule::Callback& callback);
+  void getValueWithPromise(
+      bool error,
+      const facebook::xplat::module::CxxModule::Callback& resolve,
+      const facebook::xplat::module::CxxModule::Callback& reject);
+};
+} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.h}:
 namespace facebook::react {
@@ -17020,6 +17182,15 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       jsi::Runtime& rt,
       std::string name,
       std::optional<HighResTimeStamp> startTime);
+  std::tuple<HighResTimeStamp, HighResDuration> measure(
+      jsi::Runtime& rt,
+      std::string name,
+      std::optional<HighResTimeStamp> startTime,
+      std::optional<HighResTimeStamp> endTime,
+      std::optional<HighResDuration> duration,
+      std::optional<std::string> startMark,
+      std::optional<std::string> endMark);
+  [[deprecated("This method is deprecated. Use the measure method instead.")]]
   std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
       jsi::Runtime& rt,
       std::string name,
@@ -17060,6 +17231,8 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   std::unordered_map<std::string, double> getSimpleMemoryInfo(jsi::Runtime& rt);
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
+  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
+  void clearEventCountsForTesting(jsi::Runtime& rt);
 };
 } // namespace facebook::react
 
@@ -17398,6 +17571,7 @@ class PerformanceEntryReporter {
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
     return eventCounts_;
   }
+  void clearEventCounts();
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
   PerformanceMark reportMark(
@@ -19195,8 +19369,8 @@ enum class HyphenationFrequency { None, Normal, Full };
 /// @src {packages/react-native/ReactCommon/react/renderer/bridging/bridging.h}:
 namespace facebook::react {
 template <>
-struct Bridging<ShadowNode::Shared> {
-  static ShadowNode::Shared fromJs(
+struct Bridging<std::shared_ptr<const ShadowNode>> {
+  static std::shared_ptr<const ShadowNode> fromJs(
       jsi::Runtime& rt,
       const jsi::Value& jsiValue) {
     auto object = jsiValue.asObject(rt);
@@ -19213,7 +19387,9 @@ struct Bridging<ShadowNode::Shared> {
     }
     return shadowNodeWrapper->shadowNode;
   }
-  static jsi::Value toJs(jsi::Runtime& rt, const ShadowNode::Shared& value) {
+  static jsi::Value toJs(
+      jsi::Runtime& rt,
+      const std::shared_ptr<const ShadowNode>& value) {
     jsi::Object obj(rt);
     obj.setNativeState(rt, std::make_shared<ShadowNodeWrapper>(value));
     return obj;
@@ -19717,8 +19893,9 @@ class ModalHostViewComponentDescriptor final
         static_cast<const ModalHostViewShadowNode::ConcreteState&>(
             *shadowNode.getState())
             .getData();
-    layoutableShadowNode.setSize(
-        Size{stateData.screenSize.width, stateData.screenSize.height});
+    layoutableShadowNode.setSize(Size{
+        .width = stateData.screenSize.width,
+        .height = stateData.screenSize.height});
     layoutableShadowNode.setPositionType(YGPositionTypeAbsolute);
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
@@ -19745,11 +19922,12 @@ class ModalHostViewShadowNode final : public ConcreteViewShadowNode<
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewState.h}:
+/// @dep {packages/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.h}
 namespace facebook::react {
 class ModalHostViewState final {
  public:
   using Shared = std::shared_ptr<const ModalHostViewState>;
-  ModalHostViewState() {};
+  ModalHostViewState() : screenSize(ModalHostViewScreenSize()) {}
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_) {};
   const Size screenSize{};
 };
@@ -19757,8 +19935,29 @@ class ModalHostViewState final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/modal/ModalHostViewUtils.h}:
 namespace facebook::react {
-Size RCTModalHostViewScreenSize(void);
+Size ModalHostViewScreenSize(void);
 }
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/modal/platform/android/JReactModalHostView.h}:
+namespace facebook::react {
+class JReactModalHostView
+    : public facebook::jni::JavaClass<JReactModalHostView> {
+ public:
+  static auto constexpr kJavaDescriptor =
+      "Lcom/facebook/react/views/modal/ReactModalHostView;";
+  static Size getDisplayMetrics() {
+    static auto method =
+        JReactModalHostView::javaClassStatic()->getStaticMethod<jlong()>(
+            "getScreenDisplayMetricsWithoutInsets");
+    auto result = method(javaClassStatic());
+    int32_t wBits = 0xFFFFFFFF & (result >> 32);
+    int32_t hBits = 0xFFFFFFFF & result;
+    auto* measuredWidth = reinterpret_cast<float*>(&wBits);
+    auto* measuredHeight = reinterpret_cast<float*>(&hBits);
+    return Size{.width = *measuredWidth, .height = *measuredHeight};
+  }
+};
+} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h}:
 /// @dep {packages/react-native/ReactCommon/react/renderer/components/progressbar/android/react/renderer/components/progressbar/AndroidProgressBarMeasurementsManager.h}
@@ -20982,7 +21181,7 @@ class AndroidTextInputComponentDescriptor final
       if (getThemeData(
               fabricUIManager, surfaceId, defaultTextInputPaddingArray)) {
         jfloat* defaultTextInputPadding =
-            env->GetFloatArrayElements(defaultTextInputPaddingArray, 0);
+            env->GetFloatArrayElements(defaultTextInputPaddingArray, nullptr);
         theme.start = defaultTextInputPadding[0];
         theme.end = defaultTextInputPadding[1];
         theme.top = defaultTextInputPadding[2];
@@ -23582,10 +23781,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) override;
   void enableMeasurement();
-  void appendChild(const ShadowNode::Shared& child) override;
+  void appendChild(const std::shared_ptr<const ShadowNode>& child) override;
   void replaceChild(
       const ShadowNode& oldChild,
-      const ShadowNode::Shared& newChild,
+      const std::shared_ptr<const ShadowNode>& newChild,
       size_t suggestedIndex = SIZE_MAX) override;
   void updateYogaChildren();
   void updateYogaProps();
@@ -26690,6 +26889,465 @@ struct BorderMetrics {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/view/propsConversions.h}:
 namespace facebook::react {
+static inline yoga::Style convertRawProp(
+    const PropsParserContext& context,
+    const RawProps& rawProps,
+    const yoga::Style& sourceValue) {
+  yoga::Style yogaStyle{};
+  yogaStyle.setDirection(convertRawProp(
+      context,
+      rawProps,
+      "direction",
+      sourceValue.direction(),
+      yogaStyle.direction()));
+  yogaStyle.setFlexDirection(convertRawProp(
+      context,
+      rawProps,
+      "flexDirection",
+      sourceValue.flexDirection(),
+      yogaStyle.flexDirection()));
+  yogaStyle.setJustifyContent(convertRawProp(
+      context,
+      rawProps,
+      "justifyContent",
+      sourceValue.justifyContent(),
+      yogaStyle.justifyContent()));
+  yogaStyle.setAlignContent(convertRawProp(
+      context,
+      rawProps,
+      "alignContent",
+      sourceValue.alignContent(),
+      yogaStyle.alignContent()));
+  yogaStyle.setAlignItems(convertRawProp(
+      context,
+      rawProps,
+      "alignItems",
+      sourceValue.alignItems(),
+      yogaStyle.alignItems()));
+  yogaStyle.setAlignSelf(convertRawProp(
+      context,
+      rawProps,
+      "alignSelf",
+      sourceValue.alignSelf(),
+      yogaStyle.alignSelf()));
+  yogaStyle.setPositionType(convertRawProp(
+      context,
+      rawProps,
+      "position",
+      sourceValue.positionType(),
+      yogaStyle.positionType()));
+  yogaStyle.setFlexWrap(convertRawProp(
+      context,
+      rawProps,
+      "flexWrap",
+      sourceValue.flexWrap(),
+      yogaStyle.flexWrap()));
+  yogaStyle.setOverflow(convertRawProp(
+      context,
+      rawProps,
+      "overflow",
+      sourceValue.overflow(),
+      yogaStyle.overflow()));
+  yogaStyle.setDisplay(convertRawProp(
+      context,
+      rawProps,
+      "display",
+      sourceValue.display(),
+      yogaStyle.display()));
+  yogaStyle.setFlex(convertRawProp(
+      context, rawProps, "flex", sourceValue.flex(), yogaStyle.flex()));
+  yogaStyle.setFlexGrow(convertRawProp(
+      context,
+      rawProps,
+      "flexGrow",
+      sourceValue.flexGrow(),
+      yogaStyle.flexGrow()));
+  yogaStyle.setFlexShrink(convertRawProp(
+      context,
+      rawProps,
+      "flexShrink",
+      sourceValue.flexShrink(),
+      yogaStyle.flexShrink()));
+  yogaStyle.setFlexBasis(convertRawProp(
+      context,
+      rawProps,
+      "flexBasis",
+      sourceValue.flexBasis(),
+      yogaStyle.flexBasis()));
+  yogaStyle.setMargin(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginLeft",
+          sourceValue.margin(yoga::Edge::Left),
+          yogaStyle.margin(yoga::Edge::Left)));
+  yogaStyle.setMargin(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginTop",
+          sourceValue.margin(yoga::Edge::Top),
+          yogaStyle.margin(yoga::Edge::Top)));
+  yogaStyle.setMargin(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginRight",
+          sourceValue.margin(yoga::Edge::Right),
+          yogaStyle.margin(yoga::Edge::Right)));
+  yogaStyle.setMargin(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginBottom",
+          sourceValue.margin(yoga::Edge::Bottom),
+          yogaStyle.margin(yoga::Edge::Bottom)));
+  yogaStyle.setMargin(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginStart",
+          sourceValue.margin(yoga::Edge::Start),
+          yogaStyle.margin(yoga::Edge::Start)));
+  yogaStyle.setMargin(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginEnd",
+          sourceValue.margin(yoga::Edge::End),
+          yogaStyle.margin(yoga::Edge::End)));
+  yogaStyle.setMargin(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginHorizontal",
+          sourceValue.margin(yoga::Edge::Horizontal),
+          yogaStyle.margin(yoga::Edge::Horizontal)));
+  yogaStyle.setMargin(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "marginVertical",
+          sourceValue.margin(yoga::Edge::Vertical),
+          yogaStyle.margin(yoga::Edge::Vertical)));
+  yogaStyle.setMargin(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "margin",
+          sourceValue.margin(yoga::Edge::All),
+          yogaStyle.margin(yoga::Edge::All)));
+  yogaStyle.setPosition(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "left",
+          sourceValue.position(yoga::Edge::Left),
+          yogaStyle.position(yoga::Edge::Left)));
+  yogaStyle.setPosition(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "top",
+          sourceValue.position(yoga::Edge::Top),
+          yogaStyle.position(yoga::Edge::Top)));
+  yogaStyle.setPosition(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "right",
+          sourceValue.position(yoga::Edge::Right),
+          yogaStyle.position(yoga::Edge::Right)));
+  yogaStyle.setPosition(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "bottom",
+          sourceValue.position(yoga::Edge::Bottom),
+          yogaStyle.position(yoga::Edge::Bottom)));
+  yogaStyle.setPosition(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "start",
+          sourceValue.position(yoga::Edge::Start),
+          yogaStyle.position(yoga::Edge::Start)));
+  yogaStyle.setPosition(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "end",
+          sourceValue.position(yoga::Edge::End),
+          yogaStyle.position(yoga::Edge::End)));
+  yogaStyle.setPosition(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "insetInline",
+          sourceValue.position(yoga::Edge::Horizontal),
+          yogaStyle.position(yoga::Edge::Horizontal)));
+  yogaStyle.setPosition(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "insetBlock",
+          sourceValue.position(yoga::Edge::Vertical),
+          yogaStyle.position(yoga::Edge::Vertical)));
+  yogaStyle.setPosition(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "inset",
+          sourceValue.position(yoga::Edge::All),
+          yogaStyle.position(yoga::Edge::All)));
+  yogaStyle.setPadding(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingLeft",
+          sourceValue.padding(yoga::Edge::Left),
+          yogaStyle.padding(yoga::Edge::Left)));
+  yogaStyle.setPadding(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingTop",
+          sourceValue.padding(yoga::Edge::Top),
+          yogaStyle.padding(yoga::Edge::Top)));
+  yogaStyle.setPadding(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingRight",
+          sourceValue.padding(yoga::Edge::Right),
+          yogaStyle.padding(yoga::Edge::Right)));
+  yogaStyle.setPadding(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingBottom",
+          sourceValue.padding(yoga::Edge::Bottom),
+          yogaStyle.padding(yoga::Edge::Bottom)));
+  yogaStyle.setPadding(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingStart",
+          sourceValue.padding(yoga::Edge::Start),
+          yogaStyle.padding(yoga::Edge::Start)));
+  yogaStyle.setPadding(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingEnd",
+          sourceValue.padding(yoga::Edge::End),
+          yogaStyle.padding(yoga::Edge::End)));
+  yogaStyle.setPadding(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingHorizontal",
+          sourceValue.padding(yoga::Edge::Horizontal),
+          yogaStyle.padding(yoga::Edge::Horizontal)));
+  yogaStyle.setPadding(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "paddingVertical",
+          sourceValue.padding(yoga::Edge::Vertical),
+          yogaStyle.padding(yoga::Edge::Vertical)));
+  yogaStyle.setPadding(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "padding",
+          sourceValue.padding(yoga::Edge::All),
+          yogaStyle.padding(yoga::Edge::All)));
+  yogaStyle.setGap(
+      yoga::Gutter::Row,
+      convertRawProp(
+          context,
+          rawProps,
+          "rowGap",
+          sourceValue.gap(yoga::Gutter::Row),
+          yogaStyle.gap(yoga::Gutter::Row)));
+  yogaStyle.setGap(
+      yoga::Gutter::Column,
+      convertRawProp(
+          context,
+          rawProps,
+          "columnGap",
+          sourceValue.gap(yoga::Gutter::Column),
+          yogaStyle.gap(yoga::Gutter::Column)));
+  yogaStyle.setGap(
+      yoga::Gutter::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "gap",
+          sourceValue.gap(yoga::Gutter::All),
+          yogaStyle.gap(yoga::Gutter::All)));
+  yogaStyle.setBorder(
+      yoga::Edge::Left,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderLeftWidth",
+          sourceValue.border(yoga::Edge::Left),
+          yogaStyle.border(yoga::Edge::Left)));
+  yogaStyle.setBorder(
+      yoga::Edge::Top,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderTopWidth",
+          sourceValue.border(yoga::Edge::Top),
+          yogaStyle.border(yoga::Edge::Top)));
+  yogaStyle.setBorder(
+      yoga::Edge::Right,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderRightWidth",
+          sourceValue.border(yoga::Edge::Right),
+          yogaStyle.border(yoga::Edge::Right)));
+  yogaStyle.setBorder(
+      yoga::Edge::Bottom,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderBottomWidth",
+          sourceValue.border(yoga::Edge::Bottom),
+          yogaStyle.border(yoga::Edge::Bottom)));
+  yogaStyle.setBorder(
+      yoga::Edge::Start,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderStartWidth",
+          sourceValue.border(yoga::Edge::Start),
+          yogaStyle.border(yoga::Edge::Start)));
+  yogaStyle.setBorder(
+      yoga::Edge::End,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderEndWidth",
+          sourceValue.border(yoga::Edge::End),
+          yogaStyle.border(yoga::Edge::End)));
+  yogaStyle.setBorder(
+      yoga::Edge::Horizontal,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderHorizontalWidth",
+          sourceValue.border(yoga::Edge::Horizontal),
+          yogaStyle.border(yoga::Edge::Horizontal)));
+  yogaStyle.setBorder(
+      yoga::Edge::Vertical,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderVerticalWidth",
+          sourceValue.border(yoga::Edge::Vertical),
+          yogaStyle.border(yoga::Edge::Vertical)));
+  yogaStyle.setBorder(
+      yoga::Edge::All,
+      convertRawProp(
+          context,
+          rawProps,
+          "borderWidth",
+          sourceValue.border(yoga::Edge::All),
+          yogaStyle.border(yoga::Edge::All)));
+  yogaStyle.setDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "width",
+          sourceValue.dimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "height",
+          sourceValue.dimension(yoga::Dimension::Height),
+          {}));
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "minWidth",
+          sourceValue.minDimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setMinDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "minHeight",
+          sourceValue.minDimension(yoga::Dimension::Height),
+          {}));
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Width,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxWidth",
+          sourceValue.maxDimension(yoga::Dimension::Width),
+          {}));
+  yogaStyle.setMaxDimension(
+      yoga::Dimension::Height,
+      convertRawProp(
+          context,
+          rawProps,
+          "maxHeight",
+          sourceValue.maxDimension(yoga::Dimension::Height),
+          {}));
+  yogaStyle.setAspectRatio(convertRawProp(
+      context,
+      rawProps,
+      "aspectRatio",
+      sourceValue.aspectRatio(),
+      yogaStyle.aspectRatio()));
+  yogaStyle.setBoxSizing(convertRawProp(
+      context,
+      rawProps,
+      "boxSizing",
+      sourceValue.boxSizing(),
+      yogaStyle.boxSizing()));
+  return yogaStyle;
+}
 template <typename T>
 static inline CascadedRectangleCorners<T> convertRawProp(
     const PropsParserContext& context,
@@ -27109,6 +27767,29 @@ static inline ViewEvents convertRawProp(
 }
 } // namespace facebook::react
 
+/// @src {packages/react-native/ReactCommon/react/renderer/components/virtualview/VirtualViewComponentDescriptor.h}:
+namespace facebook::react {
+using VirtualViewComponentDescriptor =
+    ConcreteComponentDescriptor<VirtualViewShadowNode>;
+}
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/virtualview/VirtualViewShadowNode.h}:
+namespace facebook::react {
+constexpr const char VirtualViewComponentName[] = "VirtualView";
+class VirtualViewShadowNode final : public ConcreteViewShadowNode<
+                                        VirtualViewComponentName,
+                                        VirtualViewProps,
+                                        VirtualViewEventEmitter> {
+ public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::Unstable_uncullableView);
+    return traits;
+  }
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactCommon/react/renderer/consistency/ScopedShadowTreeRevisionLock.h}:
 namespace facebook::react {
 class ScopedShadowTreeRevisionLock {
@@ -27167,8 +27848,8 @@ class ComponentDescriptor {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const = 0;
   virtual void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const = 0;
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const = 0;
   virtual Props::Shared cloneProps(
       const PropsParserContext& context,
       const Props::Shared& props,
@@ -27249,8 +27930,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
   void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const override {
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const override {
     auto& concreteParentShadowNode =
         static_cast<const ShadowNodeT&>(*parentShadowNode);
     const_cast<ShadowNodeT&>(concreteParentShadowNode)
@@ -27907,8 +28588,8 @@ class LayoutableShadowNode : public ShadowNode {
   virtual Transform getTransform() const;
   virtual Point getContentOriginOffset(bool includeTransform) const;
   void setLayoutMetrics(LayoutMetrics layoutMetrics);
-  static ShadowNode::Shared findNodeAtPoint(
-      const ShadowNode::Shared& node,
+  static std::shared_ptr<const ShadowNode> findNodeAtPoint(
+      const std::shared_ptr<const ShadowNode>& node,
       Point point);
   virtual void dirtyLayout() = 0;
   virtual bool getIsLayoutClean() const = 0;
@@ -28318,16 +28999,24 @@ class ShadowNode : public Sealable,
                    public DebugStringConvertible,
                    public jsi::NativeState {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
+  using Shared [[deprecated("Use std::shared_ptr<const ShadowNode> instead")]] =
+      std::shared_ptr<const ShadowNode>;
   using Weak [[deprecated("Use std::weak_ptr<const ShadowNode> instead")]] =
       std::weak_ptr<const ShadowNode>;
   using Unshared [[deprecated("Use std::shared_ptr<ShadowNode> instead")]] =
       std::shared_ptr<ShadowNode>;
-  using ListOfShared = std::vector<Shared>;
-  using ListOfWeak = std::vector<std::weak_ptr<const ShadowNode>>;
-  using SharedListOfShared = std::shared_ptr<const ListOfShared>;
-  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
-  using UnsharedListOfWeak = std::shared_ptr<ListOfWeak>;
+  using ListOfShared [[deprecated(
+      "Use std::vector<std::shared_ptr<const ShadowNode>> instead")]] =
+      std::vector<std::shared_ptr<const ShadowNode>>;
+  using ListOfWeak [[deprecated(
+      "Use std::vector<std::weak_ptr<const ShadowNode>> instead")]] =
+      std::vector<std::weak_ptr<const ShadowNode>>;
+  using SharedListOfShared =
+      std::shared_ptr<const std::vector<std::shared_ptr<const ShadowNode>>>;
+  using UnsharedListOfShared =
+      std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>>;
+  using UnsharedListOfWeak =
+      std::shared_ptr<std::vector<std::weak_ptr<const ShadowNode>>>;
   using AncestorList =
       std::vector<std::pair<std::reference_wrapper<const ShadowNode>, int>>;
   static SharedListOfShared emptySharedShadowNodeSharedList();
@@ -28363,7 +29052,7 @@ class ShadowNode : public Sealable,
   ComponentHandle getComponentHandle() const;
   ShadowNodeTraits getTraits() const;
   const Props::Shared& getProps() const;
-  const ListOfShared& getChildren() const;
+  const std::vector<std::shared_ptr<const ShadowNode>>& getChildren() const;
   const SharedEventEmitter& getEventEmitter() const;
   jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
   Tag getTag() const;
@@ -28376,19 +29065,19 @@ class ShadowNode : public Sealable,
   void sealRecursive() const;
   const ShadowNodeFamily& getFamily() const;
   ShadowNodeFamily::Shared getFamilyShared() const;
-  virtual void appendChild(const Shared& child);
+  virtual void appendChild(const std::shared_ptr<const ShadowNode>& child);
   virtual void replaceChild(
       const ShadowNode& oldChild,
-      const Shared& newChild,
+      const std::shared_ptr<const ShadowNode>& newChild,
       size_t suggestedIndex = std::numeric_limits<size_t>::max());
   void setMounted(bool mounted) const;
   bool getHasBeenPromoted() const;
   void setRuntimeShadowNodeReference(const std::shared_ptr<ShadowNodeWrapper>&
                                          runtimeShadowNodeReference) const;
   void updateRuntimeShadowNodeReference(
-      const Shared& destinationShadowNode) const;
+      const std::shared_ptr<const ShadowNode>& destinationShadowNode) const;
   void transferRuntimeShadowNodeReference(
-      const Shared& destinationShadowNode,
+      const std::shared_ptr<const ShadowNode>& destinationShadowNode,
       const ShadowNodeFragment& fragment) const;
 
  protected:
@@ -28410,10 +29099,10 @@ static_assert(
     std::has_virtual_destructor<ShadowNode>::value,
     "ShadowNode must have a virtual destructor");
 struct ShadowNodeWrapper : public jsi::NativeState {
-  explicit ShadowNodeWrapper(ShadowNode::Shared shadowNode)
+  explicit ShadowNodeWrapper(std::shared_ptr<const ShadowNode> shadowNode)
       : shadowNode(std::move(shadowNode)) {}
   ~ShadowNodeWrapper() override;
-  ShadowNode::Shared shadowNode;
+  std::shared_ptr<const ShadowNode> shadowNode;
 };
 } // namespace facebook::react
 
@@ -32847,7 +33536,7 @@ struct RNMeasureRect {
   double pageY = 0;
 };
 struct DOMOffset {
-  ShadowNode::Shared offsetParent = nullptr;
+  std::shared_ptr<const ShadowNode> offsetParent = nullptr;
   double top = 0;
   double left = 0;
 };
@@ -32865,10 +33554,10 @@ struct DOMBorderWidthRounded {
   int bottom = 0;
   int left = 0;
 };
-ShadowNode::Shared getParentNode(
+std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
-std::vector<ShadowNode::Shared> getChildNodes(
+std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 bool isConnected(
@@ -32992,17 +33681,19 @@ class Element final {
       std::function<void(const ConcreteUnsharedShadowNode& shadowNode)>
           callback) {
     fragment_.referenceCallback =
-        [callback = std::move(callback)](const ShadowNode::Shared& shadowNode) {
+        [callback = std::move(callback)](
+            const std::shared_ptr<const ShadowNode>& shadowNode) {
           callback(std::const_pointer_cast<ConcreteShadowNode>(
               std::static_pointer_cast<const ConcreteShadowNode>(shadowNode)));
         };
     return *this;
   }
   Element& reference(ConcreteUnsharedShadowNode& outShadowNode) {
-    fragment_.referenceCallback = [&](const ShadowNode::Shared& shadowNode) {
-      outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
-          std::static_pointer_cast<const ConcreteShadowNode>(shadowNode));
-    };
+    fragment_.referenceCallback =
+        [&](const std::shared_ptr<const ShadowNode>& shadowNode) {
+          outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
+              std::static_pointer_cast<const ConcreteShadowNode>(shadowNode));
+        };
     return *this;
   }
   Element& finalize(
@@ -35829,9 +36520,9 @@ namespace facebook::react {
 using MutationObserverId = int32_t;
 struct MutationRecord {
   MutationObserverId mutationObserverId;
-  ShadowNode::Shared targetShadowNode;
-  std::vector<ShadowNode::Shared> addedShadowNodes;
-  std::vector<ShadowNode::Shared> removedShadowNodes;
+  std::shared_ptr<const ShadowNode> targetShadowNode;
+  std::vector<std::shared_ptr<const ShadowNode>> addedShadowNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> removedShadowNodes;
 };
 class MutationObserver {
  public:
@@ -35859,7 +36550,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
   MutationObserverManager();
   void observe(
       MutationObserverId mutationObserverId,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       bool observeSubtree,
       const UIManager& uiManager);
   void unobserveAll(MutationObserverId mutationObserverId);
@@ -36150,15 +36841,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   const RuntimeExecutor runtimeExecutor_;
   SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
   void scheduleEventLoop();
-  void runEventLoop(jsi::Runtime& runtime, bool onlyExpired);
-  std::shared_ptr<Task> selectTask(
-      HighResTimeStamp currentTime,
-      bool onlyExpired);
+  void runEventLoop(jsi::Runtime& runtime);
+  std::shared_ptr<Task> selectTask();
   void scheduleTask(std::shared_ptr<Task> task);
-  void runEventLoopTick(
-      jsi::Runtime& runtime,
-      Task& task,
-      HighResTimeStamp taskStartTime);
+  void runEventLoopTick(jsi::Runtime& runtime, Task& task);
   void executeTask(
       jsi::Runtime& runtime,
       Task& task,
@@ -36410,19 +37096,21 @@ class Scheduler final : public UIManagerDelegate {
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) override;
   void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType) override;
   void uiManagerDidSetIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
   void uiManagerShouldAddEventListener(
       std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(
@@ -36468,6 +37156,8 @@ class SchedulerDelegate {
   virtual void schedulerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) = 0;
+  virtual void schedulerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) = 0;
   virtual ~SchedulerDelegate() noexcept = default;
 };
 } // namespace facebook::react
@@ -36811,6 +37501,12 @@ class LineMeasureCacheKey final {
   ParagraphAttributes paragraphAttributes{};
   Size size{};
 };
+class PreparedTextCacheKey final {
+ public:
+  AttributedString attributedString{};
+  ParagraphAttributes paragraphAttributes{};
+  LayoutConstraints layoutConstraints{};
+};
 constexpr auto kSimpleThreadSafeCacheSizeCap = size_t{1024};
 using TextMeasureCache = SimpleThreadSafeCache<
     TextMeasureCacheKey,
@@ -36869,10 +37565,23 @@ inline bool areAttributedStringFragmentsEquivalentLayoutWise(
        (lhs.parentShadowView.layoutMetrics ==
         rhs.parentShadowView.layoutMetrics));
 }
+inline bool areAttributedStringFragmentsEquivalentDisplayWise(
+    const AttributedString::Fragment& lhs,
+    const AttributedString::Fragment& rhs) {
+  return lhs.isContentEqual(rhs) &&
+      (!lhs.isAttachment() ||
+       (lhs.parentShadowView.layoutMetrics ==
+        rhs.parentShadowView.layoutMetrics));
+}
 inline size_t attributedStringFragmentHashLayoutWise(
     const AttributedString::Fragment& fragment) {
   return facebook::react::hash_combine(
       fragment.string, textAttributesHashLayoutWise(fragment.textAttributes));
+}
+inline size_t attributedStringFragmentHashDisplayWise(
+    const AttributedString::Fragment& fragment) {
+  return facebook::react::hash_combine(
+      fragment.string, fragment.textAttributes);
 }
 inline bool areAttributedStringsEquivalentLayoutWise(
     const AttributedString& lhs,
@@ -36891,12 +37600,38 @@ inline bool areAttributedStringsEquivalentLayoutWise(
   }
   return true;
 }
+inline bool areAttributedStringsEquivalentDisplayWise(
+    const AttributedString& lhs,
+    const AttributedString& rhs) {
+  auto& lhsFragment = lhs.getFragments();
+  auto& rhsFragment = rhs.getFragments();
+  if (lhsFragment.size() != rhsFragment.size()) {
+    return false;
+  }
+  auto size = lhsFragment.size();
+  for (size_t i = 0; i < size; i++) {
+    if (!areAttributedStringFragmentsEquivalentDisplayWise(
+            lhsFragment.at(i), rhsFragment.at(i))) {
+      return false;
+    }
+  }
+  return true;
+}
 inline size_t attributedStringHashLayoutWise(
     const AttributedString& attributedString) {
   auto seed = size_t{0};
   for (const auto& fragment : attributedString.getFragments()) {
     facebook::react::hash_combine(
         seed, attributedStringFragmentHashLayoutWise(fragment));
+  }
+  return seed;
+}
+inline size_t attributedStringHashDisplayWise(
+    const AttributedString& attributedString) {
+  size_t seed = 0;
+  for (const auto& fragment : attributedString.getFragments()) {
+    facebook::react::hash_combine(
+        seed, attributedStringFragmentHashDisplayWise(fragment));
   }
   return seed;
 }
@@ -36908,11 +37643,6 @@ inline bool operator==(
       lhs.paragraphAttributes == rhs.paragraphAttributes &&
       lhs.layoutConstraints == rhs.layoutConstraints;
 }
-inline bool operator!=(
-    const TextMeasureCacheKey& lhs,
-    const TextMeasureCacheKey& rhs) {
-  return !(lhs == rhs);
-}
 inline bool operator==(
     const LineMeasureCacheKey& lhs,
     const LineMeasureCacheKey& rhs) {
@@ -36921,10 +37651,13 @@ inline bool operator==(
       lhs.paragraphAttributes == rhs.paragraphAttributes &&
       lhs.size == rhs.size;
 }
-inline bool operator!=(
-    const LineMeasureCacheKey& lhs,
-    const LineMeasureCacheKey& rhs) {
-  return !(lhs == rhs);
+inline bool operator==(
+    const PreparedTextCacheKey& lhs,
+    const PreparedTextCacheKey& rhs) {
+  return areAttributedStringsEquivalentDisplayWise(
+             lhs.attributedString, rhs.attributedString) &&
+      lhs.paragraphAttributes == rhs.paragraphAttributes &&
+      lhs.layoutConstraints == rhs.layoutConstraints;
 }
 } // namespace facebook::react
 namespace std {
@@ -36944,6 +37677,15 @@ struct hash<facebook::react::LineMeasureCacheKey> {
         attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.size);
+  }
+};
+template <>
+struct hash<facebook::react::PreparedTextCacheKey> {
+  size_t operator()(const facebook::react::PreparedTextCacheKey& key) const {
+    return facebook::react::hash_combine(
+        attributedStringHashDisplayWise(key.attributedString),
+        key.paragraphAttributes,
+        key.layoutConstraints);
   }
 };
 } // namespace std
@@ -37534,7 +38276,7 @@ class LayoutAnimationStatusDelegate {
 namespace facebook::react {
 struct PointerEventTarget {
   PointerEvent event;
-  ShadowNode::Shared target;
+  std::shared_ptr<const ShadowNode> target;
 };
 struct ActivePointer {
   PointerEvent event;
@@ -37554,11 +38296,11 @@ using PointerHoverTrackerRegistry =
     std::unordered_map<PointerIdentifier, PointerHoverTracker::Unique>;
 class PointerEventsProcessor final {
  public:
-  static ShadowNode::Shared getShadowNodeFromEventTarget(
+  static std::shared_ptr<const ShadowNode> getShadowNodeFromEventTarget(
       jsi::Runtime& runtime,
       const EventTarget* target);
   void interceptPointerEvent(
-      const ShadowNode::Shared& target,
+      const std::shared_ptr<const ShadowNode>& target,
       const std::string& type,
       ReactEventPriority priority,
       const PointerEvent& event,
@@ -37566,7 +38308,7 @@ class PointerEventsProcessor final {
       const UIManager& uiManager);
   void setPointerCapture(
       PointerIdentifier pointerId,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
   void releasePointerCapture(
       PointerIdentifier pointerId,
       const ShadowNode* shadowNode);
@@ -37582,7 +38324,9 @@ class PointerHoverTracker {
  public:
   using Unique = std::unique_ptr<PointerHoverTracker>;
   using EventPath = std::vector<std::reference_wrapper<const ShadowNode>>;
-  PointerHoverTracker(ShadowNode::Shared target, const UIManager& uiManager);
+  PointerHoverTracker(
+      std::shared_ptr<const ShadowNode> target,
+      const UIManager& uiManager);
   const ShadowNode* getTarget(const UIManager& uiManager) const;
   bool hasSameTarget(const PointerHoverTracker& other) const;
   bool areAnyTargetsListeningToEvents(
@@ -37624,7 +38368,7 @@ class UIManager final : public ShadowTreeDelegate {
   void unregisterCommitHook(UIManagerCommitHook& commitHook);
   void registerMountHook(UIManagerMountHook& mountHook);
   void unregisterMountHook(UIManagerMountHook& mountHook);
-  ShadowNode::Shared getNewestCloneOfShadowNode(
+  std::shared_ptr<const ShadowNode> getNewestCloneOfShadowNode(
       const ShadowNode& shadowNode) const;
   ShadowTreeRevisionConsistencyManager*
   getShadowTreeRevisionConsistencyManager();
@@ -37660,18 +38404,18 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::SharedListOfShared& children,
       RawProps rawProps) const;
   void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const;
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const;
   void completeSurface(
       SurfaceId surfaceId,
       const ShadowNode::UnsharedListOfShared& rootChildren,
       ShadowTree::CommitOptions commitOptions);
   void setIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) const;
-  ShadowNode::Shared findNodeAtPoint(
-      const ShadowNode::Shared& shadowNode,
+  std::shared_ptr<const ShadowNode> findNodeAtPoint(
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       Point point) const;
   LayoutMetrics getRelativeLayoutMetrics(
       const ShadowNode& shadowNode,
@@ -37679,16 +38423,17 @@ class UIManager final : public ShadowTreeDelegate {
       LayoutableShadowNode::LayoutInspectingPolicy policy) const;
   void updateState(const StateUpdate& stateUpdate) const;
   void dispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) const;
   void setNativeProps_DEPRECATED(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       RawProps rawProps) const;
   void sendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType);
-  ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
+  std::shared_ptr<const ShadowNode> findShadowNodeByTag_DEPRECATED(
+      Tag tag) const;
   const ShadowTreeRegistry& getShadowTreeRegistry() const;
   void reportMount(SurfaceId surfaceId) const;
   void updateShadowTree(
@@ -37788,19 +38533,21 @@ class UIManagerDelegate {
       bool mountSynchronously) = 0;
   virtual void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) = 0;
   virtual void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) = 0;
   virtual void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType) = 0;
   virtual void uiManagerDidSetIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) = 0;
   virtual void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) = 0;
+  virtual void uiManagerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) = 0;
   virtual void uiManagerShouldAddEventListener(
       std::shared_ptr<const EventListener> listener) = 0;
   virtual void uiManagerShouldRemoveEventListener(
@@ -37876,7 +38623,7 @@ struct ShadowNodeListWrapper : public jsi::NativeState {
 };
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     bool assignRuntimeShadowNodeReference = false) {
   auto wrappedShadowNode =
       std::make_shared<ShadowNodeWrapper>(std::move(shadowNode));
@@ -37896,11 +38643,13 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     auto jsArray = std::move(object).asArray(runtime);
     size_t jsArrayLen = jsArray.length(runtime);
     if (jsArrayLen > 0) {
-      auto shadowNodeArray = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
+      auto shadowNodeArray =
+          std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
       shadowNodeArray->reserve(jsArrayLen);
       for (size_t i = 0; i < jsArrayLen; i++) {
-        shadowNodeArray->push_back(Bridging<ShadowNode::Shared>::fromJs(
-            runtime, jsArray.getValueAtIndex(runtime, i)));
+        shadowNodeArray->push_back(
+            Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                runtime, jsArray.getValueAtIndex(runtime, i)));
       }
       return shadowNodeArray;
     } else {
@@ -37924,7 +38673,8 @@ inline static jsi::Value valueFromShadowNodeList(
 }
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
     const ShadowNode::UnsharedListOfWeak& weakShadowNodeList) {
-  auto result = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
+  auto result =
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   for (const auto& weakShadowNode : *weakShadowNodeList) {
     auto sharedShadowNode = weakShadowNode.lock();
     if (!sharedShadowNode) {
@@ -37938,7 +38688,8 @@ inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& value) {
   auto shadowNodeList = shadowNodeListFromValue(runtime, value);
-  auto weakShadowNodeList = std::make_shared<std::vector<std::weak_ptr<const ShadowNode>>>();
+  auto weakShadowNodeList =
+      std::make_shared<std::vector<std::weak_ptr<const ShadowNode>>>();
   for (const auto& shadowNode : *shadowNodeList) {
     weakShadowNodeList->push_back(shadowNode);
   }
@@ -38925,8 +39676,7 @@ class FuseboxTracer {
 /// @src {packages/react-native/ReactCommon/reactperflogger/reactperflogger/BridgeNativeModulePerfLogger.h}:
 /// @dep {packages/react-native/ReactCommon/reactperflogger/reactperflogger/NativeModulePerfLogger.h}
 
-namespace facebook::react {
-namespace BridgeNativeModulePerfLogger {
+namespace facebook::react::BridgeNativeModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger>&& logger);
 void disableLogging();
 void moduleDataCreateStart(const char* moduleName, int32_t id);
@@ -38997,8 +39747,7 @@ void asyncMethodCallExecutionFail(
     const char* moduleName,
     const char* methodName,
     int32_t id);
-} // namespace BridgeNativeModulePerfLogger
-} // namespace facebook::react
+} // namespace facebook::react::BridgeNativeModulePerfLogger
 
 /// @src {packages/react-native/ReactCommon/reactperflogger/reactperflogger/FuseboxPerfettoDataSource.h}:
 
@@ -39010,7 +39759,7 @@ void asyncMethodCallExecutionFail(
 namespace facebook::react {
 class NativeModulePerfLogger {
  public:
-  virtual ~NativeModulePerfLogger() {}
+  virtual ~NativeModulePerfLogger() = default;
   virtual void moduleDataCreateStart(const char* moduleName, int32_t id) = 0;
   virtual void moduleDataCreateEnd(const char* moduleName, int32_t id) = 0;
   virtual void moduleCreateStart(const char* moduleName, int32_t id) = 0;
@@ -39538,8 +40287,9 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
     case YGUnitPoint:
     case YGUnitPercent:
       return lhs.value == rhs.value;
+    default:
+      return false;
   }
-  return false;
 }
 inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
   return !(lhs == rhs);
@@ -41948,8 +42698,10 @@ using DimensionsPayload = NativeDeviceInfoDimensionsPayload<
     std::optional<DisplayMetrics>,
     std::optional<DisplayMetricsAndroid>,
     std::optional<DisplayMetricsAndroid>>;
-using DeviceInfoConstants =
-    NativeDeviceInfoDeviceInfoConstants<DimensionsPayload, std::optional<bool>>;
+using DeviceInfoConstants = NativeDeviceInfoDeviceInfoConstants<
+    DimensionsPayload,
+    std::optional<bool>,
+    std::optional<bool>>;
 template <>
 struct Bridging<DisplayMetrics>
     : NativeDeviceInfoDisplayMetricsBridging<DisplayMetrics> {};
@@ -42033,10 +42785,6 @@ class DevLoadingViewModule
 
 /// @src {packages/react-native/ReactCxxPlatform/react/devsupport/DevServerHelper.h}:
 namespace facebook::react {
-namespace {
-constexpr std::string_view DEFAULT_DEV_SERVER_HOST = "localhost";
-constexpr uint32_t DEFAULT_DEV_SERVER_PORT = 8081;
-} // namespace
 class DevServerHelper {
  public:
   enum class DownloadProgressStatus : short { STARTED, FAILED, FINISHED };
@@ -42044,6 +42792,8 @@ class DevServerHelper {
   DevServerHelper(
       std::string appId,
       std::string deviceName,
+      std::string devServerHost,
+      uint32_t devServerPort,
       const HttpClientFactory& httpClientFactory,
       JavaScriptModuleCallback javaScriptModuleCallback) noexcept;
   ~DevServerHelper() noexcept = default;
@@ -42330,6 +43080,25 @@ using WebSocketClientFactory =
 WebSocketClientFactory getWebSocketClientFactory();
 } // namespace facebook::react
 
+/// @src {packages/react-native/ReactCxxPlatform/react/io/IImageLoader.h}:
+namespace facebook::react {
+using IImageLoaderOnLoadCallback = std::function<
+    void(double imageWidth, double imageHeight, const char* errorMessage)>;
+class IImageLoader {
+ public:
+  enum class CacheStatus {
+    None = 0,
+    Disk = 0x1,
+    Memory = 0x1 << 1,
+  };
+  virtual ~IImageLoader() = default;
+  virtual void loadImage(
+      const std::string& uri,
+      const IImageLoaderOnLoadCallback&& onLoad) = 0;
+  virtual CacheStatus getCacheStatus(const std::string& uri) = 0;
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactCxxPlatform/react/io/ImageLoaderModule.h}:
 namespace facebook::react {
 using ImageSize = NativeImageLoaderAndroidImageSize<double, double>;
@@ -42339,8 +43108,11 @@ struct Bridging<ImageSize>
 class ImageLoaderModule
     : public NativeImageLoaderAndroidCxxSpec<ImageLoaderModule> {
  public:
-  explicit ImageLoaderModule(std::shared_ptr<CallInvoker> jsInvoker)
-      : NativeImageLoaderAndroidCxxSpec(jsInvoker) {}
+  explicit ImageLoaderModule(
+      std::shared_ptr<CallInvoker> jsInvoker,
+      std::weak_ptr<IImageLoader> imageLoader = std::weak_ptr<IImageLoader>())
+      : NativeImageLoaderAndroidCxxSpec(jsInvoker),
+        imageLoader_(std::move(imageLoader)) {}
   jsi::Object getConstants(jsi::Runtime& rt);
   void abortRequest(jsi::Runtime& rt, int32_t requestId);
   AsyncPromise<ImageSize> getSize(jsi::Runtime& rt, const std::string& uri);
@@ -43723,6 +44495,7 @@ class PropsAnimatedNode final : public AnimatedNode {
   void update() override;
   void update(bool forceFabricCommit);
 };
+  Tag connectedViewTag_{animated::undefinedAnimatedNodeIdentifier};
 };
 } // namespace facebook::react
 
@@ -43785,9 +44558,9 @@ class StyleAnimatedNode final : public AnimatedNode {
       Tag tag,
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
-  void update() override;
-  const folly::dynamic& getProps() const noexcept {
-    return props_;
+  void collectViewUpdates(folly::dynamic& props);
+  bool isLayoutStyleUpdated() const noexcept {
+    return layoutStyleUpdated_;
   }
 };
 } // namespace facebook::react
@@ -43877,8 +44650,7 @@ class TransformAnimatedNode final : public AnimatedNode {
       Tag tag,
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
-  void update() override;
-  const folly::dynamic& getProps();
+  void collectViewUpdates(folly::dynamic& props);
 };
 } // namespace facebook::react
 
@@ -44018,6 +44790,8 @@ class IMountingManager {
   virtual void synchronouslyUpdateViewOnUIThread(
       Tag reactTag,
       const folly::dynamic& changedProps) {};
+  virtual void onUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) {};
   virtual void initializeAccessibilityManager() {};
   virtual void setAccessibilityFocusedView(Tag viewTag) {};
   virtual void setFocusedView(Tag viewTag) {};
@@ -44039,6 +44813,9 @@ class IMountingManager {
   virtual void setEventEmitterListener(
       std::shared_ptr<EventEmitterListener> listener) noexcept {};
   virtual void setUIManager(std::weak_ptr<UIManager> uiManager) noexcept {};
+  virtual std::shared_ptr<IImageLoader> getImageLoader() noexcept {
+    return nullptr;
+  }
 };
 } // namespace facebook::react
 
@@ -44104,10 +44881,12 @@ struct ReactInstanceConfig {
   bool enableDebugging{false};
   std::string appId;
   std::string deviceName;
+  std::string devServerHost{"localhost"};
+  uint32_t devServerPort{8081};
 };
 } // namespace facebook::react
 
-/// @src {packages/react-native/ReactCxxPlatform/react/runtime/platform/cxx/PlatformTimerRegistryImpl.h}:
+/// @src {packages/react-native/ReactCxxPlatform/react/runtime/platform/cxx/react/runtime/PlatformTimerRegistryImpl.h}:
 namespace facebook::react {
 class PlatformTimerRegistryImpl : public PlatformTimerRegistry {
  public:
@@ -44241,3 +45020,11 @@ class RunLoopObserverManager
   void induce() const noexcept;
 };
 } // namespace facebook::react
+
+/// @src {packages/react-native/scripts/ios-prebuild/React-umbrella.h}:
+extern "C" double ReactVersionNumber;
+extern "C" const unsigned char ReactVersionString[];
+
+/// @src {packages/react-native/scripts/ios-prebuild/React_RCTAppDelegate-umbrella.h}:
+extern "C" double React_RCTAppDelegateVersionNumber;
+extern "C" const unsigned char React_RCTAppDelegateVersionString[];
