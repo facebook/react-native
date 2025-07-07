@@ -416,6 +416,14 @@ public open class ReactViewGroup public constructor(context: Context?) :
     childrenRemovedWhileTransitioning?.remove(view.id)
   }
 
+  internal fun requestFocusFromJS() {
+    super.requestFocus(FOCUS_DOWN, null)
+  }
+
+  internal fun clearFocusFromJS() {
+    super.clearFocus()
+  }
+
   private fun trackChildViewTransition(childId: Int) {
     if (childrenRemovedWhileTransitioning == null) {
       childrenRemovedWhileTransitioning = mutableSetOf()

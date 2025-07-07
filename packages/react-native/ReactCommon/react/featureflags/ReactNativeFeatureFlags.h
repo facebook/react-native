@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20809734183aa7bfd7aad9b8d01ea080>>
+ * @generated SignedSource<<e54b039cd8b48acd9a7d9b3242380da2>>
  */
 
 /**
@@ -133,6 +133,11 @@ class ReactNativeFeatureFlags {
    * This feature flag enables a fix for reparenting fix in differentiator
    */
   RN_EXPORT static bool enableFixForParentTagDuringReparenting();
+
+  /**
+   * Enables focus commands on View in addition to TextInput.
+   */
+  RN_EXPORT static bool enableFocusCommandsOnView();
 
   /**
    * Enables font scale changes updating layout for measurable nodes.

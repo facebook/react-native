@@ -14,6 +14,7 @@
 
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
@@ -87,7 +88,12 @@ function focusTextInput(textField: ?HostInstance) {
 
   if (textField != null) {
     const fieldCanBeFocused =
-      currentlyFocusedInputRef !== textField &&
+      // We do not subscribe onBlur in View, so it will never call blurInput when
+      // a native event (e.g., keyboard navigation) causes a focus change. As such,
+      // we cannot rely on the `currentlyFocusedInputRef` accurately reflecting the
+      // current focus state.
+      (ReactNativeFeatureFlags.enableFocusCommandsOnView() ||
+        currentlyFocusedInputRef !== textField) &&
       // $FlowFixMe - `currentProps` is missing in `NativeMethods`
       textField.currentProps?.editable !== false;
 

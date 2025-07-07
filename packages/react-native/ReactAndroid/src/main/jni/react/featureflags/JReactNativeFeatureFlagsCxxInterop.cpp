@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5effd7d4ac8034424144ea68c82b61a7>>
+ * @generated SignedSource<<8039c6a2cfad70f8a67485f7ae2fe0c4>>
  */
 
 /**
@@ -150,6 +150,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableFixForParentTagDuringReparenting() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForParentTagDuringReparenting");
+    return method(javaProvider_);
+  }
+
+  bool enableFocusCommandsOnView() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFocusCommandsOnView");
     return method(javaProvider_);
   }
 
@@ -486,6 +492,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFixForParentTagDuringReparenting(
   return ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFocusCommandsOnView(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFocusCommandsOnView();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
@@ -769,6 +780,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFixForParentTagDuringReparenting",
         JReactNativeFeatureFlagsCxxInterop::enableFixForParentTagDuringReparenting),
+      makeNativeMethod(
+        "enableFocusCommandsOnView",
+        JReactNativeFeatureFlagsCxxInterop::enableFocusCommandsOnView),
       makeNativeMethod(
         "enableFontScaleChangesUpdatingLayout",
         JReactNativeFeatureFlagsCxxInterop::enableFontScaleChangesUpdatingLayout),
