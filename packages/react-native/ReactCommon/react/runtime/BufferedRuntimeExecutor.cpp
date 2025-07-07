@@ -7,13 +7,11 @@
 
 #include "BufferedRuntimeExecutor.h"
 
-#include <algorithm>
-
 namespace facebook::react {
 
 BufferedRuntimeExecutor::BufferedRuntimeExecutor(
     RuntimeExecutor runtimeExecutor)
-    : runtimeExecutor_(runtimeExecutor),
+    : runtimeExecutor_(std::move(runtimeExecutor)),
       isBufferingEnabled_(true),
       lastIndex_(0) {}
 
@@ -51,7 +49,7 @@ void BufferedRuntimeExecutor::flush() {
 void BufferedRuntimeExecutor::unsafeFlush() {
   while (queue_.size() > 0) {
     const BufferedWork& bufferedWork = queue_.top();
-    Work work = std::move(bufferedWork.work_);
+    Work work = bufferedWork.work_;
     runtimeExecutor_(std::move(work));
     queue_.pop();
   }
