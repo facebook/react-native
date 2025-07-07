@@ -17,8 +17,6 @@ import DOMException from '../../errors/DOMException';
 import NativePerformance from '../specs/NativePerformance';
 import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
 
-/* eslint-disable jest/no-disabled-tests */
-
 declare var performance: Performance;
 
 function getThrownError(fn: () => mixed): mixed {
@@ -73,7 +71,7 @@ describe('Performance', () => {
       // expect(mark.detail).not.toBe(originalDetail);
     });
 
-    it.skip('throws if no name is provided', () => {
+    it('throws if no name is provided', () => {
       expect(() => {
         // $FlowExpectedError[incompatible-call]
         performance.mark();
@@ -82,7 +80,7 @@ describe('Performance', () => {
       );
     });
 
-    it.skip('casts startTime to a number', () => {
+    it('casts startTime to a number', () => {
       const mark = performance.mark('some-mark', {
         // $FlowExpectedError[incompatible-call]
         startTime: '10',
@@ -98,7 +96,7 @@ describe('Performance', () => {
       expect(mark2.startTime).toBe(0);
     });
 
-    it.skip('throws if startTime cannot be converted to a finite number', () => {
+    it('throws if startTime cannot be converted to a finite number', () => {
       expect(() => {
         performance.mark('some-mark', {startTime: NaN});
       }).toThrow(
@@ -113,7 +111,7 @@ describe('Performance', () => {
       );
     });
 
-    it.skip('throws if startTime is negative', () => {
+    it('throws if startTime is negative', () => {
       expect(() => {
         performance.mark('some-mark', {startTime: -1});
       }).toThrow(
@@ -124,7 +122,7 @@ describe('Performance', () => {
 
   describe('measure', () => {
     describe('with measureOptions', () => {
-      it.skip('uses 0 as default start and now as default end', () => {
+      it('uses 0 as default start and now as default end', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         const measure = performance.measure('measure-with-defaults', {});
@@ -137,7 +135,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with a start timestamp', () => {
+      it('works with a start timestamp', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         const measure = performance.measure('measure-with-start-timestamp', {
@@ -152,7 +150,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with start mark', () => {
+      it('works with start mark', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         performance.mark('start-mark', {
@@ -171,7 +169,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with end mark', () => {
+      it('works with end mark', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         performance.mark('end-mark', {
@@ -190,7 +188,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with start mark and end mark', () => {
+      it('works with start mark and end mark', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         performance.mark('start-mark', {
@@ -236,7 +234,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with a start timestamp and a duration', () => {
+      it('works with a start timestamp and a duration', () => {
         const measure = performance.measure(
           'measure-with-start-timestamp-and-duration',
           {
@@ -253,7 +251,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with a start mark and a duration', () => {
+      it('works with a start mark and a duration', () => {
         performance.mark('start-mark', {
           startTime: 10,
         });
@@ -317,10 +315,10 @@ describe('Performance', () => {
     });
 
     describe('with startMark / endMark', () => {
-      it.skip('uses 0 as default start and now as default end', () => {
+      it('uses 0 as default start and now as default end', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
-        const measure = performance.measure('measure-with-defaults', undefined);
+        const measure = performance.measure('measure-with-defaults');
 
         expect(measure).toBeInstanceOf(PerformanceMeasure);
         expect(measure.entryType).toBe('measure');
@@ -330,7 +328,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with startMark', () => {
+      it('works with startMark', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         performance.mark('start-mark', {
@@ -350,7 +348,7 @@ describe('Performance', () => {
         expect(measure.detail).toBeUndefined();
       });
 
-      it.skip('works with startMark and endMark', () => {
+      it('works with startMark and endMark', () => {
         NativePerformance?.setCurrentTimeStampForTesting?.(25);
 
         performance.mark('start-mark', {
