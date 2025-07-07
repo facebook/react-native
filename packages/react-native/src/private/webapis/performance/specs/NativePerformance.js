@@ -58,6 +58,15 @@ export interface Spec extends TurboModule {
     name: string,
     startTime?: number,
   ) => NativePerformanceMarkResult;
+  +measure?: (
+    name: string,
+    startTime?: number,
+    endTime?: number,
+    duration?: number,
+    startMark?: string,
+    endMark?: string,
+  ) => NativePerformanceMeasureResult;
+  // DEPRECATED: Use measure instead.
   +measureWithResult?: (
     name: string,
     startTime: number,
