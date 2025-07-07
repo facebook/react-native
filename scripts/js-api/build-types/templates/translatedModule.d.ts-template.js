@@ -28,7 +28,7 @@ function translatedModuleTemplate({
  *
  * ${signedsource.getSigningToken()}
  *
- * This file was translated from Flow by scripts/build-types/index.js.
+ * This file was translated from Flow by scripts/js-api/build-types/index.js.
  * Original file: ${originalFileName}
  */
 ${tripleSlashDirectives.length > 0 ? '\n/// ' + tripleSlashDirectives.join('\n/// ') + '\n\n' : ''}${source}

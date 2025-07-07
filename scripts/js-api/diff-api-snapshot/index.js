@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-require('../babel-register').registerForScript();
+require('../../babel-register').registerForScript();
 
 const {diffApiSnapshot} = require('./diffApiSnapshot');
 const fs = require('fs');
@@ -32,7 +32,7 @@ async function main() {
 
   if (help) {
     console.log(`
-  Usage: node ./scripts/diff-api-snapshot <prev-snapshot> <new-snapshot>
+  Usage: node ./scripts/js-api/diff-api-snapshot <prev-snapshot> <new-snapshot>
 
   Analyze changes between two versions of React Native's JavaScript API
   snapshot (yarn build-types). Returns a JSON object with the following
