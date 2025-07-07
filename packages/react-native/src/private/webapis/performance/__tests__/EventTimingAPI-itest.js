@@ -248,4 +248,65 @@ describe('Event Timing API', () => {
 
     expect([...performance.eventCounts.values()]).toEqual([1, 1, 3]);
   });
+
+  describe('durationThreshold option', () => {
+    it('works when used with `type`', () => {
+      const callback = jest.fn();
+
+      const observer = new PerformanceObserver(callback);
+      observer.observe({type: 'event', durationThreshold: 50});
+
+      let forceDelay = false;
+
+      function MyComponent() {
+        const [count, setCount] = useState(0);
+
+        return (
+          <View
+            onClick={event => {
+              if (forceDelay) {
+                sleep(50);
+              }
+              setCount(count + 1);
+            }}>
+            <Text>{count}</Text>
+          </View>
+        );
+      }
+
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(<MyComponent />);
+      });
+
+      const element = nullthrows(
+        root.document.documentElement.firstElementChild,
+      );
+
+      expect(callback).not.toHaveBeenCalled();
+
+      Fantom.dispatchNativeEvent(element, 'click');
+
+      expect(callback).toHaveBeenCalledTimes(0);
+
+      forceDelay = true;
+
+      Fantom.dispatchNativeEvent(element, 'click');
+
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it('throws when used together with `entryTypes`', () => {
+      const observer = new PerformanceObserver(() => {});
+
+      expect(() => {
+        observer.observe({
+          entryTypes: ['event', 'mark'],
+          durationThreshold: 100,
+        });
+      }).toThrow(
+        `Failed to execute 'observe' on 'PerformanceObserver': An observe() call must not include both entryTypes and durationThreshold arguments.`,
+      );
+    });
+  });
 });
