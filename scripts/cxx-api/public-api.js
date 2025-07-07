@@ -34,13 +34,13 @@ const isTTY = process.stdout.isTTY;
 
 /*::
 type Config = {
-    include: string[],
-    exclude: string[],
-    settings: {
-        output: string,
-        clang?: string,
-        'clang-format'?: string,
-    }
+  include: string[],
+  exclude: string[],
+  settings: {
+    output: string,
+    clang?: string,
+    'clang-format'?: string,
+  },
 };
 
 type ParsedConfig = {

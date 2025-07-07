@@ -73,8 +73,8 @@ pushd "$FBSOURCE_ROOT/xplat/js/react-native-github" || exit $ERR_CODE_CANT_FIND_
 trap cleanup EXIT
 
 # TODO: This operates in the sandbox and can't modify files in the repository, which we need for change detection
-# buck2 run //xplat/js/react-native-github/private/cxx-public-api:public-api
-REPO_RELATIVE_DIR="private/cxx-public-api"
+# buck2 run //xplat/js/react-native-github/scripts/cxx-api:public-api
+REPO_RELATIVE_DIR="scripts/cxx-api"
 (cd "$REPO_RELATIVE_DIR" && $YARN_BINARY install)
 $NODE_BINARY "$REPO_RELATIVE_DIR/public-api.js"
 echo
