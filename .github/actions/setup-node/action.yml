@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: 'The node.js version to use'
     required: false
-    default: '22'
+    default: '22.14.0'
 runs:
   using: "composite"
   steps:
