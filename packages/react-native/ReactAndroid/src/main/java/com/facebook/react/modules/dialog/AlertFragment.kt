@@ -162,7 +162,16 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
         builder.setItems(arguments.getCharSequenceArray(ARG_ITEMS), fragment)
       }
 
-      return builder.create()
+      val dialog = builder.create()
+      
+      // Disable all caps on buttons
+      dialog.setOnShowListener {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.isAllCaps = false
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.isAllCaps = false
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL)?.isAllCaps = false
+      }
+      
+      return dialog
     }
 
     /**
@@ -203,7 +212,16 @@ public class AlertFragment : DialogFragment, DialogInterface.OnClickListener {
         builder.setItems(arguments.getCharSequenceArray(ARG_ITEMS), fragment)
       }
 
-      return builder.create()
+      val dialog = builder.create()
+      
+      // Disable all caps on buttons
+      dialog.setOnShowListener {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.isAllCaps = false
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.isAllCaps = false
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL)?.isAllCaps = false
+      }
+      
+      return dialog
     }
   }
 }
