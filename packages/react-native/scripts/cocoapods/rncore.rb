@@ -9,6 +9,18 @@ require 'rexml/document'
 
 require_relative './utils.rb'
 
+### Adds ReactNativeCore-prebuilt as a dependency to the given podspec if we're not
+### building ReactNativeCore from source (then this function does nothing).
+def add_rncore_dependency(s)
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+        current_pod_target_xcconfig = s.to_hash["pod_target_xcconfig"] || {}
+        current_pod_target_xcconfig = current_pod_target_xcconfig.to_h unless current_pod_target_xcconfig.is_a?(Hash)
+        s.dependency "React-Core-prebuilt"
+        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] ||= [] << "$(PODS_ROOT)/React-Core-prebuilt/React.xcframework/Headers"
+        s.pod_target_xcconfig = current_pod_target_xcconfig
+    end
+end
+
 ## - RCT_USE_PREBUILT_RNCORE: If set to 1, it will use the release tarball from Maven instead of building from source.
 ## - RCT_TESTONLY_RNCORE_TARBALL_PATH: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
 ## - RCT_TESTONLY_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.

@@ -48,4 +48,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

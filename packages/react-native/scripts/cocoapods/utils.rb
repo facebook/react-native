@@ -255,18 +255,26 @@ class ReactNativePodsUtils
     end
 
     def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
-        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
         search_paths = []
 
-        if platforms.empty?() || platforms.length() == 1
-            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
-            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-        else
-            platforms.each { |platform|
-                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+        # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
+        if ReactNativeCoreUtils.build_rncore_from_source()
+            platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+
+            if platforms.empty?() || platforms.length() == 1
+                base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
                 self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-            }
+            else
+                platforms.each { |platform|
+                    base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                    self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+                }
+            end
+        else
+            base_path = File.join("${PODS_ROOT}", "#{pod_name}")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
         end
+
         return search_paths
     end
 

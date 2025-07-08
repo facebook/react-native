@@ -52,4 +52,5 @@ Pod::Spec.new do |s|
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end
