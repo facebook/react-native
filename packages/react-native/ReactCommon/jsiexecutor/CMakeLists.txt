@@ -23,4 +23,4 @@ target_link_libraries(jsireact
         jsi)
 
 target_compile_reactnative_options(jsireact PRIVATE)
-target_compile_options(jsireact PRIVATE -O3)
+target_compile_options(jsireact PRIVATE -O3 -flto)
