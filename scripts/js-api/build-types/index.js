@@ -8,7 +8,7 @@
  * @format
  */
 
-require('../../babel-register').registerForScript();
+require('../../shared/babelRegister').registerForScript();
 
 const buildApiSnapshot = require('./buildApiSnapshot');
 const buildGeneratedTypes = require('./buildGeneratedTypes');

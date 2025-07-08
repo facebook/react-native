@@ -8,7 +8,7 @@
  * @format
  */
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../../shared/consts');
 const {ENTRY_POINT, IGNORE_PATTERNS, TYPES_OUTPUT_DIR} = require('../config');
 const getRequireStack = require('./resolution/getRequireStack');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');

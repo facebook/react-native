@@ -11,8 +11,8 @@
 
 import type {PluginObj} from '@babel/core';
 
-const {PACKAGES_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../../consts');
-const {isGitRepo} = require('../../scm-utils');
+const {PACKAGES_DIR, REACT_NATIVE_PACKAGE_DIR} = require('../../shared/consts');
+const isGitRepo = require('../../shared/isGitRepo');
 const {API_EXTRACTOR_CONFIG_FILE, TYPES_OUTPUT_DIR} = require('../config');
 const apiSnapshotTemplate = require('./templates/ReactNativeApi.d.ts-template.js');
 const applyBabelTransformsSeq = require('./utils/applyBabelTransformsSeq');

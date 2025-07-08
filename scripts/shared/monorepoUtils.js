@@ -8,7 +8,7 @@
  * @format
  */
 
-const {REPO_ROOT} = require('../consts');
+const {REPO_ROOT} = require('./consts');
 const {promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');

@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-require('../../babel-register').registerForScript();
+require('../../shared/babelRegister').registerForScript();
 
 const {diffApiSnapshot} = require('./diffApiSnapshot');
 const fs = require('fs');

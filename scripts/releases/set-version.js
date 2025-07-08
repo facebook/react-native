@@ -11,14 +11,14 @@
 'use strict';
 
 /*::
-import type {PackageJson} from '../utils/monorepo';
+import type {PackageJson} from '../shared/monorepoUtils';
 */
 
 const {
   getPackages,
   getWorkspaceRoot,
   updatePackageJson,
-} = require('../utils/monorepo');
+} = require('../shared/monorepoUtils');
 const {updateReactNativeArtifacts} = require('./set-rn-artifacts-version');
 const {parseArgs} = require('util');
 
