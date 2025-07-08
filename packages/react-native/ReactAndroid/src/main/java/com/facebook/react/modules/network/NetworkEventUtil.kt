@@ -11,10 +11,32 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableArray
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.net.SocketTimeoutException
+import okhttp3.Headers
+import okhttp3.Request
+import okhttp3.Response
 
-/** Util methods to send network responses to JS. */
-internal object ResponseUtil {
+/**
+ * Utility class for reporting network lifecycle events to JavaScript and InspectorNetworkReporter.
+ */
+internal object NetworkEventUtil {
+  @JvmStatic
+  fun onCreateRequest(requestId: Int, request: Request) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      val headersMap = okHttpHeadersToMap(request.headers())
+      InspectorNetworkReporter.reportRequestStart(
+          requestId,
+          request.url().toString(),
+          request.method(),
+          headersMap,
+          request.body()?.toString() ?: "",
+          request.body()?.contentLength() ?: 0,
+      )
+      InspectorNetworkReporter.reportConnectionTiming(requestId, headersMap)
+    }
+  }
+
   @JvmStatic
   fun onDataSend(
       reactContext: ReactApplicationContext?,
@@ -104,7 +126,14 @@ internal object ResponseUtil {
   }
 
   @JvmStatic
-  fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
+  fun onRequestSuccess(
+      reactContext: ReactApplicationContext?,
+      requestId: Int,
+      encodedDataLength: Long
+  ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.reportResponseEnd(requestId, encodedDataLength)
+    }
     reactContext?.emitDeviceEvent(
         "didCompleteNetworkResponse",
         buildReadableArray {
@@ -117,17 +146,72 @@ internal object ResponseUtil {
   fun onResponseReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
-      statusCode: Int,
-      headers: WritableMap?,
-      url: String?
+      response: Response,
   ) {
+    val responseUrl = response.request().url().toString()
+    val headersMap = okHttpHeadersToMap(response.headers())
+
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.reportResponseStart(
+          requestId,
+          responseUrl,
+          response.code(),
+          headersMap,
+          response.body()?.contentLength() ?: 0,
+      )
+    }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
-          pushInt(statusCode)
-          pushMap(headers)
-          pushString(url)
+          pushInt(response.code())
+          pushMap(Arguments.makeNativeMap(headersMap))
+
+          pushString(responseUrl)
         })
+  }
+
+  @Deprecated("Compatibility overload")
+  @JvmStatic
+  fun onResponseReceived(
+      reactContext: ReactApplicationContext?,
+      requestId: Int,
+      statusCode: Int,
+      headers: WritableMap?,
+      url: String?
+  ) {
+    val headersBuilder = Headers.Builder()
+    headers?.let { map ->
+      val iterator = map.keySetIterator()
+      while (iterator.hasNextKey()) {
+        val key = iterator.nextKey()
+        val value = map.getString(key)
+        if (value != null) {
+          headersBuilder.add(key, value)
+        }
+      }
+    }
+    onResponseReceived(
+        reactContext,
+        requestId,
+        Response.Builder()
+            .code(statusCode)
+            .request(Request.Builder().url(url.orEmpty()).build())
+            .headers(headersBuilder.build())
+            .build())
+  }
+
+  private fun okHttpHeadersToMap(headers: Headers): Map<String, String> {
+    val responseHeaders = mutableMapOf<String, String>()
+    for (i in 0 until headers.size()) {
+      val headerName = headers.name(i)
+      // multiple values for the same header
+      if (responseHeaders.containsKey(headerName)) {
+        responseHeaders[headerName] = responseHeaders[headerName] + ", " + headers.value(i)
+      } else {
+        responseHeaders[headerName] = headers.value(i)
+      }
+    }
+    return responseHeaders
   }
 }
