@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {REPO_ROOT} = require('../../consts');
+const {REPO_ROOT} = require('../../shared/consts');
 const {execSync, spawn} = require('child_process');
 const fs = require('fs');
 const path = require('path');

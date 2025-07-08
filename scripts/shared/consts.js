@@ -13,7 +13,7 @@ const path = require('path');
 /**
  * The absolute path to the repo root.
  */
-const REPO_ROOT /*: string */ = path.resolve(__dirname, '..');
+const REPO_ROOT /*: string */ = path.resolve(__dirname, '../..');
 
 /**
  * The absolute path to the packages directory (note: this directory alone may

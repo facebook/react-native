@@ -28,7 +28,7 @@ let isRegisteredForMonorepo = false;
  * ```js
  * // Place in a package entry point
  * if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
- *   require('../../../scripts/babel-register').registerForMonorepo();
+ *   require('../../../scripts/shared/babelRegister').registerForMonorepo();
  * }
  * ```
  */
@@ -57,7 +57,7 @@ function registerForMonorepo() {
  *
  * ```js
  * // Place in a script entry point
- * require('../babel-register').registerForScript();
+ * require('../shared/babelRegister').registerForScript();
  * ```
  */
 function registerForScript() {

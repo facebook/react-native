@@ -8,8 +8,8 @@
  * @format
  */
 
-const {PACKAGES_DIR} = require('../../../consts');
-const {getPackages} = require('../../../utils/monorepo');
+const {PACKAGES_DIR} = require('../../../shared/consts');
+const {getPackages} = require('../../../shared/monorepoUtils');
 const {existsSync} = require('fs');
 const path = require('path');
 

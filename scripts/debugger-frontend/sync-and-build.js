@@ -8,7 +8,7 @@
  * @format
  */
 
-const {PACKAGES_DIR} = require('../consts');
+const {PACKAGES_DIR} = require('../shared/consts');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');
 const {execSync, spawnSync} = require('child_process');

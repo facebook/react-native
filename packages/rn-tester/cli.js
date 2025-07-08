@@ -31,7 +31,7 @@ function injectCoreCLIUtilsRuntimePatch() {
 
 if (process.env.BUILD_EXCLUDE_BABEL_REGISTER == null) {
   // $FlowFixMe[cannot-resolve-module]
-  require('../../scripts/babel-register').registerForMonorepo();
+  require('../../scripts/shared/babelRegister').registerForMonorepo();
 }
 
 injectCoreCLIUtilsRuntimePatch();

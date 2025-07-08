@@ -17,8 +17,8 @@
  * and to make it more accessible for other devs to play around with.
  */
 
-const {REPO_ROOT} = require('../consts');
 const {initNewProjectFromSource} = require('../e2e/init-project-e2e');
+const {REPO_ROOT} = require('../shared/consts');
 const {
   checkPackagerRunning,
   launchPackagerInSeparateWindow,
