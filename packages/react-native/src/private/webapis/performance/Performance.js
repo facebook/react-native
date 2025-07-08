@@ -18,6 +18,7 @@ import type {
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
 import DOMException from '../errors/DOMException';
+import structuredClone from '../structuredClone/structuredClone';
 import {setPlatformObject} from '../webidl/PlatformObjects';
 import {EventCounts} from './EventTiming';
 import {
@@ -122,6 +123,11 @@ export default class Performance {
       );
     }
 
+    let resolvedDetail;
+    if (markOptions?.detail != null) {
+      resolvedDetail = structuredClone(markOptions.detail);
+    }
+
     let computedStartTime;
     if (NativePerformance?.markWithResult) {
       let resolvedStartTime;
@@ -152,7 +158,7 @@ export default class Performance {
 
     return new PerformanceMark(markName, {
       startTime: computedStartTime,
-      detail: markOptions?.detail,
+      detail: resolvedDetail,
     });
   }
 
@@ -249,7 +255,10 @@ export default class Performance {
             );
           }
 
-          resolvedDetail = startMarkOrOptions.detail;
+          const detail = startMarkOrOptions.detail;
+          if (detail != null) {
+            resolvedDetail = structuredClone(detail);
+          }
 
           break;
         }

@@ -75,8 +75,7 @@ describe('Performance', () => {
       });
 
       expect(mark.detail).toEqual(originalDetail);
-      // TODO structuredClone
-      // expect(mark.detail).not.toBe(originalDetail);
+      expect(mark.detail).not.toBe(originalDetail);
     });
 
     it('throws if no name is provided', () => {
@@ -423,8 +422,7 @@ describe('Performance', () => {
       });
 
       expect(measure.detail).toEqual(originalDetail);
-      // TODO structuredClone
-      // expect(measure.detail).not.toBe(originalDetail);
+      expect(measure.detail).not.toBe(originalDetail);
     });
   });
 
