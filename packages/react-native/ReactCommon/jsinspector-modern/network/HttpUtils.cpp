@@ -147,8 +147,11 @@ std::string httpReasonPhrase(uint16_t status) {
 std::string mimeTypeFromHeaders(const Headers& headers) {
   std::string mimeType = "application/octet-stream";
 
-  if (headers.find("Content-Type") != headers.end()) {
-    mimeType = headers.at("Content-Type");
+  for (const auto& header : headers) {
+    if (strcasecmp(header.first.c_str(), "Content-Type") == 0) {
+      mimeType = header.second;
+      break;
+    }
   }
 
   return mimeType;
