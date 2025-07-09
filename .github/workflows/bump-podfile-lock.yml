@@ -29,6 +29,10 @@ jobs:
           git checkout "$BRANCH_NAME"
           git fetch
           git pull origin "$BRANCH_NAME"
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.2.0'
       - name: Bump podfile.lock
         run: |
           cd packages/rn-tester
