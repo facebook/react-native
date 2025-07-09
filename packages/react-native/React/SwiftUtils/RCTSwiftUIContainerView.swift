@@ -18,10 +18,8 @@ import UIKit
     guard let view = hostingController?.view else {
       return
     }
-
     view.backgroundColor = .clear;
   }
-
 
   @objc public func updateContentView(_ view: UIView) {
     containerViewModel.contentView = view
