@@ -1,6 +1,6 @@
 {
   "name": "@react-native/debugger-shell",
-  "version": "0.81.0-main",
+  "version": "0.81.0-rc.0",
   "description": "Experimental debugger shell for React Native for use with @react-native/debugger-frontend",
   "keywords": [
     "react-native",
