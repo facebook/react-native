@@ -30,15 +30,14 @@ inline std::shared_ptr<const ShadowNode> getShadowNode(
   return Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
       runtime, shadowNodeValue);
 }
-} // namespace
 
 #pragma mark - Private helpers
 
-static UIManager& getUIManagerFromRuntime(facebook::jsi::Runtime& runtime) {
+UIManager& getUIManagerFromRuntime(facebook::jsi::Runtime& runtime) {
   return UIManagerBinding::getBinding(runtime)->getUIManager();
 }
 
-static RootShadowNode::Shared getCurrentShadowTreeRevision(
+RootShadowNode::Shared getCurrentShadowTreeRevision(
     facebook::jsi::Runtime& runtime,
     SurfaceId surfaceId) {
   auto shadowTreeRevisionProvider =
@@ -46,7 +45,7 @@ static RootShadowNode::Shared getCurrentShadowTreeRevision(
   return shadowTreeRevisionProvider->getCurrentRevision(surfaceId);
 }
 
-static RootShadowNode::Shared getCurrentShadowTreeRevision(
+RootShadowNode::Shared getCurrentShadowTreeRevision(
     facebook::jsi::Runtime& runtime,
     jsi::Value& nativeNodeReference) {
   if (nativeNodeReference.isNumber()) {
@@ -58,14 +57,13 @@ static RootShadowNode::Shared getCurrentShadowTreeRevision(
       runtime, getShadowNode(runtime, nativeNodeReference)->getSurfaceId());
 }
 
-static facebook::react::PointerEventsProcessor&
-getPointerEventsProcessorFromRuntime(facebook::jsi::Runtime& runtime) {
+facebook::react::PointerEventsProcessor& getPointerEventsProcessorFromRuntime(
+    facebook::jsi::Runtime& runtime) {
   return facebook::react::UIManagerBinding::getBinding(runtime)
       ->getPointerEventsProcessor();
 }
 
-static std::vector<facebook::jsi::Value>
-getArrayOfInstanceHandlesFromShadowNodes(
+std::vector<facebook::jsi::Value> getArrayOfInstanceHandlesFromShadowNodes(
     const std::vector<std::shared_ptr<const ShadowNode>>& nodes,
     facebook::jsi::Runtime& runtime) {
   // JSI doesn't support adding elements to an array after creation,
@@ -83,9 +81,11 @@ getArrayOfInstanceHandlesFromShadowNodes(
   return nonNullInstanceHandles;
 }
 
-static bool isRootShadowNode(const ShadowNode& shadowNode) {
+bool isRootShadowNode(const ShadowNode& shadowNode) {
   return shadowNode.getTraits().check(ShadowNodeTraits::Trait::RootNodeKind);
 }
+
+} // namespace
 
 #pragma mark - NativeDOM
 
@@ -389,44 +389,38 @@ jsi::Value NativeDOM::linkRootNode(
 void NativeDOM::measure(
     jsi::Runtime& rt,
     std::shared_ptr<const ShadowNode> shadowNode,
-    jsi::Function callback) {
+    const MeasureOnSuccessCallback& callback) {
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
-    callback.call(rt, {0, 0, 0, 0, 0, 0});
+    callback(0, 0, 0, 0, 0, 0);
     return;
   }
 
   auto measureRect = dom::measure(currentRevision, *shadowNode);
 
-  callback.call(
-      rt,
-      {jsi::Value{rt, measureRect.x},
-       jsi::Value{rt, measureRect.y},
-       jsi::Value{rt, measureRect.width},
-       jsi::Value{rt, measureRect.height},
-       jsi::Value{rt, measureRect.pageX},
-       jsi::Value{rt, measureRect.pageY}});
+  callback(
+      measureRect.x,
+      measureRect.y,
+      measureRect.width,
+      measureRect.height,
+      measureRect.pageX,
+      measureRect.pageY);
 }
 
 void NativeDOM::measureInWindow(
     jsi::Runtime& rt,
     std::shared_ptr<const ShadowNode> shadowNode,
-    jsi::Function callback) {
+    const MeasureInWindowOnSuccessCallback& callback) {
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
-    callback.call(rt, {0, 0, 0, 0});
+    callback(0, 0, 0, 0);
     return;
   }
 
   auto rect = dom::measureInWindow(currentRevision, *shadowNode);
-  callback.call(
-      rt,
-      {jsi::Value{rt, rect.x},
-       jsi::Value{rt, rect.y},
-       jsi::Value{rt, rect.width},
-       jsi::Value{rt, rect.height}});
+  callback(rect.x, rect.y, rect.width, rect.height);
 }
 
 void NativeDOM::measureLayout(
@@ -434,7 +428,7 @@ void NativeDOM::measureLayout(
     std::shared_ptr<const ShadowNode> shadowNode,
     std::shared_ptr<const ShadowNode> relativeToShadowNode,
     jsi::Function onFail,
-    jsi::Function onSuccess) {
+    const MeasureLayoutOnSuccessCallback& onSuccess) {
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -452,12 +446,7 @@ void NativeDOM::measureLayout(
 
   auto rect = maybeRect.value();
 
-  onSuccess.call(
-      rt,
-      {jsi::Value{rt, rect.x},
-       jsi::Value{rt, rect.y},
-       jsi::Value{rt, rect.width},
-       jsi::Value{rt, rect.height}});
+  onSuccess(rect.x, rect.y, rect.width, rect.height);
 }
 
 #pragma mark - Legacy direct manipulation APIs (for `ReactNativeElement`).
