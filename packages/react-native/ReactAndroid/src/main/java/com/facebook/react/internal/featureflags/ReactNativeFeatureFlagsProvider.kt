@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8abf9bfb81265ae0c840457eb6c199bd>>
+ * @generated SignedSource<<d6de753a08bc272f918066ad90fda301>>
  */
 
 /**
@@ -24,8 +24,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
-
-  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 

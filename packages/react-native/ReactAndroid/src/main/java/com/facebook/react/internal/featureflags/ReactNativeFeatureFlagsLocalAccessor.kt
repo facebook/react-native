@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<356261385b837def94ac5a4ca7ffd05d>>
+ * @generated SignedSource<<5e082a56b9e6594828e50e2dfef76ea9>>
  */
 
 /**
@@ -25,7 +25,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
@@ -89,16 +88,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun animatedShouldSignalBatch(): Boolean {
-    var cached = animatedShouldSignalBatchCache
-    if (cached == null) {
-      cached = currentProvider.animatedShouldSignalBatch()
-      accessedFeatureFlags.add("animatedShouldSignalBatch")
-      animatedShouldSignalBatchCache = cached
     }
     return cached
   }

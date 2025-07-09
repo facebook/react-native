@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5effd7d4ac8034424144ea68c82b61a7>>
+ * @generated SignedSource<<d2e4ec09356f6857d789cfcc44a83552>>
  */
 
 /**
@@ -42,12 +42,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
-    return method(javaProvider_);
-  }
-
-  bool animatedShouldSignalBatch() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
     return method(javaProvider_);
   }
 
@@ -396,11 +390,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
@@ -715,9 +704,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
-      makeNativeMethod(
-        "animatedShouldSignalBatch",
-        JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
       makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),

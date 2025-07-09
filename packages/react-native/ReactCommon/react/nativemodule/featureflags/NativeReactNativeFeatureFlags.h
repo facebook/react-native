@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3336bad491a91abb3af7e8fcd7e5938>>
+ * @generated SignedSource<<f09cc734d07ec566f153e90c6d8796db>>
  */
 
 /**
@@ -37,8 +37,6 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
-
-  bool animatedShouldSignalBatch(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 

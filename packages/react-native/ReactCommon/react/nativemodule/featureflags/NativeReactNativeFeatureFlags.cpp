@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aebe2ba2618903a0ac2df06f18df8c75>>
+ * @generated SignedSource<<52f80499ef40102683c343c11570badf>>
  */
 
 /**
@@ -47,11 +47,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
-}
-
-bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
 }
 
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(

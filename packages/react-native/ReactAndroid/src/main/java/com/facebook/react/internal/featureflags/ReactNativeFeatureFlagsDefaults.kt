@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<48fa8921cc2947a713974c9926e1d806>>
+ * @generated SignedSource<<c7dc0406f2a4e8b4bedde09e8dec5b07>>
  */
 
 /**
@@ -24,8 +24,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
-
-  override fun animatedShouldSignalBatch(): Boolean = false
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 

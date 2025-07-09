@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55c1f0223345b5680bbdd888a358f210>>
+ * @generated SignedSource<<5935f4d8ec94954d583ad79116e8daba>>
  * @flow strict
  * @noformat
  */
@@ -26,7 +26,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
-  +animatedShouldSignalBatch?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +cxxNativeAnimatedRemoveJsSync?: () => boolean;
   +disableMainQueueSyncDispatchIOS?: () => boolean;
