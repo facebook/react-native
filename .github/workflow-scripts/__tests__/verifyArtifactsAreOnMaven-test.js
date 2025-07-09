@@ -38,7 +38,7 @@ describe('#verifyArtifactsAreOnMaven', () => {
 
     expect(mockSleep).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1',
+      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1/react-native-artifacts-0.78.1.pom',
     );
   });
 
@@ -55,7 +55,7 @@ describe('#verifyArtifactsAreOnMaven', () => {
 
     expect(mockSleep).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1',
+      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1/react-native-artifacts-0.78.1.pom',
     );
   });
 
@@ -67,7 +67,7 @@ describe('#verifyArtifactsAreOnMaven', () => {
 
     expect(mockSleep).toHaveBeenCalledTimes(0);
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1',
+      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1/react-native-artifacts-0.78.1.pom',
     );
   });
 
@@ -81,7 +81,7 @@ describe('#verifyArtifactsAreOnMaven', () => {
     expect(mockSleep).toHaveBeenCalledTimes(90);
     expect(mockExit).toHaveBeenCalledWith(1);
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1',
+      'https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.78.1/react-native-artifacts-0.78.1.pom',
     );
   });
 });
