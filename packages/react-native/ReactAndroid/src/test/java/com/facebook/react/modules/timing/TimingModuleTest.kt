@@ -14,12 +14,10 @@ package com.facebook.react.modules.timing
 import android.content.Context
 import android.os.Looper
 import android.view.Choreographer.FrameCallback
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.jstasks.HeadlessJsTaskConfig
@@ -29,6 +27,7 @@ import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
 import com.facebook.react.modules.core.TimingModule
+import com.facebook.testutils.shadows.ShadowArguments
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -49,6 +48,7 @@ import org.mockito.kotlin.whenever
 import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 
 object MockCompat {
   // Same as Mockito's 'eq()', but works for non-nullable types
@@ -63,6 +63,7 @@ object MockCompat {
   @Suppress("UNCHECKED_CAST") fun <T> uninitialized(): T = null as T
 }
 
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class TimingModuleTest {
   companion object {
@@ -75,7 +76,6 @@ class TimingModuleTest {
   private lateinit var postFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var idlePostFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var jsTimersMock: JSTimers
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var systemClock: MockedStatic<SystemClock>
   private lateinit var reactChoreographerMock: ReactChoreographer
 
@@ -84,9 +84,6 @@ class TimingModuleTest {
 
   @Before
   fun prepareModules() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-
     systemClock = mockStatic(SystemClock::class.java)
     systemClock
         .`when`<Long> { SystemClock.uptimeMillis() }
@@ -147,7 +144,6 @@ class TimingModuleTest {
   @After
   fun tearDown() {
     systemClock.close()
-    arguments.close()
     ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 

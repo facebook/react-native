@@ -19,7 +19,6 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
@@ -31,7 +30,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -188,12 +186,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       ((BaseVMFocusChangeListener) focusChangeListener).detach(view);
     }
 
-    AccessibilityDelegateCompat axDelegate = ViewCompat.getAccessibilityDelegate(view);
-
-    if (axDelegate instanceof ReactAccessibilityDelegate) {
-      ((ReactAccessibilityDelegate) axDelegate).cleanUp();
-    }
-
     if (view instanceof ViewGroup) {
       ((ViewGroup) view).setOnHierarchyChangeListener(null);
     }
@@ -319,59 +311,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
 
-    /*
-     * If we change the nativeId we need to notify the relevant accessibility parent to update the
-     * focusing order.
-     */
-    if (view.getTag(R.id.accessibility_order_parent) != null) {
-      ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessibility_order_parent);
-
-      accessibilityParent.setTag(R.id.accessibility_order_dirty, true);
-
-      accessibilityParent.notifySubtreeAccessibilityStateChanged(
-          accessibilityParent, accessibilityParent, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
-    }
-
     ReactFindViewUtil.notifyViewRendered(view);
-  }
-
-  @ReactProp(name = ViewProps.ACCESSIBILITY_ORDER)
-  public void setAccessibilityOrder(@NonNull T view, @Nullable ReadableArray nativeIds) {
-    if (!ReactNativeFeatureFlags.enableAccessibilityOrder()) {
-      return;
-    }
-
-    view.setTag(R.id.accessibility_order, nativeIds);
-    view.setTag(R.id.accessibility_order_dirty, true);
-
-    if (view instanceof ViewGroup) {
-      ((ViewGroup) view)
-          .setOnHierarchyChangeListener(
-              new ViewGroup.OnHierarchyChangeListener() {
-                @Override
-                public void onChildViewAdded(View parent, View child) {
-                  view.setTag(R.id.accessibility_order_dirty, true);
-
-                  // We also want to listen to changes on the hierarchy of nested ViewGroups
-                  if (child instanceof ViewGroup) {
-                    ViewGroup childGroup = (ViewGroup) child;
-                    childGroup.setOnHierarchyChangeListener(this);
-                    for (int i = 0; i < childGroup.getChildCount(); i++) {
-                      onChildViewAdded(childGroup, childGroup.getChildAt(i));
-                    }
-                  }
-                }
-
-                @Override
-                public void onChildViewRemoved(View parent, View child) {
-                  view.setTag(R.id.accessibility_order_dirty, true);
-                }
-              });
-
-      ((ViewGroup) view)
-          .notifySubtreeAccessibilityStateChanged(
-              view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
-    }
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)

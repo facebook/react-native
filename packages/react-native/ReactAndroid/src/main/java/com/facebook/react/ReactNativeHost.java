@@ -10,6 +10,7 @@ package com.facebook.react;
 import android.app.Application;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.JSExceptionHandler;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
@@ -18,7 +19,6 @@ import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
@@ -32,12 +32,12 @@ import java.util.List;
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
  * {@link Application class} (see {@link ReactApplication}), or as a static field.
+ *
+ * @deprecated This class will be replaced by com.facebook.react.ReactHost in the New Architecture.
  */
-@DeprecatedInNewArchitecture(
-    message =
-        "This class will be replaced by com.facebook.react.ReactHost in the new architecture of"
-            + " React Native.")
+@Deprecated
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactNativeHost {
 
   static {

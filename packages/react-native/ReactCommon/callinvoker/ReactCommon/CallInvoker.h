@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
-
 #include "SchedulerPriority.h"
+
+#include <functional>
+#include <string>
 
 namespace facebook::jsi {
 class Runtime;
@@ -45,7 +45,7 @@ class CallInvoker {
     invokeSync([func](jsi::Runtime&) { func(); });
   }
 
-  virtual ~CallInvoker() {}
+  virtual ~CallInvoker() = default;
 };
 
 using NativeMethodCallFunc = std::function<void()>;
@@ -58,7 +58,7 @@ class NativeMethodCallInvoker {
   virtual void invokeSync(
       const std::string& methodName,
       NativeMethodCallFunc&& func) = 0;
-  virtual ~NativeMethodCallInvoker() {}
+  virtual ~NativeMethodCallInvoker() = default;
 };
 
 } // namespace facebook::react

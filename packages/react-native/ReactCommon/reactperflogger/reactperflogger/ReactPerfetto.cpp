@@ -88,9 +88,7 @@ uint64_t highResTimeStampToPerfettoTraceTime(HighResTimeStamp timestamp) {
   auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
       chronoDurationSinceSteadyClockEpoch);
 
-  return std::chrono::duration_cast<std::chrono::duration<std::uint64_t>>(
-             nanoseconds)
-      .count();
+  return static_cast<uint64_t>(nanoseconds.count());
 }
 
 } // namespace facebook::react

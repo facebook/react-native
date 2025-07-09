@@ -279,6 +279,8 @@ class VirtualizedList extends StateSafePureComponent<
       const cartOffset = this._listMetrics.cartesianOffset(
         offset + this._scrollMetrics.visibleLength,
       );
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       return horizontal ? {x: cartOffset} : {y: cartOffset};
     } else {
       return horizontal ? {x: offset} : {y: offset};

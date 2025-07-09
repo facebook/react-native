@@ -58,7 +58,7 @@ void NativeIntersectionObserver::observe(
 void NativeIntersectionObserver::unobserve(
     jsi::Runtime& runtime,
     IntersectionObserverObserverId intersectionObserverId,
-    ShadowNode::Shared targetShadowNode) {
+    std::shared_ptr<const ShadowNode> targetShadowNode) {
   auto token =
       tokenFromShadowNodeFamily(runtime, targetShadowNode->getFamilyShared());
   unobserveV2(runtime, intersectionObserverId, std::move(token));
