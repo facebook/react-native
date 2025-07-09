@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b5caffd8f748384aa32ed6e153ee9c1>>
+ * @generated SignedSource<<9c76318ff7b99285e85a47b473927251>>
  */
 
 /**
@@ -100,6 +100,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFixForParentTagDuringReparenting() override {
+    return false;
+  }
+
+  bool enableFocusCommandsOnView() override {
     return false;
   }
 

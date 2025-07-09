@@ -248,6 +248,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableFocusCommandsOnView: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-04-07',
+        description: 'Enables focus commands on View in addition to TextInput.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableFontScaleChangesUpdatingLayout: {
       defaultValue: false,
       metadata: {

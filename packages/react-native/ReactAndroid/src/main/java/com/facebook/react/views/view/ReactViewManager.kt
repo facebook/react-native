@@ -391,6 +391,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (commandId) {
       HOTSPOT_UPDATE_KEY -> handleHotspotUpdate(root, args)
       "setPressed" -> handleSetPressed(root, args)
+      "focus" -> handleFocus(root)
+      "blur" -> handleBlur(root)
       else -> {}
     }
   }
@@ -412,5 +414,17 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     val x = args.getDouble(0).dpToPx()
     val y = args.getDouble(1).dpToPx()
     root.drawableHotspotChanged(x, y)
+  }
+
+  private fun handleFocus(root: ReactViewGroup) {
+    if (ReactNativeFeatureFlags.enableFocusCommandsOnView()) {
+      root.requestFocusFromJS()
+    }
+  }
+
+  private fun handleBlur(root: ReactViewGroup) {
+    if (ReactNativeFeatureFlags.enableFocusCommandsOnView()) {
+      root.clearFocusFromJS()
+    }
   }
 }

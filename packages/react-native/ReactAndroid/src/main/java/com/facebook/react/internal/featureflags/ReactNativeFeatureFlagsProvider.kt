@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8abf9bfb81265ae0c840457eb6c199bd>>
+ * @generated SignedSource<<c8f4dbe0b668325c073b4067a43c3546>>
  */
 
 /**
@@ -60,6 +60,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
   @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
+
+  @DoNotStrip public fun enableFocusCommandsOnView(): Boolean
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 

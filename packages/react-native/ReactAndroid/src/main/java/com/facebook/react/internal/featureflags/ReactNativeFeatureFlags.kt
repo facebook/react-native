@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4a7c66f4603fc6a56018aba12c942ee>>
+ * @generated SignedSource<<69930d9dead0ddf4cedce9cc00f2f74f>>
  */
 
 /**
@@ -143,6 +143,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFixForParentTagDuringReparenting(): Boolean = accessor.enableFixForParentTagDuringReparenting()
+
+  /**
+   * Enables focus commands on View in addition to TextInput.
+   */
+  @JvmStatic
+  public fun enableFocusCommandsOnView(): Boolean = accessor.enableFocusCommandsOnView()
 
   /**
    * Enables font scale changes updating layout for measurable nodes.
