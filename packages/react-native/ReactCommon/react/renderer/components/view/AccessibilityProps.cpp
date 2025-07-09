@@ -227,7 +227,7 @@ AccessibilityProps::AccessibilityProps(
   if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
     accessibilityRole = sourceProps.accessibilityRole;
     role = sourceProps.role;
-    accessibilityTraits = sourceProps.accessibilityTraits;    
+    accessibilityTraits = sourceProps.accessibilityTraits;
   } else {
     auto* accessibilityRoleValue =
         rawProps.at("accessibilityRole", nullptr, nullptr);
