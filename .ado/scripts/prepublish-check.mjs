@@ -103,7 +103,8 @@ function verifyNpmAuth(registry = NPM_DEFEAULT_REGISTRY) {
   if (whoami.status !== 0) {
     const error = whoami.stderr.toString();
     const m = error.match(npmErrorRegex);
-    switch (m && m[1]) {
+    const errorCode = m && m[1];
+    switch (errorCode) {
       case "EINVALIDNPMTOKEN":
         throw new Error(`Invalid auth token for npm registry: ${registry}`);
       case "ENEEDAUTH":
@@ -118,7 +119,15 @@ function verifyNpmAuth(registry = NPM_DEFEAULT_REGISTRY) {
   if (token.status !== 0) {
     const error = token.stderr.toString();
     const m = error.match(npmErrorRegex);
-    throw new Error(m ? `Auth token for '${registry}' returned error code ${m[1]}` : error);
+    const errorCode = m && m[1];
+    
+    // E403 means the token doesn't have permission to list tokens, but that's
+    // not required for publishing. Only fail for other error codes.
+    if (errorCode === "E403") {
+      info(`Token verification skipped: token doesn't have permission to list tokens (${errorCode})`);
+    } else {
+      throw new Error(m ? `Auth token for '${registry}' returned error code ${errorCode}` : error);
+    }
   }
 }
 
