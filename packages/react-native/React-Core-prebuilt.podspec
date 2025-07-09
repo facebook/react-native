@@ -62,8 +62,7 @@ Pod::Spec.new do |s|
         CONFIG="Debug"
       fi
 
-      # TODO(T228219721): Add this for React Native Core as well
-      ##### "$NODE_BINARY" "$REACT_NATIVE_PATH/third-party-podspecs/replace_dependencies_version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
+      "$NODE_BINARY" "$REACT_NATIVE_PATH/scripts/replace-rncore-version.js" -c "$CONFIG" -r "#{version}" -p "$PODS_ROOT"
       EOS
     }
 
@@ -73,7 +72,7 @@ Pod::Spec.new do |s|
       # always run the script without warning
       script_phase[:always_out_of_date] = "1"
     end
-    
+
     s.script_phase = script_phase
   end
 end
