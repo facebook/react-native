@@ -83,7 +83,7 @@ jobs:
           # Move the XCFramework in the destination directory
           mv /tmp/third-party/packages/react-native/third-party/ReactNativeDependencies.xcframework packages/react-native/third-party/ReactNativeDependencies.xcframework
 
-          VERSION=$(jq -r '.version' package.json)
+          VERSION=$(jq -r '.version' packages/react-native/package.json)
           echo "$VERSION-${{matrix.flavor}}" > "packages/react-native/third-party/version.txt"
           cat "packages/react-native/third-party/version.txt"
           # Check destination directory
