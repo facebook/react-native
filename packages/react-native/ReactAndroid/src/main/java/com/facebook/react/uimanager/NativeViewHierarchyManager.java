@@ -679,9 +679,6 @@ public class NativeViewHierarchyManager {
     View rootView = mTagsToViews.get(rootViewTag);
     dropView(rootView);
     mRootTags.delete(rootViewTag);
-    if (rootView != null) {
-      rootView.setId(View.NO_ID);
-    }
   }
 
   /**
