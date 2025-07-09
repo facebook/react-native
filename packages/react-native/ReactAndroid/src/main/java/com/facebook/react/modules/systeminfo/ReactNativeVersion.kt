@@ -12,9 +12,9 @@ package com.facebook.react.modules.systeminfo
 public object ReactNativeVersion {
   @JvmField
   public val VERSION: Map<String, Any?> = mapOf(
-    "major" to 0,
-    "minor" to 81,
+    "major" to 1000,
+    "minor" to 0,
     "patch" to 0,
-    "prerelease" to "rc.0"
+    "prerelease" to null
   )
 }
