@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@react-native/oss-library-example": "0.81.0-main",
-    "@react-native/new-app-screen": "0.81.0-rc.0",
-    "@react-native/popup-menu-android": "0.81.0-rc.0",
+    "@react-native/new-app-screen": "0.81.0-main",
+    "@react-native/popup-menu-android": "0.81.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
