@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<356261385b837def94ac5a4ca7ffd05d>>
+ * @generated SignedSource<<5cef6c0a4bab5827f35d209e5279ae47>>
  */
 
 /**
@@ -30,6 +30,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
+  private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
@@ -139,6 +140,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.disableMountItemReorderingAndroid()
       accessedFeatureFlags.add("disableMountItemReorderingAndroid")
       disableMountItemReorderingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean {
+    var cached = disableOldAndroidAttachmentMetricsWorkaroundsCache
+    if (cached == null) {
+      cached = currentProvider.disableOldAndroidAttachmentMetricsWorkarounds()
+      accessedFeatureFlags.add("disableOldAndroidAttachmentMetricsWorkarounds")
+      disableOldAndroidAttachmentMetricsWorkaroundsCache = cached
     }
     return cached
   }
