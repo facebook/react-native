@@ -1409,14 +1409,14 @@ public class ReactInstanceManager {
             new RuntimeException(
                 "detachRootViewFromInstance called with ReactRootView with invalid id"));
       }
-
-      clearReactRoot(reactRoot);
     } else {
       reactContext
           .getCatalystInstance()
           .getJSModule(AppRegistry.class)
           .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
+
+    clearReactRoot(reactRoot);
   }
 
   @ThreadConfined(UI)
