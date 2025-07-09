@@ -65,10 +65,13 @@ async function computeNightlyTarballURL(
   artifactCoordinate /*: string */,
   artifactName /*: string */,
 ) /*: Promise<string> */ {
+  const urlLog = createLogger('NightlyURL');
   const xmlUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/maven-metadata.xml`;
 
+  urlLog(`Attempting to download maven-metadata.xml from: ${xmlUrl}...`);
   const response = await fetch(xmlUrl);
   if (!response.ok) {
+    urlLog(`Downloading maven-metadata.xml failed!`, 'error');
     return '';
   }
   const xmlText = await response.text();
@@ -76,6 +79,7 @@ async function computeNightlyTarballURL(
   // Extract the <snapshot> block
   const snapshotMatch = xmlText.match(/<snapshot>([\s\S]*?)<\/snapshot>/);
   if (!snapshotMatch) {
+    urlLog(`Could not find a <snapshot> tag that matches the regex!`, 'error');
     return '';
   }
   const snapshotContent = snapshotMatch[1];
@@ -83,6 +87,10 @@ async function computeNightlyTarballURL(
   // Extract <timestamp> from the snapshot block
   const timestampMatch = snapshotContent.match(/<timestamp>(.*?)<\/timestamp>/);
   if (!timestampMatch) {
+    urlLog(
+      `Could not find a <timestamp> tag inside <snapshot> that matches the regex!`,
+      'error',
+    );
     return '';
   }
   const timestamp = timestampMatch[1];
@@ -92,12 +100,17 @@ async function computeNightlyTarballURL(
     /<buildNumber>(.*?)<\/buildNumber>/,
   );
   if (!buildNumberMatch) {
+    urlLog(
+      `Could not find a <buildNumber> tag that matches the regex!`,
+      'error',
+    );
     return '';
   }
   const buildNumber = buildNumberMatch[1];
 
   const fullVersion = `${version}-${timestamp}-${buildNumber}`;
   const finalUrl = `https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/${artifactCoordinate}/${version}-SNAPSHOT/${artifactCoordinate}-${fullVersion}-${artifactName}`;
+  urlLog(`Final artifact URL found: ${finalUrl}`);
   return finalUrl;
 }
 
