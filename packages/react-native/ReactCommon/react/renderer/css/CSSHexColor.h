@@ -34,9 +34,9 @@ constexpr uint8_t hexToNumeric(std::string_view hex, HexColorType hexType) {
   }
 
   if (hexType == HexColorType::Short) {
-    return static_cast<uint8_t>(result * 16 + result); // Windows #14666
+    return static_cast<uint8_t>(result * 16 + result);
   } else {
-    return static_cast<uint8_t>(result); // Windows #14666
+    return static_cast<uint8_t>(result);
   }
 }
 
