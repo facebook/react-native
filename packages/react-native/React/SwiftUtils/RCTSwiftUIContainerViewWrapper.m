@@ -21,7 +21,6 @@
     return self;
 }
 
-
 - (UIView *)contentView {
     return [self.swiftContainerView contentView];
 }
