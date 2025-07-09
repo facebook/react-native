@@ -7,6 +7,7 @@
 
 #include "TesterAppDelegate.h"
 
+#include <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
 #include <glog/logging.h>
@@ -87,6 +88,8 @@ TesterAppDelegate::TesterAppDelegate(
           return std::make_shared<NativeCPUTime>(jsInvoker);
         } else if (name == NativeFantomTestSpecificMethods::kModuleName) {
           return std::make_shared<NativeFantomTestSpecificMethods>(jsInvoker);
+        } else if (name == NativeCxxModuleExample::kModuleName) {
+          return std::make_shared<NativeCxxModuleExample>(jsInvoker);
         } else {
           return nullptr;
         }

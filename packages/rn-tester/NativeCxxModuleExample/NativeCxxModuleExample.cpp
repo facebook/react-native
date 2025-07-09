@@ -7,8 +7,21 @@
 
 #include "NativeCxxModuleExample.h"
 #include <react/debug/react_native_assert.h>
+#include <iomanip>
+#include <ostream>
+#include <sstream>
 
 namespace facebook::react {
+
+namespace {
+
+std::string to_string_with_precision(double value, int precision = 2) {
+  std::ostringstream oss;
+  oss << std::setprecision(precision) << std::fixed << value;
+  return oss.str();
+}
+
+} // namespace
 
 NativeCxxModuleExample::NativeCxxModuleExample(
     std::shared_ptr<CallInvoker> jsInvoker)
@@ -126,10 +139,12 @@ std::string NativeCxxModuleExample::getUnion(
     float x,
     std::string y,
     jsi::Object z) {
-  std::string result = "x: " + std::to_string(x) + ", y: " + y + ", z: { ";
+  std::string result =
+      "x: " + to_string_with_precision(x) + ", y: " + y + ", z: { ";
   if (z.hasProperty(rt, "value")) {
     result += "value: ";
-    result += std::to_string(z.getProperty(rt, "value").getNumber());
+    result +=
+        to_string_with_precision(z.getProperty(rt, "value").getNumber(), 0);
   } else if (z.hasProperty(rt, "low")) {
     result += "low: ";
     result += z.getProperty(rt, "low").getString(rt).utf8(rt);
@@ -201,11 +216,13 @@ void NativeCxxModuleExample::emitCustomDeviceEvent(
       eventName,
       [jsInvoker = jsInvoker_](
           jsi::Runtime& rt, std::vector<jsi::Value>& args) {
-        args.emplace_back(jsi::Value(true));
-        args.emplace_back(jsi::Value(42));
-        args.emplace_back(jsi::String::createFromAscii(rt, "stringArg"));
-        args.emplace_back(bridging::toJs(
-            rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker));
+        args.emplace_back(jsi::Array::createWithElements(
+            rt,
+            jsi::Value(true),
+            jsi::Value(42),
+            jsi::String::createFromAscii(rt, "stringArg"),
+            bridging::toJs(
+                rt, CustomDeviceEvent{"one", 2, std::nullopt}, jsInvoker)));
       });
 }
 
