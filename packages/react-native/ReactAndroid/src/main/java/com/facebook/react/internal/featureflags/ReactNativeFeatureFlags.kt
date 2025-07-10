@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4a7c66f4603fc6a56018aba12c942ee>>
+ * @generated SignedSource<<48a25f3bf3e45c8864f84a8cccca473d>>
  */
 
 /**
@@ -35,12 +35,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  @JvmStatic
-  public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e78150be120e3fdf02f9420abce23bfc>>
+ * @generated SignedSource<<37da6a5b4c8f877f64d9cf1385d2a20f>>
  */
 
 /**
@@ -52,15 +52,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::commonTestFlag();
-  }
-
-  bool animatedShouldSignalBatch() override {
-    auto value = values_["animatedShouldSignalBatch"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::animatedShouldSignalBatch();
   }
 
   bool cxxNativeAnimatedEnabled() override {

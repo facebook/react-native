@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20809734183aa7bfd7aad9b8d01ea080>>
+ * @generated SignedSource<<eb769df330eff243aa913b79807396e7>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  RN_EXPORT static bool animatedShouldSignalBatch();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
