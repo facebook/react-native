@@ -48,6 +48,14 @@ runs:
     - name: Print third-party folder
       shell: bash
       run: ls -lR /tmp/third-party
+    - name: Download React Native Prebuilds
+      uses: actions/download-artifact@v4
+      with:
+        name: ReactCore${{ inputs.flavor }}.xcframework.tar.gz
+        path: /tmp/ReactCore
+    - name: Print ReactCore folder
+      shell: bash
+      run: ls -lR /tmp/ReactCore
     - name: Install iOS dependencies - Configuration ${{ inputs.flavor }};
       shell: bash
       run: |
@@ -73,6 +81,7 @@ runs:
         TARBALL_FILENAME=$(node ../../packages/react-native/scripts/hermes/get-tarball-name.js --buildType "$BUILD_TYPE")
         export HERMES_ENGINE_TARBALL_PATH="$HERMES_WS_DIR/hermes-runtime-darwin/$TARBALL_FILENAME"
         export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+        export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
 
         yarn bootstrap ios "${args[@]}" | cat
 
