@@ -12,7 +12,7 @@
 
 @class RCTJSStackFrame;
 
-typedef void (^RCTRedBoxButtonPressHandler)(void);
+using RCTRedBoxButtonPressHandler = void (^)();
 
 @interface RCTRedBox : NSObject <RCTBridgeModule>
 

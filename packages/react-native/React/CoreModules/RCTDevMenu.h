@@ -78,7 +78,7 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 @end
 
-typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
+using RCTDevMenuItemTitleBlock = NSString * (^)();
 
 /**
  * Developer menu item, used to expose additional functionality via the menu.

@@ -87,7 +87,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
+using RCTDevMenuAlertActionHandler = void (^)(UIAlertAction *__strong);
 
 @interface RCTDevMenu () <RCTBridgeModule, RCTInvalidating, NativeDevMenuSpec>
 
