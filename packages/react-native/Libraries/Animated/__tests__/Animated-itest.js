@@ -537,3 +537,64 @@ test('animate layout props', () => {
     <rn-view height="100.000000" />,
   );
 });
+
+test('AnimatedValue.interpolate', () => {
+  let _valueX;
+  let _interpolatedValueX;
+  const viewRef = createRef<HostInstance>();
+
+  function MyApp({outputRangeX}: $ReadOnly<{outputRangeX: number}>) {
+    const valueX = useAnimatedValue(0.5, {useNativeDriver: true});
+    _valueX = valueX;
+    const offset = outputRangeX - 1;
+    const interpolatedValueX = valueX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [offset, 100],
+    });
+    _interpolatedValueX = interpolatedValueX;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: 100,
+          },
+          {transform: [{translateX: valueX}, {translateY: interpolatedValueX}]},
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp outputRangeX={1} />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  expect(_valueX?.__getValue()).toBe(0.5);
+  expect(_interpolatedValueX?.__getValue()).toBe(50);
+  expect(
+    JSON.stringify(
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform,
+    ),
+  ).toBe('[{"translateX":0.5},{"translateY":50}]');
+  expect(viewElement.getBoundingClientRect().x).toBe(0.5);
+  expect(viewElement.getBoundingClientRect().y).toBe(50);
+
+  Fantom.runTask(() => {
+    root.render(<MyApp outputRangeX={51} />);
+  });
+
+  expect(_valueX?.__getValue()).toBe(0.5);
+  expect(_interpolatedValueX?.__getValue()).toBe(75);
+  expect(
+    JSON.stringify(
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform,
+    ),
+  ).toBe('[{"translateX":0.5},{"translateY":75}]');
+  expect(viewElement.getBoundingClientRect().x).toBe(0.5);
+  expect(viewElement.getBoundingClientRect().y).toBe(75);
+});
