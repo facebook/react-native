@@ -21,6 +21,7 @@ class ImageResponse final {
     Completed,
     Failed,
     Cancelled,
+    Consumed,
   };
 
   ImageResponse(std::shared_ptr<void> image, std::shared_ptr<void> metadata);
