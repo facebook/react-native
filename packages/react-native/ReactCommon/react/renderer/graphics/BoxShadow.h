@@ -21,5 +21,25 @@ struct BoxShadow {
   Float spreadDistance{};
   SharedColor color{};
   bool inset{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["offsetX"] = offsetX;
+    result["offsetY"] = offsetY;
+    result["blurRadius"] = blurRadius;
+    result["spreadDistance"] = spreadDistance;
+    result["color"] = *color;
+    result["inset"] = inset;
+    return result;
+  }
+#endif
 };
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const BoxShadow& boxShadow) {
+  return boxShadow.toDynamic();
+}
+#endif
+
 } // namespace facebook::react
