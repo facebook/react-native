@@ -125,8 +125,8 @@ class ReactNativeCoreUtils
 
         url = stable_tarball_url(@@react_native_version, :debug)
         rncore_log("Using tarball from URL: #{url}")
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
+        download_stable_rncore(@@react_native_path, @@react_native_version, :debug)
+        download_stable_rncore(@@react_native_path, @@react_native_version, :release)
         return {:http => url}
     end
 
@@ -162,9 +162,9 @@ class ReactNativeCoreUtils
         end
     end
 
-    def self.download_stable_rndeps(react_native_path, version, configuration)
+    def self.download_stable_rncore(react_native_path, version, configuration)
         tarball_url = stable_tarball_url(version, configuration)
-        download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+        download_rncore_tarball(react_native_path, tarball_url, version, configuration)
     end
 
     def self.podspec_source_download_prebuilt_nightly_tarball(version)
@@ -173,14 +173,14 @@ class ReactNativeCoreUtils
         return {:http => url}
     end
 
-    def self.download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+    def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration)
         destination_path = configuration == nil ?
-            "#{artifacts_dir()}/reactnative-core-debug.tar.gz-#{version}.tar.gz" :
-            "#{artifacts_dir()}/reactnative-core-debug.tar.gz-#{version}-#{configuration}.tar.gz"
+            "#{artifacts_dir()}/reactnative-core-#{version}.tar.gz" :
+            "#{artifacts_dir()}/reactnative-core-#{version}-#{configuration}.tar.gz"
 
         unless File.exist?(destination_path)
           # Download to a temporary file first so we don't cache incomplete downloads.
-          tmp_file = "#{artifacts_dir()}/reactnative-core-debug.tar.gz.download"
+          tmp_file = "#{artifacts_dir()}/reactnative-core.download"
           `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
         end
 
