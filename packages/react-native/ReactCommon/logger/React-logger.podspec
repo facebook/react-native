@@ -30,4 +30,5 @@ Pod::Spec.new do |s|
   s.header_dir             = "logger"
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end
