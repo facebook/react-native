@@ -25,10 +25,11 @@ import com.facebook.react.views.scroll.ReactScrollViewHelper
 import com.facebook.react.views.scroll.ScrollEventType
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.virtual.VirtualViewMode
+import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewRenderState
 import com.facebook.systrace.Systrace
 
-internal class ReactVirtualView(context: Context) :
+public class ReactVirtualView(context: Context) :
     ReactViewGroup(context),
     ReactScrollViewHelper.ScrollListener,
     ReactScrollViewHelper.LayoutChangeListener,
@@ -36,7 +37,7 @@ internal class ReactVirtualView(context: Context) :
 
   internal var mode: VirtualViewMode? = null
   internal var renderState: VirtualViewRenderState = VirtualViewRenderState.Unknown
-  internal var modeChangeEmitter: ModeChangeEmitter? = null
+  internal var modeChangeEmitter: VirtualViewModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
   internal val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
@@ -367,15 +368,6 @@ internal class ReactVirtualView(context: Context) :
       }
     }
   }
-}
-
-internal fun interface ModeChangeEmitter {
-  fun emitModeChange(
-      mode: VirtualViewMode,
-      targetRect: Rect,
-      thresholdRect: Rect,
-      synchronous: Boolean,
-  )
 }
 
 private const val DEBUG_TAG: String = "ReactVirtualView"

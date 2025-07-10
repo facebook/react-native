@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.virtual.view
+package com.facebook.react.views.virtual.viewexperimental
 
 import android.graphics.Rect
 import androidx.annotation.VisibleForTesting
@@ -17,35 +17,36 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.EventDispatcher
-import com.facebook.react.viewmanagers.VirtualViewManagerDelegate
-import com.facebook.react.viewmanagers.VirtualViewManagerInterface
+import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerDelegate
+import com.facebook.react.viewmanagers.VirtualViewExperimentalManagerInterface
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
 import com.facebook.react.views.virtual.VirtualViewRenderState
 
-@ReactModule(name = ReactVirtualViewManager.REACT_CLASS)
-public class ReactVirtualViewManager :
-    ViewGroupManager<ReactVirtualView>(), VirtualViewManagerInterface<ReactVirtualView> {
+@ReactModule(name = ReactVirtualViewExperimentalManager.REACT_CLASS)
+public class ReactVirtualViewExperimentalManager :
+    ViewGroupManager<ReactVirtualViewExperimental>(),
+    VirtualViewExperimentalManagerInterface<ReactVirtualViewExperimental> {
 
-  private val _delegate = VirtualViewManagerDelegate(this)
+  private val _delegate = VirtualViewExperimentalManagerDelegate(this)
 
-  override fun getDelegate(): ViewManagerDelegate<ReactVirtualView> = _delegate
+  override fun getDelegate(): ViewManagerDelegate<ReactVirtualViewExperimental> = _delegate
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createViewInstance(reactContext: ThemedReactContext): ReactVirtualView =
-      ReactVirtualView(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactVirtualViewExperimental =
+      ReactVirtualViewExperimental(reactContext)
 
   @ReactProp(name = "initialHidden")
-  override fun setInitialHidden(view: ReactVirtualView, value: Boolean) {
+  override fun setInitialHidden(view: ReactVirtualViewExperimental, value: Boolean) {
     if (view.mode == null) {
       view.mode = if (value) VirtualViewMode.Hidden else VirtualViewMode.Visible
     }
   }
 
   @ReactProp(name = "renderState")
-  override fun setRenderState(view: ReactVirtualView, value: Int) {
+  override fun setRenderState(view: ReactVirtualViewExperimental, value: Int) {
     // If disabled, `renderState` will always be `VirtualViewRenderState.Unknown`.
     if (ReactNativeFeatureFlags.enableVirtualViewRenderState()) {
       view.renderState =
@@ -57,12 +58,14 @@ public class ReactVirtualViewManager :
     }
   }
 
-  override fun setNativeId(view: ReactVirtualView, nativeId: String?) {
+  override fun setNativeId(view: ReactVirtualViewExperimental, nativeId: String?) {
     super.setNativeId(view, nativeId)
-    view.debugLog("setNativeId") { "${view.id}" }
   }
 
-  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactVirtualView) {
+  override fun addEventEmitters(
+      reactContext: ThemedReactContext,
+      view: ReactVirtualViewExperimental
+  ) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
     view.modeChangeEmitter =
         VirtualViewEventEmitter(view.id, UIManagerHelper.getSurfaceId(reactContext), dispatcher)
@@ -70,14 +73,14 @@ public class ReactVirtualViewManager :
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactVirtualView,
-  ): ReactVirtualView? {
+      view: ReactVirtualViewExperimental,
+  ): ReactVirtualViewExperimental? {
     view.recycleView()
     return super.prepareToRecycleView(reactContext, view)
   }
 
   public companion object {
-    public const val REACT_CLASS: String = "VirtualView"
+    public const val REACT_CLASS: String = "VirtualViewExperimental"
   }
 }
 
