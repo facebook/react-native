@@ -1031,7 +1031,7 @@ type TextInputBaseProps = $ReadOnly<{
 }>;
 
 export type TextInputProps = $ReadOnly<{
-  ...Omit<ViewProps, 'style' | 'experimental_accessibilityOrder'>,
+  ...Omit<ViewProps, 'style'>,
   ...TextInputIOSProps,
   ...TextInputAndroidProps,
   ...TextInputBaseProps,
