@@ -58,7 +58,7 @@
     "@react-native/metro-config": "0.81.0-main",
     "@tsconfig/node22": "22.0.2",
     "@types/react": "^19.1.0",
-    "@typescript-eslint/parser": "^7.1.1",
+    "@typescript-eslint/parser": "^8.36.0",
     "ansi-styles": "^4.2.1",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
     "babel-plugin-syntax-hermes-parser": "0.29.1",
