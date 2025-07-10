@@ -28,6 +28,8 @@ internal class ReactTextChangedEvent(
     }
   }
 
+  override fun experimental_isSynchronous(): Boolean = true
+
   companion object {
     const val EVENT_NAME: String = "topChange"
   }
