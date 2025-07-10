@@ -5252,6 +5252,16 @@ public abstract interface class com/facebook/react/viewmanagers/UnimplementedNat
 	public abstract fun setName (Landroid/view/View;Ljava/lang/String;)V
 }
 
+public class com/facebook/react/viewmanagers/VirtualViewExperimentalManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
+	public fun <init> (Lcom/facebook/react/uimanager/BaseViewManager;)V
+	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
+}
+
+public abstract interface class com/facebook/react/viewmanagers/VirtualViewExperimentalManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
+	public abstract fun setInitialHidden (Landroid/view/View;Z)V
+	public abstract fun setRenderState (Landroid/view/View;I)V
+}
+
 public class com/facebook/react/viewmanagers/VirtualViewManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
 	public fun <init> (Lcom/facebook/react/uimanager/BaseViewManager;)V
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
@@ -5696,7 +5706,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager : 
 public final class com/facebook/react/views/scroll/ReactHorizontalScrollViewManager$Companion {
 }
 
-public class com/facebook/react/views/scroll/ReactScrollView : android/widget/ScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper {
+public class com/facebook/react/views/scroll/ReactScrollView : android/widget/ScrollView, android/view/View$OnLayoutChangeListener, android/view/ViewGroup$OnHierarchyChangeListener, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/views/scroll/ReactAccessibleScrollView, com/facebook/react/views/scroll/ReactScrollViewHelper$HasFlingAnimator, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollEventThrottle, com/facebook/react/views/scroll/ReactScrollViewHelper$HasScrollState, com/facebook/react/views/scroll/ReactScrollViewHelper$HasSmoothScroll, com/facebook/react/views/scroll/ReactScrollViewHelper$HasStateWrapper, com/facebook/react/views/scroll/VirtualViewContainer {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/views/scroll/FpsListener;)V
 	public fun abortAnimation ()V
@@ -5724,6 +5734,7 @@ public class com/facebook/react/views/scroll/ReactScrollView : android/widget/Sc
 	public fun getScrollEventThrottle ()I
 	public fun getStateWrapper ()Lcom/facebook/react/uimanager/StateWrapper;
 	protected fun getTopFadingEdgeStrength ()F
+	public fun getVirtualViewContainerState ()Lcom/facebook/react/views/scroll/VirtualViewContainerState;
 	protected fun handleInterceptedTouchEvent (Landroid/view/MotionEvent;)V
 	public fun isPartiallyScrolledInView (Landroid/view/View;)Z
 	protected fun onAttachedToWindow ()V
@@ -5989,6 +6000,12 @@ public final class com/facebook/react/views/scroll/ScrollEventType : java/lang/E
 
 public final class com/facebook/react/views/scroll/ScrollEventType$Companion {
 	public final fun getJSEventName (Lcom/facebook/react/views/scroll/ScrollEventType;)Ljava/lang/String;
+}
+
+public abstract interface class com/facebook/react/views/scroll/VirtualView {
+	public abstract fun getContainerRelativeRect ()Landroid/graphics/Rect;
+	public abstract fun getVirtualViewID ()Ljava/lang/String;
+	public abstract fun onModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;)V
 }
 
 public final class com/facebook/react/views/swiperefresh/ReactSwipeRefreshLayout : androidx/swiperefreshlayout/widget/SwipeRefreshLayout {
@@ -6645,5 +6662,81 @@ public final class com/facebook/react/views/view/ReactViewManager$Companion {
 public final class com/facebook/react/views/view/WindowUtilKt {
 	public static final fun isEdgeToEdgeFeatureFlagOn ()Z
 	public static final fun setEdgeToEdgeFeatureFlagOn ()V
+}
+
+public final class com/facebook/react/views/virtual/VirtualViewMode : java/lang/Enum {
+	public static final field Hidden Lcom/facebook/react/views/virtual/VirtualViewMode;
+	public static final field Prerender Lcom/facebook/react/views/virtual/VirtualViewMode;
+	public static final field Visible Lcom/facebook/react/views/virtual/VirtualViewMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getValue ()I
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/virtual/VirtualViewMode;
+	public static fun values ()[Lcom/facebook/react/views/virtual/VirtualViewMode;
+}
+
+public final class com/facebook/react/views/virtual/view/ReactVirtualView : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/ReactScrollViewHelper$LayoutChangeListener, com/facebook/react/views/scroll/ReactScrollViewHelper$ScrollListener {
+	public fun <init> (Landroid/content/Context;)V
+	public fun onLayout (Landroid/view/ViewGroup;)V
+	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
+	public fun onLayoutChange (Landroid/view/ViewGroup;)V
+	public fun onScroll (Landroid/view/ViewGroup;Lcom/facebook/react/views/scroll/ScrollEventType;FF)V
+	public synthetic fun recycleView$xplat_js_react_native_github_packages_react_native_ReactAndroid_src_main_java_com_facebook_react_views_view_viewAndroid ()V
+}
+
+public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/VirtualViewManagerInterface {
+	public static final field Companion Lcom/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion;
+	public static final field REACT_CLASS Ljava/lang/String;
+	public fun <init> ()V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
+	public fun getName ()Ljava/lang/String;
+	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	public synthetic fun setInitialHidden (Landroid/view/View;Z)V
+	public fun setInitialHidden (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Z)V
+	public synthetic fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
+	public fun setNativeId (Lcom/facebook/react/views/virtual/view/ReactVirtualView;Ljava/lang/String;)V
+	public synthetic fun setRenderState (Landroid/view/View;I)V
+	public fun setRenderState (Lcom/facebook/react/views/virtual/view/ReactVirtualView;I)V
+}
+
+public final class com/facebook/react/views/virtual/view/ReactVirtualViewManager$Companion {
+}
+
+public final class com/facebook/react/views/virtual/view/VirtualViewEventEmitter : com/facebook/react/views/virtual/VirtualViewModeChangeEmitter {
+	public fun <init> (IILcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public fun emitModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;Landroid/graphics/Rect;Z)V
+}
+
+public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental : com/facebook/react/views/view/ReactViewGroup, android/view/View$OnLayoutChangeListener, com/facebook/react/views/scroll/VirtualView {
+	public fun <init> (Landroid/content/Context;)V
+	public fun getContainerRelativeRect ()Landroid/graphics/Rect;
+	public fun getVirtualViewID ()Ljava/lang/String;
+	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
+	public fun onModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;)V
+	public synthetic fun recycleView$xplat_js_react_native_github_packages_react_native_ReactAndroid_src_main_java_com_facebook_react_views_view_viewAndroid ()V
+}
+
+public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager : com/facebook/react/uimanager/ViewGroupManager, com/facebook/react/viewmanagers/VirtualViewExperimentalManagerInterface {
+	public static final field Companion Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager$Companion;
+	public static final field REACT_CLASS Ljava/lang/String;
+	public fun <init> ()V
+	public synthetic fun addEventEmitters (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)V
+	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
+	public fun getName ()Ljava/lang/String;
+	public synthetic fun prepareToRecycleView (Lcom/facebook/react/uimanager/ThemedReactContext;Landroid/view/View;)Landroid/view/View;
+	public synthetic fun setInitialHidden (Landroid/view/View;Z)V
+	public fun setInitialHidden (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;Z)V
+	public synthetic fun setNativeId (Landroid/view/View;Ljava/lang/String;)V
+	public fun setNativeId (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;Ljava/lang/String;)V
+	public synthetic fun setRenderState (Landroid/view/View;I)V
+	public fun setRenderState (Lcom/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimental;I)V
+}
+
+public final class com/facebook/react/views/virtual/viewexperimental/ReactVirtualViewExperimentalManager$Companion {
+}
+
+public final class com/facebook/react/views/virtual/viewexperimental/VirtualViewEventEmitter : com/facebook/react/views/virtual/VirtualViewModeChangeEmitter {
+	public fun <init> (IILcom/facebook/react/uimanager/events/EventDispatcher;)V
+	public fun emitModeChange (Lcom/facebook/react/views/virtual/VirtualViewMode;Landroid/graphics/Rect;Landroid/graphics/Rect;Z)V
 }
 

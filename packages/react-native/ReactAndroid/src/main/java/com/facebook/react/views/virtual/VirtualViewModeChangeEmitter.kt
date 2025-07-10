@@ -7,8 +7,13 @@
 
 package com.facebook.react.views.virtual
 
-public enum class VirtualViewMode(public val value: Int) {
-  Visible(0),
-  Prerender(1),
-  Hidden(2),
+import android.graphics.Rect
+
+internal fun interface VirtualViewModeChangeEmitter {
+  public fun emitModeChange(
+      mode: VirtualViewMode,
+      targetRect: Rect,
+      thresholdRect: Rect,
+      synchronous: Boolean,
+  )
 }
