@@ -491,21 +491,6 @@ inline static void updateAccessibilityStateProp(
   result["accessibilityState"] = resultState;
 }
 
-static folly::dynamic toDynamic(const std::vector<BoxShadow>& boxShadow) {
-  folly::dynamic boxShadowResult = folly::dynamic::array();
-  for (const auto& boxShadowValue : boxShadow) {
-    folly::dynamic boxShadowValueResult = folly::dynamic::object();
-    boxShadowValueResult["offsetX"] = boxShadowValue.offsetX;
-    boxShadowValueResult["offsetY"] = boxShadowValue.offsetY;
-    boxShadowValueResult["blurRadius"] = boxShadowValue.blurRadius;
-    boxShadowValueResult["spreadDistance"] = boxShadowValue.spreadDistance;
-    boxShadowValueResult["color"] = *boxShadowValue.color;
-    boxShadowValueResult["inset"] = boxShadowValue.inset;
-    boxShadowResult.push_back(boxShadowValueResult);
-  }
-  return boxShadowResult;
-}
-
 static folly::dynamic toDynamic(const std::vector<FilterFunction>& filter) {
   folly::dynamic filterResult = folly::dynamic::array();
   for (const auto& filterFunction : filter) {
