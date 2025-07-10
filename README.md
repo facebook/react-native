@@ -126,8 +126,7 @@ You can learn more about our vision for React Native in the [**Roadmap**][roadma
 
 We have a list of [good first issues][gfi] that contain bugs which have a relatively limited scope. This is a great place to get started, gain experience, and get familiar with our contribution process.
 
-[gfi]: https://github.com/facebook/react-native/labels/good%20first%20issue
-
+[gfi]: https://github.com/facebook/react-native/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Good%20first%20issue%22
 ### Discussions
 
 Larger discussions and proposals are discussed in [**@react-native-community/discussions-and-proposals**][repo-meta].
