@@ -28,22 +28,22 @@ ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
 }
 
 // Read alpha channel in [0, 255] range
-uint8_t alphaFromColor(SharedColor color) {
+uint8_t alphaFromColor(SharedColor color) noexcept {
   return static_cast<uint8_t>(std::round(alphaFromHostPlatformColor(*color)));
 }
 
 // Read red channel in [0, 255] range
-uint8_t redFromColor(SharedColor color) {
+uint8_t redFromColor(SharedColor color) noexcept {
   return static_cast<uint8_t>(std::round(redFromHostPlatformColor(*color)));
 }
 
 // Read green channel in [0, 255] range
-uint8_t greenFromColor(SharedColor color) {
+uint8_t greenFromColor(SharedColor color) noexcept {
   return static_cast<uint8_t>(std::round(greenFromHostPlatformColor(*color)));
 }
 
 // Read blue channel in [0, 255] range
-uint8_t blueFromColor(SharedColor color) {
+uint8_t blueFromColor(SharedColor color) noexcept {
   return static_cast<uint8_t>(std::round(blueFromHostPlatformColor(*color)));
 }
 
