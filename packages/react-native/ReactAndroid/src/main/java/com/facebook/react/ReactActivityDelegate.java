@@ -117,6 +117,7 @@ public class ReactActivityDelegate {
    *     going away in the New Architecture. You should access {@link ReactHost} instead."
    * @noinspection deprecation
    */
+  @Deprecated
   public ReactInstanceManager getReactInstanceManager() {
     return Objects.requireNonNull(mReactDelegate).getReactInstanceManager();
   }
