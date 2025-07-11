@@ -44,9 +44,7 @@ class PerformanceMarkTemplate extends PerformanceEntry {
       duration: 0,
     });
 
-    if (markOptions) {
-      this.__detail = markOptions.detail;
-    }
+    this.__detail = markOptions?.detail ?? null;
   }
 
   get detail(): DetailType {
@@ -71,9 +69,7 @@ export const PerformanceMark: typeof PerformanceMarkTemplate =
     this.__startTime = markOptions?.startTime ?? getCurrentTimeStamp();
     this.__duration = 0;
 
-    if (markOptions) {
-      this.__detail = markOptions.detail;
-    }
+    this.__detail = markOptions?.detail ?? null;
   };
 
 // $FlowExpectedError[prop-missing]
@@ -93,9 +89,7 @@ class PerformanceMeasureTemplate extends PerformanceEntry {
       duration: measureOptions.duration,
     });
 
-    if (measureOptions) {
-      this.__detail = measureOptions.detail;
-    }
+    this.__detail = measureOptions?.detail ?? null;
   }
 
   get detail(): DetailType {
@@ -116,9 +110,7 @@ export const PerformanceMeasure: typeof PerformanceMeasureTemplate =
     this.__startTime = measureOptions.startTime;
     this.__duration = measureOptions.duration;
 
-    if (measureOptions) {
-      this.__detail = measureOptions.detail;
-    }
+    this.__detail = measureOptions.detail ?? null;
   };
 
 // $FlowExpectedError[prop-missing]
