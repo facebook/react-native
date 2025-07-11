@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52f80499ef40102683c343c11570badf>>
+ * @generated SignedSource<<1248a1cd10f3cd2758d4ad59d0370d72>>
  */
 
 /**
@@ -57,11 +57,6 @@ bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
-}
-
-bool NativeReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(

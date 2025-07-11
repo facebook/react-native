@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37da6a5b4c8f877f64d9cf1385d2a20f>>
+ * @generated SignedSource<<cac15150a01cd911e14f47a4979531b9>>
  */
 
 /**
@@ -70,15 +70,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
-    auto value = values_["disableMainQueueSyncDispatchIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::disableMainQueueSyncDispatchIOS();
   }
 
   bool disableMountItemReorderingAndroid() override {

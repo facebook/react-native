@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb769df330eff243aa913b79807396e7>>
+ * @generated SignedSource<<7f9a1e13365f6b035465869e1adcaaaf>>
  */
 
 /**
@@ -53,11 +53,6 @@ class ReactNativeFeatureFlags {
    * Removes JS sync at end of native animation
    */
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
-
-  /**
-   * Disable sync dispatch on the main queue on iOS
-   */
-  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread

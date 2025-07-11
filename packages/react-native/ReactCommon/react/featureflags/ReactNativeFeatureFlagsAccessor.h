@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<03ac996ff129f4ed37cad03a835008ca>>
+ * @generated SignedSource<<1c29a131d097a9cdb433b8e88b341f00>>
  */
 
 /**
@@ -35,7 +35,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool commonTestFlag();
   bool cxxNativeAnimatedEnabled();
   bool cxxNativeAnimatedRemoveJsSync();
-  bool disableMainQueueSyncDispatchIOS();
   bool disableMountItemReorderingAndroid();
   bool disableTextLayoutManagerCacheAndroid();
   bool enableAccessibilityOrder();
@@ -100,12 +99,11 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 57> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 56> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
-  std::atomic<std::optional<bool>> disableMainQueueSyncDispatchIOS_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;
   std::atomic<std::optional<bool>> enableAccessibilityOrder_;

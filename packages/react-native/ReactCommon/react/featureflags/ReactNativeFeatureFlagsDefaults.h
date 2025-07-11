@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<447ab7d26fc92000742788c2fba6e297>>
+ * @generated SignedSource<<e47ca0b05d17a175c2fc522bc6088300>>
  */
 
 /**
@@ -36,10 +36,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
-    return false;
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
     return false;
   }
 
