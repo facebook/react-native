@@ -207,8 +207,8 @@ def release_tarball_url(version, build_type)
     ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
     ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
     maven_repo_url =
-        ENV[ENTERPRISE_REPOSITORY] != nil && ENV[ENTERPRISE_REPOSITORY] != "" ?
-        ENV[ENTERPRISE_REPOSITORY] :
+        ENV['ENTERPRISE_REPOSITORY'] != nil && ENV['ENTERPRISE_REPOSITORY'] != "" ?
+        ENV['ENTERPRISE_REPOSITORY'] :
         "https://repo1.maven.org/maven2"
     namespace = "com/facebook/react"
     # Sample url from Maven:
