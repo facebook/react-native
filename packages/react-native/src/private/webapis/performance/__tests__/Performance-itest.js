@@ -53,7 +53,7 @@ describe('Performance', () => {
       expect(mark.name).toBe('mark-now');
       expect(mark.startTime).toBe(25);
       expect(mark.duration).toBe(0);
-      expect(mark.detail).toBeUndefined();
+      expect(mark.detail).toBe(null);
     });
 
     it('works with custom timestamp', () => {
@@ -64,7 +64,7 @@ describe('Performance', () => {
       expect(mark.name).toBe('mark-custom');
       expect(mark.startTime).toBe(10);
       expect(mark.duration).toBe(0);
-      expect(mark.detail).toBeUndefined();
+      expect(mark.detail).toBe(null);
     });
 
     it('provides detail', () => {
@@ -76,6 +76,13 @@ describe('Performance', () => {
 
       expect(mark.detail).toEqual(originalDetail);
       expect(mark.detail).not.toBe(originalDetail);
+    });
+
+    it('provides a null detail if it is not provided or is undefined', () => {
+      expect(performance.mark('mark-without-detail').detail).toBe(null);
+      expect(
+        performance.mark('mark-without-detail', {detail: undefined}).detail,
+      ).toBe(null);
     });
 
     it('throws if no name is provided', () => {
@@ -146,7 +153,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-defaults');
         expect(measure.startTime).toBe(0);
         expect(measure.duration).toBe(25);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with a start timestamp', () => {
@@ -161,7 +168,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-timestamp');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(15);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with start mark', () => {
@@ -180,7 +187,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-mark');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(15);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with end mark', () => {
@@ -199,7 +206,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-end-mark');
         expect(measure.startTime).toBe(0);
         expect(measure.duration).toBe(50);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with start mark and end mark', () => {
@@ -226,7 +233,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-mark-and-end-mark');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(40);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with a start timestamp and an end timestamp', () => {
@@ -245,7 +252,7 @@ describe('Performance', () => {
         );
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(15);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with a start timestamp and a duration', () => {
@@ -262,7 +269,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-timestamp-and-duration');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(30);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with a start mark and a duration', () => {
@@ -283,7 +290,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-mark-and-duration');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(30);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('throws if the specified mark does NOT exist', () => {
@@ -339,7 +346,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-defaults');
         expect(measure.startTime).toBe(0);
         expect(measure.duration).toBe(25);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with startMark', () => {
@@ -359,7 +366,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-mark');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(15);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('works with startMark and endMark', () => {
@@ -383,7 +390,7 @@ describe('Performance', () => {
         expect(measure.name).toBe('measure-with-start-mark-and-end-mark');
         expect(measure.startTime).toBe(10);
         expect(measure.duration).toBe(15);
-        expect(measure.detail).toBeUndefined();
+        expect(measure.detail).toBe(null);
       });
 
       it('throws if the specified marks do NOT exist', () => {
@@ -430,6 +437,14 @@ describe('Performance', () => {
 
       expect(measure.detail).toEqual(originalDetail);
       expect(measure.detail).not.toBe(originalDetail);
+    });
+
+    it('provides a null detail if it is not provided or is undefined', () => {
+      expect(performance.measure('measure-without-detail').detail).toBe(null);
+      expect(
+        performance.measure('measure-without-detail', {detail: undefined})
+          .detail,
+      ).toBe(null);
     });
 
     it('casts measure name to a string', () => {
