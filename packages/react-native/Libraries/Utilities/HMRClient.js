@@ -21,6 +21,7 @@ const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const prettyFormat = require('pretty-format');
 
 const pendingEntryPoints = [];
+const refreshLogDisabled = Boolean(typeof process !== 'undefined' && process.env && process.env.DISABLE_HMR_LOGS);
 let hmrClient = null;
 let hmrUnavailableReason: string | null = null;
 let hmrOrigin: string | null = null;
@@ -79,7 +80,7 @@ const HMRClient: HMRClientNativeInterface = {
     // Since they'll get applied now, we'll show a banner.
     const hasUpdates = hmrClient.hasPendingUpdates();
 
-    if (hasUpdates) {
+    if (hasUpdates && !refreshLogDisabled) {
       DevLoadingView.showMessage('Refreshing...', 'refresh');
     }
     try {
@@ -214,7 +215,7 @@ Error: ${e.message}`;
       currentCompileErrorMessage = null;
       didConnect = true;
 
-      if (client.isEnabled() && !isInitialUpdate) {
+      if (client.isEnabled() && !isInitialUpdate && !refreshLogDisabled) {
         DevLoadingView.showMessage('Refreshing...', 'refresh');
       }
     });
