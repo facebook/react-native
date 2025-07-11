@@ -243,7 +243,7 @@ Transform::Translate(Float x, Float y, Float z) noexcept {
     if ((haveLHS &&
          lhs.operations[i].type == TransformOperationType::Arbitrary) ||
         (haveRHS &&
-         rhs.operations[i].type == TransformOperationType::Arbitrary)) {
+         rhs.operations[j].type == TransformOperationType::Arbitrary)) {
       return result;
     }
     if (haveLHS && lhs.operations[i].type == TransformOperationType::Identity) {
