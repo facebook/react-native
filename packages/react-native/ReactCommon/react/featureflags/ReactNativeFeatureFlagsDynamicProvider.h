@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37da6a5b4c8f877f64d9cf1385d2a20f>>
+ * @generated SignedSource<<f595975d62a3adf9e4ea0902aacdeaa6>>
  */
 
 /**
@@ -457,6 +457,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preparedTextCacheSize();
+  }
+
+  bool releaseImageDataWhenConsumed() override {
+    auto value = values_["releaseImageDataWhenConsumed"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::releaseImageDataWhenConsumed();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
