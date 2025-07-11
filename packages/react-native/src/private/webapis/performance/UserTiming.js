@@ -12,44 +12,45 @@
 
 import type {DOMHighResTimeStamp} from './PerformanceEntry';
 
+import {getCurrentTimeStamp} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 
 export type DetailType = mixed;
 
-export type PerformanceMarkOptions = {
+export type PerformanceMarkOptions = $ReadOnly<{
   detail?: DetailType,
   startTime?: DOMHighResTimeStamp,
-};
+}>;
 
 export type TimeStampOrName = DOMHighResTimeStamp | string;
 
-export type PerformanceMeasureInit = {
+export type PerformanceMeasureInit = $ReadOnly<{
   detail?: DetailType,
   startTime: DOMHighResTimeStamp,
   duration: DOMHighResTimeStamp,
-};
+}>;
 
 class PerformanceMarkTemplate extends PerformanceEntry {
   // We don't use private fields because they're significantly slower to
   // initialize on construction and to access.
-  _detail: DetailType;
+  __detail: DetailType;
 
   // This constructor isn't really used. See `PerformanceMark` below.
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
     super({
       name: markName,
       entryType: 'mark',
-      startTime: markOptions?.startTime ?? performance.now(),
+      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
       duration: 0,
     });
 
     if (markOptions) {
-      this._detail = markOptions.detail;
+      this.__detail = markOptions.detail;
     }
   }
 
   get detail(): DetailType {
-    return this._detail;
+    return this.__detail;
   }
 }
 
@@ -67,11 +68,11 @@ export const PerformanceMark: typeof PerformanceMarkTemplate =
   ) {
     this.__name = markName;
     this.__entryType = 'mark';
-    this.__startTime = markOptions?.startTime ?? performance.now();
+    this.__startTime = markOptions?.startTime ?? getCurrentTimeStamp();
     this.__duration = 0;
 
     if (markOptions) {
-      this._detail = markOptions.detail;
+      this.__detail = markOptions.detail;
     }
   };
 
@@ -81,7 +82,7 @@ PerformanceMark.prototype = PerformanceMarkTemplate.prototype;
 class PerformanceMeasureTemplate extends PerformanceEntry {
   // We don't use private fields because they're significantly slower to
   // initialize on construction and to access.
-  _detail: DetailType;
+  __detail: DetailType;
 
   // This constructor isn't really used. See `PerformanceMeasure` below.
   constructor(measureName: string, measureOptions: PerformanceMeasureInit) {
@@ -93,12 +94,12 @@ class PerformanceMeasureTemplate extends PerformanceEntry {
     });
 
     if (measureOptions) {
-      this._detail = measureOptions.detail;
+      this.__detail = measureOptions.detail;
     }
   }
 
   get detail(): DetailType {
-    return this._detail;
+    return this.__detail;
   }
 }
 
@@ -116,7 +117,7 @@ export const PerformanceMeasure: typeof PerformanceMeasureTemplate =
     this.__duration = measureOptions.duration;
 
     if (measureOptions) {
-      this._detail = measureOptions.detail;
+      this.__detail = measureOptions.detail;
     }
   };
 
