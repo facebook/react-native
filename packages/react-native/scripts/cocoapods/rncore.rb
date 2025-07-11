@@ -26,6 +26,7 @@ end
 ## - RCT_TESTONLY_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.
 
 class ReactNativeCoreUtils
+    ENTERPRISE_REPOSITORY = "ENTERPRISE_REPOSITORY"
     @@build_from_source = true
     @@react_native_path = ""
     @@react_native_version = ""

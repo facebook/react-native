@@ -8,6 +8,7 @@ require 'rexml/document'
 
 HERMES_GITHUB_URL = "https://github.com/facebook/hermes.git"
 ENV_BUILD_FROM_SOURCE = "RCT_BUILD_HERMES_FROM_SOURCE"
+ENTERPRISE_REPOSITORY = "ENTERPRISE_REPOSITORY"
 
 module HermesEngineSourceType
     LOCAL_PREBUILT_TARBALL = :local_prebuilt_tarball

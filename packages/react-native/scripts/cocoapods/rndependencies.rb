@@ -57,6 +57,7 @@ def add_rn_third_party_dependencies(s)
 end
 
 class ReactNativeDependenciesUtils
+    ENTERPRISE_REPOSITORY = "ENTERPRISE_REPOSITORY"
     @@build_from_source = true
     @@react_native_path = ""
     @@react_native_version = ""
