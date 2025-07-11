@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<037acd19008660ca0740c9f256d45942>>
+ * @generated SignedSource<<f3e838bc19232c5b2bb539133c825a71>>
  */
 
 /**
@@ -38,6 +38,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableCustomFocusSearchOnClippedElementsAndroid() = 0;
   virtual bool enableDestroyShadowTreeRevisionAsync() = 0;
   virtual bool enableDoubleMeasurementFixAndroid() = 0;
+  virtual bool enableEagerMainQueueModulesOnIOS() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRenderer() = 0;
@@ -49,7 +50,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
   virtual bool enableMainQueueCoordinatorOnIOS() = 0;
-  virtual bool enableMainQueueModulesOnIOS() = 0;
   virtual bool enableModuleArgumentNSNullConversionIOS() = 0;
   virtual bool enableNativeCSSParsing() = 0;
   virtual bool enableNetworkEventReporting() = 0;

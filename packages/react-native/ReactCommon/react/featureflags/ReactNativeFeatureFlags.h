@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f9a1e13365f6b035465869e1adcaaaf>>
+ * @generated SignedSource<<e6c1138d3b50c0a8db0194828b448741>>
  */
 
 /**
@@ -105,6 +105,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
 
   /**
+   * This infra allows native modules to initialize on the main thread, during React Native init.
+   */
+  RN_EXPORT static bool enableEagerMainQueueModulesOnIOS();
+
+  /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
@@ -158,11 +163,6 @@ class ReactNativeFeatureFlags {
    * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
    */
   RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
-
-  /**
-   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
-   */
-  RN_EXPORT static bool enableMainQueueModulesOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

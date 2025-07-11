@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5ebc619798b4421e67c76eb4c9edbae>>
+ * @generated SignedSource<<b680260e184df469f918d2bf4a3a4e65>>
  * @flow strict
  * @noformat
  */
@@ -64,6 +64,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
+  enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
@@ -75,7 +76,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
-  enableMainQueueModulesOnIOS: Getter<boolean>,
   enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
@@ -246,6 +246,10 @@ export const enableDestroyShadowTreeRevisionAsync: Getter<boolean> = createNativ
  */
 export const enableDoubleMeasurementFixAndroid: Getter<boolean> = createNativeFlagGetter('enableDoubleMeasurementFixAndroid', false);
 /**
+ * This infra allows native modules to initialize on the main thread, during React Native init.
+ */
+export const enableEagerMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableEagerMainQueueModulesOnIOS', false);
+/**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
@@ -289,10 +293,6 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
  */
 export const enableMainQueueCoordinatorOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueCoordinatorOnIOS', false);
-/**
- * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
- */
-export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
 /**
  * Enable NSNull conversion when handling module arguments on iOS
  */

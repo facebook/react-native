@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bfa5d2ae272c5645cee6aec1328aba77>>
+ * @generated SignedSource<<9588b972841baa23bd3bb3b7326b4710>>
  */
 
 /**
@@ -54,6 +54,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableDoubleMeasurementFixAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableEagerMainQueueModulesOnIOS(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
@@ -75,8 +77,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableMainQueueCoordinatorOnIOS(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableModuleArgumentNSNullConversionIOS(): Boolean
 

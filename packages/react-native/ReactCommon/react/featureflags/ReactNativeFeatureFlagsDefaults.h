@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e47ca0b05d17a175c2fc522bc6088300>>
+ * @generated SignedSource<<a16b227254e43d57c46479d87bc45bf2>>
  */
 
 /**
@@ -79,6 +79,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableEagerMainQueueModulesOnIOS() override {
+    return false;
+  }
+
   bool enableEagerRootViewAttachment() override {
     return false;
   }
@@ -120,10 +124,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
     return false;
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7eba68c1825ec1f35955a11c0fd5f982>>
+ * @generated SignedSource<<d6024891cd1852741976e94cd6d637c6>>
  */
 
 /**
@@ -37,6 +37,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
+  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -48,7 +49,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
-  private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
@@ -211,6 +211,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
+    var cached = enableEagerMainQueueModulesOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableEagerMainQueueModulesOnIOS()
+      accessedFeatureFlags.add("enableEagerMainQueueModulesOnIOS")
+      enableEagerMainQueueModulesOnIOSCache = cached
+    }
+    return cached
+  }
+
   override fun enableEagerRootViewAttachment(): Boolean {
     var cached = enableEagerRootViewAttachmentCache
     if (cached == null) {
@@ -317,16 +327,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableMainQueueCoordinatorOnIOS()
       accessedFeatureFlags.add("enableMainQueueCoordinatorOnIOS")
       enableMainQueueCoordinatorOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMainQueueModulesOnIOS(): Boolean {
-    var cached = enableMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableMainQueueModulesOnIOS()
-      accessedFeatureFlags.add("enableMainQueueModulesOnIOS")
-      enableMainQueueModulesOnIOSCache = cached
     }
     return cached
   }

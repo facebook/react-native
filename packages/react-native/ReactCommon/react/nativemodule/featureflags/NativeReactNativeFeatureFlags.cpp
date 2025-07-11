@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1248a1cd10f3cd2758d4ad59d0370d72>>
+ * @generated SignedSource<<09ffa5d69974c01761505c26a61ce865>>
  */
 
 /**
@@ -109,6 +109,11 @@ bool NativeReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid(
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS();
+}
+
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
@@ -162,11 +167,6 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
 bool NativeReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS();
-}
-
-bool NativeReactNativeFeatureFlags::enableMainQueueModulesOnIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS(
