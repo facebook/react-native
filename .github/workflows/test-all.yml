@@ -245,6 +245,14 @@ jobs:
       - name: Print third-party folder
         shell: bash
         run: ls -lR /tmp/third-party
+      - name: Download React Native Prebuilds
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/ReactCore
+      - name: Print ReactCore folder
+        shell: bash
+        run: ls -lR /tmp/ReactCore
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
@@ -267,6 +275,7 @@ jobs:
           NEW_ARCH_ENABLED=1
 
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
