@@ -81,16 +81,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableMainQueueSyncDispatchIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-04-02',
-        description: 'Disable sync dispatch on the main queue on iOS',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
