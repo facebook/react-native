@@ -598,3 +598,99 @@ test('AnimatedValue.interpolate', () => {
   expect(viewElement.getBoundingClientRect().x).toBe(0.5);
   expect(viewElement.getBoundingClientRect().y).toBe(75);
 });
+
+test('Animated.sequence', () => {
+  let _translateY;
+  let _isSequenceFinished = false;
+  const elementRef = createRef<HostInstance>();
+
+  function MyApp() {
+    const translateY = useAnimatedValue(0, {useNativeDriver: true});
+    _translateY = translateY;
+
+    return (
+      <View>
+        <Animated.View
+          ref={elementRef}
+          style={[
+            {
+              position: 'absolute',
+              width: 100,
+              height: 100,
+            },
+            {
+              transform: [
+                {
+                  translateY: translateY.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      </View>
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const element = ensureInstance(elementRef.current, ReactNativeElement);
+
+  expect(element.getBoundingClientRect().y).toBe(0);
+
+  Fantom.runTask(() => {
+    Animated.sequence([
+      Animated.timing(_translateY, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(_translateY, {
+        toValue: 0,
+        duration: 0,
+        useNativeDriver: true,
+      }),
+    ]).start(({finished}) => {
+      if (finished) {
+        _isSequenceFinished = true;
+      }
+    });
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
+  ).toBeCloseTo(-16, 0.001);
+
+  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
+  }
+  expect(_isSequenceFinished).toBe(false);
+  expect(element.getBoundingClientRect().y).toBe(-16);
+
+  Fantom.runWorkLoop(); // React render
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
+  ).toBeCloseTo(0, 0.001);
+
+  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+  }
+  expect(element.getBoundingClientRect().y).toBe(0);
+
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(_isSequenceFinished).toBe(false);
+    Fantom.runWorkLoop();
+  }
+  expect(_isSequenceFinished).toBe(true);
+});
