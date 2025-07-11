@@ -87,6 +87,13 @@ describe('Performance', () => {
       );
     });
 
+    it('casts mark name to a string', () => {
+      // $FlowExpectedError[incompatible-call]
+      const mark = performance.mark(10);
+
+      expect(mark.name).toBe('10');
+    });
+
     it('casts startTime to a number', () => {
       const mark = performance.mark('some-mark', {
         // $FlowExpectedError[incompatible-call]
@@ -423,6 +430,22 @@ describe('Performance', () => {
 
       expect(measure.detail).toEqual(originalDetail);
       expect(measure.detail).not.toBe(originalDetail);
+    });
+
+    it('casts measure name to a string', () => {
+      // $FlowExpectedError[incompatible-call]
+      const measure = performance.measure(10);
+
+      expect(measure.name).toBe('10');
+    });
+
+    it('throws if no name is provided', () => {
+      expect(() => {
+        // $FlowExpectedError[incompatible-call]
+        performance.measure();
+      }).toThrow(
+        `Failed to execute 'measure' on 'Performance': 1 argument required, but only 0 present.`,
+      );
     });
   });
 

@@ -123,6 +123,8 @@ export default class Performance {
       );
     }
 
+    const resolvedMarkName = String(markName);
+
     let resolvedDetail;
     if (markOptions?.detail != null) {
       resolvedDetail = structuredClone(markOptions.detail);
@@ -137,7 +139,7 @@ export default class Performance {
         resolvedStartTime = Number(startTime);
         if (resolvedStartTime < 0) {
           throw new TypeError(
-            `Failed to execute 'mark' on 'Performance': '${markName}' cannot have a negative start time.`,
+            `Failed to execute 'mark' on 'Performance': '${resolvedMarkName}' cannot have a negative start time.`,
           );
         } else if (!Number.isFinite(resolvedStartTime)) {
           throw new TypeError(
@@ -148,7 +150,7 @@ export default class Performance {
 
       // $FlowExpectedError[not-a-function]
       computedStartTime = NativePerformance.markWithResult(
-        markName,
+        resolvedMarkName,
         resolvedStartTime,
       );
     } else {
@@ -156,7 +158,7 @@ export default class Performance {
       computedStartTime = performance.now();
     }
 
-    return new PerformanceMark(markName, {
+    return new PerformanceMark(resolvedMarkName, {
       startTime: computedStartTime,
       detail: resolvedDetail,
     });
@@ -176,6 +178,13 @@ export default class Performance {
     startMarkOrOptions?: string | PerformanceMeasureOptions,
     endMark?: string,
   ): PerformanceMeasure {
+    if (measureName == null) {
+      throw new TypeError(
+        `Failed to execute 'measure' on 'Performance': 1 argument required, but only 0 present.`,
+      );
+    }
+
+    let resolvedMeasureName = String(measureName);
     let resolvedStartTime: number | void;
     let resolvedStartMark: string | void;
     let resolvedEndTime: number | void;
@@ -282,7 +291,7 @@ export default class Performance {
     if (NativePerformance?.measure) {
       try {
         [computedStartTime, computedDuration] = NativePerformance.measure(
-          measureName,
+          resolvedMeasureName,
           resolvedStartTime,
           resolvedEndTime,
           resolvedDuration,
@@ -299,7 +308,7 @@ export default class Performance {
       try {
         [computedStartTime, computedDuration] =
           NativePerformance.measureWithResult(
-            measureName,
+            resolvedMeasureName,
             resolvedStartTime ?? 0,
             resolvedEndTime ?? 0,
             resolvedDuration,
@@ -316,7 +325,7 @@ export default class Performance {
       warnNoNativePerformance();
     }
 
-    const measure = new PerformanceMeasure(measureName, {
+    const measure = new PerformanceMeasure(resolvedMeasureName, {
       startTime: computedStartTime,
       duration: computedDuration ?? 0,
       detail: resolvedDetail,
