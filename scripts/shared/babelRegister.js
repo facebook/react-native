@@ -41,7 +41,15 @@ function registerForMonorepo() {
     // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
     require('@fb-tools/babel-register');
   } else {
-    require('metro-babel-register')([
+    // Temporarily allow the default export to be a function (Metro <= 0.82),
+    // or contain a `register` function (Metro >= 0.83). Remove shim once Metro
+    // is bumped in OSS.
+    const metroBabelRegister = require('metro-babel-register') /*:: as $FlowFixMe */;
+    const registerFunction =
+      typeof metroBabelRegister.register === 'function'
+        ? metroBabelRegister.register
+        : metroBabelRegister;
+    registerFunction([
       PACKAGES_DIR,
       PRIVATE_DIR,
       SCRIPTS_DIR,
