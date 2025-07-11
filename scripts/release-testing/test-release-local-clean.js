@@ -11,7 +11,7 @@
 'use strict';
 
 /*
- * This script, paired with test-e2e-local.js, is the full suite of
+ * This script, paired with test-release-local.js, is the full suite of
  * tooling needed for a successful local testing experience.
  * This script is an helper to clean up the environment fully
  * before running the test suite.
