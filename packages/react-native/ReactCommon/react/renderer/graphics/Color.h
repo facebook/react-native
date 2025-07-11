@@ -8,7 +8,6 @@
 #pragma once
 
 #include <functional>
-#include <limits>
 
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/HostPlatformColor.h>

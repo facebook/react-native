@@ -8,7 +8,6 @@
 #pragma once
 
 #include <array>
-#include <string>
 #include <vector>
 
 #include <react/renderer/debug/flags.h>
@@ -37,7 +36,7 @@ inline bool isZero(Float n) {
  * An "Arbitrary" operation means that the transform was seeded with some
  * arbitrary initial result.
  */
-enum class TransformOperationType {
+enum class TransformOperationType : uint8_t {
   Arbitrary,
   Identity,
   Perspective,
