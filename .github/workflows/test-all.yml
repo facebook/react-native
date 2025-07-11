@@ -141,26 +141,7 @@ jobs:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  test_ios_rntester_dynamic_frameworks:
-    runs-on: macos-14
-    needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run it
-        uses: ./.github/actions/test-ios-rntester
-        with:
-          use-frameworks: DynamicFrameworks
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: Debug
 
   test_ios_rntester:
     runs-on: macos-14-large
@@ -174,14 +155,14 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
+        frameworks: [StaticLibraries, DynamicFrameworks]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          run-unit-tests: "false"
-          use-frameworks: StaticLibraries
+          use-frameworks: ${{ matrix.frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
