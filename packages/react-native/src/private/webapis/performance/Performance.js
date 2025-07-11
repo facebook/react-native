@@ -25,31 +25,26 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
 } from './internals/RawPerformanceEntry';
-import {warnNoNativePerformance} from './internals/Utilities';
+import {
+  getCurrentTimeStamp,
+  warnNoNativePerformance,
+} from './internals/Utilities';
 import MemoryInfo from './MemoryInfo';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import NativePerformance from './specs/NativePerformance';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
 
-declare var global: {
-  // This value is defined directly via JSI, if available.
-  +nativePerformanceNow?: ?() => number,
-};
-
-const getCurrentTimeStamp: () => DOMHighResTimeStamp =
-  NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());
-
 export type PerformanceMeasureOptions =
-  | {
+  | $ReadOnly<{
       detail?: DetailType,
       start?: DOMHighResTimeStamp | string,
       duration?: DOMHighResTimeStamp,
-    }
-  | {
+    }>
+  | $ReadOnly<{
       detail?: DetailType,
       start?: DOMHighResTimeStamp | string,
       end?: DOMHighResTimeStamp | string,
-    };
+    }>;
 
 const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
   ['mark', 'measure'];
@@ -155,7 +150,7 @@ export default class Performance {
       );
     } else {
       warnNoNativePerformance();
-      computedStartTime = performance.now();
+      computedStartTime = getCurrentTimeStamp();
     }
 
     return new PerformanceMark(resolvedMarkName, {
