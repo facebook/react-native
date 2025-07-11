@@ -7,6 +7,8 @@
 
 #import <React/RCTVirtualTextShadowView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTShadowView+Layout.h>
 #import <yoga/Yoga.h>
 
@@ -36,3 +38,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

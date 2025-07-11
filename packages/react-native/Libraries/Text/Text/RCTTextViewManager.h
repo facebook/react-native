@@ -7,8 +7,12 @@
 
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTBaseTextViewManager.h"
 
 @interface RCTTextViewManager : RCTBaseTextViewManager
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

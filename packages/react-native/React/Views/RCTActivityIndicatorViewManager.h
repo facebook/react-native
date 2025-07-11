@@ -7,6 +7,8 @@
 
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTConvert (UIActivityIndicatorView)
 
 + (UIActivityIndicatorViewStyle)UIActivityIndicatorViewStyle:(id)json;
@@ -16,3 +18,5 @@
 @interface RCTActivityIndicatorViewManager : RCTViewManager
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -9,6 +9,8 @@
 #import <React/RCTVirtualTextView.h>
 #import <React/RCTVirtualTextViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @implementation RCTVirtualTextViewManager
 
 RCT_EXPORT_MODULE(RCTVirtualText)
@@ -24,3 +26,5 @@ RCT_EXPORT_MODULE(RCTVirtualText)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

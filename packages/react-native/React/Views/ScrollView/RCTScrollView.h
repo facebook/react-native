@@ -7,6 +7,8 @@
 
 #import <UIKit/UIScrollView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTDefines.h>
 #import <React/RCTEventDispatcherProtocol.h>
@@ -78,3 +80,5 @@
 @end
 
 RCT_EXTERN void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNumber *reactTag);
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
