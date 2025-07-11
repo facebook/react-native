@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c7dc0406f2a4e8b4bedde09e8dec5b07>>
+ * @generated SignedSource<<a4574d37f3e33c268a7415af572ad19b>>
  */
 
 /**
@@ -114,6 +114,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
   override fun preparedTextCacheSize(): Double = 200.0
+
+  override fun releaseImageDataWhenConsumed(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

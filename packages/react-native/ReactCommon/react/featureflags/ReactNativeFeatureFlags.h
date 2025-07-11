@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb769df330eff243aa913b79807396e7>>
+ * @generated SignedSource<<1916210e2c6126688cb40ffb9c6c6f5c>>
  */
 
 /**
@@ -268,6 +268,11 @@ class ReactNativeFeatureFlags {
    * Number cached PreparedLayouts in TextLayoutManager cache
    */
   RN_EXPORT static double preparedTextCacheSize();
+
+  /**
+   * Releases the cached image data when it is consumed by the observers.
+   */
+  RN_EXPORT static bool releaseImageDataWhenConsumed();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
