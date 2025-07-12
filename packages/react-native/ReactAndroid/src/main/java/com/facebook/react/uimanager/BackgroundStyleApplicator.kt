@@ -34,6 +34,9 @@ import com.facebook.react.uimanager.drawable.MIN_OUTSET_BOX_SHADOW_SDK_VERSION
 import com.facebook.react.uimanager.drawable.OutlineDrawable
 import com.facebook.react.uimanager.drawable.OutsetBoxShadowDrawable
 import com.facebook.react.uimanager.style.BackgroundImageLayer
+import com.facebook.react.uimanager.style.BackgroundPosition
+import com.facebook.react.uimanager.style.BackgroundRepeat
+import com.facebook.react.uimanager.style.BackgroundSize
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -73,6 +76,36 @@ public object BackgroundStyleApplicator {
       ensureBackgroundDrawable(view).backgroundImageLayers = backgroundImageLayers
     } else {
       ensureCSSBackground(view).setBackgroundImage(backgroundImageLayers)
+    }
+  }
+
+  @JvmStatic
+  public fun setBackgroundSize(
+    view: View,
+    backgroundSizes: List<BackgroundSize>?
+  ): Unit {
+    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
+      ensureBackgroundDrawable(view).backgroundSize = backgroundSizes
+    }
+  }
+
+  @JvmStatic
+  public fun setBackgroundPosition(
+    view: View,
+    backgroundPositions: List<BackgroundPosition>?
+  ): Unit {
+    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
+      ensureBackgroundDrawable(view).backgroundPosition = backgroundPositions
+    }
+  }
+
+  @JvmStatic
+  public fun setBackgroundRepeat(
+    view: View,
+    backgroundRepeats: List<BackgroundRepeat>?
+  ): Unit {
+    if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
+      ensureBackgroundDrawable(view).backgroundRepeat = backgroundRepeats
     }
   }
 
