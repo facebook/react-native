@@ -20,6 +20,7 @@ import com.facebook.react.DebugCorePackage
 import com.facebook.react.ReactPackage
 import com.facebook.react.ViewManagerOnDemandReactPackage
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BundleConsumer
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.JSBundleLoaderDelegate
 import com.facebook.react.bridge.JavaScriptContextHolder
@@ -43,6 +44,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.facebook.react.fabric.BigStringBufferWrapper
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -288,6 +290,15 @@ internal class ReactInstance(
     }
   }
 
+  fun beforeLoad(scriptWrapper: BigStringBufferWrapper, sourceURL: String){
+    val bundleConsumers = turboModuleManager.getModulesConformingToInterfaceNames(BundleConsumer::class.java)
+    for(name in bundleConsumers) {
+      val module = turboModuleManager.getModule(name) as BundleConsumer
+      module.setScriptWrapper(scriptWrapper);
+      module.setSourceURL(sourceURL);
+    }
+  }
+
   fun loadJSBundle(bundleLoader: JSBundleLoader) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactInstance.loadJSBundle")
     bundleLoader.loadScript(
@@ -298,11 +309,18 @@ internal class ReactInstance(
               loadSynchronously: Boolean
           ) {
             context.setSourceURL(sourceURL)
-            loadJSBundleFromFile(fileName, sourceURL)
+
+            val script = BigStringBufferWrapper(fileName);
+
+            beforeLoad(script, sourceURL);
+            loadJSBundle(script, sourceURL)
           }
 
           override fun loadSplitBundleFromFile(fileName: String, sourceURL: String) {
-            loadJSBundleFromFile(fileName, sourceURL)
+            val script = BigStringBufferWrapper(fileName)
+
+            beforeLoad(script, sourceURL);
+            loadJSBundle(script, sourceURL)
           }
 
           override fun loadScriptFromAssets(
@@ -311,7 +329,12 @@ internal class ReactInstance(
               loadSynchronously: Boolean
           ) {
             context.setSourceURL(assetURL)
-            loadJSBundleFromAssets(assetManager, assetURL)
+
+            val sourceURL = assetURL.removePrefix("assets://")
+            val script = BigStringBufferWrapper(assetManager, sourceURL)
+
+            beforeLoad(script, assetURL);
+            loadJSBundle(script, assetURL)
           }
 
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
@@ -423,7 +446,7 @@ internal class ReactInstance(
       reactHostInspectorTarget: ReactHostInspectorTarget?
   ): HybridData
 
-  private external fun loadJSBundleFromFile(fileName: String, sourceURL: String)
+  private external fun loadJSBundle(scriptWrapper: BigStringBufferWrapper, sourceURL: String)
 
   private external fun loadJSBundleFromAssets(assetManager: AssetManager, assetURL: String)
 
