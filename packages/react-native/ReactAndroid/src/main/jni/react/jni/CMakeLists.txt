@@ -80,8 +80,10 @@ target_link_libraries(reactnativejni
         fbjni
         folly_runtime
         glog_init
+        jsinspector_network
         logger
         react_cxxreact
+        react_featureflags
         react_renderer_runtimescheduler
         reactnativejni_common
         runtimeexecutor
