@@ -1,4 +1,6 @@
 appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+tags:
+  - exclude-from-debug # when running in debug mode, the app is showing a logbox which makes the API tab not tappable
 ---
 - launchApp
 - assertVisible:
@@ -12,7 +14,7 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     id: "Legacy Native Module"
 - tapOn:
     id: "Legacy Native Module"
-- tapOn: 
+- tapOn:
     text: "voidFunc"
 - assertVisible:
     id: "voidFunc-result"
