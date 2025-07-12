@@ -28,15 +28,20 @@ tasks.register("clean") {
   )
 }
 
-// Configure ktfmt tasks to run on all subprojects
-gradle.projectsEvaluated {
-  val ktfmtProjects = subprojects.filter {
-    it.plugins.hasPlugin("com.ncorti.ktfmt.gradle")
-  }
+tasks.named("ktfmtCheck") {
+  dependsOn(
+      ":react-native-gradle-plugin:ktfmtCheck",
+      ":settings-plugin:ktfmtCheck",
+      ":shared-testutil:ktfmtCheck",
+      ":shared:ktfmtCheck",
+  )
+}
 
-  listOf("ktfmtCheck", "ktfmtFormat").forEach { taskName ->
-    tasks.named(taskName) {
-      dependsOn(ktfmtProjects.map { it.tasks.named(taskName) })
-    }
-  }
+tasks.named("ktfmtFormat") {
+  dependsOn(
+      ":react-native-gradle-plugin:ktfmtFormat",
+      ":settings-plugin:ktfmtFormat",
+      ":shared-testutil:ktfmtFormat",
+      ":shared:ktfmtFormat",
+  )
 }
