@@ -1878,7 +1878,7 @@ const styles = StyleSheet.create({
 type RefForwarder<TNativeInstance, TPublicInstance> = {
   getForwardingRef: (
     ?React.RefSetter<TPublicInstance>,
-  ) => (TNativeInstance | null) => void,
+  ) => (TNativeInstance | null) => () => void,
   nativeInstance: TNativeInstance | null,
   publicInstance: TPublicInstance | null,
 };
@@ -1892,20 +1892,44 @@ function createRefForwarder<TNativeInstance, TPublicInstance>(
 ): RefForwarder<TNativeInstance, TPublicInstance> {
   const state: RefForwarder<TNativeInstance, TPublicInstance> = {
     getForwardingRef: memoize(forwardedRef => {
-      return (nativeInstance: TNativeInstance | null): void => {
+      let cleanup: ?() => void = null;
+
+      return (nativeInstance: TNativeInstance | null): (() => void) => {
+        if (cleanup) {
+          cleanup();
+          cleanup = null;
+        }
+
         const publicInstance =
           nativeInstance == null ? null : mutator(nativeInstance);
 
         state.nativeInstance = nativeInstance;
         state.publicInstance = publicInstance;
 
-        if (forwardedRef != null) {
+        if (forwardedRef != null && nativeInstance != null) {
           if (typeof forwardedRef === 'function') {
-            forwardedRef(publicInstance);
+            const result = forwardedRef(publicInstance);
+            if (typeof result === 'function') {
+              // $FlowFixMe[incompatible-use]
+              cleanup = result;
+            } else {
+              // $FlowFixMe[incompatible-type]
+              cleanup = () => forwardedRef(null);
+            }
           } else {
             forwardedRef.current = publicInstance;
+            cleanup = () => {
+              forwardedRef.current = null;
+            };
           }
         }
+
+        return () => {
+          if (cleanup) {
+            cleanup();
+            cleanup = null;
+          }
+        };
       };
     }),
     nativeInstance: null,
