@@ -30,27 +30,27 @@ export const STOP_IMMEDIATE_PROPAGATION_FLAG_KEY: symbol = Symbol(
 export const STOP_PROPAGATION_FLAG_KEY: symbol = Symbol('stopPropagationFlag');
 export const TARGET_KEY: symbol = Symbol('target');
 
-export function getCurrentTarget(event: Event): EventTarget | null {
+export function getCurrentTarget(event: Event): EventTarget<> | null {
   // $FlowExpectedError[prop-missing]
   return event[CURRENT_TARGET_KEY];
 }
 
 export function setCurrentTarget(
   event: Event,
-  currentTarget: EventTarget | null,
+  currentTarget: EventTarget<> | null,
 ): void {
   // $FlowExpectedError[prop-missing]
   event[CURRENT_TARGET_KEY] = currentTarget;
 }
 
-export function getComposedPath(event: Event): $ReadOnlyArray<EventTarget> {
+export function getComposedPath(event: Event): $ReadOnlyArray<EventTarget<>> {
   // $FlowExpectedError[prop-missing]
   return event[COMPOSED_PATH_KEY];
 }
 
 export function setComposedPath(
   event: Event,
-  composedPath: $ReadOnlyArray<EventTarget>,
+  composedPath: $ReadOnlyArray<EventTarget<>>,
 ): void {
   // $FlowExpectedError[prop-missing]
   event[COMPOSED_PATH_KEY] = composedPath;
@@ -109,12 +109,12 @@ export function setStopPropagationFlag(event: Event, value: boolean): void {
   event[STOP_PROPAGATION_FLAG_KEY] = value;
 }
 
-export function getTarget(event: Event): EventTarget | null {
+export function getTarget(event: Event): EventTarget<> | null {
   // $FlowExpectedError[prop-missing]
   return event[TARGET_KEY];
 }
 
-export function setTarget(event: Event, target: EventTarget | null): void {
+export function setTarget(event: Event, target: EventTarget<> | null): void {
   // $FlowExpectedError[prop-missing]
   event[TARGET_KEY] = target;
 }
