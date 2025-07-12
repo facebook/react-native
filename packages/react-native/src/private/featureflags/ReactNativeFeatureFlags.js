@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c5a52b9ffce6f221ae263e90a79a8ab>>
+ * @generated SignedSource<<a5ebc619798b4421e67c76eb4c9edbae>>
  * @flow strict
  * @noformat
  */
@@ -54,7 +54,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
-  disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
@@ -206,10 +205,6 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
  * Removes JS sync at end of native animation
  */
 export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
-/**
- * Disable sync dispatch on the main queue on iOS
- */
-export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
 /**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */

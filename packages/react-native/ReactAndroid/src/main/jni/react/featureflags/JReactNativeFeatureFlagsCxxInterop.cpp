@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2e4ec09356f6857d789cfcc44a83552>>
+ * @generated SignedSource<<08a4e8f9c543a25fc3665753cf7055ef>>
  */
 
 /**
@@ -54,12 +54,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedRemoveJsSync() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
-    return method(javaProvider_);
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMainQueueSyncDispatchIOS");
     return method(javaProvider_);
   }
 
@@ -400,11 +394,6 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
   return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -710,9 +699,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "cxxNativeAnimatedRemoveJsSync",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
-      makeNativeMethod(
-        "disableMainQueueSyncDispatchIOS",
-        JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),

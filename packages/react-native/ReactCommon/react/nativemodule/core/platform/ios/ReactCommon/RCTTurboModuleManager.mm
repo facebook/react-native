@@ -601,11 +601,7 @@ typedef struct {
       };
 
       if ([self _requiresMainQueueSetup:moduleClass]) {
-        NSString *message = [NSString
-            stringWithFormat:
-                @"Lazily setting up TurboModule \"%s\" on the main queue. This could deadlock react native, if it happens during sync rendering. Please fix this by avoiding lazy main queue setup.",
-                moduleName];
-        RCTUnsafeExecuteOnMainQueueSyncWithError(work, message);
+        RCTUnsafeExecuteOnMainQueueSync(work);
       } else {
         work();
       }
