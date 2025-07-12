@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5effd7d4ac8034424144ea68c82b61a7>>
+ * @generated SignedSource<<62ecfcd8d00ce03d659715bbb3f4a235>>
  */
 
 /**
@@ -45,12 +45,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool animatedShouldSignalBatch() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
-    return method(javaProvider_);
-  }
-
   bool cxxNativeAnimatedEnabled() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedEnabled");
@@ -60,12 +54,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool cxxNativeAnimatedRemoveJsSync() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cxxNativeAnimatedRemoveJsSync");
-    return method(javaProvider_);
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableMainQueueSyncDispatchIOS");
     return method(javaProvider_);
   }
 
@@ -126,6 +114,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableDoubleMeasurementFixAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableDoubleMeasurementFixAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableEagerMainQueueModulesOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableEagerMainQueueModulesOnIOS");
     return method(javaProvider_);
   }
 
@@ -192,12 +186,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableMainQueueCoordinatorOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueCoordinatorOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableMainQueueModulesOnIOS");
     return method(javaProvider_);
   }
 
@@ -396,11 +384,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedEnabled();
@@ -409,11 +392,6 @@ bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
@@ -464,6 +442,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableDestroyShadowTreeRevisionAsync(
 bool JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableDoubleMeasurementFixAndroid();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableEagerMainQueueModulesOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableEagerMainQueueModulesOnIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
@@ -519,11 +502,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
 bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableMainQueueModulesOnIOS();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS(
@@ -716,17 +694,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
       makeNativeMethod(
-        "animatedShouldSignalBatch",
-        JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
-      makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
       makeNativeMethod(
         "cxxNativeAnimatedRemoveJsSync",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedRemoveJsSync),
-      makeNativeMethod(
-        "disableMainQueueSyncDispatchIOS",
-        JReactNativeFeatureFlagsCxxInterop::disableMainQueueSyncDispatchIOS),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
@@ -757,6 +729,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableDoubleMeasurementFixAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableDoubleMeasurementFixAndroid),
+      makeNativeMethod(
+        "enableEagerMainQueueModulesOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableEagerMainQueueModulesOnIOS),
       makeNativeMethod(
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
@@ -790,9 +765,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableMainQueueCoordinatorOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableMainQueueCoordinatorOnIOS),
-      makeNativeMethod(
-        "enableMainQueueModulesOnIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableMainQueueModulesOnIOS),
       makeNativeMethod(
         "enableModuleArgumentNSNullConversionIOS",
         JReactNativeFeatureFlagsCxxInterop::enableModuleArgumentNSNullConversionIOS),

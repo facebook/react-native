@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<20809734183aa7bfd7aad9b8d01ea080>>
+ * @generated SignedSource<<e6c1138d3b50c0a8db0194828b448741>>
  */
 
 /**
@@ -45,11 +45,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  RN_EXPORT static bool animatedShouldSignalBatch();
-
-  /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
@@ -58,11 +53,6 @@ class ReactNativeFeatureFlags {
    * Removes JS sync at end of native animation
    */
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
-
-  /**
-   * Disable sync dispatch on the main queue on iOS
-   */
-  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
@@ -113,6 +103,11 @@ class ReactNativeFeatureFlags {
    * When enabled a subset of components will avoid double measurement on Android.
    */
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
+
+  /**
+   * This infra allows native modules to initialize on the main thread, during React Native init.
+   */
+  RN_EXPORT static bool enableEagerMainQueueModulesOnIOS();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -168,11 +163,6 @@ class ReactNativeFeatureFlags {
    * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
    */
   RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
-
-  /**
-   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
-   */
-  RN_EXPORT static bool enableMainQueueModulesOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

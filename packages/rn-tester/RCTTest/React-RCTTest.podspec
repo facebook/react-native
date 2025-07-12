@@ -41,4 +41,5 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

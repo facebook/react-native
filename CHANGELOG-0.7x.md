@@ -319,6 +319,31 @@ ChuiHW))
 - **JSC:** Clean up RCTBridgeDelegate to remove shouldBridgeUseCustomJSC method ([c8f1506f13](https://github.com/facebook/react-native/commit/c8f1506f13310ffafe370273805684e696d72d50) by [@zhongwuzw](https://github.com/zhongwuzw))
 - **Layout:** Remove no longer needed UISceneDelegate ([a033cf9d5e](https://github.com/facebook/react-native/commit/a033cf9d5e8ffbda8b6f86cf3ce152b4ccb73187) by [@okwasniewski](https://github.com/okwasniewski))
 
+## v0.78.3
+
+### Added
+
+#### Android specific
+
+- **Gradle:** RNGP - Add support for `exclusiveEnterpriseRepository` to specify an internal Maven mirror. ([6cb8dc37c7](https://github.com/facebook/react-native/commit/6cb8dc37c74995cba3f9f0a845919f305de53c3d) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- **DevTools**: Temporarily disable eager evaluation and live expressions in the console tab ([07717b5275](https://github.com/facebook/react-native/commit/07717b5275d80cde7b2b4edbe032ab629127fbf0) by [@huntie](https://github.com/huntie))
+- **InteropLayer:** Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+
+#### Android specific
+
+- **StyleSheet:** Wrong `borderBottomEndRadius` on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Codegen:** Skip codegen for selectively disabled libraries in react-native.config.js ([be8595b18a](https://github.com/facebook/react-native/commit/be8595b18a46635bf679d8e7473f2960c33530fa) by [@ismarbesic](https://github.com/ismarbesic))
+- **Layout:** Layout direction changes are now honored on bundle reload ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
+- **Runtime:** Re-enable enableFixForViewCommandRace feature flag ([ae59702f8e](https://github.com/facebook/react-native/commit/ae59702f8ee89e7bddec971e0a041744cb91e65c) by [@okwasniewski](https://github.com/okwasniewski))
+- **Switch:** Fixed switches correctly reverting to controlled state ([aa8c072870](https://github.com/facebook/react-native/commit/aa8c072870f6f9740e567a0f455c0e500ff1400c) by [@javache](https://github.com/javache))
+
 ## v0.78.2
 
 ### Changed

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<356261385b837def94ac5a4ca7ffd05d>>
+ * @generated SignedSource<<d6024891cd1852741976e94cd6d637c6>>
  */
 
 /**
@@ -25,10 +25,8 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
-  private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
@@ -39,6 +37,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
+  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -50,7 +49,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
-  private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
@@ -93,16 +91,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun animatedShouldSignalBatch(): Boolean {
-    var cached = animatedShouldSignalBatchCache
-    if (cached == null) {
-      cached = currentProvider.animatedShouldSignalBatch()
-      accessedFeatureFlags.add("animatedShouldSignalBatch")
-      animatedShouldSignalBatchCache = cached
-    }
-    return cached
-  }
-
   override fun cxxNativeAnimatedEnabled(): Boolean {
     var cached = cxxNativeAnimatedEnabledCache
     if (cached == null) {
@@ -119,16 +107,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.cxxNativeAnimatedRemoveJsSync()
       accessedFeatureFlags.add("cxxNativeAnimatedRemoveJsSync")
       cxxNativeAnimatedRemoveJsSyncCache = cached
-    }
-    return cached
-  }
-
-  override fun disableMainQueueSyncDispatchIOS(): Boolean {
-    var cached = disableMainQueueSyncDispatchIOSCache
-    if (cached == null) {
-      cached = currentProvider.disableMainQueueSyncDispatchIOS()
-      accessedFeatureFlags.add("disableMainQueueSyncDispatchIOS")
-      disableMainQueueSyncDispatchIOSCache = cached
     }
     return cached
   }
@@ -229,6 +207,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableDoubleMeasurementFixAndroid()
       accessedFeatureFlags.add("enableDoubleMeasurementFixAndroid")
       enableDoubleMeasurementFixAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
+    var cached = enableEagerMainQueueModulesOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableEagerMainQueueModulesOnIOS()
+      accessedFeatureFlags.add("enableEagerMainQueueModulesOnIOS")
+      enableEagerMainQueueModulesOnIOSCache = cached
     }
     return cached
   }
@@ -339,16 +327,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableMainQueueCoordinatorOnIOS()
       accessedFeatureFlags.add("enableMainQueueCoordinatorOnIOS")
       enableMainQueueCoordinatorOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMainQueueModulesOnIOS(): Boolean {
-    var cached = enableMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableMainQueueModulesOnIOS()
-      accessedFeatureFlags.add("enableMainQueueModulesOnIOS")
-      enableMainQueueModulesOnIOSCache = cached
     }
     return cached
   }

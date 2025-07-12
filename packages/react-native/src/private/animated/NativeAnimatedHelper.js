@@ -58,7 +58,6 @@ let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
 const shouldSignalBatch: boolean =
-  ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {

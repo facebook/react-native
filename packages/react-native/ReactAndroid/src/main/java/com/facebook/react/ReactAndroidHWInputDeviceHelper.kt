@@ -83,6 +83,9 @@ internal class ReactAndroidHWInputDeviceHelper(private val reactRootView: ReactR
             KeyEvent.KEYCODE_DPAD_DOWN to "down",
             KeyEvent.KEYCODE_DPAD_LEFT to "left",
             KeyEvent.KEYCODE_INFO to "info",
-            KeyEvent.KEYCODE_MENU to "menu")
+            KeyEvent.KEYCODE_MENU to "menu",
+            KeyEvent.KEYCODE_CHANNEL_UP to "channelUp",
+            KeyEvent.KEYCODE_CHANNEL_DOWN to "channelDown",
+        )
   }
 }

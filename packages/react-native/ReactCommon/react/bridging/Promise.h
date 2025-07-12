@@ -16,8 +16,12 @@
 
 namespace facebook::react {
 
-template <typename T>
+template <typename... T>
 class AsyncPromise {
+  static_assert(
+      sizeof...(T) <= 1,
+      "AsyncPromise must have at most one argument");
+
  public:
   AsyncPromise(jsi::Runtime& rt, const std::shared_ptr<CallInvoker>& jsInvoker)
       : state_(std::make_shared<SharedState>()) {
@@ -28,7 +32,9 @@ class AsyncPromise {
         bridging::toJs(
             rt,
             // Safe to capture this since this is called synchronously.
-            [this](AsyncCallback<T> resolve, AsyncCallback<Error> reject) {
+            [this](
+                AsyncCallback<T...> resolve,
+                const AsyncCallback<Error>& reject) {
               state_->resolve = std::move(resolve);
               state_->reject = std::move(reject);
             },
@@ -42,11 +48,11 @@ class AsyncPromise {
     state_->promiseHolder = promiseHolder;
   }
 
-  void resolve(T value) {
+  void resolve(T... value) {
     std::lock_guard<std::mutex> lock(state_->mutex);
 
     if (state_->resolve) {
-      state_->resolve->call(std::move(value));
+      state_->resolve->call(std::forward<T>(value)...);
       state_->resolve.reset();
       state_->reject.reset();
     }
@@ -87,16 +93,16 @@ class AsyncPromise {
 
     std::mutex mutex;
     std::weak_ptr<PromiseHolder> promiseHolder;
-    std::optional<AsyncCallback<T>> resolve;
+    std::optional<AsyncCallback<T...>> resolve;
     std::optional<AsyncCallback<Error>> reject;
   };
 
   std::shared_ptr<SharedState> state_;
 };
 
-template <typename T>
-struct Bridging<AsyncPromise<T>> {
-  static jsi::Object toJs(jsi::Runtime& rt, const AsyncPromise<T>& promise) {
+template <typename... T>
+struct Bridging<AsyncPromise<T...>> {
+  static jsi::Object toJs(jsi::Runtime& rt, const AsyncPromise<T...>& promise) {
     return promise.get(rt);
   }
 };

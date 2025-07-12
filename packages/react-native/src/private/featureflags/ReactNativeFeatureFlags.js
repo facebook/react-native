@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b75fccb46a36b07c692d890f0659f9a3>>
+ * @generated SignedSource<<b680260e184df469f918d2bf4a3a4e65>>
  * @flow strict
  * @noformat
  */
@@ -52,10 +52,8 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
-  animatedShouldSignalBatch: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
-  disableMainQueueSyncDispatchIOS: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   disableTextLayoutManagerCacheAndroid: Getter<boolean>,
   enableAccessibilityOrder: Getter<boolean>,
@@ -66,6 +64,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableCustomFocusSearchOnClippedElementsAndroid: Getter<boolean>,
   enableDestroyShadowTreeRevisionAsync: Getter<boolean>,
   enableDoubleMeasurementFixAndroid: Getter<boolean>,
+  enableEagerMainQueueModulesOnIOS: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
@@ -77,7 +76,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableMainQueueCoordinatorOnIOS: Getter<boolean>,
-  enableMainQueueModulesOnIOS: Getter<boolean>,
   enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
@@ -200,10 +198,6 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
 /**
- * Enables start- and finishOperationBatch on any platform.
- */
-export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
-/**
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
 export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedEnabled', false);
@@ -211,10 +205,6 @@ export const cxxNativeAnimatedEnabled: Getter<boolean> = createNativeFlagGetter(
  * Removes JS sync at end of native animation
  */
 export const cxxNativeAnimatedRemoveJsSync: Getter<boolean> = createNativeFlagGetter('cxxNativeAnimatedRemoveJsSync', false);
-/**
- * Disable sync dispatch on the main queue on iOS
- */
-export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlagGetter('disableMainQueueSyncDispatchIOS', false);
 /**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
@@ -255,6 +245,10 @@ export const enableDestroyShadowTreeRevisionAsync: Getter<boolean> = createNativ
  * When enabled a subset of components will avoid double measurement on Android.
  */
 export const enableDoubleMeasurementFixAndroid: Getter<boolean> = createNativeFlagGetter('enableDoubleMeasurementFixAndroid', false);
+/**
+ * This infra allows native modules to initialize on the main thread, during React Native init.
+ */
+export const enableEagerMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableEagerMainQueueModulesOnIOS', false);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
@@ -299,10 +293,6 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
  */
 export const enableMainQueueCoordinatorOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueCoordinatorOnIOS', false);
-/**
- * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
- */
-export const enableMainQueueModulesOnIOS: Getter<boolean> = createNativeFlagGetter('enableMainQueueModulesOnIOS', false);
 /**
  * Enable NSNull conversion when handling module arguments on iOS
  */

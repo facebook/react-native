@@ -9,7 +9,7 @@
  */
 
 const {setVersion} = require('../releases/set-version');
-const {getBranchName} = require('../scm-utils');
+const {getBranchName} = require('../releases/utils/scm-utils');
 const {parseVersion} = require('./utils/version-utils');
 const {execSync} = require('child_process');
 const yargs = require('yargs');

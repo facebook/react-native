@@ -537,3 +537,160 @@ test('animate layout props', () => {
     <rn-view height="100.000000" />,
   );
 });
+
+test('AnimatedValue.interpolate', () => {
+  let _valueX;
+  let _interpolatedValueX;
+  const viewRef = createRef<HostInstance>();
+
+  function MyApp({outputRangeX}: $ReadOnly<{outputRangeX: number}>) {
+    const valueX = useAnimatedValue(0.5, {useNativeDriver: true});
+    _valueX = valueX;
+    const offset = outputRangeX - 1;
+    const interpolatedValueX = valueX.interpolate({
+      inputRange: [0, 1],
+      outputRange: [offset, 100],
+    });
+    _interpolatedValueX = interpolatedValueX;
+    return (
+      <Animated.View
+        ref={viewRef}
+        style={[
+          {
+            width: 100,
+            height: 100,
+          },
+          {transform: [{translateX: valueX}, {translateY: interpolatedValueX}]},
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp outputRangeX={1} />);
+  });
+
+  const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+  expect(_valueX?.__getValue()).toBe(0.5);
+  expect(_interpolatedValueX?.__getValue()).toBe(50);
+  expect(
+    JSON.stringify(
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform,
+    ),
+  ).toBe('[{"translateX":0.5},{"translateY":50}]');
+  expect(viewElement.getBoundingClientRect().x).toBe(0.5);
+  expect(viewElement.getBoundingClientRect().y).toBe(50);
+
+  Fantom.runTask(() => {
+    root.render(<MyApp outputRangeX={51} />);
+  });
+
+  expect(_valueX?.__getValue()).toBe(0.5);
+  expect(_interpolatedValueX?.__getValue()).toBe(75);
+  expect(
+    JSON.stringify(
+      Fantom.unstable_getDirectManipulationProps(viewElement).transform,
+    ),
+  ).toBe('[{"translateX":0.5},{"translateY":75}]');
+  expect(viewElement.getBoundingClientRect().x).toBe(0.5);
+  expect(viewElement.getBoundingClientRect().y).toBe(75);
+});
+
+test('Animated.sequence', () => {
+  let _translateY;
+  let _isSequenceFinished = false;
+  const elementRef = createRef<HostInstance>();
+
+  function MyApp() {
+    const translateY = useAnimatedValue(0, {useNativeDriver: true});
+    _translateY = translateY;
+
+    return (
+      <View>
+        <Animated.View
+          ref={elementRef}
+          style={[
+            {
+              position: 'absolute',
+              width: 100,
+              height: 100,
+            },
+            {
+              transform: [
+                {
+                  translateY: translateY.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -16],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      </View>
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp />);
+  });
+
+  const element = ensureInstance(elementRef.current, ReactNativeElement);
+
+  expect(element.getBoundingClientRect().y).toBe(0);
+
+  Fantom.runTask(() => {
+    Animated.sequence([
+      Animated.timing(_translateY, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(_translateY, {
+        toValue: 0,
+        duration: 0,
+        useNativeDriver: true,
+      }),
+    ]).start(({finished}) => {
+      if (finished) {
+        _isSequenceFinished = true;
+      }
+    });
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
+  ).toBeCloseTo(-16, 0.001);
+
+  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
+  }
+  expect(_isSequenceFinished).toBe(false);
+  expect(element.getBoundingClientRect().y).toBe(-16);
+
+  Fantom.runWorkLoop(); // React render
+
+  expect(
+    // $FlowFixMe[incompatible-use]
+    Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
+  ).toBeCloseTo(0, 0.001);
+
+  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+  }
+  expect(element.getBoundingClientRect().y).toBe(0);
+
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(_isSequenceFinished).toBe(false);
+    Fantom.runWorkLoop();
+  }
+  expect(_isSequenceFinished).toBe(true);
+});

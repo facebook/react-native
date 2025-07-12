@@ -35,7 +35,7 @@ thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
 
 ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
-      std::make_shared<ShadowNode::ListOfShared>();
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   return emptySharedShadowNodeSharedList;
 }
 
@@ -177,7 +177,8 @@ ComponentHandle ShadowNode::getComponentHandle() const {
   return family_->getComponentHandle();
 }
 
-const ShadowNode::ListOfShared& ShadowNode::getChildren() const {
+const std::vector<std::shared_ptr<const ShadowNode>>& ShadowNode::getChildren()
+    const {
   return *children_;
 }
 
@@ -241,7 +242,8 @@ void ShadowNode::appendChild(const std::shared_ptr<const ShadowNode>& child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
-  auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
+  auto& children =
+      const_cast<std::vector<std::shared_ptr<const ShadowNode>>&>(*children_);
   children.push_back(child);
 
   child->family_->setParent(family_);
@@ -257,7 +259,8 @@ void ShadowNode::replaceChild(
   cloneChildrenIfShared();
   newChild->family_->setParent(family_);
 
-  auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
+  auto& children =
+      const_cast<std::vector<std::shared_ptr<const ShadowNode>>&>(*children_);
   auto size = children.size();
 
   if (suggestedIndex != std::numeric_limits<size_t>::max() &&
@@ -287,7 +290,8 @@ void ShadowNode::cloneChildrenIfShared() {
   }
 
   traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
-  children_ = std::make_shared<ShadowNode::ListOfShared>(*children_);
+  children_ = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+      *children_);
 }
 
 void ShadowNode::updateTraitsIfNeccessary() {
@@ -395,7 +399,9 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone(
-        {.children = std::make_shared<ShadowNode::ListOfShared>(children)});
+        {.children =
+             std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                 children)});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
@@ -411,7 +417,7 @@ std::shared_ptr<ShadowNode> cloneMultipleRecursive(
         ShadowNode>(const ShadowNode&, const ShadowNodeFragment&)>& callback) {
   const auto* family = &shadowNode.getFamily();
   auto& children = shadowNode.getChildren();
-  std::shared_ptr<ShadowNode::ListOfShared> newChildren;
+  std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> newChildren;
   auto count = childrenCount.at(family);
 
   for (int i = 0; count > 0 && i < children.size(); i++) {
@@ -419,7 +425,9 @@ std::shared_ptr<ShadowNode> cloneMultipleRecursive(
     if (childrenCount.contains(childFamily)) {
       count--;
       if (!newChildren) {
-        newChildren = std::make_shared<ShadowNode::ListOfShared>(children);
+        newChildren =
+            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                children);
       }
       (*newChildren)[i] = cloneMultipleRecursive(
           *children[i], familiesToUpdate, childrenCount, callback);

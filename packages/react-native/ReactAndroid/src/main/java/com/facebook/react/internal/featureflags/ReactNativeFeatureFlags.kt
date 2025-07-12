@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a4a7c66f4603fc6a56018aba12c942ee>>
+ * @generated SignedSource<<f45b66a7bbafef525b79c657522d062e>>
  */
 
 /**
@@ -37,12 +37,6 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  @JvmStatic
-  public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
-
-  /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   @JvmStatic
@@ -53,12 +47,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
-
-  /**
-   * Disable sync dispatch on the main queue on iOS
-   */
-  @JvmStatic
-  public fun disableMainQueueSyncDispatchIOS(): Boolean = accessor.disableMainQueueSyncDispatchIOS()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
@@ -119,6 +107,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableDoubleMeasurementFixAndroid(): Boolean = accessor.enableDoubleMeasurementFixAndroid()
+
+  /**
+   * This infra allows native modules to initialize on the main thread, during React Native init.
+   */
+  @JvmStatic
+  public fun enableEagerMainQueueModulesOnIOS(): Boolean = accessor.enableEagerMainQueueModulesOnIOS()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -185,12 +179,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
-
-  /**
-   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
-   */
-  @JvmStatic
-  public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS

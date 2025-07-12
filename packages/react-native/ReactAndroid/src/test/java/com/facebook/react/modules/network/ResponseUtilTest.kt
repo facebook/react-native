@@ -8,40 +8,31 @@
 package com.facebook.react.modules.network
 
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.JavaOnlyArray
-import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.testutils.shadows.ShadowArguments
 import java.net.SocketTimeoutException
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@Config(shadows = [ShadowArguments::class])
+@RunWith(RobolectricTestRunner::class)
 class ResponseUtilTest {
   private lateinit var reactContext: ReactApplicationContext
-  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
     reactContext = mock()
-
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray>(Arguments::createArray).thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap>(Arguments::createMap).thenAnswer { JavaOnlyMap() }
-  }
-
-  @After
-  fun tearDown() {
-    arguments.close()
   }
 
   @Test

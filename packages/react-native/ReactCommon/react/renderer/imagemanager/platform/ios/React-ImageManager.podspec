@@ -55,4 +55,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

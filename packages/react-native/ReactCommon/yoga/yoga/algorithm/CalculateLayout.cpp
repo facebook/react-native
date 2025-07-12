@@ -478,16 +478,19 @@ static void zeroOutLayoutRecursively(yoga::Node* const node) {
 }
 
 static void cleanupContentsNodesRecursively(yoga::Node* const node) {
-  for (auto child : node->getChildren()) {
-    if (child->style().display() == Display::Contents) {
-      child->getLayout() = {};
-      child->setLayoutDimension(0, Dimension::Width);
-      child->setLayoutDimension(0, Dimension::Height);
-      child->setHasNewLayout(true);
-      child->setDirty(false);
-      child->cloneChildrenIfNeeded();
+  if (node->hasContentsChildren()) [[unlikely]] {
+    node->cloneContentsChildrenIfNeeded();
+    for (auto child : node->getChildren()) {
+      if (child->style().display() == Display::Contents) {
+        child->getLayout() = {};
+        child->setLayoutDimension(0, Dimension::Width);
+        child->setLayoutDimension(0, Dimension::Height);
+        child->setHasNewLayout(true);
+        child->setDirty(false);
+        child->cloneChildrenIfNeeded();
 
-      cleanupContentsNodesRecursively(child);
+        cleanupContentsNodesRecursively(child);
+      }
     }
   }
 }

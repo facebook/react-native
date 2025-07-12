@@ -83,6 +83,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
       if (shouldSupportLegacyPackages()) {
         // TODO(T145105887): Output warnings that ReactPackage was used
+        @Suppress("DEPRECATION")
         val nativeModules = reactPackage.createNativeModules(reactApplicationContext)
 
         val moduleMap: MutableMap<String, NativeModule> = mutableMapOf()
@@ -94,6 +95,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
           val moduleName = reactModule?.name ?: module.name
 
+          @Suppress("DEPRECATION")
           val moduleInfo: ReactModuleInfo =
               if (reactModule != null)
                   ReactModuleInfo(

@@ -8,6 +8,8 @@
  * @format
  */
 
+import typeof FS from 'fs';
+
 import * as path from 'path';
 
 const {
@@ -25,8 +27,11 @@ const {
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
-const MemoryFs = require('metro-memory-fs');
 const os = require('os');
+
+// $FlowFixMe[untyped-import] (OSS) memfs
+// $FlowFixMe[cannot-resolve-module] (Meta) memfs
+const {memfs} = require('memfs') as {memfs: () => {fs: FS}};
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';
@@ -147,16 +152,8 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock(
-      'fs',
-      () =>
-        new MemoryFs({
-          platform: process.platform === 'win32' ? 'win32' : 'posix',
-        }),
-    );
+    jest.mock('fs', () => memfs().fs);
     fs = require('fs');
-    // $FlowFixMe[prop-missing]
-    fs.reset();
 
     populateMockFilesystemWithHermesBuildScripts();
 

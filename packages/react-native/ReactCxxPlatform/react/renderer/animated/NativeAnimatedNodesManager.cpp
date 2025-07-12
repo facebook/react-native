@@ -466,14 +466,33 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
+  // This method can be called from either the UI thread or JavaScript thread.
+  // It ensures `startOnRenderCallback_` is called exactly once using atomic
+  // operations. We use std::atomic_bool rather than std::mutex to avoid
+  // potential deadlocks that could occur if we called external code while
+  // holding a mutex.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
+  if (isRenderCallbackStarted) {
+    // onRender callback is already started.
+    return;
+  }
+
   if (startOnRenderCallback_) {
     startOnRenderCallback_([this]() { onRender(); });
   }
 }
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
-  if (stopOnRenderCallback_) {
-    stopOnRenderCallback_();
+  // When multiple threads reach this point, only one thread should call
+  // stopOnRenderCallback_. This synchronization is primarily needed during
+  // destruction of NativeAnimatedNodesManager. In normal operation,
+  // stopRenderCallbackIfNeeded is always called from the UI thread.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
+
+  if (isRenderCallbackStarted) {
+    if (stopOnRenderCallback_) {
+      stopOnRenderCallback_();
+    }
   }
 }
 

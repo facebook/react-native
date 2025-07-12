@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7b5caffd8f748384aa32ed6e153ee9c1>>
+ * @generated SignedSource<<a16b227254e43d57c46479d87bc45bf2>>
  */
 
 /**
@@ -31,19 +31,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool animatedShouldSignalBatch() override {
-    return false;
-  }
-
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
-    return false;
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
     return false;
   }
 
@@ -84,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
+    return false;
+  }
+
+  bool enableEagerMainQueueModulesOnIOS() override {
     return false;
   }
 
@@ -128,10 +124,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
     return false;
   }
 

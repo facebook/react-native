@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3336bad491a91abb3af7e8fcd7e5938>>
+ * @generated SignedSource<<736f6e9a9941d0a9a6fbde5c038f1622>>
  */
 
 /**
@@ -38,13 +38,9 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool animatedShouldSignalBatch(jsi::Runtime& runtime);
-
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
-
-  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
@@ -65,6 +61,8 @@ class NativeReactNativeFeatureFlags
   bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
+
+  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
@@ -87,8 +85,6 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
-
-  bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
 

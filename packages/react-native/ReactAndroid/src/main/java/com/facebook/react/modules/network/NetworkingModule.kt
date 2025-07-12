@@ -57,7 +57,7 @@ public class NetworkingModule(
    * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
    * fetch the URI and return the JS body payload.
    */
-  public interface UriHandler {
+  internal interface UriHandler {
     /** Returns if the handler should be used for an URI. */
     public fun supports(uri: Uri, responseType: String): Boolean
 
@@ -66,7 +66,7 @@ public class NetworkingModule(
   }
 
   /** Allows adding custom handling to build the [RequestBody] from the JS body payload. */
-  public interface RequestBodyHandler {
+  internal interface RequestBodyHandler {
     /** Returns if the handler should be used for a JS body payload. */
     public fun supports(map: ReadableMap): Boolean
 
@@ -75,7 +75,7 @@ public class NetworkingModule(
   }
 
   /** Allows adding custom handling to build the JS body payload from the [ResponseBody]. */
-  public interface ResponseHandler {
+  internal interface ResponseHandler {
     /** Returns if the handler should be used for a response type. */
     public fun supports(responseType: String): Boolean
 
@@ -180,27 +180,27 @@ public class NetworkingModule(
     uriHandlers.clear()
   }
 
-  public fun addUriHandler(handler: UriHandler): Unit {
+  internal fun addUriHandler(handler: UriHandler): Unit {
     uriHandlers.add(handler)
   }
 
-  public fun addRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun addRequestBodyHandler(handler: RequestBodyHandler): Unit {
     requestBodyHandlers.add(handler)
   }
 
-  public fun addResponseHandler(handler: ResponseHandler): Unit {
+  internal fun addResponseHandler(handler: ResponseHandler): Unit {
     responseHandlers.add(handler)
   }
 
-  public fun removeUriHandler(handler: UriHandler): Unit {
+  internal fun removeUriHandler(handler: UriHandler): Unit {
     uriHandlers.remove(handler)
   }
 
-  public fun removeRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun removeRequestBodyHandler(handler: RequestBodyHandler): Unit {
     requestBodyHandlers.remove(handler)
   }
 
-  public fun removeResponseHandler(handler: ResponseHandler): Unit {
+  internal fun removeResponseHandler(handler: ResponseHandler): Unit {
     responseHandlers.remove(handler)
   }
 

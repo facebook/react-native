@@ -26,6 +26,7 @@ module.exports = {
   rootDir: path.resolve(__dirname, '../../..') /*:: as string */,
   roots: [
     '<rootDir>/packages/react-native',
+    '<rootDir>/packages/rn-tester',
     '<rootDir>/packages/polyfills',
     '<rootDir>/private/react-native-fantom',
   ],
