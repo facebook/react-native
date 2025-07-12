@@ -4,9 +4,6 @@ inputs:
   release-type:
     required: true
     description: The type of release we are building. It could be nightly, release or dry-run
-  run-e2e-tests:
-    default: 'false'
-    description: If we need to build to run E2E tests. If yes, we need to build also x86.
   gradle-cache-encryption-key:
     description: "The encryption key needed to store the Gradle Configuration cache"
 runs:
@@ -43,11 +40,7 @@ runs:
       run: |
         if [[ "${{ inputs.release-type }}" == "dry-run" ]]; then
           # dry-run: we only build ARM64 to save time/resources. For release/nightlies the default is to build all archs.
-          if [[ "${{ inputs.run-e2e-tests }}" == 'true' ]]; then
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a,x86" # x86 is required for E2E testing
-          else
-            export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a"
-          fi
+          export ORG_GRADLE_PROJECT_reactNativeArchitectures="arm64-v8a,x86" # x86 is required for E2E testing
           TASKS="publishAllToMavenTempLocal build"
         elif [[ "${{ inputs.release-type }}" == "nightly" ]]; then
           # nightly: we set isSnapshot to true so artifacts are sent to the right repository on Maven Central.
