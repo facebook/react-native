@@ -15,6 +15,9 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.network.OkHttpCallUtil
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowArguments
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
@@ -71,6 +74,12 @@ class NetworkingModuleTest {
 
     context = mock()
     whenever(context.hasActiveReactInstance()).thenReturn(true)
+
+    ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableNetworkEventReporting(): Boolean = false
+        })
 
     networkingModule = NetworkingModule(context, "", httpClient, null)
 
