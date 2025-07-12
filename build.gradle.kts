@@ -161,11 +161,4 @@ allprojects {
   ).forEach {
     tasks.withType(it) { exclude(excludePatterns) }
   }
-
-  // Disable the problematic ktfmt script tasks due to symbolic link issues in subprojects
-  afterEvaluate {
-    listOf("ktfmtCheckScripts", "ktfmtFormatScripts").forEach {
-      tasks.findByName(it)?.enabled = false
-    }
-  }
 }
