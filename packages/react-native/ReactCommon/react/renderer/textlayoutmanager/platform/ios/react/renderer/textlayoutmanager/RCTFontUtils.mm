@@ -253,7 +253,7 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
 
   CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
   NSString *cacheKey = [NSString
-      stringWithFormat:@"%.1f/%.2f/%ld", effectiveFontSize, fontProperties.weight, (long)fontProperties.style];
+      stringWithFormat:@"%@/%.1f/%.2f/%ld", fontProperties.family, effectiveFontSize, fontProperties.weight, (long)fontProperties.style];
   UIFont *font;
 
   {
@@ -267,11 +267,20 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
   if (!font) {
     font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
 
-    if (fontProperties.style == RCTFontStyleItalic) {
-      UIFontDescriptor *fontDescriptor = [font fontDescriptor];
-      UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
+    BOOL isItalicFont = fontProperties.style == RCTFontStyleItalic;
+    BOOL isCondensedFont = [fontProperties.family isEqualToString:@"SystemCondensed"];
 
-      symbolicTraits |= UIFontDescriptorTraitItalic;
+    if (isItalicFont || isCondensedFont) {
+      UIFontDescriptor *fontDescriptor = [font fontDescriptor];
+      UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;  
+
+      if (isItalicFont) {
+        symbolicTraits |= UIFontDescriptorTraitItalic;
+      }
+
+      if (isCondensedFont) {
+        symbolicTraits |= UIFontDescriptorTraitCondensed;
+      }
 
       fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
       font = [UIFont fontWithDescriptor:fontDescriptor size:effectiveFontSize];
@@ -333,7 +342,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         fontWeight = fontWeight ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
-        font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+        font = RCTDefaultFontWithFontProperties(fontProperties);
       }
     }
 
