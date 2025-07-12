@@ -6675,7 +6675,7 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableMainQueueCoordinatorOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableMainQueueModulesOnIOS(
+  static bool enableEagerMainQueueModulesOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableModuleArgumentNSNullConversionIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -16872,7 +16872,7 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
-  bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
+  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
   bool enableNetworkEventReporting(jsi::Runtime& runtime);

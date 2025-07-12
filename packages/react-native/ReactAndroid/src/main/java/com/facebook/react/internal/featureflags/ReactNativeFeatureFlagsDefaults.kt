@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<50fc180b1ab286ab9c03ea171b6fad06>>
+ * @generated SignedSource<<7b6a844d99839c72647d6685d72f6896>>
  */
 
 /**
@@ -49,6 +49,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
 
+  override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
+
   override fun enableEagerRootViewAttachment(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
@@ -70,8 +72,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableMainQueueCoordinatorOnIOS(): Boolean = false
-
-  override fun enableMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 

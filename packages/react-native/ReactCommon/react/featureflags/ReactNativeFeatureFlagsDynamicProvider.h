@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cac15150a01cd911e14f47a4979531b9>>
+ * @generated SignedSource<<015e26c40f3a6bef540d8c4ca43b8502>>
  */
 
 /**
@@ -162,6 +162,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableDoubleMeasurementFixAndroid();
   }
 
+  bool enableEagerMainQueueModulesOnIOS() override {
+    auto value = values_["enableEagerMainQueueModulesOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableEagerMainQueueModulesOnIOS();
+  }
+
   bool enableEagerRootViewAttachment() override {
     auto value = values_["enableEagerRootViewAttachment"];
     if (!value.isNull()) {
@@ -259,15 +268,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableMainQueueCoordinatorOnIOS();
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
-    auto value = values_["enableMainQueueModulesOnIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableMainQueueModulesOnIOS();
   }
 
   bool enableModuleArgumentNSNullConversionIOS() override {
