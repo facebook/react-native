@@ -10,8 +10,7 @@
 #include <reactperflogger/NativeModulePerfLogger.h>
 #include <memory>
 
-namespace facebook::react {
-namespace TurboModulePerfLogger {
+namespace facebook::react::TurboModulePerfLogger {
 void enableLogging(std::unique_ptr<NativeModulePerfLogger>&& logger);
 void disableLogging();
 
@@ -106,5 +105,4 @@ void asyncMethodCallExecutionFail(
     const char* methodName,
     int32_t id);
 
-} // namespace TurboModulePerfLogger
-} // namespace facebook::react
+} // namespace facebook::react::TurboModulePerfLogger

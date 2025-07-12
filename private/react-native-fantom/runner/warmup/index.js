@@ -8,6 +8,6 @@
  * @format
  */
 
-require('../../../../scripts/babel-register').registerForMonorepo();
+require('../../../../scripts/shared/babelRegister').registerForMonorepo();
 
 module.exports = require('./warmup');

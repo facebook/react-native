@@ -86,7 +86,8 @@ public class ReactScrollView extends ScrollView
         HasStateWrapper,
         HasFlingAnimator,
         HasScrollEventThrottle,
-        HasSmoothScroll {
+        HasSmoothScroll,
+        VirtualViewContainer {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -99,6 +100,7 @@ public class ReactScrollView extends ScrollView
   private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
+  private @Nullable VirtualViewContainerState mVirtualViewContainerState;
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
   private Overflow mOverflow = Overflow.SCROLL;
@@ -151,6 +153,15 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public VirtualViewContainerState getVirtualViewContainerState() {
+    if (mVirtualViewContainerState == null) {
+      mVirtualViewContainerState = new VirtualViewContainerState(this);
+    }
+
+    return mVirtualViewContainerState;
+  }
+
+  @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
     super.onInitializeAccessibilityNodeInfo(info);
 
@@ -165,7 +176,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Nullable
-  private OverScroller getOverScrollerFromParent() {
+  protected OverScroller getOverScrollerFromParent() {
     OverScroller scroller;
 
     if (!sTriedToGetScrollerField) {

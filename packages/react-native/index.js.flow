@@ -127,6 +127,7 @@ export {default as Switch} from './Libraries/Components/Switch/Switch';
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
 
 export type {
   AutoCapitalize,

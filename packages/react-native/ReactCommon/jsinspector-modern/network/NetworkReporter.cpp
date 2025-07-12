@@ -12,7 +12,6 @@
 #endif
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-#include <folly/dynamic.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
 #endif
 #include <react/featureflags/ReactNativeFeatureFlags.h>
@@ -21,6 +20,7 @@
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <chrono>
 #endif
+#include <glog/logging.h>
 #include <stdexcept>
 
 namespace facebook::react::jsinspector_modern {
@@ -69,6 +69,7 @@ bool NetworkReporter::disableDebugging() {
   }
 
   debuggingEnabled_.store(false, std::memory_order_release);
+  requestBodyBuffer_.clear();
   return true;
 }
 
@@ -125,7 +126,9 @@ void NetworkReporter::reportRequestStart(
 #endif
 }
 
-void NetworkReporter::reportConnectionTiming(const std::string& requestId) {
+void NetworkReporter::reportConnectionTiming(
+    const std::string& requestId,
+    const std::optional<Headers>& headers) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
 
@@ -145,21 +148,14 @@ void NetworkReporter::reportConnectionTiming(const std::string& requestId) {
     return;
   }
 
-  // TODO(T218236597)
-  throw std::runtime_error("Not implemented");
-#endif
-}
+  auto params = cdp::network::RequestWillBeSentExtraInfoParams{
+      .requestId = requestId,
+      .headers = headers.value_or(Headers{}),
+      .connectTiming = {.requestTime = getCurrentUnixTimestampSeconds()},
+  };
 
-void NetworkReporter::reportRequestFailed(
-    const std::string& /*requestId*/) const {
-#ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
-  if (!isDebuggingEnabledNoSync()) {
-    return;
-  }
-
-  // TODO(T218236855)
-  throw std::runtime_error("Not implemented");
+  frontendChannel_(cdp::jsonNotification(
+      "Network.requestWillBeSentExtraInfo", params.toDynamic()));
 #endif
 }
 
@@ -175,6 +171,7 @@ void NetworkReporter::reportResponseStart(
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
       auto it = perfTimingsBuffer_.find(requestId);
       if (it != perfTimingsBuffer_.end()) {
+        it->second.connectEnd = now;
         it->second.responseStart = now;
         it->second.responseStatus = responseInfo.statusCode;
       }
@@ -189,11 +186,14 @@ void NetworkReporter::reportResponseStart(
 
   auto response =
       cdp::network::Response::fromInputParams(responseInfo, encodedDataLength);
+  auto resourceType = cdp::network::resourceTypeFromMimeType(response.mimeType);
+  resourceTypeMap_.emplace(requestId, resourceType);
+
   auto params = cdp::network::ResponseReceivedParams{
       .requestId = requestId,
       .loaderId = "",
       .timestamp = getCurrentUnixTimestampSeconds(),
-      .type = cdp::network::resourceTypeFromMimeType(response.mimeType),
+      .type = resourceType,
       .response = response,
       .hasExtraInfo = false,
   };
@@ -203,29 +203,25 @@ void NetworkReporter::reportResponseStart(
 #endif
 }
 
-void NetworkReporter::reportDataReceived(const std::string& requestId) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
-
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        it->second.connectEnd = now;
-        it->second.responseStart = now;
-      }
-    }
-  }
-
+void NetworkReporter::reportDataReceived(
+    const std::string& requestId,
+    int dataLength,
+    const std::optional<int>& encodedDataLength) {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
   // Debug build: CDP event handling
   if (!isDebuggingEnabledNoSync()) {
     return;
   }
 
-  // TODO(T218236266)
-  throw std::runtime_error("Not implemented");
+  auto params = cdp::network::DataReceivedParams{
+      .requestId = requestId,
+      .timestamp = getCurrentUnixTimestampSeconds(),
+      .dataLength = dataLength,
+      .encodedDataLength = encodedDataLength.value_or(dataLength),
+  };
+
+  frontendChannel_(
+      cdp::jsonNotification("Network.dataReceived", params.toDynamic()));
 #endif
 }
 
@@ -270,6 +266,51 @@ void NetworkReporter::reportResponseEnd(
   frontendChannel_(
       cdp::jsonNotification("Network.loadingFinished", params.toDynamic()));
 #endif
+}
+
+void NetworkReporter::reportRequestFailed(
+    const std::string& requestId,
+    bool cancelled) const {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: CDP event handling
+  if (!isDebuggingEnabledNoSync()) {
+    return;
+  }
+
+  auto params = cdp::network::LoadingFailedParams{
+      .requestId = requestId,
+      .timestamp = getCurrentUnixTimestampSeconds(),
+      .type = resourceTypeMap_.find(requestId) != resourceTypeMap_.end()
+          ? resourceTypeMap_.at(requestId)
+          : "Other",
+      .errorText = cancelled ? "net::ERR_ABORTED" : "net::ERR_FAILED",
+      .canceled = cancelled,
+  };
+
+  frontendChannel_(
+      cdp::jsonNotification("Network.loadingFailed", params.toDynamic()));
+#endif
+}
+
+void NetworkReporter::storeResponseBody(
+    const std::string& requestId,
+    std::string_view body,
+    bool base64Encoded) {
+  std::lock_guard<std::mutex> lock(requestBodyMutex_);
+  requestBodyBuffer_.put(requestId, body, base64Encoded);
+}
+
+std::optional<std::tuple<std::string, bool>> NetworkReporter::getResponseBody(
+    const std::string& requestId) {
+  std::lock_guard<std::mutex> lock(requestBodyMutex_);
+  auto responseBody = requestBodyBuffer_.get(requestId);
+
+  if (responseBody == nullptr) {
+    return std::nullopt;
+  }
+
+  return std::make_optional<std::tuple<std::string, bool>>(
+      responseBody->data, responseBody->base64Encoded);
 }
 
 } // namespace facebook::react::jsinspector_modern

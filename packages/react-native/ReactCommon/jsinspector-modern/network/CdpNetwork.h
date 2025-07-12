@@ -59,6 +59,13 @@ struct Response {
 };
 
 /**
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ConnectTiming
+ */
+struct ConnectTiming {
+  double requestTime;
+};
+
+/**
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestWillBeSent
  */
 struct RequestWillBeSentParams {
@@ -76,6 +83,17 @@ struct RequestWillBeSentParams {
 };
 
 /**
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-requestWillBeSentExtraInfo
+ */
+struct RequestWillBeSentExtraInfoParams {
+  std::string requestId;
+  Headers headers;
+  ConnectTiming connectTiming;
+
+  folly::dynamic toDynamic() const;
+};
+
+/**
  * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-responseReceived
  */
 struct ResponseReceivedParams {
@@ -85,6 +103,31 @@ struct ResponseReceivedParams {
   std::string type;
   Response response;
   bool hasExtraInfo;
+
+  folly::dynamic toDynamic() const;
+};
+
+/**
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-dataReceived
+ */
+struct DataReceivedParams {
+  std::string requestId;
+  double timestamp;
+  int dataLength;
+  int encodedDataLength;
+
+  folly::dynamic toDynamic() const;
+};
+
+/**
+ * https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFailed
+ */
+struct LoadingFailedParams {
+  std::string requestId;
+  double timestamp;
+  std::string type;
+  std::string errorText;
+  bool canceled;
 
   folly::dynamic toDynamic() const;
 };

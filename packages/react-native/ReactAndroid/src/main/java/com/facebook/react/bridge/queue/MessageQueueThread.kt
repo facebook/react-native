@@ -55,13 +55,16 @@ public interface MessageQueueThread {
    * Returns the perf counters taken when the framework was started. This method is intended to be
    * used for instrumentation purposes.
    */
-  public fun getPerfStats(): MessageQueueThreadPerfStats?
+  @Deprecated("MessageQueueThread perf stats are no longer collected")
+  @Suppress("DEPRECATION")
+  public fun getPerfStats(): MessageQueueThreadPerfStats? = null
 
   /**
    * Resets the perf counters. This is useful if the RN threads are being re-used. This method is
    * intended to be used for instrumentation purposes.
    */
-  public fun resetPerfStats()
+  @Deprecated("MessageQueueThread perf stats are no longer collected")
+  public fun resetPerfStats(): Unit = Unit
 
   /**
    * Resets the perf counters. This is useful if the RN threads are being re-used. This method is

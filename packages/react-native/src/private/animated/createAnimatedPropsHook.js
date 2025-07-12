@@ -67,7 +67,7 @@ export default function createAnimatedPropsHook(
 
     useEffect(() => {
       // Animated queue flush is handled deterministically in setImmediate for the following feature flags:
-      // animatedShouldSignalBatch, cxxNativeAnimatedEnabled
+      // cxxNativeAnimatedEnabled
       if (!NativeAnimatedHelper.shouldSignalBatch) {
         // If multiple components call `flushQueue`, the first one will flush the
         // queue and subsequent ones will do nothing.

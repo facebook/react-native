@@ -97,6 +97,17 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
       std::optional<HighResTimeStamp> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
+  std::tuple<HighResTimeStamp, HighResDuration> measure(
+      jsi::Runtime& rt,
+      std::string name,
+      std::optional<HighResTimeStamp> startTime,
+      std::optional<HighResTimeStamp> endTime,
+      std::optional<HighResDuration> duration,
+      std::optional<std::string> startMark,
+      std::optional<std::string> endMark);
+
+  // https://w3c.github.io/user-timing/#measure-method
+  [[deprecated("This method is deprecated. Use the measure method instead.")]]
   std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
       jsi::Runtime& rt,
       std::string name,
@@ -184,6 +195,14 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
+
+#pragma mark - Testing
+
+  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
+  void clearEventCountsForTesting(jsi::Runtime& rt);
+
+ private:
+  std::optional<HighResTimeStamp> forcedCurrentTimeStamp_;
 };
 
 } // namespace facebook::react

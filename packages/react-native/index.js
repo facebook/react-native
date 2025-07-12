@@ -112,6 +112,9 @@ module.exports = {
   get Text() {
     return require('./Libraries/Text/Text').default;
   },
+  get unstable_TextAncestorContext() {
+    return require('./Libraries/Text/TextAncestorContext').default;
+  },
   get TextInput() {
     return require('./Libraries/Components/TextInput/TextInput').default;
   },

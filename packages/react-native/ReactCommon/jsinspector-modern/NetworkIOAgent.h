@@ -88,6 +88,17 @@ struct IOReadResult {
   }
 };
 
+struct GetResponseBodyResult {
+  std::string body;
+  bool base64Encoded;
+  folly::dynamic toDynamic() const {
+    folly::dynamic params = folly::dynamic::object;
+    params["body"] = body;
+    params["base64Encoded"] = base64Encoded;
+    return params;
+  }
+};
+
 /**
  * Passed to `loadNetworkResource`, provides callbacks for processing incoming
  * data and other events.
@@ -259,6 +270,11 @@ class NetworkIOAgent {
    * Reports CDP ok if the stream is found, or a CDP error if not.
    */
   void handleIoClose(const cdp::PreparsedRequest& req);
+
+  /**
+   * Handle a Network.getResponseBody CDP request.
+   */
+  void handleGetResponseBody(const cdp::PreparsedRequest& req);
 };
 
 } // namespace facebook::react::jsinspector_modern

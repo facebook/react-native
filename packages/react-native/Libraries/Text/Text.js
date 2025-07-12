@@ -19,7 +19,7 @@ import usePressability from '../Pressability/usePressability';
 import flattenStyle from '../StyleSheet/flattenStyle';
 import processColor from '../StyleSheet/processColor';
 import Platform from '../Utilities/Platform';
-import TextAncestor from './TextAncestor';
+import TextAncestorContext from './TextAncestorContext';
 import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
@@ -169,7 +169,7 @@ const TextImpl: component(
 
   const _nativeID = id ?? nativeID;
 
-  const hasTextAncestor = useContext(TextAncestor);
+  const hasTextAncestor = useContext(TextAncestorContext);
   if (hasTextAncestor) {
     if (isPressable) {
       return (
@@ -302,7 +302,7 @@ const TextImpl: component(
   }
 
   // If the children do not contain a JSX element it would not be possible to have a
-  // nested `Text` component so we can skip adding the `TextAncestor` context wrapper
+  // nested `Text` component so we can skip adding the `TextAncestorContext` context wrapper
   // which has a performance overhead. Since we do this for performance reasons we need
   // to keep the check simple to avoid regressing overall perf. For this reason the
   // `children.length` constant is set to `3`, this should be a reasonable tradeoff
@@ -322,9 +322,7 @@ const TextImpl: component(
     return nativeText;
   }
 
-  return (
-    <TextAncestor.Provider value={true}>{nativeText}</TextAncestor.Provider>
-  );
+  return <TextAncestorContext value={true}>{nativeText}</TextAncestorContext>;
 };
 
 TextImpl.displayName = 'Text';

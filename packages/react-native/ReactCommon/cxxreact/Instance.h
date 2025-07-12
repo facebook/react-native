@@ -35,7 +35,7 @@ class ModuleRegistry;
 class RAMBundleRegistry;
 
 struct InstanceCallback {
-  virtual ~InstanceCallback() {}
+  virtual ~InstanceCallback() = default;
   virtual void onBatchComplete() {}
   virtual void incrementPendingJSCalls() {}
   virtual void decrementPendingJSCalls() {}

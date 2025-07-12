@@ -98,7 +98,7 @@ class UIManager final : public ShadowTreeDelegate {
   void registerMountHook(UIManagerMountHook& mountHook);
   void unregisterMountHook(UIManagerMountHook& mountHook);
 
-  ShadowNode::Shared getNewestCloneOfShadowNode(
+  std::shared_ptr<const ShadowNode> getNewestCloneOfShadowNode(
       const ShadowNode& shadowNode) const;
 
   ShadowTreeRevisionConsistencyManager*
@@ -148,8 +148,8 @@ class UIManager final : public ShadowTreeDelegate {
       RawProps rawProps) const;
 
   void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const;
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const;
 
   void completeSurface(
       SurfaceId surfaceId,
@@ -157,12 +157,12 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree::CommitOptions commitOptions);
 
   void setIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) const;
 
-  ShadowNode::Shared findNodeAtPoint(
-      const ShadowNode::Shared& shadowNode,
+  std::shared_ptr<const ShadowNode> findNodeAtPoint(
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       Point point) const;
 
   /*
@@ -182,16 +182,16 @@ class UIManager final : public ShadowTreeDelegate {
   void updateState(const StateUpdate& stateUpdate) const;
 
   void dispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) const;
 
   void setNativeProps_DEPRECATED(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       RawProps rawProps) const;
 
   void sendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType);
 
   /*
@@ -200,7 +200,8 @@ class UIManager final : public ShadowTreeDelegate {
    * wasn't found. This is a temporary workaround that should not be used in
    * any core functionality.
    */
-  ShadowNode::Shared findShadowNodeByTag_DEPRECATED(Tag tag) const;
+  std::shared_ptr<const ShadowNode> findShadowNodeByTag_DEPRECATED(
+      Tag tag) const;
 
   const ShadowTreeRegistry& getShadowTreeRegistry() const;
 
@@ -235,9 +236,9 @@ class UIManager final : public ShadowTreeDelegate {
       const jsi::Value& successCallback,
       const jsi::Value& failureCallback) const;
 
-  ShadowNode::Shared getShadowNodeInSubtree(
+  std::shared_ptr<const ShadowNode> getShadowNodeInSubtree(
       const ShadowNode& shadowNode,
-      const ShadowNode::Shared& ancestorShadowNode) const;
+      const std::shared_ptr<const ShadowNode>& ancestorShadowNode) const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate* delegate_{};

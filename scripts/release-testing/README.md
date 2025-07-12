@@ -6,10 +6,10 @@ Scripts supporting local manual release testing. See also [How to Test a Release
 
 For information on command arguments, run `node <command> --help`.
 
-### `test-e2e-local`
+### `test-release-local`
 
 Set up, build, and install a given test app configuration.
 
-### `test-e2e-local-clean`
+### `test-release-local-clean`
 
 Clean up all file system and cache state between tests.

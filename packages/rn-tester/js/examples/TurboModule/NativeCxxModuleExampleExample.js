@@ -58,6 +58,7 @@ type Examples =
   | 'promise'
   | 'rejectPromise'
   | 'voidFunc'
+  | 'voidPromise'
   | 'setMenuItem'
   | 'optionalArgs'
   | 'emitDeviceEvent';
@@ -138,6 +139,10 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
         .then(() => {})
         .catch(e => this._setResult('rejectPromise', e.message)),
     voidFunc: () => NativeCxxModuleExample?.voidFunc(),
+    voidPromise: () =>
+      NativeCxxModuleExample?.voidPromise().then(valuePromise =>
+        this._setResult('voidPromise', valuePromise),
+      ),
     setMenuItem: () => {
       let curValue = '';
       NativeCxxModuleExample?.setMenu({

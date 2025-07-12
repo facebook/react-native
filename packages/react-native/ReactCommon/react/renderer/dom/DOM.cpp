@@ -17,7 +17,7 @@ namespace facebook::react::dom {
 
 namespace {
 
-ShadowNode::Shared getShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   // If the given shadow node is of the same family as the root shadow node,
@@ -36,7 +36,7 @@ ShadowNode::Shared getShadowNodeInRevision(
   return pair->first.get().getChildren().at(pair->second);
 }
 
-ShadowNode::Shared getParentShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getParentShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   // If the given shadow node is of the same family as the root shadow node,
@@ -61,7 +61,7 @@ ShadowNode::Shared getParentShadowNodeInRevision(
       parentOfParentPair.second);
 }
 
-ShadowNode::Shared getPositionedAncestorOfShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getPositionedAncestorOfShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
@@ -156,13 +156,13 @@ Rect getScrollableContentBounds(
 
 } // namespace
 
-ShadowNode::Shared getParentNode(
+std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   return getParentShadowNodeInRevision(currentRevision, shadowNode);
 }
 
-std::vector<ShadowNode::Shared> getChildNodes(
+std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =

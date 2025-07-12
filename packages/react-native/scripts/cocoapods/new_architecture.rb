@@ -132,6 +132,7 @@ class NewArchitectureHelper
 
         depend_on_js_engine(spec)
         add_rn_third_party_dependencies(spec)
+        add_rncore_dependency(spec)
 
         spec.pod_target_xcconfig = current_config
     end

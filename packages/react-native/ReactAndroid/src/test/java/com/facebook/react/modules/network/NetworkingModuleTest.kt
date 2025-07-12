@@ -10,13 +10,12 @@
 
 package com.facebook.react.modules.network
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.network.OkHttpCallUtil
+import com.facebook.testutils.shadows.ShadowArguments
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 import okhttp3.Call
@@ -46,15 +45,16 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.kotlin.withSettings
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /** Tests [NetworkingModule] */
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class NetworkingModuleTest {
 
   private lateinit var networkingModule: NetworkingModule
   private lateinit var httpClient: OkHttpClient
   private lateinit var context: ReactApplicationContext
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var okHttpCallUtil: MockedStatic<OkHttpCallUtil>
   private lateinit var requestBodyUtil: MockedStatic<RequestBodyUtil>
   private lateinit var requestArgumentCaptor: KArgumentCaptor<Request>
@@ -74,10 +74,6 @@ class NetworkingModuleTest {
 
     networkingModule = NetworkingModule(context, "", httpClient, null)
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     okHttpCallUtil = mockStatic(OkHttpCallUtil::class.java)
     requestArgumentCaptor = argumentCaptor()
   }
@@ -92,7 +88,6 @@ class NetworkingModuleTest {
 
   @After
   fun tearDown() {
-    arguments.close()
     okHttpCallUtil.close()
   }
 

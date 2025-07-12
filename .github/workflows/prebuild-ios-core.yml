@@ -23,7 +23,7 @@ jobs:
         id: restore-ios-slice
         uses: actions/cache/restore@v4
         with:
-          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift', 'packages/react-native/scripts/ios-prebuild/setup.js', 'packages/react-native/React/**/*', 'packages/react-native/ReactCommon/**/*', 'packages/react-native/Libraries/**/*') }}
           path: packages/react-native/
       - name: Setup node.js
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
@@ -83,7 +83,7 @@ jobs:
           # Move the XCFramework in the destination directory
           mv /tmp/third-party/packages/react-native/third-party/ReactNativeDependencies.xcframework packages/react-native/third-party/ReactNativeDependencies.xcframework
 
-          VERSION=$(jq -r '.version' package.json)
+          VERSION=$(jq -r '.version' packages/react-native/package.json)
           echo "$VERSION-${{matrix.flavor}}" > "packages/react-native/third-party/version.txt"
           cat "packages/react-native/third-party/version.txt"
           # Check destination directory
@@ -117,7 +117,7 @@ jobs:
         uses: actions/cache/save@v4
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         with:
-          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          key: v3-ios-core-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift', 'packages/react-native/scripts/ios-prebuild/setup.js', 'packages/react-native/React/**/*', 'packages/react-native/ReactCommon/**/*', 'packages/react-native/Libraries/**/*') }}
           path: |
             packages/react-native/.build/output/spm/${{ matrix.flavor }}/Build/Products
             packages/react-native/.build/headers
@@ -140,7 +140,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: packages/react-native/.build/output/xcframeworks
-          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift', 'packages/react-native/scripts/ios-prebuild/setup.js', 'packages/react-native/React/**/*', 'packages/react-native/ReactCommon/**/*', 'packages/react-native/Libraries/**/*') }}
       - name: Setup node.js
         if: steps.restore-ios-xcframework.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup-node
@@ -209,4 +209,4 @@ jobs:
           path: |
             packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.xcframework.tar.gz
             packages/react-native/.build/output/xcframeworks/ReactCore${{matrix.flavor}}.framework.dSYM.tar.gz
-          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift') }}-${{ hashFiles('packages/react-native/scripts/ios-prebuild/setup.js') }}
+          key: v2-ios-core-xcframework-${{ matrix.flavor }}-${{ hashFiles('packages/react-native/Package.swift', 'packages/react-native/scripts/ios-prebuild/setup.js', 'packages/react-native/React/**/*', 'packages/react-native/ReactCommon/**/*', 'packages/react-native/Libraries/**/*') }}

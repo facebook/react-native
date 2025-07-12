@@ -12,47 +12,75 @@
 
 import type {DOMHighResTimeStamp} from './PerformanceEntry';
 
+import {getCurrentTimeStamp} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 
 export type DetailType = mixed;
 
-export type PerformanceMarkOptions = {
+export type PerformanceMarkOptions = $ReadOnly<{
   detail?: DetailType,
   startTime?: DOMHighResTimeStamp,
-};
+}>;
 
 export type TimeStampOrName = DOMHighResTimeStamp | string;
 
-export type PerformanceMeasureInit = {
+export type PerformanceMeasureInit = $ReadOnly<{
   detail?: DetailType,
   startTime: DOMHighResTimeStamp,
   duration: DOMHighResTimeStamp,
-};
+}>;
 
-export class PerformanceMark extends PerformanceEntry {
-  #detail: DetailType;
+class PerformanceMarkTemplate extends PerformanceEntry {
+  // We don't use private fields because they're significantly slower to
+  // initialize on construction and to access.
+  __detail: DetailType;
 
+  // This constructor isn't really used. See `PerformanceMark` below.
   constructor(markName: string, markOptions?: PerformanceMarkOptions) {
     super({
       name: markName,
       entryType: 'mark',
-      startTime: markOptions?.startTime ?? performance.now(),
+      startTime: markOptions?.startTime ?? getCurrentTimeStamp(),
       duration: 0,
     });
 
-    if (markOptions) {
-      this.#detail = markOptions.detail;
-    }
+    this.__detail = markOptions?.detail ?? null;
   }
 
   get detail(): DetailType {
-    return this.#detail;
+    return this.__detail;
   }
 }
 
-export class PerformanceMeasure extends PerformanceEntry {
-  #detail: DetailType;
+// This is the real value we're exporting where we define the class a function
+// so we don't need to call `super()` and we can avoid the performance penalty
+// of the current code transpiled with Babel.
+// We should remove this when we have built-in support for classes in the
+// runtime.
+export const PerformanceMark: typeof PerformanceMarkTemplate =
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceMark(
+    this: PerformanceMarkTemplate,
+    markName: string,
+    markOptions?: PerformanceMarkOptions,
+  ) {
+    this.__name = markName;
+    this.__entryType = 'mark';
+    this.__startTime = markOptions?.startTime ?? getCurrentTimeStamp();
+    this.__duration = 0;
 
+    this.__detail = markOptions?.detail ?? null;
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceMark.prototype = PerformanceMarkTemplate.prototype;
+
+class PerformanceMeasureTemplate extends PerformanceEntry {
+  // We don't use private fields because they're significantly slower to
+  // initialize on construction and to access.
+  __detail: DetailType;
+
+  // This constructor isn't really used. See `PerformanceMeasure` below.
   constructor(measureName: string, measureOptions: PerformanceMeasureInit) {
     super({
       name: measureName,
@@ -61,12 +89,29 @@ export class PerformanceMeasure extends PerformanceEntry {
       duration: measureOptions.duration,
     });
 
-    if (measureOptions) {
-      this.#detail = measureOptions.detail;
-    }
+    this.__detail = measureOptions?.detail ?? null;
   }
 
   get detail(): DetailType {
-    return this.#detail;
+    return this.__detail;
   }
 }
+
+// We do the same here as we do for `PerformanceMark` for performance reasons.
+export const PerformanceMeasure: typeof PerformanceMeasureTemplate =
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceMeasure(
+    this: PerformanceMeasureTemplate,
+    measureName: string,
+    measureOptions: PerformanceMeasureInit,
+  ) {
+    this.__name = measureName;
+    this.__entryType = 'measure';
+    this.__startTime = measureOptions.startTime;
+    this.__duration = measureOptions.duration;
+
+    this.__detail = measureOptions.detail ?? null;
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceMeasure.prototype = PerformanceMeasureTemplate.prototype;
