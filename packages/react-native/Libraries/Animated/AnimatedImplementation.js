@@ -20,7 +20,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 
-import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import {AnimatedEvent, attachNativeEventImpl} from './AnimatedEvent';
 import DecayAnimation from './animations/DecayAnimation';
 import SpringAnimation from './animations/SpringAnimation';
 import TimingAnimation from './animations/TimingAnimation';
@@ -47,39 +47,39 @@ export type CompositeAnimation = {
   ...
 };
 
-const add = function (
+const addImpl = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
 };
 
-const subtract = function (
+const subtractImpl = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedSubtraction {
   return new AnimatedSubtraction(a, b);
 };
 
-const divide = function (
+const divideImpl = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedDivision {
   return new AnimatedDivision(a, b);
 };
 
-const multiply = function (
+const multiplyImpl = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
 };
 
-const modulo = function (a: AnimatedNode, modulus: number): AnimatedModulo {
+const moduloImpl = function (a: AnimatedNode, modulus: number): AnimatedModulo {
   return new AnimatedModulo(a, modulus);
 };
 
-const diffClamp = function (
+const diffClampImpl = function (
   a: AnimatedNode,
   min: number,
   max: number,
@@ -120,7 +120,7 @@ const maybeVectorAnim = function (
     const aY = anim((value: AnimatedValueXY).y, configY);
     // We use `stopTogether: false` here because otherwise tracking will break
     // because the second animation will get stopped before it can update.
-    return parallel([aX, aY], {stopTogether: false});
+    return parallelImpl([aX, aY], {stopTogether: false});
   } else if (value instanceof AnimatedColor) {
     const configR = {...config};
     const configG = {...config};
@@ -146,12 +146,12 @@ const maybeVectorAnim = function (
     const aA = anim((value: AnimatedColor).a, configA);
     // We use `stopTogether: false` here because otherwise tracking will break
     // because the second animation will get stopped before it can update.
-    return parallel([aR, aG, aB, aA], {stopTogether: false});
+    return parallelImpl([aR, aG, aB, aA], {stopTogether: false});
   }
   return null;
 };
 
-const spring = function (
+const springImpl = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
@@ -179,7 +179,7 @@ const spring = function (
     }
   };
   return (
-    maybeVectorAnim(value, config, spring) || {
+    maybeVectorAnim(value, config, springImpl) || {
       start: function (callback?: ?EndCallback): void {
         start(value, config, callback);
       },
@@ -204,7 +204,7 @@ const spring = function (
   );
 };
 
-const timing = function (
+const timingImpl = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
@@ -233,7 +233,7 @@ const timing = function (
   };
 
   return (
-    maybeVectorAnim(value, config, timing) || {
+    maybeVectorAnim(value, config, timingImpl) || {
       start: function (callback?: ?EndCallback, isLooping?: boolean): void {
         start(value, {...config, isLooping}, callback);
       },
@@ -258,7 +258,7 @@ const timing = function (
   );
 };
 
-const decay = function (
+const decayImpl = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
@@ -275,7 +275,7 @@ const decay = function (
   };
 
   return (
-    maybeVectorAnim(value, config, decay) || {
+    maybeVectorAnim(value, config, decayImpl) || {
       start: function (callback?: ?EndCallback): void {
         start(value, config, callback);
       },
@@ -300,7 +300,7 @@ const decay = function (
   );
 };
 
-const sequence = function (
+const sequenceImpl = function (
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
   let current = 0;
@@ -363,7 +363,7 @@ type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-const parallel = function (
+const parallelImpl = function (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
 ): CompositeAnimation {
@@ -431,9 +431,9 @@ const parallel = function (
   return result;
 };
 
-const delay = function (time: number): CompositeAnimation {
+const delayImpl = function (time: number): CompositeAnimation {
   // Would be nice to make a specialized implementation
-  return timing(new AnimatedValue(0), {
+  return timingImpl(new AnimatedValue(0), {
     toValue: 0,
     delay: time,
     duration: 0,
@@ -441,13 +441,13 @@ const delay = function (time: number): CompositeAnimation {
   });
 };
 
-const stagger = function (
+const staggerImpl = function (
   time: number,
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
-  return parallel(
+  return parallelImpl(
     animations.map((animation, i) => {
-      return sequence([delay(time * i), animation]);
+      return sequenceImpl([delayImpl(time * i), animation]);
     }),
   );
 };
@@ -458,7 +458,7 @@ type LoopAnimationConfig = {
   ...
 };
 
-const loop = function (
+const loopImpl = function (
   animation: CompositeAnimation,
   // $FlowFixMe[prop-missing]
   {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
@@ -514,7 +514,7 @@ const loop = function (
   };
 };
 
-function forkEvent(
+function forkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function,
 ): AnimatedEvent | Function {
@@ -531,7 +531,7 @@ function forkEvent(
   }
 }
 
-function unforkEvent(
+function unforkEventImpl(
   event: ?AnimatedEvent | ?Function,
   listener: Function,
 ): void {
@@ -540,9 +540,9 @@ function unforkEvent(
   }
 }
 
-const event = function (
+const eventImpl = function <T>(
   argMapping: $ReadOnlyArray<?Mapping>,
-  config: EventConfig,
+  config: EventConfig<T>,
 ): any {
   const animatedEvent = new AnimatedEvent(argMapping, config);
   if (animatedEvent.__isNative) {
@@ -606,146 +606,25 @@ export default {
    * See https://reactnative.dev/docs/animated#node
    */
   Node: AnimatedNode,
-
-  /**
-   * Animates a value from an initial velocity to zero based on a decay
-   * coefficient.
-   *
-   * See https://reactnative.dev/docs/animated#decay
-   */
-  decay,
-  /**
-   * Animates a value along a timed easing curve. The Easing module has tons of
-   * predefined curves, or you can use your own function.
-   *
-   * See https://reactnative.dev/docs/animated#timing
-   */
-  timing,
-  /**
-   * Animates a value according to an analytical spring model based on
-   * damped harmonic oscillation.
-   *
-   * See https://reactnative.dev/docs/animated#spring
-   */
-  spring,
-
-  /**
-   * Creates a new Animated value composed from two Animated values added
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#add
-   */
-  add,
-
-  /**
-   * Creates a new Animated value composed by subtracting the second Animated
-   * value from the first Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#subtract
-   */
-  subtract,
-
-  /**
-   * Creates a new Animated value composed by dividing the first Animated value
-   * by the second Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#divide
-   */
-  divide,
-
-  /**
-   * Creates a new Animated value composed from two Animated values multiplied
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#multiply
-   */
-  multiply,
-
-  /**
-   * Creates a new Animated value that is the (non-negative) modulo of the
-   * provided Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#modulo
-   */
-  modulo,
-
-  /**
-   * Create a new Animated value that is limited between 2 values. It uses the
-   * difference between the last value so even if the value is far from the
-   * bounds it will start changing when the value starts getting closer again.
-   *
-   * See https://reactnative.dev/docs/animated#diffclamp
-   */
-  diffClamp,
-
-  /**
-   * Starts an animation after the given delay.
-   *
-   * See https://reactnative.dev/docs/animated#delay
-   */
-  delay,
-  /**
-   * Starts an array of animations in order, waiting for each to complete
-   * before starting the next. If the current running animation is stopped, no
-   * following animations will be started.
-   *
-   * See https://reactnative.dev/docs/animated#sequence
-   */
-  sequence,
-  /**
-   * Starts an array of animations all at the same time. By default, if one
-   * of the animations is stopped, they will all be stopped. You can override
-   * this with the `stopTogether` flag.
-   *
-   * See https://reactnative.dev/docs/animated#parallel
-   */
-  parallel,
-  /**
-   * Array of animations may run in parallel (overlap), but are started in
-   * sequence with successive delays.  Nice for doing trailing effects.
-   *
-   * See https://reactnative.dev/docs/animated#stagger
-   */
-  stagger,
-  /**
-   * Loops a given animation continuously, so that each time it reaches the
-   * end, it resets and begins again from the start.
-   *
-   * See https://reactnative.dev/docs/animated#loop
-   */
-  loop,
-
-  /**
-   * Takes an array of mappings and extracts values from each arg accordingly,
-   * then calls `setValue` on the mapped outputs.
-   *
-   * See https://reactnative.dev/docs/animated#event
-   */
-  event,
-
-  /**
-   * Make any React component Animatable.  Used to create `Animated.View`, etc.
-   *
-   * See https://reactnative.dev/docs/animated#createanimatedcomponent
-   */
+  decay: decayImpl,
+  timing: timingImpl,
+  spring: springImpl,
+  add: addImpl,
+  subtract: subtractImpl,
+  divide: divideImpl,
+  multiply: multiplyImpl,
+  modulo: moduloImpl,
+  diffClamp: diffClampImpl,
+  delay: delayImpl,
+  sequence: sequenceImpl,
+  parallel: parallelImpl,
+  stagger: staggerImpl,
+  loop: loopImpl,
+  event: eventImpl,
   createAnimatedComponent,
-
-  /**
-   * Imperative API to attach an animated value to an event on a view. Prefer
-   * using `Animated.event` with `useNativeDrive: true` if possible.
-   *
-   * See https://reactnative.dev/docs/animated#attachnativeevent
-   */
-  attachNativeEvent,
-
-  /**
-   * Advanced imperative API for snooping on animated events that are passed in
-   * through props. Use values directly where possible.
-   *
-   * See https://reactnative.dev/docs/animated#forkevent
-   */
-  forkEvent,
-  unforkEvent,
+  attachNativeEvent: attachNativeEventImpl,
+  forkEvent: forkEventImpl,
+  unforkEvent: unforkEventImpl,
 
   /**
    * Expose Event class, so it can be used as a type for type checkers.

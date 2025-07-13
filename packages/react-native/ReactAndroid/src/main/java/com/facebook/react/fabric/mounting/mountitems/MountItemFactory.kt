@@ -12,30 +12,30 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.StateWrapper
 
 /** Factory class that expose creation of [MountItem] */
-public object MountItemFactory {
+internal object MountItemFactory {
   /** @return a [DispatchCommandMountItem] for commands identified by an int */
   @JvmStatic
-  public fun createDispatchCommandMountItem(
+  fun createDispatchCommandMountItem(
       surfaceId: Int,
       reactTag: Int,
       commandId: Int,
-      commandArgs: ReadableArray?
+      commandArgs: ReadableArray
   ): DispatchCommandMountItem =
       DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 
   /** @return a [DispatchCommandMountItem] for commands identified by a String */
   @JvmStatic
-  public fun createDispatchCommandMountItem(
+  fun createDispatchCommandMountItem(
       surfaceId: Int,
       reactTag: Int,
       commandId: String,
-      commandArgs: ReadableArray?
+      commandArgs: ReadableArray
   ): DispatchCommandMountItem =
       DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 
   /** @return a [MountItem] that will control the execution of an AccessibilityEvent */
   @JvmStatic
-  public fun createSendAccessibilityEventMountItem(
+  fun createSendAccessibilityEventMountItem(
       surfaceId: Int,
       reactTag: Int,
       eventType: Int
@@ -43,7 +43,7 @@ public object MountItemFactory {
 
   /** @return a [MountItem] that will be used to preallocate views */
   @JvmStatic
-  public fun createPreAllocateViewMountItem(
+  fun createPreAllocateViewMountItem(
       surfaceId: Int,
       reactTag: Int,
       component: String,
@@ -55,7 +55,7 @@ public object MountItemFactory {
 
   /** @return a [MountItem] that will be used to destroy views */
   @JvmStatic
-  public fun createDestroyViewMountItem(surfaceId: Int, reactTag: Int): MountItem =
+  fun createDestroyViewMountItem(surfaceId: Int, reactTag: Int): MountItem =
       DestroyUnmountedViewMountItem(surfaceId, reactTag)
 
   /**
@@ -63,7 +63,7 @@ public object MountItemFactory {
    *   the int[] and Object[] received by parameter
    */
   @JvmStatic
-  public fun createIntBufferBatchMountItem(
+  fun createIntBufferBatchMountItem(
       surfaceId: Int,
       intBuf: IntArray,
       objBuf: Array<Any?>,

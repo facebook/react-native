@@ -13,36 +13,36 @@ package com.facebook.react.runtime.internal.bolts
  * access to the consumer side through the getTask() method while isolating the Task's completion
  * mechanisms from the consumer.
  */
-internal class TaskCompletionSource<TResult>() {
+internal class TaskCompletionSource<TResult> {
 
   /** @return the Task associated with this TaskCompletionSource. */
-  public val task: Task<TResult> = Task()
+  val task: Task<TResult> = Task()
 
   /** Sets the cancelled flag on the Task if the Task hasn't already been completed. */
-  public fun trySetCancelled(): Boolean = task.trySetCancelled()
+  fun trySetCancelled(): Boolean = task.trySetCancelled()
 
   /** Sets the result on the Task if the Task hasn't already been completed. */
-  public fun trySetResult(result: TResult?): Boolean = task.trySetResult(result)
+  fun trySetResult(result: TResult?): Boolean = task.trySetResult(result)
 
   /** Sets the error on the Task if the Task hasn't already been completed. */
-  public fun trySetError(error: Exception?): Boolean = task.trySetError(error)
+  fun trySetError(error: Exception?): Boolean = task.trySetError(error)
 
   /** Sets the cancelled flag on the task, throwing if the Task has already been completed. */
-  public fun setCancelled(): Unit {
+  fun setCancelled(): Unit {
     if (!trySetCancelled()) {
       throw IllegalStateException("Cannot cancel a completed task.")
     }
   }
 
   /** Sets the result of the Task, throwing if the Task has already been completed. */
-  public fun setResult(result: TResult?): Unit {
+  fun setResult(result: TResult?): Unit {
     if (!trySetResult(result)) {
       throw IllegalStateException("Cannot set the result of a completed task.")
     }
   }
 
   /** Sets the error of the Task, throwing if the Task has already been completed. */
-  public fun setError(error: Exception?): Unit {
+  fun setError(error: Exception?): Unit {
     if (!trySetError(error)) {
       throw IllegalStateException("Cannot set the error on a completed task.")
     }

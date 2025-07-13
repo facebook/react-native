@@ -7,6 +7,7 @@
 
 #import "RCTTextInputComponentView.h"
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/iostextinput/TextInputComponentDescriptor.h>
 #import <react/renderer/textlayoutmanager/RCTAttributedTextUtils.h>
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
@@ -28,7 +29,10 @@ static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
 
 using namespace facebook::react;
 
-@interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
+@interface RCTTextInputComponentView () <
+    RCTBackedTextInputDelegate,
+    RCTTextInputViewProtocol,
+    UIDropInteractionDelegate>
 @end
 
 static NSSet<NSNumber *> *returnKeyTypesSet;
@@ -70,6 +74,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
 
   BOOL _hasInputAccessoryView;
+  CGSize _previousContentSize;
 }
 
 #pragma mark - UIView overrides
@@ -86,6 +91,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
     _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
+    _previousContentSize = CGSizeZero;
 
     [self addSubview:_backedTextInputView];
     [self initializeReturnKeyType];
@@ -101,11 +107,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
       [_backedTextInputView.defaultTextAttributes mutableCopy];
 
-#if !TARGET_OS_MACCATALYST
-  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
-  eventEmitterWrapper.eventEmitter = _eventEmitter;
-  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
-#endif
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = RCTWrapEventEmitter(_eventEmitter);
 
   _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
@@ -125,6 +127,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   [self _restoreTextSelection];
+}
+
+// TODO: replace with registerForTraitChanges once iOS 17.0 is the lowest supported version
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (facebook::react::ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() &&
+      UITraitCollection.currentTraitCollection.preferredContentSizeCategory !=
+          previousTraitCollection.preferredContentSizeCategory) {
+    const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
+    _backedTextInputView.defaultTextAttributes =
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+  }
 }
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView
@@ -192,6 +208,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (newTextInputProps.traits.editable != oldTextInputProps.traits.editable) {
     _backedTextInputView.editable = newTextInputProps.traits.editable;
+  }
+
+  if (newTextInputProps.multiline &&
+      newTextInputProps.traits.dataDetectorTypes != oldTextInputProps.traits.dataDetectorTypes) {
+    _backedTextInputView.dataDetectorTypes =
+        RCTUITextViewDataDetectorTypesFromStringVector(newTextInputProps.traits.dataDetectorTypes);
   }
 
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
@@ -266,10 +288,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
-#if !TARGET_OS_MACCATALYST
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
         _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
-#endif
     _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
@@ -288,6 +308,19 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (newTextInputProps.disableKeyboardShortcuts != oldTextInputProps.disableKeyboardShortcuts) {
     _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
+  }
+
+  if (newTextInputProps.acceptDragAndDropTypes != oldTextInputProps.acceptDragAndDropTypes) {
+    if (!newTextInputProps.acceptDragAndDropTypes.has_value()) {
+      _backedTextInputView.acceptDragAndDropTypes = nil;
+    } else {
+      auto &vector = newTextInputProps.acceptDragAndDropTypes.value();
+      NSMutableArray<NSString *> *array = [NSMutableArray arrayWithCapacity:vector.size()];
+      for (const std::string &str : vector) {
+        [array addObject:[NSString stringWithUTF8String:str.c_str()]];
+      }
+      _backedTextInputView.acceptDragAndDropTypes = array;
+    }
   }
 
   [super updateProps:props oldProps:oldProps];
@@ -328,7 +361,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _backedTextInputView.textContainerInset =
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 
-  if (_eventEmitter) {
+  if (!CGSizeEqualToSize(_previousContentSize, _backedTextInputView.contentSize) && _eventEmitter) {
+    _previousContentSize = _backedTextInputView.contentSize;
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onContentSizeChange([self _textInputMetrics]);
   }
 }
@@ -545,6 +579,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (startPosition && endPosition) {
     UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+    // ensure we scroll to the selected position
+    NSInteger offsetEnd = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                        toPosition:range.end];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetEnd, 0)];
   }
   _comingFromJS = NO;
 }
@@ -697,6 +735,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)_restoreTextSelection
 {
+  [self _restoreTextSelectionAndIgnoreCaretChange:NO];
+}
+
+- (void)_restoreTextSelectionAndIgnoreCaretChange:(BOOL)ignore
+{
   const auto &selection = static_cast<const TextInputProps &>(*_props).selection;
   if (!selection.has_value()) {
     return;
@@ -705,6 +748,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                    offset:selection->start];
   auto end = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument offset:selection->end];
   auto range = [_backedTextInputView textRangeFromPosition:start toPosition:end];
+  if (ignore && range.empty) {
+    return;
+  }
   [_backedTextInputView setSelectedTextRange:range notifyDelegate:YES];
 }
 
@@ -719,19 +765,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
   // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
   // This is fixed by restoring the cursor position and scrolling to that position (iOS issue 652653).
-  if (selectedRange.empty) {
-    // Maintaining a cursor position relative to the end of the old text.
-    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                          toPosition:selectedRange.start];
-    NSInteger offsetFromEnd = oldTextLength - offsetStart;
-    NSInteger newOffset = attributedString.string.length - offsetFromEnd;
-    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                   offset:newOffset];
-    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
-                                notifyDelegate:YES];
-    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
-  }
-  [self _restoreTextSelection];
+  // Maintaining a cursor position relative to the end of the old text.
+  NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                        toPosition:selectedRange.start];
+  NSInteger offsetFromEnd = oldTextLength - offsetStart;
+  NSInteger newOffset = attributedString.string.length - offsetFromEnd;
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                 offset:newOffset];
+  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
+  [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+
+  // A zero-length selection range can cause the caret position to change on iOS,
+  // and we have already updated the caret position, so we can safely ignore caret changing in this place.
+  [self _restoreTextSelectionAndIgnoreCaretChange:YES];
   [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
 }

@@ -10,7 +10,11 @@
 
 import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxJNITypeFromDefaultValue,
+  getCxxTypeFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 export default function (definitions: FeatureFlagDefinitions): string {
@@ -40,10 +44,10 @@ static jni::alias_ref<jni::JClass> getReactNativeFeatureFlagsProviderJavaClass()
  * Implementation of ReactNativeFeatureFlagsProvider that wraps a
  * ReactNativeFeatureFlagsProvider Java object.
  */
-class ReactNativeFeatureFlagsProviderHolder
+class ReactNativeFeatureFlagsJavaProvider
     : public ReactNativeFeatureFlagsProvider {
  public:
-  explicit ReactNativeFeatureFlagsProviderHolder(
+  explicit ReactNativeFeatureFlagsJavaProvider(
       jni::alias_ref<jobject> javaProvider)
       : javaProvider_(make_global(javaProvider)){};
 
@@ -54,7 +58,7 @@ ${Object.entries(definitions.common)
         flagConfig.defaultValue,
       )} ${flagName}() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("${flagName}");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<${getCxxJNITypeFromDefaultValue(flagConfig.defaultValue)}()>("${flagName}");
     return method(javaProvider_);
   }`,
   )
@@ -80,7 +84,7 @@ void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   ReactNativeFeatureFlags::override(
-      std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+      std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
 }
 
 void JReactNativeFeatureFlagsCxxInterop::dangerouslyReset(
@@ -92,7 +96,7 @@ jni::local_ref<jstring> JReactNativeFeatureFlagsCxxInterop::dangerouslyForceOver
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   auto accessedFlags = ReactNativeFeatureFlags::dangerouslyForceOverride(
-             std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+             std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
   if (accessedFlags.has_value()) {
     return jni::make_jstring(accessedFlags.value());
   }

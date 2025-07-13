@@ -6,14 +6,13 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
 const render = require('../../../jest/renderer');
-const View = require('../../Components/View/View');
-const Modal = require('../Modal');
+const View = require('../../Components/View/View').default;
+const Modal = require('../Modal').default;
 const React = require('react');
 
 describe('Modal', () => {

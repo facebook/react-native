@@ -38,7 +38,7 @@ public data class BoxShadow(
             when (val type = boxShadow.getType("color")) {
               ReadableType.Number -> boxShadow.getInt("color")
               ReadableType.Map -> ColorPropConverter.getColor(boxShadow.getMap("color"), context)
-              else -> throw JSApplicationCausedNativeException("Unsupported color type ${type}")
+              else -> throw JSApplicationCausedNativeException("Unsupported color type $type")
             }
           } else null
       val blurRadius =

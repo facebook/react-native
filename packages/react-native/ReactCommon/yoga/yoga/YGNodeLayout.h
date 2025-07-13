@@ -32,4 +32,14 @@ YG_EXPORT float YGNodeLayoutGetMargin(YGNodeConstRef node, YGEdge edge);
 YG_EXPORT float YGNodeLayoutGetBorder(YGNodeConstRef node, YGEdge edge);
 YG_EXPORT float YGNodeLayoutGetPadding(YGNodeConstRef node, YGEdge edge);
 
+/**
+ * Return the measured height of the node, before layout rounding
+ */
+YG_EXPORT float YGNodeLayoutGetRawHeight(YGNodeConstRef node);
+
+/**
+ * Return the measured width of the node, before layout rounding
+ */
+YG_EXPORT float YGNodeLayoutGetRawWidth(YGNodeConstRef node);
+
 YG_EXTERN_C_END

@@ -39,7 +39,7 @@ static NSString *const RCTPerfMonitorCellIdentifier = @"RCTPerfMonitorCellIdenti
 static const CGFloat RCTPerfMonitorBarHeight = 50;
 static const CGFloat RCTPerfMonitorExpandHeight = 250;
 
-typedef BOOL (*RCTJSCSetOptionType)(const char *);
+using RCTJSCSetOptionType = BOOL (*)(const char *);
 
 NSArray<NSString *> *LabelsForRCTPerformanceLoggerTags();
 
@@ -118,7 +118,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -420,6 +420,11 @@ RCT_EXPORT_MODULE()
     if (view.window || view.superview.window) {
       visibleViewCount++;
     }
+  }
+
+  // Ensure the container always stays on top of newly added views
+  if ([_container.superview.subviews lastObject] != _container) {
+    [_container.superview bringSubviewToFront:_container];
   }
 
   double mem = (double)RCTGetResidentMemorySize() / 1024 / 1024;

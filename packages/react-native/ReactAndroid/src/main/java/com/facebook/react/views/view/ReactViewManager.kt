@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.LengthPercentage
@@ -63,17 +64,23 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   }
 
   init {
-    setupViewRecycling()
+    if (ReactNativeFeatureFlags.enableViewRecyclingForView()) {
+      setupViewRecycling()
+    }
   }
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
       view: ReactViewGroup
-  ): ReactViewGroup {
+  ): ReactViewGroup? {
+    // We don't want to run the view clipping when the view is being prepared for recycling to avoid
+    // have size changes iterate over child view that should be removed anyway
+    view.removeClippedSubviews = false
+
     // BaseViewManager
     val preparedView = super.prepareToRecycleView(reactContext, view)
     preparedView?.recycleView()
-    return view
+    return preparedView
   }
 
   @ReactProp(name = "accessible")
@@ -97,8 +104,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         val backgroundImageLayers = ArrayList<BackgroundImageLayer>(backgroundImage.size())
         for (i in 0 until backgroundImage.size()) {
           val backgroundImageMap = backgroundImage.getMap(i)
-          val layer = BackgroundImageLayer(backgroundImageMap, view.context)
-          backgroundImageLayers.add(layer)
+          val layer = BackgroundImageLayer.parse(backgroundImageMap, view.context)
+          if (layer != null) {
+            backgroundImageLayers.add(layer)
+          }
         }
         BackgroundStyleApplicator.setBackgroundImage(view, backgroundImageLayers)
       } else {
@@ -181,8 +190,12 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
     when (hitSlop.type) {
       ReadableType.Map -> {
         val hitSlopMap = hitSlop.asMap()
-        view.setHitSlopRect(
-            Rect(
+        if (hitSlopMap == null) {
+          view.hitSlopRect = null
+          return
+        }
+        view.hitSlopRect =
+            (Rect(
                 hitSlopMap.px("left"),
                 hitSlopMap.px("top"),
                 hitSlopMap.px("right"),
@@ -192,13 +205,13 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
       ReadableType.Number -> {
         val hitSlopValue = hitSlop.asDouble().dpToPx().toInt()
-        view.setHitSlopRect(Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue))
+        view.hitSlopRect = Rect(hitSlopValue, hitSlopValue, hitSlopValue, hitSlopValue)
       }
 
-      ReadableType.Null -> view.setHitSlopRect(null)
+      ReadableType.Null -> view.hitSlopRect = null
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid type for 'hitSlop' value ${hitSlop.type}")
-        view.setHitSlopRect(null)
+        view.hitSlopRect = null
       }
     }
   }
@@ -207,7 +220,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public open fun setPointerEvents(view: ReactViewGroup, pointerEventsStr: String?) {
-    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr))
+    view.pointerEvents = PointerEvents.parsePointerEvents(pointerEventsStr)
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
@@ -303,7 +316,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.OVERFLOW)
   public open fun setOverflow(view: ReactViewGroup, overflow: String?) {
-    view.setOverflow(overflow)
+    view.overflow = overflow
   }
 
   @ReactProp(name = "backfaceVisibility")

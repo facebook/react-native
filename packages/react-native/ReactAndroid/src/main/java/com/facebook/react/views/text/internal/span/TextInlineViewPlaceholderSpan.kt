@@ -16,12 +16,9 @@ import android.text.style.ReplacementSpan
  * TextInlineViewPlaceholderSpan is a span for inlined views that are inside <Text></Text>. It
  * computes its size based on the input size. It contains no draw logic, just positioning logic.
  */
-public class TextInlineViewPlaceholderSpan(
-    public val reactTag: Int,
-    public val width: Int,
-    public val height: Int
-) : ReplacementSpan(), ReactSpan {
-  public override fun getSize(
+internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, val height: Int) :
+    ReplacementSpan(), ReactSpan {
+  override fun getSize(
       paint: Paint,
       text: CharSequence?,
       start: Int,
@@ -38,7 +35,7 @@ public class TextInlineViewPlaceholderSpan(
     return width
   }
 
-  public override fun draw(
+  override fun draw(
       canvas: Canvas,
       text: CharSequence?,
       start: Int,

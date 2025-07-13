@@ -9,9 +9,13 @@
 
 package com.facebook.react.defaults
 
+import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
-import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsProvider
 
 /**
  * A utility class that serves as an entry point for users setup the New Architecture.
@@ -26,8 +30,50 @@ import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatur
  * Bridgeless
  */
 public object DefaultNewArchitectureEntryPoint {
+
+  public var releaseLevel: ReleaseLevel = ReleaseLevel.STABLE
+
+  /**
+   * Loads the React Native New Architecture entry point with the default configuration.
+   *
+   * This will load the app with TurboModules, Fabric and Bridgeless by default.
+   */
   @JvmStatic
-  @JvmOverloads
+  public fun load() {
+    load(turboModulesEnabled = true, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+  ) {
+    load(turboModulesEnabled, fabricEnabled = true, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
+  public fun load(
+      turboModulesEnabled: Boolean = true,
+      fabricEnabled: Boolean = true,
+  ) {
+    load(turboModulesEnabled, fabricEnabled, bridgelessEnabled = true)
+  }
+
+  @JvmStatic
+  @Deprecated(
+      message =
+          "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
+              "Please use load() instead when loading the New Architecture.",
+      replaceWith = ReplaceWith("load()"))
   public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
@@ -39,24 +85,37 @@ public object DefaultNewArchitectureEntryPoint {
       error(errorMessage)
     }
 
-    ReactNativeFeatureFlags.override(
-        object : ReactNativeNewArchitectureFeatureFlagsDefaults(bridgelessEnabled) {
-          override fun useFabricInterop(): Boolean = bridgelessEnabled || fabricEnabled
-
-          override fun enableFabricRenderer(): Boolean = bridgelessEnabled || fabricEnabled
-
-          // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
-          // similar bugs related to pressable.
-          override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-              bridgelessEnabled || fabricEnabled
-
-          override fun useTurboModules(): Boolean = bridgelessEnabled || turboModulesEnabled
-        })
+    when (releaseLevel) {
+      ReleaseLevel.EXPERIMENTAL -> {
+        ReactNativeFeatureFlags.override(
+            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android())
+      }
+      ReleaseLevel.CANARY -> {
+        ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
+      }
+      ReleaseLevel.STABLE -> {
+        ReactNativeFeatureFlags.override(
+            ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
+                fabricEnabled, bridgelessEnabled, turboModulesEnabled))
+      }
+    }
 
     privateFabricEnabled = fabricEnabled
     privateTurboModulesEnabled = turboModulesEnabled
     privateConcurrentReactEnabled = fabricEnabled
     privateBridgelessEnabled = bridgelessEnabled
+
+    DefaultSoLoader.maybeLoadSoLibrary()
+  }
+
+  @JvmStatic
+  internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
+    ReactNativeFeatureFlags.override(featureFlags)
+
+    privateFabricEnabled = featureFlags.enableFabricRenderer()
+    privateTurboModulesEnabled = featureFlags.useTurboModules()
+    privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
+    privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }

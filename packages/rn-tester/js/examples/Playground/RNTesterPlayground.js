@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
@@ -34,5 +33,6 @@ const styles = StyleSheet.create({
 export default ({
   title: 'Playground',
   name: 'playground',
+  description: 'Test out new features and ideas.',
   render: (): React.Node => <Playground />,
 }: RNTesterModuleExample);

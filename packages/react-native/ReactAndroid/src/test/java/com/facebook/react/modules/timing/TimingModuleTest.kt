@@ -14,12 +14,10 @@ package com.facebook.react.modules.timing
 import android.content.Context
 import android.os.Looper
 import android.view.Choreographer.FrameCallback
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.jstasks.HeadlessJsTaskConfig
@@ -29,6 +27,7 @@ import com.facebook.react.modules.core.JSTimers
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.modules.core.ReactChoreographer.CallbackType
 import com.facebook.react.modules.core.TimingModule
+import com.facebook.testutils.shadows.ShadowArguments
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -36,23 +35,24 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
-import org.mockito.Mockito.doAnswer
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.Mockito.`when` as whenever
 import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import org.mockito.stubbing.Answer
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 
-public object MockCompat {
+object MockCompat {
   // Same as Mockito's 'eq()', but works for non-nullable types
-  public fun <T : Any> eq(value: T): T = ArgumentMatchers.eq(value) ?: value
+  fun <T : Any> eq(value: T): T = ArgumentMatchers.eq(value) ?: value
 
   // Same as Mockito's 'any()', but works for non-nullable types
   fun <T> any(): T {
@@ -63,6 +63,7 @@ public object MockCompat {
   @Suppress("UNCHECKED_CAST") fun <T> uninitialized(): T = null as T
 }
 
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class TimingModuleTest {
   companion object {
@@ -75,7 +76,6 @@ class TimingModuleTest {
   private lateinit var postFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var idlePostFrameCallbackHandler: PostFrameCallbackHandler
   private lateinit var jsTimersMock: JSTimers
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var systemClock: MockedStatic<SystemClock>
   private lateinit var reactChoreographerMock: ReactChoreographer
 
@@ -84,9 +84,6 @@ class TimingModuleTest {
 
   @Before
   fun prepareModules() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-
     systemClock = mockStatic(SystemClock::class.java)
     systemClock
         .`when`<Long> { SystemClock.uptimeMillis() }
@@ -104,11 +101,11 @@ class TimingModuleTest {
           return@thenAnswer currentTimeNs
         }
 
-    reactChoreographerMock = mock(ReactChoreographer::class.java)
+    reactChoreographerMock = mock<ReactChoreographer>()
     reactChoreographerOriginal = ReactChoreographer.overrideInstanceForTest(reactChoreographerMock)
 
-    val reactInstance = mock(CatalystInstance::class.java)
-    reactContext = spy(BridgeReactContext(mock(Context::class.java)))
+    val reactInstance = mock<CatalystInstance>()
+    reactContext = spy(BridgeReactContext(mock<Context>()))
     doReturn(reactInstance).`when`(reactContext).catalystInstance
     doReturn(true).`when`(reactContext).hasActiveReactInstance()
 
@@ -130,12 +127,10 @@ class TimingModuleTest {
           return@thenAnswer idlePostFrameCallbackHandler.answer(it)
         }
 
-    timingModule = TimingModule(reactContext, mock(DevSupportManager::class.java))
-    jsTimersMock = mock(JSTimers::class.java)
+    timingModule = TimingModule(reactContext, mock<DevSupportManager>())
+    jsTimersMock = mock<JSTimers>()
     doReturn(jsTimersMock).`when`(reactContext).getJSModule(JSTimers::class.java)
-    doReturn(mock(AppRegistry::class.java))
-        .`when`(reactContext)
-        .getJSModule(AppRegistry::class.java)
+    doReturn(mock<AppRegistry>()).`when`(reactContext).getJSModule(AppRegistry::class.java)
     doAnswer({ invocation ->
           (invocation.arguments[0] as Runnable).run()
           return@doAnswer true
@@ -149,7 +144,6 @@ class TimingModuleTest {
   @After
   fun tearDown() {
     systemClock.close()
-    arguments.close()
     ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 

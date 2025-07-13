@@ -6,10 +6,10 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
+import type {PageDescription} from '../inspector-proxy/types';
 import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
@@ -57,51 +57,60 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const {query} = url.parse(req.url, true);
-      const {
-        appId,
-        device,
-        launchId,
-        target: targetId,
-      }: {
+      const paresedUrl = url.parse(req.url, true);
+      const query: {
         /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
+        /** @deprecated Will only match legacy Hermes targets */
         device?: string,
         launchId?: string,
+        telemetryInfo?: string,
         target?: string,
         ...
-      } = query;
+      } = paresedUrl.query;
 
       const targets = inspectorProxy
-        .getPageDescriptions(new URL(serverBaseUrl))
-        .filter(
-          // Only use targets with better reloading support
-          app =>
+        .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
+        .filter(app => {
+          const betterReloadingSupport =
             app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
-            app.reactNative.capabilities?.nativePageReloads === true,
-        );
+            app.reactNative.capabilities?.nativePageReloads === true;
 
-      let target;
+          if (!betterReloadingSupport) {
+            logger?.warn(
+              "Ignoring DevTools app debug target for '%s' with title '%s' and 'nativePageReloads' capability set to '%s'. ",
+              app.appId,
+              app.title,
+              String(app.reactNative.capabilities?.nativePageReloads),
+            );
+          }
+
+          return betterReloadingSupport;
+        });
+
+      let target: PageDescription | void;
 
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
       if (
-        typeof targetId === 'string' ||
-        typeof appId === 'string' ||
-        typeof device === 'string'
+        typeof query.target === 'string' ||
+        typeof query.appId === 'string' ||
+        typeof query.device === 'string'
       ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' DevTools...',
         );
+
         target = targets.find(
           _target =>
-            (targetId == null || _target.id === targetId) &&
-            (appId == null ||
-              (_target.appId === appId &&
+            (query.target == null || _target.id === query.target) &&
+            (query.appId == null ||
+              (_target.appId === query.appId &&
                 _target.title === LEGACY_SYNTHETIC_PAGE_TITLE)) &&
-            (device == null || _target.reactNative.logicalDeviceId === device),
+            (query.device == null ||
+              _target.reactNative.logicalDeviceId === query.device),
         );
       } else if (targets.length > 0) {
         logger?.info(
@@ -127,29 +136,60 @@ export default function openDebuggerMiddleware({
       }
 
       const useFuseboxEntryPoint =
-        target.reactNative.capabilities?.prefersFuseboxFrontend;
+        target.reactNative.capabilities?.prefersFuseboxFrontend ?? false;
 
       try {
         switch (launchType) {
-          case 'launch':
-            await browserLauncher.launchDebuggerAppWindow(
-              getDevToolsFrontendUrl(
-                experiments,
-                target.webSocketDebuggerUrl,
-                serverBaseUrl,
-                {launchId, useFuseboxEntryPoint},
-              ),
+          case 'launch': {
+            const frontendUrl = getDevToolsFrontendUrl(
+              experiments,
+              target.webSocketDebuggerUrl,
+              serverBaseUrl,
+              {
+                launchId: query.launchId,
+                telemetryInfo: query.telemetryInfo,
+                appId: target.appId,
+                useFuseboxEntryPoint,
+              },
             );
+            if (
+              useFuseboxEntryPoint &&
+              experiments.enableStandaloneFuseboxShell
+            ) {
+              const windowKey = [
+                serverBaseUrl,
+                target.webSocketDebuggerUrl,
+                target.appId,
+              ].join('-');
+              if (!browserLauncher.unstable_showFuseboxShell) {
+                throw new Error(
+                  'Fusebox shell is not supported by the current browser launcher',
+                );
+              }
+              await browserLauncher.unstable_showFuseboxShell(
+                frontendUrl,
+                windowKey,
+              );
+            } else {
+              await browserLauncher.launchDebuggerAppWindow(frontendUrl);
+            }
             res.writeHead(200);
             res.end();
             break;
+          }
           case 'redirect':
             res.writeHead(302, {
               Location: getDevToolsFrontendUrl(
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {relative: true, launchId, useFuseboxEntryPoint},
+                {
+                  relative: true,
+                  launchId: query.launchId,
+                  telemetryInfo: query.telemetryInfo,
+                  appId: target.appId,
+                  useFuseboxEntryPoint,
+                },
               ),
             });
             res.end();
@@ -161,11 +201,12 @@ export default function openDebuggerMiddleware({
           type: 'launch_debugger_frontend',
           launchType,
           status: 'success',
-          appId: appId ?? null,
-          deviceId: device ?? null,
-          resolvedTargetDescription: target.description,
-          resolvedTargetAppId: target.appId,
-          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
+          appId: target.appId,
+          deviceId: target.reactNative.logicalDeviceId,
+          pageId: target.id,
+          deviceName: target.deviceName,
+          targetDescription: target.description,
+          prefersFuseboxFrontend: useFuseboxEntryPoint,
         });
         return;
       } catch (e) {
@@ -179,7 +220,7 @@ export default function openDebuggerMiddleware({
           launchType,
           status: 'error',
           error: e,
-          prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
+          prefersFuseboxFrontend: useFuseboxEntryPoint,
         });
         return;
       }

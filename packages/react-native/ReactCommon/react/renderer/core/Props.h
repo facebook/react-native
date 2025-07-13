@@ -35,7 +35,12 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
       const RawProps& rawProps,
       const std::function<bool(const std::string&)>& filterObjectKeys =
           nullptr);
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  virtual ~Props() override = default;
+#else
   virtual ~Props() = default;
+#endif
 
   Props(const Props& other) = delete;
   Props& operator=(const Props& other) = delete;
@@ -58,12 +63,23 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
 
   std::string nativeId;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic rawProps = folly::dynamic::object();
+
+  virtual ComponentName getDiffPropsImplementationTarget() const {
+    return "";
+  }
 
   virtual folly::dynamic getDiffProps(const Props* prevProps) const {
     return folly::dynamic::object();
   }
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+#pragma mark - DebugStringConvertible (Partial)
+
+  SharedDebugStringConvertibleList getDebugProps() const override;
 
 #endif
 

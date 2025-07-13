@@ -4,20 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {View} = ReactNative;
+import * as React from 'react';
+import {useEffect} from 'react';
+import {NativeModules, View} from 'react-native';
 
-const {TestModule, RNTesterTestModule} = ReactNative.NativeModules;
+const {TestModule, RNTesterTestModule} = NativeModules;
 
-class SyncMethodTest extends React.Component<{...}> {
-  componentDidMount(): void {
+function SyncMethodTest(): React.Node {
+  useEffect(() => {
     if (
       RNTesterTestModule.echoString('test string value') !== 'test string value'
     ) {
@@ -41,13 +41,9 @@ class SyncMethodTest extends React.Component<{...}> {
         );
       }
     });
-  }
+  }, []);
 
-  render(): React.Node {
-    return <View />;
-  }
+  return <View />;
 }
 
-SyncMethodTest.displayName = 'SyncMethodTest';
-
-module.exports = SyncMethodTest;
+export default SyncMethodTest;

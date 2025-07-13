@@ -12,14 +12,11 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.robolectric.RobolectricTestRunner
 
 /** Tests for {@link NetworkingModule}. */
-@RunWith(RobolectricTestRunner::class)
 class ReactCookieJarContainerTest {
   private val httpUrl: HttpUrl = HttpUrl.Builder().host("example.com").scheme("http").build()
 

@@ -20,12 +20,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.common.ModuleDataCleaner
+import com.facebook.react.modules.network.CookieJarContainer
 import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
-import com.facebook.react.modules.network.OkHttpCompat
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import okhttp3.JavaNetCookieJar
 
@@ -51,7 +50,7 @@ constructor(
 
   /**
    * Create a new Fresco module with a default configuration (or the previously given configuration
-   * via [.FrescoModule].
+   * via [FrescoModule].
    *
    * @param reactContext the context to use
    * @param imagePipeline the Fresco image pipeline to use
@@ -133,7 +132,7 @@ constructor(
 
     /**
      * Check whether the FrescoModule has already been initialized. If this is the case, Calls to
-     * [.FrescoModule] will ignore the given configuration.
+     * [FrescoModule] will ignore the given configuration.
      *
      * @return true if this module has already been initialized
      */
@@ -146,7 +145,8 @@ constructor(
      * Get the default Fresco configuration builder. Allows adding of configuration options in
      * addition to the default values.
      *
-     * @return [ImagePipelineConfig.Builder] that has been initialized with default values
+     * @return [com.facebook.imagepipeline.core.ImagePipelineConfig.Builder] that has been
+     *   initialized with default values
      */
     @JvmStatic
     public fun getDefaultConfigBuilder(context: ReactContext): ImagePipelineConfig.Builder {
@@ -156,7 +156,10 @@ constructor(
 
       // make sure to forward cookies for any requests via the okHttpClient
       // so that image requests to endpoints that use cookies still work
-      val container = OkHttpCompat.getCookieJarContainer(client)
+
+      @Suppress("DEPRECATION_ERROR") // Conflicting okhttp versions
+      val container = client.cookieJar() as CookieJarContainer
+
       val handler = ForwardingCookieHandler()
       container.setCookieJar(JavaNetCookieJar(handler))
       val builder =
@@ -164,9 +167,7 @@ constructor(
               .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
               .setDownsampleMode(DownsampleMode.AUTO)
               .setRequestListeners(requestListeners)
-      builder
-          .experiment()
-          .setBinaryXmlEnabled(ReactNativeFeatureFlags.loadVectorDrawablesOnImages())
+      builder.experiment().setBinaryXmlEnabled(true)
       return builder
     }
   }

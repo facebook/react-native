@@ -10,22 +10,22 @@ package com.facebook.react.uimanager
 import android.view.View
 
 /**
- * Common base class for most of the {@link ViewManager}s. It provides support for most common
- * properties through extending {@link BaseViewManager}. It also reduces boilerplate by specifying
- * the type of shadow node to be {@link ReactShadowNode} and providing default, empty implementation
- * for some of the methods of {@link ViewManager} interface.
+ * Common base class for most of the [ViewManager]s. It provides support for most common properties
+ * through extending [BaseViewManager]. It also reduces boilerplate by specifying the type of shadow
+ * node to be [ReactShadowNode] and providing default, empty implementation for some of the methods
+ * of [ViewManager] interface.
  *
  * @param <T> the view handled by this manager
  */
 public abstract class SimpleViewManager<T : View> : BaseViewManager<T, LayoutShadowNode>() {
 
-  override public fun createShadowNodeInstance(): LayoutShadowNode {
+  public override fun createShadowNodeInstance(): LayoutShadowNode {
     return LayoutShadowNode()
   }
 
-  override public fun getShadowNodeClass(): Class<LayoutShadowNode> {
+  public override fun getShadowNodeClass(): Class<LayoutShadowNode> {
     return LayoutShadowNode::class.java
   }
 
-  override public fun updateExtraData(root: T, extraData: Any?): Unit = Unit
+  public override fun updateExtraData(root: T, extraData: Any?): Unit = Unit
 }

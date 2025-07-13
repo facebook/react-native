@@ -25,11 +25,11 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "react/renderer/mapbuffer/*.{cpp,h}"
+  s.source_files           = podspec_sources("react/renderer/mapbuffer/*.{cpp,h}", "react/renderer/mapbuffer/*.h")
   s.exclude_files          = "react/renderer/mapbuffer/tests"
   s.public_header_files    = 'react/renderer/mapbuffer/*.h'
   s.header_dir             = "react/renderer/mapbuffer"
-  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\"", "USE_HEADERMAP" => "YES",
+  s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => ["\"$(PODS_TARGET_SRCROOT)\""], "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   if ENV['USE_FRAMEWORKS']
@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_Mapbuffer'
   end
 
-  s.dependency "glog"
   add_dependency(s, "React-debug")
-
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

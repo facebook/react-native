@@ -74,6 +74,17 @@ NS_ASSUME_NONNULL_BEGIN
            oldLayoutMetrics:(const facebook::react::LayoutMetrics &)oldLayoutMetrics NS_REQUIRES_SUPER;
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
 - (void)prepareForRecycle NS_REQUIRES_SUPER;
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event;
+
+/*
+ * This is the label that would be coopted by another element
+ */
+- (NSString *)accessibilityLabelForCoopting;
+
+/*
+ * This View has no label and will look to coopt something below it
+ */
+- (BOOL)wantsToCooptLabel;
 
 /*
  * This is a fragment of temporary workaround that we need only temporary and will get rid of soon.

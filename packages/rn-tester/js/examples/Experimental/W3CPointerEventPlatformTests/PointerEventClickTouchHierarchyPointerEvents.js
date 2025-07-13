@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
 import type {EventOccurrence, EventTrackerProps} from './PointerEventSupport';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ViewProps} from 'react-native';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {EventTracker, mkEvent} from './PointerEventSupport';
@@ -97,12 +97,16 @@ function PointerEventClickTouchHierarchyPointerEventsTestCase(
     <View>
       <View style={styles.parentContainer}>
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetBoxOnly}
           pointerEvents="box-only"
           eventsRef={eventsInOrder}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetBoxNone}
           pointerEvents="box-none"
@@ -114,12 +118,16 @@ function PointerEventClickTouchHierarchyPointerEventsTestCase(
           }}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetAuto}
           pointerEvents="auto"
           eventsRef={eventsInOrder}
         />
         <PointerEventBoxParentChild
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           childStyle={styles.targetNone}
           pointerEvents="none"

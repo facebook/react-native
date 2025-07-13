@@ -7,6 +7,9 @@
 
 package com.facebook.react.views.safeareaview
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.uimanager.LayoutShadowNode
 
-internal class ReactSafeAreaViewShadowNode() : LayoutShadowNode() {}
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+internal class ReactSafeAreaViewShadowNode : LayoutShadowNode()

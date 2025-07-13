@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
@@ -15,9 +15,9 @@ import type {
   PerformanceEntryJSON,
 } from './PerformanceEntry';
 
+import {warnNoNativePerformance} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
 
 export type PerformanceEventTimingJSON = {
   ...PerformanceEntryJSON,

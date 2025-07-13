@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 let ease;
+
+export type EasingFunction = (t: number) => number;
 
 /**
  * The `Easing` module implements common easing functions. This module is used
@@ -57,7 +59,7 @@ let ease;
  * - [`inOut`](docs/easing.html#inout) makes any easing function symmetrical
  * - [`out`](docs/easing.html#out) runs an easing function backwards
  */
-const Easing = {
+const EasingStatic = {
   /**
    * A stepping function, returns 1 for any positive value of `n`.
    */
@@ -90,7 +92,7 @@ const Easing = {
    */
   ease(t: number): number {
     if (!ease) {
-      ease = Easing.bezier(0.42, 0, 1, 1);
+      ease = EasingStatic.bezier(0.42, 0, 1, 1);
     }
     return ease(t);
   },
@@ -121,7 +123,7 @@ const Easing = {
    * n = 4: http://easings.net/#easeInQuart
    * n = 5: http://easings.net/#easeInQuint
    */
-  poly(n: number): (t: number) => number {
+  poly(n: number): EasingFunction {
     return (t: number) => Math.pow(t, n);
   },
 
@@ -162,7 +164,7 @@ const Easing = {
    *
    * http://easings.net/#easeInElastic
    */
-  elastic(bounciness: number = 1): (t: number) => number {
+  elastic(bounciness: number = 1): EasingFunction {
     const p = bounciness * Math.PI;
     return t => 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
   },
@@ -173,7 +175,7 @@ const Easing = {
    *
    * https://easings.net/#easeInBack
    */
-  back(s: number = 1.70158): (t: number) => number {
+  back(s: number = 1.70158): EasingFunction {
     return t => t * t * ((s + 1) * t - s);
   },
 
@@ -208,12 +210,7 @@ const Easing = {
    * A useful tool to visualize cubic bezier curves can be found at
    * http://cubic-bezier.com/
    */
-  bezier(
-    x1: number,
-    y1: number,
-    x2: number,
-    y2: number,
-  ): (t: number) => number {
+  bezier(x1: number, y1: number, x2: number, y2: number): EasingFunction {
     const _bezier = require('./bezier').default;
     return _bezier(x1, y1, x2, y2);
   },
@@ -221,14 +218,14 @@ const Easing = {
   /**
    * Runs an easing function forwards.
    */
-  in(easing: (t: number) => number): (t: number) => number {
+  in(easing: EasingFunction): EasingFunction {
     return easing;
   },
 
   /**
    * Runs an easing function backwards.
    */
-  out(easing: (t: number) => number): (t: number) => number {
+  out(easing: EasingFunction): EasingFunction {
     return t => 1 - easing(1 - t);
   },
 
@@ -237,7 +234,7 @@ const Easing = {
    * forwards for half of the duration, then backwards for the rest of the
    * duration.
    */
-  inOut(easing: (t: number) => number): (t: number) => number {
+  inOut(easing: EasingFunction): EasingFunction {
     return t => {
       if (t < 0.5) {
         return easing(t * 2) / 2;
@@ -247,4 +244,5 @@ const Easing = {
   },
 };
 
-export default Easing;
+export type Easing = typeof EasingStatic;
+export default EasingStatic;

@@ -11,12 +11,16 @@
 #include <fbjni/fbjni.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <react/renderer/components/rncore/ComponentDescriptors.h>
+#include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 
 namespace facebook::react {
 
 std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
     DefaultComponentsRegistry::registerComponentDescriptorsFromEntryPoint{};
+
+std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
+    DefaultComponentsRegistry::
+        registerCodegenComponentDescriptorsFromEntryPoint{};
 
 void DefaultComponentsRegistry::setRegistryRunction(
     jni::alias_ref<jclass>,
@@ -31,6 +35,12 @@ void DefaultComponentsRegistry::setRegistryRunction(
         .flavor = nullptr};
 
     auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
+    if (registerCodegenComponentDescriptorsFromEntryPoint) {
+      registerCodegenComponentDescriptorsFromEntryPoint(providerRegistry);
+    } else {
+      LOG(WARNING)
+          << "Codegen component descriptors were not configured from JNI_OnLoad";
+    }
     if (registerComponentDescriptorsFromEntryPoint) {
       registerComponentDescriptorsFromEntryPoint(providerRegistry);
     } else {

@@ -11,7 +11,7 @@ import com.facebook.react.bridge.ModuleHolder
 import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
@@ -22,6 +22,7 @@ import javax.inject.Provider
 /** Abstract class that supports lazy loading of NativeModules by default. */
 public abstract class BaseReactPackage : ReactPackage {
 
+  @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     throw UnsupportedOperationException(
         "createNativeModules method is not supported. Use getModule() method instead.")
@@ -65,7 +66,8 @@ public abstract class BaseReactPackage : ReactPackage {
             // This Iterator is used to create the NativeModule registry. The NativeModule
             // registry must not have TurboModules. Therefore, if TurboModules are enabled, and
             // the current NativeModule is a TurboModule, we need to skip iterating over it.
-            if (ReactNativeFeatureFlags.useTurboModules() && reactModuleInfo.isTurboModule) {
+            if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() &&
+                reactModuleInfo.isTurboModule) {
               continue
             }
 

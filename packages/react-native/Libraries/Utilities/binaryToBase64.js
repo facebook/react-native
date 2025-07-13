@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -28,4 +28,4 @@ function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string {
   return base64.fromByteArray(new Uint8Array(buffer, byteOffset, byteLength));
 }
 
-module.exports = binaryToBase64;
+export default binaryToBase64;

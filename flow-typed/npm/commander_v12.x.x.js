@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  * @generated
  */
 
@@ -317,7 +316,7 @@ declare module 'commander' {
      */
     formatHelp(cmd: Command, helper: Help): string;
   }
-  export type HelpConfiguration = $Rest<Help, {...}>;
+  export type HelpConfiguration = Partial<Help>;
   export interface ParseOptions {
     from: 'node' | 'electron' | 'user';
   }

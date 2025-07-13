@@ -125,7 +125,7 @@ namespace facebook::react {
 
 template <>
 struct Bridging<JsErrorHandler::ProcessedError::StackFrame> {
-  static jsi::Value toJs(
+  static jsi::Object toJs(
       jsi::Runtime& runtime,
       const JsErrorHandler::ProcessedError::StackFrame& frame) {
     auto stackFrame = jsi::Object(runtime);
@@ -143,7 +143,7 @@ struct Bridging<JsErrorHandler::ProcessedError::StackFrame> {
 
 template <>
 struct Bridging<JsErrorHandler::ProcessedError> {
-  static jsi::Value toJs(
+  static jsi::Object toJs(
       jsi::Runtime& runtime,
       const JsErrorHandler::ProcessedError& error) {
     auto data = jsi::Object(runtime);
@@ -276,12 +276,6 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     message = *name + ": " + message;
   }
 
-  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
-
-  if (!isLooselyNull(jsEngineValue)) {
-    message += ", js engine: " + stringifyToCpp(runtime, jsEngineValue);
-  }
-
   auto extraDataKey = jsi::PropNameID::forUtf8(runtime, "RN$ErrorExtraDataKey");
   auto extraDataValue = errorObj.getProperty(runtime, extraDataKey);
 
@@ -290,6 +284,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     objectAssign(runtime, extraData, extraDataValue.asObject(runtime));
   }
 
+  auto jsEngineValue = errorObj.getProperty(runtime, "jsEngine");
   auto isDEV =
       isTruthy(runtime, runtime.global().getProperty(runtime, "__DEV__"));
 
@@ -341,18 +336,25 @@ void JsErrorHandler::handleErrorWithCppPipeline(
       .extraData = std::move(extraData),
   };
 
-  auto data = bridging::toJs(runtime, processedError).asObject(runtime);
+  auto data = bridging::toJs(runtime, processedError);
 
   auto isComponentError =
       isTruthy(runtime, errorObj.getProperty(runtime, "isComponentError"));
   data.setProperty(runtime, "isComponentError", isComponentError);
 
   if (logToConsole) {
-    auto console = runtime.global().getPropertyAsObject(runtime, "console");
-    auto errorFn = console.getPropertyAsFunction(runtime, "error");
-    auto finalMessage =
-        jsi::String::createFromUtf8(runtime, processedError.message);
-    errorFn.callWithThis(runtime, console, finalMessage);
+    try {
+      auto console = runtime.global().getPropertyAsObject(runtime, "console");
+      auto errorFn = console.getPropertyAsFunction(runtime, "error");
+      auto finalMessage =
+          jsi::String::createFromUtf8(runtime, processedError.message);
+      errorFn.callWithThis(runtime, console, finalMessage);
+    } catch (jsi::JSError& ex) {
+      logErrorWhileReporting(
+          "handleErrorWithCppPipeline(): Error while logToConsole: ",
+          ex,
+          error);
+    }
   }
 
   std::shared_ptr<bool> shouldPreventDefault = std::make_shared<bool>(false);

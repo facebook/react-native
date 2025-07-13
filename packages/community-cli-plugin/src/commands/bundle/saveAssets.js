@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {AssetData} from 'metro/src/Assets';
+import type {AssetData} from 'metro';
 
 import {
   cleanAssetCatalog,
@@ -17,12 +16,13 @@ import {
   isCatalogAsset,
   writeImageSet,
 } from './assetCatalogIOS';
+import createKeepFileAsync from './createKeepFileAsync';
 import filterPlatformAssetScales from './filterPlatformAssetScales';
 import getAssetDestPathAndroid from './getAssetDestPathAndroid';
 import getAssetDestPathIOS from './getAssetDestPathIOS';
-import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+import {styleText} from 'util';
 
 type CopiedFiles = {
   [src: string]: string,
@@ -65,7 +65,7 @@ async function saveAssets(
     const catalogDir = path.join(assetCatalogDest, 'RNAssets.xcassets');
     if (!fs.existsSync(catalogDir)) {
       console.error(
-        `${chalk.red('error')}: Could not find asset catalog 'RNAssets.xcassets' in ${assetCatalogDest}. Make sure to create it if it does not exist.`,
+        `${styleText('red', 'error')}: Could not find asset catalog 'RNAssets.xcassets' in ${assetCatalogDest}. Make sure to create it if it does not exist.`,
       );
       return;
     }
@@ -87,6 +87,9 @@ async function saveAssets(
     console.info('Done adding images to asset catalog');
   } else {
     assets.forEach(addAssetToCopy);
+  }
+  if (platform === 'android') {
+    await createKeepFileAsync(assets, assetsDest);
   }
 
   return copyAll(filesToCopy);

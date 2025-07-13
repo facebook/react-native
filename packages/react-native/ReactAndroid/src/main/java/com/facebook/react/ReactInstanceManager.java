@@ -28,9 +28,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JS_VM_CALLS;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.app.Activity;
 import android.content.Context;
@@ -56,12 +54,10 @@ import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.JSExceptionHandler;
-import com.facebook.react.bridge.JavaJSExecutor;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleRegistry;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
-import com.facebook.react.bridge.ProxyJavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactCxxErrorHandler;
@@ -78,8 +74,10 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
-import com.facebook.react.common.annotations.StableReactNativeAPI;
-import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -95,7 +93,7 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.interfaces.TaskInterface;
 import com.facebook.react.internal.AndroidChoreographerProvider;
 import com.facebook.react.internal.ChoreographerProvider;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManager;
 import com.facebook.react.internal.turbomodule.core.TurboModuleManagerDelegate;
 import com.facebook.react.modules.appearance.AppearanceModule;
@@ -144,8 +142,13 @@ import java.util.Set;
  * <p>To instantiate an instance of this class use {@link #builder}.
  */
 @ThreadSafe
-@StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManager {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "ReactInstanceManager", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();
 
@@ -269,8 +272,7 @@ public class ReactInstanceManager {
     mUseDeveloperSupport = useDeveloperSupport;
     mRequireActivity = requireActivity;
     mKeepActivity = keepActivity;
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.initDevSupportManager");
+    Systrace.beginSection(TRACE_TAG_REACT, "ReactInstanceManager.initDevSupportManager");
     mDevSupportManager =
         devSupportManagerFactory.create(
             applicationContext,
@@ -284,7 +286,7 @@ public class ReactInstanceManager {
             surfaceDelegateFactory,
             devLoadingViewManager,
             pausedInDebuggerOverlayManager);
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
     mBridgeIdleDebugListener = bridgeIdleDebugListener;
     mLifecycleState = initialLifecycleState;
     mMemoryPressureRouter = new MemoryPressureRouter(applicationContext);
@@ -326,11 +328,6 @@ public class ReactInstanceManager {
   private ReactInstanceDevHelper createDevHelperInterface() {
     return new ReactInstanceDevHelper() {
       @Override
-      public void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-        ReactInstanceManager.this.onReloadWithJSDebugger(jsExecutorFactory);
-      }
-
-      @Override
       public void onJSBundleLoadedFromServer() {
         ReactInstanceManager.this.onJSBundleLoadedFromServer();
       }
@@ -355,7 +352,7 @@ public class ReactInstanceManager {
         Activity currentActivity = getCurrentActivity();
         if (currentActivity != null) {
           ReactRootView rootView = new ReactRootView(currentActivity);
-          boolean isFabric = ReactNativeFeatureFlags.enableFabricRenderer();
+          boolean isFabric = ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer();
           rootView.setIsFabric(isFabric);
           rootView.startReactApplication(ReactInstanceManager.this, appKey, new Bundle());
           return rootView;
@@ -372,7 +369,7 @@ public class ReactInstanceManager {
       }
 
       @Override
-      public void reload(String s) {
+      public void reload(String reason) {
         // no-op not implemented for Bridge Mode
       }
 
@@ -415,15 +412,17 @@ public class ReactInstanceManager {
   }
 
   private void registerCxxErrorHandlerFunc() {
-    Class[] parameterTypes = new Class[1];
-    parameterTypes[0] = Exception.class;
-    Method handleCxxErrorFunc = null;
-    try {
-      handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
-    } catch (NoSuchMethodException e) {
-      FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
+    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+      Class[] parameterTypes = new Class[1];
+      parameterTypes[0] = Exception.class;
+      Method handleCxxErrorFunc = null;
+      try {
+        handleCxxErrorFunc = ReactInstanceManager.class.getMethod("handleCxxError", parameterTypes);
+      } catch (NoSuchMethodException e) {
+        FLog.e("ReactInstanceHolder", "Failed to set cxx error handler function", e);
+      }
+      ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
     }
-    ReactCxxErrorHandler.setHandleErrorFunc(this, handleCxxErrorFunc);
   }
 
   private void unregisterCxxErrorHandlerFunc() {
@@ -484,7 +483,7 @@ public class ReactInstanceManager {
 
     if (mUseDeveloperSupport && mJSMainModulePath != null) {
       final DeveloperSettings devSettings = mDevSupportManager.getDevSettings();
-      if (!Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+      if (!Systrace.isTracing(TRACE_TAG_REACT)) {
         if (mBundleLoader == null) {
           mDevSupportManager.handleReloadJS();
         } else {
@@ -502,14 +501,11 @@ public class ReactInstanceManager {
                         if (packagerIsRunning) {
                           mDevSupportManager.handleReloadJS();
                         } else if (mDevSupportManager.hasUpToDateJSBundleInCache()
-                            && !devSettings.isRemoteJSDebugEnabled()
                             && !mUseFallbackBundle) {
                           // If there is a up-to-date bundle downloaded from server,
                           // with remote JS debugging disabled, always use that.
                           onJSBundleLoadedFromServer();
                         } else {
-                          // If dev server is down, disable the remote JS debugging.
-                          devSettings.setRemoteJSDebugEnabled(false);
                           recreateReactContextInBackgroundFromBundleLoader();
                         }
                       });
@@ -652,9 +648,7 @@ public class ReactInstanceManager {
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
       if (mCurrentActivity == null) {
-        String message =
-            "ReactInstanceManager.onHostPause called with null activity, expected:"
-                + mCurrentActivity.getClass().getSimpleName();
+        String message = "ReactInstanceManager.onHostPause called with null activity";
         FLog.e(TAG, message);
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         for (StackTraceElement element : stackTrace) {
@@ -1013,7 +1007,7 @@ public class ReactInstanceManager {
   public List<ViewManager> getOrCreateViewManagers(
       ReactApplicationContext catalystApplicationContext) {
     ReactMarker.logMarker(CREATE_VIEW_MANAGERS_START);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAllViewManagers");
+    Systrace.beginSection(TRACE_TAG_REACT, "createAllViewManagers");
     try {
       if (mViewManagers == null) {
         synchronized (mPackages) {
@@ -1029,7 +1023,7 @@ public class ReactInstanceManager {
       }
       return mViewManagers;
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_VIEW_MANAGERS_END);
     }
   }
@@ -1059,7 +1053,7 @@ public class ReactInstanceManager {
   }
 
   public Collection<String> getViewManagerNames() {
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerNames");
+    Systrace.beginSection(TRACE_TAG_REACT, "ReactInstanceManager.getViewManagerNames");
     try {
       Collection<String> viewManagerNames = mViewManagerNames;
       if (viewManagerNames != null) {
@@ -1078,13 +1072,16 @@ public class ReactInstanceManager {
         if (mViewManagerNames == null) {
           Set<String> uniqueNames = new HashSet<>();
           for (ReactPackage reactPackage : mPackages) {
-            SystraceMessage.beginSection(
-                    TRACE_TAG_REACT_JAVA_BRIDGE, "ReactInstanceManager.getViewManagerName")
+            SystraceMessage.beginSection(TRACE_TAG_REACT, "ReactInstanceManager.getViewManagerName")
                 .arg("Package", reactPackage.getClass().getSimpleName())
                 .flush();
             if (reactPackage instanceof ViewManagerOnDemandReactPackage) {
               Collection<String> names =
                   ((ViewManagerOnDemandReactPackage) reactPackage).getViewManagerNames(context);
+              // When converting this class to Kotlin, you need to retain this null check
+              // or wrap around a try/catch otherwise this will cause a crash for OSS libraries
+              // that are not migrated to Kotlin yet and are returning null for
+              // `getViewManagerNames`
               if (names != null) {
                 uniqueNames.addAll(names);
               }
@@ -1095,14 +1092,14 @@ public class ReactInstanceManager {
                       + " loaded",
                   reactPackage.getClass().getSimpleName());
             }
-            Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+            Systrace.endSection(TRACE_TAG_REACT);
           }
           mViewManagerNames = uniqueNames;
         }
         return mViewManagerNames;
       }
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
     }
   }
 
@@ -1121,7 +1118,6 @@ public class ReactInstanceManager {
   /**
    * @return current ReactApplicationContext
    */
-  @VisibleForTesting
   public @Nullable ReactContext getCurrentReactContext() {
     synchronized (mReactContextLock) {
       return mCurrentReactContext;
@@ -1153,16 +1149,6 @@ public class ReactInstanceManager {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.invalidate()");
     mInstanceManagerInvalidated = true;
     destroy();
-  }
-
-  @ThreadConfined(UI)
-  private void onReloadWithJSDebugger(JavaJSExecutor.Factory jsExecutorFactory) {
-    FLog.d(ReactConstants.TAG, "ReactInstanceManager.onReloadWithJSDebugger()");
-    recreateReactContextInBackground(
-        new ProxyJavaScriptExecutor.Factory(jsExecutorFactory),
-        JSBundleLoader.createRemoteDebuggerBundleLoader(
-            mDevSupportManager.getJSBundleURLForRemoteDebugging(),
-            mDevSupportManager.getSourceUrl()));
   }
 
   @ThreadConfined(UI)
@@ -1276,7 +1262,7 @@ public class ReactInstanceManager {
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.setupReactContext()");
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
+    Systrace.beginSection(TRACE_TAG_REACT, "setupReactContext");
     synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         mCurrentReactContext = Assertions.assertNotNull(reactContext);
@@ -1326,7 +1312,7 @@ public class ReactInstanceManager {
     reactContext.runOnNativeModulesQueueThread(
         () -> Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT));
 
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_END);
     // Mark end of bridge loading
     ReactMarker.logMarker(ReactMarkerConstants.REACT_BRIDGE_LOADING_END);
@@ -1339,7 +1325,7 @@ public class ReactInstanceManager {
       return;
     }
 
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
+    Systrace.beginSection(TRACE_TAG_REACT, "attachRootViewToInstance");
 
     @Nullable
     UIManager uiManager =
@@ -1377,15 +1363,14 @@ public class ReactInstanceManager {
       reactRoot.runApplication();
     }
 
-    Systrace.beginAsyncSection(
-        TRACE_TAG_REACT_JAVA_BRIDGE, "pre_rootView.onAttachedToReactInstance", rootTag);
+    Systrace.beginAsyncSection(TRACE_TAG_REACT, "pre_rootView.onAttachedToReactInstance", rootTag);
     UiThreadUtil.runOnUiThread(
         () -> {
           Systrace.endAsyncSection(
-              TRACE_TAG_REACT_JAVA_BRIDGE, "pre_rootView.onAttachedToReactInstance", rootTag);
+              TRACE_TAG_REACT, "pre_rootView.onAttachedToReactInstance", rootTag);
           reactRoot.onStage(ReactStage.ON_ATTACH_TO_INSTANCE);
         });
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
   }
 
   private void detachRootViewFromInstance(ReactRoot reactRoot, ReactContext reactContext) {
@@ -1478,12 +1463,12 @@ public class ReactInstanceManager {
 
     ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_START);
     // CREATE_CATALYST_INSTANCE_END is in JSCExecutor.cpp
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstance");
+    Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstance");
     final CatalystInstance catalystInstance;
     try {
       catalystInstance = catalystInstanceBuilder.build();
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_CATALYST_INSTANCE_END);
     }
 
@@ -1496,7 +1481,7 @@ public class ReactInstanceManager {
     // architecture so it will always be there.
     catalystInstance.getRuntimeScheduler();
 
-    if (ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
+    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
               .setPackages(mPackages)
@@ -1531,15 +1516,14 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
-    if (BuildConfig.ENABLE_PERFETTO
-        || Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+    if (BuildConfig.ENABLE_PERFETTO || Systrace.isTracing(TRACE_TAG_REACT)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
 
     ReactMarker.logMarker(ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "runJSBundle");
+    Systrace.beginSection(TRACE_TAG_REACT, "runJSBundle");
     catalystInstance.runJSBundle();
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
     return reactContext;
   }
@@ -1553,23 +1537,23 @@ public class ReactInstanceManager {
 
     synchronized (mPackages) {
       for (ReactPackage reactPackage : packages) {
-        Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createAndProcessCustomReactPackage");
+        Systrace.beginSection(TRACE_TAG_REACT, "createAndProcessCustomReactPackage");
         try {
           processPackage(reactPackage, nativeModuleRegistryBuilder);
         } finally {
-          Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+          Systrace.endSection(TRACE_TAG_REACT);
         }
       }
     }
     ReactMarker.logMarker(PROCESS_PACKAGES_END);
 
     ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_START);
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "buildNativeModuleRegistry");
+    Systrace.beginSection(TRACE_TAG_REACT, "buildNativeModuleRegistry");
     NativeModuleRegistry nativeModuleRegistry;
     try {
       nativeModuleRegistry = nativeModuleRegistryBuilder.build();
     } finally {
-      Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(TRACE_TAG_REACT);
       ReactMarker.logMarker(BUILD_NATIVE_MODULE_REGISTRY_END);
     }
 
@@ -1578,7 +1562,7 @@ public class ReactInstanceManager {
 
   private void processPackage(
       ReactPackage reactPackage, NativeModuleRegistryBuilder nativeModuleRegistryBuilder) {
-    SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "processPackage")
+    SystraceMessage.beginSection(TRACE_TAG_REACT, "processPackage")
         .arg("className", reactPackage.getClass().getSimpleName())
         .flush();
     if (reactPackage instanceof ReactPackageLogger) {
@@ -1589,7 +1573,7 @@ public class ReactInstanceManager {
     if (reactPackage instanceof ReactPackageLogger) {
       ((ReactPackageLogger) reactPackage).endProcessPackage();
     }
-    SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
+    SystraceMessage.endSection(TRACE_TAG_REACT).flush();
   }
 
   private static class InspectorTargetDelegateImpl

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -14,8 +14,9 @@ import typeof INativeAppearance from './NativeAppearance';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import EventEmitter from '../vendor/emitter/EventEmitter';
-import {isAsyncDebugging} from './DebugEnvironment';
 import invariant from 'invariant';
+
+export type {AppearancePreferences};
 
 type Appearance = {
   colorScheme: ?ColorSchemeName,
@@ -74,13 +75,6 @@ function getState(): $NonMaybeType<typeof lazyState> {
  * the `useColorScheme` hook.
  */
 export function getColorScheme(): ?ColorSchemeName {
-  if (__DEV__) {
-    if (isAsyncDebugging) {
-      // Hard code light theme when using the async debugger as
-      // sync calls aren't supported
-      return 'light';
-    }
-  }
   let colorScheme = null;
   const state = getState();
   const {NativeAppearance} = state;

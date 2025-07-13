@@ -1173,7 +1173,7 @@ TEST_P(JSITest, DecoratorTest) {
 
   class CountRuntime final : public WithRuntimeDecorator<Count> {
    public:
-    explicit CountRuntime(std::unique_ptr<Runtime> rt)
+    explicit CountRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<Count>(*rt, count_),
           rt_(std::move(rt)),
           count_(kInit) {}
@@ -1183,7 +1183,7 @@ TEST_P(JSITest, DecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     Count count_;
   };
 
@@ -1222,7 +1222,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
   class MultiRuntime final
       : public WithRuntimeDecorator<std::tuple<Inc, Nest>> {
    public:
-    explicit MultiRuntime(std::unique_ptr<Runtime> rt)
+    explicit MultiRuntime(std::shared_ptr<Runtime> rt)
         : WithRuntimeDecorator<std::tuple<Inc, Nest>>(*rt, tuple_),
           rt_(std::move(rt)) {}
 
@@ -1234,7 +1234,7 @@ TEST_P(JSITest, MultiDecoratorTest) {
     }
 
    private:
-    std::unique_ptr<Runtime> rt_;
+    std::shared_ptr<Runtime> rt_;
     std::tuple<Inc, Nest> tuple_;
   };
 
@@ -1576,7 +1576,7 @@ TEST_P(JSITest, UTF8ExceptionTest) {
   }
 }
 
-TEST_P(JSITest, UTF16Test) {
+TEST_P(JSITest, UTF16ConversionTest) {
   // This Runtime Decorator is used to test the conversion from UTF-8 to UTF-16
   // in the default utf16 method for runtimes that do not provide their own
   // utf16 implementation.
@@ -1601,14 +1601,19 @@ TEST_P(JSITest, UTF16Test) {
   rd.utf8Str = "foobar";
   EXPECT_EQ(str.utf16(rd), u"foobar");
 
-  rd.utf8Str = "你好";
-  EXPECT_EQ(str.utf16(rd), u"你好");
+  // 你 in UTF-8 encoding is 0xe4 0xbd 0xa0 and 好 is 0xe5 0xa5 0xbd
+  // 你 in UTF-16 encoding is 0x4f60 and 好 is 0x597d
+  rd.utf8Str = "\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"\x4f60\x597d");
 
-  rd.utf8Str = "👍";
-  EXPECT_EQ(str.utf16(rd), u"👍");
+  // 👍 in UTF-8 encoding is 0xf0 0x9f 0x91 0x8d
+  // 👍 in UTF-16 encoding is 0xd83d 0xdc4d
+  rd.utf8Str = "\xf0\x9f\x91\x8d";
+  EXPECT_EQ(str.utf16(rd), u"\xd83d\xdc4d");
 
-  rd.utf8Str = "foobar👍你好";
-  EXPECT_EQ(str.utf16(rd), u"foobar👍你好");
+  // String is foobar👍你好
+  rd.utf8Str = "foobar\xf0\x9f\x91\x8d\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"foobar\xd83d\xdc4d\x4f60\x597d");
 
   // String ended before second byte of the encoding
   rd.utf8Str = "\xcf";
@@ -1635,6 +1640,50 @@ TEST_P(JSITest, UTF16Test) {
   EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
 }
 
+TEST_P(JSITest, CreateFromUtf16Test) {
+  // This Runtime Decorator is used to test the default createStringFromUtf16
+  // and createPropNameIDFromUtf16 implementation for VMs that do not provide
+  // their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    String createStringFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createStringFromUtf16(utf16, length);
+    }
+
+    PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createPropNameIDFromUtf16(utf16, length);
+    }
+  };
+
+  RD rd = RD(rt);
+  std::u16string utf16 = u"foobar";
+
+  auto jsString = String::createFromUtf16(rd, utf16);
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  auto prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  // 👋 in UTF-16 encoding is 0xd83d 0xdc4b
+  utf16 = u"hello!\xd83d\xdc4b";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  utf16 = u"\xd83d";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  /// We need to use charCodeAt instead of UTF16 because the default
+  /// implementation of UTF16 converts to UTF8, then to UTF16, so we will lose
+  /// the lone surrogate value.
+  rd.global().setProperty(rd, "loneSurrogate", jsString);
+  auto cp = eval("loneSurrogate.charCodeAt(0)").getNumber();
+  EXPECT_EQ(cp, 55357); // 0xD83D in decimal
+}
+
 TEST_P(JSITest, GetStringDataTest) {
   // This Runtime Decorator is used to test the default getStringData
   // implementation for VMs that do not provide their own implementation
@@ -1652,7 +1701,8 @@ TEST_P(JSITest, GetStringDataTest) {
   };
 
   RD rd = RD(rt);
-  String str = String::createFromUtf8(rd, "hello👋");
+  // 👋 in UTF8 encoding is 0xf0 0x9f 0x91 0x8b
+  String str = String::createFromUtf8(rd, "hello\xf0\x9f\x91\x8b");
 
   std::u16string buf;
   auto cb = [&buf](bool ascii, const void* data, size_t num) {
@@ -1721,6 +1771,113 @@ TEST_P(JSITest, ObjectCreateWithPrototype) {
   // Tests null value as prototype
   child = Object::create(rd, Value::null());
   EXPECT_TRUE(child.getPrototype(rd).isNull());
+}
+
+TEST_P(JSITest, SetRuntimeData) {
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setRuntimeDataImpl(
+        const UUID& uuid,
+        const void* data,
+        void (*deleter)(const void* data)) override {
+      Runtime::setRuntimeDataImpl(uuid, data, deleter);
+    }
+
+    const void* getRuntimeDataImpl(const UUID& uuid) override {
+      return Runtime::getRuntimeDataImpl(uuid);
+    }
+  };
+
+  RD rd1 = RD(rt);
+  UUID uuid1{0xe67ab3d6, 0x09a0, 0x11f0, 0xa641, 0x325096b39f47};
+  auto str = std::make_shared<std::string>("hello world");
+  rd1.setRuntimeData(uuid1, str);
+
+  UUID uuid2{0xa12f99fc, 0x09a2, 0x11f0, 0x84de, 0x325096b39f47};
+  auto obj1 = std::make_shared<Object>(rd1);
+  rd1.setRuntimeData(uuid2, obj1);
+
+  auto storedStr =
+      std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  auto storedObj = std::static_pointer_cast<Object>(rd1.getRuntimeData(uuid2));
+  EXPECT_EQ(storedStr, str);
+  EXPECT_EQ(storedObj, obj1);
+
+  // Override the existing value at uuid1
+  auto weakOldStr = std::weak_ptr<std::string>(str);
+  str = std::make_shared<std::string>("goodbye world");
+  rd1.setRuntimeData(uuid1, str);
+  storedStr = std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  EXPECT_EQ(str, storedStr);
+  // Verify that the old data was not held on after it was overwritten.
+  EXPECT_EQ(weakOldStr.use_count(), 0);
+
+  auto rt2 = factory();
+  RD* rd2 = new RD(*rt2);
+  UUID uuid3{0x16f55892, 0x1034, 0x11f0, 0x8f65, 0x325096b39f47};
+  auto obj2 = std::make_shared<Object>(*rd2);
+  rd2->setRuntimeData(uuid3, obj2);
+
+  auto storedObj2 =
+      std::static_pointer_cast<Object>(rd2->getRuntimeData(uuid3));
+  EXPECT_EQ(storedObj2, obj2);
+
+  // UUID1 is for some data in runtime rd1, not rd2
+  EXPECT_FALSE(rd2->getRuntimeData(uuid1));
+
+  // Verify that when runtime is deleted, its runtime data map gets removed from
+  // the global map. So nothing should be holding on to the stored data.
+  auto weakObj2 = std::weak_ptr<Object>(obj2);
+  obj2.reset();
+  storedObj2.reset();
+  delete rd2;
+  rt2.reset();
+  EXPECT_EQ(weakObj2.use_count(), 0);
+
+  // Only the second runtime was destroyed, so custom data from the first
+  // runtime should remain unaffected.
+  storedStr = std::static_pointer_cast<std::string>(rd1.getRuntimeData(uuid1));
+  EXPECT_EQ(storedStr, str);
+
+  // Overwrite Object.defineProperty, which is called in the default
+  // implementation of setRuntimeDataImpl, to test that even if the JSI
+  // operations on this secret property fail, we are still able to properly
+  // clean up the custom data.
+  auto rt3 = factory();
+  RD* rd3 = new RD(*rt3);
+  UUID uuid4{0xa5682986, 0x1edc, 0x11f0, 0xa4fa, 0x325096b39f47};
+  rd3->global()
+      .getPropertyAsObject(*rd3, "Object")
+      .setProperty(*rd3, "defineProperty", Value(false));
+
+  auto obj3 = std::make_shared<Object>(*rd3);
+  auto weakObj3 = std::weak_ptr<Object>(obj3);
+  EXPECT_THROW(rd3->setRuntimeData(uuid4, obj3), JSIException);
+  obj3.reset();
+  delete rd3;
+  rt3.reset();
+  EXPECT_EQ(weakObj3.use_count(), 0);
+}
+
+TEST_P(JSITest, CastInterface) {
+  // This Runtime Decorator is used to test the default implementation of
+  // jsi::Runtime::castInterface
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    ICast* castInterface(const UUID& interfaceUuid) override {
+      return Runtime::castInterface(interfaceUuid);
+    }
+  };
+
+  RD rd = RD(rt);
+  auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
+  auto ptr = rd.castInterface(randomUuid);
+
+  EXPECT_EQ(ptr, nullptr);
 }
 
 INSTANTIATE_TEST_CASE_P(

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -14,7 +14,7 @@ const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Text, View} = require('react-native');
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 class AccessibilityIOSExample extends React.Component<Props> {
   render(): React.Node {
     return (

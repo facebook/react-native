@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
@@ -50,7 +51,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void loadScript(
       std::unique_ptr<const JSBigString> script,
       const std::string& sourceURL,
-      std::function<void(jsi::Runtime& runtime)>&& completion = nullptr);
+      std::function<void(jsi::Runtime& runtime)>&& beforeLoad = nullptr,
+      std::function<void(jsi::Runtime& runtime)>&& afterLoad = nullptr);
 
   void registerSegment(uint32_t segmentId, const std::string& segmentPath);
 

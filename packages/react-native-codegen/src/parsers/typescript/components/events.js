@@ -41,6 +41,7 @@ const {
 } = require('../../parsers-primitives');
 const {parseTopLevelType} = require('../parseTopLevelType');
 const {flattenProperties} = require('./componentsUtils');
+
 function getPropertyType(
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
@@ -51,7 +52,7 @@ function getPropertyType(
   annotation,
   parser: Parser,
 ): NamedShape<EventTypeAnnotation> {
-  const topLevelType = parseTopLevelType(annotation);
+  const topLevelType = parseTopLevelType(annotation, parser);
   const typeAnnotation = topLevelType.type;
   const optional = optionalProperty || topLevelType.optional;
   const type =
@@ -247,6 +248,7 @@ function buildEventSchema(
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
+    parser,
     types,
   );
 

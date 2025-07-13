@@ -5,25 +5,37 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "RuntimeScheduler.h"
+#include "Task.h"
+#include <atomic>
 
 namespace facebook::react {
+
+namespace {
+
+inline uint64_t getNextId() noexcept {
+  static std::atomic<uint64_t> nextId = 1;
+  return nextId++;
+}
+
+} // namespace
 
 Task::Task(
     SchedulerPriority priority,
     jsi::Function&& callback,
-    std::chrono::steady_clock::time_point expirationTime)
+    HighResTimeStamp expirationTime)
     : priority(priority),
       callback(std::move(callback)),
-      expirationTime(expirationTime) {}
+      expirationTime(expirationTime),
+      id(getNextId()) {}
 
 Task::Task(
     SchedulerPriority priority,
     RawCallback&& callback,
-    std::chrono::steady_clock::time_point expirationTime)
+    HighResTimeStamp expirationTime)
     : priority(priority),
       callback(std::move(callback)),
-      expirationTime(expirationTime) {}
+      expirationTime(expirationTime),
+      id(getNextId()) {}
 
 jsi::Value Task::execute(jsi::Runtime& runtime, bool didUserCallbackTimeout) {
   auto result = jsi::Value::undefined();

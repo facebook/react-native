@@ -9,25 +9,24 @@
 
 #include "RAMBundleRegistry.h"
 
-#include <folly/Conv.h>
 #include <jsinspector-modern/ReactCdp.h>
-#include <react/timing/primitives.h>
 
-#include <chrono>
+#include <array>
 
 namespace facebook::react {
 
 std::string JSExecutor::getSyntheticBundlePath(
     uint32_t bundleId,
     const std::string& bundlePath) {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   if (bundleId == RAMBundleRegistry::MAIN_BUNDLE_ID) {
     return bundlePath;
   }
-  return folly::to<std::string>("seg-", bundleId, ".js");
-}
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
-double JSExecutor::performanceNow() {
-  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
+  std::array<char, 32> buffer{};
+  std::snprintf(buffer.data(), buffer.size(), "seg-%u.js", bundleId);
+  return buffer.data();
 }
 
 jsinspector_modern::RuntimeTargetDelegate&

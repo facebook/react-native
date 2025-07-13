@@ -17,8 +17,7 @@
 #import <React/RCTModuleMethod.h>
 #import <React/RCTParserUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -123,6 +122,15 @@ std::vector<ExportedMethod> parseExportedMethods(std::string moduleName, Class m
     NSArray<RCTMethodArgument *> *arguments;
     SEL objCMethodSelector = NSSelectorFromString(RCTParseMethodSignature(methodInfo->objcName, &arguments));
     NSMethodSignature *objCMethodSignature = [moduleClass instanceMethodSignatureForSelector:objCMethodSelector];
+    if (objCMethodSignature == nullptr) {
+      RCTLogWarn(
+          @"The objective-c `%s` method signature for the JS method `%@` can not be found in the ObjecitveC definition of the %s module.\nThe `%@` JS method will not be available.",
+          methodInfo->objcName,
+          jsMethodName,
+          moduleName.c_str(),
+          jsMethodName);
+      continue;
+    }
     std::string objCMethodReturnType = [objCMethodSignature methodReturnType];
 
     if (objCMethodSignature.numberOfArguments - 2 != [arguments count]) {
@@ -259,12 +267,15 @@ jsi::Value ObjCInteropTurboModule::create(jsi::Runtime &runtime, const jsi::Prop
               if (!this->constantsCache_.isUndefined()) {
                 return jsi::Value(rt, this->constantsCache_);
               }
+              const std::string &methodName = this->methodDescriptors_[i].methodName;
+              NSString *moduleName = [[this->instance_ class] description];
+              this->_logLegacyArchitectureWarning(moduleName, methodName);
 
               // TODO: Dispatch getConstants to the main queue, if the module requires main queue setup
               jsi::Value ret = this->invokeObjCMethod(
                   rt,
                   this->methodDescriptors_[i].jsReturnKind,
-                  this->methodDescriptors_[i].methodName,
+                  methodName,
                   this->methodDescriptors_[i].selector,
                   args,
                   count);
@@ -296,10 +307,14 @@ jsi::Value ObjCInteropTurboModule::create(jsi::Runtime &runtime, const jsi::Prop
           propName,
           static_cast<unsigned int>(methodDescriptors_[i].jsArgCount),
           [this, i](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+            const std::string &methodName = this->methodDescriptors_[i].methodName;
+            NSString *moduleName = [[this->instance_ class] description];
+            this->_logLegacyArchitectureWarning(moduleName, methodName);
+
             return this->invokeObjCMethod(
                 rt,
                 this->methodDescriptors_[i].jsReturnKind,
-                this->methodDescriptors_[i].methodName,
+                methodName,
                 this->methodDescriptors_[i].selector,
                 args,
                 count);
@@ -316,6 +331,26 @@ jsi::Value ObjCInteropTurboModule::create(jsi::Runtime &runtime, const jsi::Prop
   }
 
   return constant;
+}
+
+void ObjCInteropTurboModule::_logLegacyArchitectureWarning(NSString *moduleName, const std::string &methodName)
+{
+  if (!RCTAreLegacyLogsEnabled()) {
+    return;
+  }
+
+  std::string separator = std::string(".");
+
+  std::string moduleInvocation = [moduleName cStringUsingEncoding:NSUTF8StringEncoding] + separator + methodName;
+  if (warnedModuleInvocation_.find(moduleInvocation) == warnedModuleInvocation_.end()) {
+    RCTLogWarn(
+        @"The `%@` module is invoking the `%s` method using the TurboModule interop layer. This is part of the compatibility layer with the Legacy Architecture. If `%@` is a local module, please migrate it to be a Native Module as described at https://reactnative.dev/docs/next/turbo-native-modules-introduction. If `%@` is a third party dependency, please open an issue in the library repository.",
+        moduleName,
+        methodName.c_str(),
+        moduleName,
+        moduleName);
+    warnedModuleInvocation_.insert(moduleInvocation);
+  }
 }
 
 void ObjCInteropTurboModule::setInvocationArg(
@@ -337,7 +372,7 @@ void ObjCInteropTurboModule::setInvocationArg(
   SEL selector = selectorForType(argumentType);
 
   if ([RCTConvert respondsToSelector:selector]) {
-    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     if (objCArgType == @encode(char)) {
       char arg = RCTConvertTo<char>(selector, objCArg);
@@ -437,6 +472,15 @@ void ObjCInteropTurboModule::setInvocationArg(
 
     if (objCArgType == @encode(id)) {
       id arg = RCTConvertTo<id>(selector, objCArg);
+
+      // Handle the special case where there is an argument and it must be nil
+      // Without this check, the JS side will receive an object.
+      // See: discussion at
+      // https://github.com/facebook/react-native/pull/49250#issuecomment-2668465893
+      if (arg == [NSNull null]) {
+        return;
+      }
+
       if (arg) {
         [retainedObjectsForInvocation addObject:arg];
       }
@@ -491,7 +535,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock arg =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     if (arg) {
       [retainedObjectsForInvocation addObject:arg];
     }
@@ -506,7 +550,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock senderBlock =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     RCTResponseErrorBlock arg = ^(NSError *error) {
       senderBlock(@[ RCTJSErrorFromNSError(error) ]);
     };
@@ -536,7 +580,7 @@ void ObjCInteropTurboModule::setInvocationArg(
           runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
     }
 
-    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
     RCTManagedPointer *box = convert([RCTCxxConvert class], selector, arg);
@@ -650,5 +694,4 @@ std::vector<facebook::jsi::PropNameID> ObjCInteropTurboModule::getPropertyNames(
   return propNames;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

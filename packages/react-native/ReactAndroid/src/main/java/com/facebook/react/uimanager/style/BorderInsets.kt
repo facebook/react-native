@@ -16,11 +16,11 @@ import com.facebook.react.modules.i18nmanager.I18nUtil
 internal class BorderInsets {
   private val edgeInsets = arrayOfNulls<Float?>(LogicalEdge.values().size)
 
-  public fun setBorderWidth(edge: LogicalEdge, width: Float?) {
+  fun setBorderWidth(edge: LogicalEdge, width: Float?) {
     edgeInsets[edge.ordinal] = width
   }
 
-  public fun resolve(
+  fun resolve(
       layoutDirection: Int,
       context: Context,
   ): RectF {

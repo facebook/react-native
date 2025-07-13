@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<37e95652ef5d824bb05e78ebdb051e43>>
+ * @generated SignedSource<<a0c97a9338cbe91cc3de4db2fa5f27d2>>
  * @flow strict
+ * @noformat
  */
 
 /**
@@ -25,50 +26,61 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
-  +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
-  +disableEventLoopOnBridgeless?: () => boolean;
+  +cxxNativeAnimatedEnabled?: () => boolean;
+  +cxxNativeAnimatedRemoveJsSync?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
+  +disableTextLayoutManagerCacheAndroid?: () => boolean;
+  +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
+  +enableAndroidTextMeasurementOptimizations?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
-  +enableDeletionOfUnmountedViews?: () => boolean;
+  +enableCustomFocusSearchOnClippedElementsAndroid?: () => boolean;
+  +enableDestroyShadowTreeRevisionAsync?: () => boolean;
+  +enableDoubleMeasurementFixAndroid?: () => boolean;
+  +enableEagerMainQueueModulesOnIOS?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
-  +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
-  +enableFixForViewCommandRace?: () => boolean;
-  +enableGranularShadowTreeStateReconciliation?: () => boolean;
+  +enableFixForParentTagDuringReparenting?: () => boolean;
+  +enableFontScaleChangesUpdatingLayout?: () => boolean;
+  +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
-  +enableImagePrefetchingAndroid?: () => boolean;
+  +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
-  +enableLongTaskAPI?: () => boolean;
+  +enableMainQueueCoordinatorOnIOS?: () => boolean;
+  +enableModuleArgumentNSNullConversionIOS?: () => boolean;
+  +enableNativeCSSParsing?: () => boolean;
+  +enableNetworkEventReporting?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;
-  +enablePreciseSchedulingForPremountItemsOnAndroid?: () => boolean;
+  +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
-  +enableReportEventPaintTime?: () => boolean;
+  +enableResourceTimingAPI?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
-  +enableUIConsistency?: () => boolean;
+  +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
-  +excludeYogaFromRawProps?: () => boolean;
-  +fixDifferentiatorEmittingUpdatesWithWrongParentTag?: () => boolean;
+  +enableViewRecyclingForText?: () => boolean;
+  +enableViewRecyclingForView?: () => boolean;
+  +enableVirtualViewDebugFeatures?: () => boolean;
+  +enableVirtualViewRenderState?: () => boolean;
+  +enableVirtualViewWindowFocusDetection?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
-  +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
-  +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
-  +lazyAnimationCallbacks?: () => boolean;
-  +loadVectorDrawablesOnImages?: () => boolean;
+  +fuseboxNetworkInspectionEnabled?: () => boolean;
+  +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +preparedTextCacheSize?: () => number;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
-  +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
-  +useOptimisedViewPreallocationOnAndroid?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;
-  +useRuntimeShadowNodeReferenceUpdate?: () => boolean;
+  +useShadowNodeStateOnClone?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
+  +virtualViewPrerenderRatio?: () => number;
 }
 
 const NativeReactNativeFeatureFlags: ?Spec = TurboModuleRegistry.get<Spec>(

@@ -21,6 +21,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -38,7 +41,13 @@ import java.util.Map;
  * A class that is used to receive React commands from JS and translate them into a shadow node
  * hierarchy that is then mapped to a native view hierarchy.
  */
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class UIImplementation {
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "UIImplementation", LegacyArchitectureLogLevel.ERROR);
+  }
+
   protected Object uiImplementationThreadLock = new Object();
 
   protected final EventDispatcher mEventDispatcher;
@@ -603,8 +612,7 @@ public class UIImplementation {
 
   /** Invoked at the end of the transaction to commit any updates to the node hierarchy. */
   public void dispatchViewUpdates(int batchId) {
-    SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.dispatchViewUpdates")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "UIImplementation.dispatchViewUpdates")
         .arg("batchId", batchId)
         .flush();
     final long commitStartTime = SystemClock.uptimeMillis();
@@ -613,7 +621,7 @@ public class UIImplementation {
       mNativeViewHierarchyOptimizer.onBatchComplete();
       mOperationsQueue.dispatchViewUpdates(batchId, commitStartTime, mLastCalculateLayoutTime);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -629,8 +637,7 @@ public class UIImplementation {
   }
 
   protected void updateViewHierarchy() {
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.updateViewHierarchy");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "UIImplementation.updateViewHierarchy");
     try {
       for (int i = 0; i < mShadowNodeRegistry.getRootNodeCount(); i++) {
         int tag = mShadowNodeRegistry.getRootTag(i);
@@ -638,19 +645,18 @@ public class UIImplementation {
 
         if (cssRoot.getWidthMeasureSpec() != null && cssRoot.getHeightMeasureSpec() != null) {
           SystraceMessage.beginSection(
-                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-                  "UIImplementation.notifyOnBeforeLayoutRecursive")
+                  Systrace.TRACE_TAG_REACT, "UIImplementation.notifyOnBeforeLayoutRecursive")
               .arg("rootTag", cssRoot.getReactTag())
               .flush();
           try {
             notifyOnBeforeLayoutRecursive(cssRoot);
           } finally {
-            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            Systrace.endSection(Systrace.TRACE_TAG_REACT);
           }
 
           calculateRootLayout(cssRoot);
           SystraceMessage.beginSection(
-                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIImplementation.applyUpdatesRecursive")
+                  Systrace.TRACE_TAG_REACT, "UIImplementation.applyUpdatesRecursive")
               .arg("rootTag", cssRoot.getReactTag())
               .flush();
           try {
@@ -669,7 +675,7 @@ public class UIImplementation {
             }
 
           } finally {
-            Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            Systrace.endSection(Systrace.TRACE_TAG_REACT);
           }
 
           if (mLayoutUpdateListener != null) {
@@ -678,7 +684,7 @@ public class UIImplementation {
         }
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -912,7 +918,7 @@ public class UIImplementation {
   }
 
   protected void calculateRootLayout(ReactShadowNode cssRoot) {
-    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "cssRoot.calculateLayout")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "cssRoot.calculateLayout")
         .arg("rootTag", cssRoot.getReactTag())
         .flush();
     long startTime = SystemClock.uptimeMillis();
@@ -927,7 +933,7 @@ public class UIImplementation {
               ? YogaConstants.UNDEFINED
               : MeasureSpec.getSize(heightSpec));
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
       mLastCalculateLayoutTime = SystemClock.uptimeMillis() - startTime;
     }
   }

@@ -34,13 +34,15 @@ class PrepareBoostTaskTest {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
+    val boostThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/boost/")
     val task =
         createTestTask<PrepareBoostTask>(project = project) {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
-    File(project.projectDir, "src/main/jni/third-party/boost/CMakeLists.txt").apply {
+    File(boostThirdPartyJniPath, "CMakeLists.txt").apply {
       parentFile.mkdirs()
       createNewFile()
     }
@@ -52,10 +54,12 @@ class PrepareBoostTaskTest {
   @Test
   fun prepareBoostTask_copiesAsmFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask>() {
+        createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -71,10 +75,12 @@ class PrepareBoostTaskTest {
   @Test
   fun prepareBoostTask_copiesBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -90,10 +96,12 @@ class PrepareBoostTaskTest {
   @Test
   fun prepareBoostTask_copiesVersionlessBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }

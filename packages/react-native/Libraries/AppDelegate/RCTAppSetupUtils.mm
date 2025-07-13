@@ -54,6 +54,12 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
+NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
+{
+  // For oss, insert core main queue setup modules here
+  return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
+}
+
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
 {
   // private block used to filter out modules depending on protocol conformance
@@ -130,38 +136,35 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
-#if USE_HERMES
+  auto runtimeInstallerLambda = [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge || !turboModuleManager) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+    [turboModuleManager installJSBindings:runtime];
+  };
+#if USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
-  return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller(
-          [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-            if (!bridge || !turboModuleManager) {
-              return;
-            }
-            if (runtimeScheduler) {
-              facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-            }
-            [turboModuleManager installJSBindings:runtime];
-          }));
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#endif
 }
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
-#if USE_HERMES
+  auto runtimeInstallerLambda = [bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+  };
+#if USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
-  return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-        if (!bridge) {
-          return;
-        }
-        if (runtimeScheduler) {
-          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-        }
-      }));
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#endif
 }

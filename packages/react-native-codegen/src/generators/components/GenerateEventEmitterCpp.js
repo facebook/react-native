@@ -68,11 +68,11 @@ const ComponentTemplate = ({
   dispatchEventName: string,
   implementation: string,
 }) => {
-  const capture = implementation.includes('$event')
-    ? '$event=std::move($event)'
+  const capture = implementation.includes('event')
+    ? 'event=std::move(event)'
     : '';
   return `
-void ${className}EventEmitter::${eventName}(${structName} $event) const {
+void ${className}EventEmitter::${eventName}(${structName} event) const {
   dispatchEvent("${dispatchEventName}", [${capture}](jsi::Runtime &runtime) {
     ${implementation}
   });
@@ -103,7 +103,7 @@ function generateSetter(
   valueMapper: string => string = value => value,
 ) {
   const eventChain = usingEvent
-    ? `$event.${[...propertyParts, propertyName].join('.')}`
+    ? `event.${[...propertyParts, propertyName].join('.')}`
     : [...propertyParts, propertyName].join('.');
   return `${variableName}.setProperty(runtime, "${propertyName}", ${valueMapper(
     eventChain,
@@ -156,7 +156,7 @@ function generateArraySetter(
   usingEvent: boolean,
 ): string {
   const eventChain = usingEvent
-    ? `$event.${[...propertyParts, propertyName].join('.')}`
+    ? `event.${[...propertyParts, propertyName].join('.')}`
     : [...propertyParts, propertyName].join('.');
   const indexVar = `${propertyName}Index`;
   const innerLoopVar = `${propertyName}Value`;
@@ -376,14 +376,14 @@ function generateEvent(
 
   if (event.typeAnnotation.argument) {
     const implementation = `
-    auto $payload = jsi::Object(runtime);
+    auto payload = jsi::Object(runtime);
     ${generateSetters(
-      '$payload',
+      'payload',
       event.typeAnnotation.argument.properties,
       [],
       extraIncludes,
     )}
-    return $payload;
+    return payload;
   `.trim();
 
     if (!event.name.startsWith('on')) {
@@ -430,6 +430,7 @@ module.exports = {
         return components;
       })
       .filter(Boolean)
+      // $FlowFixMe[unsafe-object-assign]
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const extraIncludes = new Set<string>();

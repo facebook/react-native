@@ -8,10 +8,11 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
-const version: $ReadOnly<{
+export const version: $ReadOnly<{
   major: number,
   minor: number,
   patch: number,
@@ -22,8 +23,6 @@ const version: $ReadOnly<{
   patch: 0,
   prerelease: 'nightly-29282302-abcd1234',
 };
-
-module.exports = {version};
 "
 `;
 
@@ -67,7 +66,7 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
 "
 `;
 
-exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -77,18 +76,16 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * << GENERATED >>
  */
 
-package com.facebook.react.modules.systeminfo;
+package com.facebook.react.modules.systeminfo
 
-import com.facebook.react.common.MapBuilder;
-
-import java.util.Map;
-
-public class ReactNativeVersion {
-  public static final Map<String, Object> VERSION = MapBuilder.<String, Object>of(
-      \\"major\\", 0,
-      \\"minor\\", 81,
-      \\"patch\\", 0,
-      \\"prerelease\\", \\"nightly-29282302-abcd1234\\");
+public object ReactNativeVersion {
+  @JvmField
+  public val VERSION: Map<String, Any?> = mapOf(
+    \\"major\\" to 0,
+    \\"minor\\" to 81,
+    \\"patch\\" to 0,
+    \\"prerelease\\" to \\"nightly-29282302-abcd1234\\"
+  )
 }
 "
 `;
@@ -108,6 +105,10 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
 #include <cstdint>
 #include <string_view>
 
+#define REACT_NATIVE_VERSION_MAJOR 0
+#define REACT_NATIVE_VERSION_MINOR 81
+#define REACT_NATIVE_VERSION_PATCH 0
+
 namespace facebook::react {
 
 constexpr struct {
@@ -121,6 +122,12 @@ constexpr struct {
 "
 `;
 
+exports[`updateReactNativeArtifacts should set nightly version: packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `
+"version = \\"0.81.0-nightly-29282302-abcd1234\\\\
+other text
+version = \\"0.81.0-nightly-29282302-abcd1234\\\\"
+`;
+
 exports[`updateReactNativeArtifacts should set release version: packages/react-native/Libraries/Core/ReactNativeVersion.js 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -129,10 +136,11 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict
+ * @noformat
  * << GENERATED >>
  */
 
-const version: $ReadOnly<{
+export const version: $ReadOnly<{
   major: number,
   minor: number,
   patch: number,
@@ -143,8 +151,6 @@ const version: $ReadOnly<{
   patch: 0,
   prerelease: null,
 };
-
-module.exports = {version};
 "
 `;
 
@@ -188,7 +194,7 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
 "
 `;
 
-exports[`updateReactNativeArtifacts should set release version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `
 "/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -198,18 +204,16 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * << GENERATED >>
  */
 
-package com.facebook.react.modules.systeminfo;
+package com.facebook.react.modules.systeminfo
 
-import com.facebook.react.common.MapBuilder;
-
-import java.util.Map;
-
-public class ReactNativeVersion {
-  public static final Map<String, Object> VERSION = MapBuilder.<String, Object>of(
-      \\"major\\", 0,
-      \\"minor\\", 81,
-      \\"patch\\", 0,
-      \\"prerelease\\", null);
+public object ReactNativeVersion {
+  @JvmField
+  public val VERSION: Map<String, Any?> = mapOf(
+    \\"major\\" to 0,
+    \\"minor\\" to 81,
+    \\"patch\\" to 0,
+    \\"prerelease\\" to null
+  )
 }
 "
 `;
@@ -229,6 +233,10 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
 #include <cstdint>
 #include <string_view>
 
+#define REACT_NATIVE_VERSION_MAJOR 0
+#define REACT_NATIVE_VERSION_MINOR 81
+#define REACT_NATIVE_VERSION_PATCH 0
+
 namespace facebook::react {
 
 constexpr struct {
@@ -240,4 +248,10 @@ constexpr struct {
 
 } // namespace facebook::react
 "
+`;
+
+exports[`updateReactNativeArtifacts should set release version: packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `
+"version = \\"0.81.0\\\\
+other text
+version = \\"0.81.0\\\\"
 `;

@@ -13,7 +13,6 @@
 #include <string>
 #include <string_view>
 #include <variant>
-#include <vector>
 
 namespace facebook::react {
 
@@ -28,22 +27,6 @@ enum class FilterType {
   Saturate,
   Sepia,
   DropShadow
-};
-
-struct DropShadowParams {
-  bool operator==(const DropShadowParams& other) const = default;
-
-  Float offsetX{};
-  Float offsetY{};
-  Float standardDeviation{};
-  SharedColor color{};
-};
-
-struct FilterFunction {
-  bool operator==(const FilterFunction& other) const = default;
-
-  FilterType type{};
-  std::variant<Float, DropShadowParams> parameters{};
 };
 
 inline FilterType filterTypeFromString(std::string_view filterName) {
@@ -71,5 +54,77 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
     throw std::invalid_argument(std::string(filterName));
   }
 }
+
+inline std::string toString(const FilterType& filterType) {
+  switch (filterType) {
+    case FilterType::Blur:
+      return "blur";
+    case FilterType::Brightness:
+      return "brightness";
+    case FilterType::Contrast:
+      return "contrast";
+    case FilterType::Grayscale:
+      return "grayscale";
+    case FilterType::HueRotate:
+      return "hueRotate";
+    case FilterType::Invert:
+      return "invert";
+    case FilterType::Opacity:
+      return "opacity";
+    case FilterType::Saturate:
+      return "saturate";
+    case FilterType::Sepia:
+      return "sepia";
+    case FilterType::DropShadow:
+      return "dropShadow";
+  }
+}
+
+struct DropShadowParams {
+  bool operator==(const DropShadowParams& other) const = default;
+
+  Float offsetX{};
+  Float offsetY{};
+  Float standardDeviation{};
+  SharedColor color{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["offsetX"] = offsetX;
+    result["offsetY"] = offsetY;
+    result["standardDeviation"] = standardDeviation;
+    result["color"] = *color;
+    return result;
+  }
+#endif
+};
+
+struct FilterFunction {
+  bool operator==(const FilterFunction& other) const = default;
+
+  FilterType type{};
+  std::variant<Float, DropShadowParams> parameters{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    std::string typeKey = toString(type);
+    if (std::holds_alternative<Float>(parameters)) {
+      result[typeKey] = std::get<Float>(parameters);
+    } else if (std::holds_alternative<DropShadowParams>(parameters)) {
+      const auto& dropShadowParams = std::get<DropShadowParams>(parameters);
+      result[typeKey] = dropShadowParams.toDynamic();
+    }
+    return result;
+  }
+#endif
+};
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const FilterFunction& filterFunction) {
+  return filterFunction.toDynamic();
+}
+#endif
 
 } // namespace facebook::react

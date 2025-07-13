@@ -22,29 +22,18 @@ import com.facebook.react.viewmanagers.DebuggingOverlayManagerDelegate
 import com.facebook.react.viewmanagers.DebuggingOverlayManagerInterface
 
 @ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
-public class DebuggingOverlayManager :
+internal class DebuggingOverlayManager :
     SimpleViewManager<DebuggingOverlay>(), DebuggingOverlayManagerInterface<DebuggingOverlay> {
 
   private val delegate: ViewManagerDelegate<DebuggingOverlay> =
       DebuggingOverlayManagerDelegate(this)
 
-  public override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
+  override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "highlightTraceUpdates" -> highlightTraceUpdates(view, args)
-      "highlightElements" -> highlightElements(view, args)
-      "clearElementsHighlights" -> clearElementsHighlights(view)
-      else -> {
-        ReactSoftExceptionLogger.logSoftException(
-            REACT_CLASS,
-            ReactNoCrashSoftException("Received unexpected command in DebuggingOverlayManager"))
-      }
-    }
-  }
-
-  public override fun highlightTraceUpdates(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedTraceUpdates = args?.getArray(0) ?: return
+  override fun highlightTraceUpdates(
+      view: DebuggingOverlay,
+      providedTraceUpdates: ReadableArray
+  ): Unit {
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
@@ -93,8 +82,7 @@ public class DebuggingOverlayManager :
     }
   }
 
-  public override fun highlightElements(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedElements = args?.getArray(0) ?: return
+  override fun highlightElements(view: DebuggingOverlay, providedElements: ReadableArray): Unit {
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true
@@ -129,19 +117,19 @@ public class DebuggingOverlayManager :
     }
   }
 
-  public override fun clearElementsHighlights(view: DebuggingOverlay): Unit {
+  override fun clearElementsHighlights(view: DebuggingOverlay): Unit {
     view.clearElementsHighlights()
   }
 
-  public override fun createViewInstance(context: ThemedReactContext): DebuggingOverlay {
+  override fun createViewInstance(context: ThemedReactContext): DebuggingOverlay {
     return DebuggingOverlay(context)
   }
 
-  public override fun getName(): String {
+  override fun getName(): String {
     return REACT_CLASS
   }
 
-  public companion object {
-    public const val REACT_CLASS: String = "DebuggingOverlay"
+  companion object {
+    const val REACT_CLASS: String = "DebuggingOverlay"
   }
 }

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -22,7 +22,7 @@ type Props = {
 
 class RNTesterListFilters extends React.Component<
   Props,
-  {|currentFilter: string|},
+  {currentFilter: string},
 > {
   constructor(props: Props) {
     super(props);

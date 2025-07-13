@@ -20,7 +20,7 @@ protected constructor(private val exceptionHandler: JSExceptionHandler) :
     Choreographer.FrameCallback {
   protected constructor(reactContext: ReactContext) : this(reactContext.exceptionHandler)
 
-  override public fun doFrame(frameTimeNanos: Long) {
+  public override fun doFrame(frameTimeNanos: Long) {
     try {
       doFrameGuarded(frameTimeNanos)
     } catch (e: RuntimeException) {

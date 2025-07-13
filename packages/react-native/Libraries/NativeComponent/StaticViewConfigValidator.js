@@ -8,6 +8,7 @@
  * @format
  */
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 export type Difference =
@@ -128,7 +129,10 @@ function accumulateDifferences(
       }
     }
 
-    if (nativeValue !== staticValue) {
+    if (
+      nativeValue !== staticValue &&
+      !ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ) {
       differences.push({
         path: [...path, nativeKey],
         type: 'unequal',

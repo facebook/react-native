@@ -30,7 +30,7 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
-public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
+internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAccessor {
   private var currentProvider: ReactNativeFeatureFlagsProvider = ReactNativeFeatureFlagsDefaults()
 
   private val accessedFeatureFlags = mutableSetOf<String>()
@@ -46,7 +46,12 @@ ${Object.entries(definitions.common)
 
 ${Object.entries(definitions.common)
   .map(
-    ([flagName, flagConfig]) => `  override fun ${flagName}(): Boolean {
+    ([
+      flagName,
+      flagConfig,
+    ]) => `  override fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
+      flagConfig.defaultValue,
+    )} {
     var cached = ${flagName}Cache
     if (cached == null) {
       cached = currentProvider.${flagName}()

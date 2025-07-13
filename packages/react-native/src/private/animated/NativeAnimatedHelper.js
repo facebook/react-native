@@ -57,6 +57,9 @@ const eventListenerAnimationFinishedCallbacks: {
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
+const shouldSignalBatch: boolean =
+  ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
+
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [
     'createAnimatedNode', // 1
@@ -93,12 +96,18 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         // is possible because # arguments is fixed for each operation. For more
         // details, see `NativeAnimatedModule.queueAndExecuteBatchedOperations`.
         singleOpQueue.push(operationID, ...args);
+        if (shouldSignalBatch) {
+          clearImmediate(flushQueueImmediate);
+          flushQueueImmediate = setImmediate(API.flushQueue);
+        }
       };
     }
   } else {
     for (let ii = 0, length = methodNames.length; ii < length; ii++) {
       const methodName = methodNames[ii];
       nativeOperations[methodName] = (...args) => {
+        /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         const method = nullthrows(NativeAnimatedModule)[methodName];
         // If queueing is explicitly on, *or* the queue has not yet
         // been flushed, use the queue. This is to prevent operations
@@ -106,6 +115,11 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         if (queueOperations || queue.length !== 0) {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           queue.push(() => method(...args));
+        } else if (shouldSignalBatch) {
+          // $FlowExpectedError[incompatible-call] - Dynamism.
+          queue.push(() => method(...args));
+          clearImmediate(flushQueueImmediate);
+          flushQueueImmediate = setImmediate(API.flushQueue);
         } else {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           method(...args);
@@ -138,21 +152,25 @@ const API = {
       }) as $NonMaybeType<typeof NativeAnimatedModule>['getValue'],
 
   setWaitingForIdentifier(id: string): void {
+    if (shouldSignalBatch) {
+      return;
+    }
+
     waitingForQueuedOperations.add(id);
     queueOperations = true;
     if (
       ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
       flushQueueImmediate
     ) {
-      if (ReactNativeFeatureFlags.enableAnimatedClearImmediateFix()) {
-        clearImmediate(flushQueueImmediate);
-      } else {
-        clearTimeout(flushQueueImmediate);
-      }
+      clearImmediate(flushQueueImmediate);
     }
   },
 
   unsetWaitingForIdentifier(id: string): void {
+    if (shouldSignalBatch) {
+      return;
+    }
+
     waitingForQueuedOperations.delete(id);
 
     if (waitingForQueuedOperations.size === 0) {
@@ -206,7 +224,7 @@ const API = {
           return;
         }
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.startOperationBatch?.();
         }
 
@@ -215,7 +233,7 @@ const API = {
         }
         queue.length = 0;
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.finishOperationBatch?.();
         }
       }) as () => void,
@@ -371,7 +389,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(
-  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig,
+  config: $ReadOnly<{...AnimationConfig, ...}> | EventConfig<mixed>,
 ): boolean {
   if (config.useNativeDriver == null) {
     console.warn(
@@ -423,6 +441,7 @@ export default {
   generateNewAnimationId,
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
+  shouldSignalBatch,
   transformDataType,
   // $FlowExpectedError[unsafe-getters-setters] - unsafe getter lint suppression
   // $FlowExpectedError[missing-type-arg] - unsafe getter lint suppression

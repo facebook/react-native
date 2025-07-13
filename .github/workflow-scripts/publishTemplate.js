@@ -7,7 +7,8 @@
  * @format
  */
 
-const {run, sleep, getNpmPackageInfo, log} = require('./utils.js');
+const {run, sleep, log} = require('./utils.js');
+const {verifyPublishedPackage} = require('./verifyPublishedPackage.js');
 
 const TAG_AS_LATEST_REGEX = /#publish-packages-to-npm&latest/;
 
@@ -53,8 +54,7 @@ module.exports.publishTemplate = async (github, version, dryRun = true) => {
   });
 };
 
-const SLEEP_S = 10;
-const MAX_RETRIES = 3 * 6; // 3 minutes
+const MAX_RETRIES = 3 * 6; // 18 attempts. Waiting between attempt: 10 s. Total time: 3 mins.
 const TEMPLATE_NPM_PKG = '@react-native-community/template';
 
 /**
@@ -68,36 +68,18 @@ module.exports.verifyPublishedTemplate = async (
   latest = false,
   retries = MAX_RETRIES,
 ) => {
-  log(`🔍 Is ${TEMPLATE_NPM_PKG}@${version} on npm?`);
-
-  let count = retries;
-  while (count-- > 0) {
-    try {
-      const json = await getNpmPackageInfo(
-        TEMPLATE_NPM_PKG,
-        latest ? 'latest' : version,
-      );
-      log(`🎉 Found ${TEMPLATE_NPM_PKG}@${version} on npm`);
-      if (!latest) {
-        return;
-      }
-      if (json.version === version) {
-        log(`🎉 ${TEMPLATE_NPM_PKG}@latest → ${version} on npm`);
-        return;
-      }
-      log(
-        `🐌 ${TEMPLATE_NPM_PKG}@latest → ${pkg.version} on npm and not ${version} as expected, retrying...`,
-      );
-    } catch (e) {
-      log(`Nope, fetch failed: ${e.message}`);
+  try {
+    if (version.startsWith('v')) {
+      version = version.slice(1);
     }
-    await sleep(SLEEP_S);
+    await verifyPublishedPackage(
+      TEMPLATE_NPM_PKG,
+      version,
+      latest ? 'latest' : null,
+      retries,
+    );
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
   }
-
-  let msg = `🚨 Timed out when trying to verify ${TEMPLATE_NPM_PKG}@${version} on npm`;
-  if (latest) {
-    msg += ' and latest tag points to this version.';
-  }
-  log(msg);
-  process.exit(1);
 };

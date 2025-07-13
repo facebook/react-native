@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -75,7 +75,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
     Linking.openURL(url);
   }
 
-  state: $FlowFixMe | {|type: 'Uint8Array'|} = {
+  state: $FlowFixMe | {type: 'Uint8Array'} = {
     type: 'Uint8Array',
   };
 

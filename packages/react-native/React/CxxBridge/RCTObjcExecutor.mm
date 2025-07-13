@@ -7,8 +7,9 @@
 
 #import "RCTObjcExecutor.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <React/RCTCxxUtils.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTJavaScriptExecutor.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
@@ -19,6 +20,7 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <folly/json.h>
+#import <react/utils/FollyConvert.h>
 
 namespace facebook::react {
 
@@ -144,3 +146,5 @@ std::unique_ptr<JSExecutor> RCTObjcExecutorFactory::createJSExecutor(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

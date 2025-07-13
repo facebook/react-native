@@ -15,8 +15,6 @@
 #import <react/renderer/scheduler/SchedulerDelegate.h>
 #import <react/utils/RunLoopObserver.h>
 
-#import <React/RCTFollyConvert.h>
-
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
@@ -66,6 +64,18 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidSendAccessibilityEvent:shadowView eventType:eventType];
+  }
+
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(facebook::react::Tag tag, const folly::dynamic &props) override
+  {
+    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
+    [scheduler.delegate schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:props];
+  }
+
+  void schedulerDidUpdateShadowTree(const std::unordered_map<Tag, folly::dynamic> &tagToProps) override
+  {
+    // Does nothing.
+    // This delegate method is not currently used on iOS.
   }
 
  private:

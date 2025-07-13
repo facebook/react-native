@@ -11,7 +11,7 @@ package com.facebook.react.bridge
  * Interface that represents a JavaScript Promise which can be passed to the native module as a
  * method parameter.
  *
- * Methods annotated with {@link ReactMethod} that use a {@link Promise} as the last parameter
+ * Methods annotated with [ReactMethod] that use a [Promise] as the last parameter
  * will be marked as "promise" and will return a promise when invoked from JavaScript.
  */
 public interface Promise {

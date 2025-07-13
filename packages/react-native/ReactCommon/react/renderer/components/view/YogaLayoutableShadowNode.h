@@ -37,6 +37,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment);
 
+  void completeClone(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) override;
+
 #pragma mark - Mutating Methods
 
   /*
@@ -45,10 +49,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  void appendChild(const ShadowNode::Shared& child) override;
+  void appendChild(const std::shared_ptr<const ShadowNode>& child) override;
   void replaceChild(
       const ShadowNode& oldChild,
-      const ShadowNode::Shared& newChild,
+      const std::shared_ptr<const ShadowNode>& newChild,
       size_t suggestedIndex = SIZE_MAX) override;
 
   void updateYogaChildren();
@@ -69,7 +73,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
 #pragma mark - LayoutableShadowNode
 
-  void cleanLayout() override;
   void dirtyLayout() override;
   bool getIsLayoutClean() const override;
 
@@ -85,9 +88,15 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   Rect getContentBounds() const;
 
-  static void filterRawProps(RawProps& rawProps);
-
  protected:
+  /**
+   * Subclasses which provide MeasurableYogaNode may override to signal that a
+   * new ShadowNode revision does not need to invalidate existing measurements.
+   */
+  virtual bool shouldNewRevisionDirtyMeasurement(
+      const ShadowNode& sourceShadowNode,
+      const ShadowNodeFragment& fragment) const;
+
   /*
    * Yoga config associated (only) with this particular node.
    */

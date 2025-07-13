@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import processBoxShadow from '../processBoxShadow';
@@ -15,7 +14,7 @@ import processColor from '../processColor';
 // js1 test processBoxShadow
 describe('processBoxShadow', () => {
   it('should parse basic string', () => {
-    expect(processBoxShadow('10px 5')).toEqual([
+    expect(processBoxShadow('10px 5px')).toEqual([
       {
         offsetX: 10,
         offsetY: 5,
@@ -23,8 +22,17 @@ describe('processBoxShadow', () => {
     ]);
   });
 
+  it('should parse basic string with unitless zero length', () => {
+    expect(processBoxShadow('10px 0')).toEqual([
+      {
+        offsetX: 10,
+        offsetY: 0,
+      },
+    ]);
+  });
+
   it('should parse basic string with multiple whitespaces', () => {
-    expect(processBoxShadow('10px    5')).toEqual([
+    expect(processBoxShadow('10px    5px')).toEqual([
       {
         offsetX: 10,
         offsetY: 5,
@@ -33,7 +41,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with color', () => {
-    expect(processBoxShadow('red 10 5')).toEqual([
+    expect(processBoxShadow('red 10px 5px')).toEqual([
       {
         color: processColor('red'),
         offsetX: 10,
@@ -43,7 +51,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with color function rgba', () => {
-    expect(processBoxShadow('rgba(255, 255, 255, 0.5) 10 5')).toEqual([
+    expect(processBoxShadow('rgba(255, 255, 255, 0.5) 10px 5px')).toEqual([
       {
         color: processColor('rgba(255, 255, 255, 0.5)'),
         offsetX: 10,
@@ -53,7 +61,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with color function hsl', () => {
-    expect(processBoxShadow('hsl(318, 69%, 55%) 10 5')).toEqual([
+    expect(processBoxShadow('hsl(318, 69%, 55%) 10px 5px')).toEqual([
       {
         color: processColor('hsl(318, 69%, 55%)'),
         offsetX: 10,
@@ -63,7 +71,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with hex color', () => {
-    expect(processBoxShadow('#FFFFFF 10 5')).toEqual([
+    expect(processBoxShadow('#FFFFFF 10px 5px')).toEqual([
       {
         color: processColor('#FFFFFF'),
         offsetX: 10,
@@ -73,7 +81,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with blurRadius', () => {
-    expect(processBoxShadow('red 10 5 2')).toEqual([
+    expect(processBoxShadow('red 10px 5px 2px')).toEqual([
       {
         color: processColor('red'),
         blurRadius: 2,
@@ -84,7 +92,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with spreadDistance', () => {
-    expect(processBoxShadow('red 10 5 2 3')).toEqual([
+    expect(processBoxShadow('red 10px 5px 2px 3px')).toEqual([
       {
         color: processColor('red'),
         blurRadius: 2,
@@ -115,7 +123,7 @@ describe('processBoxShadow', () => {
   });
 
   it('should parse string with inset and color before and after lengths', () => {
-    expect(processBoxShadow('red 10 10 inset')).toEqual([
+    expect(processBoxShadow('red 10px 10px inset')).toEqual([
       {
         color: processColor('red'),
         offsetX: 10,
@@ -127,7 +135,9 @@ describe('processBoxShadow', () => {
 
   it('should parse multiple box shadow strings', () => {
     expect(
-      processBoxShadow('10 5 red, 5 12 inset, inset 10 45 13 red'),
+      processBoxShadow(
+        '10px 5px red, 5px 12px inset, inset 10px 45px 13px red',
+      ),
     ).toEqual([
       {
         offsetX: 10,
@@ -151,7 +161,9 @@ describe('processBoxShadow', () => {
 
   it('should parse multiple box shadow strings with newlines', () => {
     expect(
-      processBoxShadow('10 5 red, 5 12 inset,\n  inset 10 45 13 red'),
+      processBoxShadow(
+        '10px 5px red, 5px 12px inset,\n  inset 10px 45px 13px red',
+      ),
     ).toEqual([
       {
         offsetX: 10,
@@ -178,35 +190,39 @@ describe('processBoxShadow', () => {
   });
 
   it('should fail to parse too many lengths', () => {
-    expect(processBoxShadow('10 5 2 3 10 10')).toEqual([]);
+    expect(processBoxShadow('10px 5px 2px 3px 10px 10px')).toEqual([]);
   });
 
   it('should fail to parse inset between lengths', () => {
-    expect(processBoxShadow('10 inset 5 2 3,')).toEqual([]);
+    expect(processBoxShadow('10px inset 5px 2px 3px,')).toEqual([]);
   });
 
   it('should fail to parse double color', () => {
-    expect(processBoxShadow('red red 10 5')).toEqual([]);
+    expect(processBoxShadow('red red 10px 5px')).toEqual([]);
   });
 
   it('should fail to parse double inset', () => {
-    expect(processBoxShadow('10 5 inset inset')).toEqual([]);
+    expect(processBoxShadow('10px 5px inset inset')).toEqual([]);
   });
 
   it('should fail to parse color between lengths', () => {
-    expect(processBoxShadow('10 red 5 2 3,')).toEqual([]);
+    expect(processBoxShadow('10px red 5px 2px 3px,')).toEqual([]);
   });
 
   it('should fail to parse invalid unit', () => {
-    expect(processBoxShadow('red 10foo 5 2 3,')).toEqual([]);
+    expect(processBoxShadow('red 10foo 5px 2px 3px,')).toEqual([]);
   });
 
   it('should fail to parse invalid argument', () => {
-    expect(processBoxShadow('red asf 5 2 3')).toEqual([]);
+    expect(processBoxShadow('red asf 5px 2px 3px')).toEqual([]);
   });
 
   it('should fail to parse negative blur', () => {
-    expect(processBoxShadow('red 5 2 -3')).toEqual([]);
+    expect(processBoxShadow('red 5px 2px -3px')).toEqual([]);
+  });
+
+  it('should fail to parse missing unit', () => {
+    expect(processBoxShadow('10px 5')).toEqual([]);
   });
 
   it('should parse simple object', () => {

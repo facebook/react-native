@@ -14,7 +14,6 @@
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-#import <ReactCommon/SampleTurboCxxModule.h>
 
 #import <React/RCTPushNotificationManager.h>
 
@@ -39,17 +38,21 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"RNTesterApp";
+  self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
 #if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = [self prepareInitialProps];
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+
+  [self.reactNativeFactory startReactNativeWithModuleName:@"RNTesterApp"
+                                                 inWindow:self.window
+                                        initialProperties:[self prepareInitialProps]
+                                            launchOptions:launchOptions];
 
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  return YES;
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -76,20 +79,9 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [RCTLinkingManager application:app openURL:url options:options];
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
-}
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  if (name == std::string([@"SampleTurboCxxModule" UTF8String])) {
-    return std::make_shared<facebook::react::SampleTurboCxxModule>(jsInvoker);
-  }
-
   if (name == facebook::react::NativeCxxModuleExample::kModuleName) {
     return std::make_shared<facebook::react::NativeCxxModuleExample>(jsInvoker);
   }

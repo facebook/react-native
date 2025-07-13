@@ -16,8 +16,7 @@ ImageManager::ImageManager(const ContextContainer::Shared& contextContainer)
     : self_(new ImageFetcher(contextContainer)) {}
 
 ImageManager::~ImageManager() {
-  // @lint-ignore CLANGTIDY cppcoreguidelines-no-malloc
-  free(self_);
+  delete static_cast<ImageFetcher*>(self_);
 }
 
 ImageRequest ImageManager::requestImage(
@@ -31,13 +30,7 @@ ImageRequest ImageManager::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) const {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
-    // @lint-ignore CLANGTIDY cppcoreguidelines-pro-type-cstyle-cast
-    return ((ImageFetcher*)self_)
-        ->requestImage(imageSource, imageRequestParams, surfaceId, tag);
-  } else {
-    return {imageSource, nullptr, {}};
-  }
+  return {imageSource, nullptr, {}};
 }
 
 } // namespace facebook::react

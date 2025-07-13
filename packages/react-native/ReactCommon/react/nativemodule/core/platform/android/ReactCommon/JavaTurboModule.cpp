@@ -16,7 +16,6 @@
 
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
 #include <react/bridging/Bridging.h>
 #include <react/debug/react_native_assert.h>
@@ -970,34 +969,32 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-void JavaTurboModule::setEventEmitterCallback(
-    jni::alias_ref<jobject> jinstance) {
+void JavaTurboModule::configureEventEmitterCallback() {
   JNIEnv* env = jni::Environment::current();
-  auto instance = jinstance.get();
   static jmethodID cachedMethodId = nullptr;
   if (cachedMethodId == nullptr) {
-    jclass cls = env->GetObjectClass(instance);
+    jclass cls = env->GetObjectClass(instance_.get());
     cachedMethodId = env->GetMethodID(
         cls,
         "setEventEmitterCallback",
         "(Lcom/facebook/react/bridge/CxxCallbackImpl;)V");
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   }
 
-  auto eventEmitterLookup =
-      [&](const std::string& eventName) -> AsyncEventEmitter<folly::dynamic>& {
-    return static_cast<AsyncEventEmitter<folly::dynamic>&>(
+  auto callback = JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
+    auto eventName = args.at(0).asString();
+    auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
         *eventEmitterMap_[eventName].get());
-  };
+    eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
+  });
 
-  jvalue arg;
-  arg.l = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
-                                                  eventEmitterLookup)](
-                                                 folly::dynamic args) {
-            auto eventName = args.at(0).asString();
-            auto eventArgs = args.size() > 1 ? args.at(1) : nullptr;
-            eventEmitterLookup(eventName).emit(std::move(eventArgs));
-          }).release();
-  env->CallVoidMethod(instance, cachedMethodId, arg);
+  jvalue args[1];
+  args[0].l = callback.release();
+
+  // CallVoidMethod is replaced with CallVoidMethodA as it's unsafe on 32bit and
+  // causes crashes https://github.com/facebook/react-native/issues/51628
+  env->CallVoidMethodA(instance_.get(), cachedMethodId, args);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 }
 
 } // namespace facebook::react

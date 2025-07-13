@@ -24,13 +24,22 @@ export type RawPerformanceEntry = {
   startTime: number,
   duration: number,
 
-  // For "event" entries only:
+  // For PerformanceEventTiming only
   processingStart?: number,
   processingEnd?: number,
   interactionId?: number,
+
+  // For PerformanceResourceTiming only
+  fetchStart?: number,
+  requestStart?: number,
+  connectStart?: number,
+  connectEnd?: number,
+  responseStart?: number,
+  responseEnd?: number,
+  responseStatus?: number,
 };
 
-export type OpaqueNativeObserverHandle = mixed;
+export opaque type OpaqueNativeObserverHandle = mixed;
 
 export type NativeBatchedObserverCallback = () => void;
 export type NativePerformanceMarkResult = number;
@@ -49,6 +58,15 @@ export interface Spec extends TurboModule {
     name: string,
     startTime?: number,
   ) => NativePerformanceMarkResult;
+  +measure?: (
+    name: string,
+    startTime?: number,
+    endTime?: number,
+    duration?: number,
+    startMark?: string,
+    endMark?: string,
+  ) => NativePerformanceMeasureResult;
+  // DEPRECATED: Use measure instead.
   +measureWithResult?: (
     name: string,
     startTime: number,
@@ -87,6 +105,9 @@ export interface Spec extends TurboModule {
   ) => $ReadOnlyArray<RawPerformanceEntry>;
 
   +getSupportedPerformanceEntryTypes?: () => $ReadOnlyArray<RawPerformanceEntryType>;
+
+  +setCurrentTimeStampForTesting?: (timeStamp: number) => void;
+  +clearEventCountsForTesting?: () => void;
 }
 
 export default (TurboModuleRegistry.get<Spec>('NativePerformanceCxx'): ?Spec);

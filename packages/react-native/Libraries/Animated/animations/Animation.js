@@ -16,7 +16,12 @@ import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHe
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedProps from '../nodes/AnimatedProps';
 
-export type EndResult = {finished: boolean, value?: number, ...};
+export type EndResult = {
+  finished: boolean,
+  value?: number,
+  offset?: number,
+  ...
+};
 export type EndCallback = (result: EndResult) => void;
 
 export type AnimationConfig = $ReadOnly<{
@@ -141,15 +146,19 @@ export default class Animation {
           // When using natively driven animations, once the animation completes,
           // we need to ensure that the JS side nodes are synced with the updated
           // values.
-          const {value} = result;
+          const {value, offset} = result;
           if (value != null) {
-            animatedValue.__onAnimatedValueUpdateReceived(value);
+            animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
             if (
-              ReactNativeFeatureFlags.shouldSkipStateUpdatesForLoopingAnimations() &&
-              this.__isLooping === true
+              !(
+                ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+                ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()
+              )
             ) {
-              return;
+              if (this.__isLooping === true) {
+                return;
+              }
             }
 
             // Once the JS side node is synced with the updated values, trigger an

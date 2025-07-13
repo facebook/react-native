@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import type {Item} from '../../components/ListExampleShared';
-import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
+import type {SectionBase} from 'react-native';
 
 import {
   FooterComponent,
@@ -28,6 +28,7 @@ import {
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useRef, useState} from 'react';
 import {
   Alert,
   Animated,
@@ -37,7 +38,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import infoLog from 'react-native/Libraries/Utilities/infoLog';
 
 const VIEWABILITY_CONFIG = {
   minimumViewTime: 3000,
@@ -143,8 +143,9 @@ const renderItemComponent =
 
 const onScrollToIndexFailed = (info: {
   index: number,
-  c: number,
+  highestMeasuredFrameIndex: number,
   averageItemLength: number,
+  ...
 }) => {
   console.warn('onScrollToIndexFailed. See comment in callback', info);
   /**
@@ -177,12 +178,12 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     [{nativeEvent: {contentOffset: {y: scrollPos}}}],
     {useNativeDriver: true},
   );
-  const [filterText, setFilterText] = React.useState('');
-  const [virtualized, setVirtualized] = React.useState(true);
-  const [logViewable, setLogViewable] = React.useState(false);
-  const [debug, setDebug] = React.useState(false);
-  const [inverted, setInverted] = React.useState(false);
-  const [data, setData] = React.useState(genNewerItems(1000));
+  const [filterText, setFilterText] = useState('');
+  const [virtualized, setVirtualized] = useState(true);
+  const [logViewable, setLogViewable] = useState(false);
+  const [debug, setDebug] = useState(false);
+  const [inverted, setInverted] = useState(false);
+  const [data, setData] = useState(genNewerItems(1000));
 
   const filterRegex = new RegExp(String(filterText), 'i');
   const filter = (item: Item) =>
@@ -211,7 +212,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
     setData([...data.slice(0, index), item, ...data.slice(index + 1)]);
   };
 
-  const ref = React.useRef<?SectionList<SectionBase<any>>>(null);
+  const ref = useRef<?SectionList<SectionBase<any>>>(null);
   const scrollToLocation = (sectionIndex: number, itemIndex: number) => {
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
     if (ref != null && ref.current?.scrollToLocation != null) {
@@ -232,7 +233,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
   }) => {
     // Impressions can be logged here
     if (logViewable) {
-      infoLog(
+      console.log(
         'onViewableItemsChanged: ',
         info.changed.map((v: Object) => ({
           ...v,
@@ -317,6 +318,7 @@ export function SectionList_scrollable(Props: {...}): React.MixedElement {
           )
         }
         onEndReachedThreshold={0}
+        // $FlowFixMe[incompatible-type] - incompatible redenerItem type
         sections={filteredSectionData}
         style={styles.list}
         viewabilityConfig={VIEWABILITY_CONFIG}

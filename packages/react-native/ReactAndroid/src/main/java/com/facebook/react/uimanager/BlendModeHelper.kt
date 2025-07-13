@@ -17,9 +17,9 @@ import com.facebook.react.R
 @TargetApi(29)
 internal object BlendModeHelper {
 
-  /** @see https://www.w3.org/TR/compositing-1/#mix-blend-mode */
+  /** @see <a href="https://www.w3.org/TR/compositing-1/#mix-blend-mode">mix-blend-mode</a> */
   @JvmStatic
-  public fun parseMixBlendMode(mixBlendMode: String?): BlendMode? {
+  fun parseMixBlendMode(mixBlendMode: String?): BlendMode? {
     if (mixBlendMode == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
       return null
     }
@@ -46,6 +46,6 @@ internal object BlendModeHelper {
   }
 
   @JvmStatic
-  public fun needsIsolatedLayer(view: ViewGroup): Boolean =
+  fun needsIsolatedLayer(view: ViewGroup): Boolean =
       view.children.any { it.getTag(R.id.mix_blend_mode) != null }
 }

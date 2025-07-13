@@ -45,12 +45,19 @@
 using namespace facebook;
 using namespace facebook::react;
 
+@interface RCTComponentViewFactory ()
+- (void)_registerComponentIfPossible:(const std::string &)name;
+- (BOOL)_wasComponentRegistered:(const std::string &)name;
+@end
+
 // Allow JS runtime to register native components as needed. For static view configs.
 void RCTInstallNativeComponentRegistryBinding(facebook::jsi::Runtime &runtime)
 {
   auto hasComponentProvider = [](const std::string &name) -> bool {
-    return [[RCTComponentViewFactory currentComponentViewFactory]
-        registerComponentIfPossible:componentNameByReactViewName(name)];
+    auto globalComponentViewFactory = [RCTComponentViewFactory currentComponentViewFactory];
+    auto actualName = componentNameByReactViewName(name);
+    [globalComponentViewFactory _registerComponentIfPossible:actualName];
+    return [globalComponentViewFactory _wasComponentRegistered:actualName];
   };
   bindHasComponentProvider(runtime, std::move(hasComponentProvider));
 }
@@ -62,7 +69,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
 @implementation RCTComponentViewFactory {
   std::unordered_map<ComponentHandle, RCTComponentViewClassDescriptor> _componentViewClasses;
-  std::unordered_set<std::string> _registeredComponentsNames;
+  std::unordered_map<std::string, bool> _registrationStatusMap;
   ComponentDescriptorProviderRegistry _providerRegistry;
   std::shared_mutex _mutex;
 }
@@ -81,7 +88,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
     componentViewFactory->_providerRegistry.setComponentDescriptorProviderRequest(
         [](ComponentName requestedComponentName) {
-          [componentViewFactory registerComponentIfPossible:requestedComponentName];
+          [componentViewFactory _registerComponentIfPossible:requestedComponentName];
         });
   });
 
@@ -106,11 +113,16 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 #pragma clang diagnostic pop
 }
 
-- (BOOL)registerComponentIfPossible:(const std::string &)name
+- (BOOL)_wasComponentRegistered:(const std::string &)name
 {
-  if (_registeredComponentsNames.find(name) != _registeredComponentsNames.end()) {
-    // Component has already been registered.
-    return YES;
+  auto registrationResult = _registrationStatusMap.find(name);
+  return registrationResult != _registrationStatusMap.end() && (registrationResult->second);
+}
+
+- (void)_registerComponentIfPossible:(const std::string &)name
+{
+  if (_registrationStatusMap.find(name) != _registrationStatusMap.end()) {
+    return;
   }
 
   // Paper name: we prepare this variables to warn the user
@@ -122,7 +134,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   Class<RCTComponentViewProtocol> klass = RCTComponentViewClassWithName(name.c_str());
   if (klass) {
     [self registerComponentViewClass:klass];
-    return YES;
+    return;
   }
 
   // Fallback 2: Ask the provider and check in the dictionary provided
@@ -133,7 +145,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     klass = self.thirdPartyFabricComponentsProvider.thirdPartyFabricComponents[objcName];
     if (klass) {
       [self registerComponentViewClass:klass];
-      return YES;
+      return;
     }
   }
 
@@ -153,12 +165,13 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
     auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
 
-    [self _addDescriptorToProviderRegistry:ComponentDescriptorProvider{
-                                               componentHandle, componentName, flavor, constructor}];
+    auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
 
+    _providerRegistry.add(provider);
     _componentViewClasses[componentHandle] =
         [self _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
-    return YES;
+    _registrationStatusMap.insert({provider.name, true});
+    return;
   }
 
   // Fallback 4: use <UnimplementedView> if component doesn't exist.
@@ -166,15 +179,12 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   auto componentName = ComponentName{flavor->c_str()};
   auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
   auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
+  auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
 
-  [self _addDescriptorToProviderRegistry:ComponentDescriptorProvider{
-                                             componentHandle, componentName, flavor, constructor}];
-
+  _providerRegistry.add(provider);
   _componentViewClasses[componentHandle] =
       [self _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
-
-  // No matching class exists for `name`.
-  return NO;
+  _registrationStatusMap.insert({provider.name, false});
 }
 
 - (void)registerComponentViewClass:(Class<RCTComponentViewProtocol>)componentViewClass
@@ -182,21 +192,16 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   RCTAssert(componentViewClass, @"RCTComponentViewFactory: Provided `componentViewClass` is `nil`.");
   std::unique_lock lock(_mutex);
 
-  auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
-  _componentViewClasses[componentDescriptorProvider.handle] =
-      [self _componentViewClassDescriptorFromClass:componentViewClass];
-  [self _addDescriptorToProviderRegistry:componentDescriptorProvider];
+  auto provider = [componentViewClass componentDescriptorProvider];
+  _componentViewClasses[provider.handle] = [self _componentViewClassDescriptorFromClass:componentViewClass];
+  _providerRegistry.add(provider);
+  _registrationStatusMap.insert({provider.name, true});
 
   auto supplementalComponentDescriptorProviders = [componentViewClass supplementalComponentDescriptorProviders];
-  for (const auto &provider : supplementalComponentDescriptorProviders) {
-    [self _addDescriptorToProviderRegistry:provider];
+  for (const auto &supplementalProvider : supplementalComponentDescriptorProviders) {
+    _providerRegistry.add(supplementalProvider);
+    _registrationStatusMap.insert({supplementalProvider.name, true});
   }
-}
-
-- (void)_addDescriptorToProviderRegistry:(const ComponentDescriptorProvider &)provider
-{
-  _registeredComponentsNames.insert(provider.name);
-  _providerRegistry.add(provider);
 }
 
 - (RCTComponentViewDescriptor)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle

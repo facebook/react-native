@@ -28,7 +28,7 @@ export default function LogBoxInspectorFooter(props: Props): React.Node {
     return (
       <View style={styles.root}>
         <View style={styles.button}>
-          <Text style={styles.syntaxErrorText}>
+          <Text id="logbox_dismissable_text" style={styles.syntaxErrorText}>
             This error cannot be dismissed.
           </Text>
         </View>
@@ -38,8 +38,16 @@ export default function LogBoxInspectorFooter(props: Props): React.Node {
 
   return (
     <View style={styles.root}>
-      <LogBoxInspectorFooterButton text="Dismiss" onPress={props.onDismiss} />
-      <LogBoxInspectorFooterButton text="Minimize" onPress={props.onMinimize} />
+      <LogBoxInspectorFooterButton
+        id="logbox_footer_button_dismiss"
+        text="Dismiss"
+        onPress={props.onDismiss}
+      />
+      <LogBoxInspectorFooterButton
+        id="logbox_footer_button_minimize"
+        text="Minimize"
+        onPress={props.onMinimize}
+      />
     </View>
   );
 }

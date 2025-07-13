@@ -52,7 +52,7 @@ internal open class SwipeRefreshLayoutManager :
       val colorValues = IntArray(colors.size())
       for (i in 0..<colors.size()) {
         if (colors.getType(i) == ReadableType.Map) {
-          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.context)
+          colorValues[i] = ColorPropConverter.getColor(colors.getMap(i), view.context, 0)
         } else {
           colorValues[i] = colors.getInt(i)
         }
@@ -114,20 +114,6 @@ internal open class SwipeRefreshLayoutManager :
     view.setOnRefreshListener {
       val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
       eventDispatcher?.dispatchEvent(RefreshEvent(UIManagerHelper.getSurfaceId(view), view.id))
-    }
-  }
-
-  override fun receiveCommand(
-      root: ReactSwipeRefreshLayout,
-      commandId: String,
-      args: ReadableArray?
-  ) {
-    when (commandId) {
-      "setNativeRefreshing" ->
-          if (args != null) {
-            setRefreshing(root, args.getBoolean(0))
-          }
-      else -> {}
     }
   }
 

@@ -8,6 +8,7 @@
 #import "TextLayoutManager.h"
 #import "RCTTextLayoutManager.h"
 
+#import <react/renderer/attributedstring/PlaceholderAttributedString.h>
 #import <react/renderer/telemetry/TransactionTelemetry.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -36,25 +37,25 @@ TextMeasurement TextLayoutManager::measure(
 
   switch (attributedStringBox.getMode()) {
     case AttributedStringBox::Mode::Value: {
-      auto &attributedString = attributedStringBox.getValue();
+      auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
-      measurement = textMeasureCache_.get(
-          {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
-            auto telemetry = TransactionTelemetry::threadLocalTelemetry();
-            if (telemetry) {
-              telemetry->willMeasureText();
-            }
+      measurement = textMeasureCache_.get({attributedString, paragraphAttributes, layoutConstraints}, [&]() {
+        auto telemetry = TransactionTelemetry::threadLocalTelemetry();
+        if (telemetry) {
+          telemetry->willMeasureText();
+        }
 
-            auto measurement = [textLayoutManager measureAttributedString:attributedString
-                                                      paragraphAttributes:paragraphAttributes
-                                                        layoutConstraints:layoutConstraints];
+        auto measurement = [textLayoutManager measureAttributedString:attributedString
+                                                  paragraphAttributes:paragraphAttributes
+                                                        layoutContext:layoutContext
+                                                    layoutConstraints:layoutConstraints];
 
-            if (telemetry) {
-              telemetry->didMeasureText();
-            }
+        if (telemetry) {
+          telemetry->didMeasureText();
+        }
 
-            return measurement;
-          });
+        return measurement;
+      });
       break;
     }
 
@@ -69,6 +70,7 @@ TextMeasurement TextLayoutManager::measure(
 
       measurement = [textLayoutManager measureNSAttributedString:nsAttributedString
                                              paragraphAttributes:paragraphAttributes
+                                                   layoutContext:layoutContext
                                                layoutConstraints:layoutConstraints];
 
       if (telemetry) {
@@ -90,17 +92,16 @@ LinesMeasurements TextLayoutManager::measureLines(
     const Size &size) const
 {
   react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
-  const auto &attributedString = attributedStringBox.getValue();
+  auto attributedString = ensurePlaceholderIfEmpty_DO_NOT_USE(attributedStringBox.getValue());
 
   RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
-  auto measurement =
-      lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
-        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
-                                                      paragraphAttributes:paragraphAttributes
-                                                                     size:{size.width, size.height}];
-        return measurement;
-      });
+  auto measurement = lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&]() {
+    auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                  paragraphAttributes:paragraphAttributes
+                                                                 size:{size.width, size.height}];
+    return measurement;
+  });
 
   return measurement;
 }

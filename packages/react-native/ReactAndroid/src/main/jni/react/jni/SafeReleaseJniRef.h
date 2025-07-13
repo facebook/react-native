@@ -13,6 +13,12 @@
 namespace facebook::react {
 
 /**
+ * Ensures that the current thread has an attached JNI environment, setting one
+ * up to be detached at the end of the thread's lifetime if not.
+ */
+void ensureThreadDurationJNIEnvAttached();
+
+/**
  * A wrapper around a JNI reference (e.g. jni::global_ref<>) that makes it safe
  * to destroy (decrement refcount) from any thread. This wrapping is necessary
  * when we don't have control over the thread where a given JNI reference's
@@ -29,6 +35,7 @@ class SafeReleaseJniRef {
   using T = std::remove_reference<decltype(*std::declval<RefT>())>::type;
 
  public:
+  SafeReleaseJniRef() = default;
   /* explicit */ SafeReleaseJniRef(RefT ref) : ref_(std::move(ref)) {}
   SafeReleaseJniRef(const SafeReleaseJniRef& other) = default;
   SafeReleaseJniRef(SafeReleaseJniRef&& other) = default;
@@ -37,7 +44,7 @@ class SafeReleaseJniRef {
 
   ~SafeReleaseJniRef() {
     if (ref_) {
-      jni::ThreadScope ts;
+      ensureThreadDurationJNIEnvAttached();
       ref_.reset();
     }
   }
@@ -64,6 +71,10 @@ class SafeReleaseJniRef {
 
   operator RefT() const {
     return ref_;
+  }
+
+  RefT::javaobject get() const {
+    return ref_.get();
   }
 
  private:

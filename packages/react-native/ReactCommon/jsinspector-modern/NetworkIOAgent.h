@@ -7,17 +7,15 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "ScopedExecutor.h"
 
 #include <folly/dynamic.h>
-#include <mutex>
-#include <sstream>
+#include <jsinspector-modern/cdp/CdpJson.h>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <variant>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -43,7 +41,7 @@ struct ReadStreamParams {
 struct NetworkResource {
   bool success{};
   std::optional<std::string> stream;
-  std::optional<int> httpStatusCode;
+  std::optional<uint32_t> httpStatusCode;
   std::optional<std::string> netErrorName;
   std::optional<Headers> headers;
   folly::dynamic toDynamic() const {
@@ -90,6 +88,17 @@ struct IOReadResult {
   }
 };
 
+struct GetResponseBodyResult {
+  std::string body;
+  bool base64Encoded;
+  folly::dynamic toDynamic() const {
+    folly::dynamic params = folly::dynamic::object;
+    params["body"] = body;
+    params["base64Encoded"] = base64Encoded;
+    return params;
+  }
+};
+
 /**
  * Passed to `loadNetworkResource`, provides callbacks for processing incoming
  * data and other events.
@@ -111,7 +120,7 @@ class NetworkRequestListener {
    * \param httpStatusCode The HTTP status code received.
    * \param headers Response headers as an unordered_map.
    */
-  virtual void onHeaders(int httpStatusCode, const Headers& headers) = 0;
+  virtual void onHeaders(uint32_t httpStatusCode, const Headers& headers) = 0;
 
   /**
    * To be called by the delegate on receipt of data chunks.
@@ -261,6 +270,11 @@ class NetworkIOAgent {
    * Reports CDP ok if the stream is found, or a CDP error if not.
    */
   void handleIoClose(const cdp::PreparsedRequest& req);
+
+  /**
+   * Handle a Network.getResponseBody CDP request.
+   */
+  void handleGetResponseBody(const cdp::PreparsedRequest& req);
 };
 
 } // namespace facebook::react::jsinspector_modern

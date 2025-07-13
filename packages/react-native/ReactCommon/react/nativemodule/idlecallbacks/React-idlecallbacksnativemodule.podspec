@@ -16,13 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = [
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-]
-
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the module access its own files
@@ -37,12 +31,11 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.compiler_flags         = folly_compiler_flags
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.header_dir             = "react/nativemodule/idlecallbacks"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-                               "OTHER_CFLAGS" => "$(inherited) " + folly_compiler_flags,
+                               "OTHER_CFLAGS" => "$(inherited)",
                                "DEFINES_MODULE" => "YES" }
 
   if ENV['USE_FRAMEWORKS']
@@ -50,16 +43,16 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  s.dependency "RCT-Folly"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
+
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-runtimescheduler"
   add_dependency(s, "React-RCTFBReactNativeSpec")
-  s.dependency "glog"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
+
 end

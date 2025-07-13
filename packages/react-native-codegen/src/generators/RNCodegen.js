@@ -73,22 +73,37 @@ const ALL_GENERATORS = {
   generateViewConfigJs: generateViewConfigJs.generate,
 };
 
-type LibraryOptions = $ReadOnly<{
+export type FilesOutput = Map<string, string>;
+
+export type GenerateFunction = (
+  libraryName: string,
+  schema: SchemaType,
+  packageName?: string,
+  assumeNonnull: boolean,
+  headerPrefix?: string,
+) => FilesOutput;
+
+export type LibraryGeneratorsFunctions = $ReadOnly<{
+  [string]: Array<GenerateFunction>,
+}>;
+
+export type LibraryOptions = $ReadOnly<{
   libraryName: string,
   schema: SchemaType,
   outputDirectory: string,
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
   useLocalIncludePaths?: boolean,
+  libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
-type SchemasOptions = $ReadOnly<{
+export type SchemasOptions = $ReadOnly<{
   schemas: {[string]: SchemaType},
   outputDirectory: string,
   supportedApplePlatforms?: {[string]: {[string]: boolean}},
 }>;
 
-type LibraryGenerators =
+export type LibraryGenerators =
   | 'componentsAndroid'
   | 'componentsIOS'
   | 'descriptors'
@@ -101,20 +116,23 @@ type LibraryGenerators =
   | 'modulesCxx'
   | 'modulesIOS';
 
-type SchemasGenerators = 'providerIOS';
+export type SchemasGenerators = 'providerIOS';
 
-type LibraryConfig = $ReadOnly<{
+export type LibraryConfig = $ReadOnly<{
   generators: Array<LibraryGenerators>,
   test?: boolean,
 }>;
 
-type SchemasConfig = $ReadOnly<{
+export type SchemasConfig = $ReadOnly<{
   generators: Array<SchemasGenerators>,
   test?: boolean,
 }>;
 
-const LIBRARY_GENERATORS = {
-  descriptors: [generateComponentDescriptorH.generate],
+const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
+  descriptors: [
+    generateComponentDescriptorCpp.generate,
+    generateComponentDescriptorH.generate,
+  ],
   events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
   states: [generateStateCpp.generate, generateStateH.generate],
   props: [
@@ -228,8 +246,6 @@ function checkOrWriteFiles(
 
 module.exports = {
   allGenerators: ALL_GENERATORS,
-  libraryGenerators: LIBRARY_GENERATORS,
-  schemaGenerators: SCHEMAS_GENERATORS,
 
   generate(
     {
@@ -239,6 +255,7 @@ module.exports = {
       packageName,
       assumeNonnull,
       useLocalIncludePaths,
+      libraryGenerators = LIBRARY_GENERATORS,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
   ): boolean {
@@ -275,7 +292,7 @@ module.exports = {
     const generatedFiles: Array<CodeGenFile> = [];
 
     for (const name of generators) {
-      for (const generator of LIBRARY_GENERATORS[name]) {
+      for (const generator of libraryGenerators[name]) {
         generator(
           libraryName,
           schema,
@@ -318,7 +335,10 @@ module.exports = {
     }
     return checkOrWriteFiles(generatedFiles, test);
   },
-  generateViewConfig({libraryName, schema}: LibraryOptions): string {
+  generateViewConfig({
+    libraryName,
+    schema,
+  }: Pick<LibraryOptions, 'libraryName' | 'schema'>): string {
     schemaValidator.validate(schema);
 
     const result = generateViewConfigJs

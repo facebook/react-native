@@ -12,7 +12,9 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeMutationObserverModuleProvider(
@@ -36,20 +38,17 @@ void NativeMutationObserver::observe(
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
+  auto shadowNode = options.targetShadowNode;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
       mutationObserverId, shadowNode, subtree, uiManager);
 }
 
-void NativeMutationObserver::unobserve(
+void NativeMutationObserver::unobserveAll(
     jsi::Runtime& runtime,
-    MutationObserverId mutationObserverId,
-    jsi::Object targetShadowNode) {
-  auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
-  mutationObserverManager_.unobserve(mutationObserverId, *shadowNode);
+    MutationObserverId mutationObserverId) {
+  mutationObserverManager_.unobserveAll(mutationObserverId);
 }
 
 void NativeMutationObserver::connect(
@@ -99,7 +98,7 @@ jsi::Value NativeMutationObserver::getPublicInstanceFromShadowNode(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    const std::vector<ShadowNode::Shared>& shadowNodes) const {
+    const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 
@@ -142,8 +141,7 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
 
   if (dispatchNotification) {
     TraceSection s("NativeMutationObserver::notifyObservers");
-    if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
-        !ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
+    if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
       runtime_->queueMicrotask(notifyMutationObservers_.value());
     } else {
       jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {

@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  HostInstance,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 
 import * as React from 'react';
 

@@ -21,6 +21,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/timing/primitives.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
@@ -35,7 +36,7 @@ std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
     RuntimeSchedulerTaskErrorHandler taskErrorHandler) {
   std::shared_ptr<RuntimeScheduler> scheduler =
       std::make_shared<RuntimeScheduler>(
-          runtimeExecutor, RuntimeSchedulerClock::now, taskErrorHandler);
+          runtimeExecutor, HighResTimeStamp::now, taskErrorHandler);
   scheduler->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and
       // guarantee that its lifetime is the same as the runtime.
@@ -81,14 +82,6 @@ ReactInstance::ReactInstance(
             try {
               ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
               callback(jsiRuntime);
-
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
             } catch (jsi::JSError& originalError) {
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {
@@ -207,7 +200,7 @@ namespace {
 // Copied from JSIExecutor.cpp
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
 std::string simpleBasename(const std::string& path) {
-  size_t pos = path.rfind("/");
+  size_t pos = path.rfind('/');
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
 
@@ -223,7 +216,8 @@ std::string simpleBasename(const std::string& path) {
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
     const std::string& sourceURL,
-    std::function<void(jsi::Runtime& runtime)>&& completion) {
+    std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
+    std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
@@ -234,7 +228,11 @@ void ReactInstance::loadScript(
                                    weakBufferedRuntimeExecuter =
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
-                                   completion](jsi::Runtime& runtime) {
+                                   beforeLoad,
+                                   afterLoad](jsi::Runtime& runtime) {
+    if (beforeLoad) {
+      beforeLoad(runtime);
+    }
     TraceSection s("ReactInstance::loadScript");
     bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
     if (hasLogger) {
@@ -263,8 +261,8 @@ void ReactInstance::loadScript(
             weakBufferedRuntimeExecuter.lock()) {
       strongBufferedRuntimeExecuter->flush();
     }
-    if (completion) {
-      completion(runtime);
+    if (afterLoad) {
+      afterLoad(runtime);
     }
   });
 }
@@ -338,7 +336,7 @@ void ReactInstance::registerSegment(
                << segmentId;
   runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
     TraceSection s("ReactInstance::registerSegment");
-    const auto tag = folly::to<std::string>(segmentId);
+    auto tag = std::to_string(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
     if (script->size() == 0) {
       throw std::invalid_argument(

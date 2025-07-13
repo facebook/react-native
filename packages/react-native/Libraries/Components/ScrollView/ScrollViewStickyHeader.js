@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
@@ -16,12 +16,19 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+  cloneElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
-export type Props = $ReadOnly<{
-  children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
+export type ScrollViewStickyHeaderProps = $ReadOnly<{
+  children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
@@ -32,16 +39,20 @@ export type Props = $ReadOnly<{
   hiddenOnScroll?: ?boolean,
 }>;
 
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: number => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: number => void;
+}
 
-const ScrollViewStickyHeaderWithForwardedRef: component(
+const ScrollViewStickyHeader: component(
   ref: React.RefSetter<Instance>,
-  ...props: Props
-) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+  ...props: ScrollViewStickyHeaderProps
+) = function ScrollViewStickyHeader({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<Instance>,
+  ...ScrollViewStickyHeaderProps,
+}) {
   const {
     inverted,
     scrollViewHeight,
@@ -62,6 +73,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     if (ref == null) {
       return;
     }
+    // $FlowExpectedError[cannot-write]
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
@@ -253,7 +265,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     isFabric,
   ]);
 
-  const _onLayout = (event: LayoutEvent) => {
+  const _onLayout = (event: LayoutChangeEvent) => {
     setLayoutY(event.nativeEvent.layout.y);
     setLayoutHeight(event.nativeEvent.layout.height);
     setMeasured(true);
@@ -290,13 +302,13 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       passthroughAnimatedPropExplicitValues={
         passthroughAnimatedPropExplicitValues
       }>
-      {React.cloneElement(child, {
+      {cloneElement(child, {
         style: styles.fill, // We transfer the child style to the wrapper.
         onLayout: undefined, // we call this manually through our this._onLayout
       })}
     </Animated.View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   header: {
@@ -307,4 +319,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ScrollViewStickyHeaderWithForwardedRef;
+export default ScrollViewStickyHeader;

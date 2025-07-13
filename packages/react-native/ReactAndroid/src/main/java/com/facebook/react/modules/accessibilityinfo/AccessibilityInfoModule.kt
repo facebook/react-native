@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.accessibilityinfo
 
-import android.annotation.TargetApi
 import android.content.ContentResolver
 import android.content.Context
 import android.database.ContentObserver
@@ -30,7 +29,6 @@ import com.facebook.react.module.annotations.ReactModule
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
 internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
       AccessibilityManager.TouchExplorationStateChangeListener {
     override fun onTouchExplorationStateChanged(enabled: Boolean) {
@@ -41,7 +39,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   // Android can listen for accessibility service enable with `accessibilityStateChange`, but
   // `accessibilityState` conflicts with React Native props and confuses developers. Therefore, the
   // name `accessibilityServiceChange` is used here instead.
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactAccessibilityServiceChangeListener :
       AccessibilityManager.AccessibilityStateChangeListener {
     override fun onAccessibilityStateChanged(enabled: Boolean) {
@@ -57,7 +54,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendReduceMotionChangeEvent()
           }
         }
@@ -70,7 +67,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendHighTextContrastChangeEvent()
           }
         }
@@ -93,7 +90,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val appContext = context.applicationContext
     accessibilityManager =
         appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    contentResolver = getReactApplicationContext().getContentResolver()
+    contentResolver = reactApplicationContext.contentResolver
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
@@ -101,7 +98,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isReduceMotionEnabledValue: Boolean
     get() {
       // Disabling animations in developer settings will set the animation scale to "0.0"
@@ -109,23 +105,30 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       val rawValue =
           Settings.Global.getString(contentResolver, Settings.Global.TRANSITION_ANIMATION_SCALE)
 
-      // Parse the value as a float so we can check for a single value.
-      val parsedValue = rawValue?.toFloat() ?: 1f
-      return parsedValue == 0f
-    }
+      if (rawValue == null) {
+        return false
+      }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private val isInvertColorsEnabledValue: Boolean
-    get() {
       try {
-        return Settings.Secure.getInt(
-            contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
-      } catch (e: Settings.SettingNotFoundException) {
+        // In some locales, the decimal separator is a comma instead of a dot,
+        // but "toFloat" would crash failing to conver these.
+        val parsedValue = rawValue.replace(',', '.').toFloat()
+        return parsedValue == 0f
+      } catch (e: NumberFormatException) {
+        // If the value is not a valid number, we assume reduced motion is not enabled
         return false
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private val isInvertColorsEnabledValue: Boolean
+    get() =
+        try {
+          Settings.Secure.getInt(
+              contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
+        } catch (e: Settings.SettingNotFoundException) {
+          false
+        }
+
   private val isGrayscaleEnabledValue: Boolean
     get() {
       try {
@@ -140,7 +143,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       }
     }
 
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isHighTextContrastEnabledValue: Boolean
     get() {
       return Settings.Secure.getInt(
@@ -178,10 +180,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isReduceMotionEnabled = isReduceMotionEnabledValue
     if (reduceMotionEnabled != isReduceMotionEnabled) {
       reduceMotionEnabled = isReduceMotionEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
     }
   }
 
@@ -189,10 +189,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isInvertColorsEnabled = isInvertColorsEnabledValue
     if (invertColorsEnabled != isInvertColorsEnabled) {
       invertColorsEnabled = isInvertColorsEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(INVERT_COLOR_EVENT_NAME, invertColorsEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(INVERT_COLOR_EVENT_NAME, invertColorsEnabled)
     }
   }
 
@@ -200,13 +198,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isHighTextContrastEnabled = isHighTextContrastEnabledValue
     if (highTextContrastEnabled != isHighTextContrastEnabled) {
       highTextContrastEnabled = isHighTextContrastEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(
-            HIGH_TEXT_CONTRAST_EVENT_NAME,
-            highTextContrastEnabled,
-        )
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(
+              HIGH_TEXT_CONTRAST_EVENT_NAME,
+              highTextContrastEnabled,
+          )
     }
   }
 
@@ -236,14 +232,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isGrayscaleModeEnabled = isGrayscaleEnabledValue
     if (grayscaleModeEnabled != isGrayscaleModeEnabled) {
       grayscaleModeEnabled = isGrayscaleModeEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(GRAYSCALE_MODE_EVENT_NAME, grayscaleModeEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(GRAYSCALE_MODE_EVENT_NAME, grayscaleModeEnabled)
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)
@@ -262,7 +255,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     updateAndSendGrayscaleModeChangeEvent()
   }
 
-  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostPause() {
     accessibilityManager?.removeTouchExplorationStateChangeListener(
         touchExplorationStateChangeListener)
@@ -316,8 +308,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     successCallback.invoke(recommendedTimeout)
   }
 
-  public companion object {
-    public const val NAME: String = NativeAccessibilityInfoSpec.NAME
+  companion object {
+    const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
     private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"

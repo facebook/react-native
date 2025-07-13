@@ -55,11 +55,9 @@ internal class InsetBoxShadowDrawable(
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
-        if (blurRadius > 0) {
-          maskFilter =
-              BlurMaskFilter(
-                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
-                  BlurMaskFilter.Blur.NORMAL)
+        val convertedBlurRadius = FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE)
+        if (convertedBlurRadius > 0) {
+          maskFilter = BlurMaskFilter(convertedBlurRadius, BlurMaskFilter.Blur.NORMAL)
         }
       }
 
@@ -111,7 +109,11 @@ internal class InsetBoxShadowDrawable(
     val spreadExtent = spread.dpToPx()
     val innerRect =
         RectF(paddingBoxRect).apply {
-          inset(spreadExtent, spreadExtent)
+          if (2 * spreadExtent > paddingBoxRect.width()) {
+            setEmpty()
+          } else {
+            inset(spreadExtent, spreadExtent)
+          }
           offset(x, y)
         }
 
@@ -120,11 +122,9 @@ internal class InsetBoxShadowDrawable(
     val blurExtent = FilterHelper.sigmaToRadius(blurRadius)
     val outerRect =
         RectF(innerRect).apply {
+          set(paddingBoxRect)
           inset(-blurExtent, -blurExtent)
-          if (spreadExtent < 0) {
-            inset(spreadExtent, spreadExtent)
-          }
-          union(RectF(this).apply { offset(-x, -y) })
+          union(RectF(innerRect))
         }
 
     canvas.save().let { saveCount ->

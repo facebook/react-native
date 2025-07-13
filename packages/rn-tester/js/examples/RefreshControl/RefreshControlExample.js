@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
@@ -18,6 +17,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+
+type Data = $ReadOnly<{
+  clicks: number,
+  text: string,
+}>;
 
 const styles = StyleSheet.create({
   row: {
@@ -36,12 +40,17 @@ const styles = StyleSheet.create({
   },
 });
 
-class Row extends React.Component {
+class Row extends React.Component<
+  $ReadOnly<{
+    data: Data,
+    onClick: Data => void,
+  }>,
+> {
   _onClick = () => {
     this.props.onClick(this.props.data);
   };
 
-  render() {
+  render(): React.Node {
     return (
       <TouchableWithoutFeedback onPress={this._onClick}>
         <View style={styles.row}>
@@ -54,24 +63,44 @@ class Row extends React.Component {
   }
 }
 
-class RefreshControlExample extends React.Component {
-  state = {
+type RefreshControlExampleState = $ReadOnly<{
+  isRefreshing: boolean,
+  loaded: number,
+  rowData: $ReadOnlyArray<Data>,
+}>;
+
+class RefreshControlExample extends React.Component<
+  $ReadOnly<{}>,
+  RefreshControlExampleState,
+> {
+  state: RefreshControlExampleState = {
     isRefreshing: false,
     loaded: 0,
-    rowData: Array.from(new Array(20)).map((val, i) => ({
+    rowData: Array.from(new Array<void>(20)).map((val, i) => ({
       text: 'Initial row ' + i,
       clicks: 0,
     })),
   };
 
-  _onClick = row => {
-    row.clicks++;
-    this.setState({
-      rowData: this.state.rowData,
+  componentDidMount() {
+    this._onRefresh();
+  }
+
+  _onClick = (row: Data) => {
+    this.setState(prevState => {
+      const index = prevState.rowData.indexOf(row);
+      return index < 0
+        ? null
+        : {
+            rowData: [...prevState.rowData].splice(index, 1, {
+              ...row,
+              clicks: row.clicks + 1,
+            }),
+          };
     });
   };
 
-  render() {
+  render(): React.Node {
     const rows = this.state.rowData.map((row, ii) => {
       return <Row key={ii} data={row} onClick={this._onClick} />;
     });
@@ -98,7 +127,7 @@ class RefreshControlExample extends React.Component {
     this.setState({isRefreshing: true});
     setTimeout(() => {
       // prepend 10 items
-      const rowData = Array.from(new Array(10))
+      const rowData = Array.from(new Array<void>(10))
         .map((val, i) => ({
           text: 'Loaded row ' + (+this.state.loaded + i),
           clicks: 0,

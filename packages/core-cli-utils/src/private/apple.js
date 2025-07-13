@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Task} from './types';
@@ -71,7 +70,14 @@ function checkPodfileInSyncWithManifest(
 
 const FIRST = 1,
   SECOND = 2,
-  THIRD = 3;
+  THIRD = 3,
+  FOURTH = 4,
+  FIFTH = 5;
+
+function getNodePackagePath(packageName: string): string {
+  // $FlowIgnore[prop-missing] type definition is incomplete
+  return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
+}
 
 /* eslint sort-keys: "off" */
 export const tasks = {
@@ -79,26 +85,51 @@ export const tasks = {
   bootstrap: (
     options: AppleBootstrapOption,
   ): {
+    cleanupBuildFolder: Task<void>,
+    runCodegen: Task<void>,
     validate: Task<void>,
     installRubyGems: Task<ExecaPromise>,
     installDependencies: Task<ExecaPromise>,
   } => ({
-    validate: task(FIRST, 'Check Cocoapods and bundle are available', () => {
+    cleanupBuildFolder: task(FIRST, 'Cleanup build folder', () => {
+      execa.sync('rm', ['-rf', 'build'], {
+        cwd: options.cwd,
+      });
+    }),
+    runCodegen: task(SECOND, 'Run codegen', () => {
+      const reactNativePath = path.dirname(getNodePackagePath('react-native'));
+      const codegenScript = path.join(
+        reactNativePath,
+        'scripts',
+        'generate-codegen-artifacts.js',
+      );
+      execa.sync('node', [
+        codegenScript,
+        '-p',
+        process.cwd(),
+        '-o',
+        options.cwd,
+        '-t',
+        'ios',
+      ]);
+    }),
+    validate: task(THIRD, 'Check Cocoapods and bundle are available', () => {
       assertDependencies(
         isOnPath('pod', 'CocoaPods'),
         isOnPath('bundle', "Bundler to manage Ruby's gems"),
       );
     }),
-    installRubyGems: task(SECOND, 'Install Ruby Gems', () =>
+    installRubyGems: task(FOURTH, 'Install Ruby Gems', () =>
       execa('bundle', ['install'], {
         cwd: options.cwd,
       }),
     ),
-    installDependencies: task(THIRD, 'Install CocoaPods dependencies', () => {
-      const env = {
+    installDependencies: task(FIFTH, 'Install CocoaPods dependencies', () => {
+      const env: {[string]: string | void} = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
         USE_FRAMEWORKS: options.frameworks,
         USE_HERMES: options.hermes ? '1' : '0',
+        RCT_IGNORE_PODS_DEPRECATION: '1',
       };
       if (options.frameworks == null) {
         delete env.USE_FRAMEWORKS;

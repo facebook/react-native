@@ -13,7 +13,10 @@
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ScrollEvent} from '../../Types/CoreEventTypes';
+import type {
+  GestureResponderEvent,
+  ScrollEvent,
+} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ScrollViewNativeProps = $ReadOnly<{
@@ -39,7 +42,7 @@ export type ScrollViewNativeProps = $ReadOnly<{
   directionalLockEnabled?: ?boolean,
   disableIntervalMomentum?: ?boolean,
   endFillColor?: ?ColorValue,
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
   indicatorStyle?: ?('default' | 'black' | 'white'),
   isInvertedVirtualizedList?: ?boolean,
   keyboardDismissMode?: ?('none' | 'on-drag' | 'interactive'),
@@ -76,6 +79,6 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToStart?: ?boolean,
   zoomScale?: ?number,
   // Overrides
-  onResponderGrant?: ?(e: $FlowFixMe) => void | boolean,
+  onResponderGrant?: ?(e: GestureResponderEvent) => void | boolean,
   ...
 }>;

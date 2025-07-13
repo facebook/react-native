@@ -24,6 +24,6 @@ export interface TextInputNativeCommands<T> {
   ) => void;
 }
 
-const supportedCommands = ['focus', 'blur', 'setTextAndSelection'];
+const supportedCommands = ['focus', 'blur', 'setTextAndSelection'] as string[];
 
 export default supportedCommands;

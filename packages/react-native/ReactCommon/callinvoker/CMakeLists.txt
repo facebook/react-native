@@ -6,13 +6,10 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(callinvoker INTERFACE)
 
 target_include_directories(callinvoker INTERFACE .)
+target_compile_reactnative_options(callinvoker INTERFACE)
+target_compile_options(callinvoker INTERFACE -Wpedantic)

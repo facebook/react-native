@@ -18,17 +18,17 @@ internal class VelocityHelper {
   private var velocityTracker: VelocityTracker? = null
 
   /* Needs to call ACTION_UP/CANCEL to update the xVelocity/yVelocity */
-  public var xVelocity = 0f
+  var xVelocity = 0f
     private set
 
-  public var yVelocity = 0f
+  var yVelocity = 0f
     private set
 
   /**
    * Call from a ScrollView in onTouchEvent. Calculating the velocity for END_DRAG movement and send
    * them back to react ScrollResponder.js
    */
-  public fun calculateVelocity(ev: MotionEvent): Unit {
+  fun calculateVelocity(ev: MotionEvent): Unit {
     if (velocityTracker == null) {
       velocityTracker = VelocityTracker.obtain()
     }

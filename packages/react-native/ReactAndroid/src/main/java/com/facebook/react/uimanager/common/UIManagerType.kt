@@ -8,14 +8,16 @@
 package com.facebook.react.uimanager.common
 
 import androidx.annotation.IntDef
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 
 @Retention(AnnotationRetention.SOURCE)
-@IntDef(UIManagerType.DEFAULT, UIManagerType.FABRIC)
-@DeprecatedInNewArchitecture
+@Suppress("DEPRECATION")
+@IntDef(UIManagerType.DEFAULT, UIManagerType.LEGACY, UIManagerType.FABRIC)
 public annotation class UIManagerType {
   public companion object {
+    @Deprecated(
+        "UIManagerType.DEFAULT will be deleted in the next release of React Native. Use [LEGACY] instead.")
     public const val DEFAULT: Int = 1
+    public const val LEGACY: Int = 1
     public const val FABRIC: Int = 2
   }
 }

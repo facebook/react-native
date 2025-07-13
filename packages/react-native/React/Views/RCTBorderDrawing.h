@@ -36,6 +36,11 @@ typedef struct {
 } RCTBorderColors;
 
 /**
+ * Determine the largest border inset value.
+ */
+RCT_EXTERN CGFloat RCTMaxBorderInset(UIEdgeInsets borderInsets);
+
+/**
  * Determine if the border widths, colors and radii are all equal.
  */
 RCT_EXTERN BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets);
@@ -52,8 +57,11 @@ RCT_EXTERN RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii, UIEdge
  * Create a CGPath representing a rounded rectangle with the specified bounds
  * and corner insets. Note that the CGPathRef must be released by the caller.
  */
-RCT_EXTERN CGPathRef
-RCTPathCreateWithRoundedRect(CGRect bounds, RCTCornerInsets cornerInsets, const CGAffineTransform *transform);
+RCT_EXTERN CGPathRef RCTPathCreateWithRoundedRect(
+    CGRect bounds,
+    RCTCornerInsets cornerInsets,
+    const CGAffineTransform *transform,
+    const BOOL inverted);
 
 /**
  * Draw a CSS-compliant border as an image. You can determine if it's scalable

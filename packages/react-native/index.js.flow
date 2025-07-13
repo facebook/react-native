@@ -1,0 +1,456 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+// ----------------------------------------------------------------------------
+// Types entry point for react-native.
+//
+// Exports of this module define the public API for React Native at development
+// time, and are automatically translated to TypeScript when we publish to npm.
+//
+// IMPORTANT: Keep this file in sync with index.js. Test your changes whenever
+// updating React Native's public API.
+// ----------------------------------------------------------------------------
+
+/// <reference path="../src/types/globals.d.ts" />
+
+// #region Components
+
+export type {ActivityIndicatorProps} from './Libraries/Components/ActivityIndicator/ActivityIndicator';
+export {default as ActivityIndicator} from './Libraries/Components/ActivityIndicator/ActivityIndicator';
+
+export type {ButtonProps} from './Libraries/Components/Button';
+export {default as Button} from './Libraries/Components/Button';
+
+export type {
+  DrawerLayoutAndroidProps,
+  DrawerSlideEvent,
+} from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
+export {default as DrawerLayoutAndroid} from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
+
+export type {FlatListProps} from './Libraries/Lists/FlatList';
+export {default as FlatList} from './Libraries/Lists/FlatList';
+
+export type {
+  ImageBackgroundProps,
+  ImageErrorEvent,
+  ImageLoadEvent,
+  ImageProgressEventIOS,
+  ImageProps,
+  ImagePropsAndroid,
+  ImagePropsBase,
+  ImagePropsIOS,
+  ImageResolvedAssetSource,
+  ImageSize,
+  ImageSourcePropType,
+} from './Libraries/Image/Image';
+export type {
+  ImageRequireSource,
+  ImageSource,
+  ImageURISource,
+} from './Libraries/Image/ImageSource';
+export {default as Image} from './Libraries/Image/Image';
+export {default as ImageBackground} from './Libraries/Image/ImageBackground';
+
+export type {InputAccessoryViewProps} from './Libraries/Components/TextInput/InputAccessoryView';
+export {default as InputAccessoryView} from './Libraries/Components/TextInput/InputAccessoryView';
+
+export type {KeyboardAvoidingViewProps} from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+export {default as KeyboardAvoidingView} from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+
+export type {LayoutConformanceProps} from './Libraries/Components/LayoutConformance/LayoutConformance';
+export {default as experimental_LayoutConformance} from './Libraries/Components/LayoutConformance/LayoutConformance';
+
+export type {
+  ModalBaseProps,
+  ModalProps,
+  ModalPropsAndroid,
+  ModalPropsIOS,
+} from './Libraries/Modal/Modal';
+export {default as Modal} from './Libraries/Modal/Modal';
+
+export type {
+  PressableAndroidRippleConfig,
+  PressableProps,
+  PressableStateCallbackType,
+} from './Libraries/Components/Pressable/Pressable';
+export {default as Pressable} from './Libraries/Components/Pressable/Pressable';
+
+export type {ProgressBarAndroidProps} from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
+export {default as ProgressBarAndroid} from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
+
+export type {
+  RefreshControlProps,
+  RefreshControlPropsAndroid,
+  RefreshControlPropsIOS,
+} from './Libraries/Components/RefreshControl/RefreshControl';
+export {default as RefreshControl} from './Libraries/Components/RefreshControl/RefreshControl';
+
+export {default as SafeAreaView} from './Libraries/Components/SafeAreaView/SafeAreaView';
+
+export type {
+  ScrollViewImperativeMethods,
+  ScrollViewScrollToOptions,
+  ScrollResponderType,
+  ScrollViewProps,
+  ScrollViewPropsAndroid,
+  ScrollViewPropsIOS,
+} from './Libraries/Components/ScrollView/ScrollView';
+export {default as ScrollView} from './Libraries/Components/ScrollView/ScrollView';
+
+export type {
+  SectionListProps,
+  SectionListRenderItem,
+  SectionListRenderItemInfo,
+  SectionListData,
+} from './Libraries/Lists/SectionList';
+export {default as SectionList} from './Libraries/Lists/SectionList';
+
+export type {
+  StatusBarAnimation,
+  StatusBarProps,
+  StatusBarStyle,
+} from './Libraries/Components/StatusBar/StatusBar';
+export {default as StatusBar} from './Libraries/Components/StatusBar/StatusBar';
+
+export type {
+  SwitchChangeEvent,
+  SwitchProps,
+} from './Libraries/Components/Switch/Switch';
+export {default as Switch} from './Libraries/Components/Switch/Switch';
+
+export type {TextProps} from './Libraries/Text/Text';
+export {default as Text} from './Libraries/Text/Text';
+export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
+
+export type {
+  AutoCapitalize,
+  EnterKeyHintTypeOptions,
+  KeyboardTypeOptions,
+  InputModeOptions,
+  TextContentType,
+  TextInputAndroidProps,
+  TextInputIOSProps,
+  TextInputProps,
+  TextInputChangeEvent,
+  TextInputContentSizeChangeEvent,
+  TextInputEndEditingEvent,
+  TextInputFocusEvent,
+  TextInputKeyPressEvent,
+  TextInputSelectionChangeEvent,
+  TextInputSubmitEditingEvent,
+  ReturnKeyTypeOptions,
+  SubmitBehavior,
+} from './Libraries/Components/TextInput/TextInput';
+export {default as TextInput} from './Libraries/Components/TextInput/TextInput';
+
+export {default as Touchable} from './Libraries/Components/Touchable/Touchable';
+
+export type {TouchableHighlightProps} from './Libraries/Components/Touchable/TouchableHighlight';
+export {default as TouchableHighlight} from './Libraries/Components/Touchable/TouchableHighlight';
+
+export type {TouchableNativeFeedbackProps} from './Libraries/Components/Touchable/TouchableNativeFeedback';
+export {default as TouchableNativeFeedback} from './Libraries/Components/Touchable/TouchableNativeFeedback';
+
+export type {TouchableOpacityProps} from './Libraries/Components/Touchable/TouchableOpacity';
+export {default as TouchableOpacity} from './Libraries/Components/Touchable/TouchableOpacity';
+
+export type {TouchableWithoutFeedbackProps} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
+export {default as TouchableWithoutFeedback} from './Libraries/Components/Touchable/TouchableWithoutFeedback';
+
+export type {
+  AccessibilityActionEvent,
+  AccessibilityProps,
+  AccessibilityRole,
+  AccessibilityState,
+  AccessibilityValue,
+  Role,
+} from './Libraries/Components/View/ViewAccessibility';
+export type {
+  GestureResponderHandlers,
+  TVViewPropsIOS,
+  ViewProps,
+  ViewPropsAndroid,
+  ViewPropsIOS,
+} from './Libraries/Components/View/ViewPropTypes';
+export {default as View} from './Libraries/Components/View/View';
+
+export type {
+  ListRenderItemInfo,
+  ListRenderItem,
+  Separators,
+  VirtualizedListProps,
+} from './Libraries/Lists/VirtualizedList';
+export {default as VirtualizedList} from './Libraries/Lists/VirtualizedList';
+
+export type {
+  ScrollToLocationParamsType,
+  SectionBase,
+  VirtualizedSectionListProps,
+} from './Libraries/Lists/VirtualizedSectionList';
+export {default as VirtualizedSectionList} from './Libraries/Lists/VirtualizedSectionList';
+
+// #endregion
+// #region APIs
+
+export {default as AccessibilityInfo} from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
+
+export type {
+  ActionSheetIOSOptions,
+  ShareActionSheetIOSOptions,
+  ShareActionSheetError,
+} from './Libraries/ActionSheetIOS/ActionSheetIOS';
+export {default as ActionSheetIOS} from './Libraries/ActionSheetIOS/ActionSheetIOS';
+
+export type {
+  AlertType,
+  AlertButtonStyle,
+  AlertButton,
+  AlertOptions,
+} from './Libraries/Alert/Alert';
+export {default as Alert} from './Libraries/Alert/Alert';
+
+export {default as Animated} from './Libraries/Animated/Animated';
+
+export * as Appearance from './Libraries/Utilities/Appearance';
+
+export type {
+  TaskProvider,
+  ComponentProvider,
+  ComponentProviderInstrumentationHook,
+  AppConfig,
+  Runnable,
+  Runnables,
+  Registry,
+  WrapperComponentProvider,
+  RootViewStyleProvider,
+} from './Libraries/ReactNative/AppRegistry';
+export {AppRegistry} from './Libraries/ReactNative/AppRegistry';
+
+export type {
+  AppStateStatus,
+  AppStateEvent,
+} from './Libraries/AppState/AppState';
+export {default as AppState} from './Libraries/AppState/AppState';
+
+export type {BackPressEventName} from './Libraries/Utilities/BackHandler';
+export {default as BackHandler} from './Libraries/Utilities/BackHandler';
+
+export {default as Clipboard} from './Libraries/Components/Clipboard/Clipboard';
+
+export {default as codegenNativeComponent} from './Libraries/Utilities/codegenNativeComponent';
+export {default as codegenNativeCommands} from './Libraries/Utilities/codegenNativeCommands';
+
+export {default as DeviceEventEmitter} from './Libraries/EventEmitter/RCTDeviceEventEmitter';
+
+export type {DeviceInfoConstants} from './Libraries/Utilities/DeviceInfo';
+export {default as DeviceInfo} from './Libraries/Utilities/DeviceInfo';
+
+export {default as DevMenu} from './src/private/devsupport/devmenu/DevMenu';
+export {default as DevSettings} from './Libraries/Utilities/DevSettings';
+
+export type {
+  DimensionsPayload,
+  DisplayMetrics,
+  DisplayMetricsAndroid,
+  ScaledSize,
+} from './Libraries/Utilities/Dimensions';
+export {default as Dimensions} from './Libraries/Utilities/Dimensions';
+
+export type {DynamicColorIOSTuple} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+export {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
+
+export type {EasingFunction} from './Libraries/Animated/Easing';
+export {default as Easing} from './Libraries/Animated/Easing';
+
+export {findNodeHandle} from './Libraries/ReactNative/RendererProxy';
+
+export {default as I18nManager} from './Libraries/ReactNative/I18nManager';
+
+export type {
+  Handle,
+  PromiseTask,
+  SimpleTask,
+} from './Libraries/Interaction/InteractionManager';
+export {default as InteractionManager} from './Libraries/Interaction/InteractionManager';
+
+export type {
+  AndroidKeyboardEvent,
+  IOSKeyboardEvent,
+  KeyboardEvent,
+  KeyboardEventEasing,
+  KeyboardEventName,
+  KeyboardMetrics,
+} from './Libraries/Components/Keyboard/Keyboard';
+export {default as Keyboard} from './Libraries/Components/Keyboard/Keyboard';
+
+export type {
+  LayoutAnimationAnim,
+  LayoutAnimationConfig,
+  LayoutAnimationProperties,
+  LayoutAnimationProperty,
+  LayoutAnimationType,
+  LayoutAnimationTypes,
+} from './Libraries/LayoutAnimation/LayoutAnimation';
+export {default as LayoutAnimation} from './Libraries/LayoutAnimation/LayoutAnimation';
+
+export {default as Linking} from './Libraries/Linking/Linking';
+
+export type {
+  ExtendedExceptionData,
+  IgnorePattern,
+  LogData,
+} from './Libraries/LogBox/LogBox';
+export {default as LogBox} from './Libraries/LogBox/LogBox';
+
+export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
+
+export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
+
+export type {
+  EventSubscription,
+  EmitterSubscription,
+  NativeEventSubscription,
+} from './Libraries/EventEmitter/NativeEventEmitter';
+export {default as NativeEventEmitter} from './Libraries/EventEmitter/NativeEventEmitter';
+export {default as NativeModules} from './Libraries/BatchedBridge/NativeModules';
+export {default as Networking} from './Libraries/Network/RCTNetworking';
+
+export type {
+  PanResponderCallbacks,
+  PanResponderGestureState,
+  PanResponderInstance,
+} from './Libraries/Interaction/PanResponder';
+export {default as PanResponder} from './Libraries/Interaction/PanResponder';
+
+export type {
+  Permission,
+  PermissionStatus,
+  Rationale,
+} from './Libraries/PermissionsAndroid/PermissionsAndroid';
+export {default as PermissionsAndroid} from './Libraries/PermissionsAndroid/PermissionsAndroid';
+
+export {default as PixelRatio} from './Libraries/Utilities/PixelRatio';
+
+export type {
+  PlatformOSType,
+  PlatformSelectSpec,
+} from './Libraries/Utilities/PlatformTypes';
+export {default as Platform} from './Libraries/Utilities/Platform';
+
+export {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
+
+export type {
+  PushNotificationEventName,
+  PushNotificationPermissions,
+} from './Libraries/PushNotificationIOS/PushNotificationIOS';
+export {default as PushNotificationIOS} from './Libraries/PushNotificationIOS/PushNotificationIOS';
+
+export type {ProcessedColorValue} from './Libraries/StyleSheet/processColor';
+export {default as processColor} from './Libraries/StyleSheet/processColor';
+
+export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
+export {default as requireNativeComponent} from './Libraries/ReactNative/requireNativeComponent';
+
+export type {RootTag} from './Libraries/ReactNative/RootTag';
+export {RootTagContext} from './Libraries/ReactNative/RootTag';
+
+export {default as Settings} from './Libraries/Settings/Settings';
+
+export type {
+  ShareAction,
+  ShareContent,
+  ShareOptions,
+} from './Libraries/Share/Share';
+export {default as Share} from './Libraries/Share/Share';
+
+// TODO(T210505449): StyleSheet/StyleSheetTypes exports are incomplete - review
+export type {
+  ColorValue,
+  ImageStyle,
+  FilterFunction,
+  FontVariant,
+  NativeColorValue,
+  OpaqueColorValue,
+  StyleProp,
+  TextStyle,
+  TransformsStyle,
+  ViewStyle,
+} from './Libraries/StyleSheet/StyleSheet';
+export type {
+  BoxShadowValue,
+  CursorValue,
+  DimensionValue,
+  DropShadowValue,
+  EdgeInsetsValue,
+  PointValue,
+} from './Libraries/StyleSheet/StyleSheetTypes';
+export type {Insets} from './Libraries/StyleSheet/Rect';
+export {default as StyleSheet} from './Libraries/StyleSheet/StyleSheet';
+
+export * as Systrace from './Libraries/Performance/Systrace';
+export {default as ToastAndroid} from './Libraries/Components/ToastAndroid/ToastAndroid';
+export * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
+export {default as UIManager} from './Libraries/ReactNative/UIManager';
+export {unstable_batchedUpdates} from './Libraries/ReactNative/RendererProxy';
+export {default as useAnimatedValue} from './Libraries/Animated/useAnimatedValue';
+export {default as useColorScheme} from './Libraries/Utilities/useColorScheme';
+export {default as useWindowDimensions} from './Libraries/Utilities/useWindowDimensions';
+export {default as UTFSequence} from './Libraries/UTFSequence';
+export {default as Vibration} from './Libraries/Vibration/Vibration';
+
+// #endregion
+// #region APIs (types only)
+
+export type {
+  BlurEvent,
+  FocusEvent,
+  GestureResponderEvent,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  MouseEvent,
+  PointerEvent,
+  NativeMouseEvent,
+  NativePointerEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  NativeTouchEvent,
+  NativeUIEvent,
+  ResponderSyntheticEvent,
+  ScrollEvent,
+  TargetedEvent,
+  TextLayoutEvent,
+} from './Libraries/Types/CoreEventTypes';
+
+export type {TurboModule} from './Libraries/TurboModule/RCTExport';
+export type * from './Libraries/Types/CodegenTypesNamespace';
+
+export type {
+  HostInstance,
+  NativeMethods,
+  NativeMethodsMixin,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from './src/private/types/HostInstance';
+export type {HostComponent} from './src/private/types/HostComponent';
+export type {ColorSchemeName} from './src/private/specs_DEPRECATED/modules/NativeAppearance';
+export type {ErrorUtils} from './Libraries/vendor/core/ErrorUtils';
+export type {
+  PublicRootInstance,
+  PublicTextInstance,
+} from './Libraries/ReactPrivate/ReactNativePrivateInterface';
+
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from './src/private/components/virtualview/VirtualView';
+export type {ModeChangeEvent} from './src/private/components/virtualview/VirtualView';
+
+// #endregion

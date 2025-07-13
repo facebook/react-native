@@ -7,10 +7,11 @@
 
 package com.facebook.react.common.mapbuffer
 
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.lang.StringBuilder
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -25,42 +26,25 @@ import javax.annotation.concurrent.NotThreadSafe
 @StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-public class ReadableMapBuffer : MapBuffer {
+public class ReadableMapBuffer
+@DoNotStrip
+private constructor(
+    // Byte data of the mapBuffer
+    private val buffer: ByteBuffer,
+    // Offset to the start of the MapBuffer
+    private val offsetToMapBuffer: Int
+) : HybridClassBase(), MapBuffer {
 
-  // Hybrid data must be kept in the `mHybridData` field for fbjni to work
-  @field:DoNotStrip private val mHybridData: HybridData?
-
-  // Byte data of the mapBuffer
-  private val buffer: ByteBuffer
-  // Offset to the start of the MapBuffer
-  private val offsetToMapBuffer: Int
   // Amount of items serialized on the ByteBuffer
   override var count: Int = 0
     private set
 
-  @DoNotStrip
-  private constructor(hybridData: HybridData) {
-    mHybridData = hybridData
-    buffer = importByteBuffer()
-    offsetToMapBuffer = 0
+  init {
     readHeader()
   }
 
-  private constructor(buffer: ByteBuffer) {
-    mHybridData = null
-    this.buffer = buffer
-    offsetToMapBuffer = 0
-    readHeader()
-  }
-
-  private constructor(buffer: ByteBuffer, offset: Int) {
-    mHybridData = null
-    this.buffer = buffer.duplicate().apply { position(offset) }
-    offsetToMapBuffer = offset
-    readHeader()
-  }
-
-  private external fun importByteBuffer(): ByteBuffer
+  private fun cloneWithOffset(offset: Int) =
+      ReadableMapBuffer(buffer.duplicate().apply { position(offset) }, offset)
 
   private fun readHeader() {
     // byte order
@@ -77,7 +61,7 @@ public class ReadableMapBuffer : MapBuffer {
     get() = getKeyOffsetForBucketIndex(count)
 
   /**
-   * @param key Key to search for
+   * @param intKey Key to search for
    * @return the "bucket index" for a key or -1 if not found. It uses a binary search algorithm
    *   (log(n))
    */
@@ -103,7 +87,11 @@ public class ReadableMapBuffer : MapBuffer {
 
   private fun readDataType(bucketIndex: Int): MapBuffer.DataType {
     val value = readUnsignedShort(getKeyOffsetForBucketIndex(bucketIndex) + TYPE_OFFSET).toInt()
-    return MapBuffer.DataType.values()[value]
+    return if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+      DATA_TYPES[value]
+    } else {
+      MapBuffer.DataType.values()[value]
+    }
   }
 
   private fun getTypedValueOffsetForKey(key: Int, expected: MapBuffer.DataType): Int {
@@ -146,7 +134,7 @@ public class ReadableMapBuffer : MapBuffer {
 
   private fun readMapBufferValue(position: Int): ReadableMapBuffer {
     val offset = offsetForDynamicData + buffer.getInt(position)
-    return ReadableMapBuffer(buffer, offset + Int.SIZE_BYTES)
+    return cloneWithOffset(offset + Int.SIZE_BYTES)
   }
 
   private fun readMapBufferListValue(position: Int): List<ReadableMapBuffer> {
@@ -157,9 +145,9 @@ public class ReadableMapBuffer : MapBuffer {
     var curLen = 0
     while (curLen < sizeMapBufferList) {
       val sizeMapBuffer = buffer.getInt(offset + curLen)
-      curLen = curLen + Int.SIZE_BYTES
-      readMapBufferList.add(ReadableMapBuffer(buffer, offset + curLen))
-      curLen = curLen + sizeMapBuffer
+      curLen += Int.SIZE_BYTES
+      readMapBufferList.add(cloneWithOffset(offset + curLen))
+      curLen += sizeMapBuffer
     }
     return readMapBufferList
   }
@@ -281,7 +269,12 @@ public class ReadableMapBuffer : MapBuffer {
       get() = readUnsignedShort(bucketOffset).toInt()
 
     override val type: MapBuffer.DataType
-      get() = MapBuffer.DataType.values()[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+      get() =
+          if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+            DATA_TYPES[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+          } else {
+            MapBuffer.DataType.values()[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+          }
 
     override val doubleValue: Double
       get() {
@@ -336,8 +329,6 @@ public class ReadableMapBuffer : MapBuffer {
     // 4 bytes = 2 (key) + 2 (type)
     private const val VALUE_OFFSET = 4
 
-    init {
-      MapBufferSoLoader.staticInit()
-    }
+    private val DATA_TYPES = MapBuffer.DataType.values()
   }
 }

@@ -10,7 +10,6 @@
 #include <exception>
 #include <string>
 
-#include <folly/Conv.h>
 #include <folly/dynamic.h>
 
 // When building a cross-platform module for React Native, arguments passed
@@ -21,8 +20,7 @@
 // jsArgAs... methods at the end simple to use should be most common, but any
 // non-detail method can be used when needed.
 
-namespace facebook {
-namespace xplat {
+namespace facebook::xplat {
 
 class JsArgumentException : public std::logic_error {
  public:
@@ -31,7 +29,7 @@ class JsArgumentException : public std::logic_error {
 
 // This extracts a single argument by calling the given method pointer on it.
 // If an exception is thrown, the additional arguments are passed to
-// folly::to<> to be included in the exception string.  This will be most
+// std::to_string to be included in the exception string.  This will be most
 // commonly used when extracting values from non-scalar argument.  The second
 // overload accepts ref-qualified member functions.
 
@@ -119,7 +117,6 @@ inline std::string jsArgAsString(const folly::dynamic& args, size_t n) {
   return jsArgN(args, n, &folly::dynamic::asString);
 }
 
-} // namespace xplat
-} // namespace facebook
+} // namespace facebook::xplat
 
 #include <cxxreact/JsArgumentHelpers-inl.h>

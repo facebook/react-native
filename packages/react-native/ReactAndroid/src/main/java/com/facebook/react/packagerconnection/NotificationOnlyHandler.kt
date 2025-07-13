@@ -11,10 +11,10 @@ import com.facebook.common.logging.FLog
 
 public abstract class NotificationOnlyHandler : RequestHandler {
 
-  override final fun onRequest(params: Any?, responder: Responder) {
+  final override fun onRequest(params: Any?, responder: Responder) {
     responder.error("Request is not supported")
     FLog.e(JSPackagerClient::class.java.simpleName, "Request is not supported")
   }
 
-  override abstract fun onNotification(params: Any?)
+  abstract override fun onNotification(params: Any?)
 }

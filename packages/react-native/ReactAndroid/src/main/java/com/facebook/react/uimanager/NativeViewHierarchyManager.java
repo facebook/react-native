@@ -26,6 +26,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
@@ -64,7 +67,13 @@ import javax.annotation.concurrent.NotThreadSafe;
  * <p>TODO(5483031): Only dispatch updates when shadow views have changed
  */
 @NotThreadSafe
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeViewHierarchyManager {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.ERROR);
+  }
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
   private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;
@@ -170,7 +179,7 @@ public class NativeViewHierarchyManager {
     }
     UiThreadUtil.assertOnUiThread();
     SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_updateLayout")
+            Systrace.TRACE_TAG_REACT, "NativeViewHierarchyManager_updateLayout")
         .arg("parentTag", parentTag)
         .arg("tag", tag)
         .flush();
@@ -233,7 +242,7 @@ public class NativeViewHierarchyManager {
         updateLayout(viewToUpdate, x, y, width, height);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -277,8 +286,7 @@ public class NativeViewHierarchyManager {
           (initialProps != null ? initialProps.toString() : "<null>"));
     }
     UiThreadUtil.assertOnUiThread();
-    SystraceMessage.beginSection(
-            Systrace.TRACE_TAG_REACT_VIEW, "NativeViewHierarchyManager_createView")
+    SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "NativeViewHierarchyManager_createView")
         .arg("tag", tag)
         .arg("className", className)
         .flush();
@@ -290,7 +298,7 @@ public class NativeViewHierarchyManager {
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 

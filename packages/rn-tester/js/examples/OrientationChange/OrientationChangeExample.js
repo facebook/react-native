@@ -4,57 +4,47 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useEffect, useState} from 'react';
 import {DeviceEventEmitter, View} from 'react-native';
-import {type EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
-class OrientationChangeExample extends React.Component<{...}, $FlowFixMeState> {
-  _orientationSubscription: EventSubscription;
-
-  state:
-    | any
-    | {
-        currentOrientation: string,
-        isLandscape: boolean,
-        orientationDegrees: number,
-      } = {
+const OrientationChangeExample = (): React.Node => {
+  const [state, setState] = useState({
     currentOrientation: '',
     orientationDegrees: 0,
     isLandscape: false,
-  };
+  });
 
-  componentDidMount() {
-    this._orientationSubscription = DeviceEventEmitter.addListener(
+  useEffect(() => {
+    const onOrientationChange = (orientation: Object) => {
+      setState({
+        currentOrientation: orientation.name,
+        orientationDegrees: orientation.rotationDegrees,
+        isLandscape: orientation.isLandscape,
+      });
+    };
+
+    const orientationSubscription = DeviceEventEmitter.addListener(
       'namedOrientationDidChange',
-      this._onOrientationChange,
+      onOrientationChange,
     );
-  }
 
-  componentWillUnmount() {
-    this._orientationSubscription.remove();
-  }
+    return () => {
+      orientationSubscription.remove();
+    };
+  }, []);
 
-  _onOrientationChange = (orientation: Object) => {
-    this.setState({
-      currentOrientation: orientation.name,
-      orientationDegrees: orientation.rotationDegrees,
-      isLandscape: orientation.isLandscape,
-    });
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <RNTesterText>{JSON.stringify(this.state)}</RNTesterText>
-      </View>
-    );
-  }
-}
+  return (
+    <View>
+      <RNTesterText>{JSON.stringify(state)}</RNTesterText>
+    </View>
+  );
+};
 
 exports.title = 'OrientationChangeExample';
 exports.category = 'Basic';

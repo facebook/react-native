@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {
@@ -131,13 +131,13 @@ function constructAsyncTestHook(
   };
 }
 
-export type PlatformTestHarnessHookResult = $ReadOnly<{|
+export type PlatformTestHarnessHookResult = $ReadOnly<{
   testKey: number,
   harness: PlatformTestHarness,
   numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,
-|}>;
+}>;
 
 export default function usePlatformTestHarness(): PlatformTestHarnessHookResult {
   const [testResults, updateTestResults] = useState<

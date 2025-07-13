@@ -36,6 +36,8 @@
 #include "JniJSModulesUnbundle.h"
 #include "NativeArray.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 using namespace facebook::jni;
 
 namespace facebook::react {
@@ -419,3 +421,5 @@ void CatalystInstanceImpl::unregisterFromInspector() {
 }
 
 } // namespace facebook::react
+
+#endif

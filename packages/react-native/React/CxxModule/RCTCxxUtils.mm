@@ -7,7 +7,6 @@
 
 #import "RCTCxxUtils.h"
 
-#import <React/RCTFollyConvert.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/CxxNativeModule.h>
@@ -20,6 +19,8 @@
 namespace facebook::react {
 
 using facebook::jsi::JSError;
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 std::vector<std::unique_ptr<NativeModule>>
 createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance)
@@ -38,6 +39,8 @@ createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const 
   }
   return nativeModules;
 }
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 static NSError *errorWithException(const std::exception &e)
 {

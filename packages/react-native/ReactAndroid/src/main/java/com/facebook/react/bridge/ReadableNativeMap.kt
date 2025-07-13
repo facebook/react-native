@@ -79,10 +79,10 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
 
   private inline fun <reified T> getNullableValue(name: String, type: Class<T>): T? {
     val res = getNullableValue(name)
-    if (res == null) {
-      return null
+    return if (res == null) {
+      null
     } else {
-      return checkInstance(name, res, type)
+      checkInstance(name, res, type)
     }
   }
 
@@ -179,7 +179,7 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   private companion object {
     @get:JvmStatic
     @get:JvmName("getJNIPassCounter")
-    public var jniPassCounter: Int = 0
+    var jniPassCounter: Int = 0
       private set
   }
 }

@@ -6,36 +6,32 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_render_scheduler_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_scheduler STATIC ${react_render_scheduler_SRC})
+file(GLOB react_renderer_scheduler_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_scheduler STATIC ${react_renderer_scheduler_SRC})
 
-target_include_directories(react_render_scheduler PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_scheduler PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_scheduler
+target_link_libraries(react_renderer_scheduler
         folly_runtime
         glog
         jsi
         react_debug
         react_featureflags
         react_performance_timeline
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mounting
-        react_render_observers_events
-        react_render_runtimescheduler
-        react_render_uimanager
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mounting
+        react_renderer_observers_events
+        react_renderer_runtimescheduler
+        react_renderer_uimanager
         react_utils
         rrc_root
         rrc_view
         yoga
 )
+target_compile_reactnative_options(react_renderer_scheduler PRIVATE)
+target_compile_options(react_renderer_scheduler PRIVATE -Wpedantic)

@@ -37,8 +37,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * Check if the app has the permission given. successCallback is called with true if the
    * permission had been granted, false otherwise. See [Activity.checkSelfPermission].
    */
-  override public fun checkPermission(permission: String, promise: Promise): Unit {
-    val context = getReactApplicationContext().getBaseContext()
+  public override fun checkPermission(permission: String, promise: Promise): Unit {
+    val context = reactApplicationContext.baseContext
     promise.resolve(context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED)
   }
 
@@ -48,9 +48,9 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * message is only displayed if the user has revoked this permission once before, and if the
    * permission dialog will be shown to the user (the user can choose to not be shown that dialog
    * again). For devices before Android M, this always returns false. See
-   * [permissionAwareActivity.shouldShowRequestPermissionRationale].
+   * [PermissionAwareActivity.shouldShowRequestPermissionRationale].
    */
-  override public fun shouldShowRequestPermissionRationale(
+  public override fun shouldShowRequestPermissionRationale(
       permission: String,
       promise: Promise
   ): Unit {
@@ -67,7 +67,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * user has the permission given or not and resolves with GRANTED or DENIED. See
    * [Activity.checkSelfPermission].
    */
-  override public fun requestPermission(permission: String, promise: Promise): Unit {
+  public override fun requestPermission(permission: String, promise: Promise): Unit {
     val context = getReactApplicationContext().getBaseContext()
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       promise.resolve(GRANTED)
@@ -78,9 +78,9 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            override public operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
-              if (results.size > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+              if (results.isNotEmpty() && results[0] == PackageManager.PERMISSION_GRANTED) {
                 promise.resolve(GRANTED)
               } else {
                 val callbackActivity = args[1] as PermissionAwareActivity
@@ -99,7 +99,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     }
   }
 
-  override public fun requestMultiplePermissions(
+  public override fun requestMultiplePermissions(
       permissions: ReadableArray,
       promise: Promise
   ): Unit {
@@ -125,7 +125,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            override public operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
               val callbackActivity = args[1] as PermissionAwareActivity
               for (j in permissionsToCheck.indices) {
@@ -175,7 +175,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
 
   private val permissionAwareActivity: PermissionAwareActivity
     get() {
-      val activity = getCurrentActivity()
+      val activity = reactApplicationContext.getCurrentActivity()
       checkNotNull(activity) { "Tried to use permissions API while not attached to an Activity." }
       check(activity is PermissionAwareActivity) {
         ("Tried to use permissions API but the host Activity doesn't implement PermissionAwareActivity.")

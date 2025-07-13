@@ -15,7 +15,7 @@ import RNTesterText from '../../components/RNTesterText';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {cloneElement, useCallback, useRef, useState} from 'react';
 import {
   Platform,
   RefreshControl,
@@ -84,7 +84,7 @@ class AppendingList extends React.Component<
           style={styles.scrollView}>
           {this.state.items.map(item =>
             // $FlowFixMe[prop-missing] React.Element internal inspection
-            React.cloneElement(item, {key: item.props.msg}),
+            cloneElement(item, {key: item.props.msg}),
           )}
         </ScrollView>
         <ScrollView
@@ -97,7 +97,7 @@ class AppendingList extends React.Component<
           style={[styles.scrollView, styles.horizontalScrollView]}>
           {this.state.items.map(item =>
             // $FlowFixMe[prop-missing] React.Element internal inspection
-            React.cloneElement(item, {key: item.props.msg, style: null}),
+            cloneElement(item, {key: item.props.msg, style: null}),
           )}
         </ScrollView>
         <View style={styles.row}>
@@ -127,7 +127,7 @@ class AppendingList extends React.Component<
             onPress={() => {
               this.setState(state => ({
                 items: [
-                  React.cloneElement(state.items[0], {
+                  cloneElement(state.items[0], {
                     style: {paddingBottom: Math.random() * 40},
                   }),
                 ].concat(state.items.slice(1)),
@@ -159,7 +159,7 @@ class AppendingList extends React.Component<
             onPress={() => {
               this.setState(state => ({
                 items: state.items.slice(0, -1).concat(
-                  React.cloneElement(state.items[state.items.length - 1], {
+                  cloneElement(state.items[state.items.length - 1], {
                     style: {paddingBottom: Math.random() * 40},
                   }),
                 ),
@@ -201,6 +201,8 @@ function ScrollViewScrollToExample(): React.Node {
   return (
     <View>
       {scrolledToTop ? (
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         <RNTesterText style={textStyle}>scrolledToTop invoked</RNTesterText>
       ) : null}
       <ScrollView
@@ -457,6 +459,16 @@ const examples: Array<RNTesterModuleExample> = [
       return <ClippingExampleHorizontal />;
     },
   },
+  {
+    name: 'touchableChildrenOverflowingContainerHorizontal',
+    title:
+      '<ScrollView> touchable children overflow content container (horizontal = true)\n',
+    description:
+      "Children that overflow ScrollView's content container should still receive touch events",
+    render() {
+      return <ChildrenWithTouchEventsOverflowingContainerHorizontal />;
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
@@ -559,7 +571,7 @@ const HorizontalScrollView = (props: {
   itemCount?: number,
 }) => {
   const {direction} = props;
-  const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
+  const scrollRef = useRef<?React.ElementRef<typeof ScrollView>>();
   const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
   const items =
     props.itemCount == null ? ITEMS : ITEMS.slice(0, props.itemCount);
@@ -634,6 +646,8 @@ const SnapToOptions = () => {
 
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         snapToAlignment={snapToAlignment}
@@ -826,6 +840,8 @@ const OnScrollOptions = () => {
   return (
     <View>
       <RNTesterText>onScroll: {onScrollDrag}</RNTesterText>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         onScrollBeginDrag={() => setOnScrollDrag('onScrollBeginDrag')}
@@ -962,6 +978,8 @@ const KeyboardExample = () => {
         value={textInputValue}
         onChangeText={val => setTextInputValue(val)}
       />
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         keyboardDismissMode={keyboardDismissMode}
@@ -1003,7 +1021,7 @@ const KeyboardExample = () => {
 
 const InvertStickyHeaders = () => {
   const [invertStickyHeaders, setInvertStickyHeaders] = useState(false);
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = useRef<?React.ElementRef<typeof ScrollView>>(null);
   return (
     <View>
       {/* $FlowFixMe[incompatible-use] */}
@@ -1044,7 +1062,7 @@ const InvertStickyHeaders = () => {
 };
 
 const MultipleStickyHeaders = () => {
-  const _scrollView = React.useRef<?React.ElementRef<typeof ScrollView>>(null);
+  const _scrollView = useRef<?React.ElementRef<typeof ScrollView>>(null);
   const stickyHeaderStyle = {backgroundColor: 'yellow'};
   return (
     <View>
@@ -1088,6 +1106,8 @@ const IndicatorStyle = () => {
   const [indicatorStyle, setIndicatorStyle] = useState('default');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         indicatorStyle={indicatorStyle}
@@ -1158,6 +1178,8 @@ const DecelerationRateExample = () => {
   const [decelRate, setDecelRate] = useState('normal');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         decelerationRate={decelRate}
@@ -1193,6 +1215,8 @@ const ContentExample = () => {
     useState('never');
   return (
     <View>
+      {/* $FlowFixMe[incompatible-use] Natural Inference rollout. See
+       * https://fburl.com/workplace/6291gfvu */}
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         canCancelContentTouches={canCancelContentTouches}
@@ -1352,10 +1376,60 @@ function ClippingExampleHorizontal() {
   );
 }
 
-class Item extends React.PureComponent<{|
+function TouchableItem({index}: {index: number}) {
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <View
+      onTouchStart={() => setPressed(p => !p)}
+      testID={`touchable_item_${index}`}
+      style={{
+        position: 'relative',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: '25%',
+        margin: 5,
+        backgroundColor: pressed ? 'gray' : 'lightgray',
+      }}>
+      <Text>Item {index}</Text>
+    </View>
+  );
+}
+
+function ChildrenWithTouchEventsOverflowingContainerHorizontal() {
+  return (
+    <ScrollView
+      testID="touchable_overflowing_container_horizontal"
+      horizontal={true}
+      style={[styles.scrollView, {height: 200, width: '100%'}]}
+      contentContainerStyle={{
+        backgroundColor: 'red',
+      }}
+      nestedScrollEnabled={true}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'stretch',
+          minHeight: 45,
+          minWidth: '100%',
+        }}>
+        <TouchableItem index={1} />
+        <TouchableItem index={2} />
+        <TouchableItem index={3} />
+      </View>
+    </ScrollView>
+  );
+}
+
+class Item extends React.PureComponent<{
   msg?: string,
   style?: ViewStyleProp,
-|}> {
+}> {
   render(): $FlowFixMe {
     return (
       <View style={[styles.item, this.props.style]}>

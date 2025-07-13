@@ -20,13 +20,15 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStructure
-import android.view.Window
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
+import androidx.activity.ComponentDialog
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.UiThread
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -35,9 +37,11 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.uimanager.DisplayMetricsHolder
+import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -47,10 +51,13 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
+import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.disableEdgeToEdge
+import com.facebook.react.views.view.enableEdgeToEdge
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.react.views.view.setSystemBarsTranslucency
-import java.util.Objects
+import com.facebook.yoga.annotations.DoNotStrip
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -65,26 +72,30 @@ import java.util.Objects
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
+@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
   @get:VisibleForTesting
-  public var dialog: Dialog? = null
+  public var dialog: ComponentDialog? = null
     private set
 
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
+
   public var statusBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var navigationBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var animationType: String? = null
@@ -120,6 +131,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
+    initStatusBarHeight(context)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -258,17 +270,34 @@ public class ReactModalHostView(context: ThemedReactContext) :
         }
 
     val currentActivity = getCurrentActivity()
-    val newDialog = Dialog(currentActivity ?: context, theme)
+    val newDialog = ComponentDialog(currentActivity ?: context, theme)
     dialog = newDialog
-    Objects.requireNonNull<Window>(newDialog.window)
-        .setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    val window = requireNotNull(newDialog.window)
+    window.setFlags(
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
     newDialog.setContentView(contentView)
     updateProperties()
 
     newDialog.setOnShowListener(onShowListener)
+
+    val handleCloseAction: () -> Unit = {
+      val listener =
+          checkNotNull(onRequestCloseListener) {
+            "onRequestClose callback must be set if back key is expected to close the modal"
+          }
+      listener.onRequestClose(newDialog)
+    }
+
+    val backPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+          override fun handleOnBackPressed() {
+            handleCloseAction()
+          }
+        }
+
+    newDialog.onBackPressedDispatcher.addCallback(newDialog, backPressedCallback)
     newDialog.setOnKeyListener(
         object : DialogInterface.OnKeyListener {
           override fun onKey(dialog: DialogInterface, keyCode: Int, event: KeyEvent): Boolean {
@@ -278,11 +307,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
               // to whether or not to allow the back/escape key to close the dialog. If it chooses
               // to, it can just set visible to false on the Modal and the Modal will go away
               if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE) {
-                val listener =
-                    checkNotNull(onRequestCloseListener) {
-                      "onRequestClose callback must be set if back key is expected to close the modal"
-                    }
-                listener.onRequestClose(dialog)
+                handleCloseAction()
                 return true
               } else {
                 // We redirect the rest of the key events to the current activity, since the
@@ -299,19 +324,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
           }
         })
 
-    newDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
-      newDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+      window.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
     }
     val flagSecureSet = isFlagSecureSet(currentActivity)
     if (flagSecureSet) {
-      newDialog.window?.setFlags(
+      window.setFlags(
           WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
       updateSystemAppearance()
-      newDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+      window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
   }
 
@@ -358,9 +383,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       }
 
       // Navigation bar cannot be translucent without status bar being translucent too
-      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
-
-      if (!navigationBarTranslucent) {
+      if (navigationBarTranslucent) {
+        dialogWindow.enableEdgeToEdge()
+      } else {
+        dialogWindow.disableEdgeToEdge()
         dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
       }
 
@@ -375,11 +401,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
       // This is to prevent a crash from the following error, without a clear repro steps:
       // java.lang.IllegalArgumentException: View=DecorView@c94931b[XxxActivity] not attached to
       // window manager
-      FLog.e(
-          ReactConstants.TAG, "ReactModalHostView: error while setting window flags: ", e.message)
+      FLog.e(TAG, "ReactModalHostView: error while setting window flags: ", e.message)
     }
   }
 
+  /**
+   * Updates the system appearance of the dialog to match the activity that it is being displayed
+   * on.
+   */
   private fun updateSystemAppearance() {
     val currentActivity = getCurrentActivity() ?: return
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
@@ -388,16 +417,47 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val activityWindow = currentActivity.window
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-      val insetsController: WindowInsetsController = checkNotNull(activityWindow.insetsController)
-      val activityAppearance: Int = insetsController.systemBarsAppearance
+      val activityWindowInsetsController =
+          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
+      val dialogWindowInsetsController =
+          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
 
-      val activityLightStatusBars =
-          activityAppearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+      if (isEdgeToEdgeFeatureFlagOn) {
+        activityWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        dialogWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
 
-      dialogWindow.insetsController?.setSystemBarsAppearance(
-          activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+      dialogWindowInsetsController.isAppearanceLightStatusBars =
+          activityWindowInsetsController.isAppearanceLightStatusBars
+
+      activityWindow.decorView.rootWindowInsets?.let { insets ->
+        val activityRootWindowInsets = WindowInsetsCompat.toWindowInsetsCompat(insets)
+        syncSystemBarsVisibility(activityRootWindowInsets, dialogWindowInsetsController)
+      }
     } else {
       dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
+    }
+  }
+
+  /**
+   * Syncs the visibility of the system bars based on their visibility in the root window insets.
+   * This ensures consistency between the system bars visibility in the activity and the dialog.
+   */
+  private fun syncSystemBarsVisibility(
+      activityRootWindowInsets: WindowInsetsCompat,
+      dialogWindowInsetsController: WindowInsetsControllerCompat?,
+      types: List<Int> =
+          listOf(WindowInsetsCompat.Type.statusBars(), WindowInsetsCompat.Type.navigationBars()),
+  ) {
+    types.forEach { type ->
+      val isVisible = activityRootWindowInsets.isVisible(type)
+      if (isVisible) {
+        dialogWindowInsetsController?.show(type)
+      } else {
+        dialogWindowInsetsController?.hide(type)
+      }
     }
   }
 
@@ -419,6 +479,26 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private companion object {
     private const val TAG = "ReactModalHost"
+
+    // We store the status bar height to be able to properly position
+    // the modal on the first render.
+    private var statusBarHeight = 0
+
+    private fun initStatusBarHeight(reactContext: ReactContext) {
+      statusBarHeight = getStatusBarHeightPx(reactContext.currentActivity)
+    }
+
+    @JvmStatic
+    @DoNotStrip
+    private fun getScreenDisplayMetricsWithoutInsets(): Long {
+      val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
+      return encodeFloatsToLong(
+          displayMetrics.widthPixels.toFloat().pxToDp(),
+          (displayMetrics.heightPixels - statusBarHeight).toFloat().pxToDp())
+    }
+
+    private fun encodeFloatsToLong(width: Float, height: Float): Long =
+        (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
   }
 
   /**
@@ -434,6 +514,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
    */
   public class DialogRootViewGroup internal constructor(context: Context) :
       ReactViewGroup(context), RootView {
+
     internal var stateWrapper: StateWrapper? = null
     internal var eventDispatcher: EventDispatcher? = null
 
@@ -473,25 +554,30 @@ public class ReactModalHostView(context: ThemedReactContext) :
       val realWidth: Float = width.toFloat().pxToDp()
       val realHeight: Float = height.toFloat().pxToDp()
 
-      stateWrapper?.let { sw ->
+      val sw = stateWrapper
+      if (sw != null) {
         // new architecture
         val newStateData: WritableMap = WritableNativeMap()
         newStateData.putDouble("screenWidth", realWidth.toDouble())
         newStateData.putDouble("screenHeight", realHeight.toDouble())
         sw.updateState(newStateData)
+      } else if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
+        // When UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE = true, means the Legacy Architecture is
+        // fully disabled and can be minified.
+        // The goal is to compile-out UIManagerModule from the following code block:
+        run {
+          // old architecture
+          // TODO: T44725185 remove after full migration to Fabric
+          reactContext.runOnNativeModulesQueueThread(
+              object : GuardedRunnable(reactContext) {
+                override fun runGuarded() {
+                  reactContext.reactApplicationContext
+                      .getNativeModule(UIManagerModule::class.java)
+                      ?.updateNodeSize(id, viewWidth, viewHeight)
+                }
+              })
+        }
       }
-          ?: run {
-            // old architecture
-            // TODO: T44725185 remove after full migration to Fabric
-            reactContext.runOnNativeModulesQueueThread(
-                object : GuardedRunnable(reactContext) {
-                  override fun runGuarded() {
-                    reactContext.reactApplicationContext
-                        .getNativeModule(UIManagerModule::class.java)
-                        ?.updateNodeSize(id, viewWidth, viewHeight)
-                  }
-                })
-          }
     }
 
     override fun handleException(t: Throwable) {

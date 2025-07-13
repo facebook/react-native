@@ -23,9 +23,9 @@ import com.facebook.react.packagerconnection.RequestHandler
  * dependencies in release builds. If the class isn't found, [PerftestDevSupportManager] is returned
  * instead.
  */
-public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
+internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
-  public override fun create(
+  override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
       packagerPathForJSBundleName: String?,
@@ -95,19 +95,15 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       redBoxHandler: RedBoxHandler?,
       devBundleDownloadListener: DevBundleDownloadListener?,
       minNumShakes: Int,
-      customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+      customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
       useDevSupport: Boolean
   ): DevSupportManager =
-      if (!useDevSupport) {
-        if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
-          PerftestDevSupportManager(applicationContext)
-        } else {
-          ReleaseDevSupportManager()
-        }
-      } else {
+      if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
+        PerftestDevSupportManager(applicationContext)
+      } else if (useDevSupport) {
         BridgelessDevSupportManager(
             applicationContext,
             reactInstanceManagerHelper,
@@ -120,6 +116,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
             surfaceDelegateFactory,
             devLoadingViewManager,
             pausedInDebuggerOverlayManager)
+      } else {
+        ReleaseDevSupportManager()
       }
 
   private companion object {

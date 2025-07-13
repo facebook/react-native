@@ -103,6 +103,8 @@ function translateObjectTypeAnnotation(
 
   return typeAliasResolution(
     typeResolutionStatus,
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     objectTypeAnnotation,
     aliasMap,
     nullable,
@@ -291,7 +293,7 @@ function translateTypeAnnotation(
         typeScriptTypeAnnotation,
         nullable,
         flattenProperties(
-          flattenIntersectionType(typeAnnotation, types),
+          flattenIntersectionType(typeAnnotation, parser, types),
           types,
           parser,
         ),

@@ -2,46 +2,25 @@ name: Test Libraries on Nightlies
 
 on:
   workflow_call:
+    secrets:
+      discord_webhook_url:
+        required: true
 
+
+# We use the matrix.library entry to specify the dependency we want to use
+# The key is used directly as the <pkg> in the `yarn add <pkg>` command.
 jobs:
-  test-library-on-nightly-android:
-    name: "[Android] ${{ matrix.library }}"
+  runner-setup:
     runs-on: ubuntu-latest
-    continue-on-error: true
-    strategy:
-      matrix:
-        library: [
-          "react-native-async-storage",
-          "react-native-blob-util",
-          "@react-native-clipboard/clipboard",
-          "@react-native-community/datetimepicker",
-          "react-native-gesture-handler",
-          "react-native-image-picker",
-          "react-native-linear-gradient",
-          "@react-native-masked-view/masked-view",
-          "react-native-maps",
-          "@react-native-community/netinfo",
-          "react-native-reanimated",
-          "react-native-svg",
-          "react-native-video",
-          "react-native-webview",
-          "react-native-mmkv",
-          "react-native-screens",
-          "react-native-pager-view",
-          "@react-native-community/slider"
-        ]
+    outputs:
+      runners: '{"ios":"macos-14-large", "android": "ubuntu-latest"}'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Test ${{ inputs.library-name }}
-        uses: ./.github/actions/test-library-on-nightly
-        with:
-          library-npm-package: ${{ matrix.library }}
-          platform: android
+      - run: echo no-op
 
-  test-library-on-nightly-ios:
-    name: "[iOS] ${{ matrix.library }}"
-    runs-on: macos-13-large
+  test-library-on-nightly:
+    name: "[${{ matrix.platform }}] ${{ matrix.library }}"
+    needs: runner-setup
+    runs-on: ${{ fromJSON(needs.runner-setup.outputs.runners)[matrix.platform] }}
     continue-on-error: true
     strategy:
       matrix:
@@ -54,22 +33,68 @@ jobs:
           "react-native-image-picker",
           "react-native-linear-gradient",
           "@react-native-masked-view/masked-view",
-          "react-native-maps",
+          # "react-native-maps", React Native Maps with the New Arch support has a complex cocoapods setup for iOS. It needs a dedicated workflow.
           "@react-native-community/netinfo",
-          "react-native-reanimated",
+          "react-native-reanimated@nightly react-native-worklets@nightly", #reanimated requires worklet to be explicitly installed as a separate package
           "react-native-svg",
           "react-native-video",
           "react-native-webview",
           "react-native-mmkv",
           "react-native-screens",
           "react-native-pager-view",
-          "@react-native-community/slider"
+          "@react-native-community/slider",
+          # additional OSS libs used internally
+          "scandit-react-native-datacapture-barcode scandit-react-native-datacapture-core",
+          "react-native-contacts",
+          "react-native-device-info",
+          "react-native-email-link",
+          "@dr.pogodin/react-native-fs",
+          "react-native-permissions",
+          "react-native-vector-icons",
+          "react-native-masked-view",
+          "@react-native-community/image-editor",
         ]
+        platform: [ios, android]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Test ${{ inputs.library-name }}
+      - name: Set up Node.js
+        uses: ./.github/actions/setup-node
+      - name: Test ${{ matrix.library }}
+        id: run-test
         uses: ./.github/actions/test-library-on-nightly
         with:
           library-npm-package: ${{ matrix.library }}
-          platform: ios
+          platform: ${{ matrix.platform}}
+      - name: Save outcome
+        id: save-outcome
+        if: always()
+        run: |
+          LIB_FOLDER=$(echo "${{matrix.library}}"  | tr ' ' '_' | tr '/' '_')
+          echo "${{matrix.library}}: ${{steps.run-test.outcome}}" > "/tmp/$LIB_FOLDER-${{ matrix.platform }}-outcome"
+          echo "lib_folder=$LIB_FOLDER" >> $GITHUB_OUTPUT
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.save-outcome.outputs.lib_folder }}-${{ matrix.platform }}-outcome
+          path: /tmp/${{ steps.save-outcome.outputs.lib_folder }}-${{ matrix.platform }}-outcome
+
+
+  collect-results:
+    runs-on: ubuntu-latest
+    needs: [test-library-on-nightly]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Restore outcomes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-outcome'
+          path: /tmp
+      - name: Collect failures
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {collectResults} = require('./.github/workflow-scripts/collectNightlyOutcomes.js');
+            await collectResults('${{secrets.discord_webhook_url}}');

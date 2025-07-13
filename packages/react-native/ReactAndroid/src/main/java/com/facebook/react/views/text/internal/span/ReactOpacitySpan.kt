@@ -14,7 +14,7 @@ import android.text.style.UpdateAppearance
 import kotlin.math.roundToInt
 
 /** Multiplies foreground and background alpha channels by given opacity */
-public class ReactOpacitySpan(public val opacity: Float) :
+internal class ReactOpacitySpan(val opacity: Float) :
     CharacterStyle(), UpdateAppearance, ReactSpan {
 
   override fun updateDrawState(paint: TextPaint) {

@@ -222,8 +222,10 @@ jni::local_ref<jobject> getProps(
   // is enabled.
   auto* oldProps = oldShadowView.props.get();
   auto* newProps = newShadowView.props.get();
-  if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
-      strcmp(newShadowView.componentName, "View") == 0) {
+  if ((ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) &&
+      strcmp(
+          newShadowView.componentName,
+          newProps->getDiffPropsImplementationTarget()) == 0) {
     return ReadableNativeMap::newObjectCxxArgs(
         newProps->getDiffProps(oldProps));
   }
@@ -925,15 +927,9 @@ void FabricMountingManager::maybePreallocateShadowNode(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid()) {
-    // Optimised implementation where FabricUIManager.preallocateView is called
-    // from the main thread.
+  {
     std::lock_guard lock(preallocateMutex_);
     preallocatedViewsQueue_.push_back(std::move(shadowView));
-  } else {
-    // Old implementation where FabricUIManager.preallocateView is called
-    // immediately.
-    preallocateShadowView(shadowView);
   }
 }
 
@@ -1072,6 +1068,18 @@ void FabricMountingManager::onAllAnimationsComplete() {
           "onAllAnimationsComplete");
 
   allAnimationsCompleteJNI(javaUIManager_);
+}
+
+void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
+    Tag viewTag,
+    const folly::dynamic& props) {
+  static auto synchronouslyUpdateViewOnUIThreadJNI =
+      JFabricUIManager::javaClassStatic()
+          ->getMethod<void(jint, ReadableMap::javaobject)>(
+              "synchronouslyUpdateViewOnUIThread");
+  auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
+      ReadableNativeMap::newObjectCxxArgs(props).release());
+  synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
 } // namespace facebook::react

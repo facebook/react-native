@@ -10,13 +10,8 @@
 #include <android/asset_manager_jni.h>
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
-#include <folly/Conv.h>
-
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-using fbsystrace::FbSystraceSection;
-#endif
 
 using namespace facebook::jni;
 
@@ -55,13 +50,8 @@ __attribute__((visibility("default"))) AAssetManager* extractAssetManager(
 
 __attribute__((visibility("default"))) std::unique_ptr<const JSBigString>
 loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
-#ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE,
-      "reactbridge_jni_loadScriptFromAssets",
-      "assetName",
-      assetName);
-#endif
+  TraceSection s(
+      "reactbridge_jni_loadScriptFromAssets", "assetName", assetName);
   if (manager) {
     auto asset = AAssetManager_open(
         manager,
@@ -87,11 +77,17 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
     }
   }
 
-  throw std::runtime_error(folly::to<std::string>(
-      "Unable to load script. Make sure you're "
-      "either running Metro (run 'npx react-native start') or that your bundle '",
-      assetName,
-      "' is packaged correctly for release."));
+  throw std::runtime_error(
+      "Unable to load script.\n\n"
+      "Make sure you're running Metro or that your "
+      "bundle '" +
+      assetName +
+      "' is packaged correctly for release.\n\n"
+      "The device must either be USB connected (with bundler set to \"localhost:8081\") or be on "
+      "the same Wi-Fi network as your computer (with bundler set to your computer IP) to connect "
+      "to Metro.\n\n"
+      "If you're using USB on a physical device, make sure you also run this command:\n"
+      "  adb reverse tcp:8081 tcp:8081");
 }
 
 } // namespace facebook::react

@@ -9,9 +9,9 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
+#include "AndroidTextInputState.h"
 
 #include <react/renderer/attributedstring/AttributedString.h>
-#include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
 
@@ -22,13 +22,11 @@ extern const char AndroidTextInputComponentName[];
 /*
  * `ShadowNode` for <AndroidTextInput> component.
  */
-class AndroidTextInputShadowNode final
-    : public ConcreteViewShadowNode<
-          AndroidTextInputComponentName,
-          AndroidTextInputProps,
-          AndroidTextInputEventEmitter,
-          TextInputState,
-          /* usesMapBufferForStateData */ true> {
+class AndroidTextInputShadowNode final : public ConcreteViewShadowNode<
+                                             AndroidTextInputComponentName,
+                                             AndroidTextInputProps,
+                                             AndroidTextInputEventEmitter,
+                                             AndroidTextInputState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -70,19 +68,22 @@ class AndroidTextInputShadowNode final
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded();
+  void updateStateIfNeeded(const LayoutContext& layoutContext);
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
-  AttributedString getAttributedString() const;
+  AttributedString getAttributedString(
+      const LayoutContext& layoutContext) const;
 
   /**
    * Get the most up-to-date attributed string for measurement and State.
    */
-  AttributedString getMostRecentAttributedString() const;
+  AttributedString getMostRecentAttributedString(
+      const LayoutContext& layoutContext) const;
 
-  AttributedString getPlaceholderAttributedString() const;
+  AttributedString getPlaceholderAttributedString(
+      const LayoutContext& layoutContext) const;
 };
 
 } // namespace facebook::react

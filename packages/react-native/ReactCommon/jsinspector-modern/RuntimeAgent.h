@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "InspectorInterfaces.h"
 #include "RuntimeAgentDelegate.h"
 #include "RuntimeTarget.h"
+
+#include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -80,6 +82,27 @@ class RuntimeAgent final {
    * needed when constructin a new RuntimeAgent.
    */
   ExportedState getExportedState();
+
+  /**
+   * Registers the corresponding RuntimeTarget for Tracing: might enable some
+   * capabilities that will be later used in Tracing Profile.
+   */
+  void registerForTracing();
+
+  /**
+   * Start sampling profiler for the corresponding RuntimeTarget.
+   */
+  void enableSamplingProfiler();
+
+  /**
+   * Stop sampling profiler for the corresponding RuntimeTarget.
+   */
+  void disableSamplingProfiler();
+
+  /**
+   * Return recorded sampling profile for the previous sampling session.
+   */
+  tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
   FrontendChannel frontendChannel_;

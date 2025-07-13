@@ -4,40 +4,24 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // This class is responsible for coordinating the "focused" state for
 // TextInputs. All calls relating to the keyboard should be funneled
 // through here.
 
-import type {
-  HostInstance,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 
 import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/AndroidTextInputNativeComponent';
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
 const {findNodeHandle} = require('../../ReactNative/RendererProxy');
-const Platform = require('../../Utilities/Platform');
+const Platform = require('../../Utilities/Platform').default;
 
 let currentlyFocusedInputRef: ?HostInstance = null;
-const inputs = new Set<{
-  blur(): void,
-  focus(): void,
-  measure(callback: MeasureOnSuccessCallback): void,
-  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
-  measureLayout(
-    relativeToNativeNode: number | HostInstance,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void,
-  ): void,
-  setNativeProps(nativeProps: {...}): void,
-}>();
+const inputs = new Set<HostInstance>();
 
 function currentlyFocusedInput(): ?HostInstance {
   return currentlyFocusedInputRef;
@@ -54,7 +38,7 @@ function currentlyFocusedField(): ?number {
     );
   }
 
-  return findNodeHandle(currentlyFocusedInputRef);
+  return findNodeHandle<$FlowFixMe>(currentlyFocusedInputRef);
 }
 
 function focusInput(textField: ?HostInstance): void {
@@ -196,7 +180,7 @@ function isTextInput(textField: HostInstance): boolean {
   return inputs.has(textField);
 }
 
-module.exports = {
+const TextInputState = {
   currentlyFocusedInput,
   focusInput,
   blurInput,
@@ -210,3 +194,5 @@ module.exports = {
   unregisterInput,
   isTextInput,
 };
+
+export default TextInputState;

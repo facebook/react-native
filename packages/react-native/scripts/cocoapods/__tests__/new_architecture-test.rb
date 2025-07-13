@@ -101,18 +101,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, true)
 
         # Assert
-        folly_config = Helpers::Constants.folly_config
-        folly_compiler_flags = folly_config[:compiler_flags]
-
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
         assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_nil(react_core_release_config.build_settings["OTHER_CFLAGS"])
         assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
@@ -134,15 +131,15 @@ class NewArchitectureTests < Test::Unit::TestCase
         folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
-        assert_equal(spec.compiler_flags, "-DRCT_NEW_ARCH_ENABLED=1 #{NewArchitectureHelper.folly_compiler_flags}")
+        assert_equal(spec.compiler_flags, "-DRCT_NEW_ARCH_ENABLED=1")
         assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-FabricImage/React_FabricImage.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/RCTFabric.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-utils/React_utils.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-featureflags/React_featureflags.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-debug/React_debug.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-ImageManager/React_ImageManager.framework/Headers\" \"${PODS_CONFIGURATION_BUILD_DIR}/React-rendererdebug/React_rendererdebug.framework/Headers\"")
         assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 "+ folly_compiler_flags)
+        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1")
         assert_equal(
             spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
-                { :dependency_name => "RCT-Folly", "version"=>"2024.10.14.00" },
+                { :dependency_name => "ReactNativeDependencies" },
                 { :dependency_name => "glog" },
                 { :dependency_name => "React-RCTFabric" },
                 { :dependency_name => "ReactCodegen" },
@@ -168,7 +165,7 @@ class NewArchitectureTests < Test::Unit::TestCase
         #  Arrange
         spec = SpecMock.new
         spec.compiler_flags = ''
-        other_flags = "\"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\""
+        other_flags = "\"$(ReactNativeDependencies)/boost\" \"${PODS_CONFIGURATION_BUILD_DIR}/ReactCodegen/ReactCodegen.framework/Headers\""
         spec.pod_target_xcconfig = {
             "HEADER_SEARCH_PATHS" => other_flags
         }
@@ -207,160 +204,6 @@ class NewArchitectureTests < Test::Unit::TestCase
         )
     end
 
-    # =============================== #
-    # Test - Compute New Arch Enabled #
-    # =============================== #
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVarNil_returnTrueWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVar1_returnTrueWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVarNil_returnFalseWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVar0_returnFalseWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnv1_returnTrueWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnvNil_returnFalseWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnv0_returnFalseWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnv1_returnTrueWithWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
-    end
-
-
-    def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalseAndEnv0_returnTrueWithWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
-        version = '0.0.0-prealpha-0'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-    end
-
-    def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
-        version = '0.0.0-prealpha0'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-    end
-
-    def test_computeNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
-        version = '3.2.1'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns);
-    end
-
     # =================================== #
     # Test - Extract React Native Version #
     # =================================== #
@@ -377,7 +220,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     def test_extractReactNativeVersion_whenFileExists_returnTheRightVersion()
         react_native_path = "./node_modules/react-native/"
         full_path = File.join(react_native_path, "package.json")
-        json = "{\"version\": \"1.0.0-prealpha.0\"}"
+        json = "{\"version\": \"1.2.3-prerelease.4\"}"
         FileMock.mocked_existing_files([full_path])
         FileMock.files_to_read({
             full_path => json
@@ -385,7 +228,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         version = NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
 
-        assert_equal("1.0.0-prealpha.0", version)
+        assert_equal("1.2.3-prerelease.4", version)
     end
 
     # =============================== #

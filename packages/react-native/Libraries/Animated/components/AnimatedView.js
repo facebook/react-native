@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {ViewProps} from '../../Components/View/ViewPropTypes';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import View from '../../Components/View/View';
@@ -15,6 +16,6 @@ import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 
 export default (createAnimatedComponent(View): AnimatedComponentType<
-  React.ElementConfig<typeof View>,
+  ViewProps,
   React.ElementRef<typeof View>,
 >);

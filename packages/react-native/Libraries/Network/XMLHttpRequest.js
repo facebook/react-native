@@ -4,22 +4,40 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
+import type {
+  EventCallback,
+  EventListener,
+} from '../../src/private/webapis/dom/events/EventTarget';
+import type Performance from '../../src/private/webapis/performance/Performance';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import Event from '../../src/private/webapis/dom/events/Event';
+import {
+  getEventHandlerAttribute,
+  setEventHandlerAttribute,
+} from '../../src/private/webapis/dom/events/EventHandlerAttributes';
+import EventTarget from '../../src/private/webapis/dom/events/EventTarget';
+import {dispatchTrustedEvent} from '../../src/private/webapis/dom/events/internals/EventTargetInternals';
+import ProgressEvent from '../../src/private/webapis/xhr/events/ProgressEvent';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
-import EventTarget from 'event-target-shim';
 
-const BlobManager = require('../Blob/BlobManager');
-const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+const BlobManager = require('../Blob/BlobManager').default;
+const GlobalPerformanceLogger =
+  require('../Utilities/GlobalPerformanceLogger').default;
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
+
+const PERFORMANCE_TRACK_NAME = 'Network (JS-initiated only)';
+const PERFORMANCE_TRACK_GROUP = 'Chrome DevTools Temp Compat';
+
+declare var performance: Performance;
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
 const LABEL_FOR_MISSING_URL_FOR_PROFILING = 'Unknown URL';
@@ -67,34 +85,55 @@ const SUPPORTED_RESPONSE_TYPES = {
   '': true,
 };
 
-const REQUEST_EVENTS = [
-  'abort',
-  'error',
-  'load',
-  'loadstart',
-  'progress',
-  'timeout',
-  'loadend',
-];
-
-const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
-
-class XMLHttpRequestEventTarget extends (EventTarget(
-  ...REQUEST_EVENTS,
-): typeof EventTarget) {
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
+class XMLHttpRequestEventTarget extends EventTarget {
+  get onload(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'load');
+  }
+  set onload(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'load', listener);
+  }
+  get onloadstart(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadstart');
+  }
+  set onloadstart(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadstart', listener);
+  }
+  get onprogress(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'progress');
+  }
+  set onprogress(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'progress', listener);
+  }
+  get ontimeout(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'timeout');
+  }
+  set ontimeout(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'timeout', listener);
+  }
+  get onerror(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'error');
+  }
+  set onerror(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'error', listener);
+  }
+  get onabort(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'abort');
+  }
+  set onabort(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'abort', listener);
+  }
+  get onloadend(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadend');
+  }
+  set onloadend(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadend', listener);
+  }
 }
 
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
+class XMLHttpRequest extends EventTarget {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -109,16 +148,6 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   HEADERS_RECEIVED: number = HEADERS_RECEIVED;
   LOADING: number = LOADING;
   DONE: number = DONE;
-
-  // EventTarget automatically initializes these to `null`.
-  onload: ?Function;
-  onloadstart: ?Function;
-  onprogress: ?Function;
-  ontimeout: ?Function;
-  onerror: ?Function;
-  onabort: ?Function;
-  onloadend: ?Function;
-  onreadystatechange: ?Function;
 
   readyState: number = UNSENT;
   responseHeaders: ?Object;
@@ -144,12 +173,12 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: string = 'unknown';
+  _trackingName: ?string;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
 
-  static setInterceptor(interceptor: ?XHRInterceptor) {
+  static __setInterceptor_DO_NOT_USE(interceptor: ?XHRInterceptor) {
     XMLHttpRequest._interceptor = interceptor;
   }
 
@@ -299,12 +328,14 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
     total: number,
   ): void {
     if (requestId === this._requestId) {
-      this.upload.dispatchEvent({
-        type: 'progress',
-        lengthComputable: true,
-        loaded: progress,
-        total,
-      });
+      dispatchTrustedEvent(
+        this.upload,
+        new ProgressEvent('progress', {
+          lengthComputable: true,
+          loaded: progress,
+          total,
+        }),
+      );
     }
   }
 
@@ -357,6 +388,9 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
     if (requestId !== this._requestId) {
       return;
     }
+
+    const start = XMLHttpRequest._profiling ? performance.now() : undefined;
+
     if (!this._response) {
       this._response = responseText;
     } else {
@@ -364,8 +398,13 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
     }
 
     if (XMLHttpRequest._profiling) {
-      performance.mark(
-        'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
+      console.timeStamp(
+        'Incremental Data: ' + this._getMeasureURL(),
+        // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
+        start,
+        undefined,
+        PERFORMANCE_TRACK_NAME,
+        PERFORMANCE_TRACK_GROUP,
       );
     }
     XMLHttpRequest._interceptor &&
@@ -383,12 +422,14 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
     if (requestId !== this._requestId) {
       return;
     }
-    this.dispatchEvent({
-      type: 'progress',
-      lengthComputable: total >= 0,
-      loaded,
-      total,
-    });
+    dispatchTrustedEvent(
+      this,
+      new ProgressEvent('progress', {
+        lengthComputable: total >= 0,
+        loaded,
+        total,
+      }),
+    );
   }
 
   // exposed for testing
@@ -412,10 +453,14 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       this.setReadyState(this.DONE);
       if (XMLHttpRequest._profiling && this._startTime != null) {
         const start = this._startTime;
-        performance.measure('Track:XMLHttpRequest:' + this._getMeasureURL(), {
+        console.timeStamp(
+          this._getMeasureURL(),
+          // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
           start,
-          end: performance.now(),
-        });
+          undefined,
+          PERFORMANCE_TRACK_NAME,
+          PERFORMANCE_TRACK_GROUP,
+        );
       }
       if (error) {
         XMLHttpRequest._interceptor &&
@@ -504,7 +549,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   /**
    * Custom extension for tracking origins of request.
    */
-  setTrackingName(trackingName: string): XMLHttpRequest {
+  setTrackingName(trackingName: ?string): XMLHttpRequest {
     this._trackingName = trackingName;
     return this;
   }
@@ -586,8 +631,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
     }
 
     const doSend = () => {
-      const friendlyName =
-        this._trackingName !== 'unknown' ? this._trackingName : this._url;
+      const friendlyName = this._trackingName ?? this._url;
       this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
       this._performanceLogger.startTimespan(this._perfKey);
       this._startTime = performance.now();
@@ -603,7 +647,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       );
       RCTNetworking.sendRequest(
         this._method,
-        this._trackingName,
+        this._trackingName ?? undefined,
         this._url,
         this._headers,
         data,
@@ -617,6 +661,8 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
         this.withCredentials,
       );
     };
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (DEBUG_NETWORK_SEND_DELAY) {
       setTimeout(doSend, DEBUG_NETWORK_SEND_DELAY);
     } else {
@@ -659,25 +705,24 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
 
   setReadyState(newState: number): void {
     this.readyState = newState;
-    this.dispatchEvent({type: 'readystatechange'});
+    dispatchTrustedEvent(this, new Event('readystatechange'));
     if (newState === this.DONE) {
       if (this._aborted) {
-        this.dispatchEvent({type: 'abort'});
+        dispatchTrustedEvent(this, new Event('abort'));
       } else if (this._hasError) {
         if (this._timedOut) {
-          this.dispatchEvent({type: 'timeout'});
+          dispatchTrustedEvent(this, new Event('timeout'));
         } else {
-          this.dispatchEvent({type: 'error'});
+          dispatchTrustedEvent(this, new Event('error'));
         }
       } else {
-        this.dispatchEvent({type: 'load'});
+        dispatchTrustedEvent(this, new Event('load'));
       }
-      this.dispatchEvent({type: 'loadend'});
+      dispatchTrustedEvent(this, new Event('loadend'));
     }
   }
 
-  /* global EventListener */
-  addEventListener(type: string, listener: EventListener): void {
+  addEventListener(type: string, listener: EventListener | null): void {
     // If we dont' have a 'readystatechange' event handler, we don't
     // have to send repeated LOADING events with incremental updates
     // to responseText, which will avoid a bunch of native -> JS
@@ -693,6 +738,74 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
       this._trackingName ?? this._url ?? LABEL_FOR_MISSING_URL_FOR_PROFILING
     );
   }
+
+  /*
+   * `on<event>` event handling (without JS prototype magic).
+   */
+
+  get onabort(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'abort');
+  }
+
+  set onabort(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'abort', listener);
+  }
+
+  get onerror(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'error');
+  }
+
+  set onerror(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'error', listener);
+  }
+
+  get onload(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'load');
+  }
+
+  set onload(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'load', listener);
+  }
+
+  get onloadstart(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadstart');
+  }
+
+  set onloadstart(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadstart', listener);
+  }
+
+  get onprogress(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'progress');
+  }
+
+  set onprogress(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'progress', listener);
+  }
+
+  get ontimeout(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'timeout');
+  }
+
+  set ontimeout(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'timeout', listener);
+  }
+
+  get onloadend(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadend');
+  }
+
+  set onloadend(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadend', listener);
+  }
+
+  get onreadystatechange(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'readystatechange');
+  }
+
+  set onreadystatechange(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'readystatechange', listener);
+  }
 }
 
-module.exports = XMLHttpRequest;
+export default XMLHttpRequest;

@@ -9,7 +9,7 @@ package com.facebook.react.bridge;
 
 import static com.facebook.infer.annotation.Assertions.assertCondition;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
-import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.content.res.AssetManager;
 import androidx.annotation.Nullable;
@@ -26,7 +26,10 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -41,12 +44,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This provides an implementation of the public CatalystInstance instance. It is public because it
- * is built by XReactInstanceManager which is in a different package.
+ * is built by ReactInstanceManager which is in a different package.
  */
 @DoNotStrip
+@LegacyArchitecture
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
-    ReactBridge.staticInit();
+    BridgeSoLoader.staticInit();
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "CatalystInstanceImpl", LegacyArchitectureLogLevel.WARNING);
   }
 
   private static final AtomicInteger sNextInstanceIdForTrace = new AtomicInteger(1);
@@ -123,7 +129,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
       JSExceptionHandler jSExceptionHandler,
       @Nullable ReactInstanceManagerInspectorTarget inspectorTarget) {
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "createCatalystInstanceImpl");
+    Systrace.beginSection(TRACE_TAG_REACT, "createCatalystInstanceImpl");
 
     mHybridData = initHybrid();
 
@@ -138,10 +144,10 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
     mInspectorTarget = inspectorTarget;
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
-    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "initializeCxxBridge");
+    Systrace.beginSection(TRACE_TAG_REACT, "initializeCxxBridge");
 
     initializeBridge(
         new InstanceCallback(this),
@@ -152,7 +158,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
         mNativeModuleRegistry.getCxxModules(),
         mInspectorTarget);
     FLog.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
-    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    Systrace.endSection(TRACE_TAG_REACT);
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
   }
@@ -459,7 +465,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   }
 
   private TurboModuleRegistry getTurboModuleRegistry() {
-    if (ReactNativeFeatureFlags.useTurboModules()) {
+    if (ReactNativeNewArchitectureFeatureFlags.useTurboModules()) {
       return Assertions.assertNotNull(
           mTurboModuleRegistry,
           "TurboModules are enabled, but mTurboModuleRegistry hasn't been set.");
@@ -554,8 +560,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
     boolean wasIdle = oldPendingCalls == 0;
-    Systrace.traceCounter(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
+    Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, oldPendingCalls + 1);
     if (wasIdle && !mBridgeIdleListeners.isEmpty()) {
       mNativeModulesQueueThread.runOnQueue(
           () -> {
@@ -586,8 +591,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     // TODO(9604406): handle case of web workers injecting messages to main thread
     // Assertions.assertCondition(newPendingCalls >= 0);
     boolean isNowIdle = newPendingCalls == 0;
-    Systrace.traceCounter(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, mJsPendingCallsTitleForTrace, newPendingCalls);
+    Systrace.traceCounter(TRACE_TAG_REACT, mJsPendingCallsTitleForTrace, newPendingCalls);
 
     if (isNowIdle && !mBridgeIdleListeners.isEmpty()) {
       mNativeModulesQueueThread.runOnQueue(

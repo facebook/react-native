@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_nativemodule_microtasks_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_nativemodule_microtasks OBJECT ${react_nativemodule_microtasks_SRC})
@@ -23,3 +17,5 @@ target_link_libraries(react_nativemodule_microtasks
         react_codegen_rncore
         react_cxxreact
 )
+target_compile_reactnative_options(react_nativemodule_microtasks PRIVATE)
+target_compile_options(react_nativemodule_microtasks PRIVATE -Wpedantic)

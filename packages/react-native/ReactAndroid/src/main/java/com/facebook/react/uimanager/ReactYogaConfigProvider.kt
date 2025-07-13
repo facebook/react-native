@@ -7,22 +7,24 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaConfig
 import com.facebook.yoga.YogaConfigFactory
 import com.facebook.yoga.YogaErrata
 
-public object ReactYogaConfigProvider {
-
-  private val yogaConfig: YogaConfig by
-      lazy(LazyThreadSafetyMode.NONE) {
-        val config = YogaConfigFactory.create()
-        config.setPointScaleFactor(0f)
-        config.setErrata(YogaErrata.ALL)
-        config
-      }
-
-  @JvmStatic
-  public fun get(): YogaConfig {
-    return yogaConfig
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+internal object ReactYogaConfigProvider {
+  init {
+    LegacyArchitectureLogger.assertLegacyArchitecture("ReactYogaConfigProvider")
   }
+
+  val yogaConfig: YogaConfig by
+      lazy(LazyThreadSafetyMode.NONE) {
+        YogaConfigFactory.create().apply {
+          setPointScaleFactor(0f)
+          setErrata(YogaErrata.ALL)
+        }
+      }
 }

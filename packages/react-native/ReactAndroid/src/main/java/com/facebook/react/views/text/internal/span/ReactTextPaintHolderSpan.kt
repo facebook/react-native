@@ -10,4 +10,4 @@ package com.facebook.react.views.text.internal.span
 import android.text.TextPaint
 
 /** Associates a TextPaint instance with a Spannable for convenience */
-public data class ReactTextPaintHolderSpan(public val textPaint: TextPaint) : ReactSpan
+internal data class ReactTextPaintHolderSpan(val textPaint: TextPaint) : ReactSpan

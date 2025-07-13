@@ -11,35 +11,36 @@
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItem,
+  ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
+  VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import {
-  VirtualizedList,
-  keyExtractor as defaultKeyExtractor,
-} from '@react-native/virtualized-lists';
+import View from '../Components/View/View';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
+import * as React from 'react';
 
-const View = require('../Components/View/View');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const deepDiffer = require('../Utilities/differ/deepDiffer');
-const Platform = require('../Utilities/Platform');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
+const deepDiffer = require('../Utilities/differ/deepDiffer').default;
+const Platform = require('../Utilities/Platform').default;
 const invariant = require('invariant');
-const React = require('react');
 
-type RequiredProps<ItemT> = {|
+const VirtualizedList = VirtualizedLists.VirtualizedList;
+const defaultKeyExtractor = VirtualizedLists.keyExtractor;
+
+type RequiredFlatListProps<ItemT> = {
   /**
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
-|};
-type OptionalProps<ItemT> = {|
+};
+type OptionalFlatListProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -66,7 +67,7 @@ type OptionalProps<ItemT> = {|
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
 
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
@@ -145,12 +146,12 @@ type OptionalProps<ItemT> = {|
   /**
    * See `ScrollView` for flow type and further documentation.
    */
-  fadingEdgeLength?: ?number,
+  fadingEdgeLength?: ?number | {start: number, end: number},
   /**
    * Enable an optimization to memoize the item renderer to prevent unnecessary rerenders.
    */
   strictMode?: boolean,
-|};
+};
 
 /**
  * Default Props Helper Functions
@@ -176,26 +177,22 @@ function isArrayLike(data: mixed): boolean {
   return typeof Object(data).length === 'number';
 }
 
-type FlatListProps<ItemT> = {|
-  ...RequiredProps<ItemT>,
-  ...OptionalProps<ItemT>,
-|};
+type FlatListBaseProps<ItemT> = {
+  ...RequiredFlatListProps<ItemT>,
+  ...OptionalFlatListProps<ItemT>,
+};
 
-type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
-
-export type Props<ItemT> = {
-  ...$Diff<
+export type FlatListProps<ItemT> = {
+  ...Omit<
     VirtualizedListProps,
-    {
-      getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
-      getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
-      getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
-      renderItem: $PropertyType<VirtualizedListProps, 'renderItem'>,
-      keyExtractor: $PropertyType<VirtualizedListProps, 'keyExtractor'>,
-      ...
-    },
+    | 'data'
+    | 'getItem'
+    | 'getItemCount'
+    | 'getItemLayout'
+    | 'renderItem'
+    | 'keyExtractor',
   >,
-  ...FlatListProps<ItemT>,
+  ...FlatListBaseProps<ItemT>,
   ...
 };
 
@@ -307,7 +304,7 @@ export type Props<ItemT> = {
  *
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
-class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
@@ -422,7 +419,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  constructor(props: Props<ItemT>) {
+  constructor(props: FlatListProps<ItemT>) {
     super(props);
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
@@ -456,7 +453,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   // $FlowFixMe[missing-local-annot]
-  componentDidUpdate(prevProps: Props<ItemT>) {
+  componentDidUpdate(prevProps: FlatListProps<ItemT>) {
     invariant(
       prevProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
@@ -488,7 +485,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   // $FlowFixMe[missing-local-annot]
-  _checkProps(props: Props<ItemT>) {
+  _checkProps(props: FlatListProps<ItemT>) {
     const {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItem,
@@ -618,7 +615,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _renderer = (
     ListItemComponent: ?(React.ComponentType<any> | React.MixedElement),
-    renderItem: ?RenderItemType<ItemT>,
+    renderItem: ?ListRenderItem<ItemT>,
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,
     extraData: ?any,
@@ -626,7 +623,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   ) => {
     const cols = numColumnsOrDefault(numColumns);
 
-    const render = (props: RenderItemProps<ItemT>): React.Node => {
+    const render = (props: ListRenderItemInfo<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid
@@ -640,7 +637,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       }
     };
 
-    const renderProp = (info: RenderItemProps<ItemT>) => {
+    const renderProp = (info: ListRenderItemInfo<ItemT>) => {
       if (cols > 1) {
         const {item, index} = info;
         invariant(
@@ -672,8 +669,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       : {renderItem: renderProp};
   };
 
-  // $FlowFixMe[missing-local-annot]
-  _memoizedRenderer = memoizeOne(this._renderer);
+  _memoizedRenderer: ReturnType<typeof memoizeOne> = memoizeOne(this._renderer);
 
   render(): React.Node {
     const {
@@ -714,4 +710,4 @@ const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
 });
 
-module.exports = FlatList;
+export default FlatList;

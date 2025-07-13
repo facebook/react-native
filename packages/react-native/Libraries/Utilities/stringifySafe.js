@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 import invariant from 'invariant';
@@ -14,12 +14,12 @@ import invariant from 'invariant';
  * Tries to stringify with JSON.stringify and toString, but catches exceptions
  * (e.g. from circular objects) and always returns a string and never throws.
  */
-export function createStringifySafeWithLimits(limits: {|
+export function createStringifySafeWithLimits(limits: {
   maxDepth?: number,
   maxStringLimit?: number,
   maxArrayLimit?: number,
   maxObjectKeysLimit?: number,
-|}): mixed => string {
+}): mixed => string {
   const {
     maxDepth = Number.POSITIVE_INFINITY,
     maxStringLimit = Number.POSITIVE_INFINITY,

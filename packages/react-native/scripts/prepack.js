@@ -6,19 +6,16 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const {
   generateFBReactNativeSpecIOS,
-  generateRNCoreComponentsIOS,
-} = require('./codegen/generate-artifacts-executor');
+} = require('./codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
 const fs = require('fs');
 
 function main() {
   console.info('[Prepack] Copying README.md');
   fs.copyFileSync('../../README.md', './README.md');
-  generateRNCoreComponentsIOS('.');
   generateFBReactNativeSpecIOS('.');
 }
 

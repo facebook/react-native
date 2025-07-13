@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {TextProps} from 'react-native/Libraries/Text/TextProps';
+import type {TextProps} from 'react-native';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import React, {useContext, useMemo} from 'react';

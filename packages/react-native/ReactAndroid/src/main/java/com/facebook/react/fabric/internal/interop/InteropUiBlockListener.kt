@@ -9,6 +9,7 @@
 
 package com.facebook.react.fabric.internal.interop
 
+import androidx.annotation.VisibleForTesting
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
@@ -24,9 +25,9 @@ import com.facebook.react.fabric.interop.UIBlockViewResolver
  */
 @OptIn(UnstableReactNativeAPI::class)
 internal class InteropUIBlockListener : UIManagerListener {
+  @VisibleForTesting internal val beforeUIBlocks: MutableList<UIBlock> = mutableListOf()
 
-  internal val beforeUIBlocks: MutableList<UIBlock> = mutableListOf()
-  internal val afterUIBlocks: MutableList<UIBlock> = mutableListOf()
+  @VisibleForTesting internal val afterUIBlocks: MutableList<UIBlock> = mutableListOf()
 
   @Synchronized
   fun prependUIBlock(block: UIBlock) {
@@ -39,27 +40,37 @@ internal class InteropUIBlockListener : UIManagerListener {
   }
 
   override fun willMountItems(uiManager: UIManager) {
-    if (beforeUIBlocks.isEmpty()) {
+    if (uiManager !is UIBlockViewResolver) {
       return
     }
-    beforeUIBlocks.forEach {
-      if (uiManager is UIBlockViewResolver) {
-        it.execute(uiManager)
-      }
-    }
-    beforeUIBlocks.clear()
+
+    // avoid ConcurrentModificationException by iterating over a copy
+    val blocks =
+        synchronized(this) {
+          if (beforeUIBlocks.isEmpty()) {
+            return
+          }
+          beforeUIBlocks.toList().also { beforeUIBlocks.clear() }
+        }
+
+    blocks.forEach { block -> block.execute(uiManager) }
   }
 
   override fun didMountItems(uiManager: UIManager) {
-    if (afterUIBlocks.isEmpty()) {
+    if (uiManager !is UIBlockViewResolver) {
       return
     }
-    afterUIBlocks.forEach {
-      if (uiManager is UIBlockViewResolver) {
-        it.execute(uiManager)
-      }
-    }
-    afterUIBlocks.clear()
+
+    // avoid ConcurrentModificationException by iterating over a copy
+    val blocks =
+        synchronized(this) {
+          if (afterUIBlocks.isEmpty()) {
+            return
+          }
+          afterUIBlocks.toList().also { afterUIBlocks.clear() }
+        }
+
+    blocks.forEach { block -> block.execute(uiManager) }
   }
 
   override fun didDispatchMountItems(uiManager: UIManager) = didMountItems(uiManager)

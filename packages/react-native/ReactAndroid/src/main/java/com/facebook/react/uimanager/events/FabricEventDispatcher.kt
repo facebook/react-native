@@ -11,10 +11,9 @@ import android.os.Handler
 import android.view.Choreographer
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
-import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.UIManagerHelper
@@ -23,44 +22,51 @@ import com.facebook.systrace.Systrace
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.Volatile
 
+private const val TAG = "FabricEventDispatcher"
+
 /**
  * A singleton class that overrides [EventDispatcher] with no-op methods, to be used by callers that
  * expect an EventDispatcher when the instance doesn't exist.
+ *
+ * While this class is Fabric-specific, it lives in the uimanager.events package to allow access to
+ * Event internals.
  */
-public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
-    EventDispatcher, LifecycleEventListener {
-  private val reactEventEmitter: ReactEventEmitter
-  private val reactContext: ReactApplicationContext = reactContext
+internal class FabricEventDispatcher(
+    private val reactContext: ReactApplicationContext,
+    fabricEventEmitter: RCTModernEventEmitter
+) : EventDispatcher, LifecycleEventListener {
+  // TODO: Remove EventEmitterImpl indirection when new Fabric is fully rolled out
+  private val eventEmitter = EventEmitterImpl(reactContext)
   private val listeners = CopyOnWriteArrayList<EventDispatcherListener>()
   private val postEventDispatchListeners = CopyOnWriteArrayList<BatchEventDispatchedListener>()
-  private val currentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
+  private val currentFrameCallback = ScheduleDispatchFrameCallback()
 
   private var isDispatchScheduled = false
   private val dispatchEventsRunnable = Runnable {
     isDispatchScheduled = false
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
     try {
       for (listener in postEventDispatchListeners) {
         listener.onBatchEventDispatched()
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
   init {
-    this.reactContext.addLifecycleEventListener(this)
-    reactEventEmitter = ReactEventEmitter(this.reactContext)
+    reactContext.addLifecycleEventListener(this)
+    eventEmitter.registerFabricEventEmitter(fabricEventEmitter)
   }
 
-  public override fun dispatchEvent(event: Event<*>) {
+  override fun dispatchEvent(event: Event<*>) {
     for (listener in listeners) {
       listener.onEventDispatch(event)
     }
-    if (event.experimental_isSynchronous()) {
+    if (event.internal_experimental_isSynchronous()) {
       dispatchSynchronous(event)
     } else {
-      event.dispatchModern(reactEventEmitter)
+      event.dispatchModern(eventEmitter)
     }
 
     event.dispose()
@@ -69,34 +75,32 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
 
   private fun dispatchSynchronous(event: Event<*>) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricEventDispatcher.dispatchSynchronous('" + event.eventName + "')")
+        Systrace.TRACE_TAG_REACT,
+        "FabricEventDispatcher.dispatchSynchronous('" + event.getEventName() + "')")
     try {
-      val fabricUIManager: UIManager? =
-          UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
-      @Suppress("DEPRECATION")
+      val fabricUIManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
+      @OptIn(UnstableReactNativeAPI::class)
       if (fabricUIManager is SynchronousEventReceiver) {
-        @Suppress("DEPRECATION")
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
             event.surfaceId,
             event.viewTag,
-            event.eventName,
+            event.getEventName(),
             event.canCoalesce(),
-            event.eventData,
-            event.eventCategory,
+            event.internal_getEventData(),
+            event.internal_getEventCategory(),
             true)
       } else {
         ReactSoftExceptionLogger.logSoftException(
-            "FabricEventDispatcher",
-            ReactNoCrashSoftException(
+            TAG,
+            IllegalStateException(
                 "Fabric UIManager expected to implement SynchronousEventReceiver."))
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 
-  public override fun dispatchAllEvents() {
+  override fun dispatchAllEvents() {
     scheduleDispatchOfBatchedEvents()
   }
 
@@ -112,40 +116,47 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
   }
 
   /** Add a listener to this EventDispatcher. */
-  public override fun addListener(listener: EventDispatcherListener) {
+  override fun addListener(listener: EventDispatcherListener) {
     listeners.add(listener)
   }
 
   /** Remove a listener from this EventDispatcher. */
-  public override fun removeListener(listener: EventDispatcherListener) {
+  override fun removeListener(listener: EventDispatcherListener) {
     listeners.remove(listener)
   }
 
-  public override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
+  override fun addBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
     postEventDispatchListeners.add(listener)
   }
 
-  public override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
+  override fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener) {
     postEventDispatchListeners.remove(listener)
   }
 
-  public override fun onHostResume() {
+  override fun onHostResume() {
     scheduleDispatchOfBatchedEvents()
     if (!ReactNativeFeatureFlags.useOptimizedEventBatchingOnAndroid()) {
       currentFrameCallback.resume()
     }
   }
 
-  public override fun onHostPause() {
+  override fun onHostPause() {
     cancelDispatchOfBatchedEvents()
   }
 
-  public override fun onHostDestroy() {
+  override fun onHostDestroy() {
     cancelDispatchOfBatchedEvents()
   }
 
-  public override fun onCatalystInstanceDestroyed() {
-    UiThreadUtil.runOnUiThread(Runnable { cancelDispatchOfBatchedEvents() })
+  fun invalidate() {
+    eventEmitter.registerFabricEventEmitter(null)
+
+    UiThreadUtil.runOnUiThread { cancelDispatchOfBatchedEvents() }
+  }
+
+  @Deprecated("Private API, should only be used when the concrete implementation is known.")
+  override fun onCatalystInstanceDestroyed() {
+    invalidate()
   }
 
   private fun cancelDispatchOfBatchedEvents() {
@@ -156,26 +167,6 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     } else {
       currentFrameCallback.stop()
     }
-  }
-
-  @Deprecated("Use the modern version with RCTModernEventEmitter")
-  @Suppress("DEPRECATION")
-  public override fun registerEventEmitter(
-      @UIManagerType uiManagerType: Int,
-      eventEmitter: RCTEventEmitter
-  ) {
-    reactEventEmitter.register(uiManagerType, eventEmitter)
-  }
-
-  public override fun registerEventEmitter(
-      @UIManagerType uiManagerType: Int,
-      eventEmitter: RCTModernEventEmitter
-  ) {
-    reactEventEmitter.register(uiManagerType, eventEmitter)
-  }
-
-  public override fun unregisterEventEmitter(@UIManagerType uiManagerType: Int) {
-    reactEventEmitter.unregister(uiManagerType)
   }
 
   private inner class ScheduleDispatchFrameCallback : Choreographer.FrameCallback {
@@ -191,25 +182,25 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
         dispatchBatchedEvents()
       }
 
-      Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "BatchEventDispatchedListeners")
+      Systrace.beginSection(Systrace.TRACE_TAG_REACT, "BatchEventDispatchedListeners")
       try {
         for (listener in postEventDispatchListeners) {
           listener.onBatchEventDispatched()
         }
       } finally {
-        Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+        Systrace.endSection(Systrace.TRACE_TAG_REACT)
       }
     }
 
-    public fun stop() {
+    fun stop() {
       shouldStop = true
     }
 
-    public fun resume() {
+    fun resume() {
       shouldStop = false
     }
 
-    public fun maybeDispatchBatchedEvents() {
+    fun maybeDispatchBatchedEvents() {
       if (!isFrameCallbackDispatchScheduled) {
         isFrameCallbackDispatchScheduled = true
         dispatchBatchedEvents()
@@ -221,7 +212,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
           .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, currentFrameCallback)
     }
 
-    public fun maybeScheduleDispatchOfBatchedEvents() {
+    fun maybeScheduleDispatchOfBatchedEvents() {
       if (isFrameCallbackDispatchScheduled) {
         return
       }
@@ -230,7 +221,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
       if (reactContext.isOnUiQueueThread()) {
         maybeDispatchBatchedEvents()
       } else {
-        reactContext.runOnUiQueueThread(Runnable { maybeDispatchBatchedEvents() })
+        reactContext.runOnUiQueueThread { maybeDispatchBatchedEvents() }
       }
     }
   }

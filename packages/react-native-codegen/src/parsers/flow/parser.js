@@ -93,6 +93,10 @@ class FlowParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    if (typeAnnotation?.id?.type === 'QualifiedTypeIdentifier') {
+      return typeAnnotation.id.id.name;
+    }
+
     return typeAnnotation?.id?.name;
   }
 
@@ -292,6 +296,7 @@ class FlowParser implements Parser {
         if (
           node.declaration != null &&
           (node.declaration.type === 'TypeAlias' ||
+            node.declaration.type === 'OpaqueType' ||
             node.declaration.type === 'InterfaceDeclaration')
         ) {
           types[node.declaration.id.name] = node.declaration;
@@ -305,6 +310,7 @@ class FlowParser implements Parser {
         types[node.declaration.id.name] = node.declaration;
       } else if (
         node.type === 'TypeAlias' ||
+        node.type === 'OpaqueType' ||
         node.type === 'InterfaceDeclaration' ||
         node.type === 'EnumDeclaration'
       ) {
@@ -443,7 +449,6 @@ class FlowParser implements Parser {
       if (resolvedTypeAnnotation == null) {
         break;
       }
-
       const {typeAnnotation: typeAnnotationNode, typeResolutionStatus: status} =
         handleGenericTypeAnnotation(node, resolvedTypeAnnotation, this);
       typeResolutionStatus = status;
@@ -540,6 +545,10 @@ class FlowParser implements Parser {
   }
 
   nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    if (typeAnnotation.type === 'OpaqueType') {
+      return typeAnnotation.impltype;
+    }
+
     return typeAnnotation.right;
   }
 

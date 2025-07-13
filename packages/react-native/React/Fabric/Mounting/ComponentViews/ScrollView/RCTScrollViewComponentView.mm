@@ -12,6 +12,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -63,6 +64,9 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
 static void
 RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag, NSString *eventName)
 {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
+    return;
+  }
   static uint16_t coalescingKey = 0;
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:[NSNumber numberWithInt:tag]
@@ -473,6 +477,37 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
   }];
+}
+
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // This is the same algorithm as in the RCTViewComponentView with the exception of
+  // skipping the immediate child (_containerView) and checking grandchildren instead.
+  // This prevents issues with touches outside of _containerView being ignored even
+  // if they are within the bounds of the _containerView's children.
+
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+
+  BOOL clipsToBounds = _containerView.clipsToBounds;
+
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+
+  if (clipsToBounds && !isPointInside) {
+    return nil;
+  }
+
+  for (UIView *subview in [_containerView.subviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+
+  return isPointInside ? self : nil;
 }
 
 /*

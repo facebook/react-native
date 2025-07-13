@@ -30,6 +30,7 @@ project.xcworkspace
 /packages/rn-tester/android/app/gradle/
 /packages/rn-tester/android/app/gradlew
 /packages/rn-tester/android/app/gradlew.bat
+/packages/react-native/build/
 /packages/react-native/ReactAndroid/build/
 /packages/react-native/ReactAndroid/.cxx/
 /packages/react-native/ReactAndroid/gradle/
@@ -39,8 +40,8 @@ project.xcworkspace
 /packages/react-native/ReactAndroid/external-artifacts/artifacts/
 /packages/react-native/ReactAndroid/hermes-engine/build/
 /packages/react-native/ReactAndroid/hermes-engine/.cxx/
-/packages/helloworld/android/app/build/
-/packages/helloworld/android/build/
+/private/helloworld/android/app/build/
+/private/helloworld/android/build/
 /packages/react-native-popup-menu-android/android/build/
 /packages/react-native-test-library/android/build/
 
@@ -107,39 +108,53 @@ package-lock.json
 
 # Ruby Gems (Bundler)
 /packages/react-native/vendor
-/packages/helloworld/vendor
+/private/helloworld/vendor
 .ruby-version
 /**/.ruby-version
 vendor/
 
 # iOS / CocoaPods
-/packages/helloworld/ios/build/
-/packages/helloworld/ios/Pods/
-/packages/helloworld/ios/Podfile.lock
+/private/helloworld/ios/build/
+/private/helloworld/ios/Pods/
+/private/helloworld/ios/Podfile.lock
+/packages/rn-tester/bin/
+/packages/rn-tester/cache/
+/packages/rn-tester/extensions/
+/packages/rn-tester/gems/
+/packages/rn-tester/specifications/
 /packages/rn-tester/Gemfile.lock
 /packages/**/RCTLegacyInteropComponents.mm
+/packages/sourcemap.ios.map
 
 # Ignore RNTester specific Pods, but keep the __offline_mirrors__ here.
 /packages/rn-tester/Pods/*
 !/packages/rn-tester/Pods/__offline_mirrors_hermes__
 !/packages/rn-tester/Pods/__offline_mirrors_jsc__
 
+# Swift Package build folder
+/packages/react-native/.build
+/packages/react-native/.swiftpm
+
 # @react-native/codegen
 /packages/react-native/React/FBReactNativeSpec/
 /packages/react-native-codegen/lib
 /packages/react-native-codegen/tmp/
-/packages/react-native/ReactCommon/react/renderer/components/rncore/
 /packages/rn-tester/NativeModuleExample/ScreenshotManagerSpec*
 /**/RCTThirdPartyFabricComponentsProvider.*
 
 # @react-native/codegen-typescript-test
-/packages/react-native-codegen-typescript-test/lib
+/private/react-native-codegen-typescript-test/lib
 
 # Additional SDKs
 /packages/react-native/sdks/download
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
+
+# iOS prebuilds
+/packages/react-native/third-party/
+fix_*.patch
+*.xcframework
 
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
@@ -154,8 +169,12 @@ vendor/
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
-# CircleCI
-.circleci/generated_config.yml
-
 # Jest Integration
-/packages/react-native-fantom/build/
+/private/react-native-fantom/build/
+/private/react-native-fantom/tester/build/
+
+# [Experimental] Generated TS type definitions
+/packages/**/types_generated/
+
+/packages/debugger-shell/build/
+/packages/*/dist/

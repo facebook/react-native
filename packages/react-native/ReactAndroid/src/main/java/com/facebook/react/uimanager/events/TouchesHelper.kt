@@ -14,8 +14,11 @@ import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventName
 import com.facebook.systrace.Systrace
 
-/** Class responsible for generating catalyst touch events based on android [MotionEvent]. */
-public object TouchesHelper {
+/**
+ * Class responsible for generating catalyst touch events based on android
+ * [android.view.MotionEvent].
+ */
+internal object TouchesHelper {
   @JvmField @Deprecated("Not used in New Architecture") public val TARGET_KEY: String = "target"
 
   private const val TARGET_SURFACE_KEY = "targetSurface"
@@ -83,7 +86,7 @@ public object TouchesHelper {
    */
   @Suppress("DEPRECATION")
   @JvmStatic
-  public fun sendTouchesLegacy(rctEventEmitter: RCTEventEmitter, touchEvent: TouchEvent) {
+  fun sendTouchesLegacy(rctEventEmitter: RCTEventEmitter, touchEvent: TouchEvent) {
     val type = touchEvent.getTouchEventType()
 
     val pointers = getWritableArray(/* copyObjects */ false, createPointersArray(touchEvent))
@@ -108,7 +111,8 @@ public object TouchesHelper {
 
   /**
    * Generate touch event data to match JS expectations. Combines logic in [sendTouchEvent] and
-   * [FabricEventEmitter] to create the same data structure in a more efficient manner.
+   * [com.facebook.react.fabric.events.FabricEventEmitter] to create the same data structure in a
+   * more efficient manner.
    *
    * Touches have to be dispatched as separate events for each changed pointer to make JS process
    * them correctly. To avoid allocations, we preprocess touch events in Java world and then convert
@@ -118,10 +122,10 @@ public object TouchesHelper {
    * @param event the touch event to extract data from
    */
   @JvmStatic
-  public fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
+  fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "TouchesHelper.sentTouchEventModern(" + event.eventName + ")")
+        Systrace.TRACE_TAG_REACT,
+        "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")")
     try {
       val type = event.getTouchEventType()
       val motionEvent = event.getMotionEvent()
@@ -173,14 +177,14 @@ public object TouchesHelper {
         eventEmitter.receiveEvent(
             event.surfaceId,
             event.viewTag,
-            event.eventName,
+            event.getEventName(),
             event.canCoalesce(),
             0,
             eventData,
-            event.eventCategory)
+            event.getEventCategory())
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE)
+      Systrace.endSection(Systrace.TRACE_TAG_REACT)
     }
   }
 

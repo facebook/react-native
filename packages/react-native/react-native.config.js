@@ -4,10 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
+
+/*::
+import type {Command} from '@react-native-community/cli-types';
+ */
 
 // React Native shouldn't be exporting itself like this, the Community Template should be be directly
 // depending on and injecting:
@@ -18,11 +23,30 @@
 //
 // This is a temporary workaround.
 
-const verbose = process.env.DEBUG && process.env.DEBUG.includes('react-native');
+const verbose = Boolean(process.env.DEBUG?.includes('react-native'));
+
+function findCommunityPlatformPackage(
+  spec /*: string */,
+  startDir /*: string */ = process.cwd(),
+) {
+  // In monorepos, we cannot make any assumptions on where
+  // `@react-native-community/*` gets installed. The safest way to find it
+  // (barring adding an optional peer dependency) is to start from the project
+  // root.
+  //
+  // Note that we're assuming that the current working directory is the project
+  // root. This is also what `@react-native-community/cli` assumes (see
+  // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
+  const main = require.resolve(spec, {paths: [startDir]});
+  // $FlowIgnore[unsupported-syntax]
+  return require(main);
+}
 
 let android;
 try {
-  android = require('@react-native-community/cli-platform-android');
+  android = findCommunityPlatformPackage(
+    '@react-native-community/cli-platform-android',
+  );
 } catch {
   if (verbose) {
     console.warn(
@@ -33,7 +57,9 @@ try {
 
 let ios;
 try {
-  ios = require('@react-native-community/cli-platform-ios');
+  ios = findCommunityPlatformPackage(
+    '@react-native-community/cli-platform-ios',
+  );
 } catch {
   if (verbose) {
     console.warn(
@@ -42,31 +68,16 @@ try {
   }
 }
 
-const commands = [];
+const commands /*: Array<Command> */ = [];
 
-try {
-  const {
-    bundleCommand,
-    startCommand,
-  } = require('@react-native/community-cli-plugin');
-  commands.push(bundleCommand, startCommand);
-} catch (e) {
-  const known =
-    e.code === 'MODULE_NOT_FOUND' &&
-    e.message.includes('@react-native-community/cli-server-api');
+const {
+  bundleCommand,
+  startCommand,
+} = require('@react-native/community-cli-plugin');
 
-  if (!known) {
-    throw e;
-  }
+commands.push(bundleCommand, startCommand);
 
-  if (verbose) {
-    console.warn(
-      '@react-native-community/cli-server-api not found, the react-native.config.js may be unusable.',
-    );
-  }
-}
-
-const codegenCommand = {
+const codegenCommand /*: Command */ = {
   name: 'codegen',
   options: [
     {
@@ -84,12 +95,18 @@ const codegenCommand = {
       name: '--outputPath <path>',
       description: 'Path where generated artifacts will be output to.',
     },
+    {
+      name: '--source <string>',
+      description: 'Whether the script is invoked from an `app` or a `library`',
+      default: 'app',
+    },
   ],
   func: (argv, config, args) =>
     require('./scripts/codegen/generate-artifacts-executor').execute(
       args.path,
       args.platform,
       args.outputPath,
+      args.source,
     ),
 };
 
@@ -97,7 +114,10 @@ commands.push(codegenCommand);
 
 const config = {
   commands,
-  platforms: {},
+  platforms: {} /*:: as {[string]: $ReadOnly<{
+      projectConfig: mixed,
+      dependencyConfig: mixed,
+    }>} */,
 };
 
 if (ios != null) {

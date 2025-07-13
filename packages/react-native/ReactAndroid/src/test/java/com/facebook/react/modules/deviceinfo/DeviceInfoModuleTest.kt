@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.modules.deviceinfo
 
 import com.facebook.react.bridge.BridgeReactContext
@@ -23,7 +25,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 

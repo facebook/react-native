@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -20,7 +19,6 @@ import type {DeviceMock} from './InspectorDeviceUtils';
 import {fetchJson} from './FetchUtils';
 import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
-import {dataUriToBuffer} from 'data-uri-to-buffer';
 import until from 'wait-for-expect';
 
 export type CdpMessageFromTarget = $ReadOnly<{
@@ -107,15 +105,6 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
   );
   // $FlowIgnore[incompatible-return]
   return receivedMessage.wrappedEvent;
-}
-
-export function parseJsonFromDataUri<T: JSONSerializable>(uri: string): T {
-  expect(uri).toMatch(/^data:/);
-  const parsedUri = dataUriToBuffer(uri);
-  expect(parsedUri.type).toBe('application/json');
-  return JSON.parse(
-    new TextDecoder(parsedUri.charset).decode(parsedUri.buffer),
-  );
 }
 
 export async function createAndConnectTarget(

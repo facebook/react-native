@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.binary.compatibility.validator) apply true
+  alias(libs.plugins.android.test) apply false
 }
 
 val reactAndroidProperties = java.util.Properties()
@@ -54,6 +55,8 @@ nexusPublishing {
     sonatype {
       username.set(sonatypeUsername)
       password.set(sonatypePassword)
+      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
     }
   }
 }
@@ -92,7 +95,7 @@ tasks.register("build") {
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
-  // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
+  // We don't publish the external-artifacts to Maven Local as ci is using it via workspace.
   dependsOn(
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
@@ -121,7 +124,7 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            .using(module("com.facebook.react:hermes-android:0.0.0-+"))
+            .using(module("com.facebook.react:hermes-android:0.+"))
             .because("Users opted to use hermes from nightly")
       }
     }

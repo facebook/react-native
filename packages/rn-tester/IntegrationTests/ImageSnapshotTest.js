@@ -4,39 +4,36 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Image} = ReactNative;
-const {TestModule} = ReactNative.NativeModules;
+import * as React from 'react';
+import {useEffect} from 'react';
+import {Image, NativeModules} from 'react-native';
 
-class ImageSnapshotTest extends React.Component<{...}> {
-  componentDidMount(): void {
+const {TestModule} = NativeModules;
+
+function ImageSnapshotTest(): React.Node {
+  useEffect(() => {
     if (!TestModule.verifySnapshot) {
       throw new Error('TestModule.verifySnapshot not defined.');
     }
-  }
+  }, []);
 
-  done: (success: boolean) => void = (success: boolean) => {
+  const done = (success: boolean) => {
     TestModule.markTestPassed(success);
   };
 
-  render(): React.Node {
-    return (
-      <Image
-        source={require('./blue_square.png')}
-        defaultSource={require('./red_square.png')}
-        onLoad={() => TestModule.verifySnapshot(this.done)}
-      />
-    );
-  }
+  return (
+    <Image
+      source={require('./blue_square.png')}
+      defaultSource={require('./red_square.png')}
+      onLoad={() => TestModule.verifySnapshot(done)}
+    />
+  );
 }
 
-ImageSnapshotTest.displayName = 'ImageSnapshotTest';
-
-module.exports = ImageSnapshotTest;
+export default ImageSnapshotTest;

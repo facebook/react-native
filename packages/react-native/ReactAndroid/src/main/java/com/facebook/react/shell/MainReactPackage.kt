@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
@@ -54,6 +55,7 @@ import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
+import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactRawTextManager
 import com.facebook.react.views.text.ReactTextViewManager
 import com.facebook.react.views.text.ReactVirtualTextViewManager
@@ -115,7 +117,9 @@ constructor(private val config: MainPackageConfig? = null) :
         ImageLoaderModule.NAME -> ImageLoaderModule(reactContext)
         ImageStoreManager.NAME -> ImageStoreManager(reactContext)
         IntentModule.NAME -> IntentModule(reactContext)
-        NativeAnimatedModule.NAME -> NativeAnimatedModule(reactContext)
+        NativeAnimatedModule.NAME ->
+            if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+            else NativeAnimatedModule(reactContext)
         NetworkingModule.NAME -> NetworkingModule(reactContext)
         PermissionsModule.NAME -> PermissionsModule(reactContext)
         ShareModule.NAME -> ShareModule(reactContext)
@@ -145,7 +149,8 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactModalHostManager(),
           ReactRawTextManager(),
           ReactTextInputManager(),
-          ReactTextViewManager(),
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
+          else ReactTextViewManager(),
           ReactViewManager(),
           ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager())
@@ -180,7 +185,12 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
-          ReactTextViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactTextViewManager() },
+          ReactTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.enablePreparedTextLayout())
+                    PreparedLayoutTextViewManager()
+                else ReactTextViewManager()
+              },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
           ReactVirtualTextViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
@@ -228,30 +238,33 @@ constructor(private val config: MainPackageConfig? = null) :
     // We fall back to creating this by hand
     val moduleList: Array<Class<*>> =
         arrayOf(
-            AccessibilityInfoModule::class.java,
-            AppearanceModule::class.java,
-            AppStateModule::class.java,
-            BlobModule::class.java,
-            DevLoadingModule::class.java,
-            FileReaderModule::class.java,
-            ClipboardModule::class.java,
-            DialogModule::class.java,
-            FrescoModule::class.java,
-            I18nManagerModule::class.java,
-            ImageLoaderModule::class.java,
-            ImageStoreManager::class.java,
-            IntentModule::class.java,
-            NativeAnimatedModule::class.java,
-            NetworkingModule::class.java,
-            PermissionsModule::class.java,
-            ReactDevToolsSettingsManagerModule::class.java,
-            ReactDevToolsRuntimeSettingsModule::class.java,
-            ShareModule::class.java,
-            StatusBarModule::class.java,
-            SoundManagerModule::class.java,
-            ToastModule::class.java,
-            VibrationModule::class.java,
-            WebSocketModule::class.java)
+                AccessibilityInfoModule::class.java,
+                AppearanceModule::class.java,
+                AppStateModule::class.java,
+                BlobModule::class.java,
+                DevLoadingModule::class.java,
+                FileReaderModule::class.java,
+                ClipboardModule::class.java,
+                DialogModule::class.java,
+                FrescoModule::class.java,
+                I18nManagerModule::class.java,
+                ImageLoaderModule::class.java,
+                ImageStoreManager::class.java,
+                IntentModule::class.java,
+                if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+                else NativeAnimatedModule::class.java,
+                NetworkingModule::class.java,
+                PermissionsModule::class.java,
+                ReactDevToolsSettingsManagerModule::class.java,
+                ReactDevToolsRuntimeSettingsModule::class.java,
+                ShareModule::class.java,
+                StatusBarModule::class.java,
+                SoundManagerModule::class.java,
+                ToastModule::class.java,
+                VibrationModule::class.java,
+                WebSocketModule::class.java)
+            .filterNotNull()
+            .toTypedArray()
 
     val moduleMap =
         moduleList

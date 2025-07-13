@@ -14,17 +14,38 @@ import Platform from '../Utilities/Platform';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import NativeAppState from './NativeAppState';
 
-export type AppStateValues = 'inactive' | 'background' | 'active';
+/**
+ * active - The app is running in the foreground
+ * background - The app is running in the background. The user is either:
+ *   - in another app
+ *   - on the home screen
+ *   - @platform android - on another Activity (even if it was launched by your app)
+ * @platform ios - inactive - This is a state that occurs when transitioning between foreground & background, and during periods of inactivity such as entering the multitasking view, opening the Notification Center or in the event of an incoming call.
+ */
+export type AppStateStatus =
+  | 'inactive'
+  | 'background'
+  | 'active'
+  | 'extension'
+  | 'unknown';
 
+/**
+ * change - This even is received when the app state has changed.
+ * memoryWarning - This event is used in the need of throwing memory warning or releasing it.
+ * @platform android - focus - Received when the app gains focus (the user is interacting with the app).
+ * @platform android - blur - Received when the user is not actively interacting with the app.
+ */
 type AppStateEventDefinitions = {
-  change: [AppStateValues],
+  change: [AppStateStatus],
   memoryWarning: [],
   blur: [],
   focus: [],
 };
 
+export type AppStateEvent = $Keys<AppStateEventDefinitions>;
+
 type NativeAppStateEventDefinitions = {
-  appStateDidChange: [{app_state: AppStateValues}],
+  appStateDidChange: [{app_state: AppStateStatus}],
   appStateFocusChange: [boolean],
   memoryWarning: [],
 };
@@ -35,7 +56,7 @@ type NativeAppStateEventDefinitions = {
  *
  * See https://reactnative.dev/docs/appstate
  */
-class AppState {
+class AppStateImpl {
   currentState: ?string = null;
   isAvailable: boolean;
 
@@ -89,9 +110,9 @@ class AppState {
    *
    * See https://reactnative.dev/docs/appstate#addeventlistener
    */
-  addEventListener<K: $Keys<AppStateEventDefinitions>>(
+  addEventListener<K: AppStateEvent>(
     type: K,
-    handler: (...$ElementType<AppStateEventDefinitions, K>) => void,
+    handler: (...AppStateEventDefinitions[K]) => void,
   ): EventSubscription {
     const emitter = this._emitter;
     if (emitter == null) {
@@ -100,7 +121,7 @@ class AppState {
     switch (type) {
       case 'change':
         // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
-        const changeHandler: AppStateValues => void = handler;
+        const changeHandler: AppStateStatus => void = handler;
         return emitter.addListener('appStateDidChange', appStateData => {
           changeHandler(appStateData.app_state);
         });
@@ -125,4 +146,5 @@ class AppState {
   }
 }
 
-module.exports = (new AppState(): AppState);
+const AppState: AppStateImpl = new AppStateImpl();
+export default AppState;

@@ -8,9 +8,10 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -43,7 +44,7 @@ module.exports = {
 
 function SwipeableCardExample() {
   const cardColors = ['red', 'blue', 'pink', 'aquamarine'];
-  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const nextIndex = currentIndex + 1;
 
@@ -87,10 +88,9 @@ function SwipeableCard(props: {
   color: string,
   onSwipedOut: () => void,
 }) {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const movementX = React.useMemo(() => new Animated.Value(0), [props.color]);
+  const movementX = useMemo(() => new Animated.Value(0), []);
 
-  const panResponder = React.useMemo(
+  const panResponder = useMemo(
     () =>
       PanResponder.create({
         onMoveShouldSetPanResponderCapture: (e, gestureState) => {
@@ -142,15 +142,15 @@ function SwipeableCard(props: {
 const cardData = Array(5);
 
 function Card(props: {color: string}) {
-  const renderItem = ({item, index}: RenderItemProps<$FlowFixMe>) => (
+  const renderItem = ({item, index}: ListRenderItemInfo<$FlowFixMe>) => (
     <CardSection color={props.color} index={index} />
   );
 
   const separatorComponent = () => <View style={styles.separator} />;
 
-  const listRef = React.useRef<?FlatList<mixed>>();
+  const listRef = useRef<?FlatList<mixed>>();
 
-  React.useEffect(() => {
+  useEffect(() => {
     listRef.current?.scrollToOffset({offset: 0, animated: false});
   }, [props.color]);
 

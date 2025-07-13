@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -22,15 +22,17 @@ describe('checkVersion', () => {
   });
 });
 
-function _setDevelopmentModeForTests(dev) {
+function _setDevelopmentModeForTests(dev: mixed) {
   let originalDev;
 
   beforeAll(() => {
     originalDev = global.__DEV__;
+    // $FlowIgnore[cannot-write]
     global.__DEV__ = dev;
   });
 
   afterAll(() => {
+    // $FlowIgnore[cannot-write]
     global.__DEV__ = originalDev;
   });
 }
@@ -44,14 +46,18 @@ function _defineCheckVersionTests() {
 
   beforeEach(() => {
     consoleOutput = '';
+    // $FlowFixMe[cannot-write]
     console.error = jest.fn();
+    // $FlowFixMe[cannot-write]
     global.console = {error: jest.fn(error => (consoleOutput += error))};
     spyOnConsoleError = jest.spyOn(global.console, 'error');
   });
 
   afterEach(() => {
     jest.resetModules();
+    // $FlowFixMe[cannot-write]
     console.error = consoleError;
+    // $FlowFixMe[cannot-write]
     global.console = globalConsole;
     spyOnConsoleError.mockReset();
   });
@@ -116,17 +122,23 @@ function _defineCheckVersionTests() {
   });
 }
 
-function _mockJsVersion(major = 0, minor = 0, patch = 0, prerelease = null) {
+function _mockJsVersion(
+  major: number = 0,
+  minor: number = 0,
+  patch: number = 0,
+  prerelease: ?string = null,
+) {
   jest.doMock('../ReactNativeVersion', () => ({
+    __esModule: true,
     version: {major, minor, patch, prerelease},
   }));
 }
 
 function _mockNativeVersion(
-  major = 0,
-  minor = 0,
-  patch = 0,
-  prerelease = null,
+  major: number = 0,
+  minor: number = 0,
+  patch: number = 0,
+  prerelease: ?string = null,
 ) {
   jest.doMock('../../Utilities/NativePlatformConstantsAndroid', () => ({
     getConstants: () => ({

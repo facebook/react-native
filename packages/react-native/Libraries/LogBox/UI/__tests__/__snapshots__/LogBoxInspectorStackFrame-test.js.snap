@@ -27,6 +27,7 @@ exports[`LogBoxInspectorStackFrame should render collapsed stack frame with dimm
     }
   >
     <Text
+      id="logbox_stack_frame_text"
       style={
         Array [
           Object {
@@ -99,6 +100,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame 1`] = `
     }
   >
     <Text
+      id="logbox_stack_frame_text"
       style={
         Array [
           Object {
@@ -164,6 +166,7 @@ exports[`LogBoxInspectorStackFrame should render stack frame without press feedb
     }
   >
     <Text
+      id="logbox_stack_frame_text"
       style={
         Array [
           Object {

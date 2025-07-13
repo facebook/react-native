@@ -21,4 +21,4 @@ import createPerformanceLogger from './createPerformanceLogger';
  */
 const GlobalPerformanceLogger: IPerformanceLogger = createPerformanceLogger();
 
-module.exports = GlobalPerformanceLogger;
+export default GlobalPerformanceLogger;

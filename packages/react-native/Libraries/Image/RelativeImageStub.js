@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -15,7 +15,7 @@
 
 const AssetRegistry = require('@react-native/assets-registry/registry');
 
-module.exports = (AssetRegistry.registerAsset({
+const RelativeImageStub = (AssetRegistry.registerAsset({
   __packager_asset: true,
   fileSystemLocation: '/full/path/to/directory',
   httpServerLocation: '/assets/full/path/to/directory',
@@ -26,3 +26,6 @@ module.exports = (AssetRegistry.registerAsset({
   name: 'icon',
   type: 'png',
 }): number);
+
+// eslint-disable-next-line @react-native/monorepo/no-commonjs-exports
+module.exports = RelativeImageStub;

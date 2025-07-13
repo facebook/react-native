@@ -16,6 +16,7 @@ import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import RNTOption from '../../components/RNTOption';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useContext, useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const transformProperties = {
@@ -70,6 +71,7 @@ function AnimatedView({
         Apply Selected Transforms
       </RNTesterButton>
       <Animated.View
+        // $FlowFixMe[incompatible-type] - properties are not exact
         style={[styles.animatedView, {transform: transformStyles}]}
       />
     </>
@@ -77,8 +79,8 @@ function AnimatedView({
 }
 
 function AnimatedTransformStyleExample(): React.Node {
-  const [properties, setProperties] = React.useState(transformProperties);
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [properties, setProperties] = useState(transformProperties);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
   const onToggle = (property: string) =>
     setProperties({
       ...properties,
@@ -89,7 +91,7 @@ function AnimatedTransformStyleExample(): React.Node {
         selected: !properties[property].selected,
       },
     });
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View>

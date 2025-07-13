@@ -12,9 +12,12 @@
 #include <libgen.h>
 #include <sys/endian.h>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <utility>
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 using magic_number_t = uint32_t;
 const magic_number_t MAGIC_FILE_HEADER = 0xFB0BD1E5;
@@ -93,3 +96,5 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
 }
 
 } // namespace facebook::react
+
+#endif

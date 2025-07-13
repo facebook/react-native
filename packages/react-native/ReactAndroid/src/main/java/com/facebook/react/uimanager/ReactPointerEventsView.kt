@@ -8,11 +8,11 @@
 package com.facebook.react.uimanager
 
 /**
- * This interface should be implemented be native [View] subclasses that support pointer events
- * handling. It is used to find the target View of a touch event.
+ * This interface should be implemented by native [android.view.View] subclasses that support
+ * pointer events handling. It is used to find the target View of a touch event.
  */
 public interface ReactPointerEventsView {
 
-  /** Return the PointerEvents of the View. */
-  public fun getPointerEvents(): PointerEvents
+  /** The PointerEvents of the View. */
+  public val pointerEvents: PointerEvents
 }

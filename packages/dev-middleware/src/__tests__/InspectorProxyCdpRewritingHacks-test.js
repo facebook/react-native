@@ -6,13 +6,11 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import {withFetchSelfSignedCertsForAllTests} from './FetchUtils';
 import {
   createAndConnectTarget,
-  parseJsonFromDataUri,
   sendFromDebuggerToTarget,
   sendFromTargetToDebugger,
 } from './InspectorProtocolUtils';
@@ -89,9 +87,9 @@ describe.each(['HTTP', 'HTTPS'])(
             },
           },
         );
-        expect(
-          parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
-        ).toEqual({version: 3, file: '\u2757.js'});
+        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+          `${serverRef.serverBaseUrl}/source-map`,
+        );
       } finally {
         device.close();
         debugger_.close();
@@ -132,63 +130,12 @@ describe.each(['HTTP', 'HTTPS'])(
         expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
           method: 'Debugger.scriptParsed',
           params: {
-            sourceMapURL: expect.stringMatching(/^data:/),
+            sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
           },
         });
         expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
           method: 'Debugger.aSubsequentEvent',
         });
-      } finally {
-        device.close();
-        debugger_.close();
-      }
-    });
-
-    test('handling of failure to fetch source map', async () => {
-      const {device, debugger_} = await createAndConnectTarget(
-        serverRef,
-        autoCleanup.signal,
-        {
-          app: 'bar-app',
-          id: 'page1',
-          title: 'bar-title',
-          vm: 'bar-vm',
-        },
-      );
-      try {
-        const scriptParsedMessage = await sendFromTargetToDebugger(
-          device,
-          debugger_,
-          'page1',
-          {
-            method: 'Debugger.scriptParsed',
-            params: {
-              sourceMapURL: `${serverRef.serverBaseUrl}/source-map-missing`,
-            },
-          },
-        );
-
-        // We don't rewrite the message in this case.
-        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
-          `${serverRef.serverBaseUrl}/source-map-missing`,
-        );
-
-        // We send an error through to the debugger as a console message.
-        expect(debugger_.handle).toBeCalledWith(
-          expect.objectContaining({
-            method: 'Runtime.consoleAPICalled',
-            params: {
-              args: [
-                {
-                  type: 'string',
-                  value: expect.stringMatching('Failed to fetch source map'),
-                },
-              ],
-              executionContextId: 0,
-              type: 'error',
-            },
-          }),
-        );
       } finally {
         device.close();
         debugger_.close();
@@ -211,11 +158,6 @@ describe.each(['HTTP', 'HTTPS'])(
         },
       );
       try {
-        let fetchCalledWithURL;
-        fetchSpy.mockImplementationOnce(async url => {
-          fetchCalledWithURL = url instanceof URL ? url : null;
-          throw new Error('Unreachable');
-        });
         const sourceMapURL = `${protocol.toLowerCase()}://127.0.0.1:${
           serverRef.port
         }/source-map`;
@@ -230,7 +172,6 @@ describe.each(['HTTP', 'HTTPS'])(
             },
           },
         );
-        expect(fetchCalledWithURL?.href).toEqual(sourceMapURL);
         expect(scriptParsedMessage.params.sourceMapURL).toEqual(
           `${protocol.toLowerCase()}://127.0.0.1:${serverRef.port}/source-map`,
         );
@@ -270,9 +211,9 @@ describe.each(['HTTP', 'HTTPS'])(
                 },
               },
             );
-            expect(
-              parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
-            ).toEqual({version: 3});
+            expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+              `${serverRef.serverBaseUrl}/source-map`,
+            );
           } finally {
             device.close();
             debugger_.close();
@@ -538,89 +479,6 @@ describe.each(['HTTP', 'HTTPS'])(
           debugger_.close();
         }
       });
-
-      test.each(['url', 'file'])(
-        'reports %s fetch error back to debugger',
-        async resourceType => {
-          const {device, debugger_} = await createAndConnectTarget(
-            serverRef,
-            autoCleanup.signal,
-            {
-              app: 'bar-app',
-              id: 'page1',
-              title: 'bar-title',
-              vm: 'bar-vm',
-            },
-          );
-          try {
-            await sendFromTargetToDebugger(device, debugger_, 'page1', {
-              method: 'Debugger.scriptParsed',
-              params: {
-                scriptId: 'script1',
-                url:
-                  resourceType === 'url'
-                    ? `${serverRef.serverBaseUrl}/source-missing`
-                    : '__fixtures__/mock-source-file.does-not-exist',
-                startLine: 0,
-                endLine: 0,
-                startColumn: 0,
-                endColumn: 0,
-                hash: createHash('sha256').update('foo').digest('hex'),
-              },
-            });
-            const response = await debugger_.sendAndGetResponse({
-              id: 1,
-              method: 'Debugger.getScriptSource',
-              params: {
-                scriptId: 'script1',
-              },
-            });
-
-            // We mark the request as failed.
-            expect(response).toEqual({
-              id: 1,
-              result: {
-                error: {
-                  message: expect.stringMatching(
-                    `Failed to fetch source ${resourceType}`,
-                  ),
-                },
-              },
-            });
-
-            // We also send an error through to the debugger as a console message.
-            expect(debugger_.handle).toBeCalledWith(
-              expect.objectContaining({
-                method: 'Runtime.consoleAPICalled',
-                params: {
-                  args: [
-                    {
-                      type: 'string',
-                      value: expect.stringMatching(
-                        `Failed to fetch source ${resourceType}`,
-                      ),
-                    },
-                  ],
-                  executionContextId: 0,
-                  type: 'error',
-                },
-              }),
-            );
-
-            // The device does not receive the getScriptSource request, since it
-            // is handled by the proxy.
-            expect(device.wrappedEventParsed).not.toBeCalledWith({
-              pageId: 'page1',
-              wrappedEvent: expect.objectContaining({
-                method: 'Debugger.getScriptSource',
-              }),
-            });
-          } finally {
-            device.close();
-            debugger_.close();
-          }
-        },
-      );
     });
 
     describe("disabled when target has 'nativeSourceCodeFetching' capability flag", () => {

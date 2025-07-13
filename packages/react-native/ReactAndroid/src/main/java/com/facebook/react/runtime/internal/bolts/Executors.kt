@@ -24,8 +24,8 @@ import java.util.concurrent.Executor
  * threads.
  */
 internal object Executors {
-  @JvmField public val UI_THREAD: Executor = UIThreadExecutor()
-  @JvmField public val IMMEDIATE: Executor = ImmediateExecutor()
+  @JvmField val UI_THREAD: Executor = UIThreadExecutor()
+  @JvmField val IMMEDIATE: Executor = ImmediateExecutor()
 
   private class UIThreadExecutor : Executor {
     override fun execute(command: Runnable) {

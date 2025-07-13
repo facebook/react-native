@@ -1,6 +1,6 @@
 {
   "name": "@react-native/js-polyfills",
-  "version": "0.77.0-main",
+  "version": "0.81.0-main",
   "description": "Polyfills for React Native.",
   "license": "MIT",
   "repository": {
@@ -18,6 +18,16 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
-  }
+    "node": ">= 22.14.0"
+  },
+  "files": [
+    "console.js",
+    "error-guard.js",
+    "index.js",
+    "README.md",
+    "!**/__docs__/**",
+    "!**/__fixtures__/**",
+    "!**/__mocks__/**",
+    "!**/__tests__/**"
+  ]
 }

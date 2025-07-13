@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
-export * from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
-import UnimplementedNativeViewNativeComponent from '../../../src/private/specs/components/UnimplementedNativeViewNativeComponent';
-export default UnimplementedNativeViewNativeComponent;
+export * from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';
+export {default} from '../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent';

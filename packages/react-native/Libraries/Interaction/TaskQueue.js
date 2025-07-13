@@ -4,20 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 
-type SimpleTask = {
+export type SimpleTask = {
   name: string,
   run: () => void,
 };
-type PromiseTask = {
+export type PromiseTask = {
   name: string,
   gen: () => Promise<void>,
 };
@@ -100,10 +99,14 @@ class TaskQueue {
       const task = queue.shift();
       try {
         if (typeof task === 'object' && task.gen) {
-          DEBUG && infoLog('TaskQueue: genPromise for task ' + task.name);
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+          DEBUG && console.log('TaskQueue: genPromise for task ' + task.name);
           this._genPromise(task);
         } else if (typeof task === 'object' && task.run) {
-          DEBUG && infoLog('TaskQueue: run task ' + task.name);
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+          DEBUG && console.log('TaskQueue: run task ' + task.name);
           task.run();
         } else {
           invariant(
@@ -111,12 +114,15 @@ class TaskQueue {
             'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
               JSON.stringify(task, null, 2),
           );
-          DEBUG && infoLog('TaskQueue: run anonymous task');
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+          DEBUG && console.log('TaskQueue: run anonymous task');
           task();
         }
       } catch (e) {
         e.message =
           // $FlowFixMe[incompatible-type]
+          // $FlowFixMe[incompatible-use]
           'TaskQueue: Error with task ' + (task.name || '') + ': ' + e.message;
         throw e;
       }
@@ -139,8 +145,10 @@ class TaskQueue {
       this._queueStack.length > 1
     ) {
       this._queueStack.pop();
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       DEBUG &&
-        infoLog('TaskQueue: popped queue: ', {
+        console.log('TaskQueue: popped queue: ', {
           stackIdx,
           queueStackSize: this._queueStack.length,
         });
@@ -158,13 +166,19 @@ class TaskQueue {
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
     const stackItem = this._queueStack[stackIdx];
-    DEBUG && infoLog('TaskQueue: push new queue: ', {stackIdx});
-    DEBUG && infoLog('TaskQueue: exec gen task ' + task.name);
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+    DEBUG && console.log('TaskQueue: push new queue: ', {stackIdx});
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+    DEBUG && console.log('TaskQueue: exec gen task ' + task.name);
     task
       .gen()
       .then(() => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         DEBUG &&
-          infoLog('TaskQueue: onThen for gen task ' + task.name, {
+          console.log('TaskQueue: onThen for gen task ' + task.name, {
             stackIdx,
             queueStackSize: this._queueStack.length,
           });
@@ -180,4 +194,4 @@ class TaskQueue {
   }
 }
 
-module.exports = TaskQueue;
+export default TaskQueue;

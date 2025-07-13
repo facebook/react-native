@@ -10,21 +10,22 @@
 
 // flowlint unsafe-getters-setters:off
 
+import type {IntersectionObserverId} from './internals/IntersectionObserverManager';
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
-import type {IntersectionObserverId} from './IntersectionObserverManager';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
-import * as IntersectionObserverManager from './IntersectionObserverManager';
+import {setPlatformObject} from '../webidl/PlatformObjects';
+import * as IntersectionObserverManager from './internals/IntersectionObserverManager';
 
 export type IntersectionObserverCallback = (
   entries: Array<IntersectionObserverEntry>,
   observer: IntersectionObserver,
 ) => mixed;
 
-type IntersectionObserverInit = {
-  // root?: ReactNativeElement, // This option exists on the Web but it's not currently supported in React Native.
+export interface IntersectionObserverInit {
+  root?: ?ReactNativeElement;
   // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
-  threshold?: number | $ReadOnlyArray<number>,
+  threshold?: number | $ReadOnlyArray<number>;
 
   /**
    * This is a React Native specific option (not spec compliant) that specifies
@@ -36,8 +37,8 @@ type IntersectionObserverInit = {
    * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rnRootThreshold?: number | $ReadOnlyArray<number>,
-};
+  rnRootThreshold?: number | $ReadOnlyArray<number>;
+}
 
 /**
  * The [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
@@ -66,6 +67,7 @@ export default class IntersectionObserver {
   _observationTargets: Set<ReactNativeElement> = new Set();
   _intersectionObserverId: ?IntersectionObserverId;
   _rootThresholds: $ReadOnlyArray<number> | null;
+  _root: ReactNativeElement | null;
 
   constructor(
     callback: IntersectionObserverCallback,
@@ -84,16 +86,18 @@ export default class IntersectionObserver {
     }
 
     // $FlowExpectedError[prop-missing] it's not typed in React Native but exists on Web.
-    if (options?.root != null) {
-      throw new TypeError(
-        "Failed to construct 'IntersectionObserver': root is not supported",
-      );
-    }
-
-    // $FlowExpectedError[prop-missing] it's not typed in React Native but exists on Web.
     if (options?.rootMargin != null) {
       throw new TypeError(
         "Failed to construct 'IntersectionObserver': rootMargin is not supported",
+      );
+    }
+
+    if (
+      options?.root != null &&
+      !(options?.root instanceof ReactNativeElement)
+    ) {
+      throw new TypeError(
+        "Failed to construct 'IntersectionObserver': Failed to read the 'root' property from 'IntersectionObserverInit': The provided value is not of type '(null or ReactNativeElement)",
       );
     }
 
@@ -104,6 +108,7 @@ export default class IntersectionObserver {
       options?.threshold,
       this._rootThresholds != null, // only provide default if no rootThreshold
     );
+    this._root = options?.root ?? null;
   }
 
   /**
@@ -115,7 +120,7 @@ export default class IntersectionObserver {
    * NOTE: This cannot currently be configured and `root` is always `null`.
    */
   get root(): ReactNativeElement | null {
-    return null;
+    return this._root;
   }
 
   /**
@@ -182,6 +187,7 @@ export default class IntersectionObserver {
 
     const didStartObserving = IntersectionObserverManager.observe({
       intersectionObserverId: this._getOrCreateIntersectionObserverId(),
+      root: this._root,
       target,
     });
 
@@ -249,6 +255,8 @@ export default class IntersectionObserver {
     return this._intersectionObserverId;
   }
 }
+
+setPlatformObject(IntersectionObserver);
 
 /**
  * Converts the user defined `threshold` value into an array of sorted valid

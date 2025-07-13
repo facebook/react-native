@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
@@ -314,7 +314,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
 
 function TouchableNativeMethodChecker<
   T: component(ref?: React.RefSetter<any>, ...any),
->(props: {|Component: T, name: string|}): React.Node {
+>(props: {Component: T, name: string}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
   const ref = useRef<any>(null);
 
@@ -560,7 +560,7 @@ const TouchableTouchSoundDisabled = () => {
 };
 
 function TouchableOnFocus() {
-  const ref = useRef<?{focus(): void, ...}>(null);
+  const ref = useRef<?React.ElementRef<typeof TouchableHighlight>>(null);
   const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
@@ -572,7 +572,9 @@ function TouchableOnFocus() {
   const toggleFocus = () => {
     isFocused
       ? setFocusStatus('This touchable is focused')
-      : setIsFocused('This touchable is not focused') &&
+      : /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+        setIsFocused('This touchable is not focused') &&
         setIsBlurred('This item has lost focus, onBlur called');
   };
   const focusTouchable = () => {

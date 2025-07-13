@@ -11,13 +11,13 @@ import android.os.SystemClock
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher
 import com.facebook.imagepipeline.producers.NetworkFetcher
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.modules.network.OkHttpCompat
 import java.util.concurrent.TimeUnit
 import okhttp3.CacheControl
+import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-internal class ReactOkHttpNetworkFetcher(private val okHttpClient: OkHttpClient) :
+internal class ReactOkHttpNetworkFetcher(okHttpClient: OkHttpClient) :
     OkHttpNetworkFetcher(okHttpClient) {
   private fun getHeaders(readableMap: ReadableMap?): Map<String, String>? {
     if (readableMap == null) {
@@ -57,7 +57,10 @@ internal class ReactOkHttpNetworkFetcher(private val okHttpClient: OkHttpClient)
     } else {
       cacheControlBuilder.noStore()
     }
-    val headers = OkHttpCompat.getHeadersFromMap(requestHeaders)
+
+    @Suppress("DEPRECATION_ERROR") // Conflicting okhttp versions
+    val headers = Headers.of(requestHeaders ?: emptyMap())
+
     val request =
         Request.Builder()
             .headers(headers)

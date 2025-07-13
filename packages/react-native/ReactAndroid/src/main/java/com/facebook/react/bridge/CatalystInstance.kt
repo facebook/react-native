@@ -9,7 +9,7 @@ package com.facebook.react.bridge
 
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
-import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
@@ -23,6 +23,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
     message =
         "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 @DoNotStrip
+@LegacyArchitecture
 public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   public fun runJSBundle()
 
@@ -51,7 +52,7 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
   public val isDestroyed: Boolean
 
   /** Initialize all the native modules */
-  @VisibleForTesting public fun initialize()
+  public fun initialize()
 
   public val reactQueueConfiguration: ReactQueueConfiguration
 
@@ -81,24 +82,24 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
 
   /**
    * Removes a NotThreadSafeBridgeIdleDebugListener previously added with
-   * [ ][.addBridgeIdleDebugListener]
+   * [addBridgeIdleDebugListener]
    */
   public fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener)
 
   /** This method registers the file path of an additional JS segment by its ID. */
   public fun registerSegment(segmentId: Int, path: String)
 
-  @VisibleForTesting public fun setGlobalVariable(propName: String, jsonValue: String)
+  public fun setGlobalVariable(propName: String, jsonValue: String)
 
   /**
-   * Do not use this anymore. Use {@link #getRuntimeExecutor()} instead. Get the C pointer (as a
-   * long) to the JavaScriptCore context associated with this instance.
+   * Do not use this anymore. Use [runtimeExecutor] instead. Get the C pointer (as a long) to the
+   * JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
    * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
-  @get:Deprecated("Use getRuntimeExecutor() instead.")
+  @get:Deprecated("Use runtimeExecutor instead.")
   public val javaScriptContextHolder: JavaScriptContextHolder
 
   public val runtimeExecutor: RuntimeExecutor?

@@ -35,6 +35,13 @@ struct LineMeasurement {
   LineMeasurement(const folly::dynamic& data);
 
   bool operator==(const LineMeasurement& rhs) const;
+
+  static inline Float baseline(const std::vector<LineMeasurement>& lines) {
+    if (!lines.empty()) {
+      return lines[0].ascender;
+    }
+    return 0;
+  }
 };
 
 using LinesMeasurements = std::vector<LineMeasurement>;
@@ -74,6 +81,17 @@ class LineMeasureCacheKey final {
   AttributedString attributedString{};
   ParagraphAttributes paragraphAttributes{};
   Size size{};
+};
+
+/**
+ * Cache key, mapping an AttributedString under given constraints, to a prepared
+ * (laid out and drawable) representation of the text.
+ */
+class PreparedTextCacheKey final {
+ public:
+  AttributedString attributedString{};
+  ParagraphAttributes paragraphAttributes{};
+  LayoutConstraints layoutConstraints{};
 };
 
 /*
@@ -160,6 +178,17 @@ inline bool areAttributedStringFragmentsEquivalentLayoutWise(
         rhs.parentShadowView.layoutMetrics));
 }
 
+inline bool areAttributedStringFragmentsEquivalentDisplayWise(
+    const AttributedString::Fragment& lhs,
+    const AttributedString::Fragment& rhs) {
+  return lhs.isContentEqual(rhs) &&
+      // LayoutMetrics of an attachment fragment affects the size of a measured
+      // attributed string.
+      (!lhs.isAttachment() ||
+       (lhs.parentShadowView.layoutMetrics ==
+        rhs.parentShadowView.layoutMetrics));
+}
+
 inline size_t attributedStringFragmentHashLayoutWise(
     const AttributedString::Fragment& fragment) {
   // Here we are not taking `isAttachment` and `layoutMetrics` into account
@@ -167,6 +196,15 @@ inline size_t attributedStringFragmentHashLayoutWise(
   // between hash and equivalence functions (and cause cache misses).
   return facebook::react::hash_combine(
       fragment.string, textAttributesHashLayoutWise(fragment.textAttributes));
+}
+
+inline size_t attributedStringFragmentHashDisplayWise(
+    const AttributedString::Fragment& fragment) {
+  // Here we are not taking `isAttachment` and `layoutMetrics` into account
+  // because they are logically interdependent and this can break an invariant
+  // between hash and equivalence functions (and cause cache misses).
+  return facebook::react::hash_combine(
+      fragment.string, fragment.textAttributes);
 }
 
 inline bool areAttributedStringsEquivalentLayoutWise(
@@ -190,6 +228,27 @@ inline bool areAttributedStringsEquivalentLayoutWise(
   return true;
 }
 
+inline bool areAttributedStringsEquivalentDisplayWise(
+    const AttributedString& lhs,
+    const AttributedString& rhs) {
+  auto& lhsFragment = lhs.getFragments();
+  auto& rhsFragment = rhs.getFragments();
+
+  if (lhsFragment.size() != rhsFragment.size()) {
+    return false;
+  }
+
+  auto size = lhsFragment.size();
+  for (size_t i = 0; i < size; i++) {
+    if (!areAttributedStringFragmentsEquivalentDisplayWise(
+            lhsFragment.at(i), rhsFragment.at(i))) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 inline size_t attributedStringHashLayoutWise(
     const AttributedString& attributedString) {
   auto seed = size_t{0};
@@ -197,6 +256,18 @@ inline size_t attributedStringHashLayoutWise(
   for (const auto& fragment : attributedString.getFragments()) {
     facebook::react::hash_combine(
         seed, attributedStringFragmentHashLayoutWise(fragment));
+  }
+
+  return seed;
+}
+
+inline size_t attributedStringHashDisplayWise(
+    const AttributedString& attributedString) {
+  size_t seed = 0;
+
+  for (const auto& fragment : attributedString.getFragments()) {
+    facebook::react::hash_combine(
+        seed, attributedStringFragmentHashDisplayWise(fragment));
   }
 
   return seed;
@@ -211,12 +282,6 @@ inline bool operator==(
       lhs.layoutConstraints == rhs.layoutConstraints;
 }
 
-inline bool operator!=(
-    const TextMeasureCacheKey& lhs,
-    const TextMeasureCacheKey& rhs) {
-  return !(lhs == rhs);
-}
-
 inline bool operator==(
     const LineMeasureCacheKey& lhs,
     const LineMeasureCacheKey& rhs) {
@@ -226,10 +291,13 @@ inline bool operator==(
       lhs.size == rhs.size;
 }
 
-inline bool operator!=(
-    const LineMeasureCacheKey& lhs,
-    const LineMeasureCacheKey& rhs) {
-  return !(lhs == rhs);
+inline bool operator==(
+    const PreparedTextCacheKey& lhs,
+    const PreparedTextCacheKey& rhs) {
+  return areAttributedStringsEquivalentDisplayWise(
+             lhs.attributedString, rhs.attributedString) &&
+      lhs.paragraphAttributes == rhs.paragraphAttributes &&
+      lhs.layoutConstraints == rhs.layoutConstraints;
 }
 
 } // namespace facebook::react
@@ -253,6 +321,16 @@ struct hash<facebook::react::LineMeasureCacheKey> {
         attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
         key.size);
+  }
+};
+
+template <>
+struct hash<facebook::react::PreparedTextCacheKey> {
+  size_t operator()(const facebook::react::PreparedTextCacheKey& key) const {
+    return facebook::react::hash_combine(
+        attributedStringHashDisplayWise(key.attributedString),
+        key.paragraphAttributes,
+        key.layoutConstraints);
   }
 };
 

@@ -84,6 +84,86 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
            UIFontFeatureTypeIdentifierKey : @(kNumberSpacingType),
            UIFontFeatureSelectorIdentifierKey : @(kProportionalNumbersSelector),
          }},
+        {RCTFontVariantStylisticOne, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltOneOnSelector),
+         }},
+        {RCTFontVariantStylisticTwo, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwoOnSelector),
+         }},
+        {RCTFontVariantStylisticThree, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThreeOnSelector),
+         }},
+        {RCTFontVariantStylisticFour, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourOnSelector),
+         }},
+        {RCTFontVariantStylisticFive, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFiveOnSelector),
+         }},
+        {RCTFontVariantStylisticSix, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixOnSelector),
+         }},
+        {RCTFontVariantStylisticSeven, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSevenOnSelector),
+         }},
+        {RCTFontVariantStylisticEight, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEightOnSelector),
+         }},
+        {RCTFontVariantStylisticNine, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineOnSelector),
+         }},
+        {RCTFontVariantStylisticTen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTenOnSelector),
+         }},
+        {RCTFontVariantStylisticEleven, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltElevenOnSelector),
+         }},
+        {RCTFontVariantStylisticTwelve, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwelveOnSelector),
+         }},
+        {RCTFontVariantStylisticThirteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltThirteenOnSelector),
+         }},
+        {RCTFontVariantStylisticFourteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFourteenOnSelector),
+         }},
+        {RCTFontVariantStylisticFifteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltFifteenOnSelector),
+         }},
+        {RCTFontVariantStylisticSixteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSixteenOnSelector),
+         }},
+        {RCTFontVariantStylisticSeventeen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltSeventeenOnSelector),
+         }},
+        {RCTFontVariantStylisticEighteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltEighteenOnSelector),
+         }},
+        {RCTFontVariantStylisticNineteen, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltNineteenOnSelector),
+         }},
+        {RCTFontVariantStylisticTwenty, @{
+           UIFontFeatureTypeIdentifierKey : @(kStylisticAlternativesType),
+           UIFontFeatureSelectorIdentifierKey : @(kStylisticAltTwentyOnSelector),
+         }},
     };
   });
 
@@ -101,6 +181,66 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
   }
   if (fontVariant & RCTFontVariantProportionalNums) {
     [fontFeatures addObject:mapping[RCTFontVariantProportionalNums]];
+  }
+  if (fontVariant & RCTFontVariantStylisticOne) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticOne]];
+  }
+  if (fontVariant & RCTFontVariantStylisticTwo) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticTwo]];
+  }
+  if (fontVariant & RCTFontVariantStylisticThree) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticThree]];
+  }
+  if (fontVariant & RCTFontVariantStylisticFour) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticFour]];
+  }
+  if (fontVariant & RCTFontVariantStylisticFive) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticFive]];
+  }
+  if (fontVariant & RCTFontVariantStylisticSix) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticSix]];
+  }
+  if (fontVariant & RCTFontVariantStylisticSeven) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticSeven]];
+  }
+  if (fontVariant & RCTFontVariantStylisticEight) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticEight]];
+  }
+  if (fontVariant & RCTFontVariantStylisticNine) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticNine]];
+  }
+  if (fontVariant & RCTFontVariantStylisticTen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticTen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticEleven) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticEleven]];
+  }
+  if (fontVariant & RCTFontVariantStylisticTwelve) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticTwelve]];
+  }
+  if (fontVariant & RCTFontVariantStylisticThirteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticThirteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticFourteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticFourteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticFifteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticFifteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticSixteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticSixteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticSeventeen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticSeventeen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticEighteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticEighteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticNineteen) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticNineteen]];
+  }
+  if (fontVariant & RCTFontVariantStylisticTwenty) {
+    [fontFeatures addObject:mapping[RCTFontVariantStylisticTwenty]];
   }
 
   return fontFeatures;

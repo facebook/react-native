@@ -4,14 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
- * @jsdoc
+ * @format
  */
 
 import NativeVibration from './NativeVibration';
 
-const Platform = require('../Utilities/Platform');
+const Platform = require('../Utilities/Platform').default;
 
 /**
  * Vibration API
@@ -72,8 +71,8 @@ const Vibration = {
    * See https://reactnative.dev/docs/vibration#vibrate
    */
   vibrate: function (
-    pattern: number | Array<number> = _default_vibration_length,
-    repeat: boolean = false,
+    pattern?: number | Array<number> = _default_vibration_length,
+    repeat?: boolean = false,
   ) {
     if (Platform.OS === 'android') {
       if (typeof pattern === 'number') {
@@ -110,4 +109,4 @@ const Vibration = {
   },
 };
 
-module.exports = Vibration;
+export default Vibration;

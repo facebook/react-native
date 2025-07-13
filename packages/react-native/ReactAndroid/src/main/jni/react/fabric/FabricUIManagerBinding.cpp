@@ -10,8 +10,8 @@
 #include "AndroidEventBeat.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
-#include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
+#include "FocusOrderingHelper.h"
 
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
@@ -61,8 +61,7 @@ void FabricUIManagerBinding::drainPreallocateViewsQueue() {
 }
 
 void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
-  if (ReactNativeFeatureFlags::
-          fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
+  {
     // This is a fix for `MountingCoordinator::hasPendingTransactions` on
     // Android, which otherwise would report no pending transactions
     // incorrectly. This is due to the push model used on Android and can be
@@ -172,7 +171,9 @@ void FabricUIManagerBinding::startSurface(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout({}, layoutContext);
 
   scheduler->registerSurface(surfaceHandler);
@@ -193,6 +194,102 @@ void FabricUIManagerBinding::startSurface(
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
+}
+
+jint FabricUIManagerBinding::findNextFocusableElement(
+    jint parentTag,
+    jint focusedTag,
+    jint direction) {
+  std::shared_ptr<const ShadowNode> nextNode;
+
+  std::optional<FocusDirection> focusDirection =
+      FocusOrderingHelper::resolveFocusDirection(direction);
+
+  if (!focusDirection.has_value()) {
+    return -1;
+  }
+
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  std::shared_ptr<const ShadowNode> parentShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+
+  if (parentShadowNode == nullptr) {
+    return -1;
+  }
+
+  std::shared_ptr<const ShadowNode> focusedShadowNode =
+      FocusOrderingHelper::findShadowNodeByTagRecursively(
+          parentShadowNode, focusedTag);
+
+  if (focusedShadowNode == nullptr) {
+    return -1;
+  }
+
+  LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
+      *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
+
+  Rect sourceRect = childLayoutMetrics.frame;
+
+  /*
+   * Traverse the tree recursively to find the next focusable element in the
+   * given direction
+   */
+  std::optional<Rect> nextRect = std::nullopt;
+  FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
+      parentShadowNode,
+      focusedShadowNode,
+      parentShadowNode,
+      focusDirection.value(),
+      *uimanager,
+      sourceRect,
+      nextRect,
+      nextNode);
+
+  if (nextNode == nullptr) {
+    return -1;
+  }
+
+  return nextNode->getTag();
+}
+
+jintArray FabricUIManagerBinding::getRelativeAncestorList(
+    jint rootTag,
+    jint childTag) {
+  JNIEnv* env = jni::Environment::current();
+
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  std::shared_ptr<const ShadowNode> childShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(childTag);
+  std::shared_ptr<const ShadowNode> rootShadowNode =
+      uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
+
+  if (childShadowNode == nullptr || rootShadowNode == nullptr) {
+    return nullptr;
+  }
+
+  ShadowNode::AncestorList ancestorList =
+      childShadowNode->getFamily().getAncestors(*rootShadowNode);
+
+  if (ancestorList.empty() || ancestorList.size() < 2) {
+    return nullptr;
+  }
+
+  // ignore the first ancestor as it is the rootShadowNode itself
+  std::vector<int> ancestorTags;
+  for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
+       ++it) {
+    auto& ancestor = *it;
+    ancestorTags.push_back(ancestor.first.get().getTag());
+  }
+
+  jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
+
+  env->SetIntArrayRegion(
+      result, 0, static_cast<jint>(ancestorTags.size()), ancestorTags.data());
+
+  return result;
 }
 
 // Used by non-bridgeless+Fabric
@@ -241,7 +338,9 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   auto surfaceHandler = SurfaceHandler{moduleName->toStdString(), surfaceId};
   surfaceHandler.setContextContainer(scheduler->getContextContainer());
-  surfaceHandler.setProps(initialProps->consume());
+  if (initialProps != nullptr) {
+    surfaceHandler.setProps(initialProps->consume());
+  }
   surfaceHandler.constraintLayout(constraints, context);
 
   scheduler->registerSurface(surfaceHandler);
@@ -318,6 +417,14 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
         << this << ", surfaceId: " << surfaceHandler.getSurfaceId() << ").";
   }
 
+  // This is necessary to make sure we remove the surface handler from the
+  // registry before invalidating it. Otherwise, we can access an invalid
+  // reference in `reportMount`.
+  {
+    std::unique_lock lock(surfaceHandlerRegistryMutex_);
+    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
+  }
+
   surfaceHandler.stop();
 
   auto scheduler = getScheduler();
@@ -327,11 +434,6 @@ void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     return;
   }
   scheduler->unregisterSurface(surfaceHandler);
-
-  {
-    std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    surfaceHandlerRegistry_.erase(surfaceHandler.getSurfaceId());
-  }
 
   auto mountingManager = getMountingManager("unregisterSurface");
   if (!mountingManager) {
@@ -495,9 +597,7 @@ void FabricUIManagerBinding::schedulerDidFinishTransaction(
     // the trees to determine the mutations to run on the host platform),
     // but we have to due to current limitations in the Android implementation.
     auto mountingTransaction = mountingCoordinator->pullTransaction(
-        // Indicate that the transaction will be performed asynchronously
-        ReactNativeFeatureFlags::
-            fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
+        /* willPerformAsynchronously = */ true);
     if (!mountingTransaction.has_value()) {
       return;
     }
@@ -527,7 +627,8 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto mountingTransaction = mountingCoordinator->pullTransaction();
+    auto mountingTransaction = mountingCoordinator->pullTransaction(
+        /* willPerformAsynchronously = */ true);
     if (mountingTransaction.has_value()) {
       auto transaction = std::move(*mountingTransaction);
       mountingManager->executeMount(transaction);
@@ -565,8 +666,7 @@ void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
   // Only the Views of ShadowNode that were pre-allocated (forms views) needs
   // to be destroyed if the ShadowNode is destroyed but it was never mounted
   // on the screen.
-  if (ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() &&
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+  if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     shadowNode.getFamily().onUnmountedFamilyDestroyed(
         [weakMountingManager =
              std::weak_ptr(mountingManager)](const ShadowNodeFamily& family) {
@@ -609,6 +709,19 @@ void FabricUIManagerBinding::schedulerDidSetIsJSResponder(
   }
   mountingManager->setIsJSResponder(
       shadowView, isJSResponder, blockNativeResponder);
+}
+
+void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() && mountingManager_) {
+    mountingManager_->synchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
+void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& /*tagToProps*/) {
+  // no-op
 }
 
 void FabricUIManagerBinding::onAnimationStarted() {
@@ -657,6 +770,12 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
+      makeNativeMethod(
+          "findNextFocusableElement",
+          FabricUIManagerBinding::findNextFocusableElement),
+      makeNativeMethod(
+          "getRelativeAncestorList",
+          FabricUIManagerBinding::getRelativeAncestorList),
   });
 }
 

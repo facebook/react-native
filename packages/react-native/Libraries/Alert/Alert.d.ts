@@ -12,7 +12,10 @@
  */
 export interface AlertButton {
   text?: string | undefined;
-  onPress?: ((value?: string) => void) | undefined;
+  onPress?:
+    | ((value?: string) => void)
+    | ((value?: {login: string; password: string}) => void)
+    | undefined;
   isPreferred?: boolean | undefined;
   style?: 'default' | 'cancel' | 'destructive' | undefined;
 }

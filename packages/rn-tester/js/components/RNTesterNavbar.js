@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ScreenTypes} from '../types/RNTesterTypes';
@@ -13,6 +13,7 @@ import type {RNTesterTheme} from './RNTesterTheme';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 
 type NavBarOnPressHandler = ({screen: ScreenTypes}) => void;
@@ -115,18 +116,18 @@ const APITab = ({
   />
 );
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
   screen: string,
   isExamplePageOpen: boolean,
-|}>;
+}>;
 
 const RNTesterNavbar = ({
   handleNavBarPress,
   screen,
   isExamplePageOpen,
 }: Props): React.Node => {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   const isAPIActive = screen === 'apis' && !isExamplePageOpen;
   const isComponentActive = screen === 'components' && !isExamplePageOpen;

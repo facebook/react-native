@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB_RECURSE bridgeless_jni_SRC CONFIGURE_DEPENDS *.cpp)
 
@@ -14,13 +15,10 @@ add_library(rninstance
         OBJECT
         ${bridgeless_jni_SRC}
 )
-target_compile_options(
-        rninstance
-        PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -std=c++20
-        -fexceptions
-)
+
+target_compile_reactnative_options(rninstance PRIVATE)
+target_compile_options(rninstance PRIVATE $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>)
+
 target_merge_so(rninstance)
 target_include_directories(rninstance PUBLIC .)
 target_link_libraries(
@@ -29,6 +27,7 @@ target_link_libraries(
         react_featureflagsjni
         turbomodulejsijni
         jsi
+        jsitooling
         fbjni
         bridgeless
 )

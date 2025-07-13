@@ -7,12 +7,12 @@
 
 package com.facebook.hermes.instrumentation
 
-public interface HermesMemoryDumper {
-  public fun shouldSaveSnapshot(): Boolean
+internal interface HermesMemoryDumper {
+  fun shouldSaveSnapshot(): Boolean
 
-  public fun getInternalStorage(): String
+  fun getInternalStorage(): String
 
-  public fun getId(): String
+  fun getId(): String
 
-  public fun setMetaData(crashId: String)
+  fun setMetaData(crashId: String)
 }

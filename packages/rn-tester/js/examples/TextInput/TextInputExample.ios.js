@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -14,14 +14,14 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {KeyboardTypeOptions} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
-
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-const React = require('react');
-const {
+import TextInputSharedExamples from './TextInputSharedExamples';
+import React from 'react';
+import {useRef} from 'react';
+import {
   Alert,
   Button,
   InputAccessoryView,
@@ -30,7 +30,7 @@ const {
   Text,
   TextInput,
   View,
-} = require('react-native');
+} from 'react-native';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -124,12 +124,12 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
 }
 
 class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
-  $ReadOnly<{|
-    keyboardType: KeyboardType,
-  |}>,
+  $ReadOnly<{
+    keyboardType: KeyboardTypeOptions,
+  }>,
   {text: string},
 > {
-  constructor(props: void | $ReadOnly<{keyboardType: KeyboardType}>) {
+  constructor(props: void | $ReadOnly<{keyboardType: KeyboardTypeOptions}>) {
     // $FlowFixMe[incompatible-call]
     super(props);
     this.state = {text: ''};
@@ -210,71 +210,10 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-class AutogrowingTextInputExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  constructor(props: any | void) {
-    super(props);
-
-    this.state = {
-      multiline: true,
-      fullWidth: true,
-      text: '',
-      contentSize: {
-        width: 0,
-        height: 0,
-      },
-    };
-  }
-
-  UNSAFE_componentWillReceiveProps(props: any) {
-    this.setState({
-      multiline: props.multiline,
-    });
-  }
-
-  render(): React.Node {
-    const {style, multiline, ...props} = this.props;
-    return (
-      <View>
-        <RNTesterText>Full width:</RNTesterText>
-        <Switch
-          value={this.state.fullWidth}
-          onValueChange={value => this.setState({fullWidth: value})}
-        />
-
-        <RNTesterText>Multiline:</RNTesterText>
-        <Switch
-          value={this.state.multiline}
-          onValueChange={value => this.setState({multiline: value})}
-        />
-
-        <RNTesterText>TextInput:</RNTesterText>
-        <ExampleTextInput
-          value="prop"
-          multiline={this.state.multiline}
-          style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
-          onChangeText={value => this.setState({text: value})}
-          onContentSizeChange={event =>
-            this.setState({contentSize: event.nativeEvent.contentSize})
-          }
-          {...props}
-        />
-        <RNTesterText>Plain text value representation:</RNTesterText>
-        <RNTesterText>{this.state.text}</RNTesterText>
-        <RNTesterText>
-          Content Size: {JSON.stringify(this.state.contentSize)}
-        </RNTesterText>
-      </View>
-    );
-  }
-}
-
 const TextInputWithFocusButton = () => {
-  const inputToFocusRef = React.useRef<React.ElementRef<
-    typeof TextInput,
-  > | null>(null);
+  const inputToFocusRef = useRef<React.ElementRef<typeof TextInput> | null>(
+    null,
+  );
   return (
     <View>
       <ExampleTextInput
@@ -366,7 +305,6 @@ function KeyboardShortcutsExample() {
 const styles = StyleSheet.create({
   multiline: {
     height: 50,
-    marginBottom: 4,
   },
   multilinePlaceholderStyles: {
     letterSpacing: 10,
@@ -435,7 +373,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'phone-pad',
         'decimal-pad',
         'ascii-capable-number-pad',
-      ];
+      ] as const;
       const examples = keyboardTypesWithDoneButton.map(type => {
         return (
           <WithLabel key={'keyboardType: ' + type} label={type}>
@@ -496,7 +434,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   {
     title: 'Keyboard appearance',
     render: function (): React.Node {
-      const keyboardAppearance = ['default', 'light', 'dark'];
+      const keyboardAppearance = ['default', 'light', 'dark'] as const;
       const examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
@@ -522,7 +460,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'yahoo',
         'done',
         'emergency-call',
-      ];
+      ] as const;
       const examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
@@ -587,7 +525,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'while-editing',
         'unless-editing',
         'always',
-      ];
+      ] as const;
       const examples = clearButtonModes.map(mode => {
         return (
           <WithLabel key={mode} label={mode}>
@@ -660,7 +598,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     title: 'Multiline',
     render: function (): React.Node {
       return (
-        <View>
+        <View style={{gap: 4}}>
           <ExampleTextInput
             placeholder="multiline text input"
             multiline={true}
@@ -683,6 +621,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             style={styles.multiline}
           />
           <ExampleTextInput
+            placeholder="multiline text input with max 4 lines"
+            numberOfLines={4}
+            multiline={true}
+          />
+          <ExampleTextInput
             placeholder="uneditable multiline text input"
             editable={false}
             multiline={true}
@@ -694,6 +637,14 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             multiline={true}
             style={styles.multiline}
             dataDetectorTypes="phoneNumber"
+          />
+          <ExampleTextInput
+            dataDetectorTypes={['link', 'phoneNumber']}
+            defaultValue={
+              'link: http://reactnative.dev, photo number: 88888888'
+            }
+            multiline
+            editable={false}
           />
         </View>
       );
@@ -793,6 +744,61 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    title: 'allowFontScaling attribute',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text>
+            By default, text will respect Text Size accessibility setting on
+            iOS. It means that all font sizes will be increased or decreased
+            depending on the value of Text Size setting in{' '}
+            <Text style={{fontWeight: 'bold'}}>
+              Settings.app - Display & Brightness - Text Size
+            </Text>
+          </Text>
+          <ExampleTextInput
+            placeholder="allowFontScaling = false"
+            allowFontScaling={false}
+          />
+          <ExampleTextInput
+            style={{marginTop: 10}}
+            placeholder="allowFontScaling = false"
+            allowFontScaling={true}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return (
+        <View testID={'max-font-size-multiplier'}>
+          <Text>
+            When allowFontScaling is enabled, you can use the
+            maxFontSizeMultiplier prop to set an upper limit on how much the
+            font size will be scaled.
+          </Text>
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            placeholder="This text will not scale up (max 1x)"
+            style={{marginTop: 10}}
+            testID={'non-scalable-text-input'}
+          />
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.5}
+            placeholder="This text will scale up (max 1.5x)"
+            style={{marginTop: 10}}
+            testID={'scalable-text-input'}
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Auto-expanding',
     render: function (): React.Node {
       return (
@@ -805,37 +811,6 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             returnKeyType="go"
             style={[styles.multiline, styles.multilineExpandable]}
           />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Auto-expanding',
-    render: function (): React.Node {
-      return (
-        <View>
-          <AutogrowingTextInputExample
-            enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
-            multiline={true}
-            style={{
-              maxHeight: 400,
-              minHeight: 20,
-              paddingTop: 0,
-              backgroundColor: '#eeeeee',
-              color: 'blue',
-            }}>
-            <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
-            generic generic generic
-            <Text style={{fontSize: 6, color: 'red'}}>
-              small small small small small small
-            </Text>
-            <Text>regular regular</Text>
-            <Text style={{fontSize: 30, color: 'green'}}>
-              huge huge huge huge huge
-            </Text>
-            generic generic generic
-          </AutogrowingTextInputExample>
         </View>
       );
     },
@@ -943,7 +918,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
   {
     title: 'Line Break Strategy',
     render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const lineBreakStrategy = [
+        'none',
+        'standard',
+        'hangul-word',
+        'push-out',
+      ] as const;
       const textByCode = {
         en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
         ko: '한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행 한글개행한글개행',
@@ -1021,7 +1001,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
         'head',
         'middle',
         'tail',
-      ];
+      ] as const;
       const textByCode = {
         en: 'verylongtext-dummydummydummydummydummydummydummydummydummydummydummydummy',
         ko: '한글개행한글개행-한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행한글개행',

@@ -4,26 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-'use strict';
-
-const splitLayoutProps = require('../splitLayoutProps').default;
+import splitLayoutProps from '../splitLayoutProps';
 
 test('splits style objects', () => {
-  const style = {width: 10, margin: 20, padding: 30, transform: {scaleY: -1}};
+  const style = {width: 10, margin: 20, padding: 30, transform: [{scaleY: -1}]};
   const {outer, inner} = splitLayoutProps(style);
   expect(outer).toMatchInlineSnapshot(`
+Object {
+  "margin": 20,
+  "transform": Array [
     Object {
-      "margin": 20,
-      "transform": Object {
-        "scaleY": -1,
-      },
-      "width": 10,
-    }
-  `);
+      "scaleY": -1,
+    },
+  ],
+  "width": 10,
+}
+`);
   expect(inner).toMatchInlineSnapshot(`
     Object {
       "padding": 30,

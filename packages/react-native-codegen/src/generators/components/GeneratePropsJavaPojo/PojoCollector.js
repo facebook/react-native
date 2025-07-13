@@ -80,6 +80,7 @@ export type PojoTypeAnnotation =
         | DoubleTypeAnnotation
         | FloatTypeAnnotation
         | Int32TypeAnnotation
+        | MixedTypeAnnotation
         | $ReadOnly<{
             type: 'StringEnumTypeAnnotation',
             default: string,
@@ -111,10 +112,8 @@ class PojoCollector {
       }
       case 'ArrayTypeAnnotation': {
         const arrayTypeAnnotation = typeAnnotation;
-        const elementType: $PropertyType<
-          ComponentArrayTypeAnnotation,
-          'elementType',
-        > = arrayTypeAnnotation.elementType;
+        const elementType: ComponentArrayTypeAnnotation['elementType'] =
+          arrayTypeAnnotation.elementType;
 
         const pojoElementType = (() => {
           switch (elementType.type) {
@@ -146,6 +145,8 @@ class PojoCollector {
           }
         })();
 
+        /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         return {
           type: 'ArrayTypeAnnotation',
           elementType: pojoElementType,

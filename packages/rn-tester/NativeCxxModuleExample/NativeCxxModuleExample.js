@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
-import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
+import type {CodegenTypes, TurboModule} from 'react-native';
 
 import {TurboModuleRegistry} from 'react-native';
 
@@ -77,11 +76,11 @@ export type CustomDeviceEvent = {
 };
 
 export interface Spec extends TurboModule {
-  +onPress: EventEmitter<void>;
-  +onClick: EventEmitter<string>;
-  +onChange: EventEmitter<ObjectStruct>;
-  +onSubmit: EventEmitter<ObjectStruct[]>;
-  +onEvent: EventEmitter<EnumNone>;
+  +onPress: CodegenTypes.EventEmitter<void>;
+  +onClick: CodegenTypes.EventEmitter<string>;
+  +onChange: CodegenTypes.EventEmitter<ObjectStruct>;
+  +onSubmit: CodegenTypes.EventEmitter<ObjectStruct[]>;
+  +onEvent: CodegenTypes.EventEmitter<EnumNone>;
   +getArray: (arg: Array<ObjectStruct | null>) => Array<ObjectStruct | null>;
   +getBool: (arg: boolean) => boolean;
   +getConstants: () => ConstantsStruct;
@@ -106,6 +105,7 @@ export interface Spec extends TurboModule {
   +getValueWithPromise: (error: boolean) => Promise<string>;
   +getWithWithOptionalArgs: (optionalArg?: boolean) => ?boolean;
   +voidFunc: () => void;
+  +voidPromise: () => Promise<void>;
   +setMenu: (menuItem: MenuItem) => void;
   +emitCustomDeviceEvent: (eventName: string) => void;
   +voidFuncThrows: () => void;

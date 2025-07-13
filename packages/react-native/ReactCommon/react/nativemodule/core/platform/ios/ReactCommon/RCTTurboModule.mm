@@ -18,6 +18,7 @@
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <cxxreact/TraceSection.h>
 #import <react/bridging/Bridging.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #include <glog/logging.h>
 
@@ -38,8 +39,7 @@ static int32_t getUniqueId()
   return counter++;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TurboModuleConvertUtils {
 /**
@@ -57,7 +57,7 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ?: "");
+  return jsi::String::createFromUtf8(runtime, [value UTF8String] ? [value UTF8String] : "");
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -111,21 +111,27 @@ static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::St
   return [NSString stringWithUTF8String:value.utf8(runtime).c_str()];
 }
 
-static NSArray *
-convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker)
+static NSArray *convertJSIArrayToNSArray(
+    jsi::Runtime &runtime,
+    const jsi::Array &value,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    BOOL useNSNull)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker);
+    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
     [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
-  return [result copy];
+  return result;
 }
 
-static NSDictionary *
-convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
+static NSDictionary *convertJSIObjectToNSDictionary(
+    jsi::Runtime &runtime,
+    const jsi::Object &value,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    BOOL useNSNull)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -133,18 +139,18 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, 
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
     if (v) {
       result[k] = v;
     }
   }
-  return [result copy];
+  return result;
 }
 
 static RCTResponseSenderBlock
-convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::shared_ptr<CallInvoker> jsInvoker)
+convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, const std::shared_ptr<CallInvoker> &jsInvoker)
 {
-  __block std::optional<AsyncCallback<>> callback({rt, std::move(function), std::move(jsInvoker)});
+  __block std::optional<AsyncCallback<>> callback({rt, std::move(function), jsInvoker});
   return ^(NSArray *args) {
     if (!callback) {
       LOG(FATAL) << "Callback arg cannot be called more than once";
@@ -159,10 +165,17 @@ convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::sh
   };
 }
 
-id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+id convertJSIValueToObjCObject(
+    jsi::Runtime &runtime,
+    const jsi::Value &value,
+    const std::shared_ptr<CallInvoker> &jsInvoker,
+    BOOL useNSNull)
 {
-  if (value.isUndefined() || value.isNull()) {
+  if (value.isUndefined() || (value.isNull() && !useNSNull)) {
     return nil;
+  }
+  if (value.isNull() && useNSNull) {
+    return (id)kCFNull;
   }
   if (value.isBool()) {
     return @(value.getBool());
@@ -176,12 +189,12 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
   if (value.isObject()) {
     jsi::Object o = value.getObject(runtime);
     if (o.isArray(runtime)) {
-      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, useNSNull);
     }
     if (o.isFunction(runtime)) {
       return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
     }
-    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
   }
 
   throw std::runtime_error("Unsupported jsi::Value kind");
@@ -195,7 +208,11 @@ static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string 
 /**
  * Creates JSError with current JS runtime and NSException stack trace.
  */
-static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception)
+static jsi::JSError convertNSExceptionToJSError(
+    jsi::Runtime &runtime,
+    NSException *exception,
+    const std::string &moduleName,
+    const std::string &methodName)
 {
   std::string reason = [exception.reason UTF8String];
 
@@ -206,7 +223,8 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   cause.setProperty(
       runtime, "stackReturnAddresses", convertNSArrayToJSIArray(runtime, exception.callStackReturnAddresses));
 
-  jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
+  std::string message = moduleName + "." + methodName + " raised an exception: " + reason;
+  jsi::Value error = createJSRuntimeError(runtime, message);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
   return {runtime, std::move(error)};
 }
@@ -229,7 +247,8 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
 
 } // namespace TurboModuleConvertUtils
 
-jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke)
+jsi::Value
+ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodName, PromiseInvocationBlock invoke)
 {
   if (!invoke) {
     return jsi::Value::undefined();
@@ -248,6 +267,7 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           2,
           [invokeCopy, jsInvoker = jsInvoker_, moduleName = name_, methodName](
               jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+            // FIXME: do not allocate this upfront
             std::string moduleMethod = moduleName + "." + methodName + "()";
 
             if (count != 2) {
@@ -338,28 +358,34 @@ id ObjCTurboModule::performMethodInvocation(
     }
 
     if (isSync) {
-      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
     }
 
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      if (isSync) {
+        // We can only convert NSException to JSError in sync method calls.
+        // See https://github.com/reactwg/react-native-new-architecture/discussions/276#discussioncomment-12567155
+        throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
+      } else {
+        @throw exception;
+      }
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
 
     if (!isSync) {
-      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
       return;
     }
 
     void *rawResult;
     [inv getReturnValue:&rawResult];
     result = (__bridge id)rawResult;
-    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+    TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
   };
 
   if (isSync) {
@@ -401,23 +427,23 @@ void ObjCTurboModule::performVoidMethodInvocation(
     }
 
     if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionStart(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionStart(moduleName, methodName, asyncCallCounter);
     }
 
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      throw convertNSExceptionToJSError(runtime, exception, std::string{moduleName}, methodNameStr);
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
 
     if (shouldVoidMethodsExecuteSync_) {
-      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodNameStr.c_str());
+      TurboModulePerfLogger::syncMethodCallExecutionEnd(moduleName, methodName);
     } else {
-      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodNameStr.c_str(), asyncCallCounter);
+      TurboModulePerfLogger::asyncMethodCallExecutionEnd(moduleName, methodName, asyncCallCounter);
     }
 
     return;
@@ -574,12 +600,15 @@ void ObjCTurboModule::setInvocationArg(
     double v = arg.getNumber();
 
     /**
-     * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+     * JS type checking ensures the Objective C argument here is either a double or NSNumber* or NSInteger.
      */
     if (objCArgType == @encode(id)) {
       id objCArg = [NSNumber numberWithDouble:v];
       [inv setArgument:(void *)&objCArg atIndex:i + 2];
       [retainedObjectsForInvocation addObject:objCArg];
+    } else if (objCArgType == @encode(NSInteger)) {
+      NSInteger integer = v;
+      [inv setArgument:&integer atIndex:i + 2];
     } else {
       [inv setArgument:(void *)&v atIndex:i + 2];
     }
@@ -590,7 +619,8 @@ void ObjCTurboModule::setInvocationArg(
   /**
    * Convert arg to ObjC objects.
    */
-  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_);
+  BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
+  id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
   if (objCArg) {
     NSString *methodNameNSString = @(methodName);
 
@@ -607,6 +637,10 @@ void ObjCTurboModule::setInvocationArg(
           // Message dispatch logic from old infra
           id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
           id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+
+          if (enableModuleArgumentNSNullConversionIOS && convertedObjCArg == (id)kCFNull) {
+            return;
+          }
 
           [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
           if (convertedObjCArg) {
@@ -654,7 +688,7 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     NSMutableArray *retainedObjectsForInvocation)
 {
   const char *moduleName = name_.c_str();
-  const id<RCTBridgeModule> module = instance_;
+  const NSObject<RCTBridgeModule> *module = instance_;
 
   if (isSync) {
     TurboModulePerfLogger::syncMethodCallArgConversionStart(moduleName, methodName);
@@ -662,11 +696,9 @@ NSInvocation *ObjCTurboModule::createMethodInvocation(
     TurboModulePerfLogger::asyncMethodCallArgConversionStart(moduleName, methodName);
   }
 
-  NSInvocation *inv =
-      [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
+  NSMethodSignature *methodSignature = [module methodSignatureForSelector:selector];
+  NSInvocation *inv = [NSInvocation invocationWithMethodSignature:methodSignature];
   [inv setSelector:selector];
-
-  NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
 
   for (size_t i = 0; i < count; i++) {
     const jsi::Value &arg = args[i];
@@ -782,7 +814,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
-      ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
+      ![methodArgConversionSelectors_[methodName][argIndex] isEqual:(id)kCFNull];
 }
 
 SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t argIndex)
@@ -803,7 +835,7 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
 
     methodArgConversionSelectors_[methodName] = [NSMutableArray arrayWithCapacity:argCount];
     for (int i = 0; i < argCount; i += 1) {
-      [methodArgConversionSelectors_[methodName] addObject:[NSNull null]];
+      [methodArgConversionSelectors_[methodName] addObject:(id)kCFNull];
     }
   }
 
@@ -823,8 +855,7 @@ void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterC
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 @implementation EventEmitterCallbackWrapper
 @end

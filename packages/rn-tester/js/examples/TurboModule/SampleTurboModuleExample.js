@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
-import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {EventSubscription, RootTag} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import styles from './TurboModuleExampleCommon';
@@ -18,7 +17,7 @@ import {FlatList, RootTagContext, TouchableOpacity, View} from 'react-native';
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
-type State = {|
+type State = {
   testResults: {
     [string]: {
       type: string,
@@ -27,7 +26,7 @@ type State = {|
     },
     ...
   },
-|};
+};
 
 type Examples =
   | 'callback'
@@ -62,8 +61,8 @@ type ErrorExamples =
   | 'getObjectAssert'
   | 'promiseAssert';
 
-class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+class SampleTurboModuleExample extends React.Component<{}, State> {
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
@@ -204,7 +203,7 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null) {
+    if (global.__turboModuleProxy == null && global.RN$Bridgeless == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );

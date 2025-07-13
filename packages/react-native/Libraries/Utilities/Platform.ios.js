@@ -4,14 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
-import type {
-  Platform as PlatformType,
-  PlatformSelectSpec,
-} from './Platform.flow';
+import type {PlatformSelectSpec, PlatformType} from './PlatformTypes';
 
 import NativePlatformConstantsIOS from './NativePlatformConstantsIOS';
 
@@ -24,21 +21,21 @@ const Platform: PlatformType = {
     return this.constants.osVersion;
   },
   // $FlowFixMe[unsafe-getters-setters]
-  get constants(): {|
+  get constants(): {
     forceTouchAvailable: boolean,
     interfaceIdiom: string,
     isTesting: boolean,
     isDisableAnimations?: boolean,
     osVersion: string,
-    reactNativeVersion: {|
+    reactNativeVersion: {
       major: number,
       minor: number,
       patch: number,
       prerelease: ?string,
-    |},
+    },
     systemName: string,
     isMacCatalyst?: boolean,
-  |} {
+  } {
     // $FlowFixMe[object-this-reference]
     if (this.__constants == null) {
       // $FlowFixMe[object-this-reference]
@@ -85,4 +82,4 @@ const Platform: PlatformType = {
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 
-module.exports = Platform;
+export default Platform;

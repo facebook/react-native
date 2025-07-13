@@ -8,12 +8,10 @@
  * @format
  */
 
+import type {HostComponent} from '../../src/private/types/HostComponent';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {
-  HostComponent,
-  HostInstance,
-  PartialViewConfig,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   DangerouslyImpreciseStyle,
@@ -21,13 +19,14 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
+import type {ImageSource} from './ImageSource';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
 import codegenNativeCommands from '../Utilities/codegenNativeCommands';
 import Platform from '../Utilities/Platform';
 
-type Props = $ReadOnly<{
+type ImageHostComponentProps = $ReadOnly<{
   ...ImageProps,
   ...ViewProps,
 
@@ -42,7 +41,7 @@ type Props = $ReadOnly<{
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
-  defaultSrc?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
@@ -82,9 +81,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
-          defaultSource: {
-            process: require('./resolveAssetSource'),
-          },
+          defaultSource: true,
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,
@@ -143,10 +140,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         validAttributes: {
           blurRadius: true,
           capInsets: {
-            diff: require('../Utilities/differ/insetsDiffer'),
+            diff: require('../Utilities/differ/insetsDiffer').default,
           },
           defaultSource: {
-            process: require('./resolveAssetSource'),
+            process: require('./resolveAssetSource').default,
           },
           internal_analyticTag: true,
           resizeMode: true,
@@ -165,8 +162,8 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
       };
 
-const ImageViewNativeComponent: HostComponent<Props> =
-  NativeComponentRegistry.get<Props>(
+const ImageViewNativeComponent: HostComponent<ImageHostComponentProps> =
+  NativeComponentRegistry.get<ImageHostComponentProps>(
     'RCTImageView',
     () => __INTERNAL_VIEW_CONFIG,
   );

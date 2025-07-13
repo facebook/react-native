@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 /*::
@@ -26,6 +25,10 @@ module.exports = ({version} /*: {version: Version} */) /*: string */ => `/**
 
 #include <cstdint>
 #include <string_view>
+
+#define REACT_NATIVE_VERSION_MAJOR ${version.major}
+#define REACT_NATIVE_VERSION_MINOR ${version.minor}
+#define REACT_NATIVE_VERSION_PATCH ${version.patch}
 
 namespace facebook::react {
 

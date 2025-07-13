@@ -21,6 +21,10 @@ runs:
         cd /tmp/RNApp
         yarn add ${{ inputs.library-npm-package }}
 
+    # iOS
+    - name: Setup xcode
+      if: ${{ inputs.platform == 'ios' }}
+      uses: ./.github/actions/setup-xcode
     - name: Build iOS
       shell: bash
       if: ${{ inputs.platform == 'ios' }}
@@ -32,6 +36,8 @@ runs:
           -workspace RNApp.xcworkspace \
           -scheme RNApp \
           -sdk iphonesimulator
+
+    # Android
     - name: Setup Java for Android
       if: ${{ inputs.platform == 'android' }}
       uses: actions/setup-java@v2

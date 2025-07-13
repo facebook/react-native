@@ -7,5 +7,6 @@
 
 packages/*/dist
 vendor
+packages/**/types_generated/
 
 packages/react-native-codegen/e2e/__test_fixtures__/modules/NativeEnumTurboModule.js

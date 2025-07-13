@@ -10,6 +10,7 @@ package com.facebook.react.views.text.frescosupport
 import android.view.View
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder
+import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -24,14 +25,14 @@ internal class FrescoBasedReactTextInlineImageViewManager
 constructor(
     private val draweeControllerBuilder:
         @JvmSuppressWildcards
-        AbstractDraweeControllerBuilder<*, *, *, *>? =
+        AbstractDraweeControllerBuilder<*, ImageRequest, *, *>? =
         null,
     private val callerContext: Any? = null
 ) : BaseViewManager<View, FrescoBasedReactTextInlineImageShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
 
-  public override fun createViewInstance(context: ThemedReactContext): View {
+  override fun createViewInstance(context: ThemedReactContext): View {
     throw IllegalStateException("RCTTextInlineImage doesn't map into a native view")
   }
 
@@ -44,7 +45,7 @@ constructor(
 
   override fun updateExtraData(root: View, extraData: Any) = Unit
 
-  public companion object {
-    public const val REACT_CLASS: String = "RCTTextInlineImage"
+  companion object {
+    const val REACT_CLASS: String = "RCTTextInlineImage"
   }
 }

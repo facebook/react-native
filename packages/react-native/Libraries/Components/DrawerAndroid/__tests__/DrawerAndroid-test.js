@@ -6,18 +6,17 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const View = require('../../View/View');
+const View = require('../../View/View').default;
 /* $FlowFixMe[cannot-resolve-module] (>=0.99.0 site=react_native_ios_fb) This
  * comment suppresses an error found when Flow v0.99 was deployed. To see the
  * error, delete this comment and run Flow. */
 // $FlowFixMe[missing-platform-support]
-const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
+const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android').default;
 const React = require('react');
 
 describe('<DrawerLayoutAndroid />', () => {

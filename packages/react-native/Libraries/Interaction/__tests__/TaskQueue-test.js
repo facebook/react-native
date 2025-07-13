@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -36,7 +36,7 @@ describe('TaskQueue', () => {
   beforeEach(() => {
     jest.resetModules();
     onMoreTasks = jest.fn();
-    const TaskQueue = require('../TaskQueue');
+    const TaskQueue = require('../TaskQueue').default;
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
   });

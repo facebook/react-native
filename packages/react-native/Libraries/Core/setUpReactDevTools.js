@@ -10,23 +10,39 @@
 
 'use strict';
 
-import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
-import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
+import type {Domain} from '../../src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher';
+import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/devsupport/rndevtools/specs/NativeReactDevToolsRuntimeSettingsModule';
+
+if (__DEV__) {
+  if (typeof global.queueMicrotask !== 'function') {
+    console.error(
+      'queueMicrotask should exist before setting up React DevTools.',
+    );
+  }
+
+  // Keep in sync with ExceptionsManager/installConsoleErrorReporter
+  // $FlowExpectedError[prop-missing]
+  if (console._errorOriginal != null) {
+    console.error(
+      'ExceptionsManager should be set up after React DevTools to avoid console.error arguments mutation',
+    );
+  }
+}
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
-  require('../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher');
+  require('../../src/private/devsupport/rndevtools/setUpFuseboxReactDevToolsDispatcher');
   const {
     initialize,
     connectToDevTools,
     connectWithCustomMessagingProtocol,
   } = require('react-devtools-core');
 
-  const reactDevToolsSettingsManager = require('../../src/private/debugging/ReactDevToolsSettingsManager');
+  const reactDevToolsSettingsManager = require('../../src/private/devsupport/rndevtools/ReactDevToolsSettingsManager');
   const serializedHookSettings =
     reactDevToolsSettingsManager.getGlobalHookSettings();
   const maybeReactDevToolsRuntimeSettingsModuleModule =
-    require('../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule').default;
+    require('../../src/private/devsupport/rndevtools/specs/NativeReactDevToolsRuntimeSettingsModule').default;
 
   let hookSettings = null;
   if (serializedHookSettings != null) {
@@ -54,8 +70,9 @@ if (__DEV__) {
   const reactDevToolsFuseboxGlobalBindingName =
     fuseboxReactDevToolsDispatcher.BINDING_NAME;
 
-  const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-  const resolveRNStyle = require('../StyleSheet/flattenStyle');
+  const ReactNativeStyleAttributes =
+    require('../Components/View/ReactNativeStyleAttributes').default;
+  const resolveRNStyle = require('../StyleSheet/flattenStyle').default;
 
   function handleReactDevToolsSettingsUpdate(settings: Object) {
     reactDevToolsSettingsManager.setGlobalHookSettings(
@@ -114,8 +131,8 @@ if (__DEV__) {
     // not when debugging in chrome
     // TODO(t12832058) This check is broken
     if (!window.document) {
-      const AppState = require('../AppState/AppState');
-      const getDevServer = require('./Devtools/getDevServer');
+      const AppState = require('../AppState/AppState').default;
+      const getDevServer = require('./Devtools/getDevServer').default;
 
       // Don't steal the DevTools from currently active app.
       // Note: if you add any AppState subscriptions to this file,
@@ -126,20 +143,19 @@ if (__DEV__) {
       // Get hostname from development server (packager)
       const devServer = getDevServer();
       const host = devServer.bundleLoadedFromServer
-        ? devServer.url
-            .replace(/https?:\/\//, '')
-            .replace(/\/$/, '')
-            .split(':')[0]
+        ? guessHostFromDevServerUrl(devServer.url)
         : 'localhost';
 
       // Read the optional global variable for backward compatibility.
       // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
       const port =
+        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-use]
         window.__REACT_DEVTOOLS_PORT__ != null
           ? window.__REACT_DEVTOOLS_PORT__
           : 8097;
 
-      const WebSocket = require('../WebSocket/WebSocket');
+      const WebSocket = require('../WebSocket/WebSocket').default;
       ws = new WebSocket('ws://' + host + ':' + port);
       ws.addEventListener('close', event => {
         isWebSocketOpen = false;
@@ -192,7 +208,8 @@ if (__DEV__) {
   );
 
   // 3. Fallback to attempting to connect WS-based RDT frontend
-  const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
+  const RCTNativeAppEventEmitter =
+    require('../EventEmitter/RCTNativeAppEventEmitter').default;
   RCTNativeAppEventEmitter.addListener(
     'RCTDevMenuShown',
     connectToWSBasedReactDevToolsFrontend,
@@ -238,4 +255,24 @@ function readReloadAndProfileConfig(
     onReloadAndProfile,
     onReloadAndProfileFlagsReset,
   };
+}
+
+/**
+ * This is a bad, no good, broken hack to get the host from a dev server URL for the purposes
+ * of connecting to the legacy React DevTools socket (for the standalone react-devtools package).
+ * It has too many bugs to list. Please don't use it in new code.
+ *
+ * The correct implementation would just be `return new URL(url).host`, but React Native does not
+ * ship with a spec-compliant `URL` class yet. Alternatively, this can be deleted when we delete
+ * `connectToWSBasedReactDevToolsFrontend`.
+ */
+function guessHostFromDevServerUrl(url: string): string {
+  const hopefullyHostAndPort = url
+    .replace(/https?:\/\//, '')
+    .replace(/\/$/, '');
+  // IPv6 addresses contain colons, so the split(':') below will return garbage.
+  if (hopefullyHostAndPort.includes(']')) {
+    return hopefullyHostAndPort.split(']')[0] + ']';
+  }
+  return hopefullyHostAndPort.split(':')[0];
 }

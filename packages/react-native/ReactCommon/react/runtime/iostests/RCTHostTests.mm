@@ -15,6 +15,7 @@
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTInstance.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <hermes/hermes.h>
 
 #import <OCMock/OCMock.h>
 

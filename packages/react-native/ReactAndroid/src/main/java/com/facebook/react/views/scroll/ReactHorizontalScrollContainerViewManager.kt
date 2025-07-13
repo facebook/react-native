@@ -16,10 +16,10 @@ import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 
-/** View manager for {@link ReactHorizontalScrollContainerView} components. */
+/** View manager for [ReactHorizontalScrollContainerLegacyView] components. */
 @ReactModule(name = ReactHorizontalScrollContainerViewManager.REACT_CLASS)
 public class ReactHorizontalScrollContainerViewManager : ReactViewManager() {
-  override public fun getName(): String = REACT_CLASS
+  public override fun getName(): String = REACT_CLASS
 
   protected override fun createViewInstance(
       reactTag: Int,
@@ -43,6 +43,6 @@ public class ReactHorizontalScrollContainerViewManager : ReactViewManager() {
 
   public companion object {
     public const val REACT_CLASS: String = "AndroidHorizontalScrollContentView"
-    private @UIManagerType var uiManagerType: Int? = null
+    @UIManagerType private var uiManagerType: Int? = null
   }
 }

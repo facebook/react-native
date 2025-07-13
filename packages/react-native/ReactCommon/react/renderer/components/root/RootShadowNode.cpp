@@ -56,4 +56,9 @@ RootShadowNode::Unshared RootShadowNode::clone(
   return newRootShadowNode;
 }
 
+void RootShadowNode::setInstanceHandle(
+    InstanceHandle::Shared instanceHandle) const {
+  getFamily().setInstanceHandle(instanceHandle);
+}
+
 } // namespace facebook::react

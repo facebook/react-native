@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {SectionBase} from 'react-native/Libraries/Lists/SectionList';
-
 import * as React from 'react';
 import {
   Button,
@@ -67,7 +65,8 @@ const Item = ({item, section, separators}) => {
 };
 
 type Props = $ReadOnly<{
-  exampleProps: Partial<React.ElementConfig<typeof SectionList>>,
+  // $FlowIgnore[unclear-type]
+  exampleProps: Partial<React.ElementConfig<typeof SectionList<any>>>,
   onTest?: ?() => void,
   testLabel?: ?string,
   testOutput?: ?string,
@@ -75,9 +74,17 @@ type Props = $ReadOnly<{
 }>;
 
 const SectionListBaseExample: component(
-  ref: React.RefSetter<SectionList<SectionBase<mixed>>>,
+  // $FlowIgnore[unclear-type]
+  ref: React.RefSetter<SectionList<any>>,
   ...props: Props
-) = React.forwardRef((props: Props, ref): React.Node => {
+) = ({
+  ref,
+  ...props
+}: {
+  // $FlowIgnore[unclear-type]
+  ref: React.RefSetter<SectionList<any>>,
+  ...Props,
+}): React.Node => {
   return (
     <View style={styles.container}>
       {props.testOutput != null ? (
@@ -99,7 +106,6 @@ const SectionListBaseExample: component(
         ref={ref}
         testID="section_list"
         accessibilityRole="list"
-        // $FlowFixMe[incompatible-type]
         sections={DATA}
         keyExtractor={(item, index) => item + index}
         style={styles.list}
@@ -113,7 +119,7 @@ const SectionListBaseExample: component(
       />
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   item: {

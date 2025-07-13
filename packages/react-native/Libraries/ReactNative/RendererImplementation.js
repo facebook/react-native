@@ -4,18 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {
-  HostComponent,
-  HostInstance,
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
-import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
-import type {ElementRef, ElementType} from 'react';
 
 import {
   onCaughtError,
@@ -23,6 +20,8 @@ import {
   onUncaughtError,
 } from '../../src/private/renderer/errorhandling/ErrorHandlers';
 import {type RootTag} from './RootTag';
+import * as React from 'react';
+
 export function renderElement({
   element,
   rootTag,
@@ -60,18 +59,22 @@ export function renderElement({
   }
 }
 
-export function findHostInstance_DEPRECATED<TElementType: ElementType>(
-  componentOrHandle: ?(ElementRef<TElementType> | number),
+export function findHostInstance_DEPRECATED<TElementType: React.ElementType>(
+  // $FlowFixMe[incompatible-call]
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?HostInstance {
   return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
+    // $FlowFixMe[incompatible-call]
     componentOrHandle,
   );
 }
 
-export function findNodeHandle<TElementType: ElementType>(
-  componentOrHandle: ?(ElementRef<TElementType> | number),
+export function findNodeHandle<TElementType: React.ElementType>(
+  // $FlowFixMe[incompatible-call]
+  componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?number {
   return require('../Renderer/shims/ReactNative').default.findNodeHandle(
+    // $FlowFixMe[incompatible-call]
     componentOrHandle,
   );
 }
@@ -136,8 +139,8 @@ export function isProfilingRenderer(): boolean {
 }
 
 export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
-  childInstance: ReactFabricHostComponent | HostComponent<empty>,
+  parentInstance: HostInstance,
+  childInstance: HostInstance,
 ): boolean {
   return require('../Renderer/shims/ReactNative').default.isChildPublicInstance(
     parentInstance,
@@ -160,5 +163,14 @@ export function getPublicInstanceFromInternalInstanceHandle(
   // This is only available in Fabric
   return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromInternalInstanceHandle(
     internalInstanceHandle,
+  );
+}
+
+export function getPublicInstanceFromRootTag(
+  rootTag: number,
+): mixed /*PublicRootInstance | null*/ {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromRootTag(
+    rootTag,
   );
 }

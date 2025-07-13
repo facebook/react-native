@@ -4,13 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-const MessageQueue = require('./MessageQueue');
+import typeof MessageQueueT from './MessageQueue';
+
+const MessageQueue: MessageQueueT = require('./MessageQueue').default;
 
 const BatchedBridge: MessageQueue = new MessageQueue();
 
@@ -25,4 +27,4 @@ Object.defineProperty(global, '__fbBatchedBridge', {
   value: BatchedBridge,
 });
 
-module.exports = BatchedBridge;
+export default BatchedBridge;

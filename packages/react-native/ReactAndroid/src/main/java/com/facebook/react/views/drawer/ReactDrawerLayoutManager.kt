@@ -76,7 +76,7 @@ public class ReactDrawerLayoutManager :
       }
 
       drawerPosition.type == ReadableType.String ->
-          setDrawerPositionInternal(view, drawerPosition.asString())
+          setDrawerPositionInternal(view, checkNotNull(drawerPosition.asString()))
 
       else -> {
         FLog.w(ReactConstants.TAG, "drawerPosition must be a string or int")
@@ -160,24 +160,13 @@ public class ReactDrawerLayoutManager :
           "This method is deprecated. Use receiveCommand(ReactDrawerLayout, String, ReadableArray) instead",
       replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"))
   public override fun receiveCommand(
-      root: ReactDrawerLayout,
+      view: ReactDrawerLayout,
       commandId: Int,
       args: ReadableArray?
-  ) {
+  ): Unit {
     when (commandId) {
-      OPEN_DRAWER -> root.openDrawer()
-      CLOSE_DRAWER -> root.closeDrawer()
-    }
-  }
-
-  public override fun receiveCommand(
-      root: ReactDrawerLayout,
-      commandId: String,
-      args: ReadableArray?
-  ) {
-    when (commandId) {
-      COMMAND_OPEN_DRAWER -> root.openDrawer()
-      COMMAND_CLOSE_DRAWER -> root.closeDrawer()
+      OPEN_DRAWER -> view.openDrawer()
+      CLOSE_DRAWER -> view.closeDrawer()
     }
   }
 

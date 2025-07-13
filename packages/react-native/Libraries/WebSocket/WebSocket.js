@@ -4,22 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
+import type {EventCallback} from '../../src/private/webapis/dom/events/EventTarget';
 import type {BlobData} from '../Blob/BlobTypes';
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
+import Event from '../../src/private/webapis/dom/events/Event';
+import {
+  getEventHandlerAttribute,
+  setEventHandlerAttribute,
+} from '../../src/private/webapis/dom/events/EventHandlerAttributes';
+import EventTarget from '../../src/private/webapis/dom/events/EventTarget';
+import MessageEvent from '../../src/private/webapis/html/events/MessageEvent';
+import CloseEvent from '../../src/private/webapis/websockets/events/CloseEvent';
 import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import binaryToBase64 from '../Utilities/binaryToBase64';
 import Platform from '../Utilities/Platform';
 import NativeWebSocketModule from './NativeWebSocketModule';
-import WebSocketEvent from './WebSocketEvent';
 import base64 from 'base64-js';
-import EventTarget from 'event-target-shim';
 import invariant from 'invariant';
 
 type ArrayBufferView =
@@ -47,8 +54,6 @@ const CLOSE_NORMAL = 1000;
 // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
 const CLOSE_ABNORMAL = 1006;
 
-const WEBSOCKET_EVENTS = ['close', 'error', 'message', 'open'];
-
 let nextWebSocketId = 0;
 
 type WebSocketEventDefinitions = {
@@ -68,7 +73,7 @@ type WebSocketEventDefinitions = {
  * See https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
  * See https://github.com/websockets/ws
  */
-class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
+class WebSocket extends EventTarget {
   static CONNECTING: number = CONNECTING;
   static OPEN: number = OPEN;
   static CLOSING: number = CLOSING;
@@ -83,11 +88,6 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
   _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
   _subscriptions: Array<EventSubscription>;
   _binaryType: ?BinaryType;
-
-  onclose: ?Function;
-  onerror: ?Function;
-  onmessage: ?Function;
-  onopen: ?Function;
 
   bufferedAmount: number;
   extension: ?string;
@@ -245,7 +245,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
             data = BlobManager.createFromOptions(ev.data);
             break;
         }
-        this.dispatchEvent(new WebSocketEvent('message', {data}));
+        this.dispatchEvent(new MessageEvent('message', {data}));
       }),
       this._eventEmitter.addListener('websocketOpen', ev => {
         if (ev.id !== this._socketId) {
@@ -253,7 +253,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
         }
         this.readyState = this.OPEN;
         this.protocol = ev.protocol;
-        this.dispatchEvent(new WebSocketEvent('open'));
+        this.dispatchEvent(new Event('open'));
       }),
       this._eventEmitter.addListener('websocketClosed', ev => {
         if (ev.id !== this._socketId) {
@@ -261,7 +261,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
         }
         this.readyState = this.CLOSED;
         this.dispatchEvent(
-          new WebSocketEvent('close', {
+          new CloseEvent('close', {
             code: ev.code,
             reason: ev.reason,
             // TODO: missing `wasClean` (exposed on iOS as `clean` but missing on Android)
@@ -275,13 +275,9 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
           return;
         }
         this.readyState = this.CLOSED;
+        this.dispatchEvent(new Event('error'));
         this.dispatchEvent(
-          new WebSocketEvent('error', {
-            message: ev.message,
-          }),
-        );
-        this.dispatchEvent(
-          new WebSocketEvent('close', {
+          new CloseEvent('close', {
             code: CLOSE_ABNORMAL,
             reason: ev.message,
             // TODO: Expose `wasClean`
@@ -292,6 +288,38 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
       }),
     ];
   }
+
+  get onclose(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'close');
+  }
+
+  set onclose(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'close', listener);
+  }
+
+  get onerror(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'error');
+  }
+
+  set onerror(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'error', listener);
+  }
+
+  get onmessage(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'message');
+  }
+
+  set onmessage(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'message', listener);
+  }
+
+  get onopen(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'open');
+  }
+
+  set onopen(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'open', listener);
+  }
 }
 
-module.exports = WebSocket;
+export default WebSocket;

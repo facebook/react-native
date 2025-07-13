@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -25,7 +25,7 @@ const dummyInsets = {
   bottom: undefined,
 };
 
-const insetsDiffer = function (one: Inset, two: Inset): boolean {
+function insetsDiffer(one: Inset, two: Inset): boolean {
   one = one || dummyInsets;
   two = two || dummyInsets;
   return (
@@ -35,6 +35,6 @@ const insetsDiffer = function (one: Inset, two: Inset): boolean {
       one.right !== two.right ||
       one.bottom !== two.bottom)
   );
-};
+}
 
-module.exports = insetsDiffer;
+export default insetsDiffer;

@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
-const ExceptionsManager = require('../ExceptionsManager');
-const NativeExceptionsManager = require('../NativeExceptionsManager').default;
+import type {ExceptionData} from '../NativeExceptionsManager';
+
+const ExceptionsManager = require('../ExceptionsManager').default;
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
 const fs = require('fs');
 const path = require('path');
@@ -37,49 +38,54 @@ describe('checkVersion', () => {
   });
 });
 
-function setDevelopmentModeForTests(dev) {
+function setDevelopmentModeForTests(dev: mixed) {
   let originalDev;
 
   beforeAll(() => {
     originalDev = global.__DEV__;
+    // $FlowExpectedError[cannot-write]
     global.__DEV__ = dev;
   });
 
   afterAll(() => {
+    // $FlowExpectedError[cannot-write]
     global.__DEV__ = originalDev;
   });
 }
 
 function runExceptionsManagerTests() {
   describe('ExceptionsManager', () => {
-    let nativeReportException;
-    let logBoxAddException;
+    let nativeReportException: JestMockFn<[ExceptionData], void>;
+    let logBoxAddException: JestMockFn<[ExceptionData], void>;
+    let logBoxAddConsoleLog;
 
     beforeEach(() => {
+      nativeReportException = jest.fn();
       logBoxAddException = jest.fn();
+      logBoxAddConsoleLog = jest.fn();
+
       jest.resetModules();
       jest.mock('../../LogBox/LogBox', () => ({
         default: {
           addException: logBoxAddException,
+          addConsoleLog: logBoxAddConsoleLog,
         },
       }));
       jest.mock('../NativeExceptionsManager', () => {
         return {
           default: {
-            reportException: jest.fn(),
+            reportException: nativeReportException,
           },
         };
       });
       // Make symbolication a no-op.
-      jest.mock(
-        '../Devtools/symbolicateStackTrace',
-        () =>
-          async function symbolicateStackTrace(stack) {
-            return {stack};
-          },
-      );
+      jest.mock('../Devtools/symbolicateStackTrace', () => ({
+        __esModule: true,
+        default: async function symbolicateStackTrace(stack) {
+          return {stack};
+        },
+      }));
       jest.spyOn(console, 'error').mockReturnValue(undefined);
-      nativeReportException = NativeExceptionsManager.reportException;
     });
 
     afterEach(() => {
@@ -97,13 +103,19 @@ function runExceptionsManagerTests() {
           error,
         });
 
+        let exceptionData;
         if (__DEV__) {
-          expect(nativeReportException.mock.calls.length).toBe(0);
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          return;
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBe(0);
+          expect(logBoxAddException).toBeCalledTimes(1);
+          exceptionData = logBoxAddException.mock.calls[0][0];
+        } else {
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException.mock.calls.length).toBe(1);
+          exceptionData = nativeReportException.mock.calls[0][0];
         }
-        expect(nativeReportException.mock.calls.length).toBe(1);
-        const exceptionData = nativeReportException.mock.calls[0][0];
+
         const formattedMessage =
           'ReferenceError: ' +
           message +
@@ -121,12 +133,13 @@ function runExceptionsManagerTests() {
         );
         expect(exceptionData.isFatal).toBe(false);
         expect(logToConsoleInReact).toBe(false);
-        expect(console.error).toBeCalledWith(formattedMessage);
+        expect(console.error).toBeCalledWith(error);
       });
 
       test('does not pop frames off the stack with framesToPop', () => {
         function createError() {
           const error = new Error('Some error happened');
+          // $FlowFixMe[prop-missing]
           error.framesToPop = 1;
           return error;
         }
@@ -140,55 +153,20 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = new Error('Some error happened');",
         );
-      });
-
-      test('adds the JS engine to the message', () => {
-        const error = new Error('Some error happened');
-        error.jsEngine = 'hermes';
-        // Copy all the data we care about before any possible mutation.
-        const {message, jsEngine} = error;
-
-        ReactFiberErrorDialog.showErrorDialog({
-          ...capturedErrorDefaults,
-          error,
-        });
-
-        let exceptionData;
-
-        if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
-        } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
-          exceptionData = nativeReportException.mock.calls[0][0];
-        }
-        expect(exceptionData.message).toBe(
-          'Error: ' +
-            message +
-            '\n\n' +
-            'This error is located at:' +
-            capturedErrorDefaults.componentStack +
-            ', js engine: ' +
-            jsEngine,
-        );
-        expect(console.error).toBeCalledWith(
-          'Error: ' +
-            message +
-            '\n\n' +
-            'This error is located at:' +
-            capturedErrorDefaults.componentStack +
-            ', js engine: ' +
-            jsEngine,
-        );
+        expect(console.error).toBeCalledWith(error);
       });
 
       test('wraps string in an Error and sends to handleException', () => {
@@ -202,10 +180,14 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage =
@@ -223,7 +205,13 @@ function runExceptionsManagerTests() {
         );
         expect(exceptionData.isFatal).toBe(false);
         expect(logToConsoleInReact).toBe(false);
-        expect(console.error).toBeCalledWith(formattedMessage);
+        expect(console.error).toBeCalledTimes(1);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBeInstanceOf(
+          ExceptionsManager.SyntheticError,
+        );
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0].toString()).toBe(message);
       });
 
       test('reports "Unspecified error" if error is null', () => {
@@ -235,10 +223,14 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage =
@@ -257,7 +249,15 @@ function runExceptionsManagerTests() {
         );
         expect(exceptionData.isFatal).toBe(false);
         expect(logToConsoleInReact).toBe(false);
-        expect(console.error).toBeCalledWith(formattedMessage);
+        expect(console.error).toBeCalledTimes(1);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBeInstanceOf(
+          ExceptionsManager.SyntheticError,
+        );
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0].toString()).toBe(
+          'Unspecified error',
+        );
       });
 
       test('works with a frozen error object', () => {
@@ -271,15 +271,24 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = Object.freeze(new Error('Some error happened'));",
         );
+
+        // No component stack.
+        const formattedMessage = 'Error: ' + error.message;
+        expect(exceptionData.message).toBe(formattedMessage);
+        expect(console.error).toBeCalledWith(error);
       });
 
       test('does not mutate the message', () => {
@@ -291,12 +300,27 @@ function runExceptionsManagerTests() {
           error,
         });
 
+        let exceptionData;
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
+          exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(error.message).toBe(message);
+          exceptionData = nativeReportException.mock.calls[0][0];
         }
+        const formattedMessage =
+          'ReferenceError: ' +
+          message +
+          '\n\n' +
+          'This error is located at:' +
+          capturedErrorDefaults.componentStack;
+        expect(exceptionData.message).toBe(formattedMessage);
+        expect(console.error).toBeCalledWith(error);
       });
 
       test('can safely process the same error multiple times', () => {
@@ -310,6 +334,7 @@ function runExceptionsManagerTests() {
         for (const componentStack of componentStacks) {
           nativeReportException.mockClear();
           logBoxAddException.mockClear();
+          logBoxAddConsoleLog.mockClear();
           const formattedMessage =
             'ReferenceError: ' +
             message +
@@ -325,10 +350,14 @@ function runExceptionsManagerTests() {
           let exceptionData;
 
           if (__DEV__) {
-            expect(logBoxAddException.mock.calls.length).toBe(1);
+            expect(logBoxAddConsoleLog).not.toBeCalled();
+            expect(nativeReportException).not.toBeCalled();
+            expect(logBoxAddException).toBeCalledTimes(1);
             exceptionData = logBoxAddException.mock.calls[0][0];
           } else {
-            expect(nativeReportException.mock.calls.length).toBe(1);
+            expect(logBoxAddConsoleLog).not.toBeCalled();
+            expect(logBoxAddException).not.toBeCalled();
+            expect(nativeReportException).toBeCalledTimes(1);
             exceptionData = nativeReportException.mock.calls[0][0];
           }
           expect(exceptionData.message).toBe(formattedMessage);
@@ -339,17 +368,18 @@ function runExceptionsManagerTests() {
           );
           expect(exceptionData.isFatal).toBe(false);
           expect(logToConsoleInReact).toBe(false);
-          expect(console.error).toBeCalledWith(formattedMessage);
+          expect(console.error).toBeCalledWith(error);
         }
       });
     });
 
     describe('console.error handler', () => {
-      let mockError;
+      let mockError: JestMockFn<$FlowFixMe, void>;
       beforeEach(() => {
         // NOTE: We initialise a fresh mock every time using spyOn, above.
         // We can't use `console._errorOriginal` for this, because that's a bound
         // (=wrapped) version of the mock and Jest does not approve.
+        // $FlowFixMe[incompatible-type]
         mockError = console.error;
         ExceptionsManager.installConsoleErrorReporter();
       });
@@ -357,8 +387,12 @@ function runExceptionsManagerTests() {
       afterEach(() => {
         // There is no uninstallConsoleErrorReporter. Do this so the next install
         // works.
+        // $FlowFixMe[cannot-write]
+        // $FlowFixMe[prop-missing]
         console.error = console._errorOriginal;
+        // $FlowFixMe[prop-missing]
         delete console._errorOriginal;
+        // $FlowFixMe[prop-missing]
         delete console.reportErrorsAsExceptions;
       });
 
@@ -371,23 +405,31 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          const formattedMessage = 'Error: ' + message;
+          expect(exceptionData.message).toBe(formattedMessage);
+          expect(exceptionData.originalMessage).toBe(message);
+          expect(exceptionData.name).toBe(name);
+          expect(getLineFromFrame(exceptionData.stack[0])).toBe(
+            "const error = new Error('Some error happened');",
+          );
+          expect(exceptionData.isFatal).toBe(false);
         }
-        const formattedMessage = 'Error: ' + message;
-        expect(exceptionData.message).toBe(formattedMessage);
-        expect(exceptionData.originalMessage).toBe(message);
-        expect(exceptionData.name).toBe(name);
-        expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-          "const error = new Error('Some error happened');",
-        );
-        expect(exceptionData.isFatal).toBe(false);
+
         expect(mockError.mock.calls[0]).toHaveLength(1);
         expect(mockError.mock.calls[0][0]).toBeInstanceOf(Error);
-        expect(mockError.mock.calls[0][0].toString()).toBe(formattedMessage);
+        expect(mockError.mock.calls[0][0].toString()).toBe('Error: ' + message);
       });
 
       test('logging a string', () => {
@@ -398,21 +440,28 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(message);
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          expect(exceptionData.message).toBe(
+            'console.error: Some error happened',
+          );
+          expect(exceptionData.originalMessage).toBe('Some error happened');
+          expect(exceptionData.name).toBe('console.error');
+          expect(
+            getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+          ).toBe('console.error(message);');
+          expect(exceptionData.isFatal).toBe(false);
         }
-        expect(exceptionData.message).toBe(
-          'console.error: Some error happened',
-        );
-        expect(exceptionData.originalMessage).toBe('Some error happened');
-        expect(exceptionData.name).toBe('console.error');
-        expect(
-          getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
-        ).toBe('console.error(message);');
-        expect(exceptionData.isFatal).toBe(false);
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
 
@@ -421,28 +470,34 @@ function runExceptionsManagerTests() {
 
         console.error(...args);
 
-        let exceptionData;
-
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          // In DEV we only send the raw arguments to LogBox.
+          // We do not include the the additional metadata.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          // $FlowIgnore[incompatible-call]
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
-          exceptionData = nativeReportException.mock.calls[0][0];
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
+          const exceptionData = nativeReportException.mock.calls[0][0];
+          expect(exceptionData.message).toBe(
+            'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
+          );
+          expect(exceptionData.originalMessage).toBe(
+            '42 true ["symbol" failed to stringify] {"y":null}',
+          );
+          expect(exceptionData.name).toBe('console.error');
+          expect(
+            getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+          ).toBe('console.error(...args);');
+          expect(exceptionData.isFatal).toBe(false);
         }
-        expect(exceptionData.message).toBe(
-          'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
-        );
-        expect(exceptionData.originalMessage).toBe(
-          '42 true ["symbol" failed to stringify] {"y":null}',
-        );
-        expect(exceptionData.name).toBe('console.error');
-        expect(
-          getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
-        ).toBe('console.error(...args);');
-        expect(exceptionData.isFatal).toBe(false);
 
-        expect(mockError).toHaveBeenCalledTimes(1);
+        expect(mockError).toBeCalledTimes(1);
         // Shallowly compare the mock call arguments with `args`
         expect(mockError.mock.calls[0]).toHaveLength(args.length);
         for (let i = 0; i < args.length; ++i) {
@@ -455,8 +510,21 @@ function runExceptionsManagerTests() {
 
         console.error(message);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
-        expect(mockError.mock.calls[0]).toEqual([message]);
+        if (__DEV__) {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(
+            'Warning: Some mild issue happened',
+          );
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual([message]);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual([message]);
+        }
       });
 
       test('logging a warning with more arguments', () => {
@@ -464,8 +532,21 @@ function runExceptionsManagerTests() {
 
         console.error(...args);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
-        expect(mockError.mock.calls[0]).toEqual(args);
+        if (__DEV__) {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(
+            'Warning: Some mild issue happened',
+          );
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual(args);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(mockError.mock.calls[0]).toEqual(args);
+        }
       });
 
       test('logging a warning-looking object', () => {
@@ -473,6 +554,7 @@ function runExceptionsManagerTests() {
         const object = {
           toString: () => 'Warning: Some error may have happened',
         };
+        // $FlowIgnore[prop-missing]
         object.cycle = object;
 
         const args = [object];
@@ -480,34 +562,56 @@ function runExceptionsManagerTests() {
         console.error(...args);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
         }
       });
 
       test('does not log "warn"-type errors', () => {
         const error = new Error('This is a warning.');
+        // $FlowFixMe[prop-missing]
         error.type = 'warn';
 
         console.error(error);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
+        if (__DEV__) {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+        }
       });
 
       test('reportErrorsAsExceptions = false', () => {
+        // $FlowFixMe[prop-missing]
         console.reportErrorsAsExceptions = false;
         const message = 'Some error happened';
 
         console.error(message);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
+        expect(logBoxAddException).not.toBeCalled();
+        expect(logBoxAddConsoleLog).not.toBeCalled();
+        expect(nativeReportException).not.toBeCalled();
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
 
       test('does not pop frames off the stack with framesToPop', () => {
         function createError() {
           const error = new Error('Some error happened');
+          // $FlowFixMe[prop-missing]
           error.framesToPop = 1;
           return error;
         }
@@ -518,15 +622,22 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          exceptionData = logBoxAddException.mock.calls[0][0];
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
         } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
           expect(nativeReportException.mock.calls.length).toBe(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          expect(getLineFromFrame(exceptionData.stack[0])).toBe(
+            "const error = new Error('Some error happened');",
+          );
         }
-        expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-          "const error = new Error('Some error happened');",
-        );
+        expect(mockError.mock.calls[0][0]).toEqual(error);
       });
     });
 
@@ -540,10 +651,14 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage = 'Error: ' + message;
@@ -554,8 +669,10 @@ function runExceptionsManagerTests() {
           "const error = new Error('Some error happened');",
         );
         expect(exceptionData.isFatal).toBe(true);
+        // $FlowFixMe[prop-missing]
         expect(console.error.mock.calls[0]).toHaveLength(1);
-        expect(console.error.mock.calls[0][0]).toBe(formattedMessage);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBe(error);
       });
 
       test('handling a non-fatal Error', () => {
@@ -567,10 +684,14 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage = 'Error: ' + message;
@@ -581,8 +702,10 @@ function runExceptionsManagerTests() {
           "const error = new Error('Some error happened');",
         );
         expect(exceptionData.isFatal).toBe(false);
+        // $FlowFixMe[prop-missing]
         expect(console.error.mock.calls[0]).toHaveLength(1);
-        expect(console.error.mock.calls[0][0]).toBe(formattedMessage);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBe(error);
       });
 
       test('handling a thrown string', () => {
@@ -593,10 +716,14 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(exceptionData.message).toBe(message);
@@ -604,12 +731,20 @@ function runExceptionsManagerTests() {
         expect(exceptionData.name).toBe(null);
         expect(exceptionData.stack[0].file).toMatch(/ExceptionsManager\.js$/);
         expect(exceptionData.isFatal).toBe(true);
-        expect(console.error.mock.calls[0]).toEqual([message]);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0]).toHaveLength(1);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBeInstanceOf(
+          ExceptionsManager.SyntheticError,
+        );
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0].toString()).toBe(message);
       });
 
       test('does not pop frames off the stack with framesToPop', () => {
         function createError() {
           const error = new Error('Some error happened');
+          // $FlowFixMe[prop-missing]
           error.framesToPop = 1;
           return error;
         }
@@ -620,46 +755,67 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = new Error('Some error happened');",
         );
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0]).toHaveLength(1);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBe(error);
       });
 
       test('logs fatal "warn"-type errors', () => {
         const error = new Error('This is a fatal... warning?');
+        // $FlowFixMe[prop-missing]
         error.type = 'warn';
 
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
         }
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0]).toHaveLength(1);
+        // $FlowFixMe[prop-missing]
+        expect(console.error.mock.calls[0][0]).toBe(error);
       });
     });
 
     describe('unstable_setExceptionDecorator', () => {
-      let mockError;
+      let mockConsoleError;
       beforeEach(() => {
         // NOTE: We initialise a fresh mock every time using spyOn, above.
         // We can't use `console._errorOriginal` for this, because that's a bound
         // (=wrapped) version of the mock and Jest does not approve.
-        mockError = console.error;
+        mockConsoleError = console.error;
         ExceptionsManager.installConsoleErrorReporter();
       });
 
       afterEach(() => {
         // There is no uninstallConsoleErrorReporter. Do this so the next install
         // works.
+        // $FlowFixMe[cannot-write]
+        // $FlowFixMe[prop-missing]
         console.error = console._errorOriginal;
+        // $FlowFixMe[prop-missing]
         delete console._errorOriginal;
+        // $FlowFixMe[prop-missing]
         delete console.reportErrorsAsExceptions;
       });
 
@@ -682,11 +838,15 @@ function runExceptionsManagerTests() {
         let afterDecorator;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(2);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(2);
           withoutDecoratorInstalled = logBoxAddException.mock.calls[0][0];
           afterDecorator = logBoxAddException.mock.calls[1][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(2);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(2);
           withoutDecoratorInstalled = nativeReportException.mock.calls[0][0];
           afterDecorator = nativeReportException.mock.calls[1][0];
         }
@@ -694,10 +854,14 @@ function runExceptionsManagerTests() {
         expect(afterDecorator.id).toEqual(beforeDecorator.id);
 
         // id will change between successive exceptions
+        // $FlowFixMe[incompatible-type]
         delete withoutDecoratorInstalled.id;
         delete beforeDecorator.id;
+        // $FlowFixMe[incompatible-type]
         delete afterDecorator.id;
+        // $FlowFixMe[prop-missing]
         delete withoutDecoratorInstalled.isComponentError;
+        // $FlowFixMe[prop-missing]
         delete afterDecorator.isComponentError;
 
         expect(withoutDecoratorInstalled).toEqual(beforeDecorator);
@@ -705,6 +869,11 @@ function runExceptionsManagerTests() {
           ...beforeDecorator,
           message: 'decorated: ' + beforeDecorator.message,
         });
+        expect(mockConsoleError).toBeCalledTimes(2);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0]).toBe(error);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[1][0]).toBe(error);
       });
 
       test('clearing a decorator', () => {
@@ -718,12 +887,19 @@ function runExceptionsManagerTests() {
         ExceptionsManager.unstable_setExceptionDecorator(null);
         ExceptionsManager.handleException(error, true);
 
-        expect(decorator).not.toHaveBeenCalled();
+        expect(decorator).not.toBeCalled();
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
         }
+        expect(mockConsoleError).toBeCalledTimes(1);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0]).toBe(error);
       });
 
       test('prevents decorator recursion from error handler', () => {
@@ -740,23 +916,27 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /decorated: .*Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /decorated: .*Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(2);
-        expect(mockError.mock.calls[0][0]).toMatch(
+        expect(mockConsoleError).toBeCalledTimes(2);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0]).toMatch(
           /Logging an error within the decorator/,
         );
-        expect(mockError.mock.calls[1][0]).toMatch(
-          /decorated: .*Some error happened/,
-        );
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[1][0]).toBe(error);
       });
 
       test('prevents decorator recursion from console.error', () => {
@@ -773,15 +953,20 @@ function runExceptionsManagerTests() {
         console.error(error);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(2);
-          expect(logBoxAddException.mock.calls[0][0].message).toMatch(
-            /Logging an error within the decorator/,
-          );
-          expect(logBoxAddException.mock.calls[1][0].message).toMatch(
-            /decorated: .*Some error happened/,
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(2);
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(error);
+          expect(logBoxAddConsoleLog.mock.calls[1][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[1][1]).toBe(
+            'Logging an error within the decorator',
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(2);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(2);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Logging an error within the decorator/,
           );
@@ -789,12 +974,14 @@ function runExceptionsManagerTests() {
             /decorated: .*Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(2);
+        expect(mockConsoleError).toBeCalledTimes(2);
         // console.error calls are chained without exception pre-processing, so decorator doesn't apply
-        expect(mockError.mock.calls[0][0].toString()).toMatch(
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0].toString()).toMatch(
           /Error: Some error happened/,
         );
-        expect(mockError.mock.calls[1][0]).toMatch(
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[1][0]).toMatch(
           /Logging an error within the decorator/,
         );
       });
@@ -809,22 +996,25 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(1);
-        expect(mockError.mock.calls[0][0]).toMatch(
-          /Error: Some error happened/,
-        );
+        expect(mockConsoleError).toBeCalledTimes(1);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0]).toBe(error);
       });
 
       test('can handle throwing decorators recursion when exception is logged', () => {
@@ -837,20 +1027,24 @@ function runExceptionsManagerTests() {
         console.error(error);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddConsoleLog).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
-          expect(logBoxAddException.mock.calls[0][0].message).toMatch(
-            /Error: Some error happened/,
-          );
+          expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
+          expect(logBoxAddConsoleLog.mock.calls[0][1]).toEqual(error);
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(1);
-        expect(mockError.mock.calls[0][0].toString()).toMatch(
+        expect(mockConsoleError).toBeCalledTimes(1);
+        // $FlowFixMe[prop-missing]
+        expect(mockConsoleError.mock.calls[0][0].toString()).toMatch(
           /Error: Some error happened/,
         );
       });
@@ -859,16 +1053,21 @@ function runExceptionsManagerTests() {
       test('ExtendedErrors may pass custom extraData using the decoratedExtraDataKey symbol', () => {
         const error = new Error('Some error happened');
         // Annotates the error with some custom extra data.
+        // $FlowFixMe[prop-missing]
         error[ExceptionsManager.decoratedExtraDataKey] = {foo: 'bar'};
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].extraData?.foo).toBe(
             'bar',
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddConsoleLog).not.toBeCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].extraData?.foo).toBe(
             'bar',
           );
@@ -877,9 +1076,9 @@ function runExceptionsManagerTests() {
     });
   });
 }
-const linesByFile = new Map();
+const linesByFile = new Map<string, $ReadOnlyArray<string>>();
 
-function getLineFromFrame({lineNumber /* 1-based */, file}) {
+function getLineFromFrame({lineNumber /* 1-based */, file}: $FlowFixMe) {
   if (file == null) {
     return null;
   }
@@ -893,11 +1092,11 @@ function getLineFromFrame({lineNumber /* 1-based */, file}) {
   return (lines[lineNumber - 1] || '').trim();
 }
 
-function getFirstFrameInThisFile(stack) {
+function getFirstFrameInThisFile(stack: $FlowFixMe) {
   return stack.find(({file}) => file.endsWith(path.basename(module.filename)));
 }
 
 // Works around a parseErrorStack bug involving `new X` stack frames.
-function cleanFileName(file) {
+function cleanFileName(file: string) {
   return file.replace(/^.+? \((?=\/)/, '');
 }

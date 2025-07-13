@@ -111,3 +111,4 @@ export interface UIManagerStatic {
 
 export const UIManager: UIManagerStatic;
 export type UIManager = UIManagerStatic;
+export default UIManager;

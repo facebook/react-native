@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -19,4 +20,5 @@ const MessageQueueTestModule = {
   testHook2: function () {},
 };
 
+// eslint-disable-next-line @react-native/monorepo/no-commonjs-exports
 module.exports = MessageQueueTestModule;

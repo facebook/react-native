@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -21,7 +20,7 @@ jest.mock('../../../Core/Devtools/symbolicateStackTrace');
 const symbolicateStackTrace: JestMockFn<
   $ReadOnlyArray<Array<StackFrame>>,
   Promise<SymbolicatedStackTrace>,
-> = (require('../../../Core/Devtools/symbolicateStackTrace'): any);
+> = (require('../../../Core/Devtools/symbolicateStackTrace').default: any);
 
 const createStack = (methodNames: Array<string>) =>
   methodNames.map((methodName): StackFrame => ({

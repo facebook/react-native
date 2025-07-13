@@ -7,10 +7,14 @@
 
 #include "JSIndexedRAMBundle.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <glog/logging.h>
 #include <fstream>
-#include <memory>
 #include <sstream>
+
+#include <folly/lang/Bits.h>
+#include <glog/logging.h>
 
 namespace facebook::react {
 
@@ -24,8 +28,9 @@ JSIndexedRAMBundle::buildFactory() {
 JSIndexedRAMBundle::JSIndexedRAMBundle(const char* sourcePath) {
   m_bundle = std::make_unique<std::ifstream>(sourcePath, std::ifstream::binary);
   if (!m_bundle) {
-    throw std::ios_base::failure(folly::to<std::string>(
-        "Bundle ", sourcePath, "cannot be opened: ", m_bundle->rdstate()));
+    throw std::ios_base::failure(
+        std::string("Bundle ") + sourcePath +
+        "cannot be opened: " + std::to_string(m_bundle->rdstate()));
   }
   init();
 }
@@ -39,8 +44,9 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(
   tmpStream->write(script->c_str(), script->size());
   m_bundle = std::move(tmpStream);
   if (!m_bundle) {
-    throw std::ios_base::failure(folly::to<std::string>(
-        "Bundle from string cannot be opened: ", m_bundle->rdstate()));
+    throw std::ios_base::failure(
+        "Bundle from string cannot be opened: " +
+        std::to_string(m_bundle->rdstate()));
   }
   init();
 }
@@ -73,7 +79,7 @@ void JSIndexedRAMBundle::init() {
 JSIndexedRAMBundle::Module JSIndexedRAMBundle::getModule(
     uint32_t moduleId) const {
   Module ret;
-  ret.name = folly::to<std::string>(moduleId, ".js");
+  ret.name = std::to_string(moduleId) + ".js";
   ret.code = getModuleCode(moduleId);
   return ret;
 }
@@ -92,7 +98,7 @@ std::string JSIndexedRAMBundle::getModuleCode(const uint32_t id) const {
       moduleData ? folly::Endian::little(moduleData->length) : 0;
   if (length == 0) {
     throw std::ios_base::failure(
-        folly::to<std::string>("Error loading module", id, "from RAM Bundle"));
+        "Error loading module" + std::to_string(id) + "from RAM Bundle");
   }
 
   std::string ret(length - 1, '\0');
@@ -109,8 +115,8 @@ void JSIndexedRAMBundle::readBundle(char* buffer, const std::streamsize bytes)
     if (m_bundle->rdstate() & std::ios::eofbit) {
       throw std::ios_base::failure("Unexpected end of RAM Bundle file");
     }
-    throw std::ios_base::failure(folly::to<std::string>(
-        "Error reading RAM Bundle: ", m_bundle->rdstate()));
+    throw std::ios_base::failure(
+        "Error reading RAM Bundle: " + std::to_string(m_bundle->rdstate()));
   }
 }
 
@@ -119,10 +125,12 @@ void JSIndexedRAMBundle::readBundle(
     const std::streamsize bytes,
     const std::ifstream::pos_type position) const {
   if (!m_bundle->seekg(position)) {
-    throw std::ios_base::failure(folly::to<std::string>(
-        "Error reading RAM Bundle: ", m_bundle->rdstate()));
+    throw std::ios_base::failure(
+        "Error reading RAM Bundle: " + std::to_string(m_bundle->rdstate()));
   }
   readBundle(buffer, bytes);
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

@@ -612,6 +612,225 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
 }"
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'ObjectStruct': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'c',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'NullableTypeAnnotation',
+                'typeAnnotation': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [
+          {
+            'name': 'onEvent1',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent2',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent3',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent4',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent5',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'ObjectStruct'
+              }
+            }
+          },
+          {
+            'name': 'onEvent6',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'ObjectStruct'
+                }
+              }
+            }
+          },
+          {
+            'name': 'onEvent7',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
+          }
+        ],
+        'methods': []
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getInt',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'Int32TypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'Int32TypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getFloat',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'FloatTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'FloatTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getUnsafeObject',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'o',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 1`] = `
 "{
   'modules': {
@@ -1958,6 +2177,108 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
                 ]
               },
               'params': []
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OPAQUE_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'createTask',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'callback',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'FunctionTypeAnnotation',
+                    'returnTypeAnnotation': {
+                      'type': 'VoidTypeAnnotation'
+                    },
+                    'params': []
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'cancelTask',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'task',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'GenericObjectTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'setTimeout',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'callback',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'FunctionTypeAnnotation',
+                    'returnTypeAnnotation': {
+                      'type': 'VoidTypeAnnotation'
+                    },
+                    'params': []
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'clearTimeout',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'timeoutID',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
             }
           }
         ]

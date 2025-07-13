@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.CompoundButton
 import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.PixelUtil
@@ -95,12 +94,6 @@ internal class ReactSwitchManager :
     setValueInternal(view, value)
   }
 
-  override fun receiveCommand(view: ReactSwitch, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "setNativeValue" -> setValueInternal(view, args?.getBoolean(0) ?: false)
-    }
-  }
-
   override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactSwitch) {
     view.setOnCheckedChangeListener(ON_CHECKED_CHANGE_LISTENER)
   }
@@ -138,7 +131,7 @@ internal class ReactSwitchManager :
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "AndroidSwitch"
+    const val REACT_CLASS: String = "AndroidSwitch"
 
     private val ON_CHECKED_CHANGE_LISTENER =
         CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->

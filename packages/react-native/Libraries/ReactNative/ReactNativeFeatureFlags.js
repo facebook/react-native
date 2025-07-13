@@ -8,7 +8,7 @@
  * @format
  */
 
-export type FeatureFlags = {|
+export type FeatureFlags = {
   /**
    * Function used to enable / disable W3C pointer event emitting in React Native.
    * If enabled you must also flip the equivalent native flags on each platform:
@@ -21,11 +21,11 @@ export type FeatureFlags = {|
    * for its hover callbacks
    */
   shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
-|};
+};
 
 const ReactNativeFeatureFlags: FeatureFlags = {
   shouldEmitW3CPointerEvents: () => false,
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
 };
 
-module.exports = ReactNativeFeatureFlags;
+export default ReactNativeFeatureFlags;

@@ -148,6 +148,10 @@ function toJavaType(
           case 'Int32TypeAnnotation': {
             return 'Integer';
           }
+          case 'MixedTypeAnnotation': {
+            importDynamic();
+            return 'Dynamic';
+          }
 
           /**
            * Enums
@@ -214,7 +218,7 @@ function toJavaType(
           default: {
             (elementType.type: empty);
             throw new Error(
-              `Unrecognized PojoTypeAnnotation Array element type annotation '${typeAnnotation.type}'`,
+              `Unrecognized PojoTypeAnnotation Array element type annotation '${elementType.type}'`,
             );
           }
         }

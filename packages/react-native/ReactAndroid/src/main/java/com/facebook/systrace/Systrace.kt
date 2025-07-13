@@ -16,24 +16,20 @@ import kotlin.text.StringBuilder
  * internal version of this file has not been opensourced yet.
  */
 @Suppress("UNUSED_PARAMETER")
-public object Systrace {
+internal object Systrace {
 
-  public const val TRACE_TAG_REACT_JAVA_BRIDGE: Long = 0L
-  public const val TRACE_TAG_REACT_APPS: Long = 0L
-  public const val TRACE_TAG_REACT_FRESCO: Long = 0L
-  public const val TRACE_TAG_REACT_VIEW: Long = 0L
-  public const val TRACE_TAG_REACT_JS_VM_CALLS: Long = 0L
+  const val TRACE_TAG_REACT: Long = 0L
 
-  @JvmStatic public fun registerListener(listener: TraceListener?): Unit = Unit
+  @JvmStatic fun registerListener(listener: TraceListener?): Unit = Unit
 
-  @JvmStatic public fun unregisterListener(listener: TraceListener?): Unit = Unit
+  @JvmStatic fun unregisterListener(listener: TraceListener?): Unit = Unit
 
-  @JvmStatic public fun isTracing(tag: Long): Boolean = false
+  @JvmStatic fun isTracing(tag: Long): Boolean = false
 
-  @JvmStatic public fun traceInstant(tag: Long, title: String?, scope: EventScope?): Unit = Unit
+  @JvmStatic fun traceInstant(tag: Long, title: String?, scope: EventScope?): Unit = Unit
 
   @JvmStatic
-  public fun traceSection(tag: Long, sectionName: String, block: Runnable) {
+  fun traceSection(tag: Long, sectionName: String, block: Runnable) {
     beginSection(tag, sectionName)
     try {
       block.run()
@@ -43,12 +39,12 @@ public object Systrace {
   }
 
   @JvmStatic
-  public fun beginSection(tag: Long, sectionName: String) {
+  fun beginSection(tag: Long, sectionName: String) {
     Trace.beginSection(sectionName)
   }
 
   @JvmStatic
-  public fun beginSection(tag: Long, sectionName: String, args: Array<String>, argsLength: Int) {
+  fun beginSection(tag: Long, sectionName: String, args: Array<String>, argsLength: Int) {
     Trace.beginSection(sectionName + "|" + convertArgsToText(args, argsLength))
   }
 
@@ -70,48 +66,48 @@ public object Systrace {
   }
 
   @JvmStatic
-  public fun endSection(tag: Long) {
+  fun endSection(tag: Long) {
     Trace.endSection()
   }
 
   @JvmStatic
-  public fun beginAsyncSection(tag: Long, sectionName: String, cookie: Int) {
+  fun beginAsyncSection(tag: Long, sectionName: String, cookie: Int) {
     Trace.beginAsyncSection(sectionName, cookie)
   }
 
   @JvmStatic
-  public fun beginAsyncSection(tag: Long, sectionName: String, cookie: Int, startNanos: Long) {
+  fun beginAsyncSection(tag: Long, sectionName: String, cookie: Int, startNanos: Long) {
     beginAsyncSection(tag, sectionName, cookie)
   }
 
   @JvmStatic
-  public fun endAsyncSection(tag: Long, sectionName: String, cookie: Int) {
+  fun endAsyncSection(tag: Long, sectionName: String, cookie: Int) {
     Trace.endAsyncSection(sectionName, cookie)
   }
 
   @JvmStatic
-  public fun endAsyncSection(tag: Long, sectionName: String, cookie: Int, endNanos: Long) {
+  fun endAsyncSection(tag: Long, sectionName: String, cookie: Int, endNanos: Long) {
     endAsyncSection(tag, sectionName, cookie)
   }
 
   @JvmStatic
-  public fun traceCounter(tag: Long, counterName: String, counterValue: Int) {
+  fun traceCounter(tag: Long, counterName: String, counterValue: Int) {
     Trace.setCounter(counterName, counterValue)
   }
 
   @JvmStatic
-  public fun startAsyncFlow(tag: Long, sectionName: String, cookie: Int) {
+  fun startAsyncFlow(tag: Long, sectionName: String, cookie: Int) {
     beginAsyncSection(tag, sectionName, cookie)
   }
 
-  @JvmStatic public fun stepAsyncFlow(tag: Long, sectionName: String, cookie: Int): Unit = Unit
+  @JvmStatic fun stepAsyncFlow(tag: Long, sectionName: String, cookie: Int): Unit = Unit
 
   @JvmStatic
-  public fun endAsyncFlow(tag: Long, sectionName: String, cookie: Int) {
+  fun endAsyncFlow(tag: Long, sectionName: String, cookie: Int) {
     endAsyncSection(tag, sectionName, cookie)
   }
 
-  public enum class EventScope(public val code: Char) {
+  enum class EventScope(val code: Char) {
     THREAD('t'),
     PROCESS('p'),
     GLOBAL('g')

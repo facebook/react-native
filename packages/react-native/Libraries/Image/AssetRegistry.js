@@ -8,6 +8,7 @@
  * @format
  */
 
-'use strict';
-
-module.exports = require('@react-native/assets-registry/registry');
+export {
+  registerAsset,
+  getAssetByID,
+} from '@react-native/assets-registry/registry';

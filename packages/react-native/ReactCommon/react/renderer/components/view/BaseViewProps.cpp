@@ -10,6 +10,8 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/BoxShadowPropsConversions.h>
+#include <react/renderer/components/view/FilterPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/primitives.h>
 #include <react/renderer/components/view/propsConversions.h>
@@ -274,7 +276,7 @@ BaseViewProps::BaseViewProps(
               : convertRawProp(
                     context,
                     rawProps,
-                    "shouldRasterize",
+                    "shouldRasterizeIOS",
                     sourceProps.shouldRasterize,
                     {})),
       zIndex(
@@ -405,7 +407,9 @@ void BaseViewProps::setProp(
     VIEW_EVENT_CASE(PointerLeave);
     VIEW_EVENT_CASE(PointerLeaveCapture);
     VIEW_EVENT_CASE(PointerOver);
+    VIEW_EVENT_CASE(PointerOverCapture);
     VIEW_EVENT_CASE(PointerOut);
+    VIEW_EVENT_CASE(PointerOutCapture);
     VIEW_EVENT_CASE(MoveShouldSetResponder);
     VIEW_EVENT_CASE(MoveShouldSetResponderCapture);
     VIEW_EVENT_CASE(StartShouldSetResponder);
@@ -598,6 +602,12 @@ SharedDebugStringConvertibleList BaseViewProps::getDebugProps() const {
               defaultBaseViewProps.backgroundColor),
           debugStringConvertibleItem(
               "zIndex", zIndex, defaultBaseViewProps.zIndex.value_or(0)),
+          debugStringConvertibleItem(
+              "pointerEvents",
+              pointerEvents,
+              defaultBaseViewProps.pointerEvents),
+          debugStringConvertibleItem(
+              "transform", transform, defaultBaseViewProps.transform),
       };
 }
 #endif

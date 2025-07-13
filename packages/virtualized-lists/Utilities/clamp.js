@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -20,4 +20,4 @@ function clamp(min: number, value: number, max: number): number {
   return value;
 }
 
-module.exports = clamp;
+export default clamp;

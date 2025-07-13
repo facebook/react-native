@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -130,4 +130,4 @@ const PooledClass = {
   fourArgumentPooler: (fourArgumentPooler: Pooler),
 };
 
-module.exports = PooledClass;
+export default PooledClass;

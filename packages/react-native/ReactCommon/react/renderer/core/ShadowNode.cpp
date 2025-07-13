@@ -35,7 +35,7 @@ thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
 
 ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
-      std::make_shared<ShadowNode::ListOfShared>();
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   return emptySharedShadowNodeSharedList;
 }
 
@@ -50,7 +50,7 @@ ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
 Props::Shared ShadowNode::propsForClonedShadowNode(
     const ShadowNode& sourceShadowNode,
     const Props::Shared& props) {
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
   bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
   if (!hasBeenMounted && sourceNodeHasRawProps && props) {
@@ -96,6 +96,8 @@ ShadowNode::ShadowNode(
     child->family_->setParent(family_);
   }
 
+  updateTraitsIfNeccessary();
+
   // The first node of the family gets its state committed automatically.
   family_->setMostRecentState(state_);
 }
@@ -112,7 +114,9 @@ ShadowNode::ShadowNode(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       state_(
           fragment.state ? fragment.state
-                         : sourceShadowNode.getMostRecentState()),
+                         : (ReactNativeFeatureFlags::useShadowNodeStateOnClone()
+                                ? sourceShadowNode.state_
+                                : sourceShadowNode.getMostRecentState())),
       orderIndex_(sourceShadowNode.orderIndex_),
       family_(sourceShadowNode.family_),
       traits_(sourceShadowNode.traits_) {
@@ -128,10 +132,11 @@ ShadowNode::ShadowNode(
     for (const auto& child : *children_) {
       child->family_->setParent(family_);
     }
+    updateTraitsIfNeccessary();
   }
 }
 
-ShadowNode::Unshared ShadowNode::clone(
+std::shared_ptr<ShadowNode> ShadowNode::clone(
     const ShadowNodeFragment& fragment) const {
   const auto& family = *family_;
   const auto& componentDescriptor = family.componentDescriptor_;
@@ -172,7 +177,8 @@ ComponentHandle ShadowNode::getComponentHandle() const {
   return family_->getComponentHandle();
 }
 
-const ShadowNode::ListOfShared& ShadowNode::getChildren() const {
+const std::vector<std::shared_ptr<const ShadowNode>>& ShadowNode::getChildren()
+    const {
   return *children_;
 }
 
@@ -189,12 +195,7 @@ const SharedEventEmitter& ShadowNode::getEventEmitter() const {
 }
 
 jsi::Value ShadowNode::getInstanceHandle(jsi::Runtime& runtime) const {
-  auto instanceHandle = family_->instanceHandle_;
-  if (instanceHandle == nullptr) {
-    return jsi::Value::null();
-  }
-
-  return instanceHandle->getInstanceHandle(runtime);
+  return family_->getInstanceHandle(runtime);
 }
 
 Tag ShadowNode::getTag() const {
@@ -237,26 +238,29 @@ void ShadowNode::sealRecursive() const {
 
 #pragma mark - Mutating Methods
 
-void ShadowNode::appendChild(const ShadowNode::Shared& child) {
+void ShadowNode::appendChild(const std::shared_ptr<const ShadowNode>& child) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
-  auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
+  auto& children =
+      const_cast<std::vector<std::shared_ptr<const ShadowNode>>&>(*children_);
   children.push_back(child);
 
   child->family_->setParent(family_);
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::replaceChild(
     const ShadowNode& oldChild,
-    const ShadowNode::Shared& newChild,
+    const std::shared_ptr<const ShadowNode>& newChild,
     size_t suggestedIndex) {
   ensureUnsealed();
 
   cloneChildrenIfShared();
   newChild->family_->setParent(family_);
 
-  auto& children = const_cast<ShadowNode::ListOfShared&>(*children_);
+  auto& children =
+      const_cast<std::vector<std::shared_ptr<const ShadowNode>>&>(*children_);
   auto size = children.size();
 
   if (suggestedIndex != std::numeric_limits<size_t>::max() &&
@@ -277,6 +281,7 @@ void ShadowNode::replaceChild(
   }
 
   react_native_assert(false && "Child to replace was not found.");
+  updateTraitsIfNeccessary();
 }
 
 void ShadowNode::cloneChildrenIfShared() {
@@ -285,7 +290,27 @@ void ShadowNode::cloneChildrenIfShared() {
   }
 
   traits_.unset(ShadowNodeTraits::Trait::ChildrenAreShared);
-  children_ = std::make_shared<ShadowNode::ListOfShared>(*children_);
+  children_ = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+      *children_);
+}
+
+void ShadowNode::updateTraitsIfNeccessary() {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    if (traits_.check(ShadowNodeTraits::Trait::Unstable_uncullableView)) {
+      return;
+    }
+
+    for (const auto& child : *children_) {
+      if (child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableView) ||
+          child->getTraits().check(
+              ShadowNodeTraits::Trait::Unstable_uncullableTrace)) {
+        traits_.set(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+        return;
+      }
+    }
+    traits_.unset(ShadowNodeTraits::Trait::Unstable_uncullableTrace);
+  }
 }
 
 void ShadowNode::setMounted(bool mounted) const {
@@ -308,22 +333,29 @@ void ShadowNode::setRuntimeShadowNodeReference(
   runtimeShadowNodeReference_ = runtimeShadowNodeReference;
 }
 
-void ShadowNode::transferRuntimeShadowNodeReference(
-    const Shared& destinationShadowNode) const {
-  destinationShadowNode->runtimeShadowNodeReference_ =
-      runtimeShadowNodeReference_;
-
+void ShadowNode::updateRuntimeShadowNodeReference(
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode) const {
   if (auto reference = runtimeShadowNodeReference_.lock()) {
     reference->shadowNode = destinationShadowNode;
   }
 }
 
 void ShadowNode::transferRuntimeShadowNodeReference(
-    const Shared& destinationShadowNode,
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (!ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    updateRuntimeShadowNodeReference(destinationShadowNode);
+  }
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const std::shared_ptr<const ShadowNode>& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
-  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
-      fragment.runtimeShadowNodeReference &&
-      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+  if ((ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit() ||
+       useRuntimeShadowNodeReferenceUpdateOnThread) &&
+      fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }
 }
@@ -332,14 +364,18 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
   return *family_;
 }
 
-ShadowNode::Unshared ShadowNode::cloneTree(
+ShadowNodeFamily::Shared ShadowNode::getFamilyShared() const {
+  return family_;
+}
+
+std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
-    const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
-        callback) const {
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode)>& callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
-    return ShadowNode::Unshared{nullptr};
+    return std::shared_ptr<ShadowNode>{nullptr};
   }
 
   auto& parent = ancestors.back();
@@ -363,10 +399,87 @@ ShadowNode::Unshared ShadowNode::cloneTree(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone(
-        {.children = std::make_shared<ShadowNode::ListOfShared>(children)});
+        {.children =
+             std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                 children)});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
+}
+
+namespace {
+
+std::shared_ptr<ShadowNode> cloneMultipleRecursive(
+    const ShadowNode& shadowNode,
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+    const std::unordered_map<const ShadowNodeFamily*, int>& childrenCount,
+    const std::function<std::shared_ptr<
+        ShadowNode>(const ShadowNode&, const ShadowNodeFragment&)>& callback) {
+  const auto* family = &shadowNode.getFamily();
+  auto& children = shadowNode.getChildren();
+  std::shared_ptr<std::vector<std::shared_ptr<const ShadowNode>>> newChildren;
+  auto count = childrenCount.at(family);
+
+  for (int i = 0; count > 0 && i < children.size(); i++) {
+    const auto childFamily = &children[i]->getFamily();
+    if (childrenCount.contains(childFamily)) {
+      count--;
+      if (!newChildren) {
+        newChildren =
+            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                children);
+      }
+      (*newChildren)[i] = cloneMultipleRecursive(
+          *children[i], familiesToUpdate, childrenCount, callback);
+    }
+  }
+
+  ShadowNodeFragment fragment{.children = newChildren};
+  if (familiesToUpdate.contains(family)) {
+    return callback(shadowNode, fragment);
+  }
+  return shadowNode.clone(fragment);
+}
+
+} // namespace
+
+std::shared_ptr<ShadowNode> ShadowNode::cloneMultiple(
+    const std::unordered_set<const ShadowNodeFamily*>& familiesToUpdate,
+    const std::function<std::shared_ptr<ShadowNode>(
+        const ShadowNode& oldShadowNode,
+        const ShadowNodeFragment& fragment)>& callback) const {
+  std::unordered_map<const ShadowNodeFamily*, int> childrenCount;
+
+  for (const auto& family : familiesToUpdate) {
+    if (childrenCount.contains(family)) {
+      continue;
+    }
+
+    childrenCount[family] = 0;
+
+    auto ancestor = family->parent_.lock();
+    while ((ancestor != nullptr) && ancestor != family_) {
+      auto ancestorIt = childrenCount.find(ancestor.get());
+      if (ancestorIt != childrenCount.end()) {
+        ancestorIt->second++;
+        break;
+      }
+      childrenCount[ancestor.get()] = 1;
+
+      ancestor = ancestor->parent_.lock();
+    }
+
+    if (ancestor == family_) {
+      childrenCount[ancestor.get()]++;
+    }
+  }
+
+  if (childrenCount.empty()) {
+    return nullptr;
+  }
+
+  return cloneMultipleRecursive(
+      *this, familiesToUpdate, childrenCount, callback);
 }
 
 #pragma mark - DebugStringConvertible
@@ -377,8 +490,8 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + folly::to<std::string>(revision_) + "/sr" +
-      folly::to<std::string>(state_ ? state_->getRevision() : 0) +
+  return "r" + std::to_string(revision_) + "/sr" +
+      std::to_string(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "") +
       (getProps()->nativeId.empty() ? "" : "/id=" + getProps()->nativeId);
 }
@@ -400,7 +513,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
   return props_->getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("tag", folly::to<std::string>(getTag()))};
+          debugStringConvertibleItem("tag", std::to_string(getTag()))};
 }
 #endif
 

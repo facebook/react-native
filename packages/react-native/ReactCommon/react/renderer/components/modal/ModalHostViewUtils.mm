@@ -11,7 +11,7 @@
 
 namespace facebook::react {
 
-Size RCTModalHostViewScreenSize(void)
+Size ModalHostViewScreenSize(void)
 {
   CGSize screenSize = RCTScreenSize();
   return {screenSize.width, screenSize.height};

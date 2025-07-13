@@ -6,12 +6,14 @@
  */
 
 #include "LegacyViewManagerInteropComponentDescriptor.h"
+#include <React/RCTBridge+Private.h>
 #include <React/RCTBridge.h>
 #include <React/RCTBridgeModuleDecorator.h>
 #include <React/RCTBridgeProxy.h>
 #include <React/RCTComponentData.h>
 #include <React/RCTEventDispatcher.h>
 #include <React/RCTModuleData.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/utils/ContextContainer.h>
 #include <react/utils/ManagedObjectWrapper.h>
 #include "LegacyViewManagerInteropState.h"
@@ -81,13 +83,22 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
     return viewManager;
   }
 
-  // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
-  if (bridge != nil) {
-    return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
-  }
+  if (ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS()) {
+    NSArray<Class> *modulesClasses = RCTGetModuleClasses();
+    for (Class moduleClass in modulesClasses) {
+      if ([RCTBridgeModuleNameForClass(moduleClass) isEqualToString:RCTNSStringFromString(componentName)]) {
+        return moduleClass;
+      }
+    }
+  } else {
+    // If all the heuristics fail, let's try to retrieve the view manager from the bridge/bridgeProxy
+    if (bridge != nil) {
+      return [[bridge moduleForName:RCTNSStringFromString(componentName)] class];
+    }
 
-  if (bridgeProxy != nil) {
-    return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+    if (bridgeProxy != nil) {
+      return [[bridgeProxy moduleForName:RCTNSStringFromString(componentName) lazilyLoadIfNecessary:YES] class];
+    }
   }
 
   return nil;

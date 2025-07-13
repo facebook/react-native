@@ -10,16 +10,11 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <algorithm>
-#include <iostream>
 #include <memory>
-#include <random>
 
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/mounting/Differentiator.h>
 #include <react/renderer/mounting/stubs/stubs.h>
-
-#include <react/renderer/components/root/RootComponentDescriptor.h>
-#include <react/renderer/components/view/ViewComponentDescriptor.h>
 
 #include "Entropy.h"
 
@@ -32,13 +27,13 @@ static Tag generateReactTag() {
 
 class ShadowTreeEdge final {
  public:
-  ShadowNode::Shared shadowNode{nullptr};
-  ShadowNode::Shared parentShadowNode{nullptr};
+  std::shared_ptr<const ShadowNode> shadowNode{nullptr};
+  std::shared_ptr<const ShadowNode> parentShadowNode{nullptr};
   int index{0};
 };
 
 static bool traverseShadowTree(
-    const ShadowNode::Shared& parentShadowNode,
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
     const std::function<void(const ShadowTreeEdge& edge, bool& stop)>&
         callback) {
   auto index = int{0};
@@ -60,7 +55,8 @@ static bool traverseShadowTree(
   return false;
 }
 
-static int countShadowNodes(const ShadowNode::Shared& rootShadowNode) {
+static int countShadowNodes(
+    const std::shared_ptr<const ShadowNode>& rootShadowNode) {
   auto counter = int{0};
 
   traverseShadowTree(
@@ -71,7 +67,7 @@ static int countShadowNodes(const ShadowNode::Shared& rootShadowNode) {
 }
 
 static ShadowTreeEdge findShadowNodeWithIndex(
-    const ShadowNode::Shared& rootNode,
+    const std::shared_ptr<const ShadowNode>& rootNode,
     int index) {
   auto counter = int{0};
   auto result = ShadowTreeEdge{};
@@ -89,7 +85,7 @@ static ShadowTreeEdge findShadowNodeWithIndex(
 
 static ShadowTreeEdge findRandomShadowNode(
     const Entropy& entropy,
-    const ShadowNode::Shared& rootShadowNode) {
+    const std::shared_ptr<const ShadowNode>& rootShadowNode) {
   auto count = countShadowNodes(rootShadowNode);
   return findShadowNodeWithIndex(
       rootShadowNode,
@@ -106,7 +102,7 @@ static ShadowNode::ListOfShared cloneSharedShadowNodeList(
   return result;
 }
 
-static inline ShadowNode::Unshared messWithChildren(
+static inline std::shared_ptr<ShadowNode> messWithChildren(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   auto children = shadowNode.getChildren();
@@ -117,7 +113,7 @@ static inline ShadowNode::Unshared messWithChildren(
        std::make_shared<const ShadowNode::ListOfShared>(children)});
 }
 
-static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
+static inline std::shared_ptr<ShadowNode> messWithLayoutableOnlyFlag(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   auto oldProps = shadowNode.getProps();
@@ -174,7 +170,7 @@ static inline ShadowNode::Unshared messWithLayoutableOnlyFlag(
 
 // Similar to `messWithLayoutableOnlyFlag` but has a 50/50 chance of flattening
 // (or unflattening) a node's children.
-static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
+static inline std::shared_ptr<ShadowNode> messWithNodeFlattenednessFlags(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   ContextContainer contextContainer{};
@@ -215,7 +211,7 @@ static inline ShadowNode::Unshared messWithNodeFlattenednessFlags(
   return shadowNode.clone({newProps});
 }
 
-static inline ShadowNode::Unshared messWithYogaStyles(
+static inline std::shared_ptr<ShadowNode> messWithYogaStyles(
     const Entropy& entropy,
     const ShadowNode& shadowNode) {
   folly::dynamic dynamic = folly::dynamic::object();
@@ -253,8 +249,9 @@ static inline ShadowNode::Unshared messWithYogaStyles(
   return shadowNode.clone({newProps});
 }
 
-using ShadowNodeAlteration = std::function<
-    ShadowNode::Unshared(const Entropy& entropy, const ShadowNode& shadowNode)>;
+using ShadowNodeAlteration = std::function<std::shared_ptr<ShadowNode>(
+    const Entropy& entropy,
+    const ShadowNode& shadowNode)>;
 
 static inline void alterShadowTree(
     const Entropy& entropy,
@@ -286,7 +283,7 @@ static SharedViewProps generateDefaultProps(
       componentDescriptor.cloneProps(parserContext, nullptr, RawProps{}));
 }
 
-static inline ShadowNode::Shared generateShadowNodeTree(
+static inline std::shared_ptr<const ShadowNode> generateShadowNodeTree(
     const Entropy& entropy,
     const ComponentDescriptor& componentDescriptor,
     int size,
@@ -313,7 +310,7 @@ static inline ShadowNode::Shared generateShadowNodeTree(
   return componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           generateDefaultProps(componentDescriptor),
-          std::make_shared<ShadowNode::ListOfShared>(children)},
+          std::make_shared<const ShadowNode::ListOfShared>(children)},
       family);
 }
 

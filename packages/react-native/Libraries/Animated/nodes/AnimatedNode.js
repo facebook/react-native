@@ -28,7 +28,7 @@ let _assertNativeAnimatedModule: ?() => void = () => {
 };
 
 export default class AnimatedNode {
-  #listeners: Map<string, ValueListenerCallback> = new Map();
+  #listeners: Map<string, ValueListenerCallback>;
 
   _platformConfig: ?PlatformConfig = undefined;
 
@@ -38,6 +38,7 @@ export default class AnimatedNode {
       ...
     }>,
   ) {
+    this.#listeners = new Map();
     if (__DEV__) {
       this.__debugID = config?.debugID;
     }
@@ -111,8 +112,8 @@ export default class AnimatedNode {
     return this.#listeners.size > 0;
   }
 
-  __onAnimatedValueUpdateReceived(value: number): void {
-    this.__callListeners(value);
+  __onAnimatedValueUpdateReceived(value: number, offset: number): void {
+    this.__callListeners(value + offset);
   }
 
   __callListeners(value: number): void {

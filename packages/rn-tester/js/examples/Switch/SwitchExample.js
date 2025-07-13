@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -14,12 +14,12 @@ import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Platform, Switch, View} from 'react-native';
 
-type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
+type OnOffIndicatorProps = $ReadOnly<{on: boolean, testID: string}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
   return <RNTesterText testID={testID}>{on ? 'On' : 'Off'}</RNTesterText>;
 }
 
-type ExampleRowProps = $ReadOnly<{|children: React.Node|}>;
+type ExampleRowProps = $ReadOnly<{children: React.Node}>;
 function ExampleRow({children}: ExampleRowProps) {
   return (
     <View
@@ -34,15 +34,12 @@ function ExampleRow({children}: ExampleRowProps) {
   );
 }
 
-type SimpleSwitchExampleState = $ReadOnly<{|
+type SimpleSwitchExampleState = $ReadOnly<{
   trueSwitchIsOn: boolean,
   falseSwitchIsOn: boolean,
-|}>;
+}>;
 
-class BasicSwitchExample extends React.Component<
-  {||},
-  SimpleSwitchExampleState,
-> {
+class BasicSwitchExample extends React.Component<{}, SimpleSwitchExampleState> {
   state: SimpleSwitchExampleState = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
@@ -83,7 +80,7 @@ class BasicSwitchExample extends React.Component<
 }
 
 class DisabledSwitchExample extends React.Component<
-  {||},
+  {},
   SimpleSwitchExampleState,
 > {
   state: SimpleSwitchExampleState = {
@@ -324,6 +321,8 @@ exports.examples = [
 ];
 
 if (Platform.OS === 'ios') {
+  /* $FlowFixMe[incompatible-call] error found during natural inference roll-
+   * out. See https://fburl.com/workplace/tc9m3tcf */
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
     render(): React.MixedElement {

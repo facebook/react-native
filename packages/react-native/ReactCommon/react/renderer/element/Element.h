@@ -124,7 +124,8 @@ class Element final {
       std::function<void(const ConcreteUnsharedShadowNode& shadowNode)>
           callback) {
     fragment_.referenceCallback =
-        [callback = std::move(callback)](const ShadowNode::Shared& shadowNode) {
+        [callback = std::move(callback)](
+            const std::shared_ptr<const ShadowNode>& shadowNode) {
           callback(std::const_pointer_cast<ConcreteShadowNode>(
               std::static_pointer_cast<const ConcreteShadowNode>(shadowNode)));
         };
@@ -136,10 +137,11 @@ class Element final {
    * that is being constructed.
    */
   Element& reference(ConcreteUnsharedShadowNode& outShadowNode) {
-    fragment_.referenceCallback = [&](const ShadowNode::Shared& shadowNode) {
-      outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
-          std::static_pointer_cast<const ConcreteShadowNode>(shadowNode));
-    };
+    fragment_.referenceCallback =
+        [&](const std::shared_ptr<const ShadowNode>& shadowNode) {
+          outShadowNode = std::const_pointer_cast<ConcreteShadowNode>(
+              std::static_pointer_cast<const ConcreteShadowNode>(shadowNode));
+        };
     return *this;
   }
 

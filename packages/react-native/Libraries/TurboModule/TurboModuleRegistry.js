@@ -12,7 +12,7 @@ import type {TurboModule} from './RCTExport';
 
 import invariant from 'invariant';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules').default;
 
 const turboModuleProxy = global.__turboModuleProxy;
 

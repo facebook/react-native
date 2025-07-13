@@ -77,6 +77,16 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
       objects.property(String::class.java).convention("index.android.bundle")
 
   /**
+   * Whether the Bundle Asset should be compressed when packaged into a `.apk`, or not. Disabling
+   * compression for the `.bundle` allows it to be directly memory-mapped to RAM, hence improving
+   * startup time - at the cost of a larger resulting `.apk` size.
+   *
+   * Default: false
+   */
+  val enableBundleCompression: Property<Boolean> =
+      objects.property(Boolean::class.java).convention(false)
+
+  /**
    * Toggles the .so Cleanup step. If enabled, we will clean up all the unnecessary files before the
    * bundle task. If disabled, the developers will have to manually cleanup the files. Default: true
    */

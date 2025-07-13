@@ -63,7 +63,7 @@ public object PixelUtil {
     return value / DisplayMetricsHolder.getWindowDisplayMetrics().density
   }
 
-  /** @return [float] that represents the density of the display metrics for device screen. */
+  /** @return [Float] that represents the density of the display metrics for device screen. */
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
       DisplayMetricsHolder.getWindowDisplayMetrics().density

@@ -16,15 +16,15 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** [NativeModule] that allows Playing device sounds from JS. */
 @ReactModule(name = NativeSoundManagerSpec.NAME)
-public class SoundManagerModule(reactContext: ReactApplicationContext?) :
+internal class SoundManagerModule(reactContext: ReactApplicationContext?) :
     NativeSoundManagerSpec(reactContext) {
-  public override fun playTouchSound() {
+  override fun playTouchSound() {
     val audioManager =
-        getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        reactApplicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK)
   }
 
-  public companion object {
-    public const val NAME: String = NativeSoundManagerSpec.NAME
+  companion object {
+    const val NAME: String = NativeSoundManagerSpec.NAME
   }
 }

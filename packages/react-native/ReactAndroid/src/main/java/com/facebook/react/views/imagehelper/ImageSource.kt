@@ -44,7 +44,7 @@ constructor(
     }
 
     val that = other as ImageSource
-    return java.lang.Double.compare(that.size, size) == 0 &&
+    return that.size.compareTo(size) == 0 &&
         isResource == that.isResource &&
         uri == that.uri &&
         source == that.source &&
@@ -64,7 +64,7 @@ constructor(
 
   private fun computeLocalUri(context: Context): Uri {
     _isResource = true
-    return ResourceDrawableIdHelper.instance.getResourceDrawableUri(context, source)
+    return ResourceDrawableIdHelper.getResourceDrawableUri(context, source)
   }
 
   public companion object {

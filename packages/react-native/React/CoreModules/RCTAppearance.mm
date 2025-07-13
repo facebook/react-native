@@ -10,7 +10,6 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
-#import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -18,8 +17,6 @@ using namespace facebook::react;
 
 NSString *const RCTAppearanceColorSchemeLight = @"light";
 NSString *const RCTAppearanceColorSchemeDark = @"dark";
-
-static BOOL sIsAppearancePreferenceSet = NO;
 
 static BOOL sAppearancePreferenceEnabled = YES;
 void RCTEnableAppearancePreference(BOOL enabled)
@@ -63,11 +60,6 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
   if (!sAppearancePreferenceEnabled) {
     // Return the default if the app doesn't allow different color schemes.
     return RCTAppearanceColorSchemeLight;
-  }
-
-  if (appearances[@(traitCollection.userInterfaceStyle)]) {
-    sIsAppearancePreferenceSet = YES;
-    return appearances[@(traitCollection.userInterfaceStyle)];
   }
 
   if (!traitCollection) {
@@ -132,13 +124,6 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
-  if (!sIsAppearancePreferenceSet) {
-    __block UITraitCollection *traitCollection = nil;
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      traitCollection = RCTKeyWindow().traitCollection;
-    });
-    _currentColorScheme = RCTColorSchemePreference(traitCollection);
-  }
   return _currentColorScheme;
 }
 

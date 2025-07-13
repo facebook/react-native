@@ -8,11 +8,13 @@
 package com.facebook.react.uimanager
 
 import android.content.Context
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.style.BorderRadiusProp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadiusProp
 import com.facebook.react.uimanager.style.CornerRadii
 import org.assertj.core.api.Assertions.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -67,6 +69,11 @@ class BorderRadiusStyleTest {
     }
   }
 
+  @Before
+  fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
+  }
+
   @Test
   fun testCorrectPriorityRTL() {
     setContextLeftAndRightSwap(ctx, true)
@@ -88,13 +95,13 @@ class BorderRadiusStyleTest {
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
+                    BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
                     BorderRadiusProp.BORDER_END_END_RADIUS),
             ComputedBorderRadiusProp.COMPUTED_BORDER_BOTTOM_RIGHT_RADIUS to
                 arrayOf(
                     BorderRadiusProp.BORDER_RADIUS,
                     BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
-                    BorderRadiusProp.BORDER_BOTTOM_END_RADIUS,
+                    BorderRadiusProp.BORDER_BOTTOM_START_RADIUS,
                     BorderRadiusProp.BORDER_START_END_RADIUS),
         )
 

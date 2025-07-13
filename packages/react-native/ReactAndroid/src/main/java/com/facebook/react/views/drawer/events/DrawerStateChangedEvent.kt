@@ -12,33 +12,30 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
-public class DrawerStateChangedEvent : Event<DrawerStateChangedEvent> {
+internal class DrawerStateChangedEvent : Event<DrawerStateChangedEvent> {
 
   private val drawerState: Int
 
   @Deprecated(
       "Use constructor with surfaceId",
       ReplaceWith("DrawerStateChangedEvent(surfaceId, viewId, drawerState)"))
-  public constructor(
-      viewId: Int,
-      drawerState: Int
-  ) : this(ViewUtil.NO_SURFACE_ID, viewId, drawerState)
+  constructor(viewId: Int, drawerState: Int) : this(ViewUtil.NO_SURFACE_ID, viewId, drawerState)
 
-  public constructor(surfaceId: Int, viewId: Int, drawerState: Int) : super(surfaceId, viewId) {
+  constructor(surfaceId: Int, viewId: Int, drawerState: Int) : super(surfaceId, viewId) {
     this.drawerState = drawerState
   }
 
-  public fun getDrawerState(): Int = drawerState
+  fun getDrawerState(): Int = drawerState
 
-  override public fun getEventName(): String = EVENT_NAME
+  override fun getEventName(): String = EVENT_NAME
 
-  override protected fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     val eventData: WritableMap = Arguments.createMap()
     eventData.putInt("drawerState", getDrawerState())
     return eventData
   }
 
-  public companion object {
-    public const val EVENT_NAME: String = "topDrawerStateChanged"
+  companion object {
+    const val EVENT_NAME: String = "topDrawerStateChanged"
   }
 }

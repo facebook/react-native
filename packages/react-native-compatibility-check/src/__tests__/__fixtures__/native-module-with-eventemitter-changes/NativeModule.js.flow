@@ -1,0 +1,31 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {EventEmitter} from 'react-native/Libraries/Types/CodegenTypes';
+
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type ObjectStruct = {
+  a: number,
+  b: string,
+  c?: ?string,
+};
+
+export interface Spec extends TurboModule {
+  onPress: EventEmitter<string>;
+  onClick: EventEmitter<number>;
+  onChange: EventEmitter<ObjectStruct[]>;
+  onSubmit: EventEmitter<ObjectStruct>;
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeModuleTest',
+): Spec);

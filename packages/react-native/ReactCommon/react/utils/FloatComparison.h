@@ -7,11 +7,17 @@
 
 #pragma once
 
+#include <cmath>
+
 namespace facebook::react {
 
-inline bool floatEquality(float a, float b, float epsilon = 0.005f) {
+constexpr float kDefaultEpsilon = 0.005f;
+
+template <typename T>
+inline bool
+floatEquality(T a, T b, T epsilon = static_cast<T>(kDefaultEpsilon)) {
   return (std::isnan(a) && std::isnan(b)) ||
-      (!std::isnan(a) && !std::isnan(b) && fabs(a - b) < epsilon);
+      (!std::isnan(a) && !std::isnan(b) && std::abs(a - b) < epsilon);
 }
 
 } // namespace facebook::react

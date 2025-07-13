@@ -6,8 +6,8 @@
  */
 
 #import "RCTLegacyViewManagerInteropCoordinatorAdapter.h"
-#import <React/RCTFollyConvert.h>
 #import <React/UIView+React.h>
+#import <react/utils/FollyConvert.h>
 
 @implementation RCTLegacyViewManagerInteropCoordinatorAdapter {
   RCTLegacyViewManagerInteropCoordinator *_coordinator;
@@ -36,9 +36,9 @@
     _paperView = [_coordinator createPaperViewWithTag:_tag];
     __weak __typeof(self) weakSelf = self;
     [_coordinator addObserveForTag:_tag
-                        usingBlock:^(std::string eventName, folly::dynamic event) {
+                        usingBlock:^(std::string eventName, folly::dynamic &&event) {
                           if (weakSelf.eventInterceptor) {
-                            weakSelf.eventInterceptor(eventName, event);
+                            weakSelf.eventInterceptor(eventName, std::move(event));
                           }
                         }];
   }

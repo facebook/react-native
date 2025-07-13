@@ -10,10 +10,10 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTModalManager.h>
 #import <React/UIView+React.h>
+#import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
+#import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #import <react/renderer/components/modal/ModalHostViewState.h>
-#import <react/renderer/components/rncore/EventEmitters.h>
-#import <react/renderer/components/rncore/Props.h>
 
 #import "RCTConversions.h"
 
@@ -104,7 +104,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
   BOOL _isPresented;
-  UIView *_modalContentsSnapshot;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -125,6 +124,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
+    _viewController.modalInPresentation = YES;
   }
   return _viewController;
 }
@@ -141,7 +141,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
@@ -167,8 +166,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _isPresented = NO;
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
-    UIView *snapshot = _modalContentsSnapshot;
-
+    UIView *snapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
     if (_shouldPresent) {
       [self.viewController.view addSubview:snapshot];
     }
@@ -242,6 +240,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
+  const auto &oldViewProps = static_cast<const ModalHostViewProps &>(*_props);
   const auto &newProps = static_cast<const ModalHostViewProps &>(*props);
 
 #if !TARGET_OS_TV
@@ -253,6 +252,10 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   self.viewController.modalTransitionStyle = transitionStyle;
 
   self.viewController.modalPresentationStyle = presentationConfiguration(newProps);
+
+  if (oldViewProps.allowSwipeDismissal != newProps.allowSwipeDismissal) {
+    self.viewController.modalInPresentation = !newProps.allowSwipeDismissal;
+  }
 
   _shouldPresent = newProps.visible;
   [self ensurePresentedOnlyIfNeeded];
@@ -282,6 +285,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   auto eventEmitter = [self modalEventEmitter];
   if (eventEmitter) {
+    eventEmitter->onRequestClose({});
+  }
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  auto eventEmitter = [self modalEventEmitter];
+  const auto &props = static_cast<const ModalHostViewProps &>(*_props);
+
+  if (eventEmitter && props.allowSwipeDismissal) {
     eventEmitter->onRequestClose({});
   }
 }

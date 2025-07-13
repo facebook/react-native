@@ -38,7 +38,7 @@ function buildComponentSchema(
 
   const options = getOptions(optionsExpression);
   const events = getEvents(propProperties, types, parser);
-  const commands = getCommands(commandProperties, types);
+  const commands = getCommands(commandProperties, types, parser);
 
   return {
     filename: componentName,

@@ -7,13 +7,11 @@
 
 #include "MethodInvoker.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-#endif
-
 #include <glog/logging.h>
 
 #include <cxxreact/CxxNativeModule.h>
+#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 
 #include "JCallback.h"
@@ -21,6 +19,8 @@
 #include "ReadableNativeMap.h"
 #include "WritableNativeArray.h"
 #include "WritableNativeMap.h"
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 using namespace facebook::jni;
 
@@ -65,9 +65,9 @@ jint extractInteger(const folly::dynamic& value) {
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
   if (dbl != result) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "Tried to convert jint argument, but got a non-integral double: ",
-        dbl));
+    throw std::invalid_argument(
+        "Tried to convert jint argument, but got a non-integral double: " +
+        std::to_string(dbl));
   }
   return result;
 }
@@ -213,17 +213,14 @@ MethodCallResult MethodInvoker::invoke(
     std::weak_ptr<Instance>& instance,
     alias_ref<JBaseJavaModule::javaobject> module,
     const folly::dynamic& params) {
-#ifdef WITH_FBSYSTRACE
-  fbsystrace::FbSystraceSection s(
-      TRACE_TAG_REACT_CXX_BRIDGE,
+  TraceSection s(
       isSync_ ? "callJavaSyncHook" : "callJavaModuleMethod",
       "method",
       traceName_);
-#endif
-
   if (params.size() != jsArgCount_) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "expected ", jsArgCount_, " arguments, got ", params.size()));
+    throw std::invalid_argument(
+        "expected " + std::to_string(jsArgCount_) + " arguments, got " +
+        std::to_string(params.size()));
   }
 
   auto env = Environment::current();
@@ -314,3 +311,5 @@ MethodCallResult MethodInvoker::invoke(
 }
 
 } // namespace facebook::react
+
+#endif

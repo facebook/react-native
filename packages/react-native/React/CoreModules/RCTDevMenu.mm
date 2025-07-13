@@ -152,14 +152,6 @@ RCT_EXPORT_MODULE()
                                    [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
                                        toggleElementInspector];
                                  }];
-
-  // Reload in normal mode
-  [commands registerKeyCommandWithInput:@"n"
-                          modifierFlags:UIKeyModifierCommand
-                                 action:^(__unused UIKeyCommand *command) {
-                                   [(RCTDevSettings *)[weakSelf.moduleRegistry moduleForName:"DevSettings"]
-                                       setIsDebuggingRemotely:NO];
-                                 }];
 #endif
 }
 
@@ -456,12 +448,6 @@ RCT_EXPORT_METHOD(reload)
   RCTTriggerReloadCommandListeners(@"Unknown from JS");
 }
 
-RCT_EXPORT_METHOD(debugRemotely : (BOOL)enableDebug)
-{
-  WARN_DEPRECATED_DEV_MENU_EXPORT();
-  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isDebuggingRemotely = enableDebug;
-}
-
 RCT_EXPORT_METHOD(setProfilingEnabled : (BOOL)enabled)
 {
   WARN_DEPRECATED_DEV_MENU_EXPORT();
@@ -523,10 +509,6 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 - (void)addItem:(RCTDevMenu *)item
-{
-}
-
-- (void)debugRemotely:(BOOL)enableDebug
 {
 }
 

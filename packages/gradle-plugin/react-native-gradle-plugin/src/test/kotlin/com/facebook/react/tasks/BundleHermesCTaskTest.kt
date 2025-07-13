@@ -335,6 +335,7 @@ class BundleHermesCTaskTest {
     assertThat(hermesCommand)
         .containsExactly(
             customHermesc,
+            "-w",
             "-emit-binary",
             "-max-diagnostic-width=80",
             "-out",
@@ -362,6 +363,7 @@ class BundleHermesCTaskTest {
             "cmd",
             "/c",
             customHermesc,
+            "-w",
             "-emit-binary",
             "-max-diagnostic-width=80",
             "-out",

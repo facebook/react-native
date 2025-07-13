@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
@@ -18,6 +18,11 @@ import NativeDeviceInfo, {
   type DisplayMetricsAndroid,
 } from './NativeDeviceInfo';
 import invariant from 'invariant';
+
+export type {DimensionsPayload, DisplayMetrics, DisplayMetricsAndroid};
+
+/** @deprecated Use DisplayMetrics */
+export type ScaledSize = DisplayMetrics;
 
 const eventEmitter = new EventEmitter<{
   change: [DimensionsPayload],

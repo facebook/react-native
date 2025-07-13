@@ -8,8 +8,10 @@
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.JavaScriptModule
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableFabricRenderer
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabricInterop
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags.useFabricInterop
 
 /**
  * A utility class that takes care of returning [JavaScriptModule] which are used for the Fabric
@@ -19,17 +21,15 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabri
  * Currently we only support a `RCTEventEmitter` re-implementation, being `InteropEventEmitter` but
  * this class can support other re-implementation in the future.
  */
+@InteropLegacyArchitecture
 internal class InteropModuleRegistry {
-  private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
-  fun <T : JavaScriptModule?> shouldReturnInteropModule(requestedModule: Class<T>): Boolean {
-    return checkReactFeatureFlagsConditions() && supportedModules.containsKey(requestedModule)
-  }
+  private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
   fun <T : JavaScriptModule?> getInteropModule(requestedModule: Class<T>): T? {
     return if (checkReactFeatureFlagsConditions()) {
       @Suppress("UNCHECKED_CAST")
-      supportedModules[requestedModule] as? T?
+      supportedModules[requestedModule] as? T
     } else {
       null
     }
@@ -46,4 +46,10 @@ internal class InteropModuleRegistry {
 
   private fun checkReactFeatureFlagsConditions(): Boolean =
       enableFabricRenderer() && useFabricInterop()
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropModuleRegistry")
+    }
+  }
 }

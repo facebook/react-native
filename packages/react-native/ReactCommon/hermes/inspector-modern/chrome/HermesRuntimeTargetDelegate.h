@@ -54,6 +54,12 @@ class HermesRuntimeTargetDelegate : public RuntimeTargetDelegate {
       jsi::Runtime& runtime,
       size_t framesToSkip) override;
 
+  void enableSamplingProfiler() override;
+
+  void disableSamplingProfiler() override;
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() override;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether HERMES_ENABLE_DEBUGGER is defined. The net

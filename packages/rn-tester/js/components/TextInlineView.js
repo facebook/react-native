@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
 import RNTesterText from '../components/RNTesterText';
 import React from 'react';
+import {useState} from 'react';
 import {Image, TouchableHighlight, View} from 'react-native';
 
 function Basic(): React.Node {
@@ -105,116 +106,97 @@ function ClippedByText(): React.Node {
   );
 }
 
-type ChangeSizeState = {|
-  width: number,
-|};
-
-class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
-  state: ChangeSizeState = {
-    width: 50,
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <TouchableHighlight
-          onPress={() => {
-            this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}>
-          <RNTesterText style={{fontSize: 15}}>
-            Change Image Width (width={this.state.width})
-          </RNTesterText>
-        </TouchableHighlight>
-        <RNTesterText>
-          This is an
-          <Image
-            source={{
-              uri: 'https://picsum.photos/50',
-              width: this.state.width,
-              height: 50,
-            }}
-            style={{
-              width: this.state.width,
-              height: 50,
-            }}
-          />
-          inline image
+function ChangeImageSize(): React.Node {
+  const [width, setWidth] = useState(50);
+  return (
+    <View>
+      <TouchableHighlight
+        onPress={() => {
+          setWidth(width === 50 ? 100 : 50);
+        }}>
+        <RNTesterText style={{fontSize: 15}}>
+          Change Image Width (width={width})
         </RNTesterText>
-      </View>
-    );
-  }
+      </TouchableHighlight>
+      <RNTesterText>
+        This is an
+        <Image
+          source={{
+            uri: 'https://picsum.photos/50',
+            width,
+            height: 50,
+          }}
+          style={{
+            width,
+            height: 50,
+          }}
+        />
+        inline image
+      </RNTesterText>
+    </View>
+  );
 }
 
-class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
-  state: ChangeSizeState = {
-    width: 50,
-  };
+function ChangeViewSize(): React.Node {
+  const [width, setWidth] = useState(50);
+  return (
+    <View>
+      <TouchableHighlight
+        onPress={() => {
+          setWidth(width === 50 ? 100 : 50);
+        }}>
+        <RNTesterText style={{fontSize: 15}}>
+          Change View Width (width={width})
+        </RNTesterText>
+      </TouchableHighlight>
+      <RNTesterText>
+        This is an
+        <View
+          style={{
+            width,
+            height: 50,
+            backgroundColor: 'steelblue',
+          }}
+        />
+        inline view
+      </RNTesterText>
+    </View>
+  );
+}
 
-  render(): React.Node {
-    return (
-      <View>
-        <TouchableHighlight
-          onPress={() => {
-            this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}>
-          <RNTesterText style={{fontSize: 15}}>
-            Change View Width (width={this.state.width})
-          </RNTesterText>
-        </TouchableHighlight>
-        <RNTesterText>
-          This is an
+function ChangeInnerViewSize(): React.Node {
+  const [width, setWidth] = useState(50);
+  return (
+    <View>
+      <TouchableHighlight
+        onPress={() => {
+          setWidth(width === 50 ? 100 : 50);
+        }}>
+        {/* When updating `width`, it's important that the only thing that
+            changes is the width of the pink inline view. When we do this, we
+            demonstrate a bug in RN Android where the pink view doesn't get
+            rerendered and remains at its old size. If other things change
+            (e.g. we display `width` as text somewhere) it could circumvent
+            the bug and cause the pink view to be rerendered at its new size. */}
+        <RNTesterText style={{fontSize: 15}}>
+          Change Pink View Width
+        </RNTesterText>
+      </TouchableHighlight>
+      <RNTesterText>
+        This is an
+        <View style={{width: 125, height: 75, backgroundColor: 'steelblue'}}>
           <View
             style={{
-              width: this.state.width,
+              width,
               height: 50,
-              backgroundColor: 'steelblue',
+              backgroundColor: 'pink',
             }}
           />
-          inline view
-        </RNTesterText>
-      </View>
-    );
-  }
-}
-
-class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
-  state: ChangeSizeState = {
-    width: 50,
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <TouchableHighlight
-          onPress={() => {
-            this.setState({width: this.state.width === 50 ? 100 : 50});
-          }}>
-          {/* When updating `state.width`, it's important that the only thing that
-              changes is the width of the pink inline view. When we do this, we
-              demonstrate a bug in RN Android where the pink view doesn't get
-              rerendered and remains at its old size. If other things change
-              (e.g. we display `state.width` as text somewhere) it could circumvent
-              the bug and cause the pink view to be rerendered at its new size. */}
-          <RNTesterText style={{fontSize: 15}}>
-            Change Pink View Width
-          </RNTesterText>
-        </TouchableHighlight>
-        <RNTesterText>
-          This is an
-          <View style={{width: 125, height: 75, backgroundColor: 'steelblue'}}>
-            <View
-              style={{
-                width: this.state.width,
-                height: 50,
-                backgroundColor: 'pink',
-              }}
-            />
-          </View>
-          inline view
-        </RNTesterText>
-      </View>
-    );
-  }
+        </View>
+        inline view
+      </RNTesterText>
+    </View>
+  );
 }
 
 module.exports = {

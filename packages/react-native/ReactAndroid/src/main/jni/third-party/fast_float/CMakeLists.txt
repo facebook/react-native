@@ -6,8 +6,9 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-std=c++20 -fexceptions)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(fast_float INTERFACE)
 
 target_include_directories(fast_float INTERFACE include)
+target_compile_reactnative_options(fast_float INTERFACE)

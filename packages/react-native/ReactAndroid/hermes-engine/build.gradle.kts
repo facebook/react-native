@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import com.facebook.react.tasks.internal.*
 import de.undercouch.gradle.tasks.download.Download
-import java.io.FileOutputStream
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
@@ -39,11 +39,13 @@ fun getSDKManagerPath(): String {
   val ossSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager")
   val windowsMetaSdkManagerPath = File("${getSDKPath()}/cmdline-tools/latest/bin/sdkmanager.bat")
   val windowsOssSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager.bat")
+  val linuxSdkManagerPath = File("${getSDKPath()}/cmdline-tools/tools/bin/sdkmanager")
   return when {
     metaSdkManagerPath.exists() -> metaSdkManagerPath.absolutePath
     windowsMetaSdkManagerPath.exists() -> windowsMetaSdkManagerPath.absolutePath
     ossSdkManagerPath.exists() -> ossSdkManagerPath.absolutePath
     windowsOssSdkManagerPath.exists() -> windowsOssSdkManagerPath.absolutePath
+    linuxSdkManagerPath.exists() -> linuxSdkManagerPath.absolutePath
     else -> throw GradleException("Could not find sdkmanager executable.")
   }
 }
@@ -90,21 +92,22 @@ val prefabHeadersDir = File("$buildDir/prefab-headers")
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 val jsiDir = File(reactNativeRootDir, "ReactCommon/jsi")
 
+val downloadHermesDest = File(downloadsDir, "hermes.tar.gz")
 val downloadHermes by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
       quiet(true)
       useETag("all")
       retries(5)
-      dest(File(downloadsDir, "hermes.tar.gz"))
+      dest(downloadHermesDest)
     }
 
 val unzipHermes by
     tasks.registering(Copy::class) {
       dependsOn(downloadHermes)
-      from(tarTree(downloadHermes.dest)) {
+      from(tarTree(downloadHermesDest)) {
         eachFile {
           // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
           // folder at the top level.
@@ -123,36 +126,39 @@ val unzipHermes by
 // the two tasks mentioned before, so we install CMake manually to break the circular dependency.
 
 val installCMake by
-    tasks.registering(Exec::class) {
-      onlyIf { !File(cmakePath).exists() }
+    tasks.registering(CustomExecTask::class) {
+      onlyIfProvidedPathDoesNotExists.set(cmakePath)
       commandLine(
           windowsAwareCommandLine(getSDKManagerPath(), "--install", "cmake;${cmakeVersion}"))
     }
 
 val configureBuildForHermes by
-    tasks.registering(Exec::class) {
+    tasks.registering(CustomExecTask::class) {
       dependsOn(installCMake)
       workingDir(hermesDir)
       inputs.dir(hermesDir)
       outputs.files(hermesBuildOutputFileTree)
-      commandLine(
+      var cmakeCommandLine =
           windowsAwareCommandLine(
               cmakeBinaryPath,
               // Suppress all warnings as this is the Hermes build and we can't fix them.
               "--log-level=ERROR",
               "-Wno-dev",
-              if (Os.isFamily(Os.FAMILY_WINDOWS)) "-GNMake Makefiles" else "",
               "-S",
               ".",
               "-B",
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
-          ))
-      standardOutput = FileOutputStream("$buildDir/configure-hermesc.log")
+          )
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        cmakeCommandLine = cmakeCommandLine + "-GNMake Makefiles"
+      }
+      commandLine(cmakeCommandLine)
+      standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
     }
 
 val buildHermesC by
-    tasks.registering(Exec::class) {
+    tasks.registering(CustomExecTask::class) {
       dependsOn(configureBuildForHermes)
       workingDir(hermesDir)
       inputs.files(hermesBuildOutputFileTree)
@@ -166,8 +172,8 @@ val buildHermesC by
           "-j",
           ndkBuildJobs,
       )
-      standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
-      errorOutput = FileOutputStream("$buildDir/build-hermesc.error.log")
+      standardOutputFile.set(project.file("$buildDir/build-hermesc.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermesc.error.log"))
     }
 
 val prepareHeadersForPrefab by
@@ -178,6 +184,24 @@ val prepareHeadersForPrefab by
       include("**/*.h")
       exclude("jsi/**")
       into(prefabHeadersDir)
+    }
+
+val buildHermesLib by
+    tasks.registering(CustomExecTask::class) {
+      dependsOn(buildHermesC)
+      workingDir(hermesDir)
+      inputs.files(hermesBuildOutputFileTree)
+      commandLine(
+          cmakeBinaryPath,
+          "--build",
+          hermesBuildDir.toString(),
+          "--target",
+          "libhermes",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutputFile.set(project.file("$buildDir/build-hermes-lib.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermes-lib.error.log"))
     }
 
 fun windowsAwareCommandLine(vararg commands: String): List<String> {
@@ -235,9 +259,9 @@ android {
             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
-            "-DHERMES_SLOW_DEBUG=False",
             "-DHERMES_BUILD_SHARED_JSI=True",
             "-DHERMES_RELEASE_VERSION=for RN ${version}",
+            "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
             "-DHERMES_ENABLE_INTL=True")
@@ -246,6 +270,11 @@ android {
       }
     }
     ndk { abiFilters.addAll(reactNativeArchitectures()) }
+
+    compileOptions {
+      sourceCompatibility = JavaVersion.VERSION_17
+      targetCompatibility = JavaVersion.VERSION_17
+    }
   }
 
   externalNativeBuild {
@@ -281,7 +310,7 @@ android {
 
   sourceSets.getByName("main") {
     manifest.srcFile("$hermesDir/android/hermes/src/main/AndroidManifest.xml")
-    java.srcDir("$hermesDir/lib/Platform/Intl/java")
+    java.srcDirs("$hermesDir/lib/Platform/Intl/java", "$hermesDir/lib/Platform/Unicode/java")
   }
 
   buildFeatures {

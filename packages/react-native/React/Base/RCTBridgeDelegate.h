@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol RCTBridgeDelegate <NSObject>
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 /**
  * The location of the JavaScript source file. When running from the packager
@@ -39,15 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
  * match exactly, it may lead to bugs or crashes.
  */
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
-
-/**
- * Configure whether the JSCExecutor created should use the system JSC API or
- * alternative hooks provided. When returning YES from this method, you must have
- * previously called facebook::react::setCustomJSCWrapper.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
 
 /**
  * The bridge will call this method when a module been called from JS
@@ -78,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
 
+#endif // RCT_FIT_RM_OLD_RUNTIME
 @end
 
 NS_ASSUME_NONNULL_END

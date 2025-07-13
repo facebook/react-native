@@ -7,11 +7,14 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+
 // Common conditionals:
 //   - `kind == PARENT` checks whether the node can host children in the native tree.
 //   - `kind != NONE` checks whether the node appears in the native tree.
-
-public enum class NativeKind {
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+internal enum class NativeKind {
   // Node is in the native hierarchy and the HierarchyOptimizer should assume it can host children
   // (e.g. because it's a ViewGroup). Note that it's okay if the node doesn't support children. When
   // the HierarchyOptimizer generates children manipulation commands for that node, the

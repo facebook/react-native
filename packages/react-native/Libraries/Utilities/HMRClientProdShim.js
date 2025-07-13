@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -25,7 +25,6 @@ const HMRClientProdShim: HMRClientNativeInterface = {
   disable() {},
   registerBundle() {},
   log() {},
-  unstable_notifyFuseboxConsoleEnabled() {},
 };
 
-module.exports = HMRClientProdShim;
+export default HMRClientProdShim;

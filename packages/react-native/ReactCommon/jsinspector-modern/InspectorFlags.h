@@ -31,6 +31,11 @@ class InspectorFlags {
   bool getIsProfilingBuild() const;
 
   /**
+   * Flag determining if network inspection is enabled.
+   */
+  bool getNetworkInspectionEnabled() const;
+
+  /**
    * Forcibly disable the main `getFuseboxEnabled()` flag. This should ONLY be
    * used by `ReactInstanceIntegrationTest`.
    */
@@ -46,6 +51,7 @@ class InspectorFlags {
   struct Values {
     bool fuseboxEnabled;
     bool isProfilingBuild;
+    bool networkInspectionEnabled;
     bool operator==(const Values&) const = default;
   };
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
+#include <react/renderer/bridging/bridging.h>
 #include <react/renderer/observers/mutation/MutationObserverManager.h>
 #include <react/renderer/uimanager/UIManager.h>
 #include <vector>
@@ -19,7 +20,7 @@ using NativeMutationObserverObserveOptions =
         // mutationObserverId
         MutationObserverId,
         // targetShadowNode
-        jsi::Object,
+        std::shared_ptr<const ShadowNode>,
         // subtree
         bool>;
 
@@ -52,10 +53,9 @@ class NativeMutationObserver
       jsi::Runtime& runtime,
       NativeMutationObserverObserveOptions options);
 
-  void unobserve(
+  void unobserveAll(
       jsi::Runtime& runtime,
-      MutationObserverId mutationObserverId,
-      jsi::Object targetShadowNode);
+      MutationObserverId mutationObserverId);
 
   void connect(
       jsi::Runtime& runtime,
@@ -88,7 +88,7 @@ class NativeMutationObserver
   jsi::Value getPublicInstanceFromShadowNode(
       const ShadowNode& shadowNode) const;
   std::vector<jsi::Value> getPublicInstancesFromShadowNodes(
-      const std::vector<ShadowNode::Shared>& shadowNodes) const;
+      const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const;
 };
 
 } // namespace facebook::react

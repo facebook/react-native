@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @polyfill
- * @nolint
  * @format
+ * @noflow
+ * @nolint
+ * @polyfill
  */
 
 'use client';
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
+/* eslint-disable no-shadow, eqeqeq, no-unused-vars, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that
@@ -568,6 +569,11 @@ function consoleAssertPolyfill(expression, label) {
   }
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/console/timeStamp_static.
+// Non-standard API for recording markers on a timeline of the Performance instrumentation.
+// The actual logging is not provided by definition.
+function consoleTimeStampPolyfill() {}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
   // Preserve the original `console` as `originalConsole`
@@ -579,6 +585,7 @@ if (global.nativeLoggingHook) {
   }
 
   global.console = {
+    timeStamp: consoleTimeStampPolyfill,
     ...(originalConsole ?? {}),
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -693,6 +700,7 @@ if (global.nativeLoggingHook) {
     profile: stub,
     profileEnd: stub,
     table: stub,
+    timeStamp: stub,
   };
 
   Object.defineProperty(console, '_isPolyfilled', {

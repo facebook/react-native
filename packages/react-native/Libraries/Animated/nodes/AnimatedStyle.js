@@ -13,7 +13,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
-import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
@@ -22,8 +21,11 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedStyleAllowlist = $ReadOnly<{[string]: true}>;
 
+type FlatStyle = {[string]: mixed};
+type FlatStyleForWeb<TStyle: FlatStyle> = [mixed, TStyle];
+
 function createAnimatedStyle(
-  inputStyle: {[string]: mixed},
+  flatStyle: FlatStyle,
   allowlist: ?AnimatedStyleAllowlist,
   keepUnanimatedValues: boolean,
 ): [$ReadOnlyArray<string>, $ReadOnlyArray<AnimatedNode>, {[string]: mixed}] {
@@ -31,10 +33,10 @@ function createAnimatedStyle(
   const nodes: Array<AnimatedNode> = [];
   const style: {[string]: mixed} = {};
 
-  const keys = Object.keys(inputStyle);
+  const keys = Object.keys(flatStyle);
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
-    const value = inputStyle[key];
+    const value = flatStyle[key];
 
     if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
@@ -62,10 +64,10 @@ function createAnimatedStyle(
         // WARNING: This is a potentially expensive check that we should only
         // do in development. Without this check in development, it might be
         // difficult to identify which styles need to be allowlisted.
-        if (AnimatedObject.from(inputStyle[key]) != null) {
+        if (AnimatedObject.from(flatStyle[key]) != null) {
           console.error(
-            `AnimatedStyle: ${key} is not allowlisted for animation, but it ` +
-              'contains AnimatedNode values; styles allowing animation: ',
+            `AnimatedStyle: ${key} is not allowlisted for animation, but ` +
+              'it contains AnimatedNode values; styles allowing animation: ',
             allowlist,
           );
         }
@@ -80,7 +82,7 @@ function createAnimatedStyle(
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
-  #inputStyle: any;
+  #originalStyleForWeb: ?mixed;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #style: {[string]: mixed};
@@ -90,10 +92,10 @@ export default class AnimatedStyle extends AnimatedWithChildren {
    * Otherwise, returns `null`.
    */
   static from(
-    inputStyle: any,
+    flatStyle: ?FlatStyle,
     allowlist: ?AnimatedStyleAllowlist,
+    originalStyleForWeb: ?mixed,
   ): ?AnimatedStyle {
-    const flatStyle = flattenStyle(inputStyle);
     if (flatStyle == null) {
       return null;
     }
@@ -105,24 +107,31 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     if (nodes.length === 0) {
       return null;
     }
-    return new AnimatedStyle(nodeKeys, nodes, style, inputStyle);
+    return new AnimatedStyle(nodeKeys, nodes, style, originalStyleForWeb);
   }
 
   constructor(
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: {[string]: mixed},
-    inputStyle: any,
+    originalStyleForWeb: ?mixed,
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#style = style;
-    this.#inputStyle = inputStyle;
+
+    if ((Platform.OS as string) === 'web') {
+      // $FlowIgnore[cannot-write] - Intentional shadowing.
+      this.__getValueForStyle = resultStyle => [
+        originalStyleForWeb,
+        resultStyle,
+      ];
+    }
   }
 
-  __getValue(): Object | Array<Object> {
+  __getValue(): FlatStyleForWeb<FlatStyle> | FlatStyle {
     const style: {[string]: mixed} = {};
 
     const keys = Object.keys(this.#style);
@@ -137,27 +146,23 @@ export default class AnimatedStyle extends AnimatedWithChildren {
       }
     }
 
-    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
-     * Platform.flow.js */
-    return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
+    return this.__getValueForStyle(style);
   }
 
   /**
-   * Creates a new `style` object that contains the same style properties as
-   * the supplied `staticStyle` object, except with animated nodes for any
-   * style properties that were created by this `AnimatedStyle` instance.
+   * See the constructor, where this is shadowed on web platforms.
    */
-  __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object> {
-    const flatStaticStyle = flattenStyle(staticStyle);
-    const style: {[string]: mixed} =
-      flatStaticStyle == null
-        ? {}
-        : flatStaticStyle === staticStyle
-          ? // Copy the input style, since we'll mutate it below.
-            {...flatStaticStyle}
-          : // Reuse `flatStaticStyle` if it is a newly created object.
-            flatStaticStyle;
+  __getValueForStyle<TStyle: FlatStyle>(
+    style: TStyle,
+  ): FlatStyleForWeb<TStyle> | TStyle {
+    return style;
+  }
 
+  /**
+   * Mutates the supplied `style` object such that animated nodes are replaced
+   * with rasterized values.
+   */
+  __replaceAnimatedNodeWithValues(style: {[string]: mixed}): void {
     const keys = Object.keys(style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
@@ -175,10 +180,6 @@ export default class AnimatedStyle extends AnimatedWithChildren {
         style[key] = maybeNode.__getValue();
       }
     }
-
-    /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
-     * Platform.flow.js */
-    return Platform.OS === 'web' ? [this.#inputStyle, style] : style;
   }
 
   __getAnimatedValue(): Object {

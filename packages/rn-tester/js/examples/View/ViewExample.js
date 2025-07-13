@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -14,11 +14,18 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {Platform, Pressable, StyleSheet, View} from 'react-native';
+import {useState} from 'react';
+import {
+  Platform,
+  PlatformColor,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|showBorder: boolean|},
+  $ReadOnly<{}>,
+  {showBorder: boolean},
 > {
   state: {showBorder: boolean} = {
     showBorder: true,
@@ -82,10 +89,10 @@ const offscreenAlphaCompositingStyles = StyleSheet.create({
 });
 
 class OffscreenAlphaCompositing extends React.Component<
-  $ReadOnly<{|testID?: ?string|}>,
-  {|
+  $ReadOnly<{testID?: ?string}>,
+  {
     active: boolean,
-  |},
+  },
 > {
   state: {active: boolean} = {
     active: false,
@@ -166,10 +173,10 @@ const ZIndexExampleStyles = StyleSheet.create({
 });
 
 class ZIndexExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     flipped: boolean,
-  |},
+  },
 > {
   state: {flipped: boolean} = {
     flipped: false,
@@ -310,10 +317,10 @@ function PositionStaticZIndexExample(): React.Node {
 }
 
 class DisplayNoneStyle extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     index: number,
-  |},
+  },
 > {
   state: {index: number} = {
     index: 0,
@@ -376,7 +383,7 @@ class DisplayNoneStyle extends React.Component<
   };
 }
 
-class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
+class FlexGapExample extends React.Component<$ReadOnly<{testID?: ?string}>> {
   render(): React.Node {
     return (
       <View
@@ -411,55 +418,45 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
 }
 
 function BoxShadowExample(): React.Node {
-  const defaultStyleSize = {width: 75, height: 75};
+  const defaultStyleSize = {width: 50, height: 50};
 
   return (
-    <View testID="view-test-box-shadow" style={{gap: 20}}>
-      <View style={{flexDirection: 'row', gap: 15}}>
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 10,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow: '0 0 10px 0 black',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 30,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow: 'inset 0 0 10px 0 black',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 30,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow:
-              'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
-          }}
-        />
-      </View>
-      <View style={{flexDirection: 'row', gap: 15}}>
-        <View
-          style={{
-            ...defaultStyleSize,
-            boxShadow: '0px 0px 5px 5px black',
-          }}>
-          <View
-            style={{
-              left: -10,
-              width: 25,
-              height: 25,
-              backgroundColor: 'cyan',
-            }}
-          />
-        </View>
+    <View
+      testID="view-test-box-shadow"
+      style={{flexDirection: 'row', flexWrap: 'wrap', gap: 30, padding: 20}}>
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 10,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow: '0 0 10px 0 black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 30,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow: 'inset 0 0 10px 0 black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 30,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow:
+            'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          boxShadow: '0px 0px 5px 5px black',
+        }}>
         <View
           style={{
             ...defaultStyleSize,
@@ -467,33 +464,79 @@ function BoxShadowExample(): React.Node {
             boxShadow: 'inset 0px 0px 5px 5px black',
           }}
         />
-        <View style={{...defaultStyleSize, flexDirection: 'row'}}>
-          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
-          <View
-            style={{
-              ...defaultStyleSize,
-              boxShadow: ' 0px 0px 20px 5px black',
-            }}
-          />
-          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
-        </View>
-      </View>
-      <View style={{flexDirection: 'row', gap: 15}}>
         <View
           style={{
             ...defaultStyleSize,
-            backgroundColor: 'green',
-            boxShadow: '0px 10px',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            backgroundColor: 'orange',
-            boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
+            boxShadow: ' 0px 0px 20px 5px black',
           }}
         />
       </View>
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'green',
+          boxShadow: '0px 10px',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'orange',
+          boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
+        }}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            backgroundColor: 'brown',
+            boxShadow: '5px 5px 5px 0px rgba(0, 0, 255, 1) inset',
+            transform: [{scale: 1.2}],
+          },
+        ]}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'hotpink',
+          boxShadow: [
+            {
+              offsetX: 5,
+              offsetY: '5px',
+              blurRadius: 5,
+              spreadDistance: '1px',
+              color: 'green',
+            },
+            {
+              offsetX: '-5px',
+              offsetY: '0',
+              blurRadius: '5px',
+              spreadDistance: 2,
+              color: Platform.select({
+                ios: PlatformColor('systemOrange'),
+                android: PlatformColor('?attr/colorError'),
+                default: 'orange',
+              }),
+            },
+          ],
+        }}
+      />
+      {/* Invalid, should not render */}
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'hotpink',
+          boxShadow: [
+            {
+              offsetX: '-5px',
+              offsetY: '',
+              blurRadius: 5,
+              spreadDistance: '1px',
+              color: 'green',
+            },
+          ],
+        }}
+      />
     </View>
   );
 }
@@ -653,6 +696,74 @@ function BoxSizingExample(): React.Node {
       <View style={[styles.boxSizingBox, {boxSizing: 'border-box'}]}>
         <View style={styles.boxSizingChild} />
       </View>
+    </View>
+  );
+}
+
+function FocusableInnerRow({focusable}: {focusable: boolean}) {
+  const styles = StyleSheet.create({
+    focused: {
+      borderColor: 'blue',
+      borderWidth: 2,
+    },
+    innerBox: {
+      backgroundColor: 'red',
+      width: '100%',
+      height: 50,
+      borderColor: 'transparent',
+      borderWidth: 2,
+    },
+    innerBoxTextColor: {
+      color: 'white',
+    },
+  });
+  const [focused, setFocused] = useState(false);
+  return (
+    <View
+      accessible={focusable}
+      focusable={focusable}
+      onBlur={() => setFocused(false)}
+      onFocus={() => setFocused(true)}
+      style={[styles.innerBox, focused && styles.focused]}>
+      <RNTesterText style={styles.innerBoxTextColor}>
+        Focusable: {focusable ? 'true' : 'false'}
+      </RNTesterText>
+      <RNTesterText style={styles.innerBoxTextColor}>
+        Focused: {focused ? 'true' : 'false'}
+      </RNTesterText>
+    </View>
+  );
+}
+
+function FocusBlurExample(): React.Node {
+  const styles = StyleSheet.create({
+    focused: {
+      borderColor: 'blue',
+      borderWidth: 2,
+    },
+    outerBox: {
+      backgroundColor: 'green',
+      borderColor: 'transparent',
+      borderWidth: 2,
+      padding: 10,
+    },
+    outerBoxTextColor: {
+      color: 'white',
+    },
+  });
+  const [outerFocused, setOuterFocused] = useState(false);
+  return (
+    <View
+      onBlur={() => setOuterFocused(false)}
+      onFocus={() => setOuterFocused(true)}
+      style={[styles.outerBox, outerFocused && styles.focused]}>
+      <RNTesterText style={styles.outerBoxTextColor}>
+        Focused: {outerFocused ? 'true' : 'false'}
+      </RNTesterText>
+      <FocusableInnerRow focusable={true} />
+      <FocusableInnerRow focusable={true} />
+      <FocusableInnerRow focusable={false} />
+      <FocusableInnerRow focusable={true} />
     </View>
   );
 }
@@ -1320,6 +1431,11 @@ export default ({
       title: 'Box Sizing',
       name: 'box-sizing',
       render: BoxSizingExample,
+    },
+    {
+      title: 'Focus/Blur',
+      name: 'focus-blur',
+      render: FocusBlurExample,
     },
   ],
 }: RNTesterModule);

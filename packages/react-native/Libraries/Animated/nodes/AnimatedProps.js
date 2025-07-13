@@ -14,6 +14,7 @@ import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
@@ -22,8 +23,14 @@ import invariant from 'invariant';
 
 export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
-  [string]: true,
+  [key: string]: true | AnimatedStyleAllowlist,
 }>;
+
+type TargetView = {
+  +instance: TargetViewInstance,
+  connectedViewTag: ?number,
+};
+type TargetViewInstance = React.ElementRef<React.ElementType>;
 
 function createAnimatedProps(
   inputProps: {[string]: mixed},
@@ -37,18 +44,28 @@ function createAnimatedProps(
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
     const value = inputProps[key];
+    let staticValue = value;
 
     if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (key === 'style') {
-        node = AnimatedStyle.from(value, allowlist?.style);
+        // Ignore `style` if it is not an object (or array).
+        if (typeof value === 'object' && value != null) {
+          // Even if we do not find any `AnimatedNode` values in `style`, we
+          // still need to use the flattened `style` object because static
+          // values can shadow `AnimatedNode` values. We need to make sure that
+          // we propagate the flattened `style` object to the `props` object.
+          const flatStyle = flattenStyle(value as $FlowFixMe);
+          node = AnimatedStyle.from(flatStyle, allowlist?.style, value);
+          staticValue = flatStyle;
+        }
       } else if (value instanceof AnimatedNode) {
         node = value;
       } else {
         node = AnimatedObject.from(value);
       }
       if (node == null) {
-        props[key] = value;
+        props[key] = staticValue;
       } else {
         nodeKeys.push(key);
         nodes.push(node);
@@ -75,11 +92,11 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
-  #animatedView: any = null;
   #callback: () => void;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
   #props: {[string]: mixed};
+  #target: ?TargetView = null;
 
   constructor(
     inputProps: {[string]: mixed},
@@ -128,8 +145,24 @@ export default class AnimatedProps extends AnimatedNode {
       const key = keys[ii];
       const maybeNode = this.#props[key];
 
-      if (key === 'style' && maybeNode instanceof AnimatedStyle) {
-        props[key] = maybeNode.__getValueWithStaticStyle(staticProps.style);
+      if (key === 'style') {
+        const staticStyle = staticProps.style;
+        const flatStaticStyle = flattenStyle(staticStyle);
+        if (maybeNode instanceof AnimatedStyle) {
+          const mutableStyle: {[string]: mixed} =
+            flatStaticStyle == null
+              ? {}
+              : flatStaticStyle === staticStyle
+                ? // Copy the input style, since we'll mutate it below.
+                  {...flatStaticStyle}
+                : // Reuse `flatStaticStyle` if it is a newly created object.
+                  flatStaticStyle;
+
+          maybeNode.__replaceAnimatedNodeWithValues(mutableStyle);
+          props[key] = maybeNode.__getValueForStyle(mutableStyle);
+        } else {
+          props[key] = flatStaticStyle;
+        }
       } else if (maybeNode instanceof AnimatedNode) {
         props[key] = maybeNode.__getValue();
       } else if (maybeNode instanceof AnimatedEvent) {
@@ -138,6 +171,22 @@ export default class AnimatedProps extends AnimatedNode {
     }
 
     return props;
+  }
+
+  __getNativeAnimatedEventTuples(): $ReadOnlyArray<[string, AnimatedEvent]> {
+    const tuples = [];
+
+    const keys = Object.keys(this.#props);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const value = this.#props[key];
+
+      if (value instanceof AnimatedEvent && value.__isNative) {
+        tuples.push([key, value]);
+      }
+    }
+
+    return tuples;
   }
 
   __getAnimatedValue(): Object {
@@ -164,10 +213,10 @@ export default class AnimatedProps extends AnimatedNode {
   }
 
   __detach(): void {
-    if (this.__isNative && this.#animatedView) {
-      this.__disconnectAnimatedView();
+    if (this.__isNative && this.#target != null) {
+      this.#disconnectAnimatedView(this.#target);
     }
-    this.#animatedView = null;
+    this.#target = null;
 
     const nodes = this.#nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
@@ -193,56 +242,54 @@ export default class AnimatedProps extends AnimatedNode {
       this.__isNative = true;
 
       // Since this does not call the super.__makeNative, we need to store the
-      // supplied platformConfig here, before calling __connectAnimatedView
+      // supplied platformConfig here, before calling #connectAnimatedView
       // where it will be needed to traverse the graph of attached values.
       super.__setPlatformConfig(platformConfig);
 
-      if (this.#animatedView) {
-        this.__connectAnimatedView();
+      if (this.#target != null) {
+        this.#connectAnimatedView(this.#target);
       }
     }
   }
 
-  setNativeView(animatedView: any): void {
-    if (this.#animatedView === animatedView) {
+  setNativeView(instance: TargetViewInstance): void {
+    if (this.#target?.instance === instance) {
       return;
     }
-    this.#animatedView = animatedView;
+    this.#target = {instance, connectedViewTag: null};
     if (this.__isNative) {
-      this.__connectAnimatedView();
+      this.#connectAnimatedView(this.#target);
     }
   }
 
-  __connectAnimatedView(): void {
+  #connectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    if (nativeViewTag == null) {
+    let viewTag: ?number = findNodeHandle(target.instance);
+    if (viewTag == null) {
       if (process.env.NODE_ENV === 'test') {
-        nativeViewTag = -1;
+        viewTag = -1;
       } else {
         throw new Error('Unable to locate attached view in the native tree');
       }
     }
     NativeAnimatedHelper.API.connectAnimatedNodeToView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = viewTag;
   }
 
-  __disconnectAnimatedView(): void {
+  #disconnectAnimatedView(target: TargetView): void {
     invariant(this.__isNative, 'Expected node to be marked as "native"');
-    let nativeViewTag: ?number = findNodeHandle(this.#animatedView);
-    if (nativeViewTag == null) {
-      if (process.env.NODE_ENV === 'test') {
-        nativeViewTag = -1;
-      } else {
-        throw new Error('Unable to locate attached view in the native tree');
-      }
+    const viewTag = target.connectedViewTag;
+    if (viewTag == null) {
+      return;
     }
     NativeAnimatedHelper.API.disconnectAnimatedNodeFromView(
       this.__getNativeTag(),
-      nativeViewTag,
+      viewTag,
     );
+    target.connectedViewTag = null;
   }
 
   __restoreDefaultValues(): void {

@@ -6,6 +6,7 @@
 require 'shellwords'
 
 require_relative "./helpers.rb"
+require_relative "./jsengine.rb"
 
 # Utilities class for React Native Cocoapods
 class ReactNativePodsUtils
@@ -32,7 +33,7 @@ class ReactNativePodsUtils
             flags[:hermes_enabled] = true
         end
 
-        if ENV['USE_HERMES'] == '0'
+        if !use_hermes()
             flags[:hermes_enabled] = false
         end
 
@@ -45,9 +46,15 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
+    end
+
+    def self.set_gcc_preprocessor_definition_for_debugger(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-RCTNetwork", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-RCTNetwork", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -171,27 +178,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
-        projects = self.extract_projects(installer)
-
-        other_ld_flags_key = 'OTHER_LDFLAGS'
-        xcode15_compatibility_flags = '-Wl -ld_classic '
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                # fix for weak linking
-                self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_0(:xcodebuild_manager => xcodebuild_manager)
-                    self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
-                else
-                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
-                end
-            end
-            project.save()
-        end
-
-    end
-
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
@@ -269,25 +255,34 @@ class ReactNativePodsUtils
     end
 
     def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
-        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
         search_paths = []
 
-        if platforms.empty?() || platforms.length() == 1
-            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
-            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-        else
-            platforms.each { |platform|
-                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+        # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
+        if ReactNativeCoreUtils.build_rncore_from_source()
+            platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+
+            if platforms.empty?() || platforms.length() == 1
+                base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
                 self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-            }
+            else
+                platforms.each { |platform|
+                    base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                    self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+                }
+            end
+        else
+            base_path = File.join("${PODS_ROOT}", "#{pod_name}")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
         end
+
         return search_paths
     end
 
     # Add a new dependency to an existing spec, configuring also the headers search paths
     def self.add_dependency(spec, dependency_name, base_folder_for_frameworks, framework_name, additional_paths: [], version: nil, subspec_dependency: nil)
         # Update Search Path
-        optional_current_search_path = spec.to_hash["pod_target_xcconfig"]["HEADER_SEARCH_PATHS"]
+        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"] ? spec.to_hash["pod_target_xcconfig"] : {}
+        optional_current_search_path = current_pod_target_xcconfig["HEADER_SEARCH_PATHS"]
         current_search_paths = (optional_current_search_path != nil ? optional_current_search_path : "")
             .split(" ")
         create_header_search_path_for_frameworks(base_folder_for_frameworks, dependency_name, framework_name, additional_paths)
@@ -295,7 +290,6 @@ class ReactNativePodsUtils
                 wrapped_path = "\"#{path}\""
                 current_search_paths << wrapped_path
             }
-        current_pod_target_xcconfig = spec.to_hash["pod_target_xcconfig"]
         current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] = current_search_paths.join(" ")
         spec.pod_target_xcconfig = current_pod_target_xcconfig
 
@@ -415,16 +409,6 @@ class ReactNativePodsUtils
             new_config = old_config.gsub(trimmed_value,  "")
             config.build_settings[setting_name] = new_config.strip()
         end
-    end
-
-    def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
-        xcodebuild_version = xcodebuild_manager.version
-
-        if version = self.parse_xcode_version(xcodebuild_version)
-            return version["major"] == 15 && version["minor"] == 0
-        end
-
-        return false
     end
 
     def self.parse_xcode_version(version_string)
@@ -600,7 +584,7 @@ class ReactNativePodsUtils
     end
 
     def self.react_native_pods
-        return [
+        pods = [
             "DoubleConversion",
             "FBLazyVector",
             "RCT-Folly",
@@ -618,6 +602,7 @@ class ReactNativePodsUtils
             "React-RCTAppDelegate",
             "React-RCTBlob",
             "React-RCTFabric",
+            "React-RCTRuntime",
             "React-RCTImage",
             "React-RCTLinking",
             "React-RCTNetwork",
@@ -629,13 +614,13 @@ class ReactNativePodsUtils
             "React-callinvoker",
             "React-cxxreact",
             "React-graphics",
-            "React-jsc",
             "React-jsi",
             "React-jsiexecutor",
             "React-jsinspector",
+            "React-jsitooling",
             "React-logger",
+            "React-oscompat",
             "React-perflogger",
-            "React-rncore",
             "React-runtimeexecutor",
             "React-timing",
             "ReactCommon",
@@ -647,6 +632,11 @@ class ReactNativePodsUtils
             "hermes-engine",
             "React-hermes",
         ]
+        if ENV['USE_THIRD_PARTY_JSC'] != '1'
+            pods << "React-jsc"
+        end
+
+        return pods
     end
 
     def self.add_search_path_to_result(result, base_path, additional_paths, include_base_path)

@@ -8,14 +8,14 @@
 package com.facebook.react.uimanager
 
 /**
- * Interface that should be implemented by [View] subclasses that support [overflow] style. This
- * allows the overflow information to be used by [TouchTargetHelper] to determine if a View is
- * touchable.
+ * Interface that should be implemented by [android.view.View] subclasses that support [overflow]
+ * style. This allows the overflow information to be used by [TouchTargetHelper] to determine if a
+ * View is touchable.
  */
 public interface ReactOverflowView {
   /**
    * Gets the overflow state of a view. If set, this should be one of [ViewProps#HIDDEN],
    * [ViewProps#VISIBLE] or [ViewProps#SCROLL].
    */
-  public fun getOverflow(): String?
+  public val overflow: String?
 }

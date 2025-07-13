@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeSettingsManager';
-import NativeSettingsManager from '../../src/private/specs/modules/NativeSettingsManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeSettingsManager';
+import NativeSettingsManager from '../../src/private/specs_DEPRECATED/modules/NativeSettingsManager';
+
 export default NativeSettingsManager;

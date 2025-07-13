@@ -6,6 +6,7 @@
  */
 
 #import "RCTViewComponentView.h"
+#import "RCTViewAccessibilityElement.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
@@ -18,6 +19,7 @@
 #import <React/RCTConversions.h>
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
+#import <React/RCTRadialGradient.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
@@ -38,7 +40,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   CALayer *_backgroundColorLayer;
   __weak CALayer *_borderLayer;
   CALayer *_outlineLayer;
-  CALayer *_boxShadowLayer;
+  NSMutableArray<CALayer *> *_boxShadowLayers;
   CALayer *_filterLayer;
   NSMutableArray<CALayer *> *_backgroundImageLayers;
   BOOL _needsInvalidateLayer;
@@ -48,6 +50,9 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
   UIView *_containerView;
   BOOL _useCustomContainerView;
+  NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
+  NSMutableArray<NSObject *> *_accessibilityElements;
+  RCTViewAccessibilityElement *_axElementDescribingSelf;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -64,6 +69,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _reactSubviews = [NSMutableArray new];
     self.multipleTouchEnabled = YES;
     _useCustomContainerView = NO;
+    _removeClippedSubviews = NO;
   }
   return self;
 }
@@ -229,10 +235,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     needsInvalidateLayer = YES;
   }
 
-  if (oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
-    _removeClippedSubviews = newViewProps.removeClippedSubviews;
-    if (_removeClippedSubviews && self.currentContainerView.subviews.count > 0) {
-      _reactSubviews = [NSMutableArray arrayWithArray:self.currentContainerView.subviews];
+  // Disable `removeClippedSubviews` when Fabric View Culling is enabled.
+  if (!ReactNativeFeatureFlags::enableViewCulling()) {
+    if (oldViewProps.removeClippedSubviews != newViewProps.removeClippedSubviews) {
+      _removeClippedSubviews = newViewProps.removeClippedSubviews;
+      if (_removeClippedSubviews && self.currentContainerView.subviews.count > 0) {
+        _reactSubviews = [NSMutableArray arrayWithArray:self.currentContainerView.subviews];
+      }
     }
   }
 
@@ -385,6 +394,20 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
+  // `accessibilityOrder`
+  if (oldViewProps.accessibilityOrder != newViewProps.accessibilityOrder &&
+      ReactNativeFeatureFlags::enableAccessibilityOrder()) {
+    // Creating a set since a lot of logic requires lookups in here. However,
+    // we still need to preserve the orginal order. So just read from props
+    // if need to access that
+    _accessibilityOrderNativeIDs = [NSMutableSet new];
+    for (const std::string &childId : newViewProps.accessibilityOrder) {
+      [_accessibilityOrderNativeIDs addObject:RCTNSStringFromString(childId)];
+    }
+
+    _accessibilityElements = [NSMutableArray new];
+  }
+
   // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
@@ -424,6 +447,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     } else {
       self.accessibilityElement.accessibilityValue = nil;
     }
+  }
+
+  if (oldViewProps.accessibilityRespondsToUserInteraction != newViewProps.accessibilityRespondsToUserInteraction) {
+    self.accessibilityElement.accessibilityRespondsToUserInteraction =
+        newViewProps.accessibilityRespondsToUserInteraction;
   }
 
   // `testId`
@@ -589,6 +617,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+  _accessibilityElements = [NSMutableArray new];
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -661,17 +690,18 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
       .bottomRightVertical = (CGFloat)borderRadii.bottomRight.vertical};
 }
 
-static RCTCornerRadii RCTCreateOutlineCornerRadiiFromBorderRadii(const BorderRadii &borderRadii, CGFloat outlineWidth)
+static RCTCornerRadii
+RCTCreateOutlineCornerRadiiFromBorderRadii(const BorderRadii &borderRadii, CGFloat outlineWidth, CGFloat outlineOffset)
 {
   return RCTCornerRadii{
-      borderRadii.topLeft.horizontal != 0 ? borderRadii.topLeft.horizontal + outlineWidth : 0,
-      borderRadii.topLeft.vertical != 0 ? borderRadii.topLeft.vertical + outlineWidth : 0,
-      borderRadii.topRight.horizontal != 0 ? borderRadii.topRight.horizontal + outlineWidth : 0,
-      borderRadii.topRight.vertical != 0 ? borderRadii.topRight.vertical + outlineWidth : 0,
-      borderRadii.bottomLeft.horizontal != 0 ? borderRadii.bottomLeft.horizontal + outlineWidth : 0,
-      borderRadii.bottomLeft.vertical != 0 ? borderRadii.bottomLeft.vertical + outlineWidth : 0,
-      borderRadii.bottomRight.horizontal != 0 ? borderRadii.bottomRight.horizontal + outlineWidth : 0,
-      borderRadii.bottomRight.vertical != 0 ? borderRadii.bottomRight.vertical + outlineWidth : 0};
+      borderRadii.topLeft.horizontal != 0 ? borderRadii.topLeft.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.topLeft.vertical != 0 ? borderRadii.topLeft.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.topRight.horizontal != 0 ? borderRadii.topRight.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.topRight.vertical != 0 ? borderRadii.topRight.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomLeft.horizontal != 0 ? borderRadii.bottomLeft.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomLeft.vertical != 0 ? borderRadii.bottomLeft.vertical + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomRight.horizontal != 0 ? borderRadii.bottomRight.horizontal + outlineWidth + outlineOffset : 0,
+      borderRadii.bottomRight.vertical != 0 ? borderRadii.bottomRight.vertical + outlineWidth + outlineOffset : 0};
 }
 
 // To be used for CSS properties like `border` and `outline`.
@@ -814,7 +844,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       // If view has a solid background color, calculate shadow path from border.
       const RCTCornerInsets cornerInsets =
           RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
-      CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
+      CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil, NO);
       layer.shadowPath = shadowPath;
       CGPathRelease(shadowPath);
     } else {
@@ -838,9 +868,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       // rendering incorrectly on iOS, iOS apps in compatibility mode on visionOS, but not on visionOS.
       // To work around this, for iOS, we can calculate the border path based on `view.frame` (the
       // superview's coordinate space) instead of view.bounds.
-      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.frame, cornerInsets, NULL);
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.frame, cornerInsets, NULL, NO);
 #else // TARGET_OS_VISION
-      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL);
+      CGPathRef borderPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, NULL, NO);
 #endif
       UIBezierPath *bezierPath = [UIBezierPath bezierPathWithCGPath:borderPath];
       CGPathRelease(borderPath);
@@ -879,25 +909,11 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     layer.backgroundColor = nil;
     if (!_backgroundColorLayer) {
       _backgroundColorLayer = [CALayer layer];
-      _backgroundColorLayer.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
       _backgroundColorLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
       [self.layer addSublayer:_backgroundColorLayer];
     }
-
+    [self shapeLayerToMatchView:_backgroundColorLayer borderMetrics:borderMetrics];
     _backgroundColorLayer.backgroundColor = backgroundColor.CGColor;
-    if (borderMetrics.borderRadii.isUniform()) {
-      _backgroundColorLayer.mask = nil;
-      _backgroundColorLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
-      _backgroundColorLayer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
-    } else {
-      CAShapeLayer *maskLayer =
-          [self createMaskLayer:self.bounds
-                   cornerInsets:RCTGetCornerInsets(
-                                    RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
-      _backgroundColorLayer.mask = maskLayer;
-      _backgroundColorLayer.cornerRadius = 0;
-    }
-
     [_backgroundColorLayer removeAllAnimations];
   }
 
@@ -959,7 +975,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
       RCTAddContourEffectToLayer(
           _outlineLayer,
-          RCTCreateOutlineCornerRadiiFromBorderRadii(borderMetrics.borderRadii, _props->outlineWidth),
+          RCTCreateOutlineCornerRadiiFromBorderRadii(
+              borderMetrics.borderRadii, _props->outlineWidth, _props->outlineOffset),
           RCTBorderColors{outlineColor, outlineColor, outlineColor, outlineColor},
           UIEdgeInsets{_props->outlineWidth, _props->outlineWidth, _props->outlineWidth, _props->outlineWidth},
           RCTBorderStyleFromOutlineStyle(_props->outlineStyle));
@@ -983,20 +1000,13 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     }
 
     _filterLayer = [CALayer layer];
-    _filterLayer.frame = CGRectMake(0, 0, layer.frame.size.width, layer.frame.size.height);
+    [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
     _filterLayer.compositingFilter = @"multiplyBlendMode";
     _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
                                                    green:multiplicativeBrightness
                                                     blue:multiplicativeBrightness
                                                    alpha:self.layer.opacity]
                                        .CGColor;
-    if (borderMetrics.borderRadii.isUniform()) {
-      _filterLayer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
-    } else {
-      RCTCornerInsets cornerInsets =
-          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
-      _filterLayer.mask = [self createMaskLayer:self.bounds cornerInsets:cornerInsets];
-    }
     // So that this layer is always above any potential sublayers this view may
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;
@@ -1012,24 +1022,18 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         const auto &linearGradient = std::get<LinearGradient>(backgroundImage);
         CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size
                                                                         gradient:linearGradient];
-        backgroundImageLayer.frame = layer.bounds;
+        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
-        // To make border radius work with gradient layers
-        if (borderMetrics.borderRadii.isUniform()) {
-          backgroundImageLayer.cornerRadius = layer.cornerRadius;
-          backgroundImageLayer.cornerCurve = layer.cornerCurve;
-          backgroundImageLayer.mask = nil;
-        } else {
-          CAShapeLayer *maskLayer =
-              [self createMaskLayer:self.bounds
-                       cornerInsets:RCTGetCornerInsets(
-                                        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
-          backgroundImageLayer.mask = maskLayer;
-          backgroundImageLayer.cornerRadius = 0;
-        }
-
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-
+        [self.layer addSublayer:backgroundImageLayer];
+        [_backgroundImageLayers addObject:backgroundImageLayer];
+      } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
+        const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
+        CALayer *backgroundImageLayer = [RCTRadialGradient gradientLayerWithSize:self.layer.bounds.size
+                                                                        gradient:radialGradient];
+        [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
+        backgroundImageLayer.masksToBounds = YES;
+        backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
         [self.layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       }
@@ -1037,21 +1041,24 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   }
 
   // box shadow
-  [_boxShadowLayer removeFromSuperlayer];
-  _boxShadowLayer = nil;
+  for (CALayer *boxShadowLayer in _boxShadowLayers) {
+    [boxShadowLayer removeFromSuperlayer];
+  }
+  [_boxShadowLayers removeAllObjects];
   if (!_props->boxShadow.empty()) {
-    _boxShadowLayer = [CALayer layer];
-    [self.layer addSublayer:_boxShadowLayer];
-    _boxShadowLayer.zPosition = _borderLayer.zPosition;
-    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
-
-    UIImage *boxShadowImage = RCTGetBoxShadowImage(
-        _props->boxShadow,
-        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-        RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
-        layer);
-
-    _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
+    if (!_boxShadowLayers) {
+      _boxShadowLayers = [NSMutableArray new];
+    }
+    for (auto it = _props->boxShadow.rbegin(); it != _props->boxShadow.rend(); ++it) {
+      CALayer *shadowLayer = RCTGetBoxShadowLayer(
+          *it,
+          RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+          RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
+          self.layer.bounds.size);
+      shadowLayer.zPosition = _borderLayer.zPosition;
+      [self.layer addSublayer:shadowLayer];
+      [_boxShadowLayers addObject:shadowLayer];
+    }
   }
 
   // clipping
@@ -1094,9 +1101,29 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   }
 }
 
+// Shapes the given layer to match the shape of this View's layer. This is
+// basically just accounting for size, position, and border radius.
+- (void)shapeLayerToMatchView:(CALayer *)layer borderMetrics:(BorderMetrics)borderMetrics
+{
+  // Bounds is needed here to account for scaling transforms properly and ensure
+  // we do not scale twice
+  layer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
+  if (borderMetrics.borderRadii.isUniform()) {
+    layer.mask = nil;
+    layer.cornerRadius = borderMetrics.borderRadii.topLeft.horizontal;
+    layer.cornerCurve = CornerCurveFromBorderCurve(borderMetrics.borderCurves.topLeft);
+  } else {
+    CAShapeLayer *maskLayer = [self
+        createMaskLayer:self.bounds
+           cornerInsets:RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+    layer.mask = maskLayer;
+    layer.cornerRadius = 0;
+  }
+}
+
 - (CAShapeLayer *)createMaskLayer:(CGRect)bounds cornerInsets:(RCTCornerInsets)cornerInsets
 {
-  CGPathRef path = RCTPathCreateWithRoundedRect(bounds, cornerInsets, nil);
+  CGPathRef path = RCTPathCreateWithRoundedRect(bounds, cornerInsets, nil, NO);
   CAShapeLayer *maskLayer = [CAShapeLayer layer];
   maskLayer.path = path;
   CGPathRelease(path);
@@ -1122,6 +1149,58 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   return self;
 }
 
+- (NSArray<NSObject *> *)accessibilityElements
+{
+  if ([_accessibilityOrderNativeIDs count] <= 0) {
+    return super.accessibilityElements;
+  }
+
+  // TODO: Currently this ignores changes to descendant nativeID's. While that should rarely, if ever happen, it's an
+  // edge case we should address. Currently this fixes some app deaths so landing this without addressing that edge case
+  // for now.
+  if ([_accessibilityElements count] > 0) {
+    return _accessibilityElements;
+  }
+
+  NSMutableDictionary<NSString *, UIView *> *nativeIdToView = [NSMutableDictionary new];
+
+  [RCTViewComponentView collectAccessibilityElements:self
+                                      intoDictionary:nativeIdToView
+                                           nativeIds:_accessibilityOrderNativeIDs];
+
+  for (auto childId : _props->accessibilityOrder) {
+    NSString *nsStringChildId = RCTNSStringFromString(childId);
+    // Special case to allow for self-referencing with accessibilityOrder
+    if ([nsStringChildId isEqualToString:self.nativeId]) {
+      if (!_axElementDescribingSelf) {
+        _axElementDescribingSelf = [[RCTViewAccessibilityElement alloc] initWithView:self];
+      }
+      _axElementDescribingSelf.isAccessibilityElement = [super isAccessibilityElement];
+      [_accessibilityElements addObject:_axElementDescribingSelf];
+    } else {
+      UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
+      if (viewWithMatchingNativeId) {
+        [_accessibilityElements addObject:viewWithMatchingNativeId];
+      }
+    }
+  }
+
+  return _accessibilityElements;
+}
+
++ (void)collectAccessibilityElements:(UIView *)view
+                      intoDictionary:(NSMutableDictionary<NSString *, UIView *> *)dict
+                           nativeIds:(NSSet<NSString *> *)nativeIds
+{
+  for (UIView *subview in view.subviews) {
+    if ([subview isKindOfClass:[RCTViewComponentView class]] &&
+        [nativeIds containsObject:((RCTViewComponentView *)subview).nativeId]) {
+      [dict setObject:subview forKey:((RCTViewComponentView *)subview).nativeId];
+    }
+    [RCTViewComponentView collectAccessibilityElements:subview intoDictionary:dict nativeIds:nativeIds];
+  }
+}
+
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   // Result string is initialized lazily to prevent useless but costly allocations.
@@ -1136,7 +1215,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
         result = [NSMutableString string];
       }
       if (result.length > 0) {
-        [result appendString:@" "];
+        [result appendString:@", "];
       }
       [result appendString:label];
     }
@@ -1151,13 +1230,33 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     return label;
   }
 
-  return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  if (self.isAccessibilityElement) {
+    return RCTRecursiveAccessibilityLabel(self.currentContainerView);
+  }
+  return nil;
+}
+
+- (NSString *)accessibilityLabelForCoopting
+{
+  return super.accessibilityLabel;
+}
+
+- (BOOL)wantsToCooptLabel
+{
+  return !super.accessibilityLabel && super.isAccessibilityElement;
 }
 
 - (BOOL)isAccessibilityElement
 {
   if (self.contentView != nil) {
     return self.contentView.isAccessibilityElement;
+  }
+
+  // If we reference ourselves in accessibilityOrder then we will make a
+  // UIAccessibilityElement object to represent ourselves since returning YES
+  // here would mean iOS would not call into accessibilityElements
+  if ([_accessibilityOrderNativeIDs containsObject:self.nativeId]) {
+    return NO;
   }
 
   return [super isAccessibilityElement];

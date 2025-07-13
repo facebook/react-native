@@ -19,9 +19,9 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
   private var valueFlags = 0
   private var hasAliasesSet = false
 
-  public constructor() : this(0f, newFullSpacingArray()) {}
+  public constructor() : this(0f, newFullSpacingArray())
 
-  public constructor(defaultValue: Float) : this(defaultValue, newFullSpacingArray()) {}
+  public constructor(defaultValue: Float) : this(defaultValue, newFullSpacingArray())
 
   /**
    * Copy constructor.
@@ -36,8 +36,7 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
   /**
    * Set a spacing value.
    *
-   * @param spacingType one of [.LEFT], [.TOP], [.RIGHT], [.BOTTOM], [ ][.VERTICAL], [.HORIZONTAL],
-   *   [.ALL]
+   * @param spacingType one of [LEFT], [TOP], [RIGHT], [BOTTOM], [VERTICAL], [HORIZONTAL], [ALL]
    * @param value the value for this direction
    * @return `true` if the spacing has changed, or `false` if the same value was already set
    */
@@ -63,7 +62,7 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
   /**
    * Get the spacing for a direction. This takes into account any default values that have been set.
    *
-   * @param spacingType one of [.LEFT], [.TOP], [.RIGHT], [.BOTTOM]
+   * @param spacingType one of [LEFT], [TOP], [RIGHT], [BOTTOM]
    */
   public operator fun get(spacingType: Int): Float {
     val defaultVal =
@@ -94,10 +93,9 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
   }
 
   /**
-   * Get the raw value (that was set using [.set]), without taking into account any default values.
+   * Get the raw value (that was set using [set]), without taking into account any default values.
    *
-   * @param spacingType one of [.LEFT], [.TOP], [.RIGHT], [.BOTTOM], [ ][.VERTICAL], [.HORIZONTAL],
-   *   [.ALL]
+   * @param spacingType one of [LEFT], [TOP], [RIGHT], [BOTTOM], [ ][VERTICAL], [HORIZONTAL], [ALL]
    */
   public fun getRaw(spacingType: Int): Float = spacing[spacingType]
 

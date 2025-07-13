@@ -18,7 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
-import DebuggerSessionObserver from '../../../src/private/debugging/FuseboxSessionObserver';
+import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -37,20 +37,20 @@ export type LogData = $ReadOnly<{
 }>;
 
 export type Observer = (
-  $ReadOnly<{|
+  $ReadOnly<{
     logs: LogBoxLogs,
     isDisabled: boolean,
     selectedLogIndex: number,
-  |}>,
+  }>,
 ) => void;
 
 export type IgnorePattern = string | RegExp;
 
-export type Subscription = $ReadOnly<{|
+export type Subscription = $ReadOnly<{
   unsubscribe: () => void,
-|}>;
+}>;
 
-export type WarningInfo = {|
+export type WarningInfo = {
   finalFormat: string,
   forceDialogImmediately: boolean,
   suppressDialog_LEGACY: boolean,
@@ -58,15 +58,15 @@ export type WarningInfo = {|
   monitorEvent: string | null,
   monitorListVersion: number,
   monitorSampleRate: number,
-|};
+};
 
 export type WarningFilter = (format: string) => WarningInfo;
 
-type AppInfo = $ReadOnly<{|
+type AppInfo = $ReadOnly<{
   appVersion: string,
   engine: string,
   onPress?: ?() => void,
-|}>;
+}>;
 
 const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
@@ -105,7 +105,7 @@ export function reportLogBoxError(
   error: ExtendedError,
   componentStack?: string,
 ): void {
-  const ExceptionsManager = require('../../Core/ExceptionsManager');
+  const ExceptionsManager = require('../../Core/ExceptionsManager').default;
 
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {
@@ -413,26 +413,29 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
-type Props = $ReadOnly<{||}>;
-type State = $ReadOnly<{|
+type LogBoxStateSubscriptionProps = $ReadOnly<{}>;
+type LogBoxStateSubscriptionState = $ReadOnly<{
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
   selectedLogIndex: number,
-|}>;
+}>;
 
 type SubscribedComponent = React.ComponentType<
-  $ReadOnly<{|
+  $ReadOnly<{
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
     selectedLogIndex: number,
-  |}>,
+  }>,
 >;
 
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
-): React.ComponentType<{||}> {
-  class LogBoxStateSubscription extends React.Component<Props, State> {
+): React.ComponentType<{}> {
+  class LogBoxStateSubscription extends React.Component<
+    LogBoxStateSubscriptionProps,
+    LogBoxStateSubscriptionState,
+  > {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
     }
@@ -446,7 +449,7 @@ export function withSubscription(
 
     _subscription: ?Subscription;
 
-    state: State = {
+    state: LogBoxStateSubscriptionState = {
       logs: new Set(),
       isDisabled: false,
       hasError: false,

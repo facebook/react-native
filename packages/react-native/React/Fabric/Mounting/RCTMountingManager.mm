@@ -11,7 +11,6 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponent.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/TraceSection.h>
@@ -19,6 +18,7 @@
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
+#import <react/utils/FollyConvert.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -282,25 +282,34 @@ static void RCTPerformMountInstructions(
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
-                             changedProps:(NSDictionary *)props
+                             changedProps:(folly::dynamic)props
                       componentDescriptor:(const ComponentDescriptor &)componentDescriptor
 {
   RCTAssertMainQueue();
+  NSArray<NSString *> *propsKeysToBeUpdated = extractKeysFromFollyDynamic(props);
+  bool updatesTransform = props.find("transform") != props.items().end();
+  bool updatesOpacity = props.find("opacity") != props.items().end();
+
   UIView<RCTComponentViewProtocol> *componentView = [_componentViewRegistry findComponentViewWithTag:reactTag];
+  if (!componentView) {
+    RCTLogWarn(@"Attempted to update view with tag %ld, but it no longer exists", (long)reactTag);
+    return;
+  }
+
   SurfaceId surfaceId = RCTSurfaceIdForView(componentView);
   Props::Shared oldProps = [componentView props];
   Props::Shared newProps = componentDescriptor.cloneProps(
-      PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(convertIdToFollyDynamic(props)));
+      PropsParserContext{surfaceId, *_contextContainer.get()}, oldProps, RawProps(std::move(props)));
 
   NSSet<NSString *> *propKeys = componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN ?: [NSSet new];
-  propKeys = [propKeys setByAddingObjectsFromArray:props.allKeys];
+  propKeys = [propKeys setByAddingObjectsFromArray:propsKeysToBeUpdated];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = nil;
   [componentView updateProps:newProps oldProps:oldProps];
   componentView.propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN = propKeys;
 
   const auto &newViewProps = static_cast<const ViewProps &>(*newProps);
 
-  if (props[@"transform"]) {
+  if (updatesTransform) {
     auto layoutMetrics = LayoutMetrics();
     layoutMetrics.frame.size.width = componentView.layer.bounds.size.width;
     layoutMetrics.frame.size.height = componentView.layer.bounds.size.height;
@@ -309,7 +318,7 @@ static void RCTPerformMountInstructions(
       componentView.layer.transform = newTransform;
     }
   }
-  if (props[@"opacity"] && componentView.layer.opacity != (float)newViewProps.opacity) {
+  if (updatesOpacity && componentView.layer.opacity != (float)newViewProps.opacity) {
     componentView.layer.opacity = newViewProps.opacity;
   }
 

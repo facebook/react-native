@@ -9,6 +9,8 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTViewManager.h>
 
+#import <string>
+
 static UIColor *UIColorFromHexString(const std::string hexString)
 {
   unsigned rgbValue = 0;

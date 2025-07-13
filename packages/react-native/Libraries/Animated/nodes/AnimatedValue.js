@@ -9,7 +9,9 @@
  */
 
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
-import type Animation, {EndCallback} from '../animations/Animation';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type Animation from '../animations/Animation';
+import type {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
 import type {AnimatedNodeConfig} from './AnimatedNode';
@@ -50,7 +52,6 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 export function flushValue(rootNode: AnimatedNode): void {
-  // eslint-disable-next-line func-call-spacing
   const leaves = new Set<{update: () => void, ...}>();
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
@@ -84,7 +85,8 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
-  #updateSubscription: ?EventSubscription = null;
+  #listenerCount: number;
+  #updateSubscription: ?EventSubscription;
 
   _value: number;
   _startingValue: number;
@@ -97,6 +99,10 @@ export default class AnimatedValue extends AnimatedWithChildren {
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
+
+    this.#listenerCount = 0;
+    this.#updateSubscription = null;
+
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
@@ -105,20 +111,8 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  __attach(): void {
+  __detach() {
     if (this.__isNative) {
-      // NOTE: In theory, we should only need to call this when any listeners
-      // are added. However, there is a global `onUserDrivenAnimationEnded`
-      // listener that relies on `onAnimatedValueUpdate` having fired to update
-      // the values in JavaScript. If that listener is removed, this could be
-      // re-optimized.
-      this.#ensureUpdateSubscriptionExists();
-    }
-  }
-
-  __detach(): void {
-    if (this.__isNative) {
-      this.#updateSubscription?.remove();
       NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
         this._value = value - this._offset;
       });
@@ -129,6 +123,38 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    if (this.#listenerCount > 0) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+  }
+
+  addListener(callback: (value: any) => mixed): string {
+    const id = super.addListener(callback);
+    this.#listenerCount++;
+    if (this.__isNative) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    super.removeListener(id);
+    this.#listenerCount--;
+    if (this.__isNative && this.#listenerCount === 0) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  removeAllListeners(): void {
+    super.removeAllListeners();
+    this.#listenerCount = 0;
+    if (this.__isNative) {
+      this.#updateSubscription?.remove();
+    }
   }
 
   #ensureUpdateSubscriptionExists(): void {
@@ -142,7 +168,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
         'onAnimatedValueUpdate',
         data => {
           if (data.tag === nativeTag) {
-            this.__onAnimatedValueUpdateReceived(data.value);
+            this.__onAnimatedValueUpdateReceived(data.value, data.offset);
           }
         },
       );
@@ -220,7 +246,9 @@ export default class AnimatedValue extends AnimatedWithChildren {
     this._offset += this._value;
     this._value = 0;
     if (this.__isNative) {
-      NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag());
+      _executeAsAnimatedBatch(this.__getNativeTag().toString(), () =>
+        NativeAnimatedAPI.extractAnimatedNodeOffset(this.__getNativeTag()),
+      );
     }
   }
 
@@ -260,8 +288,11 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  __onAnimatedValueUpdateReceived(value: number): void {
+  __onAnimatedValueUpdateReceived(value: number, offset?: number): void {
     this._updateValue(value, false /*flush*/);
+    if (offset != null) {
+      this._offset = offset;
+    }
   }
 
   /**

@@ -7,10 +7,13 @@
 
 #include "NativeIntersectionObserver.h"
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeIntersectionObserverModuleProvider(
@@ -21,6 +24,27 @@ NativeIntersectionObserverModuleProvider(
 
 namespace facebook::react {
 
+namespace {
+
+jsi::Object tokenFromShadowNodeFamily(
+    jsi::Runtime& runtime,
+    ShadowNodeFamily::Shared shadowNodeFamily) {
+  jsi::Object obj(runtime);
+  // Need to const_cast since JSI only allows non-const pointees
+  obj.setNativeState(
+      runtime,
+      std::const_pointer_cast<ShadowNodeFamily>(std::move(shadowNodeFamily)));
+  return obj;
+}
+
+ShadowNodeFamily::Shared shadowNodeFamilyFromToken(
+    jsi::Runtime& runtime,
+    jsi::Object token) {
+  return token.getNativeState<ShadowNodeFamily>(runtime);
+}
+
+} // namespace
+
 NativeIntersectionObserver::NativeIntersectionObserver(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeIntersectionObserverCxxSpec(std::move(jsInvoker)) {}
@@ -28,27 +52,54 @@ NativeIntersectionObserver::NativeIntersectionObserver(
 void NativeIntersectionObserver::observe(
     jsi::Runtime& runtime,
     NativeIntersectionObserverObserveOptions options) {
+  observeV2(runtime, std::move(options));
+}
+
+void NativeIntersectionObserver::unobserve(
+    jsi::Runtime& runtime,
+    IntersectionObserverObserverId intersectionObserverId,
+    std::shared_ptr<const ShadowNode> targetShadowNode) {
+  auto token =
+      tokenFromShadowNodeFamily(runtime, targetShadowNode->getFamilyShared());
+  unobserveV2(runtime, intersectionObserverId, std::move(token));
+}
+
+jsi::Object NativeIntersectionObserver::observeV2(
+    jsi::Runtime& runtime,
+    NativeIntersectionObserverObserveOptions options) {
   auto intersectionObserverId = options.intersectionObserverId;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options.targetShadowNode));
+  auto shadowNode = options.targetShadowNode;
+  auto shadowNodeFamily = shadowNode->getFamilyShared();
+
+  std::optional<ShadowNodeFamily::Shared> observationRootShadowNodeFamily;
+  if (options.rootShadowNode.has_value()) {
+    observationRootShadowNodeFamily =
+        options.rootShadowNode.value()->getFamilyShared();
+  }
+
   auto thresholds = options.thresholds;
   auto rootThresholds = options.rootThresholds;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
       intersectionObserverId,
-      shadowNode,
+      observationRootShadowNodeFamily,
+      shadowNodeFamily,
       thresholds,
       rootThresholds,
       uiManager);
+
+  return tokenFromShadowNodeFamily(runtime, shadowNodeFamily);
 }
 
-void NativeIntersectionObserver::unobserve(
+void NativeIntersectionObserver::unobserveV2(
     jsi::Runtime& runtime,
     IntersectionObserverObserverId intersectionObserverId,
-    jsi::Object targetShadowNode) {
-  auto shadowNode = shadowNodeFromValue(runtime, std::move(targetShadowNode));
-  intersectionObserverManager_.unobserve(intersectionObserverId, *shadowNode);
+    jsi::Object targetToken) {
+  auto shadowNodeFamily =
+      shadowNodeFamilyFromToken(runtime, std::move(targetToken));
+  intersectionObserverManager_.unobserve(
+      intersectionObserverId, shadowNodeFamily);
 }
 
 void NativeIntersectionObserver::connect(
@@ -56,12 +107,16 @@ void NativeIntersectionObserver::connect(
     AsyncCallback<> notifyIntersectionObserversCallback) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
   intersectionObserverManager_.connect(
-      uiManager, notifyIntersectionObserversCallback);
+      *RuntimeSchedulerBinding::getBinding(runtime)->getRuntimeScheduler(),
+      uiManager,
+      std::move(notifyIntersectionObserversCallback));
 }
 
 void NativeIntersectionObserver::disconnect(jsi::Runtime& runtime) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
-  intersectionObserverManager_.disconnect(uiManager);
+  intersectionObserverManager_.disconnect(
+      *RuntimeSchedulerBinding::getBinding(runtime)->getRuntimeScheduler(),
+      uiManager);
 }
 
 std::vector<NativeIntersectionObserverEntry>
@@ -81,7 +136,7 @@ NativeIntersectionObserver::takeRecords(jsi::Runtime& runtime) {
 
 NativeIntersectionObserverEntry
 NativeIntersectionObserver::convertToNativeModuleEntry(
-    IntersectionObserverEntry entry,
+    const IntersectionObserverEntry& entry,
     jsi::Runtime& runtime) {
   RectAsTuple targetRect = {
       entry.targetRect.origin.x,
@@ -101,7 +156,7 @@ NativeIntersectionObserver::convertToNativeModuleEntry(
 
   NativeIntersectionObserverEntry nativeModuleEntry = {
       entry.intersectionObserverId,
-      (*entry.shadowNode).getInstanceHandle(runtime),
+      (*entry.shadowNodeFamily).getInstanceHandle(runtime),
       targetRect,
       rootRect,
       intersectionRect,

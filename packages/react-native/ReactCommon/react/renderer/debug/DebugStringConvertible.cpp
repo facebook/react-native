@@ -7,8 +7,11 @@
 
 #include "DebugStringConvertible.h"
 
-#include <folly/Conv.h>
-#include <folly/Format.h>
+#include <array>
+#include <cinttypes>
+#include <cstdio>
+
+#include <double-conversion/double-conversion.h>
 
 namespace facebook::react {
 
@@ -125,26 +128,34 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
 /*
  * `toString`-family implementation.
  */
-std::string toString(const std::string& value) {
-  return value;
-}
-std::string toString(const int& value) {
-  return folly::to<std::string>(value);
-}
-std::string toString(const bool& value) {
-  return folly::to<std::string>(value);
-}
-std::string toString(const float& value) {
-  return folly::to<std::string>(value);
-}
 std::string toString(const double& value) {
-  return folly::to<std::string>(value);
+  // Format taken from folly's toString
+  static double_conversion::DoubleToStringConverter conv(
+      0,
+      "Infinity",
+      "NaN",
+      'E',
+      -6, // detail::kConvMaxDecimalInShortestLow,
+      21, // detail::kConvMaxDecimalInShortestHigh,
+      6, // max leading padding zeros
+      1); // max trailing padding zeros
+  std::array<char, 256> buffer{};
+  double_conversion::StringBuilder builder(buffer.data(), buffer.size());
+  conv.ToShortest(value, &builder);
+  return builder.Finalize();
 }
+
 std::string toString(const void* value) {
   if (value == nullptr) {
     return "null";
   }
-  return folly::sformat("0x{0:016x}", reinterpret_cast<size_t>(value));
+  std::array<char, 20> buffer{};
+  std::snprintf(
+      buffer.data(),
+      buffer.size(),
+      "0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(value));
+  return buffer.data();
 }
 
 #endif

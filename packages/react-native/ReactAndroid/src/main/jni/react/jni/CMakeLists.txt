@@ -6,12 +6,40 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB reactnativejni_SRC CONFIGURE_DEPENDS *.cpp)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-add_compile_options(
-        -fexceptions
-        -Wno-unused-lambda-capture
-        -std=c++20)
+
+file(GLOB reactnativejni_common_SRC CONFIGURE_DEPENDS *.cpp)
+
+#############################
+### reactnativejni_common ###
+#############################
+
+# This library contains the code from reactnativejni that is used by both old and new
+# arch so it can be built in a separate library.
+
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
+add_library(
+        reactnativejni_common
+        OBJECT
+          JDynamicNative.cpp
+          JReactMarker.cpp
+          NativeArray.cpp
+          NativeCommon.cpp
+          NativeMap.cpp
+          OnLoad-common.cpp
+          ReadableNativeArray.cpp
+          ReadableNativeMap.cpp
+          WritableNativeArray.cpp
+          WritableNativeMap.cpp
+)
+target_merge_so(reactnativejni_common)
+target_include_directories(reactnativejni_common PUBLIC ../../)
+
+target_link_libraries(reactnativejni_common fbjni folly_runtime react_cxxreact)
+target_compile_reactnative_options(reactnativejni_common PRIVATE)
+target_compile_options(reactnativejni_common PRIVATE -Wno-unused-lambda-capture)
 
 ######################
 ### reactnativejni ###
@@ -22,7 +50,24 @@ include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-ut
 add_library(
         reactnativejni
         OBJECT
-        ${reactnativejni_SRC}
+          CatalystInstanceImpl.cpp
+          InspectorNetworkRequestListener.cpp
+          JExecutor.cpp
+          JInspector.cpp
+          JMessageQueueThread.cpp
+          JReactCxxErrorHandler.cpp
+          JReactSoftExceptionLogger.cpp
+          JRuntimeExecutor.cpp
+          JRuntimeScheduler.cpp
+          JSLoader.cpp
+          JSLogging.cpp
+          JavaModuleWrapper.cpp
+          JniJSModulesUnbundle.cpp
+          MethodInvoker.cpp
+          ModuleRegistryBuilder.cpp
+          OnLoad.cpp
+          ReactInstanceManagerInspectorTarget.cpp
+          SafeReleaseJniRef.cpp
 )
 target_merge_so(reactnativejni)
 
@@ -37,7 +82,10 @@ target_link_libraries(reactnativejni
         glog_init
         logger
         react_cxxreact
-        react_render_runtimescheduler
+        react_renderer_runtimescheduler
+        reactnativejni_common
         runtimeexecutor
         yoga
         )
+target_compile_reactnative_options(reactnativejni PRIVATE)
+target_compile_options(reactnativejni PRIVATE -Wno-unused-lambda-capture)

@@ -63,6 +63,9 @@ public class ArrayPropsNativeComponentManagerDelegate<T extends View, U extends 
       case \\"arrayOfArrayOfObject\\":
         mViewManager.setArrayOfArrayOfObject(view, (ReadableArray) value);
         break;
+      case \\"arrayOfMixed\\":
+        mViewManager.setArrayOfMixed(view, (ReadableArray) value);
+        break;
       default:
         super.setProperty(view, propName, value);
     }
@@ -218,7 +221,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"flashScrollIndicators\\":
         mViewManager.flashScrollIndicators(view);
@@ -269,7 +272,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
   }
 
   @Override
-  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       case \\"handleRootTag\\":
         mViewManager.handleRootTag(view, args.getDouble(0));

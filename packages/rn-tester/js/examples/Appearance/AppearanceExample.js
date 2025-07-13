@@ -4,11 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
-import type {ColorSchemeName} from 'react-native/Libraries/Utilities/NativeAppearance';
+import type {ColorSchemeName} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext, themes} from '../../components/RNTesterTheme';

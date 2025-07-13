@@ -209,7 +209,7 @@ function getCommonTypeAnnotation<T>(
       return buildObjectType([typeAnnotation], types, parser, buildSchema);
     case 'TSIntersectionType':
       return buildObjectType(
-        flattenIntersectionType(typeAnnotation, types),
+        flattenIntersectionType(typeAnnotation, parser, types),
         types,
         parser,
         buildSchema,
@@ -278,7 +278,7 @@ function getTypeAnnotationForArray<T>(
   buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(typeAnnotation, types);
+  const topLevelType = parseTopLevelType(typeAnnotation, parser, types);
   if (topLevelType.defaultValue !== undefined) {
     throw new Error(
       'Nested optionals such as "ReadonlyArray<boolean | null | undefined>" are not supported, please declare optionals at the top level of value definitions as in "ReadonlyArray<boolean> | null | undefined"',
@@ -310,9 +310,9 @@ function getTypeAnnotationForArray<T>(
 
   const type =
     extractedTypeAnnotation.elementType === 'TSTypeReference'
-      ? extractedTypeAnnotation.elementType.typeName.name
+      ? parser.getTypeAnnotationName(extractedTypeAnnotation.elementType)
       : extractedTypeAnnotation.elementType?.type ||
-        extractedTypeAnnotation.typeName?.name ||
+        parser.getTypeAnnotationName(extractedTypeAnnotation) ||
         extractedTypeAnnotation.type;
 
   const common = getCommonTypeAnnotation(
@@ -335,7 +335,7 @@ function getTypeAnnotationForArray<T>(
         type: 'FloatTypeAnnotation',
       };
     default:
-      (type: empty);
+      (type: mixed);
       throw new Error(`Unknown prop type for "${name}": ${type}`);
   }
 }
@@ -377,7 +377,7 @@ function getTypeAnnotation<T>(
   buildSchema: BuildSchemaFN<T>,
 ): $FlowFixMe {
   // unpack WithDefault, (T) or T|U
-  const topLevelType = parseTopLevelType(annotation, types);
+  const topLevelType = parseTopLevelType(annotation, parser, types);
   const typeAnnotation = topLevelType.type;
   const arrayType = detectArrayType(
     name,
@@ -445,10 +445,12 @@ type SchemaInfo = {
 function getSchemaInfo(
   property: PropAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): SchemaInfo {
   // unpack WithDefault, (T) or T|U
   const topLevelType = parseTopLevelType(
     property.typeAnnotation.typeAnnotation,
+    parser,
     types,
   );
 

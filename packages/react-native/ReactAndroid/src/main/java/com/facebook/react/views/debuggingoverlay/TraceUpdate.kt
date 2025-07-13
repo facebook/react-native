@@ -9,4 +9,4 @@ package com.facebook.react.views.debuggingoverlay
 
 import android.graphics.RectF
 
-public class TraceUpdate(public val id: Int, public val rectangle: RectF, public val color: Int)
+internal class TraceUpdate(val id: Int, val rectangle: RectF, val color: Int)

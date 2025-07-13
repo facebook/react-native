@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc3960bfa407d1fc123ee4c71eac644a>>
+ * @generated SignedSource<<736f6e9a9941d0a9a6fbde5c038f1622>>
  */
 
 /**
@@ -19,9 +19,7 @@
 
 #pragma once
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
 #include "FBReactNativeSpecJSI.h"
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
@@ -30,102 +28,125 @@
 namespace facebook::react {
 
 class NativeReactNativeFeatureFlags
-    : public NativeReactNativeFeatureFlagsCxxSpec<
-          NativeReactNativeFeatureFlags> {
+    : public NativeReactNativeFeatureFlagsCxxSpecJSI {
  public:
   NativeReactNativeFeatureFlags(std::shared_ptr<CallInvoker> jsInvoker);
+
+  static constexpr std::string_view kModuleName = "NativeReactNativeFeatureFlagsCxx";
 
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
+  bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
-  bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
+  bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
+  bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
+
+  bool enableAccessibilityOrder(jsi::Runtime& runtime);
+
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+
+  bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
-  bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
+  bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
+
+  bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
+
+  bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
+
+  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
-
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
-  bool enableFixForViewCommandRace(jsi::Runtime& runtime);
+  bool enableFixForParentTagDuringReparenting(jsi::Runtime& runtime);
 
-  bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
+  bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
+
+  bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
-  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+  bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
-  bool enableLongTaskAPI(jsi::Runtime& runtime);
+  bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
+
+  bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
+
+  bool enableNativeCSSParsing(jsi::Runtime& runtime);
+
+  bool enableNetworkEventReporting(jsi::Runtime& runtime);
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
-  bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
+  bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
-  bool enableReportEventPaintTime(jsi::Runtime& runtime);
+  bool enableResourceTimingAPI(jsi::Runtime& runtime);
 
   bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
-  bool enableUIConsistency(jsi::Runtime& runtime);
+  bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
 
-  bool excludeYogaFromRawProps(jsi::Runtime& runtime);
+  bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
+  bool enableViewRecyclingForView(jsi::Runtime& runtime);
+
+  bool enableVirtualViewDebugFeatures(jsi::Runtime& runtime);
+
+  bool enableVirtualViewRenderState(jsi::Runtime& runtime);
+
+  bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
-
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
-  bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);
+  bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
-  bool lazyAnimationCallbacks(jsi::Runtime& runtime);
+  bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
-  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
+  double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
-  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
-
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
-  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
+  bool useShadowNodeStateOnClone(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };
 
 } // namespace facebook::react

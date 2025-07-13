@@ -7,6 +7,8 @@
 
 #include "RAMBundleRegistry.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <folly/String.h>
 
 #include <memory>
@@ -66,8 +68,9 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(
   if (bundleId == MAIN_BUNDLE_ID) {
     return module;
   }
+
   return {
-      folly::to<std::string>("seg-", bundleId, '_', std::move(module.name)),
+      "seg-" + std::to_string(bundleId) + '_' + module.name,
       std::move(module.code),
   };
 }
@@ -77,3 +80,5 @@ JSModulesUnbundle* RAMBundleRegistry::getBundle(uint32_t bundleId) const {
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

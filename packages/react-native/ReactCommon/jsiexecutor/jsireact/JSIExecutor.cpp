@@ -12,7 +12,6 @@
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/ReactMarker.h>
 #include <cxxreact/TraceSection.h>
-#include <folly/Conv.h>
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -25,6 +24,8 @@
 using namespace facebook::jsi;
 
 namespace facebook::react {
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -195,7 +196,7 @@ void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
 void JSIExecutor::registerBundle(
     uint32_t bundleId,
     const std::string& bundlePath) {
-  const auto tag = folly::to<std::string>(bundleId);
+  auto tag = std::to_string(bundleId);
   ReactMarker::logTaggedMarker(
       ReactMarker::REGISTER_JS_SEGMENT_START, tag.c_str());
   if (bundleRegistry_) {
@@ -265,7 +266,7 @@ void JSIExecutor::invokeCallback(
         *runtime_, callbackId, valueFromDynamic(*runtime_, arguments));
   } catch (...) {
     std::throw_with_nested(std::runtime_error(
-        folly::to<std::string>("Error invoking callback ", callbackId)));
+        "Error invoking callback " + std::to_string(callbackId)));
   }
 
   callNativeModules(ret, true);
@@ -436,8 +437,9 @@ Value JSIExecutor::nativeRequire(const Value* args, size_t count) {
     throw std::invalid_argument("Got wrong number of args");
   }
 
-  uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
-  uint32_t bundleId = count == 2 ? folly::to<uint32_t>(args[1].getNumber()) : 0;
+  auto moduleId = static_cast<uint32_t>(args[0].getNumber());
+  uint32_t bundleId =
+      count == 2 ? static_cast<uint32_t>(args[1].getNumber()) : 0;
   auto module = bundleRegistry_->getModule(bundleId, moduleId);
 
   runtime_->evaluateJavaScript(
@@ -451,8 +453,7 @@ Value JSIExecutor::nativeCallSyncHook(const Value* args, size_t count) {
   }
 
   if (!args[2].isObject() || !args[2].asObject(*runtime_).isArray(*runtime_)) {
-    throw std::invalid_argument(
-        folly::to<std::string>("method parameters should be array"));
+    throw std::invalid_argument("method parameters should be array");
   }
 
   unsigned int moduleId = static_cast<unsigned int>(args[0].getNumber());
@@ -522,6 +523,55 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value* args, size_t count) {
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
 
+#else // RCT_FIT_RM_OLD_RUNTIME
+
+JSIExecutor::JSIExecutor(
+    std::shared_ptr<jsi::Runtime> runtime,
+    std::shared_ptr<ExecutorDelegate> delegate,
+    const JSIScopedTimeoutInvoker& scopedTimeoutInvoker,
+    RuntimeInstaller runtimeInstaller) {}
+
+void JSIExecutor::initializeRuntime() {}
+
+void JSIExecutor::loadBundle(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {}
+
+void JSIExecutor::registerBundle(
+    uint32_t bundleId,
+    const std::string& bundlePath) {}
+
+void JSIExecutor::callFunction(
+    const std::string& moduleId,
+    const std::string& methodId,
+    const folly::dynamic& arguments) {}
+
+void JSIExecutor::invokeCallback(
+    const double callbackId,
+    const folly::dynamic& arguments) {}
+
+void JSIExecutor::setGlobalVariable(
+    std::string propName,
+    std::unique_ptr<const JSBigString> jsonValue) {}
+
+std::string JSIExecutor::getDescription() {
+  return "null";
+}
+
+void* JSIExecutor::getJavaScriptContext() {
+  return nullptr;
+}
+
+bool JSIExecutor::isInspectable() {
+  return false;
+}
+
+void JSIExecutor::handleMemoryPressure(int pressureLevel) {}
+
+void JSIExecutor::flush() {}
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
+
 void bindNativeLogger(Runtime& runtime, Logger logger) {
   runtime.global().setProperty(
       runtime,
@@ -541,7 +591,7 @@ void bindNativeLogger(Runtime& runtime, Logger logger) {
             }
             logger(
                 args[0].asString(runtime).utf8(runtime),
-                folly::to<unsigned int>(args[1].asNumber()));
+                static_cast<unsigned int>(args[1].asNumber()));
             return Value::undefined();
           }));
 }
@@ -557,7 +607,9 @@ void bindNativePerformanceNow(Runtime& runtime) {
           [](jsi::Runtime& runtime,
              const jsi::Value&,
              const jsi::Value* args,
-             size_t count) { return Value(JSExecutor::performanceNow()); }));
+             size_t /*count*/) {
+            return HighResTimeStamp::now().toDOMHighResTimeStamp();
+          }));
 }
 
 } // namespace facebook::react

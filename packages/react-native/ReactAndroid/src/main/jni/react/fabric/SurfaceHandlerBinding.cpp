@@ -47,7 +47,8 @@ void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat offsetY,
     jboolean doLeftAndRightSwapInRTL,
     jboolean isRTL,
-    jfloat pixelDensity) {
+    jfloat pixelDensity,
+    jfloat fontScale) {
   LayoutConstraints constraints = {};
   constraints.minimumSize = {minWidth, minHeight};
   constraints.maximumSize = {maxWidth, maxHeight};
@@ -58,12 +59,14 @@ void SurfaceHandlerBinding::setLayoutConstraints(
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
   context.pointScaleFactor = pixelDensity;
   context.viewportOffset = {offsetX, offsetY};
+  context.fontSizeMultiplier = fontScale;
 
   surfaceHandler_.constraintLayout(constraints, context);
 }
 
 void SurfaceHandlerBinding::setProps(NativeMap* props) {
-  surfaceHandler_.setProps(props->consume());
+  surfaceHandler_.setProps(
+      props != nullptr ? props->consume() : folly::dynamic::object());
 }
 
 const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
@@ -73,9 +76,9 @@ const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
-      makeNativeMethod("getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
-      makeNativeMethod("isRunning", SurfaceHandlerBinding::isRunning),
-      makeNativeMethod("getModuleName", SurfaceHandlerBinding::getModuleName),
+      makeNativeMethod("_getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
+      makeNativeMethod("_isRunning", SurfaceHandlerBinding::isRunning),
+      makeNativeMethod("_getModuleName", SurfaceHandlerBinding::getModuleName),
       makeNativeMethod(
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),

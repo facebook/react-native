@@ -40,7 +40,7 @@ jobs:
           hermes-version-file: ${{ env.HERMES_VERSION_FILE }}
 
   build_hermesc_apple:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -80,7 +80,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermes_macos:
-    runs-on: macos-13
+    runs-on: macos-14
     needs: [build_apple_slices_hermes, prepare_hermes_workspace]
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -100,6 +100,15 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
 
+  prebuild_apple_dependencies:
+    uses: ./.github/workflows/prebuild-ios-dependencies.yml
+    secrets: inherit
+
+  prebuild_react_native_core:
+    uses: ./.github/workflows/prebuild-ios-core.yml
+    secrets: inherit
+    needs: [prebuild_apple_dependencies, build_hermes_macos]
+
   build_hermesc_linux:
     runs-on: ubuntu-latest
     needs: prepare_hermes_workspace
@@ -116,7 +125,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_hermesc_windows:
-    runs-on: windows-2019
+    runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
       HERMES_WS_DIR: 'D:\tmp\hermes'
@@ -153,6 +162,7 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -164,13 +174,15 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
+        prebuild_react_native_core,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
+        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -182,9 +194,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build and Publish NPM PAckage
+      - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}

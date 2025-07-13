@@ -6,33 +6,31 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_render_mounting_SRC CONFIGURE_DEPENDS 
+file(GLOB react_renderer_mounting_SRC CONFIGURE_DEPENDS
         *.cpp
+        internal/*.cpp
         stubs/*.cpp)
-add_library(react_render_mounting OBJECT ${react_render_mounting_SRC})
+add_library(react_renderer_mounting OBJECT ${react_renderer_mounting_SRC})
 
-target_include_directories(react_render_mounting PRIVATE .)
-target_include_directories(react_render_mounting PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_mounting PRIVATE .)
+target_include_directories(react_renderer_mounting PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_mounting
+target_link_libraries(react_renderer_mounting
         folly_runtime
         glog
         glog_init
         jsi
         react_debug
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_telemetry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_telemetry
         react_utils
         rrc_root
         rrc_view
+        rrc_scrollview
         yoga)
+target_compile_reactnative_options(react_renderer_mounting PRIVATE)
+target_compile_options(react_renderer_mounting PRIVATE -Wpedantic)

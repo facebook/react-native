@@ -22,6 +22,11 @@ class StubViewTree {
 
   void mutate(const ShadowViewMutationList& mutations);
 
+  void dispatchCommand(
+      const ShadowView& shadowView,
+      const std::string& commandName,
+      const folly::dynamic& args);
+
   const StubView& getRootStubView() const;
 
   /*
@@ -34,9 +39,15 @@ class StubViewTree {
    */
   size_t size() const;
 
+  /**
+   * Returns the list of mounting operations in the buffer and clears it.
+   */
+  std::vector<std::string> takeMountingLogs();
+
  private:
   Tag rootTag_{};
   std::unordered_map<Tag, StubView::Shared> registry_{};
+  std::vector<std::string> mountingLogs_{};
 
   friend bool operator==(const StubViewTree& lhs, const StubViewTree& rhs);
   friend bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs);
@@ -46,6 +57,10 @@ class StubViewTree {
   bool hasTag(Tag tag) const {
     return registry_.find(tag) != registry_.end();
   }
+
+  std::string getNativeId(Tag tag);
+  std::string getNativeId(const ShadowView& shadowView);
+  void recordMutation(const ShadowViewMutation& mutation);
 };
 
 bool operator==(const StubViewTree& lhs, const StubViewTree& rhs);

@@ -7,6 +7,8 @@
 
 #include "NativeToJsBridge.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <ReactCommon/CallInvoker.h>
 #include <folly/json.h>
 #include <glog/logging.h>
@@ -173,8 +175,7 @@ void NativeToJsBridge::callFunction(
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
-  FbSystraceAsyncFlow::begin(
-      TRACE_TAG_REACT_CXX_BRIDGE, "JSCall", systraceCookie);
+  FbSystraceAsyncFlow::begin(TRACE_TAG_REACT, "JSCall", systraceCookie);
 #endif
 
   runOnExecutorQueue([this,
@@ -192,8 +193,7 @@ void NativeToJsBridge::callFunction(
     }
 
 #ifdef WITH_FBSYSTRACE
-    FbSystraceAsyncFlow::end(
-        TRACE_TAG_REACT_CXX_BRIDGE, "JSCall", systraceCookie);
+    FbSystraceAsyncFlow::end(TRACE_TAG_REACT, "JSCall", systraceCookie);
     TraceSection s(
         "NativeToJsBridge::callFunction", "module", module, "method", method);
 #else
@@ -212,8 +212,7 @@ void NativeToJsBridge::invokeCallback(
   int systraceCookie = -1;
 #ifdef WITH_FBSYSTRACE
   systraceCookie = m_systraceCookie++;
-  FbSystraceAsyncFlow::begin(
-      TRACE_TAG_REACT_CXX_BRIDGE, "<callback>", systraceCookie);
+  FbSystraceAsyncFlow::begin(TRACE_TAG_REACT, "<callback>", systraceCookie);
 #endif
 
   runOnExecutorQueue(
@@ -227,8 +226,7 @@ void NativeToJsBridge::invokeCallback(
               "Attempting to invoke JS callback on a bad application bundle.");
         }
 #ifdef WITH_FBSYSTRACE
-        FbSystraceAsyncFlow::end(
-            TRACE_TAG_REACT_CXX_BRIDGE, "<callback>", systraceCookie);
+        FbSystraceAsyncFlow::end(TRACE_TAG_REACT, "<callback>", systraceCookie);
         TraceSection s("NativeToJsBridge::invokeCallback");
 #else
         (void)(systraceCookie);
@@ -349,3 +347,5 @@ NativeToJsBridge::getInspectorTargetDelegate() {
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

@@ -17,10 +17,10 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** [NativeModule] that allows JS to show an Android Toast. */
 @ReactModule(name = NativeToastAndroidSpec.NAME)
-public class ToastModule(reactContext: ReactApplicationContext) :
+internal class ToastModule(reactContext: ReactApplicationContext) :
     NativeToastAndroidSpec(reactContext) {
 
-  override public fun getTypedExportedConstants(): Map<String, Any> =
+  override fun getTypedExportedConstants(): Map<String, Any> =
       mutableMapOf(
           DURATION_SHORT_KEY to Toast.LENGTH_SHORT,
           DURATION_LONG_KEY to Toast.LENGTH_LONG,
@@ -29,28 +29,22 @@ public class ToastModule(reactContext: ReactApplicationContext) :
           GRAVITY_CENTER to (Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL),
       )
 
-  override public fun show(message: String?, durationDouble: Double) {
+  override fun show(message: String?, durationDouble: Double) {
     val duration = durationDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable { Toast.makeText(getReactApplicationContext(), message, duration).show() })
+    UiThreadUtil.runOnUiThread { Toast.makeText(reactApplicationContext, message, duration).show() }
   }
 
-  override public fun showWithGravity(
-      message: String?,
-      durationDouble: Double,
-      gravityDouble: Double
-  ) {
+  override fun showWithGravity(message: String?, durationDouble: Double, gravityDouble: Double) {
     val duration = durationDouble.toInt()
     val gravity = gravityDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable {
-          val toast = Toast.makeText(getReactApplicationContext(), message, duration)
-          toast.setGravity(gravity, 0, 0)
-          toast.show()
-        })
+    UiThreadUtil.runOnUiThread {
+      val toast = Toast.makeText(reactApplicationContext, message, duration)
+      toast.setGravity(gravity, 0, 0)
+      toast.show()
+    }
   }
 
-  override public fun showWithGravityAndOffset(
+  override fun showWithGravityAndOffset(
       message: String?,
       durationDouble: Double,
       gravityDouble: Double,
@@ -61,16 +55,15 @@ public class ToastModule(reactContext: ReactApplicationContext) :
     val gravity = gravityDouble.toInt()
     val xOffset = xOffsetDouble.toInt()
     val yOffset = yOffsetDouble.toInt()
-    UiThreadUtil.runOnUiThread(
-        Runnable {
-          val toast = Toast.makeText(getReactApplicationContext(), message, duration)
-          toast.setGravity(gravity, xOffset, yOffset)
-          toast.show()
-        })
+    UiThreadUtil.runOnUiThread {
+      val toast = Toast.makeText(reactApplicationContext, message, duration)
+      toast.setGravity(gravity, xOffset, yOffset)
+      toast.show()
+    }
   }
 
-  public companion object {
-    public const val NAME: String = NativeToastAndroidSpec.NAME
+  companion object {
+    const val NAME: String = NativeToastAndroidSpec.NAME
     private const val DURATION_SHORT_KEY = "SHORT"
     private const val DURATION_LONG_KEY = "LONG"
     private const val GRAVITY_TOP_KEY = "TOP"

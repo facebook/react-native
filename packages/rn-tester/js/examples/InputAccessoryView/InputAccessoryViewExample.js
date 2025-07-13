@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import {useTheme} from '../../components/RNTesterTheme';
+import {useState} from 'react';
+import {
   Alert,
   Button,
   InputAccessoryView,
@@ -20,66 +21,59 @@ const {
   Text,
   TextInput,
   View,
-} = require('react-native');
+} from 'react-native';
 
-type MessageProps = $ReadOnly<{||}>;
-class Message extends React.PureComponent<MessageProps> {
-  render(): React.Node {
-    return (
-      <View style={styles.textBubbleBackground}>
-        <Text style={styles.text}>Text Message</Text>
-      </View>
-    );
-  }
+function Message(): React.Node {
+  return (
+    <View style={styles.textBubbleBackground}>
+      <Text style={styles.text}>Text Message</Text>
+    </View>
+  );
 }
 
-type TextInputProps = $ReadOnly<{||}>;
-type TextInputState = {|text: string|};
-class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
-  state: TextInputState = {text: ''};
+function TextInputBar(): React.Node {
+  const {PlaceholderTextColor, LabelColor, SeparatorColor} = useTheme();
+  const [text, setText] = useState<string>('');
 
-  render(): React.Node {
-    return (
-      <View style={styles.textInputContainer}>
-        <TextInput
-          style={styles.textInput}
-          onChangeText={text => {
-            this.setState({text});
-          }}
-          value={this.state.text}
-          placeholder={'Type a message...'}
-        />
-        <Button
-          onPress={() => {
-            Alert.alert('You tapped the button!');
-          }}
-          title="Send"
-        />
-      </View>
-    );
-  }
+  return (
+    <View style={[styles.textInputContainer, {borderTopColor: SeparatorColor}]}>
+      <TextInput
+        style={[styles.textInput, {color: LabelColor}]}
+        onChangeText={setText}
+        value={text}
+        placeholder={'Type a message...'}
+        placeholderTextColor={PlaceholderTextColor}
+      />
+      <Button
+        onPress={() => {
+          Alert.alert('You tapped the button!');
+        }}
+        title="Send"
+      />
+    </View>
+  );
+}
+
+function InputAccessoryViewExample(): React.Node {
+  const {BackgroundColor} = useTheme();
+
+  return (
+    <>
+      <ScrollView style={styles.fill} keyboardDismissMode="interactive">
+        {Array(15)
+          .fill()
+          .map((_, i) => (
+            <Message key={i} />
+          ))}
+      </ScrollView>
+      <InputAccessoryView backgroundColor={BackgroundColor}>
+        <TextInputBar />
+      </InputAccessoryView>
+    </>
+  );
 }
 
 const BAR_HEIGHT = 44;
-type InputAccessoryProps = $ReadOnly<{||}>;
-class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
-  render(): React.Node {
-    return (
-      <>
-        <ScrollView style={styles.fill} keyboardDismissMode="interactive">
-          {Array(15)
-            .fill()
-            .map((_, i) => (
-              <Message key={i} />
-            ))}
-        </ScrollView>
-        <InputAccessoryView backgroundColor="#fffffff7">
-          <TextInputBar />
-        </InputAccessoryView>
-      </>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   fill: {
@@ -89,7 +83,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#eee',
     height: BAR_HEIGHT,
   },
   textInput: {

@@ -6,38 +6,35 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -Wno-unused-local-typedef
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_render_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_uimanager OBJECT ${react_render_uimanager_SRC})
+file(GLOB react_renderer_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_uimanager OBJECT ${react_renderer_uimanager_SRC})
 
-target_include_directories(react_render_uimanager PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_uimanager PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_uimanager
+target_link_libraries(react_renderer_uimanager
         glog
         folly_runtime
         jsi
         react_cxxreact
         react_debug
         react_featureflags
-        react_render_componentregistry
-        react_render_consistency
-        react_render_uimanager_consistency
-        react_render_core
-        react_render_debug
-        react_render_dom
-        react_render_graphics
-        react_render_leakchecker
-        react_render_runtimescheduler
-        react_render_mounting
+        react_renderer_componentregistry
+        react_renderer_consistency
+        react_renderer_uimanager_consistency
+        react_renderer_bridging
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_dom
+        react_renderer_graphics
+        react_renderer_leakchecker
+        react_renderer_runtimescheduler
+        react_renderer_mounting
         rrc_root
         rrc_view
         runtimeexecutor
 )
+target_compile_reactnative_options(react_renderer_uimanager PRIVATE)
+target_compile_options(react_renderer_uimanager PRIVATE -Wno-unused-local-typedef)
+target_compile_options(react_renderer_uimanager PRIVATE -Wpedantic)

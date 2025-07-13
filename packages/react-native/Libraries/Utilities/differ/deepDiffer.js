@@ -4,19 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 let logListeners;
 
-type LogListeners = {|
+type LogListeners = {
   +onDifferentFunctionsIgnored: (nameOne: ?string, nameTwo: ?string) => void,
-|};
+};
 
-type Options = {|+unsafelyIgnoreFunctions?: boolean|};
+type Options = {+unsafelyIgnoreFunctions?: boolean};
 
 function unstable_setLogListeners(listeners: ?LogListeners) {
   logListeners = listeners;
@@ -25,7 +25,7 @@ function unstable_setLogListeners(listeners: ?LogListeners) {
 /*
  * @returns {bool} true if different, false if equal
  */
-const deepDiffer = function (
+function deepDiffer(
   one: any,
   two: any,
   maxDepthOrOptions: Options | number = -1,
@@ -95,7 +95,7 @@ const deepDiffer = function (
     }
   }
   return false;
-};
+}
 
 deepDiffer.unstable_setLogListeners = unstable_setLogListeners;
-module.exports = deepDiffer;
+export default deepDiffer;

@@ -4,16 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {HostInstance} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
-import type {
-  Layout,
-  PointerEvent,
-} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {HostInstance, LayoutRectangle, PointerEvent} from 'react-native';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';
 import {check_PointerEvent, useTestEventHandler} from './PointerEventSupport';
@@ -48,7 +44,7 @@ function PointerEventAttributesHoverablePointersTestCase(
     (
       event: PointerEvent,
       eventType: string,
-      targetLayout: Layout,
+      targetLayout: LayoutRectangle,
       testNamePrefix: string,
       expectedPointerType: string,
     ) => {

@@ -12,6 +12,8 @@
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class JniJSModulesUnbundle : public JSModulesUnbundle {
@@ -41,3 +43,5 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif

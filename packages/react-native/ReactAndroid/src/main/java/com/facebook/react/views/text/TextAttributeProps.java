@@ -15,6 +15,7 @@ import android.view.Gravity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
@@ -31,6 +32,7 @@ import java.util.List;
 // TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
 // TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
 // TextAttributeProps (e.g. TextAlign)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextAttributeProps {
 
   // constants for Text Attributes serialization
@@ -61,6 +63,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
+  public static final short TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 
   public static final int UNSET = -1;
 
@@ -81,6 +84,7 @@ public class TextAttributeProps {
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
+  protected float mMaxFontSizeMultiplier = Float.NaN;
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
@@ -227,6 +231,9 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_TRANSFORM:
           result.setTextTransform(entry.getStringValue());
           break;
+        case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
+          result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
+          break;
       }
     }
 
@@ -243,6 +250,8 @@ public class TextAttributeProps {
     result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, ReactConstants.UNSET));
     result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
     result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
+    result.setMaxFontSizeMultiplier(
+        getFloatProp(props, ViewProps.MAX_FONT_SIZE_MULTIPLIER, Float.NaN));
     result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, ReactConstants.UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
@@ -316,7 +325,7 @@ public class TextAttributeProps {
     }
   }
 
-  private static String getStringProp(ReactStylesDiffMap mProps, String name) {
+  private static @Nullable String getStringProp(ReactStylesDiffMap mProps, String name) {
     if (mProps.hasKey(name)) {
       return mProps.getString(name);
     } else {
@@ -411,7 +420,14 @@ public class TextAttributeProps {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
-      setLetterSpacing(mLetterSpacingInput);
+    }
+  }
+
+  private void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mMaxFontSizeMultiplier) {
+      mMaxFontSizeMultiplier = maxFontSizeMultiplier;
+      setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
     }
   }
 
@@ -420,7 +436,7 @@ public class TextAttributeProps {
     if (fontSize != ReactConstants.UNSET) {
       fontSize =
           mAllowFontScaling
-              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize, mMaxFontSizeMultiplier))
               : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;
@@ -432,7 +448,7 @@ public class TextAttributeProps {
 
   private void setColor(@Nullable Integer color) {
     mIsColorSet = (color != null);
-    if (mIsColorSet) {
+    if (color != null) {
       mColor = color;
     }
   }
@@ -445,12 +461,12 @@ public class TextAttributeProps {
     return mBackgroundColor;
   }
 
-  private void setBackgroundColor(Integer color) {
+  private void setBackgroundColor(@Nullable Integer color) {
     // TODO: Don't apply background color to anchor TextView since it will be applied on the View
     // directly
     // if (!isVirtualAnchor()) {
     mIsBackgroundColorSet = (color != null);
-    if (mIsBackgroundColorSet) {
+    if (color != null) {
       mBackgroundColor = color;
     }
     // }
@@ -472,7 +488,7 @@ public class TextAttributeProps {
     return mFontStyle;
   }
 
-  public String getFontFamily() {
+  public @Nullable String getFontFamily() {
     return mFontFamily;
   }
 
@@ -578,7 +594,7 @@ public class TextAttributeProps {
     mFontFeatureSettings = TextUtils.join(", ", features);
   }
 
-  public String getFontFeatureSettings() {
+  public @Nullable String getFontFeatureSettings() {
     return mFontFeatureSettings;
   }
 
@@ -620,7 +636,7 @@ public class TextAttributeProps {
     return mIsLineThroughTextDecorationSet;
   }
 
-  private void setTextShadowOffset(ReadableMap offsetMap) {
+  private void setTextShadowOffset(@Nullable ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
 
@@ -708,7 +724,7 @@ public class TextAttributeProps {
     }
   }
 
-  public AccessibilityRole getAccessibilityRole() {
+  public @Nullable AccessibilityRole getAccessibilityRole() {
     return mAccessibilityRole;
   }
 
@@ -771,5 +787,25 @@ public class TextAttributeProps {
       }
     }
     return androidHyphenationFrequency;
+  }
+
+  public static @Nullable TextUtils.TruncateAt getEllipsizeMode(@Nullable String ellipsizeMode) {
+    @Nullable TextUtils.TruncateAt truncateAt = null;
+    if (ellipsizeMode != null) {
+      switch (ellipsizeMode) {
+        case "head":
+          truncateAt = TextUtils.TruncateAt.START;
+          break;
+        case "middle":
+          truncateAt = TextUtils.TruncateAt.MIDDLE;
+          break;
+        case "tail":
+          truncateAt = TextUtils.TruncateAt.END;
+          break;
+        case "clip":
+          truncateAt = null;
+      }
+    }
+    return truncateAt;
   }
 }

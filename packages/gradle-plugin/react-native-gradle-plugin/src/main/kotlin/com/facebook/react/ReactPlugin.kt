@@ -7,16 +7,18 @@
 
 package com.facebook.react
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.tasks.GenerateAutolinkingNewArchitecturesFileTask
 import com.facebook.react.tasks.GenerateCodegenArtifactsTask
 import com.facebook.react.tasks.GenerateCodegenSchemaTask
+import com.facebook.react.tasks.GenerateEntryPointTask
 import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
-import com.facebook.react.utils.AgpConfiguratorUtils.configureDevPorts
+import com.facebook.react.utils.AgpConfiguratorUtils.configureDevServerLocation
 import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
 import com.facebook.react.utils.DependencyUtils.configureDependencies
@@ -27,7 +29,6 @@ import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
-import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -42,7 +43,6 @@ class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
-    checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
     // like codegen config can be propagated from app project to libraries.
@@ -72,17 +72,18 @@ class ReactPlugin : Plugin<Project> {
 
       configureReactNativeNdk(project, extension)
       configureBuildConfigFieldsForApp(project, extension)
-      configureDevPorts(project)
+      configureDevServerLocation(project)
       configureBackwardCompatibilityReactMap(project)
       configureJavaToolChains(project)
 
-      project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+      project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
         onVariants(selector().all()) { variant ->
           project.configureReactTasks(variant = variant, config = extension)
         }
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
+      configureResources(project, extension)
     }
 
     // Library Only Configuration
@@ -112,20 +113,14 @@ class ReactPlugin : Plugin<Project> {
     }
   }
 
-  private fun checkIfNewArchFlagIsSet(project: Project, extension: ReactExtension) {
-    if (project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension)) {
-      project.logger.warn(
-          """
-
-      ********************************************************************************
-
-      WARNING: This version of React Native is ignoring the `newArchEnabled` flag you set. Please set it to true or remove it to suppress this warning.
-
-
-      ********************************************************************************
-
-      """
-              .trimIndent())
+  /** This function configures Android resources - in this case just the bundle */
+  private fun configureResources(project: Project, reactExtension: ReactExtension) {
+    project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
+        ext ->
+      val bundleFileExtension = reactExtension.bundleAssetName.get().substringAfterLast('.', "")
+      if (!reactExtension.enableBundleCompression.get() && bundleFileExtension.isNotBlank()) {
+        ext.androidResources.noCompress.add(bundleFileExtension)
+      }
     }
   }
 
@@ -157,6 +152,7 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
+              it.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // We're reading the package.json at configuration time to properly feed
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
@@ -172,6 +168,20 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(localExtension.jsRootDir)
               }
+              it.jsInputFiles.set(
+                  project.fileTree(it.jsRootDir) { tree ->
+                    tree.include("**/*.js")
+                    tree.include("**/*.jsx")
+                    tree.include("**/*.ts")
+                    tree.include("**/*.tsx")
+
+                    tree.exclude("node_modules/**/*")
+                    tree.exclude("**/*.d.ts")
+                    // We want to exclude the build directory, to don't pick them up for execution
+                    // avoidance.
+                    tree.exclude("**/build/**/*")
+                  })
+
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
               it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
@@ -180,14 +190,16 @@ class ReactPlugin : Plugin<Project> {
     // We create the task to generate Java code from schema.
     val generateCodegenArtifactsTask =
         project.tasks.register(
-            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
-              it.dependsOn(generateCodegenSchemaTask)
-              it.reactNativeDir.set(rootExtension.reactNativeDir)
-              it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-              it.generatedSrcDir.set(generatedSrcDir)
-              it.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
-              it.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
-              it.libraryName.set(localExtension.libraryName)
+            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) { task
+              ->
+              task.dependsOn(generateCodegenSchemaTask)
+              task.reactNativeDir.set(rootExtension.reactNativeDir)
+              task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+              task.generatedSrcDir.set(generatedSrcDir)
+              task.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
+              task.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
+              task.libraryName.set(localExtension.libraryName)
+              task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // Please note that appNeedsCodegen is triggering a read of the package.json at
               // configuration time as we need to feed the onlyIf condition of this task.
@@ -198,15 +210,23 @@ class ReactPlugin : Plugin<Project> {
               val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
               val includesGeneratedCode =
                   parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
-              it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
+              task.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
             }
 
     // We update the android configuration to include the generated sources.
     // This equivalent to this DSL:
     //
     // android { sourceSets { main { java { srcDirs += "$generatedSrcDir/java" } } } }
-    project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-      ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+    if (isLibrary) {
+      project.extensions.getByType(LibraryAndroidComponentsExtension::class.java).finalizeDsl { ext
+        ->
+        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+      }
+    } else {
+      project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
+          ext ->
+        ext.sourceSets.getByName("main").java.srcDir(generatedSrcDir.get().dir("java").asFile)
+      }
     }
 
     // `preBuild` is one of the base tasks automatically registered by AGP.
@@ -239,6 +259,16 @@ class ReactPlugin : Plugin<Project> {
               task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
             }
 
+    // We add a task called generateAutolinkingPackageList to do not clash with the existing task
+    // called generatePackageList. This can to be renamed once we unlink the rn <-> cli
+    // dependency.
+    val generateEntryPointTask =
+        project.tasks.register(
+            "generateReactNativeEntryPoint", GenerateEntryPointTask::class.java) { task ->
+              task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
+              task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
+            }
+
     if (project.isNewArchEnabled(extension)) {
       // For New Arch, we also need to generate code for C++ Autolinking
       val generateAutolinkingNewArchitectureFilesTask =
@@ -253,13 +283,16 @@ class ReactPlugin : Plugin<Project> {
           .dependsOn(generateAutolinkingNewArchitectureFilesTask)
     }
 
-    // We let generateAutolinkingPackageList depend on the preBuild task so it's executed before
+    // We let generateAutolinkingPackageList and generateEntryPoint depend on the preBuild task so
+    // it's executed before
     // everything else.
-    project.tasks.named("preBuild", Task::class.java).dependsOn(generatePackageListTask)
+    project.tasks
+        .named("preBuild", Task::class.java)
+        .dependsOn(generatePackageListTask, generateEntryPointTask)
 
     // We tell Android Gradle Plugin that inside /build/generated/autolinking/src/main/java there
     // are sources to be compiled as well.
-    project.extensions.getByType(AndroidComponentsExtension::class.java).apply {
+    project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
       onVariants(selector().all()) { variant ->
         variant.sources.java?.addStaticSourceDirectory(
             generatedAutolinkingJavaDir.get().asFile.absolutePath)

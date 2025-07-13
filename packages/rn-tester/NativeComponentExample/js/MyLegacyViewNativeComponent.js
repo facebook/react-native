@@ -8,8 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from 'react-native';
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {HostComponent, ViewProps} from 'react-native';
 
 import ReactNative from '../../../react-native/Libraries/Renderer/shims/ReactNative';
 import * as React from 'react';
@@ -26,12 +25,12 @@ type ColorChangedEvent = {
   },
 };
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   opacity?: number,
   color?: string,
   onColorChanged?: (event: ColorChangedEvent) => void,
-|}>;
+}>;
 
 export type MyLegacyViewType = HostComponent<NativeProps>;
 
@@ -43,7 +42,7 @@ export function callNativeMethodToChangeBackgroundColor(
     console.log('viewRef is null');
     return;
   }
-  const reactTag = ReactNative.findNodeHandle(viewRef);
+  const reactTag = ReactNative.findNodeHandle<$FlowFixMe>(viewRef);
   if (reactTag == null) {
     console.log('reactTag is null');
     return;
@@ -64,7 +63,7 @@ export function callNativeMethodToAddOverlays(
     console.log('viewRef is null');
     return;
   }
-  const reactTag = ReactNative.findNodeHandle(viewRef);
+  const reactTag = ReactNative.findNodeHandle<$FlowFixMe>(viewRef);
   if (reactTag == null) {
     console.log('reactTag is null');
     return;
@@ -85,7 +84,7 @@ export function callNativeMethodToRemoveOverlays(
     console.log('viewRef is null');
     return;
   }
-  const reactTag = ReactNative.findNodeHandle(viewRef);
+  const reactTag = ReactNative.findNodeHandle<$FlowFixMe>(viewRef);
   if (reactTag == null) {
     console.log('reactTag is null');
     return;

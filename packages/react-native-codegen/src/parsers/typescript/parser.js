@@ -91,6 +91,10 @@ class TypeScriptParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    if (typeAnnotation?.typeName?.type === 'TSQualifiedName') {
+      return typeAnnotation.typeName.right.name;
+    }
+
     return typeAnnotation?.typeName?.name;
   }
 
@@ -114,6 +118,8 @@ class TypeScriptParser implements Parser {
         : 'ObjectTypeAnnotation';
     };
 
+    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
@@ -459,7 +465,7 @@ class TypeScriptParser implements Parser {
     };
 
     for (;;) {
-      const topLevelType = parseTopLevelType(node);
+      const topLevelType = parseTopLevelType(node, parser);
       nullable = nullable || topLevelType.optional;
       node = topLevelType.type;
 
@@ -543,6 +549,7 @@ class TypeScriptParser implements Parser {
     for (const prop of flattenProperties(remaining, types, this)) {
       const topLevelType = parseTopLevelType(
         prop.typeAnnotation.typeAnnotation,
+        this,
         types,
       );
 

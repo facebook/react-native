@@ -9,7 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
@@ -30,7 +30,7 @@ const DATA = [
 
 const STICKY_HEADER_INDICES = [0, 2, 4];
 
-const Item = ({item, separators}: RenderItemProps<string>) => {
+const Item = ({item, separators}: ListRenderItemInfo<string>) => {
   return (
     <View style={styles.item}>
       <Text style={styles.title}>{item}</Text>

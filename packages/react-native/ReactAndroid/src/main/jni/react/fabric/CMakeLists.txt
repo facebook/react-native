@@ -6,6 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB fabricjni_SRCS CONFIGURE_DEPENDS *.cpp)
 
@@ -29,22 +30,23 @@ target_link_libraries(
         react_codegen_rncore
         react_debug
         react_featureflags
-        react_render_animations
-        react_render_attributedstring
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_dom
-        react_render_graphics
-        react_render_imagemanager
-        react_render_mapbuffer
-        react_render_mounting
-        react_render_runtimescheduler
-        react_render_scheduler
-        react_render_telemetry
-        react_render_textlayoutmanager
-        react_render_uimanager
-        react_render_uimanager_consistency
+        react_renderer_animations
+        react_renderer_attributedstring
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_css
+        react_renderer_debug
+        react_renderer_dom
+        react_renderer_graphics
+        react_renderer_imagemanager
+        react_renderer_mapbuffer
+        react_renderer_mounting
+        react_renderer_runtimescheduler
+        react_renderer_scheduler
+        react_renderer_telemetry
+        react_renderer_textlayoutmanager
+        react_renderer_uimanager
+        react_renderer_uimanager_consistency
         rrc_legacyviewmanagerinterop
         react_utils
         reactnativejni
@@ -62,12 +64,4 @@ target_link_libraries(
         yoga
 )
 
-target_compile_options(
-        fabricjni
-        PRIVATE
-        -DLOG_TAG=\"Fabric\"
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-)
+target_compile_reactnative_options(fabricjni PRIVATE)

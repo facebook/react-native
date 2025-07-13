@@ -19,7 +19,6 @@ internal object ReactPackageHelper {
    *
    * @param reactPackage
    * @param reactApplicationContext
-   * @param reactInstanceManager
    * @return
    */
   fun getNativeModuleIterator(
@@ -29,6 +28,7 @@ internal object ReactPackageHelper {
     FLog.d(
         ReactConstants.TAG,
         "${reactPackage.javaClass.simpleName} is not a LazyReactPackage, falling back to old version.")
+    @Suppress("DEPRECATION")
     val nativeModules = reactPackage.createNativeModules(reactApplicationContext)
     return Iterable {
       object : Iterator<ModuleHolder> {

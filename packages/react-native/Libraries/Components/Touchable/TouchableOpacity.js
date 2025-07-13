@@ -9,7 +9,7 @@
  */
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
@@ -21,29 +21,72 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type TVProps = $ReadOnly<{|
+export type TouchableOpacityTVProps = $ReadOnly<{
+  /**
+   * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+   *
+   * @platform ios
+   * @deprecated Use `focusable` instead
+   */
   hasTVPreferredFocus?: ?boolean,
+
+  /**
+   * Designates the next view to receive focus when the user navigates down. See the Android documentation.
+   *
+   * @platform android
+   */
   nextFocusDown?: ?number,
+
+  /**
+   * Designates the next view to receive focus when the user navigates forward. See the Android documentation.
+   *
+   * @platform android
+   */
   nextFocusForward?: ?number,
+
+  /**
+   * Designates the next view to receive focus when the user navigates left. See the Android documentation.
+   *
+   * @platform android
+   */
   nextFocusLeft?: ?number,
+
+  /**
+   * Designates the next view to receive focus when the user navigates right. See the Android documentation.
+   *
+   * @platform android
+   */
   nextFocusRight?: ?number,
+
+  /**
+   * Designates the next view to receive focus when the user navigates up. See the Android documentation.
+   *
+   * @platform android
+   */
   nextFocusUp?: ?number,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
-  ...React.ElementConfig<TouchableWithoutFeedback>,
-  ...TVProps,
-
+type TouchableOpacityBaseProps = $ReadOnly<{
+  /**
+   * Determines what the opacity of the wrapped view should be when touch is active.
+   * Defaults to 0.2
+   */
   activeOpacity?: ?number,
-  style?: ?ViewStyleProp,
+  style?: ?Animated.WithAnimatedValue<ViewStyleProp>,
 
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+export type TouchableOpacityProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...TouchableOpacityTVProps,
+  ...TouchableOpacityBaseProps,
+}>;
+
+type TouchableOpacityState = $ReadOnly<{
   anim: Animated.Value,
   pressability: Pressability,
-|}>;
+}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -129,8 +172,11 @@ type State = $ReadOnly<{|
  * ```
  *
  */
-class TouchableOpacity extends React.Component<Props, State> {
-  state: State = {
+class TouchableOpacity extends React.Component<
+  TouchableOpacityProps,
+  TouchableOpacityState,
+> {
+  state: TouchableOpacityState = {
     anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     pressability: new Pressability(this._createPressabilityConfig()),
   };
@@ -266,7 +312,8 @@ class TouchableOpacity extends React.Component<Props, State> {
         importantForAccessibility={
           this.props['aria-hidden'] === true
             ? 'no-hide-descendants'
-            : this.props.importantForAccessibility
+            : // $FlowFixMe[incompatible-type] - AnimatedProps types were made more strict and need refining at this call site
+              this.props.importantForAccessibility
         }
         accessibilityViewIsModal={
           this.props['aria-modal'] ?? this.props.accessibilityViewIsModal
@@ -302,7 +349,10 @@ class TouchableOpacity extends React.Component<Props, State> {
     );
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(
+    prevProps: TouchableOpacityProps,
+    prevState: TouchableOpacityState,
+  ) {
     this.state.pressability.configure(this._createPressabilityConfig());
     if (
       this.props.disabled !== prevProps.disabled ||
@@ -328,12 +378,16 @@ class TouchableOpacity extends React.Component<Props, State> {
 }
 
 const Touchable: component(
-  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
-  ...props: Props
-) = React.forwardRef((props, ref) => (
-  <TouchableOpacity {...props} hostRef={ref} />
-));
+  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: TouchableOpacityProps
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...TouchableOpacityProps,
+}) => <TouchableOpacity {...props} hostRef={ref} />;
 
 Touchable.displayName = 'TouchableOpacity';
 
-module.exports = Touchable;
+export default Touchable;

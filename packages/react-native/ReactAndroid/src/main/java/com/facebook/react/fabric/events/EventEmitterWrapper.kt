@@ -11,6 +11,7 @@ import android.annotation.SuppressLint
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.NativeMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.fabric.FabricSoLoader.staticInit
 import com.facebook.react.uimanager.events.EventCategoryDef
@@ -21,7 +22,7 @@ import com.facebook.react.uimanager.events.EventCategoryDef
  */
 @DoNotStripAny
 @SuppressLint("MissingNativeLoadLibrary")
-public class EventEmitterWrapper private constructor() : HybridClassBase() {
+internal class EventEmitterWrapper private constructor() : HybridClassBase() {
   private external fun dispatchEvent(
       eventName: String,
       params: NativeMap?,
@@ -39,11 +40,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
    * @param params [WritableMap] payload of the event
    */
   @Synchronized
-  public fun dispatch(
-      eventName: String,
-      params: WritableMap?,
-      @EventCategoryDef eventCategory: Int
-  ) {
+  fun dispatch(eventName: String, params: WritableMap?, @EventCategoryDef eventCategory: Int) {
     if (!isValid) {
       return
     }
@@ -51,10 +48,11 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
   }
 
   @Synchronized
-  public fun dispatchEventSynchronously(eventName: String, params: WritableMap?) {
+  fun dispatchEventSynchronously(eventName: String, params: WritableMap?) {
     if (!isValid) {
       return
     }
+    UiThreadUtil.assertOnUiThread()
     dispatchEventSynchronously(eventName, params as NativeMap?)
   }
 
@@ -66,7 +64,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
    * @param params [WritableMap] payload of the event
    */
   @Synchronized
-  public fun dispatchUnique(eventName: String, params: WritableMap?) {
+  fun dispatchUnique(eventName: String, params: WritableMap?) {
     if (!isValid) {
       return
     }
@@ -74,7 +72,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
   }
 
   @Synchronized
-  public fun destroy() {
+  fun destroy() {
     if (isValid) {
       resetNative()
     }

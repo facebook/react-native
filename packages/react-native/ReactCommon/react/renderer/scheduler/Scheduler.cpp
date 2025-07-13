@@ -56,14 +56,10 @@ Scheduler::Scheduler(
 
   runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
 
-  if (ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
-        uiManager->getShadowTreeRevisionConsistencyManager());
-  }
+  runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
+      uiManager->getShadowTreeRevisionConsistencyManager());
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
-  }
+  runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
 
   auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
@@ -139,26 +135,22 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    uiManager->registerMountHook(*eventPerformanceLogger_);
-  }
+  uiManager->registerMountHook(*eventPerformanceLogger_);
 }
 
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
 
-  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            RuntimeSchedulerKey);
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
+  auto weakRuntimeScheduler =
+      contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+          RuntimeSchedulerKey);
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
 
-    if (runtimeScheduler) {
-      runtimeScheduler->setEventTimingDelegate(nullptr);
-    }
+  if (runtimeScheduler) {
+    runtimeScheduler->setEventTimingDelegate(nullptr);
   }
 
   for (auto& commitHook : commitHooks_) {
@@ -278,31 +270,26 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
   TraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
-    if (ReactNativeFeatureFlags::enableFixForViewCommandRace()) {
-      runtimeScheduler_->scheduleRenderingUpdate(
-          shadowNode->getSurfaceId(),
-          [delegate = delegate_,
-           shadowView = std::move(shadowView),
-           commandName,
-           args]() {
-            delegate->schedulerDidDispatchCommand(
-                shadowView, commandName, args);
-          });
-    } else {
-      delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
-    }
+    runtimeScheduler_->scheduleRenderingUpdate(
+        shadowNode->getSurfaceId(),
+        [delegate = delegate_,
+         shadowView = std::move(shadowView),
+         commandName,
+         args]() {
+          delegate->schedulerDidDispatchCommand(shadowView, commandName, args);
+        });
   }
 }
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& eventType) {
   TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
@@ -316,12 +303,44 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  * Set JS responder for a view.
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) {
   if (delegate_ != nullptr) {
     delegate_->schedulerDidSetIsJSResponder(
         ShadowView(*shadowNode), isJSResponder, blockNativeResponder);
+  }
+}
+
+void Scheduler::uiManagerShouldSynchronouslyUpdateViewOnUIThread(
+    Tag tag,
+    const folly::dynamic& props) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerShouldSynchronouslyUpdateViewOnUIThread(tag, props);
+  }
+}
+
+void Scheduler::uiManagerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+  if (delegate_ != nullptr) {
+    delegate_->schedulerDidUpdateShadowTree(tagToProps);
+  }
+}
+
+void Scheduler::uiManagerShouldAddEventListener(
+    std::shared_ptr<const EventListener> listener) {
+  addEventListener(listener);
+}
+
+void Scheduler::uiManagerShouldRemoveEventListener(
+    const std::shared_ptr<const EventListener>& listener) {
+  removeEventListener(listener);
+}
+
+void Scheduler::uiManagerDidStartSurface(const ShadowTree& shadowTree) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  if (onSurfaceStartCallback_) {
+    onSurfaceStartCallback_(shadowTree);
   }
 }
 
@@ -349,6 +368,12 @@ void Scheduler::removeEventListener(
   if (eventDispatcher_->has_value()) {
     eventDispatcher_->value().removeListener(listener);
   }
+}
+
+void Scheduler::uiManagerShouldSetOnSurfaceStartCallback(
+    OnSurfaceStartCallback&& callback) {
+  std::shared_lock lock(onSurfaceStartCallbackMutex_);
+  onSurfaceStartCallback_ = std::move(callback);
 }
 
 } // namespace facebook::react

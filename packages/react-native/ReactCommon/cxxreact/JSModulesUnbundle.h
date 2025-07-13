@@ -7,11 +7,11 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-
-#include <folly/Conv.h>
 
 namespace facebook::react {
 
@@ -27,16 +27,16 @@ class JSModulesUnbundle {
   class ModuleNotFound : public std::out_of_range {
    public:
     using std::out_of_range::out_of_range;
-    ModuleNotFound(uint32_t moduleId)
+    explicit ModuleNotFound(uint32_t moduleId)
         : std::out_of_range::out_of_range(
-              folly::to<std::string>("Module not found: ", moduleId)) {}
+              "Module not found: " + std::to_string(moduleId)) {}
   };
   struct Module {
     std::string name;
     std::string code;
   };
   JSModulesUnbundle() {}
-  virtual ~JSModulesUnbundle() {}
+  virtual ~JSModulesUnbundle() = default;
   virtual Module getModule(uint32_t moduleId) const = 0;
 
  private:
@@ -44,3 +44,5 @@ class JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

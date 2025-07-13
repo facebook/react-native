@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import CompatibilityAnimatedPointerMove from './Compatibility/CompatibilityAnimatedPointerMove';
@@ -29,6 +29,7 @@ import PointerEventPointerOverOut from './W3CPointerEventPlatformTests/PointerEv
 import PointerEventPrimaryTouchPointer from './W3CPointerEventPlatformTests/PointerEventPrimaryTouchPointer';
 import EventfulView from './W3CPointerEventsEventfulView';
 import * as React from 'react';
+import {useState} from 'react';
 import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 
 function AbsoluteChildExample({log}: {log: string => void}) {
@@ -105,7 +106,7 @@ function PointerEventScaffolding({
 }: {
   Example: component(log: (string) => void),
 }) {
-  const [eventsLog, setEventsLog] = React.useState('');
+  const [eventsLog, setEventsLog] = useState('');
   const clear = () => setEventsLog('');
   const log = (eventStr: string) => {
     setEventsLog(currentEventsLog => `${eventStr}\n${currentEventsLog}`);

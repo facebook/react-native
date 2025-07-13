@@ -29,8 +29,7 @@ template <
     typename BaseShadowNodeT,
     typename PropsT,
     typename EventEmitterT = EventEmitter,
-    typename StateDataT = StateData,
-    bool usesMapBufferForStateData = false>
+    typename StateDataT = StateData>
 class ConcreteShadowNode : public BaseShadowNodeT {
   static_assert(
       std::is_base_of<ShadowNode, BaseShadowNodeT>::value,
@@ -52,7 +51,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
-  using ConcreteState = ConcreteState<StateDataT, usesMapBufferForStateData>;
+  using ConcreteState = ConcreteState<StateDataT>;
   using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
@@ -103,6 +102,16 @@ class ConcreteShadowNode : public BaseShadowNodeT {
     react_native_assert(
         BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
     return static_cast<const ConcreteProps&>(*props_);
+  }
+
+  /*
+   * Returns a concrete props object associated with the node, as a shared_ptr.
+   * Thread-safe after the node is sealed.
+   */
+  const std::shared_ptr<const ConcreteProps>& getConcreteSharedProps() const {
+    react_native_assert(
+        BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
+    return std::static_pointer_cast<const ConcreteProps>(props_);
   }
 
   /*

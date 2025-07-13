@@ -52,7 +52,10 @@ export default function LogBoxInspectorBody(props: {
           title={headerTitle}
         />
         <ScrollView style={styles.scrollBody}>
-          <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
+          <LogBoxInspectorCodeFrame
+            codeFrame={props.log.codeFrame}
+            componentCodeFrame={props.log.componentCodeFrame}
+          />
           <LogBoxInspectorReactFrames log={props.log} />
           <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
         </ScrollView>
@@ -68,7 +71,10 @@ export default function LogBoxInspectorBody(props: {
         level={props.log.level}
         title={headerTitle}
       />
-      <LogBoxInspectorCodeFrame codeFrame={props.log.codeFrame} />
+      <LogBoxInspectorCodeFrame
+        codeFrame={props.log.codeFrame}
+        componentCodeFrame={props.log.componentCodeFrame}
+      />
       <LogBoxInspectorReactFrames log={props.log} />
       <LogBoxInspectorStackFrames log={props.log} onRetry={props.onRetry} />
     </ScrollView>

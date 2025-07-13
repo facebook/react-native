@@ -11,6 +11,8 @@
 #include <functional>
 #include <string_view>
 
+#include <react/utils/toLower.h>
+
 namespace facebook::react {
 
 /**
@@ -41,10 +43,7 @@ constexpr uint32_t fnv1a(std::string_view string) noexcept {
 constexpr uint32_t fnv1aLowercase(std::string_view string) {
   struct LowerCaseTransform {
     constexpr char operator()(char c) const {
-      if (c >= 'A' && c <= 'Z') {
-        return c + static_cast<char>('a' - 'A');
-      }
-      return c;
+      return toLower(c);
     }
   };
 

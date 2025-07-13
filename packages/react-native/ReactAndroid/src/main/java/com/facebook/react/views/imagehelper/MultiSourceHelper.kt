@@ -9,15 +9,13 @@ package com.facebook.react.views.imagehelper
 
 import com.facebook.imagepipeline.core.ImagePipelineFactory
 import com.facebook.react.modules.fresco.ImageCacheControl
+import kotlin.math.abs
 
 /** Helper class for dealing with multisource images. */
-public object MultiSourceHelper {
+internal object MultiSourceHelper {
   @JvmStatic
-  public fun getBestSourceForSize(
-      width: Int,
-      height: Int,
-      sources: List<ImageSource>
-  ): MultiSourceResult = getBestSourceForSize(width, height, sources, 1.0)
+  fun getBestSourceForSize(width: Int, height: Int, sources: List<ImageSource>): MultiSourceResult =
+      getBestSourceForSize(width, height, sources, 1.0)
 
   /**
    * Chooses the image source with the size closest to the target image size.
@@ -29,7 +27,7 @@ public object MultiSourceHelper {
    *   best source; this is useful if the image will be displayed bigger than the view (e.g. zoomed)
    */
   @JvmStatic
-  public fun getBestSourceForSize(
+  fun getBestSourceForSize(
       width: Int,
       height: Int,
       sources: List<ImageSource>,
@@ -57,7 +55,7 @@ public object MultiSourceHelper {
     var bestPrecision = Double.MAX_VALUE
     var bestCachePrecision = Double.MAX_VALUE
     for (source in sources) {
-      val precision = Math.abs(1.0 - source.size / viewArea)
+      val precision = abs(1.0 - source.size / viewArea)
       if (precision < bestPrecision) {
         bestPrecision = precision
         best = source
@@ -78,16 +76,16 @@ public object MultiSourceHelper {
     return MultiSourceResult(best, bestCached)
   }
 
-  public class MultiSourceResult(
+  class MultiSourceResult(
       /**
        * Get the best result overall (closest in size to the view's size). Can be null if there were
        * no sources to choose from, or if there were more than 1 sources but width/height were 0.
        */
-      @JvmField public val bestResult: ImageSource?,
+      @JvmField val bestResult: ImageSource?,
       /**
        * Get the best result (closest in size to the view's size) that is also in cache. If this
-       * would be the same as the source from [.getBestResult], this will return `null` instead.
+       * would be the same as the source from [getBestResult], this will return `null` instead.
        */
-      @JvmField public val bestResultInCache: ImageSource?
+      @JvmField val bestResultInCache: ImageSource?
   )
 }

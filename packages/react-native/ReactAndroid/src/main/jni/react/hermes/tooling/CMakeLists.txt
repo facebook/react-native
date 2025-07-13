@@ -7,11 +7,11 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # hermestooling is a shared library where we merge all the hermes* related libraries.
 #
 # It acts as an 'umbrella' library and gets removed by RNGP (see `configureJsEnginePackagingOptions`)
-# Please note that this library gets removed for users that opt to use JSC as their JS engine.
 
 add_library(hermestooling
         SHARED
@@ -39,3 +39,4 @@ target_include_directories(hermestooling
         $<TARGET_PROPERTY:hermesinstancejni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsijniprofiler,INTERFACE_INCLUDE_DIRECTORIES>
 )
+target_compile_reactnative_options(hermestooling PRIVATE)

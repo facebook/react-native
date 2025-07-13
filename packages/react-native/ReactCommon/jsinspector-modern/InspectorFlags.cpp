@@ -29,6 +29,10 @@ bool InspectorFlags::getIsProfilingBuild() const {
   return loadFlagsAndAssertUnchanged().isProfilingBuild;
 }
 
+bool InspectorFlags::getNetworkInspectionEnabled() const {
+  return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -37,33 +41,24 @@ void InspectorFlags::dangerouslyDisableFuseboxForTest() {
   fuseboxDisabledForTest_ = true;
 }
 
-#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX) && \
-    defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
-#error \
-    "Cannot define both REACT_NATIVE_FORCE_ENABLE_FUSEBOX and REACT_NATIVE_FORCE_DISABLE_FUSEBOX"
-#endif
-
 const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
     const {
   InspectorFlags::Values newValues = {
       .fuseboxEnabled =
-#if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX)
-          true,
-#elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
-          false,
-#elif defined(HERMES_ENABLE_DEBUGGER)
-          true,
-#elif defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
+#if defined(REACT_NATIVE_DEBUGGER_ENABLED)
           true,
 #else
           ReactNativeFeatureFlags::fuseboxEnabledRelease(),
 #endif
       .isProfilingBuild =
-#if defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
+#if defined(REACT_NATIVE_DEBUGGER_MODE_PROD)
           true,
 #else
           false,
 #endif
+      .networkInspectionEnabled =
+          ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+          ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

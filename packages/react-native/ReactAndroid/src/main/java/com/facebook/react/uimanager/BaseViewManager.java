@@ -12,6 +12,8 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
@@ -28,11 +30,15 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import com.facebook.react.uimanager.events.BlurEvent;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.events.FocusEvent;
 import com.facebook.react.uimanager.events.PointerEventHelper;
 import com.facebook.react.uimanager.style.OutlineStyle;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
@@ -163,6 +169,29 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     return view;
   }
 
+  @Override
+  protected void addEventEmitters(@NonNull ThemedReactContext reactContext, @NonNull T view) {
+    super.addEventEmitters(reactContext, view);
+
+    BaseVMFocusChangeListener focusChangeListener =
+        new BaseVMFocusChangeListener(view.getOnFocusChangeListener());
+    focusChangeListener.attach(view);
+  }
+
+  @Override
+  public void onDropViewInstance(@NonNull T view) {
+    super.onDropViewInstance(view);
+
+    @Nullable OnFocusChangeListener focusChangeListener = view.getOnFocusChangeListener();
+    if (focusChangeListener instanceof BaseVMFocusChangeListener) {
+      ((BaseVMFocusChangeListener) focusChangeListener).detach(view);
+    }
+
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view).setOnHierarchyChangeListener(null);
+    }
+  }
+
   // Currently, layout listener is only attached when transform or transformOrigin is set.
   @Override
   public void onLayoutChange(
@@ -282,7 +311,60 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.NATIVE_ID)
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
+
+    /*
+     * If we change the nativeId we need to notify the relevant accessibility parent to update the
+     * focusing order.
+     */
+    if (view.getTag(R.id.accessibility_order_parent) != null) {
+      ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessibility_order_parent);
+
+      accessibilityParent.setTag(R.id.accessibility_order_dirty, true);
+
+      accessibilityParent.notifySubtreeAccessibilityStateChanged(
+          accessibilityParent, accessibilityParent, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+    }
+
     ReactFindViewUtil.notifyViewRendered(view);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBILITY_ORDER)
+  public void setAccessibilityOrder(@NonNull T view, @Nullable ReadableArray nativeIds) {
+    if (!ReactNativeFeatureFlags.enableAccessibilityOrder()) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_order, nativeIds);
+    view.setTag(R.id.accessibility_order_dirty, true);
+
+    if (view instanceof ViewGroup) {
+      ((ViewGroup) view)
+          .setOnHierarchyChangeListener(
+              new ViewGroup.OnHierarchyChangeListener() {
+                @Override
+                public void onChildViewAdded(View parent, View child) {
+                  view.setTag(R.id.accessibility_order_dirty, true);
+
+                  // We also want to listen to changes on the hierarchy of nested ViewGroups
+                  if (child instanceof ViewGroup) {
+                    ViewGroup childGroup = (ViewGroup) child;
+                    childGroup.setOnHierarchyChangeListener(this);
+                    for (int i = 0; i < childGroup.getChildCount(); i++) {
+                      onChildViewAdded(childGroup, childGroup.getChildAt(i));
+                    }
+                  }
+                }
+
+                @Override
+                public void onChildViewRemoved(View parent, View child) {
+                  view.setTag(R.id.accessibility_order_dirty, true);
+                }
+              });
+
+      ((ViewGroup) view)
+          .notifySubtreeAccessibilityStateChanged(
+              view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+    }
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)
@@ -414,7 +496,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         contentDescription.add(text.asString());
       }
     }
-    if (contentDescription.size() > 0) {
+    if (!contentDescription.isEmpty()) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }
@@ -453,6 +535,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
       ViewCompat.setImportantForAccessibility(
           view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+    }
+  }
+
+  @ReactProp(name = ViewProps.SCREEN_READER_FOCUSABLE)
+  public void setScreenReaderFocusable(@NonNull T view, boolean screenReaderFocusable) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.setScreenReaderFocusable(screenReaderFocusable);
     }
   }
 
@@ -626,7 +715,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     throw new IllegalStateException("Invalid float property value: " + value);
   }
 
-  private void updateViewAccessibility(@NonNull T view) {
+  protected void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(
         view, view.isFocusable(), view.getImportantForAccessibility());
   }
@@ -716,6 +805,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
                 MapBuilder.of(
                     "phasedRegistrationNames",
                     MapBuilder.of("bubbled", "onClick", "captured", "onClickCapture")))
+            .put(
+                "topBlur",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+            .put(
+                "topFocus",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onFocus", "captured", "onFocusCapture")))
             .build());
     return eventTypeConstants;
   }
@@ -946,4 +1045,49 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   // Please add new props to BaseViewManagerDelegate as well!
+
+  /**
+   * A helper class to keep track of the original focus change listener if one is set. This is
+   * especially helpful for views that are recycled so we can retain and restore the original
+   * listener upon recycling (onDropViewInstance).
+   */
+  private class BaseVMFocusChangeListener<V extends View> implements OnFocusChangeListener {
+    private @Nullable OnFocusChangeListener mOriginalFocusChangeListener;
+
+    public BaseVMFocusChangeListener(@Nullable OnFocusChangeListener originalFocusChangeListener) {
+      mOriginalFocusChangeListener = originalFocusChangeListener;
+    }
+
+    public void attach(T view) {
+      view.setOnFocusChangeListener(this);
+    }
+
+    public void detach(T view) {
+      view.setOnFocusChangeListener(mOriginalFocusChangeListener);
+    }
+
+    @Override
+    public void onFocusChange(View view, boolean hasFocus) {
+      if (mOriginalFocusChangeListener != null) {
+        mOriginalFocusChangeListener.onFocusChange(view, hasFocus);
+      }
+      int surfaceId = UIManagerHelper.getSurfaceId(view.getContext());
+      if (surfaceId == View.NO_ID) {
+        return;
+      }
+      if (view.getContext() instanceof ThemedReactContext) {
+        ThemedReactContext themedReactContext = (ThemedReactContext) view.getContext();
+        @Nullable
+        EventDispatcher eventDispatcher =
+            UIManagerHelper.getEventDispatcherForReactTag(themedReactContext, view.getId());
+        if (eventDispatcher != null) {
+          if (hasFocus) {
+            eventDispatcher.dispatchEvent(new FocusEvent(surfaceId, view.getId()));
+          } else {
+            eventDispatcher.dispatchEvent(new BlurEvent(surfaceId, view.getId()));
+          }
+        }
+      }
+    }
+  }
 }

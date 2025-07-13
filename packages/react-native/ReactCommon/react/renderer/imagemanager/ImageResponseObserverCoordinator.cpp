@@ -95,7 +95,7 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
   auto observers = observers_;
   mutex_.unlock();
 
-  for (auto observer : observers_) {
+  for (auto observer : observers) {
     observer->didReceiveImage(imageResponse);
   }
 }

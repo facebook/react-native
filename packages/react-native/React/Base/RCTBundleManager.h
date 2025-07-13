@@ -16,7 +16,9 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
  * A class that allows NativeModules/TurboModules to read/write the bundleURL, with or without the bridge.
  */
 @interface RCTBundleManager : NSObject
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (void)setBridge:(RCTBridge *)bridge;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 - (void)setBridgelessBundleURLGetter:(RCTBridgelessBundleURLGetter)getter
                            andSetter:(RCTBridgelessBundleURLSetter)setter
                     andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;

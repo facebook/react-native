@@ -19,7 +19,7 @@ import com.facebook.react.viewmanagers.SafeAreaViewManagerInterface
 
 /** View manager for [ReactSafeAreaView] components. */
 @ReactModule(name = ReactSafeAreaViewManager.REACT_CLASS)
-internal class ReactSafeAreaViewManager() :
+internal class ReactSafeAreaViewManager :
     ViewGroupManager<ReactSafeAreaView>(), SafeAreaViewManagerInterface<ReactSafeAreaView> {
 
   private val delegate: ViewManagerDelegate<ReactSafeAreaView> = SafeAreaViewManagerDelegate(this)
@@ -33,10 +33,10 @@ internal class ReactSafeAreaViewManager() :
 
   override fun createShadowNodeInstance(): LayoutShadowNode = ReactSafeAreaViewShadowNode()
 
-  public override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
+  override fun getShadowNodeClass(): Class<out LayoutShadowNode> =
       ReactSafeAreaViewShadowNode::class.java
 
-  public override fun updateState(
+  override fun updateState(
       view: ReactSafeAreaView,
       props: ReactStylesDiffMap,
       stateWrapper: StateWrapper

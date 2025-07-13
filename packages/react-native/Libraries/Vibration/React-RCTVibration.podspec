@@ -16,12 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 header_search_paths = [
-  "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
@@ -34,9 +29,9 @@ Pod::Spec.new do |s|
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
-  s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
+  s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{m,mm}"
+  s.source_files           = podspec_sources("*.{m,mm}", "**/*.h")
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTVibration"
   s.pod_target_xcconfig    = {
@@ -46,11 +41,13 @@ Pod::Spec.new do |s|
                              }
   s.frameworks             = "AudioToolbox"
 
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTVibrationHeaders"
 
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
+
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

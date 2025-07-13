@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uiapp
 
 import android.app.Application
@@ -30,11 +32,16 @@ import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
+import com.facebook.react.uiapp.component.ReportFullyDrawnViewManager
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
+import com.facebook.react.views.view.setEdgeToEdgeFeatureFlagOn
 import com.facebook.soloader.SoLoader
 
 internal class RNTesterApplication : Application(), ReactApplication {
+  @Deprecated(
+      "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
+      replaceWith = ReplaceWith("reactHost"))
   override val reactNativeHost: ReactNativeHost by lazy {
     object : DefaultReactNativeHost(this) {
       public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
@@ -52,59 +59,48 @@ internal class RNTesterApplication : Application(), ReactApplication {
               override fun getModule(
                   name: String,
                   reactContext: ReactApplicationContext
-              ): NativeModule? {
-                if (!isNewArchEnabled) {
-                  return null
-                }
-                if (SampleTurboModule.NAME == name) {
-                  return SampleTurboModule(reactContext)
-                }
-                if (SampleLegacyModule.NAME == name) {
-                  return SampleLegacyModule(reactContext)
-                }
-                return null
-              }
+              ): NativeModule? =
+                  when {
+                    SampleTurboModule.NAME == name -> SampleTurboModule(reactContext)
+                    SampleLegacyModule.NAME == name -> SampleLegacyModule(reactContext)
+                    else -> null
+                  }
 
               // Note: Specialized annotation processor for @ReactModule isn't configured in OSS
               // yet. For now, hardcode this information, though it's not necessary for most
               // modules.
               override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
                   ReactModuleInfoProvider {
-                    if (isNewArchEnabled) {
-                      mapOf(
-                          SampleTurboModule.NAME to
-                              ReactModuleInfo(
-                                  SampleTurboModule.NAME,
-                                  "SampleTurboModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = true),
-                          SampleLegacyModule.NAME to
-                              ReactModuleInfo(
-                                  SampleLegacyModule.NAME,
-                                  "SampleLegacyModule",
-                                  canOverrideExistingModule = false,
-                                  needsEagerInit = false,
-                                  isCxxModule = false,
-                                  isTurboModule = false))
-                    } else {
-                      emptyMap()
-                    }
+                    mapOf(
+                        SampleTurboModule.NAME to
+                            ReactModuleInfo(
+                                SampleTurboModule.NAME,
+                                "SampleTurboModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = true),
+                        SampleLegacyModule.NAME to
+                            ReactModuleInfo(
+                                SampleLegacyModule.NAME,
+                                "SampleLegacyModule",
+                                canOverrideExistingModule = false,
+                                needsEagerInit = false,
+                                isCxxModule = false,
+                                isTurboModule = false))
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
-              override fun createNativeModules(
-                  reactContext: ReactApplicationContext
-              ): List<NativeModule> = emptyList()
-
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
-                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView")
+                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
 
               override fun createViewManagers(
                   reactContext: ReactApplicationContext
               ): List<ViewManager<*, *>> =
-                  listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+                  listOf(
+                      MyNativeViewManager(),
+                      MyLegacyViewManager(reactContext),
+                      ReportFullyDrawnViewManager())
 
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
@@ -113,13 +109,13 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   when (viewManagerName) {
                     "RNTMyNativeView" -> MyNativeViewManager()
                     "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
+                    "RNTReportFullyDrawnView" -> ReportFullyDrawnViewManager()
                     else -> null
                   }
             })
       }
 
       override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
-      override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED_IN_FLAVOR
     }
   }
 
@@ -140,6 +136,10 @@ internal class RNTesterApplication : Application(), ReactApplication {
 
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       load()
+    }
+
+    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      setEdgeToEdgeFeatureFlagOn()
     }
   }
 }

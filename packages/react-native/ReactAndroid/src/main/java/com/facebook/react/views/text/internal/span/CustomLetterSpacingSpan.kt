@@ -16,12 +16,12 @@ import android.text.style.MetricAffectingSpan
  * The letter spacing is specified in pixels, which are converted to ems at paint time; this span
  * must therefore be applied after any spans affecting font size.
  */
-public class CustomLetterSpacingSpan(public val spacing: Float) : MetricAffectingSpan(), ReactSpan {
-  public override fun updateDrawState(paint: TextPaint) {
+internal class CustomLetterSpacingSpan(val spacing: Float) : MetricAffectingSpan(), ReactSpan {
+  override fun updateDrawState(paint: TextPaint) {
     apply(paint)
   }
 
-  public override fun updateMeasureState(paint: TextPaint) {
+  override fun updateMeasureState(paint: TextPaint) {
     apply(paint)
   }
 

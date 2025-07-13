@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import type {SyntheticEvent} from './CoreEventTypes';
+import type {NativeSyntheticEvent} from './CoreEventTypes';
 
 // Event types
 // We're not using the PaperName, it is only used to codegen view config settings
@@ -19,17 +19,18 @@ import type {SyntheticEvent} from './CoreEventTypes';
 export type BubblingEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = (event: SyntheticEvent<T>) => void | Promise<void>;
+> = (event: NativeSyntheticEvent<T>) => void | Promise<void>;
 export type DirectEventHandler<
   T,
   PaperName: string | empty = empty, // eslint-disable-line no-unused-vars
-> = (event: SyntheticEvent<T>) => void | Promise<void>;
+> = (event: NativeSyntheticEvent<T>) => void | Promise<void>;
 
 // Prop types
 export type Double = number;
 export type Float = number;
 export type Int32 = number;
-export type UnsafeObject = $FlowFixMe; // Object is forbidden in strict mode
+/* $FlowFixMe[unclear-type] Object is forbidden in strict mode */
+export type UnsafeObject = Object;
 export type UnsafeMixed = mixed;
 
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;

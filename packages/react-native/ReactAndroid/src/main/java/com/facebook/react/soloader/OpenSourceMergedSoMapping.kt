@@ -20,7 +20,7 @@ import com.facebook.soloader.ExternalSoMapping
  */
 public object OpenSourceMergedSoMapping : ExternalSoMapping {
 
-  override public fun mapLibName(input: String): String =
+  public override fun mapLibName(input: String): String =
       when (input) {
         "fabricjni",
         "jsinspector",
@@ -30,6 +30,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         "react_newarchdefaults",
         "reactnativeblob",
         "reactnativejni",
+        "reactnativejni_common",
         "rninstance",
         "turbomodulejsijni",
         "uimanagerjni",
@@ -41,24 +42,15 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         "jsijniprofiler" -> {
           "hermestooling"
         }
-        "jscexecutor",
-        "jscruntime",
-        "jscinstance" -> {
-          "jsctooling"
-        }
         else -> input
       }
 
-  override public fun invokeJniOnload(libraryName: String): Unit {
+  public override fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
       "hermes_executor" -> libhermes_executor_so()
       "hermesinstancejni" -> libhermesinstancejni_so()
       "hermestooling" -> libhermestooling_so()
-      "jscexecutor" -> libjscexecutor_so()
-      "jscinstance" -> libjscinstance_so()
-      "jscruntime" -> libjscruntime_so()
-      "jsctooling" -> libjsctooling_so()
       "jsijniprofiler" -> libjsijniprofiler_so()
       "jsinspector" -> libjsinspector_so()
       "mapbufferjni" -> libmapbufferjni_so()
@@ -68,6 +60,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
       "reactnative" -> libreactnative_so()
       "reactnativeblob" -> libreactnativeblob_so()
       "reactnativejni" -> libreactnativejni_so()
+      "reactnativejni_common" -> libreactnativejni_common_so()
       "rninstance" -> librninstance_so()
       "turbomodulejsijni" -> libturbomodulejsijni_so()
       "uimanagerjni" -> libuimanagerjni_so()
@@ -82,14 +75,6 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
   public external fun libhermesinstancejni_so(): Int
 
   public external fun libhermestooling_so(): Int
-
-  public external fun libjscexecutor_so(): Int
-
-  public external fun libjscinstance_so(): Int
-
-  public external fun libjscruntime_so(): Int
-
-  public external fun libjsctooling_so(): Int
 
   public external fun libjsijniprofiler_so(): Int
 
@@ -108,6 +93,8 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
   public external fun libreactnativeblob_so(): Int
 
   public external fun libreactnativejni_so(): Int
+
+  public external fun libreactnativejni_common_so(): Int
 
   public external fun librninstance_so(): Int
 

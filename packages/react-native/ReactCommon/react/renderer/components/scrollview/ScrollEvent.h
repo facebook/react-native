@@ -9,6 +9,7 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventPayload.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 
@@ -35,6 +36,9 @@ struct ScrollEvent : public EventPayload {
    */
   jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
   EventPayloadType getType() const override;
+
+  std::optional<double> extractValue(
+      const std::vector<std::string>& path) const override;
 };
 
 struct ScrollEndDragEvent : public ScrollEvent {

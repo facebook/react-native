@@ -12,14 +12,19 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -27,6 +32,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -39,7 +45,9 @@ import java.util.Stack;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
 
-  private static final String NAME = ViewManager.class.getSimpleName();
+  private static final String TAG = "ViewManager";
+
+  private @Nullable ViewManagerDelegate<T> mDelegate = null;
 
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
@@ -88,11 +96,11 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props {@link ReactStylesDiffMap} props to update the view with
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
-    if (delegate != null) {
-      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
-    } else {
-      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
+    Iterator<Map.Entry<String, Object>> iterator = props.internal_backingMap().getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(viewToUpdate, entry.getKey(), entry.getValue());
     }
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -103,15 +111,31 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
    * that must be updated and it's the delegate's responsibility to apply these values to the view.
    *
-   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
-   * a delegate and the view props should be set internally by the view manager itself.
+   * <p>By default, this methods returns a generic {@link ViewManagerDelegate} which uses {@link
+   * ViewManagerSetter} to apply property updates.
    *
    * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
    *     view manager should be set via this delegate
    */
-  @Nullable
   protected ViewManagerDelegate<T> getDelegate() {
-    return null;
+    if (this instanceof ViewManagerWithGeneratedInterface) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "ViewManager using codegen must override getDelegate method (name: "
+                  + getName()
+                  + ")."));
+    }
+    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate<>(this);
+  }
+
+  private ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
+    ViewManagerDelegate<T> delegate = mDelegate;
+    if (delegate == null) {
+      delegate = getDelegate();
+      mDelegate = delegate;
+    }
+    return delegate;
   }
 
   /** Creates a view with knowledge of props and state. */
@@ -216,12 +240,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (viewContext == null) {
       // Who knows! Anything is possible. Checking instanceof on null is an NPE,
       // So this is not redundant.
-      FLog.e(NAME, "onDropViewInstance: view [" + view.getId() + "] has a null context");
+      FLog.e(TAG, "onDropViewInstance: view [" + view.getId() + "] has a null context");
       return;
     }
     if (!(viewContext instanceof ThemedReactContext)) {
       FLog.e(
-          NAME,
+          TAG,
           "onDropViewInstance: view ["
               + view.getId()
               + "] has a context that is not a ThemedReactContext: "
@@ -236,6 +260,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (recyclableViews != null) {
       T recyclableView = prepareToRecycleView(themedReactContext, view);
       if (recyclableView != null) {
+        Assertions.assertCondition(
+            recyclableView.getParent() == null,
+            "Recycled view ["
+                + view.getId()
+                + "] should not be attached to a parent. View: "
+                + view
+                + " Parent: "
+                + recyclableView.getParent()
+                + " ThemedReactContext: "
+                + themedReactContext);
         recyclableViews.push(recyclableView);
       }
     }
@@ -280,7 +314,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * <p>TODO T7247021: Replace updateExtraData with generic update props mechanism after D2086999
    */
-  public abstract void updateExtraData(@NonNull T root, Object extraData);
+  public abstract void updateExtraData(@NonNull T view, Object extraData);
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
@@ -289,27 +323,24 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *
    * <p>This method is deprecated use {@link #receiveCommand(View, String, ReadableArray)} instead.
    *
-   * @param root View instance that should receive the command
+   * @param view View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
   @Deprecated
-  public void receiveCommand(@NonNull T root, int commandId, @Nullable ReadableArray args) {}
+  public void receiveCommand(@NonNull T view, int commandId, ReadableArray args) {}
 
   /**
    * Subclasses may use this method to receive events/commands directly from JS through the {@link
    * UIManager}. Good example of such a command would be {@code scrollTo} request with coordinates
    * for a {@link ReactScrollView} instance.
    *
-   * @param root View instance that should receive the command
+   * @param view View instance that should receive the command
    * @param commandId code of the command
    * @param args optional arguments for the command
    */
-  public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
-    if (delegate != null) {
-      delegate.receiveCommand(root, commandId, args);
-    }
+  public void receiveCommand(@NonNull T view, String commandId, ReadableArray args) {
+    getOrCreateViewManagerDelegate().receiveCommand(view, commandId, args);
   }
 
   /**
@@ -377,7 +408,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * Map contains the names (key) and types (value) of the ViewManager's props.
    */
   public Map<String, String> getNativeProps() {
-    return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+        && ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+      // TODO: review if we need to check fabricInterop here
+      return ViewManagerPropertyUpdater.getNativeProps(getClass(), null);
+    } else {
+      return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
+    }
   }
 
   /**
@@ -390,73 +427,26 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   /**
-   * Subclasses can override this method to implement custom measure functions for the ViewManager
+   * Subclasses can override this method to implement custom measure functions for the ViewManager.
+   * This function is never called automatically, but may be called manually via
+   * FabricUIManager.measure().
    *
    * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
    * @param localData {@link ReadableMap} containing "local data" defined in C++
    * @param props {@link ReadableMap} containing JS props
    * @param state {@link ReadableMap} containing state defined in C++
-   * @param width width of the view (usually zero)
-   * @param widthMode widthMode used during calculation of layout
-   * @param height height of the view (usually zero)
-   * @param heightMode widthMode used during calculation of layout
-   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
-   *     of the view. An attachment represents the position of an inline view that needs to be
-   *     rendered inside a component and it requires the content of the parent view in order to be
-   *     positioned. This array is meant to be used by the platform to RETURN the position of each
-   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
-   *     inlineViews that are rendered inside Text components). On most of the components this array
-   *     will be contain a null value.
-   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
-   *     each attachment.
-   * @return result of calculation of layout for the arguments received as a parameter.
+   * @param width width of the constraint, if YogaMeasureMode.EXACTLY or YogaMeasureMode.AT_MOST
+   * @param widthMode MeasureMode used during calculation of layout
+   * @param height height of the constraint, if YogaMeasureMode.EXACTLY or YogaMeasureMode.AT_MOST
+   * @param heightMode MeasureMode used during calculation of layout
+   * @param attachmentsPositions Always null. Only present for backwards compatibility.
+   * @return bit-packed width and height created via YogaMeasureOutput.make().
    */
   public long measure(
       Context context,
       ReadableMap localData,
       ReadableMap props,
       ReadableMap state,
-      float width,
-      YogaMeasureMode widthMode,
-      float height,
-      YogaMeasureMode heightMode,
-      @Nullable float[] attachmentsPositions) {
-    return 0;
-  }
-
-  /**
-   * THIS MEASURE METHOD IS EXPERIMENTAL, MOST LIKELY YOU ARE LOOKING TO USE THE OTHER OVERLOAD
-   * INSTEAD: {@link #measure(Context, ReadableMap, ReadableMap, ReadableMap, float,
-   * YogaMeasureMode, float, YogaMeasureMode, float[])}
-   *
-   * <p>Subclasses can override this method to implement custom measure functions for the
-   * ViewManager
-   *
-   * @param context {@link com.facebook.react.bridge.ReactContext} used for the view.
-   * @param localData {@link MapBuffer} containing "local data" defined in C++
-   * @param props {@link MapBuffer} containing JS props
-   * @param state {@link MapBuffer} containing state defined in C++
-   * @param width width of the view (usually zero)
-   * @param widthMode widthMode used during calculation of layout
-   * @param height height of the view (usually zero)
-   * @param heightMode widthMode used during calculation of layout
-   * @param attachmentsPositions {@link int[]} array containing 2x times the amount of attachments
-   *     of the view. An attachment represents the position of an inline view that needs to be
-   *     rendered inside a component and it requires the content of the parent view in order to be
-   *     positioned. This array is meant to be used by the platform to RETURN the position of each
-   *     attachment, as a result of the calculation of layout. (e.g. this array is used to measure
-   *     inlineViews that are rendered inside Text components). On most of the components this array
-   *     will be contain a null value.
-   *     <p>Even values will represent the TOP of each attachment, Odd values represent the LEFT of
-   *     each attachment.
-   * @return result of calculation of layout for the arguments received as a parameter.
-   */
-  public long measure(
-      Context context,
-      MapBuffer localData,
-      MapBuffer props,
-      // TODO(T114731225): review whether state parameter is needed
-      @Nullable MapBuffer state,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -511,6 +501,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   @UnstableReactNativeAPI
   protected boolean experimental_isPrefetchingEnabled() {
-    return ReactNativeFeatureFlags.enableImagePrefetchingAndroid();
+    return false;
   }
 }

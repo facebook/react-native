@@ -4,17 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+const StyleSheet = require('../../StyleSheet/StyleSheet').default;
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 
-jest.mock('../../Utilities/Platform', () => {
-  return {OS: 'web'};
-});
+jest.mock('../../Utilities/Platform', () => ({
+  __esModule: true,
+  default: {
+    OS: 'web',
+  },
+}));
 
 describe('Animated tests', () => {
   beforeEach(() => {

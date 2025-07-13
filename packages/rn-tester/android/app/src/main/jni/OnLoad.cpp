@@ -7,12 +7,12 @@
 
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
+#include <FBReactNativeSpec.h>
 #include <NativeCxxModuleExample.h>
 #include <ReactCommon/SampleTurboModuleJSIBindings.h>
 #include <ReactCommon/SampleTurboModuleSpec.h>
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
-#include <rncore.h>
 
 #ifdef REACT_NATIVE_APP_CODEGEN_HEADER
 #include REACT_NATIVE_APP_CODEGEN_HEADER
@@ -21,8 +21,7 @@
 #include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void registerComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
@@ -55,15 +54,14 @@ std::shared_ptr<TurboModule> javaModuleProvider(
 #endif
 
   // We first try to look up core modules
-  if (auto module = rncore_ModuleProvider(name, params)) {
+  if (auto module = FBReactNativeSpec_ModuleProvider(name, params)) {
     return module;
   }
 
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {

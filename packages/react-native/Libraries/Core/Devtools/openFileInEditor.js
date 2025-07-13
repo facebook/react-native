@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-const getDevServer = require('./getDevServer');
+const getDevServer = require('./getDevServer').default;
 
-function openFileInEditor(file: string, lineNumber: number) {
+export default function openFileInEditor(file: string, lineNumber: number) {
   // $FlowFixMe[unused-promise]
   fetch(getDevServer().url + 'open-stack-frame', {
     method: 'POST',
@@ -22,5 +22,3 @@ function openFileInEditor(file: string, lineNumber: number) {
     body: JSON.stringify({file, lineNumber}),
   });
 }
-
-module.exports = openFileInEditor;

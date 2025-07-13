@@ -9,6 +9,9 @@
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
+#if USE_THIRD_PARTY_JSC != 1
+#import <React/RCTHermesInstanceFactory.h>
+#endif
 
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
@@ -36,6 +39,13 @@
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
 {
   rootViewController.view = rootView;
+}
+
+- (JSRuntimeFactoryRef)createJSRuntimeFactory
+{
+#if USE_THIRD_PARTY_JSC != 1
+  return jsrt_create_hermes_factory();
+#endif
 }
 
 - (void)customizeRootView:(RCTRootView *)rootView
@@ -76,6 +86,17 @@
 {
 }
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  return self.dependencyProvider ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.dependencyProvider) : @[];
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
@@ -86,11 +107,7 @@
 
 - (BOOL)newArchEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return RCTIsNewArchEnabled();
 }
 
 - (BOOL)bridgelessEnabled
@@ -116,6 +133,13 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
 }
 
 @end

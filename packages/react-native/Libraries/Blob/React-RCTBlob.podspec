@@ -16,16 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 header_search_paths = [
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
@@ -37,9 +28,9 @@ Pod::Spec.new do |s|
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
-  s.compiler_flags         = folly_compiler_flags + ' -Wno-nullability-completeness'
+  s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{h,m,mm}"
+  s.source_files           = podspec_sources("*.{h,m,mm}", "**/*.h")
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTBlob"
   s.pod_target_xcconfig    = {
@@ -48,10 +39,6 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
 
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
-  s.dependency "fmt", "11.0.2"
-  s.dependency "RCT-Folly", folly_version
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTBlobHeaders"
   s.dependency "React-Core/RCTWebSocket"
@@ -60,9 +47,13 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-NativeModulesApple")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_hermes()
     s.dependency "hermes-engine"
   end
+
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

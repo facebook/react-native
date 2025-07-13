@@ -11,12 +11,12 @@ import android.content.Context
 import android.text.SpannedString
 
 /**
- * Interface used by [BridgeDevSupportManager] to allow interception on any redboxes during
- * development and handling the information from the redbox. The implementation should be passed by
- * setRedBoxHandler in ReactInstanceManager.
+ * Interface used by [com.facebook.react.devsupport.BridgeDevSupportManager] to allow interception
+ * on any redboxes during development and handling the information from the redbox. The
+ * implementation should be passed by setRedBoxHandler in ReactInstanceManager.
  */
 public interface RedBoxHandler {
-  /** Callback interface for [.reportRedbox]. */
+  /** Callback interface for [reportRedbox]. */
   public interface ReportCompletedListener {
     public fun onReportSuccess(spannedString: SpannedString?)
 

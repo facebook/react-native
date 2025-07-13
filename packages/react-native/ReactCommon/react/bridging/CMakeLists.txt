@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_bridging_SRC CONFIGURE_DEPENDS *.cpp)
 
@@ -20,4 +14,6 @@ add_library(react_bridging OBJECT ${react_bridging_SRC})
 
 target_include_directories(react_bridging PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_bridging jsi callinvoker)
+target_link_libraries(react_bridging jsi callinvoker react_timing)
+target_compile_reactnative_options(react_bridging PRIVATE)
+target_compile_options(react_bridging PRIVATE -Wpedantic)

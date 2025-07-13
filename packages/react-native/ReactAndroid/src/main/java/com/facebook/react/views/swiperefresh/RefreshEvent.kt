@@ -19,11 +19,11 @@ internal class RefreshEvent : Event<RefreshEvent> {
 
   constructor(surfaceId: Int, viewTag: Int) : super(surfaceId, viewTag)
 
-  override public fun getEventName(): String {
+  override fun getEventName(): String {
     return "topRefresh"
   }
 
-  override protected fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap {
     return Arguments.createMap()
   }
 }

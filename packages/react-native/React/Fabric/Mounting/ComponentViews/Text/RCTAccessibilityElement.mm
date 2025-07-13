@@ -12,10 +12,10 @@
 - (CGRect)accessibilityFrame
 {
   UIView *container = (UIView *)self.accessibilityContainer;
-  if (CGRectEqualToRect(_frame, CGRectZero)) {
+  if (CGRectEqualToRect(_frameInContainerSpace, CGRectZero)) {
     return UIAccessibilityConvertFrameToScreenCoordinates(container.bounds, container);
   } else {
-    return UIAccessibilityConvertFrameToScreenCoordinates(_frame, container);
+    return UIAccessibilityConvertFrameToScreenCoordinates(_frameInContainerSpace, container);
   }
 }
 

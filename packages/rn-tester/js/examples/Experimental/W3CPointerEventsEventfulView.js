@@ -4,17 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent, ViewProps} from 'react-native';
 
 import * as React from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
-export default function EventfulView(props: {|
+export default function EventfulView(props: {
   name: string,
   emitByDefault?: boolean,
   onLeave?: boolean,
@@ -35,9 +35,9 @@ export default function EventfulView(props: {|
   onCancelCapture?: boolean,
   log: string => void,
   ...ViewProps,
-|}): React.Node {
-  const ref = React.useRef<?React.ElementRef<typeof View>>();
-  React.useEffect(() => {
+}): React.Node {
+  const ref = useRef<?React.ElementRef<typeof View>>();
+  useEffect(() => {
     // $FlowFixMe[prop-missing] Using private property
     setTag(ref.current?._nativeTag);
   }, [ref]);
@@ -65,7 +65,7 @@ export default function EventfulView(props: {|
     onCancelCapture,
     ...restProps
   } = props;
-  const [tag, setTag] = React.useState<?string>('');
+  const [tag, setTag] = useState<?string>('');
 
   const eventLog =
     (eventName: string, handler: ?(e: PointerEvent) => void) =>

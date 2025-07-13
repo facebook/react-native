@@ -40,7 +40,7 @@ internal class PropsAnimatedNode(
     }
   }
 
-  public fun connectToView(viewTag: Int, uiManager: UIManager?) {
+  fun connectToView(viewTag: Int, uiManager: UIManager?) {
     if (connectedViewTag != -1) {
       throw JSApplicationIllegalArgumentException(
           "Animated node $tag is already attached to a view: $connectedViewTag")
@@ -49,7 +49,7 @@ internal class PropsAnimatedNode(
     connectedViewUIManager = uiManager
   }
 
-  public fun disconnectFromView(viewTag: Int) {
+  fun disconnectFromView(viewTag: Int) {
     if (connectedViewTag != viewTag && connectedViewTag != -1) {
       throw JSApplicationIllegalArgumentException(
           "Attempting to disconnect view that has " +
@@ -59,7 +59,7 @@ internal class PropsAnimatedNode(
     connectedViewTag = -1
   }
 
-  public fun restoreDefaultValues() {
+  fun restoreDefaultValues() {
     // Cannot restore default values if this view has already been disconnected.
     if (connectedViewTag == -1) {
       return
@@ -79,7 +79,7 @@ internal class PropsAnimatedNode(
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
   }
 
-  public fun updateView() {
+  fun updateView() {
     if (connectedViewTag == -1) {
       return
     }
@@ -109,8 +109,8 @@ internal class PropsAnimatedNode(
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)
   }
 
-  public val connectedView: View?
-    // resolveView throws an {@link IllegalViewOperationException} when the view doesn't exist
+  val connectedView: View?
+    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
     // (this can happen if the surface is being deallocated).
     get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 

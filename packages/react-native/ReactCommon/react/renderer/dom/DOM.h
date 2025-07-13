@@ -11,10 +11,15 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <cstdint>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace facebook::react::dom {
+
+constexpr uint_fast16_t DOCUMENT_POSITION_DISCONNECTED = 1;
+constexpr uint_fast16_t DOCUMENT_POSITION_PRECEDING = 2;
+constexpr uint_fast16_t DOCUMENT_POSITION_FOLLOWING = 4;
+constexpr uint_fast16_t DOCUMENT_POSITION_CONTAINS = 8;
+constexpr uint_fast16_t DOCUMENT_POSITION_CONTAINED_BY = 16;
 
 struct DOMRect {
   double x = 0;
@@ -33,7 +38,7 @@ struct RNMeasureRect {
 };
 
 struct DOMOffset {
-  ShadowNode::Shared offsetParent = nullptr;
+  std::shared_ptr<const ShadowNode> offsetParent = nullptr;
   double top = 0;
   double left = 0;
 };
@@ -55,11 +60,11 @@ struct DOMBorderWidthRounded {
   int left = 0;
 };
 
-ShadowNode::Shared getParentNode(
+std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::vector<ShadowNode::Shared> getChildNodes(
+std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 

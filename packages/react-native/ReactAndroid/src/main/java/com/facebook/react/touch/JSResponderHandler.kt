@@ -12,15 +12,15 @@ import android.view.ViewGroup
 import android.view.ViewParent
 
 /**
- * This class coordinates JSResponder commands for [UIManagerModule]. It should be set as
- * OnInterceptTouchEventListener for all newly created native views that implements [ ] and thanks
- * to the information whether JSResponder is set and to which view it will correctly coordinate the
- * return values of [OnInterceptTouchEventListener] such that touch events will be dispatched to the
- * view selected by JS gesture recognizer.
+ * This class coordinates JSResponder commands for [com.facebook.react.bridge.UIManager]. It should
+ * be set as OnInterceptTouchEventListener for all newly created native views that implements [ ]
+ * and thanks to the information whether JSResponder is set and to which view it will correctly
+ * coordinate the return values of [OnInterceptTouchEventListener] such that touch events will be
+ * dispatched to the view selected by JS gesture recognizer.
  *
- * Single [CatalystInstance] should reuse same instance of this class.
+ * Single [com.facebook.react.bridge.CatalystInstance] should reuse same instance of this class.
  */
-public class JSResponderHandler : OnInterceptTouchEventListener {
+internal class JSResponderHandler : OnInterceptTouchEventListener {
 
   @Volatile private var currentJSResponder = JS_RESPONDER_UNSET
   // We're holding on to the ViewParent that blocked native responders so that we can clear it
@@ -28,7 +28,7 @@ public class JSResponderHandler : OnInterceptTouchEventListener {
 
   private var viewParentBlockingNativeResponder: ViewParent? = null
 
-  public fun setJSResponder(tag: Int, viewParentBlockingNativeResponder: ViewParent?) {
+  fun setJSResponder(tag: Int, viewParentBlockingNativeResponder: ViewParent?) {
     currentJSResponder = tag
     // We need to unblock the native responder first, otherwise we can get in a bad state: a
     // ViewParent sets requestDisallowInterceptTouchEvent to true, which sets this setting to true
@@ -42,7 +42,7 @@ public class JSResponderHandler : OnInterceptTouchEventListener {
     }
   }
 
-  public fun clearJSResponder() {
+  fun clearJSResponder() {
     currentJSResponder = JS_RESPONDER_UNSET
     maybeUnblockNativeResponder()
   }

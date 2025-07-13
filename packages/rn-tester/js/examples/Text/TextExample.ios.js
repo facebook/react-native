@@ -4,46 +4,34 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
-import TextInlineViewsExample from './TextInlineViewsExample';
+import TextSharedExamples from './TextSharedExamples';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {
   Button,
+  Image,
   LayoutAnimation,
   Platform,
   Text,
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
 
-// TODO: Is there a cleaner way to flip the TextAncestor value to false? I
-//   suspect apps won't even be able to leverage this workaround because
-//   TextAncestor is not public.
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-function InlineView(props) {
-  return (
-    <TextAncestor.Provider value={false}>
-      <View {...props} />
-    </TextAncestor.Provider>
-  );
-}
-
-type TextAlignExampleRTLState = {|
+type TextAlignExampleRTLState = {
   isRTL: boolean,
-|};
+};
 
 class TextAlignRTLExample extends React.Component<
   {},
@@ -129,7 +117,7 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
       fontSize: this.state.fontSize,
     };
     return (
-      <View>
+      <View testID="text-with-toggle-attributes">
         {/* $FlowFixMe[incompatible-type] */}
         <Text style={curStyle}>
           Tap the controls below to change attributes.
@@ -142,12 +130,14 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
         </Text>
         <Text
           style={{backgroundColor: '#ffaaaa', marginTop: 5}}
-          onPress={this.toggleWeight}>
+          onPress={this.toggleWeight}
+          testID="toggle-weight">
           Toggle Weight
         </Text>
         <Text
           style={{backgroundColor: '#aaaaff', marginTop: 5}}
-          onPress={this.increaseSize}>
+          onPress={this.increaseSize}
+          testID="increase-size">
           Increase Size
         </Text>
       </View>
@@ -155,12 +145,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
@@ -297,6 +287,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
 
     return (
       <View>
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Nested <Text/>s:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -304,6 +296,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Array of <Text/>s in <View>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -311,6 +305,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -330,6 +326,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>
           {'Multi-line interleaved <View> and <Text>:'}
         </Text>
@@ -347,6 +345,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           </Text>
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
@@ -364,6 +364,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           </View>
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -371,6 +373,8 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <Text style={subtitleStyle}>{'<TextInput multiline/>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -1061,17 +1065,9 @@ const examples = [
     },
   },
   {
-    title: 'Empty Text',
-    description: "It's ok to have Text with zero or null children.",
-    render: function (): React.Node {
-      return <Text />;
-    },
-  },
-  {
     title: 'Toggling Attributes',
-    render: function (): React.MixedElement {
-      return <AttributeToggler />;
-    },
+    name: 'togglingAttributes',
+    render: AttributeToggler,
   },
   {
     title: 'backgroundColor attribute',
@@ -1102,9 +1098,10 @@ const examples = [
   },
   {
     title: 'numberOfLines attribute',
+    name: 'numberOfLines',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="number-of-lines">
           <Text numberOfLines={1}>
             Maximum of one line, no matter how much I write here. If I keep
             writing, it{"'"}ll just truncate after one line.
@@ -1112,6 +1109,14 @@ const examples = [
           <Text numberOfLines={2} style={{marginTop: 20}}>
             Maximum of two lines, no matter how much I write here. If I keep
             writing, it{"'"}ll just truncate after two lines.
+          </Text>
+          <Text numberOfLines={1} style={{marginTop: 20}}>
+            The hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated.
+            <Image source={hotdog} style={{height: 12}} />
           </Text>
           <Text style={{marginTop: 20}}>
             No maximum lines specified, no matter how much I write here. If I
@@ -1170,6 +1175,62 @@ const examples = [
               This text also won't scale because it inherits "allowFontScaling"
               from its parent.
             </Text>
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return (
+        <View testID={'max-font-size-multiplier'}>
+          <Text>
+            When allowFontScaling is enabled, you can use the
+            maxFontSizeMultiplier prop to set an upper limit on how much the
+            font size will be scaled.
+          </Text>
+          <Text
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            style={{marginTop: 10}}>
+            This text will not scale up (max 1x)
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1.5}>
+            This text will scale up (max 1.5x)
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text>Inherit max (max 1x)</Text>
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text maxFontSizeMultiplier={1.5}>
+              Override inherited max (max 1.5x)
+            </Text>
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2">
+            This text will scale with 'title2' dynamic type ramp (no max)
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2"
+            maxFontSizeMultiplier={1.2}>
+            This text will scale with 'title2' dynamic type ramp (max 1.2x)
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2"
+            maxFontSizeMultiplier={1}>
+            This text uses 'title2' dynamic type ramp but will not scale up (max
+            1x)
           </Text>
         </View>
       );
@@ -1277,20 +1338,20 @@ const examples = [
       return (
         <Text>
           This text has a view
-          <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+          <View style={{borderColor: 'red', borderWidth: 1}}>
             <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
             <Text style={{borderColor: 'green', borderWidth: 1}}>
               another text inside.
             </Text>
             <Text style={{borderColor: 'yellow', borderWidth: 1}}>
               And moreover, it has another view
-              <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+              <View style={{borderColor: 'red', borderWidth: 1}}>
                 <Text style={{borderColor: 'blue', borderWidth: 1}}>
                   with another text inside!
                 </Text>
-              </InlineView>
+              </View>
             </Text>
-          </InlineView>
+          </View>
           Because we need to go deeper.
         </Text>
       );
@@ -1377,7 +1438,12 @@ const examples = [
   {
     title: 'Line Break Strategy',
     render: function (): React.Node {
-      const lineBreakStrategy = ['none', 'standard', 'hangul-word', 'push-out'];
+      const lineBreakStrategy = [
+        'none',
+        'standard',
+        'hangul-word',
+        'push-out',
+      ] as const;
       const textByCode = {
         en: 'lineBreakStrategy lineBreakStrategy lineBreakStrategy lineBreakStrategy',
         ko: '한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행 한글개행',
@@ -1427,6 +1493,8 @@ const examples = [
             sizes change relative to each other.
           </Text>
           <View style={boxStyle}>
+            {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */}
             <Text style={boldStyle}>With `dynamicTypeRamp`:</Text>
             <Text style={{fontSize: 34}} dynamicTypeRamp="largeTitle">
               Large Title
@@ -1440,17 +1508,43 @@ const examples = [
             <Text style={{fontSize: 20}} dynamicTypeRamp="title3">
               Title 3
             </Text>
+            <Text style={{fontSize: 17}} dynamicTypeRamp="headline">
+              Headline
+            </Text>
             <Text style={{fontSize: 17}} dynamicTypeRamp="body">
               Body
             </Text>
+            <Text style={{fontSize: 16}} dynamicTypeRamp="callout">
+              Callout
+            </Text>
+            <Text style={{fontSize: 15}} dynamicTypeRamp="subheadline">
+              Subheadline
+            </Text>
+            <Text style={{fontSize: 13}} dynamicTypeRamp="footnote">
+              Footnote
+            </Text>
+            <Text style={{fontSize: 12}} dynamicTypeRamp="caption1">
+              Caption
+            </Text>
+            <Text style={{fontSize: 11}} dynamicTypeRamp="caption2">
+              Caption 2
+            </Text>
           </View>
           <View style={boxStyle}>
+            {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */}
             <Text style={boldStyle}>Without `dynamicTypeRamp`:</Text>
             <Text style={{fontSize: 34}}>Large Title</Text>
             <Text style={{fontSize: 28}}>Title</Text>
             <Text style={{fontSize: 22}}>Title 2</Text>
             <Text style={{fontSize: 20}}>Title 3</Text>
+            <Text style={{fontSize: 17}}>Headline</Text>
             <Text style={{fontSize: 17}}>Body</Text>
+            <Text style={{fontSize: 16}}>Callout</Text>
+            <Text style={{fontSize: 15}}>Subheadline</Text>
+            <Text style={{fontSize: 13}}>Footnote</Text>
+            <Text style={{fontSize: 12}}>Caption</Text>
+            <Text style={{fontSize: 11}}>Caption 2</Text>
           </View>
         </View>
       );
@@ -1498,7 +1592,7 @@ const examples = [
       );
     },
   },
-  TextInlineViewsExample,
+  ...TextSharedExamples,
 ];
 
 module.exports = ({

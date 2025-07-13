@@ -7,6 +7,8 @@
 
 package com.facebook.react.common
 
+import android.view.View
+
 /**
  * Interface for handling a surface in React Native. In mobile platform a surface can be any
  * container that holds some [View]. For example, a Dialog can be a surface to wrap content view

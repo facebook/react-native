@@ -20,6 +20,8 @@ jobs:
         uses: ./.github/actions/yarn-install
       - name: Build packages
         run: yarn build
+      - name: Build types
+        run: yarn build-types --skip-snapshot
       - name: Set NPM auth token
         run: echo "//registry.npmjs.org/:_authToken=$GHA_NPM_TOKEN" > ~/.npmrc
       - name: Find and publish all bumped packages

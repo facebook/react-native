@@ -9,13 +9,10 @@
 
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/graphics/Float.h>
-
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#endif
-
-#if defined(__APPLE__) && TARGET_OS_IOS
 #include "ModalHostViewUtils.h"
+
+#ifdef RN_SERIALIZABLE_STATE
+#include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
@@ -27,26 +24,21 @@ class ModalHostViewState final {
  public:
   using Shared = std::shared_ptr<const ModalHostViewState>;
 
-#if defined(__APPLE__) && TARGET_OS_IOS
-  ModalHostViewState() : screenSize(RCTModalHostViewScreenSize()) {
-#else
-  ModalHostViewState(){
-#endif
-  };
+  ModalHostViewState() : screenSize(ModalHostViewScreenSize()) {}
   ModalHostViewState(Size screenSize_) : screenSize(screenSize_){};
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   ModalHostViewState(
       const ModalHostViewState& previousState,
       folly::dynamic data)
       : screenSize(Size{
-            (Float)data["screenWidth"].getDouble(),
-            (Float)data["screenHeight"].getDouble()}){};
+            .width = (Float)data["screenWidth"].getDouble(),
+            .height = (Float)data["screenHeight"].getDouble()}){};
 #endif
 
   const Size screenSize{};
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   folly::dynamic getDynamic() const;
 #endif
 

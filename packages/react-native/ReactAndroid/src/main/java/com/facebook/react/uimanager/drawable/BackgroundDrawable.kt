@@ -122,6 +122,7 @@ internal class BackgroundDrawable(
       }
     }
 
+    backgroundPaint.alpha = 255
     if (backgroundImageLayers != null && backgroundImageLayers?.isNotEmpty() == true) {
       backgroundPaint.setShader(getBackgroundImageShader())
       if (computedBorderRadius?.isUniform() == true && borderRadius?.hasRoundedBorders() == true) {
@@ -137,6 +138,7 @@ internal class BackgroundDrawable(
       }
       backgroundPaint.setShader(null)
     }
+    backgroundPaint.alpha = Color.alpha(backgroundColor)
     canvas.restore()
   }
 
@@ -153,7 +155,7 @@ internal class BackgroundDrawable(
     backgroundImageLayers?.let { layers ->
       var compositeShader: Shader? = null
       for (backgroundImageLayer in layers) {
-        val currentShader = backgroundImageLayer.getShader(bounds) ?: continue
+        val currentShader = backgroundImageLayer.getShader(bounds)
 
         compositeShader =
             if (compositeShader == null) {

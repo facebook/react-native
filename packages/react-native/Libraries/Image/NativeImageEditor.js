@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeImageEditor';
-import NativeImageEditor from '../../src/private/specs/modules/NativeImageEditor';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeImageEditor';
+import NativeImageEditor from '../../src/private/specs_DEPRECATED/modules/NativeImageEditor';
+
 export default NativeImageEditor;

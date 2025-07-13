@@ -19,11 +19,11 @@ import com.facebook.react.module.annotations.ReactModule
  * it can e.g. release any resources, stop timers etc.
  */
 @ReactModule(name = NativeHeadlessJsTaskSupportSpec.NAME)
-public open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationContext?) :
+internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationContext?) :
     NativeHeadlessJsTaskSupportSpec(reactContext) {
   override fun notifyTaskRetry(taskIdDouble: Double, promise: Promise) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       val retryPosted = headlessJsTaskContext.retryTask(taskId)
       promise.resolve(retryPosted)
@@ -38,7 +38,7 @@ public open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCont
 
   override fun notifyTaskFinished(taskIdDouble: Double) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       headlessJsTaskContext.finishTask(taskId)
     } else {
@@ -47,5 +47,9 @@ public open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCont
           "Tried to finish non-active task with id %d. Did it time out?",
           taskId)
     }
+  }
+
+  companion object {
+    const val NAME: String = NativeHeadlessJsTaskSupportSpec.NAME
   }
 }

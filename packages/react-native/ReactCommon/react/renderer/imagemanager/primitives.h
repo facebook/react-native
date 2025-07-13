@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Size.h>
 
@@ -37,7 +38,65 @@ class ImageSource {
   bool operator!=(const ImageSource& rhs) const {
     return !(*this == rhs);
   }
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic imageSourceResult = folly::dynamic::object();
+    switch (type) {
+      case ImageSource::Type::Invalid:
+        imageSourceResult["type"] = "invalid";
+        break;
+      case ImageSource::Type::Remote:
+        imageSourceResult["type"] = "remote";
+        break;
+      case ImageSource::Type::Local:
+        imageSourceResult["type"] = "local";
+        break;
+    }
+
+    imageSourceResult["uri"] = uri;
+    imageSourceResult["bundle"] = bundle;
+    imageSourceResult["scale"] = scale;
+
+    folly::dynamic sizeResult = folly::dynamic::object();
+    sizeResult["width"] = size.width;
+    sizeResult["height"] = size.height;
+    imageSourceResult["size"] = sizeResult;
+
+    imageSourceResult["body"] = body;
+    imageSourceResult["method"] = method;
+
+    switch (cache) {
+      case ImageSource::CacheStategy::Default:
+        imageSourceResult["cache"] = "default";
+        break;
+      case ImageSource::CacheStategy::Reload:
+        imageSourceResult["cache"] = "reload";
+        break;
+      case ImageSource::CacheStategy::ForceCache:
+        imageSourceResult["cache"] = "force-cache";
+        break;
+      case ImageSource::CacheStategy::OnlyIfCached:
+        imageSourceResult["cache"] = "only-if-cached";
+        break;
+    }
+
+    folly::dynamic headersObject = folly::dynamic::object();
+    for (const auto& header : headers) {
+      headersObject[header.first] = header.second;
+    }
+    imageSourceResult["headers"] = headersObject;
+    return imageSourceResult;
+  }
+
+#endif
 };
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const ImageSource& imageSource) {
+  return imageSource.toDynamic();
+}
+#endif
 
 using ImageSources = std::vector<ImageSource>;
 

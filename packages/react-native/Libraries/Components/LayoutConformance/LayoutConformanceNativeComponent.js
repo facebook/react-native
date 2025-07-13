@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';

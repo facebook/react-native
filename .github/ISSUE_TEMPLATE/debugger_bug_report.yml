@@ -48,10 +48,10 @@ body:
   - type: textarea
     id: react-native-info
     attributes:
-      label: Output of `npx react-native info`
-      description: Run `npx react-native info` in your terminal, copy and paste the results here.
+      label: Output of `npx @react-native-community/cli info`
+      description: Run `npx @react-native-community/cli info` in your terminal, copy and paste the results here.
       placeholder: |
-        Paste the output of `npx react-native info` here. The output looks like:
+        Paste the output of `npx @react-native-community/cli info` here. The output looks like:
         ...
         System:
           OS: macOS 14.1.1
@@ -62,7 +62,7 @@ body:
             path: /bin/zsh
         Binaries:
           Node: ...
-            version: 18.14.0
+            version: 22.14.0
         ...
       render: text
     validations:

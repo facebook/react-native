@@ -11,6 +11,9 @@ inputs:
     required: false
     description: The GHA npm token, required only to publish to npm
     default: ''
+  gradle-cache-encryption-key:
+    description: The encryption key needed to store the Gradle Configuration cache
+
 runs:
   using: composite
   steps:
@@ -98,15 +101,35 @@ runs:
         cp ${{ inputs.hermes-ws-dir }}/hermes-runtime-darwin/hermes-ios-Release.tar.gz ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-ios-release.tar.gz
         cp ${{ inputs.hermes-ws-dir }}/dSYM/Debug/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-debug.tar.gz
         cp ${{ inputs.hermes-ws-dir }}/dSYM/Release/hermes.framework.dSYM  ./packages/react-native/ReactAndroid/external-artifacts/artifacts/hermes-framework-dSYM-release.tar.gz
+    - name: Download ReactNativeDependencies
+      uses: actions/download-artifact@v4
+      with:
+        pattern: ReactNativeDependencies*
+        path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
+        merge-multiple: true
+    - name: Download ReactCore artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: ReactCore*
+        path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
+        merge-multiple: true
+    - name: Print Artifacts Directory
+      shell: bash
+      run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
+      with:
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
     - name: Install dependencies
       uses: ./.github/actions/yarn-install
     - name: Build packages
       shell: bash
       run: yarn build
+    - name: Build types
+      shell: bash
+      run: yarn build-types --skip-snapshot
     # Continue with publish steps
     - name: Set npm credentials
       if: ${{ inputs.release-type == 'release' ||

@@ -8,11 +8,17 @@
  * @format
  */
 
+import type {EventCallback} from '../../src/private/webapis/dom/events/EventTarget';
 import type Blob from './Blob';
 
+import Event from '../../src/private/webapis/dom/events/Event';
+import {
+  getEventHandlerAttribute,
+  setEventHandlerAttribute,
+} from '../../src/private/webapis/dom/events/EventHandlerAttributes';
+import EventTarget from '../../src/private/webapis/dom/events/EventTarget';
 import NativeFileReaderModule from './NativeFileReaderModule';
 import {toByteArray} from 'base64-js';
-import EventTarget from 'event-target-shim';
 
 type ReadyState =
   | 0 // EMPTY
@@ -21,20 +27,11 @@ type ReadyState =
 
 type ReaderResult = string | ArrayBuffer;
 
-const READER_EVENTS = [
-  'abort',
-  'error',
-  'load',
-  'loadstart',
-  'loadend',
-  'progress',
-];
-
 const EMPTY = 0;
 const LOADING = 1;
 const DONE = 2;
 
-class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
+class FileReader extends EventTarget {
   static EMPTY: number = EMPTY;
   static LOADING: number = LOADING;
   static DONE: number = DONE;
@@ -61,16 +58,16 @@ class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
 
   _setReadyState(newState: ReadyState) {
     this._readyState = newState;
-    this.dispatchEvent({type: 'readystatechange'});
+    this.dispatchEvent(new Event('readystatechange'));
     if (newState === DONE) {
       if (this._aborted) {
-        this.dispatchEvent({type: 'abort'});
+        this.dispatchEvent(new Event('abort'));
       } else if (this._error) {
-        this.dispatchEvent({type: 'error'});
+        this.dispatchEvent(new Event('error'));
       } else {
-        this.dispatchEvent({type: 'load'});
+        this.dispatchEvent(new Event('load'));
       }
-      this.dispatchEvent({type: 'loadend'});
+      this.dispatchEvent(new Event('loadend'));
     }
   }
 
@@ -181,6 +178,54 @@ class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
   get result(): ?ReaderResult {
     return this._result;
   }
+
+  get onabort(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'abort');
+  }
+
+  set onabort(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'abort', listener);
+  }
+
+  get onerror(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'error');
+  }
+
+  set onerror(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'error', listener);
+  }
+
+  get onload(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'load');
+  }
+
+  set onload(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'load', listener);
+  }
+
+  get onloadstart(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadstart');
+  }
+
+  set onloadstart(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadstart', listener);
+  }
+
+  get onloadend(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'loadend');
+  }
+
+  set onloadend(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'loadend', listener);
+  }
+
+  get onprogress(): EventCallback | null {
+    return getEventHandlerAttribute(this, 'progress');
+  }
+
+  set onprogress(listener: ?EventCallback) {
+    setEventHandlerAttribute(this, 'progress', listener);
+  }
 }
 
-module.exports = FileReader;
+export default FileReader;

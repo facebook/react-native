@@ -45,7 +45,7 @@ internal class OutlineDrawable(
    */
   private val gapBetweenPaths = 0.8f
 
-  public var outlineOffset: Float = outlineOffset
+  var outlineOffset: Float = outlineOffset
     set(value) {
       if (value != field) {
         field = value
@@ -53,7 +53,7 @@ internal class OutlineDrawable(
       }
     }
 
-  public var outlineStyle: OutlineStyle = outlineStyle
+  var outlineStyle: OutlineStyle = outlineStyle
     set(value) {
       if (value != field) {
         field = value
@@ -62,7 +62,7 @@ internal class OutlineDrawable(
       }
     }
 
-  public var outlineColor: Int = outlineColor
+  var outlineColor: Int = outlineColor
     set(value) {
       if (value != field) {
         field = value
@@ -71,7 +71,7 @@ internal class OutlineDrawable(
       }
     }
 
-  public var outlineWidth: Float = outlineWidth
+  var outlineWidth: Float = outlineWidth
     set(value) {
       if (value != field) {
         field = value
@@ -154,8 +154,8 @@ internal class OutlineDrawable(
     }
   }
 
-  private fun calculateRadius(radius: Float, outlineWidth: Float) =
-      if (radius != 0f) radius + outlineWidth * 0.5f else 0f
+  private fun calculateRadius(radius: Float, outlineWidth: Float, outlineOffset: Float) =
+      if (radius != 0f) radius + (outlineWidth * 0.5f) + outlineOffset else 0f
 
   private fun drawRectangularOutline(canvas: Canvas) {
     pathForOutline.addRect(tempRectForOutline, Path.Direction.CW)
@@ -173,14 +173,14 @@ internal class OutlineDrawable(
     pathForOutline.addRoundRect(
         tempRectForOutline,
         floatArrayOf(
-            calculateRadius(topLeftRadius.horizontal, outlineWidth),
-            calculateRadius(topLeftRadius.vertical, outlineWidth),
-            calculateRadius(topRightRadius.horizontal, outlineWidth),
-            calculateRadius(topRightRadius.vertical, outlineWidth),
-            calculateRadius(bottomRightRadius.horizontal, outlineWidth),
-            calculateRadius(bottomRightRadius.vertical, outlineWidth),
-            calculateRadius(bottomLeftRadius.horizontal, outlineWidth),
-            calculateRadius(bottomLeftRadius.vertical, outlineWidth),
+            calculateRadius(topLeftRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(topLeftRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(topRightRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(topRightRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(bottomRightRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(bottomRightRadius.vertical, outlineWidth, outlineOffset),
+            calculateRadius(bottomLeftRadius.horizontal, outlineWidth, outlineOffset),
+            calculateRadius(bottomLeftRadius.vertical, outlineWidth, outlineOffset),
         ),
         Path.Direction.CW)
 

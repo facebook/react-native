@@ -6,8 +6,9 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
+
+require('../shared/babelRegister').registerForScript();
 
 const {BUILD_DIR, PACKAGES_DIR} = require('./build');
 const {buildConfig} = require('./config');
@@ -24,6 +25,8 @@ const config = {
 function clean() {
   const {
     values: {help},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {

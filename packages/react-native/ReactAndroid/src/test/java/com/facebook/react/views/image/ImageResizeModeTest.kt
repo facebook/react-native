@@ -11,10 +11,7 @@ import android.graphics.Shader.TileMode
 import com.facebook.drawee.drawable.ScalingUtils
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ImageResizeModeTest {
 
   @Test

@@ -8,11 +8,16 @@
  * @format
  */
 
+// $FlowFixMe[unclear-type] unclear type of events
+type UnsafeEventObject = Object;
+
 export interface EventSubscription {
   remove(): void;
 }
 
-export interface IEventEmitter<TEventToArgsMap: {...}> {
+export interface IEventEmitter<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+> {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -35,7 +40,9 @@ interface Registration<TArgs> {
   +remove: () => void;
 }
 
-type Registry<TEventToArgsMap: {...}> = {
+type Registry<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+> = {
   [K in keyof TEventToArgsMap]: Set<Registration<TEventToArgsMap[K]>>,
 };
 
@@ -59,11 +66,18 @@ type Registry<TEventToArgsMap: {...}> = {
  *   emitter.emit('error', new Error('Resource not found'));
  *
  */
-export default class EventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class EventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
-  // $FlowFixMe[incompatible-type]
-  #registry: Registry<TEventToArgsMap> = {};
+  #registry: Registry<TEventToArgsMap>;
+
+  constructor() {
+    // $FlowFixMe[incompatible-type]
+    this.#registry = {};
+  }
 
   /**
    * Registers a listener that is called when the supplied event is emitted.
@@ -81,7 +95,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     }
     const registrations = allocate<
       TEventToArgsMap,
-      TEvent,
+      $Keys<TEventToArgsMap>,
       TEventToArgsMap[TEvent],
     >(this.#registry, eventType);
     const registration: Registration<TEventToArgsMap[TEvent]> = {
@@ -136,20 +150,22 @@ export default class EventEmitter<TEventToArgsMap: {...}>
    * Returns the number of registered listeners for the supplied event.
    */
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number {
-    const registrations: ?Set<Registration<mixed>> = this.#registry[eventType];
+    const registrations: ?Set<Registration<TEventToArgsMap[TEvent]>> =
+      this.#registry[eventType];
     return registrations == null ? 0 : registrations.size;
   }
 }
 
 function allocate<
-  TEventToArgsMap: {...},
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeEventObject>>>,
   TEvent: $Keys<TEventToArgsMap>,
   TEventArgs: TEventToArgsMap[TEvent],
 >(
   registry: Registry<TEventToArgsMap>,
   eventType: TEvent,
-): Set<Registration<TEventArgs>> {
-  let registrations: ?Set<Registration<TEventArgs>> = registry[eventType];
+): Set<Registration<TEventToArgsMap[TEvent]>> {
+  let registrations: ?Set<Registration<TEventToArgsMap[TEvent]>> =
+    registry[eventType];
   if (registrations == null) {
     registrations = new Set();
     registry[eventType] = registrations;

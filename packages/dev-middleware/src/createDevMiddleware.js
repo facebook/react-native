@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
@@ -64,6 +63,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
+
+  /**
+   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_trackInspectorProxyEventLoopPerf?: boolean,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -75,10 +81,12 @@ export default function createDevMiddleware({
   projectRoot,
   serverBaseUrl,
   logger,
+  // $FlowFixMe[prop-missing]
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
   unstable_customInspectorMessageHandler,
+  unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
   const eventReporter = createWrappedEventReporter(
@@ -91,7 +99,9 @@ export default function createDevMiddleware({
     serverBaseUrl,
     eventReporter,
     experiments,
+    logger,
     unstable_customInspectorMessageHandler,
+    unstable_trackInspectorProxyEventLoopPerf,
   );
 
   const middleware = connect()
@@ -131,6 +141,7 @@ function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
+    enableStandaloneFuseboxShell: config.enableStandaloneFuseboxShell ?? false,
   };
 }
 
@@ -147,7 +158,16 @@ function createWrappedEventReporter(
       switch (event.type) {
         case 'profiling_target_registered':
           logger?.info(
-            `Profiling build target "${event.appId}" registered for debugging`,
+            "Profiling build target '%s' registered for debugging",
+            event.appId ?? 'unknown',
+          );
+          break;
+        case 'fusebox_console_notice':
+          logger?.info(
+            '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+              'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+              'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+              '\u001B[27m',
           );
           break;
       }

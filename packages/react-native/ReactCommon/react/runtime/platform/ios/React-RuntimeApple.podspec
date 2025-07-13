@@ -16,16 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-folly_dep_name = folly_config[:dep_name]
-
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
 header_search_paths = [
-  "$(PODS_ROOT)/boost",
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_TARGET_SRCROOT)/../../../..",
   "$(PODS_TARGET_SRCROOT)/../../../../..",
@@ -40,26 +31,23 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "ReactCommon/*.{mm,h}"
+  s.source_files           = podspec_sources("ReactCommon/*.{mm,h}", "ReactCommon/*.{h}")
   s.header_dir             = "ReactCommon"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths,
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
-  s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = './'
     s.module_name             = 'React_RuntimeApple'
   end
 
-  s.dependency folly_dep_name, folly_version
   s.dependency "React-jsiexecutor"
   s.dependency "React-cxxreact"
   s.dependency "React-callinvoker"
-  s.dependency "React-runtimeexecutor"
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-runtimescheduler"
-  s.dependency "React-utils"
   s.dependency "React-jsi"
   s.dependency "React-Core/Default"
   s.dependency "React-CoreModules"
@@ -70,15 +58,18 @@ Pod::Spec.new do |s|
   s.dependency "React-jserrorhandler"
   s.dependency "React-jsinspector"
   s.dependency "React-featureflags"
-
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-    s.dependency "React-RuntimeHermes"
-    s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
+  if use_third_party_jsc()
+    s.exclude_files = ["ReactCommon/RCTHermesInstance.{mm,h}", "ReactCommon/RCTJscInstance.{mm,h}"]
   else
-    s.dependency "React-jsc"
-    s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"
+    s.dependency "hermes-engine"
+    add_dependency(s, "React-RuntimeHermes")
+    s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
   end
+
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

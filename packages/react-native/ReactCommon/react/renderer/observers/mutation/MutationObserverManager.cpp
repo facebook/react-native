@@ -16,55 +16,40 @@ MutationObserverManager::MutationObserverManager() = default;
 
 void MutationObserverManager::observe(
     MutationObserverId mutationObserverId,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     bool observeSubtree,
     const UIManager& uiManager) {
   TraceSection s("MutationObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
+  auto shadowNodeFamily = shadowNode->getFamilyShared();
 
   auto& observers = observersBySurfaceId_[surfaceId];
 
   auto observerIt = observers.find(mutationObserverId);
   if (observerIt == observers.end()) {
     auto observer = MutationObserver{mutationObserverId};
-    observer.observe(shadowNode, observeSubtree);
+    observer.observe(shadowNodeFamily, observeSubtree);
     observers.emplace(mutationObserverId, std::move(observer));
   } else {
     auto& observer = observerIt->second;
-    observer.observe(shadowNode, observeSubtree);
+    observer.observe(shadowNodeFamily, observeSubtree);
   }
 }
 
-void MutationObserverManager::unobserve(
-    MutationObserverId mutationObserverId,
-    const ShadowNode& shadowNode) {
-  TraceSection s("MutationObserverManager::unobserve");
+void MutationObserverManager::unobserveAll(
+    MutationObserverId mutationObserverId) {
+  TraceSection s("MutationObserverManager::unobserveAll");
 
-  auto surfaceId = shadowNode.getSurfaceId();
-
-  auto observersIt = observersBySurfaceId_.find(surfaceId);
-  if (observersIt == observersBySurfaceId_.end()) {
-    return;
-  }
-
-  auto& observers = observersIt->second;
-
-  auto observerIt = observers.find(mutationObserverId);
-  if (observerIt == observers.end()) {
-    return;
-  }
-
-  auto& observer = observerIt->second;
-
-  observer.unobserve(shadowNode);
-
-  if (!observer.isObserving()) {
-    observers.erase(mutationObserverId);
-  }
-
-  if (observers.empty()) {
-    observersBySurfaceId_.erase(surfaceId);
+  for (auto it = observersBySurfaceId_.begin();
+       it != observersBySurfaceId_.end();) {
+    auto& observers = it->second;
+    auto deleted = observers.erase(mutationObserverId);
+    if (deleted > 0 && observers.empty()) {
+      it = observersBySurfaceId_.erase(it);
+    } else {
+      ++it;
+    }
   }
 }
 
@@ -106,8 +91,11 @@ void MutationObserverManager::commitHookWasUnregistered(
 RootShadowNode::Unshared MutationObserverManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
-    const RootShadowNode::Unshared& newRootShadowNode) noexcept {
-  runMutationObservations(shadowTree, *oldRootShadowNode, *newRootShadowNode);
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTree::CommitOptions& commitOptions) noexcept {
+  if (commitOptions.source == ShadowTree::CommitSource::React) {
+    runMutationObservations(shadowTree, *oldRootShadowNode, *newRootShadowNode);
+  }
   return newRootShadowNode;
 }
 

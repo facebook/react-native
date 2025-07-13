@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeAnimatedModule';
-import NativeAnimatedModule from '../../src/private/specs/modules/NativeAnimatedModule';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedModule';
+import NativeAnimatedModule from '../../src/private/specs_DEPRECATED/modules/NativeAnimatedModule';
+
 export default NativeAnimatedModule;

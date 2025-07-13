@@ -18,9 +18,12 @@ import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -64,6 +67,8 @@ import java.util.Map;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   // Use a direction weak character so the placeholder doesn't change the direction of the previous
@@ -103,9 +108,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(
-            TextTransform.apply(
-                ((ReactRawTextShadowNode) child).getText(), textAttributes.getTextTransform()));
+        String childText = ((ReactRawTextShadowNode) child).getText();
+        if (childText != null) {
+          sb.append(TextTransform.apply(childText, textAttributes.textTransform));
+        }
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode(
             (ReactBaseTextShadowNode) child,
@@ -151,7 +157,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
-        inlineViews.put(reactTag, child);
+
+        // supportsInlineViews is true, so we can assume that inlineViews is not null
+        Assertions.assertNotNull(inlineViews).put(reactTag, child);
       } else {
         throw new IllegalViewOperationException(
             "Unexpected view type nested under a <Text> or <TextInput> node: " + child.getClass());
@@ -240,7 +248,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactBaseTextShadowNode textShadowNode,
       @Nullable String text,
       boolean supportsInlineViews,
-      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+      @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     Assertions.assertCondition(
         !supportsInlineViews || nativeViewHierarchyOptimizer != null,
         "nativeViewHierarchyOptimizer is required when inline views are supported");
@@ -257,7 +265,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
+      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.textTransform));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
@@ -284,7 +292,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
           // Inline views cannot be layout-only because the ReactTextView needs to be able to grab
           // ahold of them on the UI thread to size and position them.
-          ReactShadowNode childNode = inlineViews.get(placeholder.getReactTag());
+          ReactShadowNode childNode =
+              Assertions.assertNotNull(inlineViews).get(placeholder.getReactTag());
+
+          Assertions.assertNotNull(childNode);
+          Assertions.assertNotNull(nativeViewHierarchyOptimizer);
           nativeViewHierarchyOptimizer.handleForceViewToBeNonLayoutOnly(childNode);
 
           // The ReactTextView is responsible for laying out the inline views.
@@ -377,7 +389,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable String mFontFeatureSettings = null;
 
   protected boolean mContainsImages = false;
-  protected Map<Integer, ReactShadowNode> mInlineViews;
+  // Only nullable iff `supportsInlineViews` is `false`.
+  protected @Nullable Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
     this(null);
@@ -472,8 +485,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
   public void setColor(@Nullable Integer color) {
-    mIsColorSet = (color != null);
-    if (mIsColorSet) {
+    if (color != null) {
+      mIsColorSet = true;
       mColor = color;
     }
     markUpdated();
@@ -486,8 +499,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // nodes get mapped to native views and native views get their background colors get set via
     // {@link BaseViewManager}.
     if (isVirtual()) {
-      mIsBackgroundColorSet = (color != null);
-      if (mIsBackgroundColorSet) {
+      if (color != null) {
+        mIsBackgroundColorSet = true;
         mBackgroundColor = color;
       }
       markUpdated();
@@ -620,20 +633,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public void setTextTransform(@Nullable String textTransform) {
+    TextTransform textTransformEnum = TextTransform.UNSET;
     if (textTransform == null) {
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
+      textTransformEnum = TextTransform.UNSET;
     } else if ("none".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.NONE);
+      textTransformEnum = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.UPPERCASE);
+      textTransformEnum = TextTransform.UPPERCASE;
     } else if ("lowercase".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.LOWERCASE);
+      textTransformEnum = TextTransform.LOWERCASE;
     } else if ("capitalize".equals(textTransform)) {
-      mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
+      textTransformEnum = TextTransform.CAPITALIZE;
     } else {
       FLog.w(ReactConstants.TAG, "Invalid textTransform: " + textTransform);
-      mTextAttributes.setTextTransform(TextTransform.UNSET);
     }
+    mTextAttributes.textTransform = textTransformEnum;
     markUpdated();
   }
 

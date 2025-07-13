@@ -5,8 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <jsi/jsi.h>
 #include <jsinspector-modern/RuntimeTarget.h>
 
+#include "HermesRuntimeSamplingProfileSerializer.h"
 #include "HermesRuntimeTargetDelegate.h"
 
 // If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
@@ -26,6 +28,38 @@ using namespace facebook::hermes::cdp;
 using namespace facebook::hermes;
 
 namespace facebook::react::jsinspector_modern {
+
+namespace {
+
+const uint16_t HERMES_SAMPLING_FREQUENCY_HZ = 10000;
+
+class HermesRuntimeSamplingProfileDelegate {
+ public:
+  explicit HermesRuntimeSamplingProfileDelegate(
+      std::shared_ptr<HermesRuntime> hermesRuntime)
+      : hermesRuntime_(std::move(hermesRuntime)) {}
+
+  void startSampling() {
+    auto* hermesAPI = jsi::castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    hermesAPI->enableSamplingProfiler(HERMES_SAMPLING_FREQUENCY_HZ);
+  }
+
+  void stopSampling() {
+    auto* hermesAPI = jsi::castInterface<IHermesRootAPI>(makeHermesRootAPI());
+    hermesAPI->disableSamplingProfiler();
+  }
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() {
+    return tracing::HermesRuntimeSamplingProfileSerializer::
+        serializeToTracingSamplingProfile(
+            hermesRuntime_->dumpSampledTraceToProfile());
+  }
+
+ private:
+  std::shared_ptr<HermesRuntime> hermesRuntime_;
+};
+
+} // namespace
 
 #ifdef HERMES_ENABLE_DEBUGGER
 class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
@@ -53,8 +87,11 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
       HermesRuntimeTargetDelegate& delegate,
       std::shared_ptr<HermesRuntime> hermesRuntime)
       : delegate_(delegate),
-        runtime_(std::move(hermesRuntime)),
-        cdpDebugAPI_(CDPDebugAPI::create(*runtime_)) {}
+        runtime_(hermesRuntime),
+        cdpDebugAPI_(CDPDebugAPI::create(*runtime_)),
+        samplingProfileDelegate_(
+            std::make_unique<HermesRuntimeSamplingProfileDelegate>(
+                std::move(hermesRuntime))) {}
 
   CDPDebugAPI& getCDPDebugAPI() {
     return *cdpDebugAPI_;
@@ -167,10 +204,24 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
         runtime_->getDebugger().captureStackTrace());
   }
 
+  void enableSamplingProfiler() override {
+    samplingProfileDelegate_->startSampling();
+  }
+
+  void disableSamplingProfiler() override {
+    samplingProfileDelegate_->stopSampling();
+  }
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() override {
+    return samplingProfileDelegate_->collectSamplingProfile();
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
   const std::unique_ptr<CDPDebugAPI> cdpDebugAPI_;
+  std::unique_ptr<HermesRuntimeSamplingProfileDelegate>
+      samplingProfileDelegate_;
 };
 
 #else
@@ -185,7 +236,26 @@ class HermesRuntimeTargetDelegate::Impl final
   explicit Impl(
       HermesRuntimeTargetDelegate&,
       std::shared_ptr<HermesRuntime> hermesRuntime)
-      : FallbackRuntimeTargetDelegate{hermesRuntime->description()} {}
+      : FallbackRuntimeTargetDelegate{hermesRuntime->description()},
+        samplingProfileDelegate_(
+            std::make_unique<HermesRuntimeSamplingProfileDelegate>(
+                std::move(hermesRuntime))) {}
+
+  void enableSamplingProfiler() override {
+    samplingProfileDelegate_->startSampling();
+  }
+
+  void disableSamplingProfiler() override {
+    samplingProfileDelegate_->stopSampling();
+  }
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() override {
+    return samplingProfileDelegate_->collectSamplingProfile();
+  }
+
+ private:
+  std::unique_ptr<HermesRuntimeSamplingProfileDelegate>
+      samplingProfileDelegate_;
 };
 
 #endif // HERMES_ENABLE_DEBUGGER
@@ -226,6 +296,19 @@ std::unique_ptr<StackTrace> HermesRuntimeTargetDelegate::captureStackTrace(
     jsi::Runtime& runtime,
     size_t framesToSkip) {
   return impl_->captureStackTrace(runtime, framesToSkip);
+}
+
+void HermesRuntimeTargetDelegate::enableSamplingProfiler() {
+  impl_->enableSamplingProfiler();
+}
+
+void HermesRuntimeTargetDelegate::disableSamplingProfiler() {
+  impl_->disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile
+HermesRuntimeTargetDelegate::collectSamplingProfile() {
+  return impl_->collectSamplingProfile();
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER
