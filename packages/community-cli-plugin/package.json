@@ -25,13 +25,13 @@
     "@react-native/dev-middleware": "0.81.0-main",
     "debug": "^4.4.0",
     "invariant": "^2.2.4",
-    "metro": "^0.82.5",
-    "metro-config": "^0.82.5",
-    "metro-core": "^0.82.5",
+    "metro": "^0.83.0",
+    "metro-config": "^0.83.0",
+    "metro-core": "^0.83.0",
     "semver": "^7.1.3"
   },
   "devDependencies": {
-    "metro-resolver": "^0.82.5"
+    "metro-resolver": "^0.83.0"
   },
   "peerDependencies": {
     "@react-native-community/cli": "*",
