@@ -46,18 +46,18 @@ internal class ReactSwitchManager :
   }
 
   @ReactProp(name = "disabled", defaultBoolean = false)
-  override fun setDisabled(view: ReactSwitch, disabled: Boolean) {
-    view.isEnabled = !disabled
+  override fun setDisabled(view: ReactSwitch, value: Boolean) {
+    view.isEnabled = !value
   }
 
   @ReactProp(name = ViewProps.ENABLED, defaultBoolean = true)
-  override fun setEnabled(view: ReactSwitch, enabled: Boolean) {
-    view.isEnabled = enabled
+  override fun setEnabled(view: ReactSwitch, value: Boolean) {
+    view.isEnabled = value
   }
 
   @ReactProp(name = ViewProps.ON)
-  override fun setOn(view: ReactSwitch, on: Boolean) {
-    setValueInternal(view, on)
+  override fun setOn(view: ReactSwitch, value: Boolean) {
+    setValueInternal(view, value)
   }
 
   @ReactProp(name = "value")
@@ -66,28 +66,28 @@ internal class ReactSwitchManager :
   }
 
   @ReactProp(name = "thumbTintColor", customType = "Color")
-  override fun setThumbTintColor(view: ReactSwitch, color: Int?) {
-    setThumbColor(view, color)
+  override fun setThumbTintColor(view: ReactSwitch, value: Int?) {
+    setThumbColor(view, value)
   }
 
   @ReactProp(name = "thumbColor", customType = "Color")
-  override fun setThumbColor(view: ReactSwitch, color: Int?) {
-    view.setThumbColor(color)
+  override fun setThumbColor(view: ReactSwitch, value: Int?) {
+    view.setThumbColor(value)
   }
 
   @ReactProp(name = "trackColorForFalse", customType = "Color")
-  override fun setTrackColorForFalse(view: ReactSwitch, color: Int?) {
-    view.setTrackColorForFalse(color)
+  override fun setTrackColorForFalse(view: ReactSwitch, value: Int?) {
+    view.setTrackColorForFalse(value)
   }
 
   @ReactProp(name = "trackColorForTrue", customType = "Color")
-  override fun setTrackColorForTrue(view: ReactSwitch, color: Int?) {
-    view.setTrackColorForTrue(color)
+  override fun setTrackColorForTrue(view: ReactSwitch, value: Int?) {
+    view.setTrackColorForTrue(value)
   }
 
   @ReactProp(name = "trackTintColor", customType = "Color")
-  override fun setTrackTintColor(view: ReactSwitch, color: Int?) {
-    view.setTrackColor(color)
+  override fun setTrackTintColor(view: ReactSwitch, value: Int?) {
+    view.setTrackColor(value)
   }
 
   override fun setNativeValue(view: ReactSwitch, value: Boolean) {
