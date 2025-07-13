@@ -11,9 +11,6 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.util.DisplayMetrics
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.JavaOnlyMap
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.events.Event
@@ -21,12 +18,11 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.scroll.ReactScrollView
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
+import com.facebook.testutils.shadows.ShadowArguments
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -34,13 +30,14 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /** Tests [ReactVirtualView] */
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class ReactVirtualViewTest {
 
   private lateinit var context: Context
-  private lateinit var arguments: MockedStatic<Arguments>
 
   @Before
   fun setUp() {
@@ -48,18 +45,10 @@ class ReactVirtualViewTest {
 
     context = Robolectric.buildActivity(Activity::class.java).create().get()
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     val displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
     displayMetricsHolder
         .`when`<DisplayMetrics> { DisplayMetricsHolder.getWindowDisplayMetrics() }
         .thenAnswer { DisplayMetrics().apply { density = 1f } }
-  }
-
-  @After
-  fun tearDown() {
-    arguments.close()
   }
 
   @Test
