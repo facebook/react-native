@@ -11,9 +11,17 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsDefaults
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.testutils.shadows.ShadowArguments
 import java.net.SocketTimeoutException
+import okhttp3.Headers
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,12 +35,23 @@ import org.robolectric.annotation.Config
 
 @Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
-class ResponseUtilTest {
+class NetworkEventUtilTest {
   private lateinit var reactContext: ReactApplicationContext
 
   @Before
   fun setUp() {
     reactContext = mock()
+
+    ReactNativeFeatureFlagsForTests.setUp()
+    ReactNativeFeatureFlags.override(
+        object : ReactNativeFeatureFlagsDefaults() {
+          override fun enableNetworkEventReporting(): Boolean = false
+        })
+  }
+
+  @After
+  fun tearDown() {
+    ReactNativeFeatureFlags.dangerouslyReset()
   }
 
   @Test
@@ -41,7 +60,7 @@ class ResponseUtilTest {
     val progress = 100L
     val total = 1000L
 
-    ResponseUtil.onDataSend(reactContext, requestId, progress, total)
+    NetworkEventUtil.onDataSend(reactContext, requestId, progress, total)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -64,7 +83,7 @@ class ResponseUtilTest {
     val progress = 100L
     val total = 1000L
 
-    ResponseUtil.onIncrementalDataReceived(reactContext, requestId, data, progress, total)
+    NetworkEventUtil.onIncrementalDataReceived(reactContext, requestId, data, progress, total)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -87,7 +106,7 @@ class ResponseUtilTest {
     val progress = 500L
     val total = 1000L
 
-    ResponseUtil.onDataReceivedProgress(reactContext, requestId, progress, total)
+    NetworkEventUtil.onDataReceivedProgress(reactContext, requestId, progress, total)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -108,7 +127,7 @@ class ResponseUtilTest {
     val requestId = 1
     val data = "response data"
 
-    ResponseUtil.onDataReceived(reactContext, requestId, data)
+    NetworkEventUtil.onDataReceived(reactContext, requestId, data)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -128,7 +147,7 @@ class ResponseUtilTest {
     val requestId = 1
     val data: WritableMap = Arguments.createMap().apply { putString("key", "value") }
 
-    ResponseUtil.onDataReceived(reactContext, requestId, data)
+    NetworkEventUtil.onDataReceived(reactContext, requestId, data)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -149,7 +168,7 @@ class ResponseUtilTest {
     val error = "An error occurred"
     val e: Throwable? = null
 
-    ResponseUtil.onRequestError(reactContext, requestId, error, e)
+    NetworkEventUtil.onRequestError(reactContext, requestId, error, e)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -170,7 +189,7 @@ class ResponseUtilTest {
     val error = "Timeout error"
     val e: Throwable = SocketTimeoutException()
 
-    ResponseUtil.onRequestError(reactContext, requestId, error, e)
+    NetworkEventUtil.onRequestError(reactContext, requestId, error, e)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -190,7 +209,7 @@ class ResponseUtilTest {
   fun testOnRequestSuccess() {
     val requestId = 1
 
-    ResponseUtil.onRequestSuccess(reactContext, requestId)
+    NetworkEventUtil.onRequestSuccess(reactContext, requestId, 128)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -209,11 +228,19 @@ class ResponseUtilTest {
   fun testOnResponseReceived() {
     val requestId = 1
     val statusCode = 200
-    val headers: WritableMap =
-        Arguments.createMap().apply { putString("Content-Type", "application/json") }
+    val headers = Headers.Builder().add("Content-Type", "application/json").build()
     val url = "http://example.com"
 
-    ResponseUtil.onResponseReceived(reactContext, requestId, statusCode, headers, url)
+    val request = Request.Builder().url(url).build()
+    val response =
+        Response.Builder()
+            .protocol(Protocol.HTTP_1_1)
+            .request(request)
+            .headers(headers)
+            .code(statusCode)
+            .message("OK")
+            .build()
+    NetworkEventUtil.onResponseReceived(reactContext, requestId, url, response)
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -222,24 +249,38 @@ class ResponseUtilTest {
 
     assertThat(eventNameCaptor.value).isEqualTo("didReceiveNetworkResponse")
 
+    val expectedHeadersMap: WritableMap =
+        Arguments.createMap().apply { putString("Content-Type", "application/json") }
+
     val args = eventArgumentsCaptor.value
     assertThat(args.size()).isEqualTo(4)
     assertThat(args.getInt(0)).isEqualTo(requestId)
     assertThat(args.getInt(1)).isEqualTo(statusCode)
-    assertThat(args.getMap(2)).isEqualTo(headers)
+    assertThat(args.getMap(2)).isEqualTo(expectedHeadersMap)
     assertThat(args.getString(3)).isEqualTo(url)
   }
 
   @Test
   fun testNullReactContext() {
-    ResponseUtil.onDataSend(null, 1, 100, 1000)
-    ResponseUtil.onIncrementalDataReceived(null, 1, "data", 100, 1000)
-    ResponseUtil.onDataReceivedProgress(null, 1, 100, 1000)
-    ResponseUtil.onDataReceived(null, 1, "data")
-    ResponseUtil.onDataReceived(null, 1, Arguments.createMap())
-    ResponseUtil.onRequestError(null, 1, "error", null)
-    ResponseUtil.onRequestSuccess(null, 1)
-    ResponseUtil.onResponseReceived(null, 1, 200, Arguments.createMap(), "http://example.com")
+    val url = "http://example.com"
+    val request = Request.Builder().url(url).build()
+    val response =
+        Response.Builder()
+            .protocol(Protocol.HTTP_1_1)
+            .request(request)
+            .headers(Headers.Builder().build())
+            .code(200)
+            .message("OK")
+            .build()
+
+    NetworkEventUtil.onDataSend(null, 1, 100, 1000)
+    NetworkEventUtil.onIncrementalDataReceived(null, 1, "data", 100, 1000)
+    NetworkEventUtil.onDataReceivedProgress(null, 1, 100, 1000)
+    NetworkEventUtil.onDataReceived(null, 1, "data")
+    NetworkEventUtil.onDataReceived(null, 1, Arguments.createMap())
+    NetworkEventUtil.onRequestError(null, 1, "error", null)
+    NetworkEventUtil.onRequestSuccess(null, 1, 0)
+    NetworkEventUtil.onResponseReceived(null, 1, url, response)
 
     verify(reactContext, never()).emitDeviceEvent(any<String>(), any())
   }
