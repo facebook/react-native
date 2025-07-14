@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f45b66a7bbafef525b79c657522d062e>>
+ * @generated SignedSource<<64faf70fad18019fc27e77681ff41d05>>
  */
 
 /**
@@ -299,6 +299,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
+
+  /**
+   * Releases the cached image data when it is consumed by the observers.
+   */
+  @JvmStatic
+  public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

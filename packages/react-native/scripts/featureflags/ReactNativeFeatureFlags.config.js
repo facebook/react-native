@@ -523,6 +523,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    releaseImageDataWhenConsumed: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-10',
+        description:
+          'Releases the cached image data when it is consumed by the observers.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
