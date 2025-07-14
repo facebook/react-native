@@ -49,28 +49,28 @@ internal class ReactProgressBarViewManager :
   }
 
   @ReactProp(name = PROP_STYLE)
-  override fun setStyleAttr(view: ProgressBarContainerView, styleName: String?) {
-    view.setStyle(styleName)
+  override fun setStyleAttr(view: ProgressBarContainerView, value: String?) {
+    view.setStyle(value)
   }
 
   @ReactProp(name = ViewProps.COLOR, customType = "Color")
-  override fun setColor(view: ProgressBarContainerView, color: Int?) {
-    view.color = color
+  override fun setColor(view: ProgressBarContainerView, value: Int?) {
+    view.color = value
   }
 
   @ReactProp(name = PROP_INDETERMINATE)
-  override fun setIndeterminate(view: ProgressBarContainerView, indeterminate: Boolean) {
-    view.indeterminate = indeterminate
+  override fun setIndeterminate(view: ProgressBarContainerView, value: Boolean) {
+    view.indeterminate = value
   }
 
   @ReactProp(name = PROP_PROGRESS)
-  override fun setProgress(view: ProgressBarContainerView, progress: Double) {
-    view.progress = progress
+  override fun setProgress(view: ProgressBarContainerView, value: Double) {
+    view.progress = value
   }
 
   @ReactProp(name = PROP_ANIMATING)
-  override fun setAnimating(view: ProgressBarContainerView, animating: Boolean) {
-    view.animating = animating
+  override fun setAnimating(view: ProgressBarContainerView, value: Boolean) {
+    view.animating = value
   }
 
   override fun setTestID(view: ProgressBarContainerView, value: String?) {
