@@ -59,6 +59,13 @@ internal object InspectorNetworkReporter {
   )
 
   /**
+   * Report when additional chunks of the response body have been received.
+   *
+   * Corresponds to `Network.dataReceived` in CDP.
+   */
+  @JvmStatic external fun reportDataReceived(requestId: Int, dataLength: Int)
+
+  /**
    * Report when a network request is complete and we are no longer receiving response data.
    * - Corresponds to `Network.loadingFinished` in CDP.
    * - Corresponds to `PerformanceResourceTiming.responseEnd`.
@@ -71,4 +78,13 @@ internal object InspectorNetworkReporter {
    */
   @JvmStatic
   external fun maybeStoreResponseBody(requestId: Int, body: String, base64Encoded: Boolean)
+
+  /**
+   * Incrementally store a response body preview, when a string response is received in chunks.
+   * Buffered contents will be flushed to `NetworkReporter` with `reportResponseEnd`.
+   *
+   * As with `maybeStoreResponseBody`, calling this method is optional and a no-op if CDP debugging
+   * is disabled.
+   */
+  @JvmStatic external fun maybeStoreResponseBodyIncremental(requestId: Int, data: String)
 }
