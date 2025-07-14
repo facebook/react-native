@@ -66,6 +66,10 @@ internal object NetworkEventUtil {
       progress: Long,
       total: Long
   ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting() && data != null) {
+      InspectorNetworkReporter.reportDataReceived(requestId, data.encodeToByteArray().size)
+      InspectorNetworkReporter.maybeStoreResponseBodyIncremental(requestId, data)
+    }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkIncrementalData",
         buildReadableArray {

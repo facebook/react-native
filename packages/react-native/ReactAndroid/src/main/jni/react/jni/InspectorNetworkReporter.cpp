@@ -11,6 +11,9 @@
 
 #include <cstddef>
 #include <string>
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+#include <unordered_map>
+#endif
 
 using namespace facebook::jni;
 using namespace facebook::react::jsinspector_modern;
@@ -48,6 +51,13 @@ std::string limitRequestBodySize(std::string requestBody) {
 }
 
 } // namespace
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+
+// Dictionary to buffer incremental response bodies (CDP debugging active only)
+static std::unordered_map<int, std::string> responseBuffers;
+
+#endif
 
 /* static */ void InspectorNetworkReporter::reportRequestStart(
     const jni::alias_ref<jclass> /*unused*/,
@@ -93,12 +103,30 @@ std::string limitRequestBodySize(std::string requestBody) {
       static_cast<std::int64_t>(encodedDataLength));
 }
 
+/* static */ void InspectorNetworkReporter::reportDataReceived(
+    jni::alias_ref<jclass> /*unused*/,
+    jint requestId,
+    jint dataLength) {
+  NetworkReporter::getInstance().reportDataReceived(
+      std::to_string(requestId), dataLength, std::nullopt);
+}
+
 /* static */ void InspectorNetworkReporter::reportResponseEnd(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jlong encodedDataLength) {
   NetworkReporter::getInstance().reportResponseEnd(
       std::to_string(requestId), static_cast<std::int64_t>(encodedDataLength));
+
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Check for buffered response body and flush to NetworkReporter
+  auto buffer = responseBuffers[requestId];
+  if (!buffer.empty()) {
+    NetworkReporter::getInstance().storeResponseBody(
+        std::to_string(requestId), buffer, false);
+    responseBuffers.erase(requestId);
+  }
+#endif
 }
 
 /* static */ void InspectorNetworkReporter::maybeStoreResponseBody(
@@ -118,6 +146,22 @@ std::string limitRequestBodySize(std::string requestBody) {
 #endif
 }
 
+/* static */ void InspectorNetworkReporter::maybeStoreResponseBodyIncremental(
+    jni::alias_ref<jclass> /*unused*/,
+    jint requestId,
+    jni::alias_ref<jstring> data) {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Buffer incremental response body contents
+  auto& networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  auto& buffer = responseBuffers[requestId];
+  buffer += data->toStdString();
+#endif
+}
+
 /* static */ void InspectorNetworkReporter::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
@@ -125,13 +169,18 @@ std::string limitRequestBodySize(std::string requestBody) {
       makeNativeMethod(
           "reportResponseStart", InspectorNetworkReporter::reportResponseStart),
       makeNativeMethod(
-          "reportResponseEnd", InspectorNetworkReporter::reportResponseEnd),
-      makeNativeMethod(
           "reportConnectionTiming",
           InspectorNetworkReporter::reportConnectionTiming),
       makeNativeMethod(
+          "reportDataReceived", InspectorNetworkReporter::reportDataReceived),
+      makeNativeMethod(
+          "reportResponseEnd", InspectorNetworkReporter::reportResponseEnd),
+      makeNativeMethod(
           "maybeStoreResponseBody",
           InspectorNetworkReporter::maybeStoreResponseBody),
+      makeNativeMethod(
+          "maybeStoreResponseBodyIncremental",
+          InspectorNetworkReporter::maybeStoreResponseBodyIncremental),
   });
 }
 

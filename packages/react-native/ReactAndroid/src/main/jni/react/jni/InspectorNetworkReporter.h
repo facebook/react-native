@@ -39,6 +39,11 @@ class InspectorNetworkReporter
       jni::alias_ref<jni::JMap<jstring, jstring>> responseHeaders,
       jlong encodedDataLength);
 
+  static void reportDataReceived(
+      jni::alias_ref<jclass> /*unused*/,
+      jint requestId,
+      jint dataLength);
+
   static void reportResponseEnd(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,
@@ -49,6 +54,11 @@ class InspectorNetworkReporter
       jint requestId,
       jni::alias_ref<jstring> body,
       jboolean base64Encoded);
+
+  static void maybeStoreResponseBodyIncremental(
+      jni::alias_ref<jclass> /*unused*/,
+      jint requestId,
+      jni::alias_ref<jstring> data);
 
   static void registerNatives();
 
