@@ -127,7 +127,7 @@ class NetworkEventUtilTest {
     val requestId = 1
     val data = "response data"
 
-    NetworkEventUtil.onDataReceived(reactContext, requestId, data)
+    NetworkEventUtil.onDataReceived(reactContext, requestId, data, "string")
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -147,7 +147,7 @@ class NetworkEventUtilTest {
     val requestId = 1
     val data: WritableMap = Arguments.createMap().apply { putString("key", "value") }
 
-    NetworkEventUtil.onDataReceived(reactContext, requestId, data)
+    NetworkEventUtil.onDataReceived(reactContext, requestId, data, ByteArray(0))
 
     val eventNameCaptor = ArgumentCaptor.forClass(String::class.java)
     val eventArgumentsCaptor = ArgumentCaptor.forClass(WritableArray::class.java)
@@ -276,8 +276,8 @@ class NetworkEventUtilTest {
     NetworkEventUtil.onDataSend(null, 1, 100, 1000)
     NetworkEventUtil.onIncrementalDataReceived(null, 1, "data", 100, 1000)
     NetworkEventUtil.onDataReceivedProgress(null, 1, 100, 1000)
-    NetworkEventUtil.onDataReceived(null, 1, "data")
-    NetworkEventUtil.onDataReceived(null, 1, Arguments.createMap())
+    NetworkEventUtil.onDataReceived(null, 1, "data", "string")
+    NetworkEventUtil.onDataReceived(null, 1, Arguments.createMap(), ByteArray(0))
     NetworkEventUtil.onRequestError(null, 1, "error", null)
     NetworkEventUtil.onRequestSuccess(null, 1, 0)
     NetworkEventUtil.onResponseReceived(null, 1, url, response)

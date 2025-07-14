@@ -35,7 +35,6 @@ import java.util.HashMap
 import java.util.UUID
 import okhttp3.MediaType
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import okio.ByteString
 
 @ReactModule(name = NativeBlobModuleSpec.NAME)
@@ -72,7 +71,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           return !isRemote && responseType == "blob"
         }
 
-        override fun fetch(uri: Uri): WritableMap {
+        override fun fetch(uri: Uri): Pair<WritableMap, ByteArray> {
           val data = getBytesFromUri(uri)
 
           val blob = Arguments.createMap()
@@ -85,7 +84,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           blob.putString("name", getNameFromUri(uri))
           blob.putDouble("lastModified", getLastModifiedFromUri(uri))
 
-          return blob
+          return blob to data
         }
       }
 
@@ -119,8 +118,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
           return responseType == "blob"
         }
 
-        override fun toResponseData(body: ResponseBody): WritableMap {
-          val data = body.bytes()
+        override fun toResponseData(data: ByteArray): WritableMap {
           val blob = Arguments.createMap()
           blob.putString("blobId", store(data))
           blob.putInt("offset", 0)
