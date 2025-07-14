@@ -147,7 +147,7 @@ async function runServer(
   // $FlowIgnore[cannot-write] Assigning to readonly property
   metroConfig.reporter = reporter;
 
-  const serverInstance = await Metro.runServer(metroConfig, {
+  const {httpServer: serverInstance} = await Metro.runServer(metroConfig, {
     host: args.host,
     secure: args.https,
     secureCert: args.cert,
