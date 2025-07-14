@@ -781,7 +781,7 @@ describe('LogBox', () => {
           '\n\nCheck the top-level render call using <TestComponent>. ' +
           'It was passed a child from TestComponent. ' +
           'See https://react.dev/link/warning-keys for more information.',
-        componentStackFrames: [],
+        componentStackFrames: ['<anonymous />', '<TestComponent />'],
         isDismissable: true,
       });
     });
@@ -802,7 +802,7 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.',
+          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props.',
       });
 
       // Open LogBox.
@@ -817,8 +817,8 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.',
-        componentStackFrames: [],
+          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props.',
+        componentStackFrames: ['<TestComponent />'],
         isDismissable: true,
       });
     });

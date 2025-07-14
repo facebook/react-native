@@ -64,6 +64,7 @@ import {
   View,
   findNodeHandle,
 } from 'react-native';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 export type {ListRenderItemInfo, ListRenderItem, Separators};
 
@@ -278,6 +279,8 @@ class VirtualizedList extends StateSafePureComponent<
       const cartOffset = this._listMetrics.cartesianOffset(
         offset + this._scrollMetrics.visibleLength,
       );
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       return horizontal ? {x: cartOffset} : {y: cartOffset};
     } else {
       return horizontal ? {x: offset} : {y: offset};
@@ -1332,7 +1335,12 @@ class VirtualizedList extends StateSafePureComponent<
 
   _onCellFocusCapture = (cellKey: string) => {
     this._lastFocusedCellKey = cellKey;
-    this._updateCellsToRender();
+    if (ReactNativeFeatureFlags.deferFlatListFocusChangeRenderUpdate()) {
+      // Schedule the cells to render update the same way we handle scroll or layout events.
+      this._scheduleCellsToRenderUpdate();
+    } else {
+      this._updateCellsToRender();
+    }
   };
 
   _onCellUnmount = (cellKey: string) => {

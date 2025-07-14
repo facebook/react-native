@@ -24,9 +24,9 @@ using NativeIntersectionObserverObserveOptions =
         // intersectionObserverId
         NativeIntersectionObserverIntersectionObserverId,
         // rootShadowNode
-        std::optional<ShadowNode::Shared>,
+        std::optional<std::shared_ptr<const ShadowNode>>,
         // targetShadowNode
-        ShadowNode::Shared,
+        std::shared_ptr<const ShadowNode>,
         // thresholds
         std::vector<Float>,
         // rootThresholds
@@ -75,7 +75,7 @@ class NativeIntersectionObserver
   void unobserve(
       jsi::Runtime& runtime,
       IntersectionObserverObserverId intersectionObserverId,
-      ShadowNode::Shared targetShadowNode);
+      std::shared_ptr<const ShadowNode> targetShadowNode);
 
   jsi::Object observeV2(
       jsi::Runtime& runtime,

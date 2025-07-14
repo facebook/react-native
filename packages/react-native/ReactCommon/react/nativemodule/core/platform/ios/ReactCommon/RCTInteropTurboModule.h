@@ -15,8 +15,7 @@
 
 #import "RCTTurboModule.h"
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
  public:
@@ -94,5 +93,4 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
   void _logLegacyArchitectureWarning(NSString *moduleName, const std::string &methodName);
 };
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

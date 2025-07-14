@@ -8,9 +8,9 @@
  * @format
  */
 
-require('../babel-register').registerForScript();
+require('../shared/babelRegister').registerForScript();
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const {PACKAGES_DIR, REPO_ROOT} = require('../shared/consts');
 const {
   buildConfig,
   getBabelConfig,

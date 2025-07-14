@@ -99,9 +99,13 @@ class TaskQueue {
       const task = queue.shift();
       try {
         if (typeof task === 'object' && task.gen) {
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           DEBUG && console.log('TaskQueue: genPromise for task ' + task.name);
           this._genPromise(task);
         } else if (typeof task === 'object' && task.run) {
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           DEBUG && console.log('TaskQueue: run task ' + task.name);
           task.run();
         } else {
@@ -110,6 +114,8 @@ class TaskQueue {
             'Expected Function, SimpleTask, or PromiseTask, but got:\n' +
               JSON.stringify(task, null, 2),
           );
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           DEBUG && console.log('TaskQueue: run anonymous task');
           task();
         }
@@ -139,6 +145,8 @@ class TaskQueue {
       this._queueStack.length > 1
     ) {
       this._queueStack.pop();
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       DEBUG &&
         console.log('TaskQueue: popped queue: ', {
           stackIdx,
@@ -158,11 +166,17 @@ class TaskQueue {
     this._queueStack.push({tasks: [], popable: false});
     const stackIdx = this._queueStack.length - 1;
     const stackItem = this._queueStack[stackIdx];
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     DEBUG && console.log('TaskQueue: push new queue: ', {stackIdx});
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     DEBUG && console.log('TaskQueue: exec gen task ' + task.name);
     task
       .gen()
       .then(() => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         DEBUG &&
           console.log('TaskQueue: onThen for gen task ' + task.name, {
             stackIdx,

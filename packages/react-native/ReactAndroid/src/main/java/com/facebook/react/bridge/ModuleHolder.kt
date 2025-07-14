@@ -53,6 +53,7 @@ public class ModuleHolder {
 
   public constructor(nativeModule: NativeModule) {
     name = nativeModule.name
+    @Suppress("DEPRECATION")
     reactModuleInfo =
         ReactModuleInfo(
             nativeModule.name,

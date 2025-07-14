@@ -97,7 +97,7 @@ void NativeFantom::reportTestSuiteResultsJSON(
 
 jsi::Object NativeFantom::getDirectManipulationProps(
     jsi::Runtime& runtime,
-    const ShadowNode::Shared& shadowNode) {
+    const std::shared_ptr<const ShadowNode>& shadowNode) {
   auto props = appDelegate_.mountingManager_->getViewDirectManipulationProps(
       shadowNode->getTag());
   return facebook::jsi::valueFromDynamic(runtime, props).asObject(runtime);
@@ -105,7 +105,7 @@ jsi::Object NativeFantom::getDirectManipulationProps(
 
 jsi::Object NativeFantom::getFabricUpdateProps(
     jsi::Runtime& runtime,
-    const ShadowNode::Shared& shadowNode) {
+    const std::shared_ptr<const ShadowNode>& shadowNode) {
   auto props = appDelegate_.mountingManager_->getViewFabricUpdateProps(
       shadowNode->getTag());
   return facebook::jsi::valueFromDynamic(runtime, props).asObject(runtime);
@@ -113,7 +113,7 @@ jsi::Object NativeFantom::getFabricUpdateProps(
 
 void NativeFantom::enqueueNativeEvent(
     jsi::Runtime& /*runtime*/,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     std::string type,
     const std::optional<folly::dynamic>& payload,
     std::optional<RawEvent::Category> category,
@@ -131,7 +131,7 @@ void NativeFantom::enqueueNativeEvent(
 
 void NativeFantom::enqueueScrollEvent(
     jsi::Runtime& /*runtime*/,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     ScrollOptions options) {
   const auto* scrollViewShadowNode =
       dynamic_cast<const ScrollViewShadowNode*>(&*shadowNode);
@@ -174,7 +174,7 @@ void NativeFantom::enqueueScrollEvent(
 
 void NativeFantom::enqueueModalSizeUpdate(
     jsi::Runtime& /*runtime*/,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     double width,
     double height) {
   const auto* modalHostViewShadowNode =
@@ -196,7 +196,7 @@ void NativeFantom::enqueueModalSizeUpdate(
 
 jsi::Function NativeFantom::createShadowNodeReferenceCounter(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode) {
+    std::shared_ptr<const ShadowNode> shadowNode) {
   auto weakShadowNode = std::weak_ptr<const ShadowNode>(shadowNode);
 
   return jsi::Function::createFromHostFunction(
@@ -210,7 +210,7 @@ jsi::Function NativeFantom::createShadowNodeReferenceCounter(
 
 jsi::Function NativeFantom::createShadowNodeRevisionGetter(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode) {
+    std::shared_ptr<const ShadowNode> shadowNode) {
 #if RN_DEBUG_STRING_CONVERTIBLE
   auto weakShadowNode = std::weak_ptr<const ShadowNode>(shadowNode);
 

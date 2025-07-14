@@ -21,8 +21,7 @@
 #include REACT_NATIVE_APP_COMPONENT_DESCRIPTORS_HEADER
 #endif
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 void registerComponents(
     std::shared_ptr<const ComponentDescriptorProviderRegistry> registry) {
@@ -62,8 +61,7 @@ std::shared_ptr<TurboModule> javaModuleProvider(
   return nullptr;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {

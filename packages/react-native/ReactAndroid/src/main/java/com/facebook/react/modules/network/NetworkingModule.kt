@@ -11,11 +11,9 @@
 package com.facebook.react.modules.network
 
 import android.net.Uri
-import android.os.Bundle
 import android.util.Base64
 import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
@@ -36,6 +34,7 @@ import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
@@ -57,7 +56,7 @@ public class NetworkingModule(
    * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
    * fetch the URI and return the JS body payload.
    */
-  public interface UriHandler {
+  internal interface UriHandler {
     /** Returns if the handler should be used for an URI. */
     public fun supports(uri: Uri, responseType: String): Boolean
 
@@ -66,7 +65,7 @@ public class NetworkingModule(
   }
 
   /** Allows adding custom handling to build the [RequestBody] from the JS body payload. */
-  public interface RequestBodyHandler {
+  internal interface RequestBodyHandler {
     /** Returns if the handler should be used for a JS body payload. */
     public fun supports(map: ReadableMap): Boolean
 
@@ -75,7 +74,7 @@ public class NetworkingModule(
   }
 
   /** Allows adding custom handling to build the JS body payload from the [ResponseBody]. */
-  public interface ResponseHandler {
+  internal interface ResponseHandler {
     /** Returns if the handler should be used for a response type. */
     public fun supports(responseType: String): Boolean
 
@@ -180,27 +179,27 @@ public class NetworkingModule(
     uriHandlers.clear()
   }
 
-  public fun addUriHandler(handler: UriHandler): Unit {
+  internal fun addUriHandler(handler: UriHandler): Unit {
     uriHandlers.add(handler)
   }
 
-  public fun addRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun addRequestBodyHandler(handler: RequestBodyHandler): Unit {
     requestBodyHandlers.add(handler)
   }
 
-  public fun addResponseHandler(handler: ResponseHandler): Unit {
+  internal fun addResponseHandler(handler: ResponseHandler): Unit {
     responseHandlers.add(handler)
   }
 
-  public fun removeUriHandler(handler: UriHandler): Unit {
+  internal fun removeUriHandler(handler: UriHandler): Unit {
     uriHandlers.remove(handler)
   }
 
-  public fun removeRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun removeRequestBodyHandler(handler: RequestBodyHandler): Unit {
     requestBodyHandlers.remove(handler)
   }
 
-  public fun removeResponseHandler(handler: ResponseHandler): Unit {
+  internal fun removeResponseHandler(handler: ResponseHandler): Unit {
     responseHandlers.remove(handler)
   }
 
@@ -231,7 +230,7 @@ public class NetworkingModule(
     } catch (th: Throwable) {
       FLog.e(TAG, "Failed to send url request: $url", th)
 
-      ResponseUtil.onRequestError(
+      NetworkEventUtil.onRequestError(
           getReactApplicationContextIfActiveOrWarn(), requestId, th.message, th)
     }
   }
@@ -256,17 +255,25 @@ public class NetworkingModule(
       for (handler in uriHandlers) {
         if (handler.supports(uri, responseType)) {
           val res = handler.fetch(uri)
+          val encodedDataLength = res.toString().toByteArray().size
           // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
           // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
-          ResponseUtil.onResponseReceived(
-              reactApplicationContext, requestId, 200, Arguments.createMap(), url)
-          ResponseUtil.onDataReceived(reactApplicationContext, requestId, res)
-          ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
+          val response =
+              Response.Builder()
+                  .protocol(Protocol.HTTP_1_1)
+                  .request(Request.Builder().url(url.orEmpty()).build())
+                  .code(200)
+                  .message("OK")
+                  .build()
+          NetworkEventUtil.onResponseReceived(reactApplicationContext, requestId, url, response)
+          NetworkEventUtil.onDataReceived(reactApplicationContext, requestId, res)
+          NetworkEventUtil.onRequestSuccess(
+              reactApplicationContext, requestId, encodedDataLength.toLong())
           return
         }
       }
     } catch (e: IOException) {
-      ResponseUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
+      NetworkEventUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
       return
     }
 
@@ -274,7 +281,7 @@ public class NetworkingModule(
     try {
       requestBuilder = Request.Builder().url(url.orEmpty())
     } catch (e: Exception) {
-      ResponseUtil.onRequestError(reactApplicationContext, requestId, e.message, null)
+      NetworkEventUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
       return
     }
 
@@ -313,7 +320,7 @@ public class NetworkingModule(
                       // JS below, so no need to do anything here.
                       return
                     }
-                    ResponseUtil.onDataReceivedProgress(
+                    NetworkEventUtil.onDataReceivedProgress(
                         reactApplicationContext, requestId, bytesWritten, contentLength)
                     last = now
                   }
@@ -333,7 +340,7 @@ public class NetworkingModule(
 
     val requestHeaders = extractHeaders(headers, data)
     if (requestHeaders == null) {
-      ResponseUtil.onRequestError(
+      NetworkEventUtil.onRequestError(
           reactApplicationContext, requestId, "Unrecognized headers format", null)
       return
     }
@@ -359,7 +366,7 @@ public class NetworkingModule(
       handler != null -> requestBody = handler.toRequestBody(data, contentType)
       data.hasKey(REQUEST_BODY_KEY_STRING) -> {
         if (contentType == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Payload is set but no content-type header specified",
@@ -374,7 +381,7 @@ public class NetworkingModule(
             requestBody = RequestBodyUtil.createGzip(contentMediaType, body)
           }
           if (requestBody == null) {
-            ResponseUtil.onRequestError(
+            NetworkEventUtil.onRequestError(
                 reactApplicationContext, requestId, "Failed to gzip request body", null)
             return
           }
@@ -389,7 +396,7 @@ public class NetworkingModule(
                 checkNotNull(contentMediaType.charset(StandardCharsets.UTF_8))
               }
           if (body == null) {
-            ResponseUtil.onRequestError(
+            NetworkEventUtil.onRequestError(
                 reactApplicationContext, requestId, "Received request but body was empty", null)
             return
           }
@@ -399,7 +406,7 @@ public class NetworkingModule(
       }
       data.hasKey(REQUEST_BODY_KEY_BASE64) -> {
         if (contentType == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Payload is set but no content-type header specified",
@@ -411,7 +418,7 @@ public class NetworkingModule(
 
         val contentMediaType = MediaType.parse(contentType)
         if (contentMediaType == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Invalid content type specified: $contentType",
@@ -420,7 +427,7 @@ public class NetworkingModule(
         }
         val base64DecodedString = ByteString.decodeBase64(base64String)
         if (base64DecodedString == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext, requestId, "Request body base64 string was invalid", null)
           return
         }
@@ -429,7 +436,7 @@ public class NetworkingModule(
       }
       data.hasKey(REQUEST_BODY_KEY_URI) -> {
         if (contentType == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Payload is set but no content-type header specified",
@@ -438,13 +445,13 @@ public class NetworkingModule(
         }
         val uri = data.getString(REQUEST_BODY_KEY_URI)
         if (uri == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext, requestId, "Request body URI field was set but null", null)
           return
         }
         val fileInputStream = RequestBodyUtil.getFileInputStream(getReactApplicationContext(), uri)
         if (fileInputStream == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext, requestId, "Could not retrieve file for uri $uri", null)
           return
         }
@@ -456,7 +463,7 @@ public class NetworkingModule(
         }
         val parts = data.getArray(REQUEST_BODY_KEY_FORMDATA)
         if (parts == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext, requestId, "Received request but form data was empty", null)
           return
         }
@@ -472,8 +479,11 @@ public class NetworkingModule(
     requestBuilder.method(method, wrapRequestBodyWithProgressEmitter(requestBody, requestId))
 
     addRequest(requestId)
+    val request = requestBuilder.build()
+    NetworkEventUtil.onCreateRequest(requestId, request)
+
     client
-        .newCall(requestBuilder.build())
+        .newCall(request)
         .enqueue(
             object : Callback {
               override fun onFailure(call: Call, e: IOException) {
@@ -483,7 +493,7 @@ public class NetworkingModule(
                 removeRequest(requestId)
                 val errorMessage =
                     e.message ?: ("Error while executing request: ${e.javaClass.simpleName}")
-                ResponseUtil.onRequestError(reactApplicationContext, requestId, errorMessage, e)
+                NetworkEventUtil.onRequestError(reactApplicationContext, requestId, errorMessage, e)
               }
 
               @Throws(IOException::class)
@@ -493,12 +503,8 @@ public class NetworkingModule(
                 }
                 removeRequest(requestId)
                 // Before we touch the body send headers to JS
-                ResponseUtil.onResponseReceived(
-                    reactApplicationContext,
-                    requestId,
-                    response.code(),
-                    translateHeaders(response.headers()),
-                    response.request().url().toString())
+                NetworkEventUtil.onResponseReceived(
+                    reactApplicationContext, requestId, url, response)
 
                 try {
                   // OkHttp implements something called transparent gzip, which mean that it will
@@ -517,7 +523,7 @@ public class NetworkingModule(
                   // https://github.com/square/okhttp/blob/5b37cda9e00626f43acf354df145fd452c3031f1/okhttp/src/main/java/okhttp3/internal/http/BridgeInterceptor.java#L76-L111
                   var responseBody: ResponseBody? = response.body()
                   if (responseBody == null) {
-                    ResponseUtil.onRequestError(
+                    NetworkEventUtil.onRequestError(
                         reactApplicationContext, requestId, "Response body is null", null)
                     return
                   }
@@ -538,8 +544,9 @@ public class NetworkingModule(
                   for (responseHandler in responseHandlers) {
                     if (responseHandler.supports(responseType)) {
                       val res = responseHandler.toResponseData(responseBody)
-                      ResponseUtil.onDataReceived(reactApplicationContext, requestId, res)
-                      ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
+                      NetworkEventUtil.onDataReceived(reactApplicationContext, requestId, res)
+                      NetworkEventUtil.onRequestSuccess(
+                          reactApplicationContext, requestId, responseBody.contentLength())
                       return
                     }
                   }
@@ -549,7 +556,8 @@ public class NetworkingModule(
                   // periodically send response data updates to JS.
                   if (useIncrementalUpdates && responseType == "text") {
                     readWithProgress(requestId, responseBody)
-                    ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
+                    NetworkEventUtil.onRequestSuccess(
+                        reactApplicationContext, requestId, responseBody.contentLength())
                     return
                   }
 
@@ -566,17 +574,19 @@ public class NetworkingModule(
                         // Javascript layer.
                         // Introduced to fix issue #7463.
                       } else {
-                        ResponseUtil.onRequestError(
+                        NetworkEventUtil.onRequestError(
                             reactApplicationContext, requestId, e.message, e)
                       }
                     }
                   } else if (responseType == "base64") {
                     responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP)
                   }
-                  ResponseUtil.onDataReceived(reactApplicationContext, requestId, responseString)
-                  ResponseUtil.onRequestSuccess(reactApplicationContext, requestId)
+                  NetworkEventUtil.onDataReceived(
+                      reactApplicationContext, requestId, responseString)
+                  NetworkEventUtil.onRequestSuccess(
+                      reactApplicationContext, requestId, responseBody.contentLength())
                 } catch (e: IOException) {
-                  ResponseUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
+                  NetworkEventUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
                 }
               }
             })
@@ -598,7 +608,7 @@ public class NetworkingModule(
           override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
             val now = System.nanoTime()
             if (done || shouldDispatch(now, last)) {
-              ResponseUtil.onDataSend(
+              NetworkEventUtil.onDataSend(
                   reactApplicationContext, requestId, bytesWritten, contentLength)
               last = now
             }
@@ -633,7 +643,7 @@ public class NetworkingModule(
       var read: Int
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       while ((inputStream.read(buffer).also { read = it }) != -1) {
-        ResponseUtil.onIncrementalDataReceived(
+        NetworkEventUtil.onIncrementalDataReceived(
             reactApplicationContext,
             requestId,
             streamDecoder.decodeNext(buffer, read),
@@ -691,7 +701,8 @@ public class NetworkingModule(
     val multipartBuilder = MultipartBody.Builder()
     val mediaType = MediaType.parse(contentType)
     if (mediaType == null) {
-      ResponseUtil.onRequestError(reactApplicationContext, requestId, "Invalid media type.", null)
+      NetworkEventUtil.onRequestError(
+          reactApplicationContext, requestId, "Invalid media type.", null)
       return null
     }
     multipartBuilder.setType(mediaType)
@@ -699,7 +710,7 @@ public class NetworkingModule(
     for (i in 0 until body.size()) {
       val bodyPart = body.getMap(i)
       if (bodyPart == null) {
-        ResponseUtil.onRequestError(
+        NetworkEventUtil.onRequestError(
             reactApplicationContext, requestId, "Unrecognized FormData part.", null)
         return null
       }
@@ -708,7 +719,7 @@ public class NetworkingModule(
       val headersArray = bodyPart.getArray("headers")
       var headers = extractHeaders(headersArray, null)
       if (headers == null) {
-        ResponseUtil.onRequestError(
+        NetworkEventUtil.onRequestError(
             reactApplicationContext,
             requestId,
             "Missing or invalid header format for FormData part.",
@@ -732,7 +743,7 @@ public class NetworkingModule(
       } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI) &&
           bodyPart.getString(REQUEST_BODY_KEY_URI) != null) {
         if (partContentType == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Binary FormData part needs a content-type header.",
@@ -741,14 +752,14 @@ public class NetworkingModule(
         }
         val fileContentUriStr = bodyPart.getString(REQUEST_BODY_KEY_URI)
         if (fileContentUriStr == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext, requestId, "Body must have a valid file uri", null)
           return null
         }
         val fileInputStream =
             RequestBodyUtil.getFileInputStream(getReactApplicationContext(), fileContentUriStr)
         if (fileInputStream == null) {
-          ResponseUtil.onRequestError(
+          NetworkEventUtil.onRequestError(
               reactApplicationContext,
               requestId,
               "Could not retrieve file for uri $fileContentUriStr",
@@ -757,7 +768,7 @@ public class NetworkingModule(
         }
         multipartBuilder.addPart(headers, RequestBodyUtil.create(partContentType, fileInputStream))
       } else {
-        ResponseUtil.onRequestError(
+        NetworkEventUtil.onRequestError(
             reactApplicationContext, requestId, "Unrecognized FormData part.", null)
       }
     }
@@ -827,20 +838,5 @@ public class NetworkingModule(
     }
 
     private fun shouldDispatch(now: Long, last: Long): Boolean = last + CHUNK_TIMEOUT_NS < now
-
-    private fun translateHeaders(headers: Headers): WritableMap {
-      val responseHeaders = Bundle()
-      for (i in 0..<headers.size()) {
-        val headerName = headers.name(i)
-        // multiple values for the same header
-        if (responseHeaders.containsKey(headerName)) {
-          responseHeaders.putString(
-              headerName, "${responseHeaders.getString(headerName)}, ${headers.value(i)}")
-        } else {
-          responseHeaders.putString(headerName, headers.value(i))
-        }
-      }
-      return Arguments.fromBundle(responseHeaders)
-    }
   }
 }

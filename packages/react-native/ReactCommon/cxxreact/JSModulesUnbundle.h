@@ -36,7 +36,7 @@ class JSModulesUnbundle {
     std::string code;
   };
   JSModulesUnbundle() {}
-  virtual ~JSModulesUnbundle() {}
+  virtual ~JSModulesUnbundle() = default;
   virtual Module getModule(uint32_t moduleId) const = 0;
 
  private:

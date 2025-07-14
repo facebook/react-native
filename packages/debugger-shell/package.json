@@ -1,6 +1,6 @@
 {
   "name": "@react-native/debugger-shell",
-  "version": "0.80.0-main",
+  "version": "0.81.0-main",
   "description": "Experimental debugger shell for React Native for use with @react-native/debugger-frontend",
   "keywords": [
     "react-native",
@@ -8,7 +8,7 @@
   ],
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/debugger-shell#readme",
   "bugs": "https://github.com/facebook/react-native/issues",
-  "main": "./src/node/index.js",
+  "main": "./src/index.js",
   "exports": {
     ".": {
       "node": "./src/node/index.js",

@@ -213,6 +213,10 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
   return entry;
 }
 
+void PerformanceEntryReporter::clearEventCounts() {
+  eventCounts_.clear();
+}
+
 std::optional<HighResTimeStamp> PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   std::shared_lock lock(buffersMutex_);

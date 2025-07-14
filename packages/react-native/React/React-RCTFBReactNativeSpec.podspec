@@ -61,6 +61,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.subspec "components" do |ss|
     ss.source_files         = podspec_sources("FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{m,mm,cpp,h}", "FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{h}")

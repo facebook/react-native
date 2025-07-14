@@ -38,7 +38,7 @@ void MutationObserver::observe(
   list.push_back(targetShadowNodeFamily);
 }
 
-static ShadowNode::Shared getShadowNodeInTree(
+static std::shared_ptr<const ShadowNode> getShadowNodeInTree(
     const ShadowNodeFamily& shadowNodeFamily,
     const ShadowNode& newTree) {
   auto ancestors = shadowNodeFamily.getAncestors(newTree);
@@ -50,8 +50,8 @@ static ShadowNode::Shared getShadowNodeInTree(
   return pair->first.get().getChildren().at(pair->second);
 }
 
-static ShadowNode::Shared findNodeOfSameFamily(
-    const ShadowNode::ListOfShared& list,
+static std::shared_ptr<const ShadowNode> findNodeOfSameFamily(
+    const std::vector<std::shared_ptr<const ShadowNode>>& list,
     const ShadowNode& node) {
   for (auto& current : list) {
     if (ShadowNode::sameFamily(node, *current)) {
@@ -129,8 +129,8 @@ void MutationObserver::recordMutationsInTarget(
 }
 
 void MutationObserver::recordMutationsInSubtrees(
-    const ShadowNode::Shared& oldNode,
-    const ShadowNode::Shared& newNode,
+    const std::shared_ptr<const ShadowNode>& oldNode,
+    const std::shared_ptr<const ShadowNode>& newNode,
     bool observeSubtree,
     std::vector<MutationRecord>& recordedMutations,
     SetOfShadowNodePointers& processedNodes) const {
@@ -146,8 +146,8 @@ void MutationObserver::recordMutationsInSubtrees(
   auto oldChildren = oldNode->getChildren();
   auto newChildren = newNode->getChildren();
 
-  std::vector<ShadowNode::Shared> addedNodes;
-  std::vector<ShadowNode::Shared> removedNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> addedNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> removedNodes;
 
   // Check for removed nodes (and equal nodes for further inspection)
   for (auto& oldChild : oldChildren) {

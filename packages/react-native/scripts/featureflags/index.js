@@ -9,7 +9,7 @@
  */
 
 if (require.main === module) {
-  require('../../../../scripts/babel-register').registerForMonorepo();
+  require('../../../../scripts/shared/babelRegister').registerForMonorepo();
 
   let command;
 

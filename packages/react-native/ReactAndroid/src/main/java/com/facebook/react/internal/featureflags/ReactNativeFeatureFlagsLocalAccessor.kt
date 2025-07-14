@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cdd5ac40322e76f95cc8831d30012375>>
+ * @generated SignedSource<<d645897d5c2e27e7de611605686d8413>>
  */
 
 /**
@@ -25,19 +25,19 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var animatedShouldSignalBatchCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
-  private var disableMainQueueSyncDispatchIOSCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
+  private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableCustomFocusSearchOnClippedElementsAndroidCache: Boolean? = null
   private var enableDestroyShadowTreeRevisionAsyncCache: Boolean? = null
   private var enableDoubleMeasurementFixAndroidCache: Boolean? = null
+  private var enableEagerMainQueueModulesOnIOSCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
@@ -49,7 +49,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableMainQueueCoordinatorOnIOSCache: Boolean? = null
-  private var enableMainQueueModulesOnIOSCache: Boolean? = null
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
@@ -68,7 +67,9 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
+  private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
+  private var releaseImageDataWhenConsumedCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -91,16 +92,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun animatedShouldSignalBatch(): Boolean {
-    var cached = animatedShouldSignalBatchCache
-    if (cached == null) {
-      cached = currentProvider.animatedShouldSignalBatch()
-      accessedFeatureFlags.add("animatedShouldSignalBatch")
-      animatedShouldSignalBatchCache = cached
-    }
-    return cached
-  }
-
   override fun cxxNativeAnimatedEnabled(): Boolean {
     var cached = cxxNativeAnimatedEnabledCache
     if (cached == null) {
@@ -117,16 +108,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.cxxNativeAnimatedRemoveJsSync()
       accessedFeatureFlags.add("cxxNativeAnimatedRemoveJsSync")
       cxxNativeAnimatedRemoveJsSyncCache = cached
-    }
-    return cached
-  }
-
-  override fun disableMainQueueSyncDispatchIOS(): Boolean {
-    var cached = disableMainQueueSyncDispatchIOSCache
-    if (cached == null) {
-      cached = currentProvider.disableMainQueueSyncDispatchIOS()
-      accessedFeatureFlags.add("disableMainQueueSyncDispatchIOS")
-      disableMainQueueSyncDispatchIOSCache = cached
     }
     return cached
   }
@@ -167,6 +148,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidTextMeasurementOptimizations(): Boolean {
+    var cached = enableAndroidTextMeasurementOptimizationsCache
+    if (cached == null) {
+      cached = currentProvider.enableAndroidTextMeasurementOptimizations()
+      accessedFeatureFlags.add("enableAndroidTextMeasurementOptimizations")
+      enableAndroidTextMeasurementOptimizationsCache = cached
     }
     return cached
   }
@@ -217,6 +208,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableDoubleMeasurementFixAndroid()
       accessedFeatureFlags.add("enableDoubleMeasurementFixAndroid")
       enableDoubleMeasurementFixAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableEagerMainQueueModulesOnIOS(): Boolean {
+    var cached = enableEagerMainQueueModulesOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableEagerMainQueueModulesOnIOS()
+      accessedFeatureFlags.add("enableEagerMainQueueModulesOnIOS")
+      enableEagerMainQueueModulesOnIOSCache = cached
     }
     return cached
   }
@@ -327,16 +328,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableMainQueueCoordinatorOnIOS()
       accessedFeatureFlags.add("enableMainQueueCoordinatorOnIOS")
       enableMainQueueCoordinatorOnIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableMainQueueModulesOnIOS(): Boolean {
-    var cached = enableMainQueueModulesOnIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableMainQueueModulesOnIOS()
-      accessedFeatureFlags.add("enableMainQueueModulesOnIOS")
-      enableMainQueueModulesOnIOSCache = cached
     }
     return cached
   }
@@ -521,12 +512,32 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun hideOffscreenVirtualViewsOnIOS(): Boolean {
+    var cached = hideOffscreenVirtualViewsOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.hideOffscreenVirtualViewsOnIOS()
+      accessedFeatureFlags.add("hideOffscreenVirtualViewsOnIOS")
+      hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
   override fun preparedTextCacheSize(): Double {
     var cached = preparedTextCacheSizeCache
     if (cached == null) {
       cached = currentProvider.preparedTextCacheSize()
       accessedFeatureFlags.add("preparedTextCacheSize")
       preparedTextCacheSizeCache = cached
+    }
+    return cached
+  }
+
+  override fun releaseImageDataWhenConsumed(): Boolean {
+    var cached = releaseImageDataWhenConsumedCache
+    if (cached == null) {
+      cached = currentProvider.releaseImageDataWhenConsumed()
+      accessedFeatureFlags.add("releaseImageDataWhenConsumed")
+      releaseImageDataWhenConsumedCache = cached
     }
     return cached
   }

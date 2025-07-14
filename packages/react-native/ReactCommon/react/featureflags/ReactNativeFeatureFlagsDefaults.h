@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<04ec71486d4052ac5ec1c6362bfd143c>>
+ * @generated SignedSource<<fbc0fe5e434b2f367ec6e73383a91d4c>>
  */
 
 /**
@@ -31,19 +31,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool animatedShouldSignalBatch() override {
-    return false;
-  }
-
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
 
   bool cxxNativeAnimatedRemoveJsSync() override {
-    return false;
-  }
-
-  bool disableMainQueueSyncDispatchIOS() override {
     return false;
   }
 
@@ -60,6 +52,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidTextMeasurementOptimizations() override {
     return false;
   }
 
@@ -80,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
+    return false;
+  }
+
+  bool enableEagerMainQueueModulesOnIOS() override {
     return false;
   }
 
@@ -124,10 +124,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
     return false;
   }
 
@@ -203,8 +199,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
   double preparedTextCacheSize() override {
     return 200.0;
+  }
+
+  bool releaseImageDataWhenConsumed() override {
+    return false;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

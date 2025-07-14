@@ -15,4 +15,5 @@ module.exports = {
   // and have predictable memory model.
   // See https://github.com/facebook/react/pull/33161 for details.
   enableEagerAlternateStateNodeCleanup: true,
+  enableFragmentRefs: true,
 };

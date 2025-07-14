@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d724d9cfe69141b40f95df5308894f50>>
+ * @generated SignedSource<<133c1ad1e5f96679faeeba9e500dba33>>
  */
 
 /**
@@ -45,11 +45,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  RN_EXPORT static bool animatedShouldSignalBatch();
-
-  /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   RN_EXPORT static bool cxxNativeAnimatedEnabled();
@@ -58,11 +53,6 @@ class ReactNativeFeatureFlags {
    * Removes JS sync at end of native animation
    */
   RN_EXPORT static bool cxxNativeAnimatedRemoveJsSync();
-
-  /**
-   * Disable sync dispatch on the main queue on iOS
-   */
-  RN_EXPORT static bool disableMainQueueSyncDispatchIOS();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
@@ -83,6 +73,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
+
+  /**
+   * Enables various optimizations throughout the path of measuring text on Android.
+   */
+  RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
@@ -108,6 +103,11 @@ class ReactNativeFeatureFlags {
    * When enabled a subset of components will avoid double measurement on Android.
    */
   RN_EXPORT static bool enableDoubleMeasurementFixAndroid();
+
+  /**
+   * This infra allows native modules to initialize on the main thread, during React Native init.
+   */
+  RN_EXPORT static bool enableEagerMainQueueModulesOnIOS();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -163,11 +163,6 @@ class ReactNativeFeatureFlags {
    * Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.
    */
   RN_EXPORT static bool enableMainQueueCoordinatorOnIOS();
-
-  /**
-   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
-   */
-  RN_EXPORT static bool enableMainQueueModulesOnIOS();
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS
@@ -260,9 +255,19 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 
   /**
+   * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
+   */
+  RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
    * Number cached PreparedLayouts in TextLayoutManager cache
    */
   RN_EXPORT static double preparedTextCacheSize();
+
+  /**
+   * Releases the cached image data when it is consumed by the observers.
+   */
+  RN_EXPORT static bool releaseImageDataWhenConsumed();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -14,7 +14,7 @@ let reporter /*: $FlowFixMe */;
 
 const logPath = process.env.RCT_PACKAGER_LOG_PATH;
 if (logPath != null && logPath !== '') {
-  const JsonReporter = require('metro/src/lib/JsonReporter');
+  const {JsonReporter} = require('metro');
   const fs = require('fs');
   const path = require('path');
   // $FlowFixMe[missing-type-arg]
@@ -27,7 +27,7 @@ if (logPath != null && logPath !== '') {
     }
   };
 } else {
-  reporter = require('metro/src/lib/TerminalReporter');
+  reporter = require('metro').TerminalReporter;
 }
 
 module.exports = reporter;

@@ -60,16 +60,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    animatedShouldSignalBatch: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-07',
-        description: 'Enables start- and finishOperationBatch on any platform.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -86,16 +76,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2025-06-16',
         description: 'Removes JS sync at end of native animation',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    disableMainQueueSyncDispatchIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-04-02',
-        description: 'Disable sync dispatch on the main queue on iOS',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -140,6 +120,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidTextMeasurementOptimizations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-01',
+        description:
+          'Enables various optimizations throughout the path of measuring text on Android.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -194,6 +185,16 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled a subset of components will avoid double measurement on Android.',
         expectedReleaseValue: true,
         purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableEagerMainQueueModulesOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'This infra allows native modules to initialize on the main thread, during React Native init.',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -308,16 +309,6 @@ const definitions: FeatureFlagDefinitions = {
           'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableMainQueueModulesOnIOS: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Makes modules requiring main queue setup initialize on the main thread, during React Native init.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -511,12 +502,34 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    hideOffscreenVirtualViewsOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-30',
+        description:
+          'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     preparedTextCacheSize: {
       defaultValue: 200,
       metadata: {
         dateAdded: '2025-06-25',
         description: 'Number cached PreparedLayouts in TextLayoutManager cache',
         expectedReleaseValue: 200,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    releaseImageDataWhenConsumed: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-10',
+        description:
+          'Releases the cached image data when it is consumed by the observers.',
+        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
@@ -681,6 +694,17 @@ const definitions: FeatureFlagDefinitions = {
           'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    deferFlatListFocusChangeRenderUpdate: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-02',
+        description:
+          'Use the deferred cell render update mechanism for focus change in FlatList.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

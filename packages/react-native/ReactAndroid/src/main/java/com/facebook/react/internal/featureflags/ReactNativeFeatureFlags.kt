@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<697babc37818f427f02fd3ab4c53febd>>
+ * @generated SignedSource<<64faf70fad18019fc27e77681ff41d05>>
  */
 
 /**
@@ -37,12 +37,6 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
-   * Enables start- and finishOperationBatch on any platform.
-   */
-  @JvmStatic
-  public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
-
-  /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
    */
   @JvmStatic
@@ -53,12 +47,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
-
-  /**
-   * Disable sync dispatch on the main queue on iOS
-   */
-  @JvmStatic
-  public fun disableMainQueueSyncDispatchIOS(): Boolean = accessor.disableMainQueueSyncDispatchIOS()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
@@ -83,6 +71,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
+
+  /**
+   * Enables various optimizations throughout the path of measuring text on Android.
+   */
+  @JvmStatic
+  public fun enableAndroidTextMeasurementOptimizations(): Boolean = accessor.enableAndroidTextMeasurementOptimizations()
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
@@ -113,6 +107,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableDoubleMeasurementFixAndroid(): Boolean = accessor.enableDoubleMeasurementFixAndroid()
+
+  /**
+   * This infra allows native modules to initialize on the main thread, during React Native init.
+   */
+  @JvmStatic
+  public fun enableEagerMainQueueModulesOnIOS(): Boolean = accessor.enableEagerMainQueueModulesOnIOS()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -179,12 +179,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableMainQueueCoordinatorOnIOS(): Boolean = accessor.enableMainQueueCoordinatorOnIOS()
-
-  /**
-   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
-   */
-  @JvmStatic
-  public fun enableMainQueueModulesOnIOS(): Boolean = accessor.enableMainQueueModulesOnIOS()
 
   /**
    * Enable NSNull conversion when handling module arguments on iOS
@@ -295,10 +289,22 @@ public object ReactNativeFeatureFlags {
   public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
 
   /**
+   * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
+   */
+  @JvmStatic
+  public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
    * Number cached PreparedLayouts in TextLayoutManager cache
    */
   @JvmStatic
   public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
+
+  /**
+   * Releases the cached image data when it is consumed by the observers.
+   */
+  @JvmStatic
+  public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -225,6 +225,11 @@ class NativeAnimatedNodesManager {
   // React context required to commit props onto Component View
   DirectManipulationCallback directManipulationCallback_;
   FabricCommitCallback fabricCommitCallback_;
+
+  /*
+   * Tracks whether the render callback loop for animations is currently active.
+   */
+  std::atomic_bool isRenderCallbackStarted_{false};
   StartOnRenderCallback startOnRenderCallback_;
   StopOnRenderCallback stopOnRenderCallback_;
 

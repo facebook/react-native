@@ -25,6 +25,7 @@ target_link_libraries(jsinspector
         jsinspector_tracing
         react_featureflags
         runtimeexecutor
+        reactperflogger
 )
 target_compile_reactnative_options(jsinspector PRIVATE)
 target_compile_options(jsinspector PRIVATE

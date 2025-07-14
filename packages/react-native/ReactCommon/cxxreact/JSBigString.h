@@ -35,7 +35,7 @@ class JSBigString {
   JSBigString(const JSBigString&) = delete;
   JSBigString& operator=(const JSBigString&) = delete;
 
-  virtual ~JSBigString() {}
+  virtual ~JSBigString() = default;
 
   virtual bool isAscii() const = 0;
 

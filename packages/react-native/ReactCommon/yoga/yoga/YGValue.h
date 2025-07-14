@@ -72,9 +72,9 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
     case YGUnitPoint:
     case YGUnitPercent:
       return lhs.value == rhs.value;
+    default:
+      return false;
   }
-
-  return false;
 }
 
 inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
