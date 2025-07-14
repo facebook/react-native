@@ -62,6 +62,11 @@ class ImageResponseObserverCoordinator {
 
  private:
   /*
+   * Resets the cached image data pointers. Needs to be protected by mutex_.
+   */
+  void consumeResponse() const;
+
+  /*
    * List of observers.
    * Mutable: protected by mutex_.
    */

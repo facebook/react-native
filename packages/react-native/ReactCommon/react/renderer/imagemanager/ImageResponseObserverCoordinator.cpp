@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react {
 
@@ -31,6 +32,7 @@ void ImageResponseObserverCoordinator::addObserver(
     case ImageResponse::Status::Completed: {
       auto imageData = imageData_;
       auto imageMetadata = imageMetadata_;
+      consumeResponse();
       mutex_.unlock();
       observer.didReceiveImage(ImageResponse{imageData, imageMetadata});
       break;
@@ -41,7 +43,8 @@ void ImageResponseObserverCoordinator::addObserver(
       observer.didReceiveFailure(ImageLoadError{imageErrorData});
       break;
     }
-    case ImageResponse::Status::Cancelled: {
+    case ImageResponse::Status::Cancelled:
+    case ImageResponse::Status::Consumed: {
       observers_.push_back(&observer);
       status_ = ImageResponse::Status::Loading;
       mutex_.unlock();
@@ -93,6 +96,9 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
       status_ == ImageResponse::Status::Cancelled);
   status_ = ImageResponse::Status::Completed;
   auto observers = observers_;
+  if (!observers.empty()) {
+    consumeResponse();
+  }
   mutex_.unlock();
 
   for (auto observer : observers) {
@@ -113,6 +119,14 @@ void ImageResponseObserverCoordinator::nativeImageResponseFailed(
 
   for (auto observer : observers) {
     observer->didReceiveFailure(loadError);
+  }
+}
+
+void ImageResponseObserverCoordinator::consumeResponse() const {
+  if (ReactNativeFeatureFlags::releaseImageDataWhenConsumed()) {
+    status_ = ImageResponse::Status::Consumed;
+    imageData_.reset();
+    imageMetadata_.reset();
   }
 }
 
