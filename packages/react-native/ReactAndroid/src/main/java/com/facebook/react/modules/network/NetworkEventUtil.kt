@@ -10,6 +10,7 @@
 package com.facebook.react.modules.network
 
 import android.os.Bundle
+import android.util.Base64
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
@@ -92,7 +93,16 @@ internal object NetworkEventUtil {
   }
 
   @JvmStatic
-  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
+  fun onDataReceived(
+      reactContext: ReactApplicationContext?,
+      requestId: Int,
+      data: String?,
+      responseType: String
+  ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.maybeStoreResponseBody(
+          requestId, data.orEmpty(), responseType == "base64")
+    }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkData",
         buildReadableArray {
@@ -102,7 +112,16 @@ internal object NetworkEventUtil {
   }
 
   @JvmStatic
-  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: WritableMap?) {
+  fun onDataReceived(
+      reactContext: ReactApplicationContext?,
+      requestId: Int,
+      data: WritableMap,
+      rawData: ByteArray
+  ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.maybeStoreResponseBody(
+          requestId, Base64.encodeToString(rawData, Base64.NO_WRAP), true)
+    }
     reactContext?.emitDeviceEvent(
         "didReceiveNetworkData",
         Arguments.createArray().apply {
