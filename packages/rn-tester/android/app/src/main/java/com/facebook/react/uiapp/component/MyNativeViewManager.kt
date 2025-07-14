@@ -54,8 +54,8 @@ internal class MyNativeViewManager :
   }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
-  override fun setOpacity(view: MyNativeView, opacity: Float) {
-    super.setOpacity(view, opacity)
+  override fun setOpacity(view: MyNativeView, value: Float) {
+    super.setOpacity(view, value)
   }
 
   @ReactProp(name = "values")
