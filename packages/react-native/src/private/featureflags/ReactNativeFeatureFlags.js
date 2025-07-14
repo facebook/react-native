@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b680260e184df469f918d2bf4a3a4e65>>
+ * @generated SignedSource<<4abf44d370e3056274df1ac8648c9fb2>>
  * @flow strict
  * @noformat
  */
@@ -96,6 +96,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
+  releaseImageDataWhenConsumed: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -373,6 +374,10 @@ export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagG
  * Number cached PreparedLayouts in TextLayoutManager cache
  */
 export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 200);
+/**
+ * Releases the cached image data when it is consumed by the observers.
+ */
+export const releaseImageDataWhenConsumed: Getter<boolean> = createNativeFlagGetter('releaseImageDataWhenConsumed', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

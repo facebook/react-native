@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62ecfcd8d00ce03d659715bbb3f4a235>>
+ * @generated SignedSource<<2a33de4ea9c5d0c332845046053a9598>>
  */
 
 /**
@@ -309,6 +309,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool releaseImageDataWhenConsumed() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("releaseImageDataWhenConsumed");
+    return method(javaProvider_);
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -604,6 +610,11 @@ double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
   return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -825,6 +836,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
+      makeNativeMethod(
+        "releaseImageDataWhenConsumed",
+        JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

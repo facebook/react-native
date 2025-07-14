@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a16b227254e43d57c46479d87bc45bf2>>
+ * @generated SignedSource<<fbc0fe5e434b2f367ec6e73383a91d4c>>
  */
 
 /**
@@ -205,6 +205,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double preparedTextCacheSize() override {
     return 200.0;
+  }
+
+  bool releaseImageDataWhenConsumed() override {
+    return false;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

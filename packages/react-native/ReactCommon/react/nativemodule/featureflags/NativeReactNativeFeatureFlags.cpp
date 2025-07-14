@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<09ffa5d69974c01761505c26a61ce865>>
+ * @generated SignedSource<<14c2e4494d0aca1228e2d7593e65fa00>>
  */
 
 /**
@@ -267,6 +267,11 @@ bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
 double NativeReactNativeFeatureFlags::preparedTextCacheSize(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::preparedTextCacheSize();
+}
+
+bool NativeReactNativeFeatureFlags::releaseImageDataWhenConsumed(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9588b972841baa23bd3bb3b7326b4710>>
+ * @generated SignedSource<<b9aa0387de9705e781bac7e522461224>>
  */
 
 /**
@@ -117,6 +117,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun preparedTextCacheSize(): Double
+
+  @DoNotStrip @JvmStatic public external fun releaseImageDataWhenConsumed(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
