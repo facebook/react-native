@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -16,7 +15,7 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
-import * as React from 'react';
+import {isValidElement} from 'react';
 
 const MAX_DEPTH = 5;
 
@@ -30,7 +29,7 @@ export function isPlainObject(
     value !== null &&
     typeof value === 'object' &&
     Object.getPrototypeOf(value).isPrototypeOf(Object) &&
-    !React.isValidElement(value)
+    !isValidElement(value)
   );
 }
 

@@ -37,10 +37,6 @@ internal class MyNativeViewManager :
   override fun createViewInstance(reactContext: ThemedReactContext): MyNativeView =
       MyNativeView(reactContext)
 
-  override fun receiveCommand(view: MyNativeView, commandName: String, args: ReadableArray?) {
-    delegate.receiveCommand(view, commandName, args)
-  }
-
   override fun callNativeMethodToChangeBackgroundColor(view: MyNativeView, color: String) {
     view.setBackgroundColor(Color.parseColor(color))
   }
@@ -58,8 +54,8 @@ internal class MyNativeViewManager :
   }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1f)
-  override fun setOpacity(view: MyNativeView, opacity: Float) {
-    super.setOpacity(view, opacity)
+  override fun setOpacity(view: MyNativeView, value: Float) {
+    super.setOpacity(view, value)
   }
 
   @ReactProp(name = "values")

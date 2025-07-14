@@ -13,8 +13,6 @@
 #include <fbsystrace.h>
 #endif
 
-#include <chrono>
-
 namespace facebook::react {
 
 namespace {
@@ -24,16 +22,31 @@ const std::string PERFETTO_DEFAULT_TRACK_NAME = "# Web Performance";
 const std::string PERFETTO_TRACK_NAME_PREFIX = "# Web Performance: ";
 
 std::string toPerfettoTrackName(
-    const std::optional<std::string_view>& trackName) {
-  return trackName.has_value()
-      ? PERFETTO_TRACK_NAME_PREFIX + std::string(trackName.value())
-      : PERFETTO_DEFAULT_TRACK_NAME;
+    const std::optional<std::string_view>& trackName,
+    const std::optional<std::string_view>& trackGroup) {
+  std::string perfettoTrackName = PERFETTO_DEFAULT_TRACK_NAME;
+
+  if (trackName || trackGroup) {
+    perfettoTrackName += ": ";
+
+    if (trackGroup) {
+      perfettoTrackName += *trackGroup;
+      if (trackName) {
+        perfettoTrackName += " | ";
+      }
+    }
+
+    if (trackName) {
+      perfettoTrackName += *trackName;
+    }
+  }
+
+  return perfettoTrackName;
 }
 #elif defined(WITH_FBSYSTRACE)
-int64_t getDeltaNanos(double jsTime) {
-  auto now = std::chrono::steady_clock::now().time_since_epoch();
-  return static_cast<int64_t>(jsTime * 1.e6) -
-      std::chrono::duration_cast<std::chrono::nanoseconds>(now).count();
+int64_t getDeltaNanos(HighResTimeStamp jsTime) {
+  auto now = HighResTimeStamp::now();
+  return (jsTime - now).toNanoseconds();
 }
 #endif
 
@@ -51,19 +64,21 @@ int64_t getDeltaNanos(double jsTime) {
 
 /* static */ void ReactPerfettoLogger::measure(
     const std::string_view& eventName,
-    double startTime,
-    double endTime,
-    const std::optional<std::string_view>& trackName) {
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
+    const std::optional<std::string_view>& trackName,
+    const std::optional<std::string_view>& trackGroup) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    auto track = getPerfettoWebPerfTrackAsync(toPerfettoTrackName(trackName));
+    auto track = getPerfettoWebPerfTrackAsync(
+        toPerfettoTrackName(trackName, trackGroup));
     TRACE_EVENT_BEGIN(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
         track,
-        performanceNowToPerfettoTraceTime(startTime));
+        highResTimeStampToPerfettoTraceTime(startTime));
     TRACE_EVENT_END(
-        "react-native", track, performanceNowToPerfettoTraceTime(endTime));
+        "react-native", track, highResTimeStampToPerfettoTraceTime(endTime));
   }
 #elif defined(WITH_FBSYSTRACE)
   static int cookie = 0;
@@ -77,15 +92,16 @@ int64_t getDeltaNanos(double jsTime) {
 
 /* static */ void ReactPerfettoLogger::mark(
     const std::string_view& eventName,
-    double startTime,
-    const std::optional<std::string_view>& trackName) {
+    HighResTimeStamp startTime,
+    const std::optional<std::string_view>& trackName,
+    const std::optional<std::string_view>& trackGroup) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
     TRACE_EVENT_INSTANT(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
-        getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName)),
-        performanceNowToPerfettoTraceTime(startTime));
+        getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName, trackGroup)),
+        highResTimeStampToPerfettoTraceTime(startTime));
   }
 #elif defined(WITH_FBSYSTRACE)
   static const char* kTrackName = "# Web Performance: Markers";

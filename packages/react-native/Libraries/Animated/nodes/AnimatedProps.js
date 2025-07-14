@@ -14,6 +14,7 @@ import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
+import flattenStyle from '../../StyleSheet/flattenStyle';
 import {AnimatedEvent} from '../AnimatedEvent';
 import AnimatedNode from './AnimatedNode';
 import AnimatedObject from './AnimatedObject';
@@ -22,7 +23,7 @@ import invariant from 'invariant';
 
 export type AnimatedPropsAllowlist = $ReadOnly<{
   style?: ?AnimatedStyleAllowlist,
-  [string]: true,
+  [key: string]: true | AnimatedStyleAllowlist,
 }>;
 
 type TargetView = {
@@ -43,18 +44,28 @@ function createAnimatedProps(
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
     const value = inputProps[key];
+    let staticValue = value;
 
     if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (key === 'style') {
-        node = AnimatedStyle.from(value, allowlist?.style);
+        // Ignore `style` if it is not an object (or array).
+        if (typeof value === 'object' && value != null) {
+          // Even if we do not find any `AnimatedNode` values in `style`, we
+          // still need to use the flattened `style` object because static
+          // values can shadow `AnimatedNode` values. We need to make sure that
+          // we propagate the flattened `style` object to the `props` object.
+          const flatStyle = flattenStyle(value as $FlowFixMe);
+          node = AnimatedStyle.from(flatStyle, allowlist?.style, value);
+          staticValue = flatStyle;
+        }
       } else if (value instanceof AnimatedNode) {
         node = value;
       } else {
         node = AnimatedObject.from(value);
       }
       if (node == null) {
-        props[key] = value;
+        props[key] = staticValue;
       } else {
         nodeKeys.push(key);
         nodes.push(node);
@@ -134,8 +145,24 @@ export default class AnimatedProps extends AnimatedNode {
       const key = keys[ii];
       const maybeNode = this.#props[key];
 
-      if (key === 'style' && maybeNode instanceof AnimatedStyle) {
-        props[key] = maybeNode.__getValueWithStaticStyle(staticProps.style);
+      if (key === 'style') {
+        const staticStyle = staticProps.style;
+        const flatStaticStyle = flattenStyle(staticStyle);
+        if (maybeNode instanceof AnimatedStyle) {
+          const mutableStyle: {[string]: mixed} =
+            flatStaticStyle == null
+              ? {}
+              : flatStaticStyle === staticStyle
+                ? // Copy the input style, since we'll mutate it below.
+                  {...flatStaticStyle}
+                : // Reuse `flatStaticStyle` if it is a newly created object.
+                  flatStaticStyle;
+
+          maybeNode.__replaceAnimatedNodeWithValues(mutableStyle);
+          props[key] = maybeNode.__getValueForStyle(mutableStyle);
+        } else {
+          props[key] = flatStaticStyle;
+        }
       } else if (maybeNode instanceof AnimatedNode) {
         props[key] = maybeNode.__getValue();
       } else if (maybeNode instanceof AnimatedEvent) {

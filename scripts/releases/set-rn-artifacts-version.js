@@ -6,15 +6,14 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 /*::
 import type {BuildType, Version} from './utils/version-utils';
 */
 
-const {REPO_ROOT} = require('../consts');
-const {getNpmInfo} = require('../npm-utils');
+const {getNpmInfo} = require('../releases/utils/npm-utils');
+const {REPO_ROOT} = require('../shared/consts');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {promises: fs} = require('fs');
 const path = require('path');
@@ -46,6 +45,8 @@ const config = {
 async function main() {
   const {
     values: {help, 'build-type': buildType, 'to-version': toVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
@@ -167,6 +168,5 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

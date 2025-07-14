@@ -19,8 +19,10 @@ else
   source[:tag] = "v#{version}"
 end
 
-module_name = "FBReactNativeSpec"
-header_dir = "FBReactNativeSpec"
+header_search_paths = [
+  "\"$(PODS_TARGET_SRCROOT)/FBReactNativeSpec\"",
+  "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
+]
 
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
@@ -33,26 +35,49 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "FBReactNativeSpec/**/*.{c,h,m,mm,S,cpp}"
+  s.source_files           = podspec_sources("FBReactNativeSpec/**/*.{c,h,m,mm,cpp}", "FBReactNativeSpec/**/*.{h}")
+  s.exclude_files          = "FBReactNativeSpec/react/renderer/components",
   s.compiler_flags         = new_arch_flags
-  s.header_dir             = header_dir
-  s.module_name            = module_name
+  s.header_dir             = 'FBReactNativeSpec'
   s.pod_target_xcconfig    = {
-    "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
-    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
+    "USE_HEADERMAP" => "NO",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
 
+  if ENV['USE_FRAMEWORKS']
+    s.header_mappings_dir  = 'FBReactNativeSpec'
+    s.module_name          = 'React_RCTFBReactNativeSpec'
+  end
+
   s.dependency "React-jsi"
-  s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-Core"
   s.dependency "React-NativeModulesApple"
+
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/bridging", :additional_framework_paths => ["react/nativemodule/bridging"])
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
+
+  s.subspec "components" do |ss|
+    ss.source_files         = podspec_sources("FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{m,mm,cpp,h}", "FBReactNativeSpec/react/renderer/components/FBReactNativeSpec/**/*.{h}")
+    ss.header_dir           = "react/renderer/components/FBReactNativeSpec"
+
+    add_dependency(ss, "React-featureflags")
+    add_dependency(ss, "React-debug")
+    add_dependency(ss, "React-rendererdebug")
+    add_dependency(ss, "React-utils")
+    add_dependency(ss, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
+    add_dependency(ss, "React-Fabric", :additional_framework_paths => [
+      "react/renderer/components/view/platform/cxx",
+    ])
+
+    ss.dependency "Yoga"
+  end
 
   s.script_phases = [
     {

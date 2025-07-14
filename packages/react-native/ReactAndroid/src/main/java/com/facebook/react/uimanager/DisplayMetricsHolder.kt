@@ -7,9 +7,12 @@
 
 package com.facebook.react.uimanager
 
+import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -27,7 +30,7 @@ public object DisplayMetricsHolder {
   /** The metrics of the window associated to the Context used to initialize ReactNative */
   @JvmStatic
   public fun getWindowDisplayMetrics(): DisplayMetrics {
-    checkNotNull(windowDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
     return windowDisplayMetrics as DisplayMetrics
   }
 
@@ -39,7 +42,7 @@ public object DisplayMetricsHolder {
   /** Screen metrics returns the metrics of the default screen on the device. */
   @JvmStatic
   public fun getScreenDisplayMetrics(): DisplayMetrics {
-    checkNotNull(screenDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
     return screenDisplayMetrics as DisplayMetrics
   }
 
@@ -63,7 +66,6 @@ public object DisplayMetricsHolder {
     val screenDisplayMetrics = DisplayMetrics()
     screenDisplayMetrics.setTo(displayMetrics)
     val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    checkNotNull(wm) { "WindowManager is null!" }
     // Get the real display metrics if we are using API level 17 or higher.
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
@@ -75,8 +77,8 @@ public object DisplayMetricsHolder {
 
   @JvmStatic
   public fun getDisplayMetricsWritableMap(fontScale: Double): WritableMap {
-    checkNotNull(windowDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
-    checkNotNull(screenDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
 
     return WritableNativeMap().apply {
       putMap(
@@ -99,4 +101,14 @@ public object DisplayMetricsHolder {
         putDouble("fontScale", fontScale)
         putDouble("densityDpi", displayMetrics.densityDpi.toDouble())
       }
+
+  internal fun getStatusBarHeightPx(activity: Activity?): Int {
+    val windowInsets = activity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0
+    return windowInsets
+        .getInsets(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.navigationBars() or
+                WindowInsetsCompat.Type.displayCutout())
+        .top
+  }
 }

@@ -10,6 +10,7 @@ package com.facebook.react.uimanager
 import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
@@ -18,7 +19,7 @@ import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.events.Event
 
 /** Event used to notify JS component about changes of its position or dimensions. */
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   @VisibleForTesting internal var x: Int = 0
   @VisibleForTesting internal var y: Int = 0
@@ -40,13 +41,12 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   override fun getEventName(): String = "topLayout"
 
   override fun getEventData(): WritableMap {
-    val layout =
-        Arguments.createMap().apply {
-          putDouble("x", toDIPFromPixel(x.toFloat()).toDouble())
-          putDouble("y", toDIPFromPixel(y.toFloat()).toDouble())
-          putDouble("width", toDIPFromPixel(width.toFloat()).toDouble())
-          putDouble("height", toDIPFromPixel(height.toFloat()).toDouble())
-        }
+    val layout = buildReadableMap {
+      put("x", toDIPFromPixel(x.toFloat()).toDouble())
+      put("y", toDIPFromPixel(y.toFloat()).toDouble())
+      put("width", toDIPFromPixel(width.toFloat()).toDouble())
+      put("height", toDIPFromPixel(height.toFloat()).toDouble())
+    }
 
     val event =
         Arguments.createMap().apply {
@@ -60,7 +60,7 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   public companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "OnLayoutEvent", LegacyArchitectureLogLevel.WARNING)
+          "OnLayoutEvent", LegacyArchitectureLogLevel.ERROR)
     }
 
     private val EVENTS_POOL: SynchronizedPool<OnLayoutEvent> = SynchronizedPool<OnLayoutEvent>(20)

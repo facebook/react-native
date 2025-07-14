@@ -11,6 +11,7 @@
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 #include <react/debug/react_native_assert.h>
+#include <react/renderer/bridging/bridging.h>
 #include <react/renderer/core/ShadowNode.h>
 
 namespace facebook::react {
@@ -30,21 +31,9 @@ struct ShadowNodeListWrapper : public jsi::NativeState {
   ShadowNode::UnsharedListOfShared shadowNodeList;
 };
 
-inline static ShadowNode::Shared shadowNodeFromValue(
-    jsi::Runtime& runtime,
-    const jsi::Value& value) {
-  if (value.isNull()) {
-    return nullptr;
-  }
-
-  return value.getObject(runtime)
-      .getNativeState<ShadowNodeWrapper>(runtime)
-      ->shadowNode;
-}
-
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     bool assignRuntimeShadowNodeReference = false) {
   // Wrap the shadow node so that we can update JS references from native
   auto wrappedShadowNode =
@@ -71,18 +60,20 @@ inline static ShadowNode::UnsharedListOfShared shadowNodeListFromValue(
     auto jsArray = std::move(object).asArray(runtime);
     size_t jsArrayLen = jsArray.length(runtime);
     if (jsArrayLen > 0) {
-      auto shadowNodeArray = std::make_shared<ShadowNode::ListOfShared>();
+      auto shadowNodeArray =
+          std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
       shadowNodeArray->reserve(jsArrayLen);
 
       for (size_t i = 0; i < jsArrayLen; i++) {
         shadowNodeArray->push_back(
-            shadowNodeFromValue(runtime, jsArray.getValueAtIndex(runtime, i)));
+            Bridging<std::shared_ptr<const ShadowNode>>::fromJs(
+                runtime, jsArray.getValueAtIndex(runtime, i)));
       }
       return shadowNodeArray;
     } else {
       // TODO: return ShadowNode::emptySharedShadowNodeSharedList()
-      return std::make_shared<ShadowNode::ListOfShared>(
-          ShadowNode::ListOfShared({}));
+      return std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+          std::vector<std::shared_ptr<const ShadowNode>>({}));
       ;
     }
   } else {
@@ -105,7 +96,8 @@ inline static jsi::Value valueFromShadowNodeList(
 
 inline static ShadowNode::UnsharedListOfShared shadowNodeListFromWeakList(
     const ShadowNode::UnsharedListOfWeak& weakShadowNodeList) {
-  auto result = std::make_shared<ShadowNode::ListOfShared>();
+  auto result =
+      std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
   for (const auto& weakShadowNode : *weakShadowNodeList) {
     auto sharedShadowNode = weakShadowNode.lock();
     if (!sharedShadowNode) {
@@ -120,7 +112,8 @@ inline static ShadowNode::UnsharedListOfWeak weakShadowNodeListFromValue(
     jsi::Runtime& runtime,
     const jsi::Value& value) {
   auto shadowNodeList = shadowNodeListFromValue(runtime, value);
-  auto weakShadowNodeList = std::make_shared<ShadowNode::ListOfWeak>();
+  auto weakShadowNodeList =
+      std::make_shared<std::vector<std::weak_ptr<const ShadowNode>>>();
   for (const auto& shadowNode : *shadowNodeList) {
     weakShadowNodeList->push_back(shadowNode);
   }

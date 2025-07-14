@@ -104,6 +104,10 @@ inline float blueFromHostPlatformColor(Color color) {
   return color.getChannel(2) * 255;
 }
 
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+  return alphaFromHostPlatformColor(color) > 0;
+}
+
 } // namespace facebook::react
 
 template <>

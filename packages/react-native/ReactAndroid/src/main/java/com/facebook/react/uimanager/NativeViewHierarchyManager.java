@@ -67,12 +67,12 @@ import javax.annotation.concurrent.NotThreadSafe;
  * <p>TODO(5483031): Only dispatch updates when shadow views have changed
  */
 @NotThreadSafe
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class NativeViewHierarchyManager {
 
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.WARNING);
+        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.ERROR);
   }
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();

@@ -7,6 +7,8 @@
 
 #include "NativeToJsBridge.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <ReactCommon/CallInvoker.h>
 #include <folly/json.h>
 #include <glog/logging.h>
@@ -345,3 +347,5 @@ NativeToJsBridge::getInspectorTargetDelegate() {
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

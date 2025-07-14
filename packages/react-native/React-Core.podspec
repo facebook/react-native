@@ -16,10 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
-use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? "-DUSE_THIRD_PARTY_JSC=1" : ""
-
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
   'RCTActionSheetHeaders'       => 'Libraries/ActionSheetIOS/*.h',
@@ -35,7 +31,7 @@ header_subspecs = {
 }
 
 frameworks_search_paths = []
-frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if use_hermes
+frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if use_hermes()
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
@@ -56,7 +52,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
-  s.compiler_flags         = use_hermes_flag + ' ' + use_third_party_jsc_flag
+  s.compiler_flags         = js_engine_flags()
   s.header_dir             = "React"
   s.weak_framework         = "JavaScriptCore"
   s.pod_target_xcconfig    = {
@@ -70,7 +66,7 @@ Pod::Spec.new do |s|
   s.default_subspec        = "Default"
 
   s.subspec "Default" do |ss|
-    ss.source_files           = "React/**/*.{c,h,m,mm,S,cpp}"
+    ss.source_files = podspec_sources("React/**/*.{c,h,m,mm,S,cpp}", "React/**/*.h")
     exclude_files = [
       "React/CoreModules/**/*",
       "React/DevSupport/**/*",
@@ -80,21 +76,20 @@ Pod::Spec.new do |s|
       "React/Inspector/**/*",
       "React/Runtime/**/*",
     ]
-    # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
-    # So we have to exclude the JSCExecutorFactory
-    if use_hermes
-      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
-    elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
-      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
-    end
+
+    # The default is use hermes,  we don't have jsc installed
+    exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
 
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
+
   end
 
   s.subspec "DevSupport" do |ss|
-    ss.source_files = "React/DevSupport/*.{h,mm,m}",
-                      "React/Inspector/*.{h,mm,m}"
+    ss.source_files = podspec_sources(["React/DevSupport/*.{h,mm,m}",
+                        "React/Inspector/*.{h,mm,m}"],
+                        ["React/DevSupport/*.h",
+                        "React/Inspector/*.h"])
 
     ss.dependency "React-Core/Default", version
     ss.dependency "React-Core/RCTWebSocket", version
@@ -102,7 +97,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "RCTWebSocket" do |ss|
-    ss.source_files = "Libraries/WebSocket/*.{h,m}"
+    ss.source_files = podspec_sources("Libraries/WebSocket/*.{h,m}", "Libraries/WebSocket/*.h")
     ss.dependency "React-Core/Default", version
   end
 
@@ -119,18 +114,24 @@ Pod::Spec.new do |s|
   s.dependency "React-perflogger"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  s.dependency "React-utils"
   s.dependency "React-featureflags"
   s.dependency "React-runtimescheduler"
   s.dependency "Yoga"
 
+  if use_hermes()
+    s.dependency "React-hermes"
+  end
+
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
+  add_dependency(s, "React-utils", :additional_framework_paths => ["react/utils/platform/ios"])
   add_dependency(s, "RCTDeprecation")
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

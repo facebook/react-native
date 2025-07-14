@@ -13,16 +13,11 @@
 #include <react/renderer/graphics/Size.h>
 #include <cmath>
 
+namespace facebook::react::dom {
+
 namespace {
 
-using namespace facebook::react;
-
-// To prevent ambiguity with built-in MacOS types.
-using facebook::react::Point;
-using facebook::react::Rect;
-using facebook::react::Size;
-
-ShadowNode::Shared getShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   // If the given shadow node is of the same family as the root shadow node,
@@ -41,7 +36,7 @@ ShadowNode::Shared getShadowNodeInRevision(
   return pair->first.get().getChildren().at(pair->second);
 }
 
-ShadowNode::Shared getParentShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getParentShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   // If the given shadow node is of the same family as the root shadow node,
@@ -66,13 +61,19 @@ ShadowNode::Shared getParentShadowNodeInRevision(
       parentOfParentPair.second);
 }
 
-ShadowNode::Shared getPositionedAncestorOfShadowNodeInRevision(
+std::shared_ptr<const ShadowNode> getPositionedAncestorOfShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
 
   if (ancestors.empty()) {
+    // The node is no longer part of an active shadow tree, or is the root.
     return nullptr;
+  }
+
+  if (ancestors.size() == 1) {
+    // The parent is the root
+    return currentRevision;
   }
 
   for (auto it = ancestors.rbegin(); it != ancestors.rend(); it++) {
@@ -86,11 +87,9 @@ ShadowNode::Shared getPositionedAncestorOfShadowNodeInRevision(
       // We have found our nearest positioned ancestor, now to get a shared
       // pointer of it
       it++;
-      if (it != ancestors.rend()) {
-        return it->first.get().getChildren().at(it->second);
-      }
-      // else the positioned ancestor is the root which we return outside of the
-      // loop
+      return it == ancestors.rend()
+          ? currentRevision
+          : it->first.get().getChildren().at(it->second);
     }
   }
 
@@ -113,7 +112,7 @@ void getTextContentInShadowNode(
   }
 }
 
-LayoutMetrics getRelativeLayoutMetrics(
+LayoutMetrics getLayoutMetricsFromRoot(
     const ShadowNode& ancestorNode,
     const ShadowNode& shadowNode,
     LayoutableShadowNode::LayoutInspectingPolicy policy) {
@@ -124,7 +123,7 @@ LayoutMetrics getRelativeLayoutMetrics(
     return EmptyLayoutMetrics;
   }
 
-  return LayoutableShadowNode::computeRelativeLayoutMetrics(
+  return LayoutableShadowNode::computeLayoutMetricsFromRoot(
       shadowNode.getFamily(), *layoutableAncestorShadowNode, policy);
 }
 
@@ -157,15 +156,13 @@ Rect getScrollableContentBounds(
 
 } // namespace
 
-namespace facebook::react::dom {
-
-ShadowNode::Shared getParentNode(
+std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   return getParentShadowNodeInRevision(currentRevision, shadowNode);
 }
 
-std::vector<ShadowNode::Shared> getChildNodes(
+std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
   auto shadowNodeInCurrentRevision =
@@ -264,7 +261,7 @@ DOMRect getBoundingClientRect(
     return DOMRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       shadowNode,
       {.includeTransform = includeTransform, .includeViewportOffset = true});
@@ -298,13 +295,13 @@ DOMOffset getOffset(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto shadowNodeLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
+  auto shadowNodeLayoutMetricsRelativeToRoot = getLayoutMetricsFromRoot(
       *currentRevision, shadowNode, {.includeTransform = false});
   if (shadowNodeLayoutMetricsRelativeToRoot == EmptyLayoutMetrics) {
     return DOMOffset{};
   }
 
-  auto positionedAncestorLayoutMetricsRelativeToRoot = getRelativeLayoutMetrics(
+  auto positionedAncestorLayoutMetricsRelativeToRoot = getLayoutMetricsFromRoot(
       *currentRevision,
       *positionedAncestorOfShadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -343,7 +340,7 @@ DOMPoint getScrollPosition(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true});
@@ -377,7 +374,7 @@ DOMSizeRounded getScrollSize(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -413,7 +410,7 @@ DOMSizeRounded getInnerSize(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -440,7 +437,7 @@ DOMBorderWidthRounded getBorderWidth(
 
   // If the node is not displayed (itself or any of its ancestors has
   // "display: none"), this returns an empty layout metrics object.
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
@@ -482,7 +479,7 @@ RNMeasureRect measure(
     return RNMeasureRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true, .includeViewportOffset = false});
@@ -517,7 +514,7 @@ DOMRect measureInWindow(
     return DOMRect{};
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *currentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = true, .includeViewportOffset = true});
@@ -551,7 +548,7 @@ std::optional<DOMRect> measureLayout(
     return std::nullopt;
   }
 
-  auto layoutMetrics = getRelativeLayoutMetrics(
+  auto layoutMetrics = getLayoutMetricsFromRoot(
       *relativeToShadowNodeInCurrentRevision,
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});

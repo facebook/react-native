@@ -107,8 +107,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     // problems, so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
-            || view.getTag(R.id.accessibility_order) != null
-            || view.getTag(R.id.accessibility_order_parent) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
@@ -137,18 +135,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
-
-    if (host.getTag(R.id.accessibility_order_dirty) != null) {
-      boolean isAxOrderDirty = (boolean) host.getTag(R.id.accessibility_order_dirty);
-      if (isAxOrderDirty) {
-        ReactAxOrderHelper.setCustomAccessibilityFocusOrder(host);
-        host.setTag(R.id.accessibility_order_dirty, false);
-      }
-    }
-
-    if (host.getTag(R.id.accessibility_order_flow_to) != null) {
-      ReactAxOrderHelper.applyFlowToTraversal(host, info);
-    }
 
     if (host.getTag(R.id.accessibility_state_expanded) != null) {
       final boolean accessibilityStateExpanded =

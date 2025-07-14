@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type Performance from 'react-native/src/private/webapis/performance/Performance';
 
@@ -33,16 +32,16 @@ describe('User Timing API', () => {
 
       expect(callback).not.toHaveBeenCalled();
 
-      const mark1Detail = Symbol('mark1Detail');
+      // const mark1Detail = {mark1: 'detail1'};
       performance.mark('mark1', {
         startTime: 100,
-        detail: mark1Detail,
+        // detail: mark1Detail,
       });
 
-      const mark2Detail = Symbol('mark2Detail');
+      // const mark2Detail = {mark2: 'detail2'};
       performance.mark('mark2', {
         startTime: 200,
-        detail: mark2Detail,
+        // detail: mark2Detail,
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -62,14 +61,16 @@ describe('User Timing API', () => {
       expect(mark1.startTime).toBe(100);
       expect(mark1.duration).toBe(0);
       // This doesn't work through PerformanceObserver yet
-      // expect(mark1.detail).toBe(mark1Detail);
+      // expect(mark1.detail).toEqual(mark1Detail);
+      // expect(mark1.detail).not.toBe(mark1Detail);
 
       expect(mark2.entryType).toBe('mark');
       expect(mark2.name).toBe('mark2');
       expect(mark2.startTime).toBe(200);
       expect(mark2.duration).toBe(0);
       // This doesn't work through PerformanceObserver yet
-      // expect(mark2.detail).toBe(mark2Detail);
+      // expect(mark2.detail).toEqual(mark2Detail);
+      // expect(mark2.detail).not.toBe(mark2Detail);
     });
   });
 });

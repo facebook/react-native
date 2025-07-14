@@ -5,19 +5,6 @@
 
 require_relative './utils.rb'
 
-# It sets up the JavaScriptCore.
-#
-# @parameter react_native_path: relative path to react-native
-# @parameter fabric_enabled: whether Fabirc is enabled
-def setup_jsc!(react_native_path: "../node_modules/react-native", fabric_enabled: false)
-    if ENV['USE_THIRD_PARTY_JSC'] != '1'
-        pod 'React-jsc', :path => "#{react_native_path}/ReactCommon/jsc"
-        if fabric_enabled
-            pod 'React-jsc/Fabric', :path => "#{react_native_path}/ReactCommon/jsc"
-        end
-    end
-end
-
 # It sets up the Hermes.
 #
 # @parameter react_native_path: relative path to react-native
@@ -32,12 +19,37 @@ def setup_hermes!(react_native_path: "../node_modules/react-native")
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
 end
 
+def use_third_party_jsc
+  return ENV['USE_THIRD_PARTY_JSC'] == '1'
+end
+
+# use Hermes is the default. The only other option is the third-party JSC
+# if the 3rd party JSC is not true, we always want to use Hermes.
+def use_hermes
+  return !use_third_party_jsc()
+end
+
+def use_hermes_flags
+  return "-DUSE_HERMES=1"
+end
+
+def use_third_party_jsc_flags
+  return "-DUSE_THIRD_PARTY_JSC=1"
+end
+
+def js_engine_flags()
+  if use_hermes()
+    return use_hermes_flags()
+  else
+    return use_third_party_jsc_flags()
+  end
+end
+
 # Utility function to depend on JS engine based on the environment variable.
 def depend_on_js_engine(s)
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_hermes()
     s.dependency 'hermes-engine'
-    s.dependency 'React-hermes'
-  elsif ENV['USE_THIRD_PARTY_JSC'] != '1'
+  elsif use_third_party_jsc()
     s.dependency 'React-jsc'
   end
 end

@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
+
+import type {CellMetricProps} from '../ListMetricsAggregator';
 
 import ListMetricsAggregator from '../ListMetricsAggregator';
 import {
@@ -58,6 +60,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(100),
+        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox},
         1,
       ),
@@ -76,6 +79,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
+        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
@@ -93,6 +97,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(100),
+        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox},
         1,
       ),
@@ -109,6 +114,7 @@ describe('elementsThatOverlapOffsets', function () {
       elementsThatOverlapOffsets(
         offsets,
         fakeProps(frames.length),
+        // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
         {getCellMetricsApprox: ii => frames[ii]},
         1,
       ),
@@ -116,15 +122,18 @@ describe('elementsThatOverlapOffsets', function () {
   });
 });
 
-function fakeProps(length) {
+function fakeProps(length: number): CellMetricProps {
   return {
-    data: new Array(length).fill({}),
+    data: new Array<void>(length).fill({} as $FlowFixMe),
+    getItem() {
+      throw new Error('Unexpected call to `getItem`.');
+    },
     getItemCount: () => length,
   };
 }
 
 describe('computeWindowedRenderLimits', function () {
-  const defaultProps = {
+  const defaultProps: Partial<CellMetricProps> = {
     getItemCount: () => 10,
     getItem: (_, index) => ({key: `test_${index}`}),
     getItemLayout: (_, index) => {
@@ -148,6 +157,7 @@ describe('computeWindowedRenderLimits', function () {
       getItemCount: () => 3,
     };
     const result = computeWindowedRenderLimits(
+      // $FlowFixMe[incompatible-call]
       props,
       5,
       10,
@@ -164,6 +174,7 @@ describe('computeWindowedRenderLimits', function () {
     });
 
     const listMetricsAggregator = new ListMetricsAggregator();
+    // $FlowFixMe[prop-missing]
     listMetricsAggregator._contentLength = 2713.60009765625;
 
     const offsets = [
@@ -179,6 +190,7 @@ describe('computeWindowedRenderLimits', function () {
 
     expect(
       computeWindowedRenderLimits(
+        // $FlowFixMe[incompatible-call]
         {
           ...defaultProps,
           getItemCount: () => 8,
@@ -190,6 +202,7 @@ describe('computeWindowedRenderLimits', function () {
         31,
         {first: 0, last: 5},
         listMetricsAggregator,
+        // $FlowFixMe[prop-missing]
         {
           dt: 949,
           dOffset: 879.2000732421875,
@@ -204,6 +217,7 @@ describe('computeWindowedRenderLimits', function () {
 
   it('handles reaching the end of the list', function () {
     const listMetricsAggregator = new ListMetricsAggregator();
+    // $FlowFixMe[prop-missing]
     listMetricsAggregator._contentLength = 1000;
 
     const offsets = Array.from({length: 10}, (_, index) => ({
@@ -214,6 +228,7 @@ describe('computeWindowedRenderLimits', function () {
 
     expect(
       computeWindowedRenderLimits(
+        // $FlowFixMe[incompatible-call]
         {
           ...defaultProps,
           getItemLayout: (_, index) => offsets[index],
@@ -222,6 +237,7 @@ describe('computeWindowedRenderLimits', function () {
         5,
         {first: 5, last: 9},
         listMetricsAggregator,
+        // $FlowFixMe[prop-missing]
         {
           dt: 100,
           dOffset: 100,
@@ -243,6 +259,7 @@ describe('computeWindowedRenderLimits', function () {
     };
     const prev = {first: 0, last: 2};
     const result = computeWindowedRenderLimits(
+      // $FlowFixMe[incompatible-call]
       defaultProps,
       2, // maxToRenderPerBatch
       5, // windowSize
@@ -264,6 +281,7 @@ describe('computeWindowedRenderLimits', function () {
       visibleLength: 1000,
     };
     const result = computeWindowedRenderLimits(
+      // $FlowFixMe[incompatible-call]
       props,
       5,
       10, // windowSize large enough to cover entire list

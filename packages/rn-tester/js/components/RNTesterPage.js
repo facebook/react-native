@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import {RNTesterThemeContext} from './RNTesterTheme';
@@ -13,7 +13,7 @@ import RNTesterTitle from './RNTesterTitle';
 import {useContext} from 'react';
 
 const React = require('react');
-const {SafeAreaView, ScrollView, StyleSheet, View} = require('react-native');
+const {Platform, ScrollView, StyleSheet, View} = require('react-native');
 
 type Props = $ReadOnly<{
   children?: React.Node,
@@ -25,10 +25,14 @@ function RNTesterPage({children, title, noScroll}: Props): React.Node {
   const theme = useContext(RNTesterThemeContext);
 
   return (
-    <SafeAreaView
+    <View
       style={[
         styles.background,
-        {backgroundColor: theme.SecondarySystemBackgroundColor},
+        {
+          backgroundColor: theme.SecondarySystemBackgroundColor,
+          marginTop: Platform.OS === 'ios' ? 50 : 20,
+          marginBottom: Platform.OS === 'ios' ? 20 : 10,
+        },
       ]}>
       {title && <RNTesterTitle title={title} />}
       {noScroll ? (
@@ -43,7 +47,7 @@ function RNTesterPage({children, title, noScroll}: Props): React.Node {
           {children}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -69,4 +69,41 @@ inline std::optional<BlendMode> blendModeFromString(
     return std::nullopt;
   }
 }
+
+inline std::string toString(const BlendMode& blendMode) {
+  switch (blendMode) {
+    case BlendMode::Normal:
+      return "normal";
+    case BlendMode::Multiply:
+      return "multiply";
+    case BlendMode::Screen:
+      return "screen";
+    case BlendMode::Overlay:
+      return "overlay";
+    case BlendMode::Darken:
+      return "darken";
+    case BlendMode::Lighten:
+      return "lighten";
+    case BlendMode::ColorDodge:
+      return "color-dodge";
+    case BlendMode::ColorBurn:
+      return "color-burn";
+    case BlendMode::HardLight:
+      return "hard-light";
+    case BlendMode::SoftLight:
+      return "soft-light";
+    case BlendMode::Difference:
+      return "difference";
+    case BlendMode::Exclusion:
+      return "exclusion";
+    case BlendMode::Hue:
+      return "hue";
+    case BlendMode::Saturation:
+      return "saturation";
+    case BlendMode::Color:
+      return "color";
+    case BlendMode::Luminosity:
+      return "luminosity";
+  }
+}
 } // namespace facebook::react

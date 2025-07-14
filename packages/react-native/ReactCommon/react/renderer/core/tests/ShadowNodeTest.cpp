@@ -32,7 +32,7 @@ class ShadowNodeTest : public testing::Test {
      *  </AB>
      *  <AC/>
      * </A>
-     * </Z>
+     * <Z/>
      */
 
     auto props = std::make_shared<const TestProps>();
@@ -78,8 +78,9 @@ class ShadowNodeTest : public testing::Test {
         familyABB,
         traits);
 
-    auto nodeABChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeABA_, nodeABB_});
+    auto nodeABChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{nodeABA_, nodeABB_});
 
     auto familyAB = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 15,
@@ -107,8 +108,10 @@ class ShadowNodeTest : public testing::Test {
         familyAC,
         traits);
 
-    auto nodeAChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeAA_, nodeAB_, nodeAC_});
+    auto nodeAChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{
+                nodeAA_, nodeAB_, nodeAC_});
 
     auto familyA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 17,
@@ -294,4 +297,34 @@ TEST_F(ShadowNodeTest, handleRuntimeReferenceTransferOnClone) {
 
   // The wrappedShadowNode should still reference nodeABRev2
   EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev2);
+}
+
+TEST_F(ShadowNodeTest, cloneMultiple) {
+  auto newProps = std::make_shared<const TestProps>();
+  auto newRoot = nodeA_->cloneMultiple(
+      {&nodeA_->getFamily(), &nodeAB_->getFamily()},
+      [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
+        return oldShadowNode.clone({
+            .props = newProps,
+            .children = fragment.children,
+            .state = fragment.state,
+        });
+      });
+
+  EXPECT_EQ(newRoot->getTag(), nodeA_->getTag());
+  EXPECT_EQ(newRoot->getProps(), newProps);
+
+  auto newNodeAA = newRoot->getChildren()[0];
+  EXPECT_EQ(newNodeAA->getTag(), nodeAA_->getTag());
+  EXPECT_EQ(newNodeAA->getProps(), nodeAA_->getProps());
+  // AA was cloned when its parent was cloned as it was shared
+  EXPECT_NE(newNodeAA.get(), nodeAA_.get());
+
+  auto newNodeAB = newRoot->getChildren()[1];
+  EXPECT_EQ(newNodeAB->getTag(), nodeAB_->getTag());
+  EXPECT_EQ(newNodeAB->getProps(), newProps);
+
+  auto newNodeABA = newNodeAB->getChildren()[0];
+  EXPECT_EQ(newNodeABA->getTag(), nodeABA_->getTag());
+  EXPECT_EQ(newNodeABA.get(), nodeABA_.get());
 }

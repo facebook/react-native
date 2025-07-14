@@ -226,3 +226,5 @@ export interface TextProps
 declare class TextComponent extends React.Component<TextProps> {}
 declare const TextBase: Constructor<NativeMethods> & typeof TextComponent;
 export class Text extends TextBase {}
+
+export const unstable_TextAncestorContext: React.Context<boolean>;

@@ -87,12 +87,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 @ReactModule(name = UIManagerModule.NAME)
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "UIManagerModule", LegacyArchitectureLogLevel.WARNING);
+        "UIManagerModule", LegacyArchitectureLogLevel.ERROR);
   }
 
   public static final String TAG = UIManagerModule.class.getSimpleName();
@@ -248,7 +248,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .arg("Lazy", true)
         .flush();
     try {
-      return UIManagerModuleConstantsHelper.createConstants(viewManagerResolver);
+      return UIManagerModuleConstantsHelper.internal_createConstants(viewManagerResolver);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_CONSTANTS_END);
@@ -264,7 +264,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .arg("Lazy", false)
         .flush();
     try {
-      return UIManagerModuleConstantsHelper.createConstants(
+      return UIManagerModuleConstantsHelper.internal_createConstants(
           viewManagers, customBubblingEvents, customDirectEvents);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);
@@ -291,7 +291,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         .flush();
     try {
       Map<String, Object> viewManagerConstants =
-          UIManagerModuleConstantsHelper.createConstantsForViewManager(
+          UIManagerModuleConstantsHelper.internal_createConstantsForViewManager(
               viewManager, null, null, null, customDirectEvents);
       if (viewManagerConstants != null) {
         return Arguments.makeNativeMap(viewManagerConstants);

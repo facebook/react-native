@@ -51,9 +51,7 @@ endfunction()
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
-find_package(jsc-android REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
-add_library(jsc ALIAS jsc-android::jsc)
 
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
@@ -62,7 +60,6 @@ add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fast_float)
 add_react_third_party_ndk_subdir(fmt)
 add_react_third_party_ndk_subdir(folly)
-add_react_third_party_ndk_subdir(googletest)
 
 # Common targets
 add_react_common_subdir(yoga)
@@ -72,7 +69,6 @@ add_react_common_subdir(logger)
 add_react_common_subdir(jsiexecutor)
 add_react_common_subdir(jsitooling)
 add_react_common_subdir(cxxreact)
-add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
 add_react_common_subdir(callinvoker)
 add_react_common_subdir(oscompat)
@@ -93,6 +89,7 @@ add_react_common_subdir(react/renderer/mounting)
 add_react_common_subdir(react/renderer/scheduler)
 add_react_common_subdir(react/renderer/telemetry)
 add_react_common_subdir(react/renderer/uimanager)
+add_react_common_subdir(react/renderer/bridging)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/consistency)
 add_react_common_subdir(react/renderer/css)
@@ -140,8 +137,6 @@ add_react_android_subdir(src/main/jni/first-party/yogajni)
 add_react_android_subdir(src/main/jni/first-party/jni-lib-merge)
 add_react_android_subdir(src/main/jni/react/jni)
 add_react_android_subdir(src/main/jni/react/reactperflogger)
-add_react_android_subdir(src/main/jni/react/jscexecutor)
-add_react_android_subdir(src/main/jni/react/jsctooling)
 add_react_android_subdir(src/main/jni/react/turbomodule)
 add_react_android_subdir(src/main/jni/react/uimanager)
 add_react_android_subdir(src/main/jni/react/mapbuffer)
@@ -155,7 +150,6 @@ add_react_android_subdir(src/main/jni/react/hermes/instrumentation/)
 add_react_android_subdir(src/main/jni/react/runtime/cxxreactpackage)
 add_react_android_subdir(src/main/jni/react/runtime/jni)
 add_react_android_subdir(src/main/jni/react/runtime/hermes/jni)
-add_react_android_subdir(src/main/jni/react/runtime/jsc/jni)
 add_react_android_subdir(src/main/jni/react/devsupport)
 
 # SoMerging Utils
@@ -330,95 +324,4 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:turbomodulejsijni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:uimanagerjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:yoga,INTERFACE_INCLUDE_DIRECTORIES>
-)
-
-# GTest dependencies
-add_executable(reactnative_unittest
-  ${REACT_COMMON_DIR}/cxxreact/tests/jsarg_helpers.cpp
-  ${REACT_COMMON_DIR}/cxxreact/tests/jsbigstring.cpp
-  ${REACT_COMMON_DIR}/cxxreact/tests/methodcall.cpp
-  ${REACT_COMMON_DIR}/cxxreact/tests/RecoverableErrorTest.cpp
-  ${REACT_COMMON_DIR}/react/bridging/tests/BridgingTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/attributedstring/tests/AttributedStringBoxTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/image/tests/ImageTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/root/tests/RootShadowNodeTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/scrollview/tests/ScrollViewTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/view/tests/LayoutTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/components/view/tests/ViewTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/DynamicPropsUtilitiesTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/EventQueueProcessorTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/FindNodeAtPointTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/LayoutableShadowNodeTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/PrimitivesTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/RawPropsTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeFamilyTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/debug/tests/DebugStringConvertibleTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/element/tests/ElementTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/graphics/tests/GraphicsTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/graphics/tests/TransformTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/imagemanager/tests/ImageManagerTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/mapbuffer/tests/MapBufferTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/mounting/tests/StackingContextTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/mounting/tests/StateReconciliationTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/RuntimeSchedulerTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/runtimescheduler/tests/SchedulerPriorityTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/telemetry/tests/TransactionTelemetryTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/textlayoutmanager/tests/TextLayoutManagerTest.cpp
-  ${REACT_COMMON_DIR}/react/renderer/uimanager/tests/FabricUIManagerTest.cpp
-
-  ########## (COMPILE BUT FAIL ON ASSERTS) ###########
-  # ${REACT_COMMON_DIR}/react/renderer/animations/tests/LayoutAnimationTest.cpp
-  # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/MountingTest.cpp
-  # ${REACT_COMMON_DIR}/react/renderer/mounting/tests/ShadowTreeLifeCycleTest.cpp
-
-  ########## (COMPILE BUT FAIL WITH RUNTIME EXCEPTIONS) ###########
-  # ${REACT_COMMON_DIR}/hermes/inspector-modern/chrome/tests/ConnectionDemuxTests.cpp
-
-  ########## (DO NOT COMPILE) ###########
-  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ShadowNodeTest.cpp
-  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
-  # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
-  )
-
-target_compile_reactnative_options(reactnative_unittest PRIVATE)
-target_compile_options(reactnative_unittest PRIVATE -DHERMES_ENABLE_DEBUGGER)
-
-target_link_libraries(reactnative_unittest
-  fabricjni
-  folly_runtime
-  glog
-  glog_init
-  gtest_main
-  hermes-engine::libhermes
-  hermes_inspector_modern
-  jserrorhandler
-  jsi
-  mapbufferjni
-  react_codegen_rncore
-  react_cxxreact
-  react_debug
-  react_renderer_animations
-  react_renderer_attributedstring
-  react_renderer_core
-  react_renderer_css
-  react_renderer_debug
-  react_renderer_dom
-  react_renderer_element
-  react_renderer_graphics
-  react_renderer_mapbuffer
-  react_renderer_mounting
-  react_renderer_telemetry
-  react_renderer_textlayoutmanager
-  react_renderer_uimanager
-  react_renderer_uimanager_consistency
-  react_utils
-  reactnative
-  rrc_legacyviewmanagerinterop
-  rrc_modal
-  rrc_root
-  rrc_scrollview
-  rrc_text
-  rrc_textinput
-  rrc_view
-  yoga
 )

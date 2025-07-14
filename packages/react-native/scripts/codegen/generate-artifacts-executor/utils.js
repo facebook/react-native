@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -17,11 +18,13 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-function pkgJsonIncludesGeneratedCode(pkgJson) {
+function pkgJsonIncludesGeneratedCode(
+  pkgJson /*: $FlowFixMe */,
+) /*: boolean */ {
   return pkgJson.codegenConfig && pkgJson.codegenConfig.includesGeneratedCode;
 }
 
-const codegenLog = (text, info = false) => {
+const codegenLog = (text /*: string */, info /*: boolean */ = false) => {
   // ANSI escape codes for colors and formatting
   const reset = '\x1b[0m';
   const cyan = '\x1b[36m';
@@ -32,12 +35,12 @@ const codegenLog = (text, info = false) => {
   console.log(`${cyan}${bold}[Codegen]${reset} ${color}${text}${reset}`);
 };
 
-function readPkgJsonInDirectory(dir) {
+function readPkgJsonInDirectory(dir /*: string */) /*: $FlowFixMe */ {
   const pkgJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(pkgJsonPath)) {
     throw `[Codegen] Error: ${pkgJsonPath} does not exist.`;
   }
-  return JSON.parse(fs.readFileSync(pkgJsonPath));
+  return JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
 }
 
 function buildCodegenIfNeeded() {
@@ -69,7 +72,7 @@ function buildCodegenIfNeeded() {
 // we don't know whether they will be populated up until the end of the process.
 //
 // @parameter filepath: the root path from which we want to remove the empty files and folders.
-function cleanupEmptyFilesAndFolders(filepath) {
+function cleanupEmptyFilesAndFolders(filepath /*: string */) {
   const stats = fs.statSync(filepath);
 
   if (stats.isFile() && stats.size === 0) {
@@ -94,20 +97,25 @@ function cleanupEmptyFilesAndFolders(filepath) {
   }
 }
 
-function readReactNativeConfig(projectRoot) {
+function readReactNativeConfig(projectRoot /*: string */) /*: $FlowFixMe */ {
   const rnConfigFilePath = path.resolve(projectRoot, 'react-native.config.js');
 
   if (!fs.existsSync(rnConfigFilePath)) {
     return {};
   }
 
+  // $FlowIgnore[unsupported-syntax]
   return require(rnConfigFilePath);
 }
 
 /**
  * Finding libraries!
  */
-function findCodegenEnabledLibraries(pkgJson, projectRoot, reactNativeConfig) {
+function findCodegenEnabledLibraries(
+  pkgJson /*: $FlowFixMe */,
+  projectRoot /*: string */,
+  reactNativeConfig /*: $FlowFixMe */,
+) /*: Array<$FlowFixMe> */ {
   const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     return projectLibraries;
@@ -120,7 +128,10 @@ function findCodegenEnabledLibraries(pkgJson, projectRoot, reactNativeConfig) {
   }
 }
 
-function findProjectRootLibraries(pkgJson, projectRoot) {
+function findProjectRootLibraries(
+  pkgJson /*: $FlowFixMe */,
+  projectRoot /*: string */,
+) /*: Array<$FlowFixMe> */ {
   codegenLog('Searching for codegen-enabled libraries in the app.', true);
 
   if (pkgJson.codegenConfig == null) {
@@ -138,7 +149,10 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
   return extractLibrariesFromJSON(pkgJson, projectRoot);
 }
 
-function findLibrariesFromReactNativeConfig(projectRoot, rnConfig) {
+function findLibrariesFromReactNativeConfig(
+  projectRoot /*: string */,
+  rnConfig /*: $FlowFixMe */,
+) /*: Array<$FlowFixMe> */ {
   codegenLog(
     `Searching for codegen-enabled libraries in react-native.config.js`,
     true,
@@ -168,7 +182,10 @@ function findLibrariesFromReactNativeConfig(projectRoot, rnConfig) {
   });
 }
 
-function findExternalLibraries(pkgJson, projectRoot) {
+function findExternalLibraries(
+  pkgJson /*: $FlowFixMe */,
+  projectRoot /*: string */,
+) /*: Array<$FlowFixMe> */ {
   const dependencies = {
     ...pkgJson.dependencies,
     ...pkgJson.devDependencies,
@@ -201,13 +218,16 @@ function findExternalLibraries(pkgJson, projectRoot) {
         return [];
       }
     }
-    const configFile = JSON.parse(fs.readFileSync(configFilePath));
+    const configFile = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
     const codegenConfigFileDir = path.dirname(configFilePath);
     return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
 }
 
-function extractLibrariesFromJSON(configFile, dependencyPath) {
+function extractLibrariesFromJSON(
+  configFile /*: $FlowFixMe */,
+  dependencyPath /*: string */,
+) /*: Array<$FlowFixMe> */ {
   if (configFile.codegenConfig == null) {
     return [];
   }
@@ -216,6 +236,7 @@ function extractLibrariesFromJSON(configFile, dependencyPath) {
     const config = configFile.codegenConfig;
     return [
       {
+        name: configFile.name,
         config,
         libraryPath: dependencyPath,
       },
@@ -226,7 +247,7 @@ function extractLibrariesFromJSON(configFile, dependencyPath) {
   }
 }
 
-function printDeprecationWarningIfNeeded(dependency) {
+function printDeprecationWarningIfNeeded(dependency /*: string */) {
   if (dependency === REACT_NATIVE) {
     return;
   }
@@ -264,16 +285,20 @@ function printDeprecationWarningIfNeeded(dependency) {
   `);
 }
 
-function extractLibrariesFromConfigurationArray(configFile, dependencyPath) {
+function extractLibrariesFromConfigurationArray(
+  configFile /*: $FlowFixMe */,
+  dependencyPath /*: string */,
+) {
   return configFile.codegenConfig.libraries.map(config => {
     return {
+      name: config.name,
       config,
       libraryPath: dependencyPath,
     };
   });
 }
 
-function isReactNativeCoreLibrary(libraryName) {
+function isReactNativeCoreLibrary(libraryName /*: string */) /*: boolean */ {
   return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
@@ -299,9 +324,11 @@ function isReactNativeCoreLibrary(libraryName) {
  * Validates that modules are defined in at most one library.
  * Validates that components are defined in at most one library.
  */
-function parseiOSAnnotations(libraries) {
-  const mLibraryMap = {};
-  const cLibraryMap = {};
+function parseiOSAnnotations(
+  libraries /*: $ReadOnlyArray<$FlowFixMe> */,
+) /*: {[string]: $FlowFixMe} */ {
+  const mLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
+  const cLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
   const map = {};
 
   for (const library of libraries) {
@@ -351,7 +378,7 @@ function parseiOSAnnotations(libraries) {
       return `  Component { "${moduleName}" } => Libraries{ ${libraryNamesString} }\n`;
     });
 
-  if (moduleConflicts.length > 0 || componentConflicts.legnth > 0) {
+  if (moduleConflicts.length > 0 || componentConflicts.length > 0) {
     throw new Error(
       'Some components or modules are declared in more than one libraries: \n' +
         [...moduleConflicts, ...componentConflicts].join('\n'),
@@ -361,9 +388,9 @@ function parseiOSAnnotations(libraries) {
   return map;
 }
 
-function getLibraryName(library) {
+function getLibraryName(library /*: $FlowFixMe */) {
   return JSON.parse(
-    fs.readFileSync(path.join(library.libraryPath, 'package.json')),
+    fs.readFileSync(path.join(library.libraryPath, 'package.json'), 'utf8'),
   ).name;
 }
 
@@ -372,7 +399,10 @@ function getLibraryName(library) {
  *
  * This is needed when selectively disabling libraries in react-native.config.js since codegen should exclude those libraries as well.
  */
-function findDisabledLibrariesByPlatform(reactNativeConfig, platform) {
+function findDisabledLibrariesByPlatform(
+  reactNativeConfig /*: $FlowFixMe */,
+  platform /*: string */,
+) /*: Array<$FlowFixMe> */ {
   const dependencies = reactNativeConfig.dependencies ?? {};
 
   return Object.keys(dependencies).filter(

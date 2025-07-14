@@ -13,12 +13,14 @@ add_library(react_renderer_observers_events OBJECT ${react_renderer_observers_ev
 
 target_include_directories(react_renderer_observers_events PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_renderer_observers_events
+        react_debug
         react_performance_timeline
         react_timing
         react_renderer_core
         react_renderer_runtimescheduler
         react_featureflags
         react_renderer_uimanager
-        react_utils)
-target_compile_reactnative_options(react_renderer_observers_events PRIVATE "Fabric")
+        react_utils
+        rrc_view)
+target_compile_reactnative_options(react_renderer_observers_events PRIVATE)
 target_compile_options(react_renderer_observers_events PRIVATE -Wpedantic)

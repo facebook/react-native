@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -30,23 +30,23 @@ describe('flattenStyle', () => {
     const style1 = {width: 10};
     const style2 = {height: 20};
     const flatStyle = flattenStyle([style1, style2]);
-    expect(flatStyle.width).toBe(10);
-    expect(flatStyle.height).toBe(20);
+    expect(flatStyle?.width).toBe(10);
+    expect(flatStyle?.height).toBe(20);
   });
 
   it('should override style properties', () => {
     const style1 = {backgroundColor: '#000', width: 10};
     const style2 = {backgroundColor: '#023c69', width: null};
     const flatStyle = flattenStyle([style1, style2]);
-    expect(flatStyle.backgroundColor).toBe('#023c69');
-    expect(flatStyle.width).toBe(null);
+    expect(flatStyle?.backgroundColor).toBe('#023c69');
+    expect(flatStyle?.width).toBe(null);
   });
 
   it('should overwrite properties with `undefined`', () => {
     const style1 = {backgroundColor: '#000'};
     const style2 = {backgroundColor: undefined};
     const flatStyle = flattenStyle([style1, style2]);
-    expect(flatStyle.backgroundColor).toBe(undefined);
+    expect(flatStyle?.backgroundColor).toBe(undefined);
   });
 
   it('should not fail on falsy values', () => {
@@ -57,9 +57,14 @@ describe('flattenStyle', () => {
     const style1 = {width: 10};
     const style2 = {height: 20};
     const style3 = {width: 30};
-    const flatStyle = flattenStyle([null, [], [style1, style2], style3]);
-    expect(flatStyle.width).toBe(30);
-    expect(flatStyle.height).toBe(20);
+    const flatStyle = flattenStyle([
+      null,
+      [] as const,
+      [style1, style2],
+      style3,
+    ]);
+    expect(flatStyle?.width).toBe(30);
+    expect(flatStyle?.height).toBe(20);
   });
 
   it('should not allocate an object when there is no style', () => {
@@ -144,6 +149,8 @@ describe('flattenStyle', () => {
   });
 
   it('should ignore invalid class names', () => {
+    // $FlowExpectedError[extra-arg]
+    // $FlowExpectedError[incompatible-call]
     const invalid = flattenStyle(1234, null);
 
     expect(invalid).toEqual(undefined);

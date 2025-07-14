@@ -9,8 +9,10 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Color
 import androidx.core.view.ViewCompat
+import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.RetryableMountingLayerException
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
@@ -19,6 +21,7 @@ import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderStyle
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderWidth
 import com.facebook.react.uimanager.LengthPercentage
 import com.facebook.react.uimanager.LengthPercentageType
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.PointerEvents.Companion.parsePointerEvents
@@ -251,7 +254,7 @@ constructor(private val fpsListener: FpsListener? = null) :
   public fun setBorderRadius(view: ReactHorizontalScrollView?, index: Int, borderRadius: Float) {
     if (view != null) {
       val radius =
-          if (java.lang.Float.isNaN(borderRadius)) null
+          if (borderRadius.isNaN()) null
           else LengthPercentage(borderRadius, LengthPercentageType.POINT)
       setBorderRadius(view, BorderRadiusProp.entries[index], radius)
     }
@@ -308,12 +311,37 @@ constructor(private val fpsListener: FpsListener? = null) :
   }
 
   @ReactProp(name = "fadingEdgeLength")
-  public fun setFadingEdgeLength(view: ReactHorizontalScrollView, value: Int) {
-    if (value > 0) {
-      view.isHorizontalFadingEdgeEnabled = true
-      view.setFadingEdgeLength(value)
+  public fun setFadingEdgeLength(view: ReactHorizontalScrollView, value: Dynamic) {
+    when (value.type) {
+      ReadableType.Number -> {
+        view.setFadingEdgeLengthStart(value.asInt())
+        view.setFadingEdgeLengthEnd(value.asInt())
+      }
+      ReadableType.Map -> {
+        value.asMap()?.let { map ->
+          var start = 0
+          var end = 0
+          if (map.hasKey("start") && map.getInt("start") > 0) {
+            start = map.getInt("start")
+          }
+          if (map.hasKey("end") && map.getInt("end") > 0) {
+            end = map.getInt("end")
+          }
+          view.setFadingEdgeLengthStart(start)
+          view.setFadingEdgeLengthEnd(end)
+        }
+      }
+      else -> {
+        // no-op
+      }
+    }
+    if (view.getFadingEdgeLengthStart() > 0 || view.getFadingEdgeLengthEnd() > 0) {
+      view.setHorizontalFadingEdgeEnabled(true)
+      view.setFadingEdgeLength(
+          Math.round(
+              Math.max(view.getFadingEdgeLengthStart(), view.getFadingEdgeLengthEnd()).dpToPx()))
     } else {
-      view.isHorizontalFadingEdgeEnabled = false
+      view.setHorizontalFadingEdgeEnabled(false)
       view.setFadingEdgeLength(0)
     }
   }

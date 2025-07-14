@@ -15,9 +15,11 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
+#include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/FloatComparison.h>
 #include <yoga/Yoga.h>
 #include <algorithm>
 #include <limits>
@@ -130,14 +132,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
       &yogaNode_, &initializeYogaConfig(yogaConfig_, previousConfig));
   updateYogaChildrenOwnersIfNeeded();
 
-  // This is the only legit place where we can dirty cloned Yoga node.
-  // If we do it later, ancestor nodes will not be able to observe this and
-  // dirty (and clone) themselves as a result.
-  if (getTraits().check(ShadowNodeTraits::Trait::DirtyYogaNode) ||
-      getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode)) {
-    yogaNode_.setDirty(true);
-  }
-
   // We do not need to reconfigure this subtree before the next layout pass if
   // the previous node with the same props and children has already been
   // configured.
@@ -158,8 +152,16 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   ensureConsistency();
 }
 
-void YogaLayoutableShadowNode::cleanLayout() {
-  yogaNode_.setDirty(false);
+void YogaLayoutableShadowNode::completeClone(
+    const ShadowNode& /*sourceShadowNode*/,
+    const ShadowNodeFragment& fragment) {
+  if (getTraits().check(ShadowNodeTraits::Trait::MeasurableYogaNode) &&
+      // New children means we must always dirty to visit. Otherwise, ask the
+      // Node if the new revision invalidates measurement.
+      (fragment.children ||
+       shouldNewRevisionDirtyMeasurement(*this, fragment))) {
+    yogaNode_.setDirty(true);
+  }
 }
 
 void YogaLayoutableShadowNode::dirtyLayout() {
@@ -222,7 +224,7 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
 }
 
 void YogaLayoutableShadowNode::appendChild(
-    const ShadowNode::Shared& childNode) {
+    const std::shared_ptr<const ShadowNode>& childNode) {
   ensureUnsealed();
   ensureConsistency();
 
@@ -258,7 +260,7 @@ void YogaLayoutableShadowNode::appendChild(
 
 void YogaLayoutableShadowNode::replaceChild(
     const ShadowNode& oldChild,
-    const ShadowNode::Shared& newChild,
+    const std::shared_ptr<const ShadowNode>& newChild,
     size_t suggestedIndex) {
   LayoutableShadowNode::replaceChild(oldChild, newChild, suggestedIndex);
 
@@ -302,8 +304,8 @@ void YogaLayoutableShadowNode::replaceChild(
     yogaNode_.replaceChild(&layoutableNewChild->yogaNode_, oldChildIndex);
     *oldChildIter = layoutableNewChild;
   } else {
-    // Layoutable child replaced with non layoutable child. Remove the previous
-    // child from the layoutable children list.
+    // Layoutable child replaced with non layoutable child. Remove the
+    // previous child from the layoutable children list.
     yogaNode_.removeChild(oldChildIndex);
     yogaLayoutableChildren_.erase(oldChildIter);
   }
@@ -314,6 +316,12 @@ void YogaLayoutableShadowNode::replaceChild(
 bool YogaLayoutableShadowNode::doesOwn(
     const YogaLayoutableShadowNode& child) const {
   return YGNodeGetOwner(&child.yogaNode_) == &yogaNode_;
+}
+
+bool YogaLayoutableShadowNode::shouldNewRevisionDirtyMeasurement(
+    const ShadowNode& /*sourceShadowNode*/,
+    const ShadowNodeFragment& /*fragment*/) const {
+  return true;
 }
 
 void YogaLayoutableShadowNode::updateYogaChildrenOwnersIfNeeded() {
@@ -372,7 +380,8 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   auto& props = static_cast<const YogaStylableProps&>(*props_);
   auto styleResult = applyAliasedProps(props.yogaStyle, props);
 
-  // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was changed.
+  // Resetting `dirty` flag only if `yogaStyle` portion of `Props` was
+  // changed.
   if (!YGNodeIsDirty(&yogaNode_) && (styleResult != yogaNode_.style())) {
     yogaNode_.setDirty(true);
   }
@@ -615,9 +624,9 @@ void YogaLayoutableShadowNode::layoutTree(
 
   // Yoga C++ API (and `YGNodeCalculateLayout` function particularly)
   // does not allow to specify sizing modes (see
-  // https://www.w3.org/TR/css-sizing-3/#auto-box-sizes) explicitly. Instead, it
-  // infers these from styles associated with the root node. To pass the actual
-  // layout constraints to Yoga we represent them as
+  // https://www.w3.org/TR/css-sizing-3/#auto-box-sizes) explicitly. Instead,
+  // it infers these from styles associated with the root node. To pass the
+  // actual layout constraints to Yoga we represent them as
   // `(min/max)(Height/Width)` style properties. Also, we pass `ownerWidth` &
   // `ownerHeight` to allow proper calculation of relative (e.g. specified in
   // percents) style values.
@@ -726,13 +735,13 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
   if (YGNodeStyleGetOverflow(&yogaNode_) == YGOverflowVisible) {
     // Note that the parent node's overflow layout is NOT affected by its
-    // transform matrix. That transform matrix is applied on the parent node as
-    // well as all of its child nodes, which won't cause changes on the
-    // overflowInset values. A special note on the scale transform -- the scaled
-    // layout may look like it's causing overflowInset changes, but it's purely
-    // cosmetic and will be handled by pixel density conversion logic later when
-    // render the view. The actual overflowInset value is not changed as if the
-    // transform is not happening here.
+    // transform matrix. That transform matrix is applied on the parent node
+    // as well as all of its child nodes, which won't cause changes on the
+    // overflowInset values. A special note on the scale transform -- the
+    // scaled layout may look like it's causing overflowInset changes, but
+    // it's purely cosmetic and will be handled by pixel density conversion
+    // logic later when render the view. The actual overflowInset value is not
+    // changed as if the transform is not happening here.
     auto contentBounds = getContentBounds();
     layoutMetrics_.overflowInset =
         calculateOverflowInset(layoutMetrics_.frame, contentBounds);
@@ -757,8 +766,8 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
           ? viewChildNode->getConcreteProps().hitSlop
           : EdgeInsets{};
 
-      // The contentBounds should always union with existing child node layout +
-      // overflowInset. The transform may in a deferred animation and not
+      // The contentBounds should always union with existing child node layout
+      // + overflowInset. The transform may in a deferred animation and not
       // applied yet.
       contentBounds.unionInPlace(insetBy(
           layoutMetricsWithOverflowInset.frame,
@@ -836,6 +845,21 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 
   auto size = shadowNode.measureContent(
       threadLocalLayoutContext, {minimumSize, maximumSize});
+
+#ifdef REACT_NATIVE_DEBUG
+  bool widthInBounds = size.width + kDefaultEpsilon >= minimumSize.width &&
+      size.width - kDefaultEpsilon <= maximumSize.width;
+  bool heightInBounds = size.height + kDefaultEpsilon >= minimumSize.height &&
+      size.height - kDefaultEpsilon <= maximumSize.height;
+
+  if (!widthInBounds || !heightInBounds) {
+    LOG(ERROR) << shadowNode.getComponentDescriptor().getComponentName()
+               << " returned an invalid measurement. Min: ["
+               << minimumSize.width << "," << minimumSize.height << "] Max: ["
+               << maximumSize.width << "," << maximumSize.height
+               << "] Actual: [" << size.width << "," << size.height << "]";
+  }
+#endif
 
   return YGSize{
       yogaFloatFromFloat(size.width), yogaFloatFromFloat(size.height)};

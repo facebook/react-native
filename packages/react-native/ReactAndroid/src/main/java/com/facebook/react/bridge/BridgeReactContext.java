@@ -14,11 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.FrameworkAPI;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
@@ -27,20 +27,25 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * This is the bridge-specific concrete subclass of ReactContext. ReactContext has many methods that
  * delegate to the react instance. This subclass implements those methods, by delegating to the
  * CatalystInstance. If you need to create a ReactContext within an "bridge context", please create
  * BridgeReactContext.
+ *
+ * @deprecated This class is deprecated in the New Architecture and will be replaced by {@link
+ *     com.facebook.react.runtime.BridgelessReactContext}
  */
-@DeprecatedInNewArchitecture
 @VisibleForTesting
-@LegacyArchitecture
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BridgeReactContext extends ReactApplicationContext {
   static {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "BridgeReactContext", LegacyArchitectureLogLevel.WARNING);
+        "BridgeReactContext", LegacyArchitectureLogLevel.ERROR);
   }
 
   @DoNotStrip
@@ -119,6 +124,7 @@ public class BridgeReactContext extends ReactApplicationContext {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
+    Assertions.assertNotNull(mCatalystInstance);
     return mCatalystInstance.hasNativeModule(nativeModuleInterface);
   }
 
@@ -127,6 +133,7 @@ public class BridgeReactContext extends ReactApplicationContext {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
+    Assertions.assertNotNull(mCatalystInstance);
     return mCatalystInstance.getNativeModules();
   }
 
@@ -139,6 +146,7 @@ public class BridgeReactContext extends ReactApplicationContext {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
+    Assertions.assertNotNull(mCatalystInstance);
     return mCatalystInstance.getNativeModule(nativeModuleInterface);
   }
 
@@ -147,6 +155,7 @@ public class BridgeReactContext extends ReactApplicationContext {
     if (mCatalystInstance == null) {
       raiseCatalystInstanceMissingException();
     }
+    Assertions.assertNotNull(mCatalystInstance);
     return mCatalystInstance.getNativeModule(moduleName);
   }
 
@@ -210,8 +219,7 @@ public class BridgeReactContext extends ReactApplicationContext {
   @Override
   public void handleException(Exception e) {
     boolean catalystInstanceVariableExists = mCatalystInstance != null;
-    boolean isCatalystInstanceAlive =
-        catalystInstanceVariableExists && !mCatalystInstance.isDestroyed();
+    boolean isCatalystInstanceAlive = mCatalystInstance != null && !mCatalystInstance.isDestroyed();
     boolean hasExceptionHandler = getJSExceptionHandler() != null;
 
     if (isCatalystInstanceAlive && hasExceptionHandler) {
@@ -268,18 +276,19 @@ public class BridgeReactContext extends ReactApplicationContext {
     return null;
   }
 
-  @DeprecatedInNewArchitecture(
-      message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
-              + " encouraged usage.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *
    * @return The UIManager when CatalystInstance is active.
+   * @deprecated Do not use this method. Instead use {@link
+   *     com.facebook.react.uimanager.UIManagerHelper} method {@code getUIManager} to get the
+   *     UIManager instance from the current ReactContext.
    */
   @Override
+  @Deprecated
   public @Nullable UIManager getFabricUIManager() {
-    return mCatalystInstance.getFabricUIManager();
+    //noinspection deprecation
+    return Objects.requireNonNull(mCatalystInstance).getFabricUIManager();
   }
 
   /**

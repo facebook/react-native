@@ -1,8 +1,8 @@
 /**
  * (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 declare module 'signedsource' {

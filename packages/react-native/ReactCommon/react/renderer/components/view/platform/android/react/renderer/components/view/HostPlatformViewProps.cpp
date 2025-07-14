@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
@@ -143,7 +144,7 @@ SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
 }
 #endif
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 
 inline static void updateEventProp(
     folly::dynamic& result,
@@ -331,6 +332,8 @@ static void updateBorderColorsProps(
       newBorderColor.bottom,
       oldBorderColor.bottom);
   updateBorderColorPropValue(
+      result, "borderEndColor", newBorderColor.end, oldBorderColor.end);
+  updateBorderColorPropValue(
       result, "borderStartColor", newBorderColor.start, oldBorderColor.start);
   updateBorderColorPropValue(
       result, "borderBlockColor", newBorderColor.block, oldBorderColor.block);
@@ -472,10 +475,10 @@ inline static void updateAccessibilityStateProp(
   if (!oldState.has_value() || newState->checked != oldState->checked) {
     switch (newState->checked) {
       case AccessibilityState::Unchecked:
-        resultState["checked"] = "unchecked";
+        resultState["checked"] = false;
         break;
       case AccessibilityState::Checked:
-        resultState["checked"] = "checked";
+        resultState["checked"] = true;
         break;
       case AccessibilityState::Mixed:
         resultState["checked"] = "mixed";
@@ -486,6 +489,10 @@ inline static void updateAccessibilityStateProp(
     }
   }
   result["accessibilityState"] = resultState;
+}
+
+ComponentName HostPlatformViewProps::getDiffPropsImplementationTarget() const {
+  return "View";
 }
 
 folly::dynamic HostPlatformViewProps::getDiffProps(
@@ -524,12 +531,46 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
   }
 
+  if (screenReaderFocusable != oldProps->screenReaderFocusable) {
+    result["screenReaderFocusable"] = screenReaderFocusable;
+  }
+
+  if (role != oldProps->role) {
+    result["role"] = toString(role);
+  }
+
   if (opacity != oldProps->opacity) {
     result["opacity"] = opacity;
   }
 
   if (backgroundColor != oldProps->backgroundColor) {
     result["backgroundColor"] = *backgroundColor;
+  }
+
+  if (outlineColor != oldProps->outlineColor) {
+    result["outlineColor"] = *outlineColor;
+  }
+
+  if (outlineOffset != oldProps->outlineOffset) {
+    result["outlineOffset"] = outlineOffset;
+  }
+
+  if (outlineStyle != oldProps->outlineStyle) {
+    switch (outlineStyle) {
+      case OutlineStyle::Solid:
+        result["outlineStyle"] = "solid";
+        break;
+      case OutlineStyle::Dotted:
+        result["outlineStyle"] = "dotted";
+        break;
+      case OutlineStyle::Dashed:
+        result["outlineStyle"] = "dashed";
+        break;
+    }
+  }
+
+  if (outlineWidth != oldProps->outlineWidth) {
+    result["outlineWidth"] = outlineWidth;
   }
 
   if (shadowColor != oldProps->shadowColor) {
@@ -564,6 +605,18 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     result["zIndex"] = zIndex.value();
   }
 
+  if (boxShadow != oldProps->boxShadow) {
+    result["boxShadow"] = toDynamic(boxShadow);
+  }
+
+  if (filter != oldProps->filter) {
+    result["filter"] = toDynamic(filter);
+  }
+
+  if (mixBlendMode != oldProps->mixBlendMode) {
+    result["mixBlendMode"] = toString(mixBlendMode);
+  }
+
   if (pointerEvents != oldProps->pointerEvents) {
     std::string value;
     switch (pointerEvents) {
@@ -582,12 +635,16 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     }
   }
 
+  if (hitSlop != oldProps->hitSlop) {
+    result["hitSlop"] = toDynamic(hitSlop);
+  }
+
   if (nativeId != oldProps->nativeId) {
-    result["nativeId"] = nativeId;
+    result["nativeID"] = nativeId;
   }
 
   if (testId != oldProps->testId) {
-    result["testId"] = testId;
+    result["testID"] = testId;
   }
 
   if (accessible != oldProps->accessible) {
@@ -672,10 +729,28 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         result,
         events,
         oldProps->events,
+        ViewEvents::Offset::PointerOverCapture,
+        "onPointerOverCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
         ViewEvents::Offset::PointerOut,
         "onPointerOut");
     updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerOutCapture,
+        "onPointerOutCapture");
+    updateEventProp(
         result, events, oldProps->events, ViewEvents::Offset::Click, "onClick");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ClickCapture,
+        "onClickCapture");
     updateEventProp(
         result,
         events,

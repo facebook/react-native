@@ -12,6 +12,7 @@
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
+#include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
 
@@ -97,12 +98,6 @@ static TextAttributes convertRawProp(
       "textTransform",
       sourceTextAttributes.textTransform,
       defaultTextAttributes.textTransform);
-  textAttributes.textAlignVertical = convertRawProp(
-      context,
-      rawProps,
-      "textAlignVertical",
-      sourceTextAttributes.textAlignVertical,
-      defaultTextAttributes.textAlignVertical);
 
   // Paragraph
   textAttributes.lineHeight = convertRawProp(
@@ -120,7 +115,7 @@ static TextAttributes convertRawProp(
   textAttributes.baseWritingDirection = convertRawProp(
       context,
       rawProps,
-      "baseWritingDirection",
+      "writingDirection",
       sourceTextAttributes.baseWritingDirection,
       defaultTextAttributes.baseWritingDirection);
   textAttributes.lineBreakStrategy = convertRawProp(
@@ -290,12 +285,6 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
-        textAlignVertical,
-        "textAlignVertical");
-    REBUILD_FIELD_SWITCH_CASE(
-        defaults,
-        value,
-        textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
     REBUILD_FIELD_SWITCH_CASE(
@@ -356,4 +345,194 @@ SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
 }
 #endif
 
+#ifdef RN_SERIALIZABLE_STATE
+
+static folly::dynamic toDynamic(const Size& size) {
+  folly::dynamic sizeResult = folly::dynamic::object();
+  sizeResult["width"] = size.width;
+  sizeResult["height"] = size.height;
+  return sizeResult;
+}
+
+void BaseTextProps::appendTextAttributesProps(
+    folly::dynamic& result,
+    const BaseTextProps* oldProps) const {
+  if (textAttributes.foregroundColor !=
+      oldProps->textAttributes.foregroundColor) {
+    result["color"] = *textAttributes.foregroundColor;
+  }
+
+  if (textAttributes.fontFamily != oldProps->textAttributes.fontFamily) {
+    result["fontFamily"] = textAttributes.fontFamily;
+  }
+
+  if (!floatEquality(
+          textAttributes.fontSize, oldProps->textAttributes.fontSize)) {
+    result["fontSize"] = textAttributes.fontSize;
+  }
+
+  if (!floatEquality(
+          textAttributes.fontSizeMultiplier,
+          oldProps->textAttributes.fontSizeMultiplier)) {
+    result["fontSizeMultiplier"] = textAttributes.fontSizeMultiplier;
+  }
+
+  if (textAttributes.fontWeight != oldProps->textAttributes.fontWeight) {
+    result["fontWeight"] = textAttributes.fontWeight.has_value()
+        ? toString(textAttributes.fontWeight.value())
+        : nullptr;
+  }
+
+  if (textAttributes.fontStyle != oldProps->textAttributes.fontStyle) {
+    result["fontStyle"] = textAttributes.fontStyle.has_value()
+        ? toString(textAttributes.fontStyle.value())
+        : nullptr;
+  }
+
+  if (textAttributes.fontVariant != oldProps->textAttributes.fontVariant) {
+    result["fontVariant"] = textAttributes.fontVariant.has_value()
+        ? toString(textAttributes.fontVariant.value())
+        : nullptr;
+  }
+
+  if (textAttributes.allowFontScaling !=
+      oldProps->textAttributes.allowFontScaling) {
+    result["allowFontScaling"] = textAttributes.allowFontScaling.has_value()
+        ? textAttributes.allowFontScaling.value()
+        : folly::dynamic(nullptr);
+  }
+
+  if (!floatEquality(
+          textAttributes.maxFontSizeMultiplier,
+          oldProps->textAttributes.maxFontSizeMultiplier)) {
+    result["maxFontSizeMultiplier"] = textAttributes.maxFontSizeMultiplier;
+  }
+
+  if (textAttributes.dynamicTypeRamp !=
+      oldProps->textAttributes.dynamicTypeRamp) {
+    result["dynamicTypeRamp"] = textAttributes.dynamicTypeRamp.has_value()
+        ? toString(textAttributes.dynamicTypeRamp.value())
+        : nullptr;
+  }
+
+  if (!floatEquality(
+          textAttributes.letterSpacing,
+          oldProps->textAttributes.letterSpacing)) {
+    result["letterSpacing"] = textAttributes.letterSpacing;
+  }
+
+  if (textAttributes.textTransform != oldProps->textAttributes.textTransform) {
+    result["textTransform"] = textAttributes.textTransform.has_value()
+        ? toString(textAttributes.textTransform.value())
+        : nullptr;
+  }
+
+  if (!floatEquality(
+          textAttributes.lineHeight, oldProps->textAttributes.lineHeight)) {
+    result["lineHeight"] = textAttributes.lineHeight;
+  }
+
+  if (textAttributes.alignment != oldProps->textAttributes.alignment) {
+    result["textAlign"] = textAttributes.alignment.has_value()
+        ? toString(textAttributes.alignment.value())
+        : nullptr;
+  }
+
+  if (textAttributes.baseWritingDirection !=
+      oldProps->textAttributes.baseWritingDirection) {
+    result["baseWritingDirection"] =
+        textAttributes.baseWritingDirection.has_value()
+        ? toString(textAttributes.baseWritingDirection.value())
+        : nullptr;
+  }
+
+  if (textAttributes.lineBreakStrategy !=
+      oldProps->textAttributes.lineBreakStrategy) {
+    result["lineBreakStrategyIOS"] =
+        textAttributes.lineBreakStrategy.has_value()
+        ? toString(textAttributes.lineBreakStrategy.value())
+        : nullptr;
+  }
+
+  if (textAttributes.lineBreakMode != oldProps->textAttributes.lineBreakMode) {
+    result["lineBreakModeIOS"] = textAttributes.lineBreakMode.has_value()
+        ? toString(textAttributes.lineBreakMode.value())
+        : nullptr;
+  }
+
+  if (textAttributes.textDecorationColor !=
+      oldProps->textAttributes.textDecorationColor) {
+    result["textDecorationColor"] = *textAttributes.textDecorationColor;
+  }
+
+  if (textAttributes.textDecorationLineType !=
+      oldProps->textAttributes.textDecorationLineType) {
+    result["textDecorationLine"] =
+        textAttributes.textDecorationLineType.has_value()
+        ? toString(textAttributes.textDecorationLineType.value())
+        : nullptr;
+  }
+
+  if (textAttributes.textDecorationStyle !=
+      oldProps->textAttributes.textDecorationStyle) {
+    result["textDecorationStyle"] =
+        textAttributes.textDecorationStyle.has_value()
+        ? toString(textAttributes.textDecorationStyle.value())
+        : nullptr;
+  }
+
+  if (textAttributes.textShadowOffset !=
+      oldProps->textAttributes.textShadowOffset) {
+    result["textShadowOffset"] = textAttributes.textShadowOffset.has_value()
+        ? toDynamic(textAttributes.textShadowOffset.value())
+        : nullptr;
+  }
+
+  if (!floatEquality(
+          textAttributes.textShadowRadius,
+          oldProps->textAttributes.textShadowRadius)) {
+    result["textShadowRadius"] = textAttributes.textShadowRadius;
+  }
+
+  if (textAttributes.textShadowColor !=
+      oldProps->textAttributes.textShadowColor) {
+    result["textShadowColor"] = *textAttributes.textShadowColor;
+  }
+
+  if (textAttributes.isHighlighted != oldProps->textAttributes.isHighlighted) {
+    result["isHighlighted"] = textAttributes.isHighlighted.has_value()
+        ? textAttributes.isHighlighted.value()
+        : folly::dynamic(nullptr);
+  }
+
+  if (textAttributes.isPressable != oldProps->textAttributes.isPressable) {
+    result["isPressable"] = textAttributes.isPressable.has_value()
+        ? textAttributes.isPressable.value()
+        : folly::dynamic(nullptr);
+  }
+
+  if (textAttributes.accessibilityRole !=
+      oldProps->textAttributes.accessibilityRole) {
+    result["accessibilityRole"] = textAttributes.accessibilityRole.has_value()
+        ? toString(textAttributes.accessibilityRole.value())
+        : nullptr;
+  }
+
+  if (textAttributes.role != oldProps->textAttributes.role) {
+    result["role"] = textAttributes.role.has_value()
+        ? toString(textAttributes.role.value())
+        : nullptr;
+  }
+
+  if (textAttributes.opacity != oldProps->textAttributes.opacity) {
+    result["opacity"] = textAttributes.opacity;
+  }
+
+  if (textAttributes.backgroundColor !=
+      oldProps->textAttributes.backgroundColor) {
+    result["backgroundColor"] = *textAttributes.backgroundColor;
+  }
+}
+
+#endif
 } // namespace facebook::react

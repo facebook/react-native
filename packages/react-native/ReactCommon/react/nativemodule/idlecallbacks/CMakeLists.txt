@@ -17,5 +17,5 @@ target_link_libraries(react_nativemodule_idlecallbacks
         react_cxxreact
         react_renderer_runtimescheduler
 )
-target_compile_reactnative_options(react_nativemodule_idlecallbacks PRIVATE "ReactNative")
+target_compile_reactnative_options(react_nativemodule_idlecallbacks PRIVATE)
 target_compile_options(react_nativemodule_idlecallbacks PRIVATE -Wpedantic)

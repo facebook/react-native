@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // ----------------------------------------------------------------------------
@@ -95,6 +95,8 @@ export {default as RefreshControl} from './Libraries/Components/RefreshControl/R
 export {default as SafeAreaView} from './Libraries/Components/SafeAreaView/SafeAreaView';
 
 export type {
+  ScrollViewImperativeMethods,
+  ScrollViewScrollToOptions,
   ScrollResponderType,
   ScrollViewProps,
   ScrollViewPropsAndroid,
@@ -106,6 +108,7 @@ export type {
   SectionListProps,
   SectionListRenderItem,
   SectionListRenderItemInfo,
+  SectionListData,
 } from './Libraries/Lists/SectionList';
 export {default as SectionList} from './Libraries/Lists/SectionList';
 
@@ -124,6 +127,7 @@ export {default as Switch} from './Libraries/Components/Switch/Switch';
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
 
 export type {
   AutoCapitalize,
@@ -442,5 +446,11 @@ export type {
   PublicRootInstance,
   PublicTextInstance,
 } from './Libraries/ReactPrivate/ReactNativePrivateInterface';
+
+export {
+  default as unstable_VirtualView,
+  VirtualViewMode,
+} from './src/private/components/virtualview/VirtualView';
+export type {ModeChangeEvent} from './src/private/components/virtualview/VirtualView';
 
 // #endregion

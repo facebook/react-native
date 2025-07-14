@@ -196,7 +196,8 @@ void UIManager::updateShadowTree(
 
         auto cloned = oldShadowNode->clone(
             {.props = newProps,
-             .children = std::make_shared<ShadowNode::ListOfShared>(children)});
+             .children = std::make_shared<
+                 std::vector<std::shared_ptr<const ShadowNode>>>(children)});
         clonedShadowNodes.insert({oldShadowNode->getTag(), std::move(cloned)});
       } else {
         LOG(ERROR) << "oldShadowNode is null";
@@ -218,6 +219,10 @@ void UIManager::updateShadowTree(
       LOG(ERROR) << "Root ShadowNode has not been cloned";
     }
   });
+
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidUpdateShadowTree(tagToProps);
+  }
 }
 
 } // namespace facebook::react

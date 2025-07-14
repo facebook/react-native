@@ -19,6 +19,7 @@ import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useState} from 'react';
 
 type Props = $ReadOnly<{
   log: LogBoxLog,
@@ -49,7 +50,7 @@ function getPrettyFileName(path: string) {
   return fileName;
 }
 function LogBoxInspectorReactFrames(props: Props): React.Node {
-  const [collapsed, setCollapsed] = React.useState(true);
+  const [collapsed, setCollapsed] = useState(true);
   if (
     props.log.getAvailableComponentStack() == null ||
     props.log.getAvailableComponentStack().length < 1

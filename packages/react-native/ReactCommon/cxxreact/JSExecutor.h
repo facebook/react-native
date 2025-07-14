@@ -14,6 +14,7 @@
 #include <folly/dynamic.h>
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/ReactCdp.h>
+#include <react/timing/primitives.h>
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -32,7 +33,7 @@ class RAMBundleRegistry;
 // Executor implementations to call from JS into native code.
 class ExecutorDelegate {
  public:
-  virtual ~ExecutorDelegate() {}
+  virtual ~ExecutorDelegate() = default;
 
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
 
@@ -52,7 +53,7 @@ class JSExecutorFactory {
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) = 0;
-  virtual ~JSExecutorFactory() {}
+  virtual ~JSExecutorFactory() = default;
 };
 
 class RN_EXPORT JSExecutor {
@@ -69,11 +70,13 @@ class RN_EXPORT JSExecutor {
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) = 0;
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   /**
    * Add an application "RAM" bundle registry
    */
   virtual void setBundleRegistry(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   /**
    * Register a file path for an additional "RAM" bundle
@@ -137,8 +140,6 @@ class RN_EXPORT JSExecutor {
   static std::string getSyntheticBundlePath(
       uint32_t bundleId,
       const std::string& bundlePath);
-
-  static double performanceNow();
 
   /**
    * Get a reference to the \c RuntimeTargetDelegate owned (or implemented) by

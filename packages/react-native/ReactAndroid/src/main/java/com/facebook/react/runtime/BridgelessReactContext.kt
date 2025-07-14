@@ -38,8 +38,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 /**
  * This class is used instead of [ReactApplicationContext] when React Native is operating in
- * bridgeless mode. The purpose of this class is to override some methods on [ReactContext] that use
- * the [CatalystInstance], which doesn't exist in bridgeless mode.
+ * bridgeless mode. The purpose of this class is to override some methods on
+ * [com.facebook.react.bridge.ReactContext] that use the [CatalystInstance], which doesn't exist in
+ * bridgeless mode.
  */
 internal class BridgelessReactContext(context: Context, private val reactHost: ReactHostImpl) :
     ReactApplicationContext(context), EventDispatcherProvider {
@@ -56,13 +57,14 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun getSourceURL(): String? = sourceURLRef.get()
 
-  public fun setSourceURL(sourceURL: String?) {
+  fun setSourceURL(sourceURL: String?) {
     sourceURLRef.set(sourceURL)
   }
 
   @Deprecated("This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
+  @OptIn(FrameworkAPI::class)
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
@@ -136,7 +138,7 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactHost.hasNativeModule(nativeModuleInterface)
 
-  override fun getNativeModules(): MutableCollection<NativeModule> = reactHost.nativeModules
+  override fun getNativeModules(): Collection<NativeModule> = reactHost.nativeModules
 
   override fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? =
       reactHost.getNativeModule(nativeModuleInterface)

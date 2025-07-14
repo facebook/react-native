@@ -10,14 +10,14 @@
 #include <folly/dynamic.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/text/ParagraphState.h>
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 inline MapBuffer toMapBuffer(const ParagraphState& paragraphState) {
   auto builder = MapBufferBuilder();
   auto attStringMapBuffer = toMapBuffer(paragraphState.attributedString);

@@ -6,10 +6,11 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 // flowlint unsafe-getters-setters:off
+
+import {setPlatformObject} from '../webidl/PlatformObjects';
 
 type ReactNativeStartupTimingLike = {
   startTime: ?number,
@@ -89,3 +90,5 @@ export default class ReactNativeStartupTiming {
     return this.#executeJavaScriptBundleEntryPointEnd;
   }
 }
+
+setPlatformObject(ReactNativeStartupTiming);

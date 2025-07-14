@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
-
-'use strict';
 
 import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
@@ -145,6 +143,11 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'NewArchitectureExample',
     category: 'UI',
     module: require('../examples/NewArchitecture/NewArchitectureExample'),
+  },
+  {
+    key: 'FabricInteropLayer',
+    category: 'UI',
+    module: require('../examples/FabricInteropLayer/FabricInteropLayer'),
   },
   {
     key: 'PerformanceComparisonExample',

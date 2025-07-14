@@ -16,6 +16,7 @@ Object {
 #include <cinttypes>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
@@ -87,6 +88,16 @@ static inline std::string toString(const ArrayPropsNativeComponentViewSizesMaskW
 }
 struct ArrayPropsNativeComponentViewObjectStruct {
   std::string prop{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentViewObjectStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"prop\\"] = prop;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewObjectStruct &result) {
@@ -102,6 +113,12 @@ static inline std::string toString(const ArrayPropsNativeComponentViewObjectStru
   return \\"[Object ArrayPropsNativeComponentViewObjectStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentViewObjectStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentViewObjectStruct> &result) {
   auto items = (std::vector<RawValue>)value;
   for (const auto &item : items) {
@@ -115,6 +132,17 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 struct ArrayPropsNativeComponentViewArrayOfObjectsStruct {
   Float prop1{0.0};
   int prop2{0};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ArrayPropsNativeComponentViewArrayOfObjectsStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"prop1\\"] = prop1;
+    result[\\"prop2\\"] = prop2;
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ArrayPropsNativeComponentViewArrayOfObjectsStruct &result) {
@@ -133,6 +161,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ArrayPropsNativeComponentViewArrayOfObjectsStruct &value) {
   return \\"[Object ArrayPropsNativeComponentViewArrayOfObjectsStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ArrayPropsNativeComponentViewArrayOfObjectsStruct &value) {
+  return value.toDynamic();
+}
+#endif
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, std::vector<ArrayPropsNativeComponentViewArrayOfObjectsStruct> &result) {
   auto items = (std::vector<RawValue>)value;
@@ -163,6 +197,12 @@ class ArrayPropsNativeComponentViewProps final : public ViewProps {
   std::vector<ArrayPropsNativeComponentViewObjectStruct> object{};
   std::vector<ArrayPropsNativeComponentViewArrayOfObjectsStruct> arrayOfObjects{};
   std::vector<folly::dynamic> arrayOfMixed{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -197,6 +237,12 @@ class BooleanPropNativeComponentViewProps final : public ViewProps {
 
   bool disabled{false};
   bool disabledNullable{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -231,6 +277,12 @@ class ColorPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   SharedColor tintColor{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -253,6 +305,7 @@ Object {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <yoga/Yoga.h>
 
 namespace facebook::react {
@@ -265,6 +318,12 @@ class DimensionPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   YGValue marginBack{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -298,6 +357,12 @@ class EdgeInsetsPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -340,6 +405,12 @@ static inline std::string toString(const EnumPropNativeComponentViewAlignment &v
     case EnumPropNativeComponentViewAlignment::BottomRight: return \\"bottom-right\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const EnumPropNativeComponentViewAlignment &value) {
+  return toString(value);
+}
+#endif
 enum class EnumPropNativeComponentViewIntervals { Intervals0 = 0, Intervals15 = 15, Intervals30 = 30, Intervals60 = 60 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, EnumPropNativeComponentViewIntervals &result) {
@@ -371,6 +442,17 @@ static inline std::string toString(const EnumPropNativeComponentViewIntervals &v
   }
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const EnumPropNativeComponentViewIntervals &value) {
+  switch (value) {
+    case EnumPropNativeComponentViewIntervals::Intervals0: return 0;
+    case EnumPropNativeComponentViewIntervals::Intervals15: return 15;
+    case EnumPropNativeComponentViewIntervals::Intervals30: return 30;
+    case EnumPropNativeComponentViewIntervals::Intervals60: return 60;
+  }
+}
+#endif
+
 class EnumPropNativeComponentViewProps final : public ViewProps {
  public:
   EnumPropNativeComponentViewProps() = default;
@@ -380,6 +462,12 @@ class EnumPropNativeComponentViewProps final : public ViewProps {
 
   EnumPropNativeComponentViewAlignment alignment{EnumPropNativeComponentViewAlignment::Center};
   EnumPropNativeComponentViewIntervals intervals{EnumPropNativeComponentViewIntervals::Intervals0};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -413,6 +501,12 @@ class EventNestedObjectPropsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   bool disabled{false};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -446,6 +540,12 @@ class EventPropsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   bool disabled{false};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -485,6 +585,12 @@ class FloatPropsNativeComponentViewProps final : public ViewProps {
   Float blurRadius5{1.0};
   Float blurRadius6{0.0};
   Float blurRadiusNullable{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -519,6 +625,12 @@ class ImagePropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   ImageSource thumbImage{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -554,6 +666,12 @@ class IntegerPropNativeComponentViewProps final : public ViewProps {
   int progress1{0};
   int progress2{-1};
   int progress3{10};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -587,6 +705,12 @@ class InterfaceOnlyNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   std::string title{\\"\\"};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -620,6 +744,12 @@ class MixedPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   folly::dynamic mixedProp{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -659,6 +789,12 @@ class MultiNativePropNativeComponentViewProps final : public ViewProps {
   SharedColor color{};
   SharedColor thumbTintColor{};
   Point point{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -692,6 +828,12 @@ class NoPropsNoEventsNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -738,6 +880,12 @@ static inline std::string toString(const ObjectPropsNativeComponentStringEnumPro
     case ObjectPropsNativeComponentStringEnumProp::Large: return \\"large\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentStringEnumProp &value) {
+  return toString(value);
+}
+#endif
 enum class ObjectPropsNativeComponentIntEnumProp { IntEnumProp0 = 0, IntEnumProp1 = 1 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentIntEnumProp &result) {
@@ -760,6 +908,15 @@ static inline std::string toString(const ObjectPropsNativeComponentIntEnumProp &
     case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return \\"1\\";
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentIntEnumProp &value) {
+  switch (value) {
+    case ObjectPropsNativeComponentIntEnumProp::IntEnumProp0: return 0;
+    case ObjectPropsNativeComponentIntEnumProp::IntEnumProp1: return 1;
+  }
+}
+#endif
 struct ObjectPropsNativeComponentObjectPropStruct {
   std::string stringProp{\\"\\"};
   bool booleanProp{false};
@@ -767,6 +924,21 @@ struct ObjectPropsNativeComponentObjectPropStruct {
   int intProp{0};
   ObjectPropsNativeComponentStringEnumProp stringEnumProp{ObjectPropsNativeComponentStringEnumProp::Small};
   ObjectPropsNativeComponentIntEnumProp intEnumProp{ObjectPropsNativeComponentIntEnumProp::IntEnumProp0};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"stringProp\\"] = stringProp;
+    result[\\"booleanProp\\"] = booleanProp;
+    result[\\"floatProp\\"] = floatProp;
+    result[\\"intProp\\"] = intProp;
+    result[\\"stringEnumProp\\"] = ::facebook::react::toDynamic(stringEnumProp);
+    result[\\"intEnumProp\\"] = ::facebook::react::toDynamic(intEnumProp);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPropStruct &result) {
@@ -802,8 +974,24 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectPropStr
   return \\"[Object ObjectPropsNativeComponentObjectPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsNativeComponentObjectArrayPropStruct {
   std::vector<std::string> array{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectArrayPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"array\\"] = ::facebook::react::toDynamic(array);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectArrayPropStruct &result) {
@@ -819,10 +1007,28 @@ static inline std::string toString(const ObjectPropsNativeComponentObjectArrayPr
   return \\"[Object ObjectPropsNativeComponentObjectArrayPropStruct]\\";
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectArrayPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
+
 struct ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct {
   ImageSource image{};
   SharedColor color{};
   Point point{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result[\\"image\\"] = ::facebook::react::toDynamic(image);
+    result[\\"color\\"] = ::facebook::react::toDynamic(color);
+    result[\\"point\\"] = ::facebook::react::toDynamic(point);
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &result) {
@@ -845,6 +1051,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &value) {
   return \\"[Object ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct]\\";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct &value) {
+  return value.toDynamic();
+}
+#endif
 class ObjectPropsNativeComponentProps final : public ViewProps {
  public:
   ObjectPropsNativeComponentProps() = default;
@@ -855,6 +1067,12 @@ class ObjectPropsNativeComponentProps final : public ViewProps {
   ObjectPropsNativeComponentObjectPropStruct objectProp{};
   ObjectPropsNativeComponentObjectArrayPropStruct objectArrayProp{};
   ObjectPropsNativeComponentObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -889,6 +1107,12 @@ class PointPropNativeComponentViewProps final : public ViewProps {
 #pragma mark - Props
 
   Point startPoint{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react
@@ -923,6 +1147,12 @@ class StringPropNativeComponentViewProps final : public ViewProps {
 
   std::string placeholder{\\"\\"};
   std::string defaultValue{};
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
 };
 
 } // namespace facebook::react

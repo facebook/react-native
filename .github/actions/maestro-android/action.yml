@@ -1,5 +1,5 @@
 name: Maestro E2E Android
-description: Runs E2E Tests on iOS using Maestro
+description: Runs E2E Tests on Android using Maestro
 inputs:
   app-path:
     required: true
@@ -7,9 +7,6 @@ inputs:
   app-id:
     required: true
     description: The id of the app to test
-  jsengine:
-    required: true
-    description: The js engine we are using
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
@@ -25,10 +22,6 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
-  architecture:
-    required: false
-    default: "NewArch"
-    description: The react native architecture to test
 
 runs:
   using: composite
@@ -79,7 +72,7 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       if: always()
       with:
-        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.flavor }}_NewArch
         path: |
           report.xml
           screen.mp4
@@ -87,5 +80,5 @@ runs:
       if: steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.flavor }}-NewArch
         path: /tmp/MaestroLogs

@@ -30,26 +30,12 @@ internal class DebuggingOverlayManager :
 
   override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "highlightTraceUpdates" -> highlightTraceUpdates(view, args)
-      "highlightElements" -> highlightElements(view, args)
-      "clearElementsHighlights" -> clearElementsHighlights(view)
-      else -> {
-        ReactSoftExceptionLogger.logSoftException(
-            REACT_CLASS,
-            ReactNoCrashSoftException("Received unexpected command in DebuggingOverlayManager"))
-      }
-    }
-  }
-
-  override fun highlightTraceUpdates(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedTraceUpdates = args?.getArray(0) ?: return
+  override fun highlightTraceUpdates(view: DebuggingOverlay, updates: ReadableArray): Unit {
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedTraceUpdates.size()) {
-      val traceUpdate = providedTraceUpdates.getMap(i) ?: continue
+    for (i in 0 until updates.size()) {
+      val traceUpdate = updates.getMap(i) ?: continue
       val serializedRectangle = traceUpdate.getMap("rectangle")
       if (serializedRectangle == null) {
         ReactSoftExceptionLogger.logSoftException(
@@ -93,13 +79,12 @@ internal class DebuggingOverlayManager :
     }
   }
 
-  override fun highlightElements(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedElements = args?.getArray(0) ?: return
+  override fun highlightElements(view: DebuggingOverlay, elements: ReadableArray): Unit {
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedElements.size()) {
-      val element = providedElements.getMap(i) ?: continue
+    for (i in 0 until elements.size()) {
+      val element = elements.getMap(i) ?: continue
       try {
         val left = element.getDouble("x").toFloat()
         val top = element.getDouble("y").toFloat()

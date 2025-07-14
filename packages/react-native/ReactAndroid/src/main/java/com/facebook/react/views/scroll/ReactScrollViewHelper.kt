@@ -11,10 +11,12 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Point
-import android.view.FocusFinder
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
+import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
@@ -30,6 +32,8 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import java.lang.ref.WeakReference
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.math.abs
+import kotlin.math.max
 
 /** Helper class that deals with emitting Scroll Events. */
 public object ReactScrollViewHelper {
@@ -113,7 +117,7 @@ public object ReactScrollViewHelper {
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
     if (scrollEventType == ScrollEventType.SCROLL &&
-        scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
+        scrollView.scrollEventThrottle >= max(17, now - scrollView.lastScrollDispatchTime)) {
       // Scroll events are throttled.
       return
     }
@@ -222,9 +226,10 @@ public object ReactScrollViewHelper {
     scrollListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
-    scrollListeners.remove(WeakReference(listener))
+    scrollListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   @JvmStatic
@@ -232,9 +237,10 @@ public object ReactScrollViewHelper {
     layoutChangeListeners.add(WeakReference(listener))
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
   @JvmStatic
   public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
-    layoutChangeListeners.remove(WeakReference(listener))
+    layoutChangeListeners.removeIf { it.get() == null || it.get() == listener }
   }
 
   /**
@@ -255,7 +261,7 @@ public object ReactScrollViewHelper {
     // Register the listeners for the fling animator if there isn't any
     val flingAnimator = scrollView.getFlingAnimator()
     if (flingAnimator.listeners == null || flingAnimator.listeners.size == 0) {
-      registerFlingAnimator<T>(scrollView)
+      registerFlingAnimator(scrollView)
     }
     val scrollState = scrollView.reactScrollViewScrollState
     scrollState.setFinalAnimatedPositionScroll(x, y)
@@ -280,7 +286,7 @@ public object ReactScrollViewHelper {
       velocity: Int
   ): Int where T : HasFlingAnimator?, T : HasScrollState?, T : ViewGroup {
     val scrollState = scrollView.reactScrollViewScrollState
-    val velocityDirectionMask = if (velocity != 0) velocity / Math.abs(velocity) else 0
+    val velocityDirectionMask = if (velocity != 0) velocity / abs(velocity) else 0
     val isMovingTowardsAnimatedValue =
         velocityDirectionMask * (postAnimationValue - currentValue) > 0
 
@@ -394,7 +400,7 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
-                updateFabricScrollState<T>(scrollView)
+                updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
@@ -450,9 +456,9 @@ public object ReactScrollViewHelper {
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollX, finalAnimatedPositionScroll.x, velocityX), // startX
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollY, finalAnimatedPositionScroll.y, velocityY), // startY
         velocityX, // velocityX
         velocityY, // velocityY
@@ -470,23 +476,8 @@ public object ReactScrollViewHelper {
   public fun findNextFocusableView(
       host: ViewGroup,
       focused: View,
-      @FocusRealDirection direction: Int,
-      horizontal: Boolean
+      @FocusDirection direction: Int,
   ): View? {
-    val absDir = resolveAbsoluteDirection(direction, horizontal, host.getLayoutDirection())
-
-    /*
-     * Check if we can focus the next element in the absolute direction within the ScrollView this
-     * would mean the view is not clipped, if we can't, look into the shadow tree to find the next
-     * focusable element
-     */
-    val ff = FocusFinder.getInstance()
-    val result = ff.findNextFocus(host, focused, absDir)
-
-    if (result != null) {
-      return result
-    }
-
     if (host !is ReactClippingViewGroup) {
       return null
     }
@@ -496,8 +487,8 @@ public object ReactScrollViewHelper {
             ?: return null
 
     val nextFocusableViewId =
-        (uimanager as FabricUIManager).findNextFocusableElement(
-            host.getChildAt(0).id, focused.id, absDir) ?: return null
+        (uimanager as FabricUIManager).findNextFocusableElement(host.id, focused.id, direction)
+            ?: return null
 
     val ancestorIdList =
         uimanager

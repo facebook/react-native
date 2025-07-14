@@ -8,6 +8,7 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
+#include <ReactCommon/RuntimeExecutorSyncUIThreadUtils.h>
 #include <cxxreact/TraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <utility>
@@ -18,7 +19,7 @@ namespace facebook::react {
 
 RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now,
+    std::function<HighResTimeStamp()> now,
     RuntimeSchedulerTaskErrorHandler onTaskError)
     : runtimeExecutor_(std::move(runtimeExecutor)),
       now_(std::move(now)),
@@ -84,7 +85,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
     jsi::Function&& /*callback*/,
-    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+    HighResDuration /*timeout*/) noexcept {
   // Idle tasks are not supported on Legacy RuntimeScheduler.
   // Because the method is `noexcept`, we return `nullptr` here and handle it
   // on the caller side.
@@ -93,7 +94,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
 
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
     RawCallback&& /*callback*/,
-    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+    HighResDuration /*timeout*/) noexcept {
   // Idle tasks are not supported on Legacy RuntimeScheduler.
   // Because the method is `noexcept`, we return `nullptr` here and handle it
   // on the caller side.
@@ -113,7 +114,7 @@ SchedulerPriority RuntimeScheduler_Legacy::getCurrentPriorityLevel()
   return currentPriority_;
 }
 
-RuntimeSchedulerTimePoint RuntimeScheduler_Legacy::now() const noexcept {
+HighResTimeStamp RuntimeScheduler_Legacy::now() const noexcept {
   return now_();
 }
 
@@ -201,6 +202,12 @@ void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
 
 void RuntimeScheduler_Legacy::setEventTimingDelegate(
     RuntimeSchedulerEventTimingDelegate* /*eventTimingDelegate*/) {
+  // No-op in the legacy scheduler
+}
+
+void RuntimeScheduler_Legacy::setIntersectionObserverDelegate(
+    RuntimeSchedulerIntersectionObserverDelegate*
+    /*intersectionObserverDelegate*/) {
   // No-op in the legacy scheduler
 }
 

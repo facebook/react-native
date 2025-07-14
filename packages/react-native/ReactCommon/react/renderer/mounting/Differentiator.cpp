@@ -165,6 +165,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext);
 
 /**
@@ -221,6 +222,7 @@ static void updateMatchedPairSubtrees(
           oldPair.shadowView.tag,
           nullptr,
           nullptr,
+          oldCullingContext,
           oldCullingContextCopy);
     }
     // Unflattening
@@ -255,6 +257,7 @@ static void updateMatchedPairSubtrees(
           parentTag,
           nullptr,
           nullptr,
+          newCullingContext,
           newCullingContextCopy);
 
       // If old nodes were not visited, we know that we can delete
@@ -280,15 +283,15 @@ static void updateMatchedPairSubtrees(
     return;
   }
 
+  auto oldCullingContextCopy =
+      oldCullingContext.adjustCullingContextIfNeeded(oldPair);
+  auto newCullingContextCopy =
+      newCullingContext.adjustCullingContextIfNeeded(newPair);
+
   // Update subtrees if View is not flattened, and if node addresses
   // are not equal
   if (oldPair.shadowNode != newPair.shadowNode ||
-      oldCullingContext != newCullingContext) {
-    auto oldCullingContextCopy =
-        oldCullingContext.adjustCullingContextIfNeeded(oldPair);
-    auto newCullingContextCopy =
-        newCullingContext.adjustCullingContextIfNeeded(newPair);
-
+      oldCullingContextCopy != newCullingContextCopy) {
     ViewNodePairScope innerScope{};
     auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
         oldPair, innerScope, false, oldCullingContextCopy);
@@ -420,6 +423,7 @@ static void calculateShadowViewMutationsFlattener(
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    const CullingContext& cullingContextForUnvisitedOtherNodes,
     const CullingContext& cullingContext) {
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
@@ -615,14 +619,19 @@ static void calculateShadowViewMutationsFlattener(
                 parentTagForUpdate));
       }
 
-      auto adjustedOldCullingContext =
-          cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair);
-      auto adjustedNewCullingContext =
-          cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
+      auto adjustedOldCullingContext = reparentMode == ReparentMode::Flatten
+          ? cullingContext.adjustCullingContextIfNeeded(oldTreeNodePair)
+          : cullingContextForUnvisitedOtherNodes.adjustCullingContextIfNeeded(
+                oldTreeNodePair);
+      auto adjustedNewCullingContext = reparentMode == ReparentMode::Flatten
+          ? cullingContextForUnvisitedOtherNodes.adjustCullingContextIfNeeded(
+                newTreeNodePair)
+          : cullingContext.adjustCullingContextIfNeeded(newTreeNodePair);
 
       // Update children if appropriate.
       if (!oldTreeNodePair.flattened && !newTreeNodePair.flattened) {
-        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode) {
+        if (oldTreeNodePair.shadowNode != newTreeNodePair.shadowNode ||
+            adjustedOldCullingContext != adjustedNewCullingContext) {
           ViewNodePairScope innerScope{};
           auto oldGrandChildPairs =
               sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -670,6 +679,7 @@ static void calculateShadowViewMutationsFlattener(
                    : parentTag),
               subVisitedNewMap,
               subVisitedOldMap,
+              cullingContextForUnvisitedOtherNodes,
               cullingContext.adjustCullingContextIfNeeded(treeChildPair));
         } else {
           // Get flattened nodes from either new or old tree
@@ -720,6 +730,7 @@ static void calculateShadowViewMutationsFlattener(
                 fixedParentTagForUpdate,
                 subVisitedNewMap,
                 subVisitedOldMap,
+                adjustedNewCullingContext,
                 adjustedNewCullingContext);
           } else {
             // Flatten parent, unflatten child
@@ -740,6 +751,8 @@ static void calculateShadowViewMutationsFlattener(
                 /* parentTagForUpdate */ fixedParentTagForUpdate,
                 /* parentSubVisitedOtherNewNodes */ subVisitedNewMap,
                 /* parentSubVisitedOtherOldNodes */ subVisitedOldMap,
+                /* cullingContextForUnvisitedOtherNodes */
+                adjustedOldCullingContext,
                 /* cullingContext */ adjustedOldCullingContext);
 
             // If old nodes were not visited, we know that we can delete them
@@ -925,20 +938,20 @@ static void calculateShadowViewMutations(
               oldChildPair.shadowView, newChildPair.shadowView, parentTag));
     }
 
+    auto adjustedOldCullingContext =
+        oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
+    auto adjustedNewCullingContext =
+        newCullingContext.adjustCullingContextIfNeeded(newChildPair);
+
     // Recursively update tree if ShadowNode pointers are not equal
     if (!oldChildPair.flattened &&
         (oldChildPair.shadowNode != newChildPair.shadowNode ||
-         oldCullingContext != newCullingContext)) {
-      auto oldCullingContextCopy =
-          oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
-      auto newCullingContextCopy =
-          newCullingContext.adjustCullingContextIfNeeded(newChildPair);
-
+         adjustedOldCullingContext != adjustedNewCullingContext)) {
       ViewNodePairScope innerScope{};
       auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          oldChildPair, innerScope, false, oldCullingContextCopy);
+          oldChildPair, innerScope, false, adjustedOldCullingContext);
       auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          newChildPair, innerScope, false, newCullingContextCopy);
+          newChildPair, innerScope, false, adjustedNewCullingContext);
 
       const size_t newGrandChildPairsSize = newGrandChildPairs.size();
 
@@ -950,8 +963,8 @@ static void calculateShadowViewMutations(
           oldChildPair.shadowView.tag,
           std::move(oldGrandChildPairs),
           std::move(newGrandChildPairs),
-          oldCullingContextCopy,
-          newCullingContextCopy);
+          adjustedOldCullingContext,
+          adjustedNewCullingContext);
     }
   }
 

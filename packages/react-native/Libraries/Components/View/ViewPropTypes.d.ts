@@ -12,10 +12,18 @@ import {Insets} from '../../../types/public/Insets';
 import {GestureResponderHandlers} from '../../../types/public/ReactNativeRenderer';
 import {StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
-import {LayoutChangeEvent, PointerEvents} from '../../Types/CoreEventTypes';
+import {
+  BlurEvent,
+  FocusEvent,
+  LayoutChangeEvent,
+  PointerEvents,
+} from '../../Types/CoreEventTypes';
 import {Touchable} from '../Touchable/Touchable';
 import {AccessibilityProps} from './ViewAccessibility';
 
+/**
+ * @deprecated These properties are not implemented natively.
+ */
 export interface TVViewPropsIOS {
   /**
    * *(Apple TV only)* When set to true, this view will be focusable
@@ -29,6 +37,7 @@ export interface TVViewPropsIOS {
    * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
    *
    * @platform ios
+   * @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: boolean | undefined;
 
@@ -76,6 +85,20 @@ export interface ViewPropsIOS extends TVViewPropsIOS {
 }
 
 export interface ViewPropsAndroid {
+  /**
+   * Callback that is called when the view is blurred.
+   *
+   * Note: This will only be called if the view is focusable.
+   */
+  onBlur?: ((e: BlurEvent) => void) | null | undefined;
+
+  /**
+   * Callback that is called when the view is focused.
+   *
+   * Note: This will only be called if the view is focusable.
+   */
+  onFocus?: ((e: FocusEvent) => void) | null | undefined;
+
   /**
    * Whether this view should render itself (and all of its children) into a single hardware texture on the GPU.
    *

@@ -222,8 +222,10 @@ jni::local_ref<jobject> getProps(
   // is enabled.
   auto* oldProps = oldShadowView.props.get();
   auto* newProps = newShadowView.props.get();
-  if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
-      strcmp(newShadowView.componentName, "View") == 0) {
+  if ((ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) &&
+      strcmp(
+          newShadowView.componentName,
+          newProps->getDiffPropsImplementationTarget()) == 0) {
     return ReadableNativeMap::newObjectCxxArgs(
         newProps->getDiffProps(oldProps));
   }

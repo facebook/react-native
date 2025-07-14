@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {Task} from './types';
@@ -126,7 +125,7 @@ export const tasks = {
       }),
     ),
     installDependencies: task(FIFTH, 'Install CocoaPods dependencies', () => {
-      const env = {
+      const env: {[string]: string | void} = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
         USE_FRAMEWORKS: options.frameworks,
         USE_HERMES: options.hermes ? '1' : '0',

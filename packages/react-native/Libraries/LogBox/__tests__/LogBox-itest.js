@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -20,6 +19,9 @@ import {LogBox, Text, View} from 'react-native';
 // If a test uses this, it should have a component frame.
 // This is a bug we'll fix in a followup.
 const BUG_WITH_COMPONENT_FRAMES: [] = [];
+
+// Disable the logic to make sure that LogBox is not installed in tests.
+Fantom.setLogBoxCheckEnabled(false);
 
 describe('LogBox', () => {
   let originalConsoleError;
@@ -330,7 +332,7 @@ describe('LogBox', () => {
       // Should pop a dialog.
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'HIT',
         stackFrames: ['TestComponent'],
@@ -339,17 +341,6 @@ describe('LogBox', () => {
       });
 
       logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: HIT\n\nThis error is located at:',
-        componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
-        isDismissable: true,
-      });
     });
   });
 
@@ -388,7 +379,7 @@ describe('LogBox', () => {
 
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'HIT',
         stackFrames: ['TestComponent'],
@@ -397,17 +388,6 @@ describe('LogBox', () => {
       });
 
       logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: HIT\n\nThis error is located at:',
-        componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
-        isDismissable: true,
-      });
     });
   });
 
@@ -492,7 +472,7 @@ describe('LogBox', () => {
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getNotificationUI()).toBe(null);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 3 of 3',
+        header: 'Log 2 of 2',
         title: 'Render Error',
         message: 'THROW',
         stackFrames: ['TestComponent'],
@@ -641,24 +621,11 @@ describe('LogBox', () => {
       // Uncaught errors pop a dialog.
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'THROWN in render',
         componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
         stackFrames: ['TestComponent'],
-        isDismissable: true,
-      });
-
-      logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: THROWN in render\n\nThis error is located at:',
-        componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
         isDismissable: true,
       });
     });
@@ -674,24 +641,11 @@ describe('LogBox', () => {
       // Uncaught errors pop a dialog.
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'THROWN in effect',
         componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
         stackFrames: ['anonymous'],
-        isDismissable: true,
-      });
-
-      logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: THROWN in effect\n\nThis error is located at:',
-        componentStackFrames: ['<TestComponent />', '<View />', '<View />'],
         isDismissable: true,
       });
     });
@@ -709,7 +663,7 @@ describe('LogBox', () => {
       // Caught errors pop a dialog.
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'THROWN in render',
         componentStackFrames: [
@@ -718,23 +672,6 @@ describe('LogBox', () => {
           '<View />',
         ],
         stackFrames: ['TestComponent'],
-        isDismissable: true,
-      });
-
-      logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: THROWN in render\n\nThis error is located at:',
-        componentStackFrames: [
-          '<TestComponent />',
-          '<ErrorBoundary />',
-          '<View />',
-        ],
         isDismissable: true,
       });
     });
@@ -754,7 +691,7 @@ describe('LogBox', () => {
       // Caught errors pop a dialog.
       expect(logBox.isOpen()).toBe(true);
       expect(logBox.getInspectorUI()).toEqual({
-        header: 'Log 2 of 2',
+        header: 'Log 1 of 1',
         title: 'Render Error',
         message: 'THROWN in effect',
         componentStackFrames: [
@@ -763,23 +700,6 @@ describe('LogBox', () => {
           '<View />',
         ],
         stackFrames: ['anonymous'],
-        isDismissable: true,
-      });
-
-      logBox.nextLog();
-
-      // NOTE: this log should not exist.
-      const ui = logBox.getInspectorUI();
-      delete ui?.stackFrames; // too big to show
-      expect(ui).toEqual({
-        header: 'Log 1 of 2',
-        title: 'Console Error',
-        message: 'Error: THROWN in effect\n\nThis error is located at:',
-        componentStackFrames: [
-          '<TestComponent />',
-          '<ErrorBoundary />',
-          '<View />',
-        ],
         isDismissable: true,
       });
     });
@@ -803,8 +723,7 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          // Error: prefix removed with D68380668
-          'Error: There was an error during concurrent rendering ' +
+          'There was an error during concurrent rendering ' +
           'but React was able to recover by instead synchronously ' +
           'rendering the entire root.',
       });
@@ -821,8 +740,7 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          // Error: prefix removed with D68380668
-          'Error: There was an error during concurrent rendering ' +
+          'There was an error during concurrent rendering ' +
           'but React was able to recover by instead synchronously ' +
           'rendering the entire root.',
         componentStackFrames: BUG_WITH_COMPONENT_FRAMES,
@@ -841,10 +759,10 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          // Interpolaton fixed by D68380668
-          'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. ' +
-          '\n\nCheck the top-level render call using <TestComponent>.  ' +
-          'It was passed a child from TestComponent.',
+          'Each child in a list should have a unique "key" prop.' +
+          '\n\nCheck the top-level render call using <TestComponent>. ' +
+          'It was passed a child from TestComponent. ' +
+          'See https://react.dev/link/warning-keys for more information.',
       });
 
       // Open LogBox.
@@ -859,11 +777,11 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          // Interpolaton fixed by D68380668
-          'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. ' +
-          '\n\nCheck the top-level render call using <TestComponent>.  ' +
-          'It was passed a child from TestComponent.',
-        componentStackFrames: [],
+          'Each child in a list should have a unique "key" prop.' +
+          '\n\nCheck the top-level render call using <TestComponent>. ' +
+          'It was passed a child from TestComponent. ' +
+          'See https://react.dev/link/warning-keys for more information.',
+        componentStackFrames: ['<anonymous />', '<TestComponent />'],
         isDismissable: true,
       });
     });
@@ -884,8 +802,7 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          // Interpolaton fixed by D68380668
-          'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. invalid',
+          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props.',
       });
 
       // Open LogBox.
@@ -900,8 +817,8 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. invalid',
-        componentStackFrames: [],
+          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key`, `ref`, and `children` props.',
+        componentStackFrames: ['<TestComponent />'],
         isDismissable: true,
       });
     });

@@ -18,8 +18,9 @@ import com.facebook.yoga.YogaMeasureFunction
 /**
  * Logger class to track usage of ShadowNodes in Legacy Architecture.
  *
- * This class is similar to [LegacyArchitectureLogger] but focuses only on ShadowNodes warning for
- * users.
+ * This class is similar to
+ * [com.facebook.react.common.annotations.internal.LegacyArchitectureLogger] but focuses only on
+ * ShadowNodes warning for users.
  */
 public object LegacyArchitectureShadowNodeLogger {
 

@@ -107,6 +107,12 @@ runs:
         pattern: ReactNativeDependencies*
         path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
         merge-multiple: true
+    - name: Download ReactCore artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: ReactCore*
+        path: ./packages/react-native/ReactAndroid/external-artifacts/artifacts
+        merge-multiple: true
     - name: Print Artifacts Directory
       shell: bash
       run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
@@ -123,7 +129,7 @@ runs:
       run: yarn build
     - name: Build types
       shell: bash
-      run: yarn build-types
+      run: yarn build-types --skip-snapshot
     # Continue with publish steps
     - name: Set npm credentials
       if: ${{ inputs.release-type == 'release' ||

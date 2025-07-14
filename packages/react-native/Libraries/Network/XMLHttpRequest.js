@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -33,6 +33,9 @@ const GlobalPerformanceLogger =
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
+
+const PERFORMANCE_TRACK_NAME = 'Network (JS-initiated only)';
+const PERFORMANCE_TRACK_GROUP = 'Chrome DevTools Temp Compat';
 
 declare var performance: Performance;
 
@@ -170,7 +173,7 @@ class XMLHttpRequest extends EventTarget {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: ?string = null;
+  _trackingName: ?string;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
@@ -385,6 +388,9 @@ class XMLHttpRequest extends EventTarget {
     if (requestId !== this._requestId) {
       return;
     }
+
+    const start = XMLHttpRequest._profiling ? performance.now() : undefined;
+
     if (!this._response) {
       this._response = responseText;
     } else {
@@ -392,8 +398,13 @@ class XMLHttpRequest extends EventTarget {
     }
 
     if (XMLHttpRequest._profiling) {
-      performance.mark(
-        'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
+      console.timeStamp(
+        'Incremental Data: ' + this._getMeasureURL(),
+        // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
+        start,
+        undefined,
+        PERFORMANCE_TRACK_NAME,
+        PERFORMANCE_TRACK_GROUP,
       );
     }
     XMLHttpRequest._interceptor &&
@@ -442,10 +453,14 @@ class XMLHttpRequest extends EventTarget {
       this.setReadyState(this.DONE);
       if (XMLHttpRequest._profiling && this._startTime != null) {
         const start = this._startTime;
-        performance.measure('Track:XMLHttpRequest:' + this._getMeasureURL(), {
+        console.timeStamp(
+          this._getMeasureURL(),
+          // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
           start,
-          end: performance.now(),
-        });
+          undefined,
+          PERFORMANCE_TRACK_NAME,
+          PERFORMANCE_TRACK_GROUP,
+        );
       }
       if (error) {
         XMLHttpRequest._interceptor &&
@@ -632,7 +647,7 @@ class XMLHttpRequest extends EventTarget {
       );
       RCTNetworking.sendRequest(
         this._method,
-        this._trackingName,
+        this._trackingName ?? undefined,
         this._url,
         this._headers,
         data,
@@ -646,6 +661,8 @@ class XMLHttpRequest extends EventTarget {
         this.withCredentials,
       );
     };
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (DEBUG_NETWORK_SEND_DELAY) {
       setTimeout(doSend, DEBUG_NETWORK_SEND_DELAY);
     } else {

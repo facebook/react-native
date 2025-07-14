@@ -8,15 +8,9 @@
  * @format
  */
 
-'use strict';
+// Compatibility module for ReactStrictDOMTextAncestorContext.native.js.flow (react-strict-dom)
+// TODO(huntie): Delete after we've fixed this cross-repo reference
 
-const React = require('react');
+import TextAncestorContext from './TextAncestorContext';
 
-/**
- * Whether the current element is the descendant of a <Text> element.
- */
-const TextAncestorContext: React.Context<boolean> = React.createContext(false);
-if (__DEV__) {
-  TextAncestorContext.displayName = 'TextAncestorContext';
-}
 export default TextAncestorContext;

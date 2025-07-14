@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -15,7 +15,6 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-const infoLog = require('../Utilities/infoLog').default;
 const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 
@@ -31,55 +30,6 @@ const _emitter = new EventEmitter<{
 const DEBUG_DELAY: 0 = 0;
 const DEBUG: false = false;
 
-/**
- * InteractionManager allows long-running work to be scheduled after any
- * interactions/animations have completed. In particular, this allows JavaScript
- * animations to run smoothly.
- *
- * Applications can schedule tasks to run after interactions with the following:
- *
- * ```
- * InteractionManager.runAfterInteractions(() => {
- *   // ...long-running synchronous task...
- * });
- * ```
- *
- * Compare this to other scheduling alternatives:
- *
- * - requestAnimationFrame(): for code that animates a view over time.
- * - setImmediate/setTimeout(): run code later, note this may delay animations.
- * - runAfterInteractions(): run code later, without delaying active animations.
- *
- * The touch handling system considers one or more active touches to be an
- * 'interaction' and will delay `runAfterInteractions()` callbacks until all
- * touches have ended or been cancelled.
- *
- * InteractionManager also allows applications to register animations by
- * creating an interaction 'handle' on animation start, and clearing it upon
- * completion:
- *
- * ```
- * var handle = InteractionManager.createInteractionHandle();
- * // run animation... (`runAfterInteractions` tasks are queued)
- * // later, on animation completion:
- * InteractionManager.clearInteractionHandle(handle);
- * // queued tasks run if all handles were cleared
- * ```
- *
- * `runAfterInteractions` takes either a plain callback function, or a
- * `PromiseTask` object with a `gen` method that returns a `Promise`.  If a
- * `PromiseTask` is supplied, then it is fully resolved (including asynchronous
- * dependencies that also schedule more tasks via `runAfterInteractions`) before
- * starting on the next task that might have been queued up synchronously
- * earlier.
- *
- * By default, queued tasks are executed together in a loop in one
- * `setImmediate` batch. If `setDeadline` is called with a positive number, then
- * tasks will only be executed until the deadline (in terms of js event loop run
- * time) approaches, at which point execution will yield via setTimeout,
- * allowing events such as touches to start interactions and block queued tasks
- * from executing, making apps more responsive.
- */
 const InteractionManagerImpl = {
   Events: {
     interactionStart: 'interactionStart',
@@ -123,7 +73,9 @@ const InteractionManagerImpl = {
    * Notify manager that an interaction has started.
    */
   createInteractionHandle(): Handle {
-    DEBUG && infoLog('InteractionManager: create interaction handle');
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+    DEBUG && console.log('InteractionManager: create interaction handle');
     _scheduleUpdate();
     const handle = ++_inc;
     _addInteractionSet.add(handle);
@@ -134,7 +86,9 @@ const InteractionManagerImpl = {
    * Notify manager that an interaction has completed.
    */
   clearInteractionHandle(handle: Handle) {
-    DEBUG && infoLog('InteractionManager: clear interaction handle');
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+    DEBUG && console.log('InteractionManager: clear interaction handle');
     invariant(!!handle, 'InteractionManager: Must provide a handle to clear.');
     _scheduleUpdate();
     _addInteractionSet.delete(handle);
@@ -194,9 +148,17 @@ function _processUpdate() {
 
   if (interactionCount !== 0 && nextInteractionCount === 0) {
     // transition from 1+ --> 0 interactions
+    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     _emitter.emit(InteractionManager.Events.interactionComplete);
   } else if (interactionCount === 0 && nextInteractionCount !== 0) {
     // transition from 0 --> 1+ interactions
+    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
+    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     _emitter.emit(InteractionManager.Events.interactionStart);
   }
 
@@ -218,9 +180,61 @@ function _processUpdate() {
   _deleteInteractionSet.clear();
 }
 
+/**
+ * InteractionManager allows long-running work to be scheduled after any
+ * interactions/animations have completed. In particular, this allows JavaScript
+ * animations to run smoothly.
+ *
+ * Applications can schedule tasks to run after interactions with the following:
+ *
+ * ```
+ * InteractionManager.runAfterInteractions(() => {
+ *   // ...long-running synchronous task...
+ * });
+ * ```
+ *
+ * Compare this to other scheduling alternatives:
+ *
+ * - requestAnimationFrame(): for code that animates a view over time.
+ * - setImmediate/setTimeout(): run code later, note this may delay animations.
+ * - runAfterInteractions(): run code later, without delaying active animations.
+ *
+ * The touch handling system considers one or more active touches to be an
+ * 'interaction' and will delay `runAfterInteractions()` callbacks until all
+ * touches have ended or been cancelled.
+ *
+ * InteractionManager also allows applications to register animations by
+ * creating an interaction 'handle' on animation start, and clearing it upon
+ * completion:
+ *
+ * ```
+ * var handle = InteractionManager.createInteractionHandle();
+ * // run animation... (`runAfterInteractions` tasks are queued)
+ * // later, on animation completion:
+ * InteractionManager.clearInteractionHandle(handle);
+ * // queued tasks run if all handles were cleared
+ * ```
+ *
+ * `runAfterInteractions` takes either a plain callback function, or a
+ * `PromiseTask` object with a `gen` method that returns a `Promise`.  If a
+ * `PromiseTask` is supplied, then it is fully resolved (including asynchronous
+ * dependencies that also schedule more tasks via `runAfterInteractions`) before
+ * starting on the next task that might have been queued up synchronously
+ * earlier.
+ *
+ * By default, queued tasks are executed together in a loop in one
+ * `setImmediate` batch. If `setDeadline` is called with a positive number, then
+ * tasks will only be executed until the deadline (in terms of js event loop run
+ * time) approaches, at which point execution will yield via setTimeout,
+ * allowing events such as touches to start interactions and block queued tasks
+ * from executing, making apps more responsive.
+ *
+ * @deprecated
+ */
 const InteractionManager = (
   ReactNativeFeatureFlags.disableInteractionManager()
-    ? require('./InteractionManagerStub').default
+    ? // $FlowFixMe[incompatible-variance]
+      require('./InteractionManagerStub').default
     : InteractionManagerImpl
 ) as typeof InteractionManagerImpl;
 

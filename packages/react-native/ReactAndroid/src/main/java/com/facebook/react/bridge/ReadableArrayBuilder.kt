@@ -47,6 +47,14 @@ public class ReadableArrayBuilder(private val array: WritableArray) {
     array.pushDouble(value.toDouble())
   }
 
+  public fun add(value: ReadableMap) {
+    array.pushMap(value)
+  }
+
+  public fun add(value: ReadableArray) {
+    array.pushArray(value)
+  }
+
   public fun addNull() {
     array.pushNull()
   }

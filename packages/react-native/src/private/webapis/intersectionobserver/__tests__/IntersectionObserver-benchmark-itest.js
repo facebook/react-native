@@ -6,11 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Root} from '@react-native/fantom';
 import type {HostInstance} from 'react-native';
@@ -19,6 +17,7 @@ import type IntersectionObserverType from 'react-native/src/private/webapis/inte
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import View from 'react-native/Libraries/Components/View/View';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
@@ -28,10 +27,11 @@ declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
 
-const nodeRef = React.createRef<HostInstance>();
+const nodeRef = createRef<HostInstance>();
 let node: ReactNativeElement;
-
-const scrollViewRef = React.createRef<HostInstance>();
+const rootRef = createRef<HostInstance>();
+let rootNode: ReactNativeElement;
+const scrollViewRef = createRef<HostInstance>();
 let scrollViewNode: ReactNativeElement;
 let observer: IntersectionObserverType;
 const VIEWPORT_HEIGHT = 100;
@@ -97,6 +97,27 @@ Fantom.unstable_benchmark
     },
   )
   .test(
+    'Create IntersectionObserver with custom root',
+    () => {
+      Fantom.runTask(() => {
+        observer = new IntersectionObserver(mockCallback, {root: rootNode});
+      });
+    },
+    {
+      beforeEach: () => {
+        mockCallback = jest.fn();
+        Fantom.runTask(() => {
+          root.render(<View ref={rootRef} />);
+        });
+        rootNode = ensureInstance(rootRef.current, ReactNativeElement);
+      },
+      afterEach: () => {
+        expect(mockCallback).not.toHaveBeenCalled();
+        cleanup(root, observer);
+      },
+    },
+  )
+  .test(
     'Observe a mounted view',
     () => {
       Fantom.runTask(() => {
@@ -111,6 +132,39 @@ Fantom.unstable_benchmark
           observer = new IntersectionObserver(mockCallback);
         });
         node = ensureInstance(nodeRef.current, ReactNativeElement);
+      },
+      afterEach: () => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+        const [entries] = mockCallback.mock.lastCall;
+        expect(entries.length).toBe(1);
+        expect(entries[0].isIntersecting).toBe(true);
+
+        cleanup(root, observer);
+      },
+    },
+  )
+  .test(
+    'Observe a mounted view with custom root',
+    () => {
+      Fantom.runTask(() => {
+        observer.observe(node);
+      });
+    },
+    {
+      beforeEach: () => {
+        mockCallback = jest.fn();
+        Fantom.runTask(() => {
+          root.render(
+            <View ref={rootRef}>
+              <View style={{width: 100, height: 10}} ref={nodeRef} />
+            </View>,
+          );
+        });
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        rootNode = ensureInstance(rootRef.current, ReactNativeElement);
+        Fantom.runTask(() => {
+          observer = new IntersectionObserver(mockCallback, {root: rootNode});
+        });
       },
       afterEach: () => {
         expect(mockCallback).toHaveBeenCalledTimes(1);
@@ -217,6 +271,48 @@ Fantom.unstable_benchmark
     },
   )
   .test(
+    'ScrollView no intersection, observation with custom root',
+    () => {
+      scrollBy1(scrollViewNode, VIEWPORT_HEIGHT);
+    },
+    {
+      beforeEach: () => {
+        mockCallback = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(
+            <ScrollView ref={scrollViewRef}>
+              {renderElementAtYScrollPosition(
+                VIEWPORT_HEIGHT + 50,
+                <View ref={nodeRef} style={{width: 100, height: 10}} />,
+              )}
+            </ScrollView>,
+          );
+        });
+        scrollViewNode = ensureInstance(
+          scrollViewRef.current,
+          ReactNativeElement,
+        );
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        Fantom.runTask(() => {
+          observer = new IntersectionObserver(mockCallback, {
+            root: scrollViewNode,
+          });
+          observer.observe(node);
+        });
+      },
+      afterEach: () => {
+        expect(mockCallback).toHaveBeenCalledTimes(1);
+
+        const [entries] = mockCallback.mock.lastCall;
+        expect(entries.length).toBe(1);
+        expect(entries[0].isIntersecting).toBe(false);
+
+        cleanup(root, observer);
+      },
+    },
+  )
+  .test(
     'ScrollView intersection, observation',
     () => {
       scrollBy1(scrollViewNode, VIEWPORT_HEIGHT);
@@ -242,6 +338,57 @@ Fantom.unstable_benchmark
         node = ensureInstance(nodeRef.current, ReactNativeElement);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {threshold: 1});
+          observer.observe(node);
+        });
+      },
+      afterEach: () => {
+        expect(mockCallback).toHaveBeenCalledTimes(3);
+
+        const [entries1] = mockCallback.mock.calls[0];
+        expect(entries1.length).toBe(1);
+        expect(entries1[0].isIntersecting).toBe(false);
+
+        const [entries2] = mockCallback.mock.calls[1];
+        expect(entries2.length).toBe(1);
+        expect(entries2[0].isIntersecting).toBe(true);
+
+        const [entries3] = mockCallback.mock.calls[2];
+        expect(entries3.length).toBe(1);
+        expect(entries3[0].isIntersecting).toBe(false);
+
+        cleanup(root, observer);
+      },
+    },
+  )
+  .test(
+    'ScrollView intersection, observation, with custom root',
+    () => {
+      scrollBy1(scrollViewNode, VIEWPORT_HEIGHT);
+    },
+    {
+      beforeEach: () => {
+        mockCallback = jest.fn();
+
+        Fantom.runTask(() => {
+          root.render(
+            <ScrollView ref={scrollViewRef}>
+              {renderElementAtYScrollPosition(
+                -5,
+                <View ref={nodeRef} style={{width: 100, height: 10}} />,
+              )}
+            </ScrollView>,
+          );
+        });
+        scrollViewNode = ensureInstance(
+          scrollViewRef.current,
+          ReactNativeElement,
+        );
+        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        Fantom.runTask(() => {
+          observer = new IntersectionObserver(mockCallback, {
+            threshold: 1,
+            root: scrollViewNode,
+          });
           observer.observe(node);
         });
       },

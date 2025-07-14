@@ -32,7 +32,7 @@ using NativePerformancePerformanceObserverObserveOptions =
         // buffered
         std::optional<bool>,
         // durationThreshold
-        std::optional<double>>;
+        std::optional<HighResDuration>>;
 
 template <>
 struct Bridging<PerformanceEntryType> {
@@ -42,10 +42,8 @@ struct Bridging<PerformanceEntryType> {
     return static_cast<PerformanceEntryType>(value.asNumber());
   }
 
-  static jsi::Value toJs(
-      jsi::Runtime& /*rt*/,
-      const PerformanceEntryType& value) {
-    return {static_cast<int>(value)};
+  static int toJs(jsi::Runtime& /*rt*/, const PerformanceEntryType& value) {
+    return static_cast<int>(value);
   }
 };
 
@@ -54,21 +52,21 @@ struct Bridging<PerformanceEntryType> {
 struct NativePerformanceEntry {
   std::string name;
   PerformanceEntryType entryType;
-  DOMHighResTimeStamp startTime;
-  DOMHighResTimeStamp duration;
+  HighResTimeStamp startTime;
+  HighResDuration duration;
 
   // For PerformanceEventTiming only
-  std::optional<DOMHighResTimeStamp> processingStart;
-  std::optional<DOMHighResTimeStamp> processingEnd;
+  std::optional<HighResTimeStamp> processingStart;
+  std::optional<HighResTimeStamp> processingEnd;
   std::optional<PerformanceEntryInteractionId> interactionId;
 
   // For PerformanceResourceTiming only
-  std::optional<DOMHighResTimeStamp> fetchStart;
-  std::optional<DOMHighResTimeStamp> requestStart;
-  std::optional<DOMHighResTimeStamp> connectStart;
-  std::optional<DOMHighResTimeStamp> connectEnd;
-  std::optional<DOMHighResTimeStamp> responseStart;
-  std::optional<DOMHighResTimeStamp> responseEnd;
+  std::optional<HighResTimeStamp> fetchStart;
+  std::optional<HighResTimeStamp> requestStart;
+  std::optional<HighResTimeStamp> connectStart;
+  std::optional<HighResTimeStamp> connectEnd;
+  std::optional<HighResTimeStamp> responseStart;
+  std::optional<HighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
 };
 
@@ -88,23 +86,34 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 #pragma mark - DOM Performance (High Resolution Time) (https://www.w3.org/TR/hr-time-3/#dom-performance)
 
   // https://www.w3.org/TR/hr-time-3/#now-method
-  double now(jsi::Runtime& rt);
+  HighResTimeStamp now(jsi::Runtime& rt);
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
   // https://w3c.github.io/user-timing/#mark-method
-  double markWithResult(
+  HighResTimeStamp markWithResult(
       jsi::Runtime& rt,
       std::string name,
-      std::optional<double> startTime);
+      std::optional<HighResTimeStamp> startTime);
 
   // https://w3c.github.io/user-timing/#measure-method
-  std::tuple<double, double> measureWithResult(
+  std::tuple<HighResTimeStamp, HighResDuration> measure(
       jsi::Runtime& rt,
       std::string name,
-      double startTime,
-      double endTime,
-      std::optional<double> duration,
+      std::optional<HighResTimeStamp> startTime,
+      std::optional<HighResTimeStamp> endTime,
+      std::optional<HighResDuration> duration,
+      std::optional<std::string> startMark,
+      std::optional<std::string> endMark);
+
+  // https://w3c.github.io/user-timing/#measure-method
+  [[deprecated("This method is deprecated. Use the measure method instead.")]]
+  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
+      jsi::Runtime& rt,
+      std::string name,
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime,
+      std::optional<HighResDuration> duration,
       std::optional<std::string> startMark,
       std::optional<std::string> endMark);
 
@@ -186,6 +195,14 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // tracking.
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
+
+#pragma mark - Testing
+
+  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
+  void clearEventCountsForTesting(jsi::Runtime& rt);
+
+ private:
+  std::optional<HighResTimeStamp> forcedCurrentTimeStamp_;
 };
 
 } // namespace facebook::react

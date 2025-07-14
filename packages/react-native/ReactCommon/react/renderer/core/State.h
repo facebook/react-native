@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <fbjni/fbjni.h>
 #include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
@@ -62,7 +62,7 @@ class State {
    */
   size_t getRevision() const;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   virtual folly::dynamic getDynamic() const = 0;
   virtual MapBuffer getMapBuffer() const = 0;
   virtual jni::local_ref<jobject> getJNIReference() const = 0;

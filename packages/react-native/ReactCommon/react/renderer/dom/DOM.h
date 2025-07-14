@@ -11,7 +11,6 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <cstdint>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace facebook::react::dom {
@@ -39,7 +38,7 @@ struct RNMeasureRect {
 };
 
 struct DOMOffset {
-  ShadowNode::Shared offsetParent = nullptr;
+  std::shared_ptr<const ShadowNode> offsetParent = nullptr;
   double top = 0;
   double left = 0;
 };
@@ -61,11 +60,11 @@ struct DOMBorderWidthRounded {
   int left = 0;
 };
 
-ShadowNode::Shared getParentNode(
+std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
-std::vector<ShadowNode::Shared> getChildNodes(
+std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 

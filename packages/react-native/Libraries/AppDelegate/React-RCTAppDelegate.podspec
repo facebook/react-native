@@ -17,12 +17,8 @@ else
 end
 
 is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] != "0"
-use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED=1" : "")
-hermes_flag = (use_hermes ? " -DUSE_HERMES=1" : "")
-use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? " -DUSE_THIRD_PARTY_JSC=1" : ""
-other_cflags = "$(inherited) " + new_arch_enabled_flag + hermes_flag + use_third_party_jsc_flag
+other_cflags = "$(inherited) " + new_arch_enabled_flag + js_engine_flags()
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
@@ -31,7 +27,7 @@ header_search_paths = [
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
   "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
   "$(PODS_ROOT)/Headers/Private/Yoga",
-].concat(use_hermes ? [
+].concat(use_hermes() ? [
   "$(PODS_ROOT)/Headers/Public/React-hermes",
   "$(PODS_ROOT)/Headers/Public/hermes-engine"
 ] : [])
@@ -46,7 +42,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files            = "**/*.{c,h,m,mm,S,cpp}"
+  s.source_files           = podspec_sources("**/*.{c,h,m,mm,S,cpp}", "**/*.h")
 
   # This guard prevent to install the dependencies when we run `pod install` in the old architecture.
   s.compiler_flags = other_cflags
@@ -66,7 +62,11 @@ Pod::Spec.new do |s|
   s.dependency "React-CoreModules"
   s.dependency "React-RCTFBReactNativeSpec"
   s.dependency "React-defaultsnativemodule"
+  if use_hermes()
+    s.dependency 'React-hermes'
+  end
 
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
   add_dependency(s, "React-runtimescheduler")
@@ -84,4 +84,5 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

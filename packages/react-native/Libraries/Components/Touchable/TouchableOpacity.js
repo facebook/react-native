@@ -21,11 +21,12 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-export type TVProps = $ReadOnly<{
+export type TouchableOpacityTVProps = $ReadOnly<{
   /**
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
    * @platform ios
+   * @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: ?boolean,
 
@@ -78,7 +79,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
 
 export type TouchableOpacityProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 
@@ -379,9 +380,13 @@ class TouchableOpacity extends React.Component<
 const Touchable: component(
   ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
   ...props: TouchableOpacityProps
-) = React.forwardRef((props, ref) => (
-  <TouchableOpacity {...props} hostRef={ref} />
-));
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...TouchableOpacityProps,
+}) => <TouchableOpacity {...props} hostRef={ref} />;
 
 Touchable.displayName = 'TouchableOpacity';
 

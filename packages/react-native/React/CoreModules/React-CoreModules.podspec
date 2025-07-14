@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
   s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
 
-  s.source_files           = "**/*.{c,m,mm,cpp}"
+  s.source_files           = podspec_sources("**/*.{c,m,mm,cpp}", "**/*.h")
 
   s.ios.exclude_files      = "PlatformStubs/**/*"
   exclude_files            = ["RCTStatusBarManager.mm"]
@@ -52,6 +52,8 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTImage", version
   s.dependency "React-jsi", version
   s.dependency 'React-RCTBlob'
+
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
@@ -61,4 +63,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

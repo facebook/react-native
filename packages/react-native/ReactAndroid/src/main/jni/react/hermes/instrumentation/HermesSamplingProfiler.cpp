@@ -9,22 +9,26 @@
 
 #include <hermes/hermes.h>
 
-namespace facebook {
-namespace jsi {
-namespace jni {
+namespace facebook::jsi::jni {
 
 void HermesSamplingProfiler::enable(jni::alias_ref<jclass>) {
-  hermes::HermesRuntime::enableSamplingProfiler();
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->enableSamplingProfiler();
 }
 
 void HermesSamplingProfiler::disable(jni::alias_ref<jclass>) {
-  hermes::HermesRuntime::disableSamplingProfiler();
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->disableSamplingProfiler();
 }
 
 void HermesSamplingProfiler::dumpSampledTraceToFile(
     jni::alias_ref<jclass>,
     std::string filename) {
-  hermes::HermesRuntime::dumpSampledTraceToFile(filename);
+  auto* hermesAPI =
+      castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesAPI->dumpSampledTraceToFile(filename);
 }
 
 void HermesSamplingProfiler::registerNatives() {
@@ -37,6 +41,4 @@ void HermesSamplingProfiler::registerNatives() {
   });
 }
 
-} // namespace jni
-} // namespace jsi
-} // namespace facebook
+} // namespace facebook::jsi::jni

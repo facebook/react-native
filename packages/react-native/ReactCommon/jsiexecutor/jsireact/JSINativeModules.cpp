@@ -6,6 +6,9 @@
  */
 
 #include "jsireact/JSINativeModules.h"
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include <glog/logging.h>
@@ -107,3 +110,5 @@ std::optional<Object> JSINativeModules::createModule(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

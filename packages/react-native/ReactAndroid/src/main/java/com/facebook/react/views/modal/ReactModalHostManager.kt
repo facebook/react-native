@@ -29,7 +29,7 @@ internal class ReactModalHostManager :
 
   override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
       ReactModalHostView(reactContext)
 
   override fun onDropViewInstance(view: ReactModalHostView) {
@@ -38,37 +38,34 @@ internal class ReactModalHostManager :
   }
 
   @ReactProp(name = "animationType")
-  override fun setAnimationType(view: ReactModalHostView, animationType: String?) {
-    if (animationType != null) {
-      view.animationType = animationType
+  override fun setAnimationType(view: ReactModalHostView, value: String?) {
+    if (value != null) {
+      view.animationType = value
     }
   }
 
   @ReactProp(name = "transparent")
-  override fun setTransparent(view: ReactModalHostView, transparent: Boolean) {
-    view.transparent = transparent
+  override fun setTransparent(view: ReactModalHostView, value: Boolean) {
+    view.transparent = value
   }
 
   @ReactProp(name = "statusBarTranslucent")
-  override fun setStatusBarTranslucent(view: ReactModalHostView, statusBarTranslucent: Boolean) {
-    view.statusBarTranslucent = statusBarTranslucent
+  override fun setStatusBarTranslucent(view: ReactModalHostView, value: Boolean) {
+    view.statusBarTranslucent = value
   }
 
   @ReactProp(name = "navigationBarTranslucent")
-  override fun setNavigationBarTranslucent(
-      view: ReactModalHostView,
-      navigationBarTranslucent: Boolean
-  ) {
-    view.navigationBarTranslucent = navigationBarTranslucent
+  override fun setNavigationBarTranslucent(view: ReactModalHostView, value: Boolean) {
+    view.navigationBarTranslucent = value
   }
 
   @ReactProp(name = "hardwareAccelerated")
-  override fun setHardwareAccelerated(view: ReactModalHostView, hardwareAccelerated: Boolean) {
-    view.hardwareAccelerated = hardwareAccelerated
+  override fun setHardwareAccelerated(view: ReactModalHostView, value: Boolean) {
+    view.hardwareAccelerated = value
   }
 
   @ReactProp(name = "visible")
-  override fun setVisible(view: ReactModalHostView, visible: Boolean) {
+  override fun setVisible(view: ReactModalHostView, value: Boolean) {
     // iOS only
   }
 
@@ -85,15 +82,15 @@ internal class ReactModalHostManager :
   @ReactProp(name = "identifier")
   override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
+  @ReactProp(name = "allowSwipeDismissal")
+  override fun setAllowSwipeDismissal(view: ReactModalHostView, value: Boolean): Unit = Unit
+
   override fun setTestId(view: ReactModalHostView, value: String?) {
     super.setTestId(view, value)
     view.setDialogRootViewGroupTestId(value)
   }
 
-  protected override fun addEventEmitters(
-      reactContext: ThemedReactContext,
-      view: ReactModalHostView
-  ) {
+  override fun addEventEmitters(reactContext: ThemedReactContext, view: ReactModalHostView) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
@@ -115,7 +112,7 @@ internal class ReactModalHostManager :
         put("topOrientationChange", mapOf("registrationName" to "onOrientationChange"))
       }
 
-  protected override fun onAfterUpdateTransaction(view: ReactModalHostView) {
+  override fun onAfterUpdateTransaction(view: ReactModalHostView) {
     super.onAfterUpdateTransaction(view)
     view.showOrUpdate()
   }

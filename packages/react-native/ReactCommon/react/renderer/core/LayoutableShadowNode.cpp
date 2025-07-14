@@ -32,6 +32,28 @@ LayoutableShadowNode::LayoutableShadowNode(
       layoutMetrics_(static_cast<const LayoutableShadowNode&>(sourceShadowNode)
                          .layoutMetrics_) {}
 
+LayoutMetrics LayoutableShadowNode::computeLayoutMetricsFromRoot(
+    const ShadowNodeFamily& descendantNodeFamily,
+    const LayoutableShadowNode& rootNode,
+    LayoutInspectingPolicy policy) {
+  // Prelude.
+
+  if (&descendantNodeFamily == &rootNode.getFamily()) {
+    // If calculating layout for root node
+    auto layoutMetrics = rootNode.getLayoutMetrics();
+    if (layoutMetrics.displayType == DisplayType::None) {
+      return EmptyLayoutMetrics;
+    }
+    if (policy.includeTransform) {
+      layoutMetrics.frame = layoutMetrics.frame * rootNode.getTransform();
+    }
+    return layoutMetrics;
+  }
+
+  auto ancestors = descendantNodeFamily.getAncestors(rootNode);
+  return computeRelativeLayoutMetrics(ancestors, policy);
+}
+
 LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     const ShadowNodeFamily& descendantNodeFamily,
     const LayoutableShadowNode& ancestorNode,
@@ -246,8 +268,8 @@ Float LayoutableShadowNode::baseline(
   return 0;
 }
 
-ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    const ShadowNode::Shared& node,
+std::shared_ptr<const ShadowNode> LayoutableShadowNode::findNodeAtPoint(
+    const std::shared_ptr<const ShadowNode>& node,
     Point point) {
   auto layoutableShadowNode =
       dynamic_cast<const LayoutableShadowNode*>(node.get());

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const execMock = jest.fn();
@@ -22,7 +21,7 @@ const getNpmInfoMock = jest.fn();
 const generateAndroidArtifactsMock = jest.fn();
 const getPackagesMock = jest.fn();
 
-const {REPO_ROOT} = require('../../consts');
+const {REPO_ROOT} = require('../../shared/consts');
 const {publishNpm} = require('../publish-npm');
 const path = require('path');
 
@@ -34,7 +33,7 @@ describe('publish-npm', () => {
       .mock('shelljs', () => ({
         exec: execMock,
       }))
-      .mock('./../../scm-utils', () => ({
+      .mock('../../releases/utils/scm-utils', () => ({
         exitIfNotOnGit: command => command(),
         getCurrentCommit: () => 'currentco_mmit',
         isTaggedLatest: isTaggedLatestMock,
@@ -50,8 +49,8 @@ describe('publish-npm', () => {
       .mock('../../releases/set-rn-artifacts-version', () => ({
         updateReactNativeArtifacts: updateReactNativeArtifactsMock,
       }))
-      .mock('../../npm-utils', () => ({
-        ...jest.requireActual('../../npm-utils'),
+      .mock('../../releases/utils/npm-utils', () => ({
+        ...jest.requireActual('../../releases/utils/npm-utils'),
         publishPackage: publishPackageMock,
         getNpmInfo: getNpmInfoMock,
       }));
@@ -79,7 +78,7 @@ describe('publish-npm', () => {
     it('should fail when invalid build type is passed', async () => {
       // Call actual function
       // $FlowExpectedError[underconstrained-implicit-instantiation]
-      const npmUtils = jest.requireActual('../../npm-utils');
+      const npmUtils = jest.requireActual('../../releases/utils/npm-utils');
       getNpmInfoMock.mockImplementation(npmUtils.getNpmInfo);
 
       await expect(async () => {
@@ -118,14 +117,14 @@ describe('publish-npm', () => {
 
   describe("publishNpm('nightly')", () => {
     beforeAll(() => {
-      jest.mock('../../utils/monorepo', () => ({
-        ...jest.requireActual('../../utils/monorepo'),
+      jest.mock('../../shared/monorepoUtils', () => ({
+        ...jest.requireActual('../../shared/monorepoUtils'),
         getPackages: getPackagesMock,
       }));
     });
 
     afterAll(() => {
-      jest.unmock('../../utils/monorepo');
+      jest.unmock('../../shared/monorepoUtils');
     });
 
     it('should publish', async () => {

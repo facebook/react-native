@@ -84,19 +84,21 @@ class Scheduler final : public UIManagerDelegate {
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) override;
   void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType) override;
   void uiManagerDidSetIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) override;
   void uiManagerShouldSynchronouslyUpdateViewOnUIThread(
       Tag tag,
       const folly::dynamic& props) override;
+  void uiManagerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
   void uiManagerShouldAddEventListener(
       std::shared_ptr<const EventListener> listener) final;
   void uiManagerShouldRemoveEventListener(

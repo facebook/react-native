@@ -17,7 +17,6 @@ namespace facebook::react {
 
 /**
  * A minimal tokenizer for a subset of CSS syntax.
- * `auto`).
  *
  * This is based on the W3C CSS Syntax specification, with simplifications made
  * for syntax which React Native does not attempt to support.

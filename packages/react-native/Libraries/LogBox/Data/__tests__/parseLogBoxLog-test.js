@@ -6,12 +6,11 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
-
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
+import type {ExtendedExceptionData} from '../parseLogBoxLog';
 
 const {
   parseLogBoxException,
@@ -297,7 +296,7 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses a babel transform syntax error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: `
 
   197 | });
@@ -345,7 +344,7 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses an invalid require syntax error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: `Unable to resolve module \`ListCellx\` from /path/to/file.js: ListCellx could not be found within the project.
 
 If you are sure the module exists, try these steps:
@@ -415,7 +414,7 @@ If you are sure the module exists, try these steps:
   });
 
   it('parses a reference error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: `
 
   197 | });
@@ -463,7 +462,7 @@ If you are sure the module exists, try these steps:
   });
 
   it('parses a babel codeframe error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
 
 Please follow the instructions at: fburl.com/rn-remote-assets
@@ -515,7 +514,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('parses a babel codeframe error with ansi', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: `TransformError RKJSModules/Apps/CrashReact/CrashReactApp.js: /path/to/RKJSModules/Apps/CrashReact/CrashReactApp.js: The first argument to \`fbRemoteAsset\` is "null_state_glyphs", but the requested asset is missing from the local metadata. Either the asset does not exist or the metadata is not up-to-date.
 
 Please follow the instructions at: fburl.com/rn-remote-assets

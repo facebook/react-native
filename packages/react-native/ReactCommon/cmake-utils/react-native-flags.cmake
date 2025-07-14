@@ -16,24 +16,20 @@ SET(reactnative_FLAGS
         -frtti
         -std=c++20
         -DFOLLY_NO_CONFIG=1
+        -DLOG_TAG=\"ReactNative\"
 )
 
 # This function can be used to configure the reactnative flags for a specific target in
-# a conveniente way. The usage is:
+# a convenient way. The usage is:
 #
-# target_compile_reactnative_options(target_name scope [tag])
+# target_compile_reactnative_options(target_name scope)
 #
 # scope is either PUBLIC, PRIVATE or INTERFACE
-# tag is optional and if set, will be passed to the -DLOG_TAG flag
 
 function(target_compile_reactnative_options target_name scope)
   target_compile_options(${target_name} ${scope} ${reactnative_FLAGS})
-  set (extra_args ${ARGN})
-  list(LENGTH extra_args extra_count)
-  set (tag "ReactNative")
-  if (${extra_count} GREATER 0)
-    list(GET extra_args 0 user_provided_tag)
-    target_compile_options(${target_name} ${scope} -DLOG_TAG=\"${user_provided_tag}\")
-  endif ()
+  # TODO T228344694 improve this so that it works for all platforms
+  if(ANDROID)
+    target_compile_definitions(${target_name} ${scope} RN_SERIALIZABLE_STATE)
+  endif()
 endfunction()
-

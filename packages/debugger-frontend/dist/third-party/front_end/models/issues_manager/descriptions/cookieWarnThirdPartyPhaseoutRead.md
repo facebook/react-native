@@ -1,7 +1,6 @@
-# Reading cookie in cross-site context will be blocked in future Chrome versions
+# Reading cookie in cross-site context may be impacted on Chrome
 
 Cookies with the `SameSite=None; Secure` and not `Partitioned` attributes that operate in cross-site contexts are third-party cookies.
-In future Chrome versions, reading third-party cookies will be blocked.
-This behavior protects user data from cross-site tracking.
+Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
 
-Please refer to the article linked to learn more about preparing your site to avoid potential breakage.
+Learn more from the linked article about preparing your site to avoid potential breakage.

@@ -25,6 +25,8 @@ using namespace facebook::jsi;
 
 namespace facebook::react {
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
   NativeModuleProxy(std::shared_ptr<JSINativeModules> nativeModules)
@@ -56,7 +58,7 @@ namespace {
 
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
 std::string simpleBasename(const std::string& path) {
-  size_t pos = path.rfind("/");
+  size_t pos = path.rfind('/');
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
 
@@ -521,6 +523,55 @@ Value JSIExecutor::globalEvalWithSourceUrl(const Value* args, size_t count) {
       std::make_unique<StringBuffer>(std::move(code)), url);
 }
 
+#else // RCT_FIT_RM_OLD_RUNTIME
+
+JSIExecutor::JSIExecutor(
+    std::shared_ptr<jsi::Runtime> runtime,
+    std::shared_ptr<ExecutorDelegate> delegate,
+    const JSIScopedTimeoutInvoker& scopedTimeoutInvoker,
+    RuntimeInstaller runtimeInstaller) {}
+
+void JSIExecutor::initializeRuntime() {}
+
+void JSIExecutor::loadBundle(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {}
+
+void JSIExecutor::registerBundle(
+    uint32_t bundleId,
+    const std::string& bundlePath) {}
+
+void JSIExecutor::callFunction(
+    const std::string& moduleId,
+    const std::string& methodId,
+    const folly::dynamic& arguments) {}
+
+void JSIExecutor::invokeCallback(
+    const double callbackId,
+    const folly::dynamic& arguments) {}
+
+void JSIExecutor::setGlobalVariable(
+    std::string propName,
+    std::unique_ptr<const JSBigString> jsonValue) {}
+
+std::string JSIExecutor::getDescription() {
+  return "null";
+}
+
+void* JSIExecutor::getJavaScriptContext() {
+  return nullptr;
+}
+
+bool JSIExecutor::isInspectable() {
+  return false;
+}
+
+void JSIExecutor::handleMemoryPressure(int pressureLevel) {}
+
+void JSIExecutor::flush() {}
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
+
 void bindNativeLogger(Runtime& runtime, Logger logger) {
   runtime.global().setProperty(
       runtime,
@@ -556,7 +607,9 @@ void bindNativePerformanceNow(Runtime& runtime) {
           [](jsi::Runtime& runtime,
              const jsi::Value&,
              const jsi::Value* args,
-             size_t count) { return Value(JSExecutor::performanceNow()); }));
+             size_t /*count*/) {
+            return HighResTimeStamp::now().toDOMHighResTimeStamp();
+          }));
 }
 
 } // namespace facebook::react

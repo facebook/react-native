@@ -9,8 +9,7 @@
 
 #if TARGET_OS_MAC
 
-namespace facebook::react {
-namespace detail {
+namespace facebook::react::detail {
 
 void wrappedManagedObjectDeleter(void *cfPointer) noexcept
 {
@@ -25,8 +24,7 @@ void wrappedManagedObjectDeleter(void *cfPointer) noexcept
   CFRelease(cfPointer);
 }
 
-} // namespace detail
-} // namespace facebook::react
+} // namespace facebook::react::detail
 
 @implementation RCTInternalGenericWeakWrapper
 @end

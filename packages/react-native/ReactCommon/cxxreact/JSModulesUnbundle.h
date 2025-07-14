@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <cstdint>
 #include <stdexcept>
 #include <string>
@@ -34,7 +36,7 @@ class JSModulesUnbundle {
     std::string code;
   };
   JSModulesUnbundle() {}
-  virtual ~JSModulesUnbundle() {}
+  virtual ~JSModulesUnbundle() = default;
   virtual Module getModule(uint32_t moduleId) const = 0;
 
  private:
@@ -42,3 +44,5 @@ class JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

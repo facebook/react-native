@@ -4,20 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import {getUrlCacheBreaker, setUrlCacheBreaker} from '../AssetUtils';
 
 describe('AssetUtils', () => {
   afterEach(() => {
+    // $FlowIgnore[cannot-write]
     global.__DEV__ = true;
     jest.clearAllMocks();
   });
 
   it('should return empty string and warn once if no cacheBreaker set (DEV)', () => {
     const mockWarn = jest.spyOn(console, 'warn').mockReturnValue(undefined);
+    // $FlowIgnore[cannot-write]
     global.__DEV__ = true;
     expect(getUrlCacheBreaker()).toEqual('');
     expect(getUrlCacheBreaker()).toEqual('');
@@ -26,6 +28,7 @@ describe('AssetUtils', () => {
 
   it('should return empty string if no cacheBreaker set in prod', () => {
     const mockWarn = jest.spyOn(console, 'warn');
+    // $FlowIgnore[cannot-write]
     global.__DEV__ = false;
     expect(getUrlCacheBreaker()).toEqual('');
     expect(mockWarn).not.toHaveBeenCalled();

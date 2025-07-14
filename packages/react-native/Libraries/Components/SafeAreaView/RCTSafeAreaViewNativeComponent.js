@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 export * from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
-import RCTSafeAreaViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
-export default RCTSafeAreaViewNativeComponent;
+export {default} from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';

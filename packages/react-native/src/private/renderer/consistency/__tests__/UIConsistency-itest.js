@@ -4,14 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @fantom_flags enableSynchronousStateUpdates:true
  * @flow strict-local
  * @format
- * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
- * @fantom_flags enableSynchronousStateUpdates:true
  */
 
-import 'react-native/Libraries/Core/InitializeCore';
+import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef056e269a4ed514c18ebaed89885661>>
+ * @generated SignedSource<<fbc0fe5e434b2f367ec6e73383a91d4c>>
  */
 
 /**
@@ -31,19 +31,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool animatedShouldSignalBatch() override {
-    return false;
-  }
-
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
 
-  bool disableMainQueueSyncDispatchIOS() override {
+  bool cxxNativeAnimatedRemoveJsSync() override {
     return false;
   }
 
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool disableTextLayoutManagerCacheAndroid() override {
     return false;
   }
 
@@ -52,6 +52,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidTextMeasurementOptimizations() override {
     return false;
   }
 
@@ -75,6 +79,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableEagerMainQueueModulesOnIOS() override {
+    return false;
+  }
+
   bool enableEagerRootViewAttachment() override {
     return false;
   }
@@ -95,11 +103,15 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableIOSTextBaselineOffsetPerLine() override {
+    return false;
+  }
+
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
 
-  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
+  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
     return false;
   }
 
@@ -111,7 +123,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
-  bool enableMainQueueModulesOnIOS() override {
+  bool enableMainQueueCoordinatorOnIOS() override {
+    return false;
+  }
+
+  bool enableModuleArgumentNSNullConversionIOS() override {
     return false;
   }
 
@@ -159,6 +175,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return true;
   }
 
+  bool enableVirtualViewDebugFeatures() override {
+    return false;
+  }
+
+  bool enableVirtualViewRenderState() override {
+    return false;
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -171,8 +199,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool incorporateMaxLinesDuringAndroidLayout() override {
-    return true;
+  bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
+  double preparedTextCacheSize() override {
+    return 200.0;
+  }
+
+  bool releaseImageDataWhenConsumed() override {
+    return false;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
@@ -213,6 +249,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useTurboModules() override {
     return false;
+  }
+
+  double virtualViewPrerenderRatio() override {
+    return 5.0;
   }
 };
 

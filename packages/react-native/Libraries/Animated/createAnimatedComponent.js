@@ -21,7 +21,7 @@ import type AnimatedValue from './nodes/AnimatedValue';
 
 import createAnimatedPropsHook from '../../src/private/animated/createAnimatedPropsHook';
 import composeStyles from '../../src/private/styles/composeStyles';
-import View from '../Components/View/View';
+import {type ViewProps} from '../Components/View/ViewPropTypes';
 import useMergeRefs from '../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useMemo} from 'react';
@@ -60,9 +60,7 @@ type NonAnimatedProps =
   | 'disabled'
   | 'accessibilityLabel';
 type PassThroughProps = $ReadOnly<{
-  passthroughAnimatedPropExplicitValues?: React.ElementConfig<
-    typeof View,
-  > | null,
+  passthroughAnimatedPropExplicitValues?: ViewProps | null,
 }>;
 
 export type AnimatedProps<Props: {...}> = {
@@ -105,41 +103,45 @@ export function unstable_createAnimatedComponentWithAllowlist<
   const AnimatedComponent: AnimatedComponentType<
     TProps,
     React.ElementRef<TInstance>,
-  > = React.forwardRef<AnimatedProps<TProps>, React.ElementRef<TInstance>>(
-    (props, forwardedRef) => {
-      const [reducedProps, callbackRef] = useAnimatedProps<
-        TProps,
-        React.ElementRef<TInstance>,
-      >(props);
-      const ref = useMergeRefs<React.ElementRef<TInstance>>(
-        callbackRef,
-        forwardedRef,
-      );
+  > = ({
+    ref: forwardedRef,
+    ...props
+  }: {
+    ref?: React.RefSetter<React.ElementRef<TInstance>>,
+    ...AnimatedProps<TProps>,
+  }) => {
+    const [reducedProps, callbackRef] = useAnimatedProps<
+      TProps,
+      React.ElementRef<TInstance>,
+    >(props);
+    const ref = useMergeRefs<React.ElementRef<TInstance>>(
+      callbackRef,
+      forwardedRef,
+    );
 
-      // Some components require explicit passthrough values for animation
-      // to work properly. For example, if an animated component is
-      // transformed and Pressable, onPress will not work after transform
-      // without these passthrough values.
-      // $FlowFixMe[prop-missing]
-      const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
-      const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
-      const mergedStyle = useMemo(
-        () => composeStyles(style, passthroughStyle),
-        [passthroughStyle, style],
-      );
+    // Some components require explicit passthrough values for animation
+    // to work properly. For example, if an animated component is
+    // transformed and Pressable, onPress will not work after transform
+    // without these passthrough values.
+    // $FlowFixMe[prop-missing]
+    const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
+    const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
+    const mergedStyle = useMemo(
+      () => composeStyles(style, passthroughStyle),
+      [passthroughStyle, style],
+    );
 
-      // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
-      // spread after `reducedProps` but before `style`.
-      return (
-        <Component
-          {...reducedProps}
-          {...passthroughAnimatedPropExplicitValues}
-          style={mergedStyle}
-          ref={ref}
-        />
-      );
-    },
-  );
+    // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
+    // spread after `reducedProps` but before `style`.
+    return (
+      <Component
+        {...reducedProps}
+        {...passthroughAnimatedPropExplicitValues}
+        style={mergedStyle}
+        ref={ref}
+      />
+    );
+  };
 
   AnimatedComponent.displayName = `Animated(${
     Component.displayName || 'Anonymous'

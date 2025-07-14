@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -20,7 +20,7 @@ const XMLHttpRequest = require('../XMLHttpRequest').default;
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');
 let requestId = 1;
-function setRequestId(id) {
+function setRequestId(id: number) {
   if (Platform.OS === 'ios') {
     return;
   }
@@ -49,12 +49,12 @@ jest.setMock('../../BatchedBridge/NativeModules', {
 });
 
 describe('XMLHttpRequest', function () {
-  let xhr;
-  let handleTimeout;
-  let handleError;
-  let handleLoad;
-  let handleReadyStateChange;
-  let handleLoadEnd;
+  let xhr: XMLHttpRequest;
+  let handleTimeout: JestMockFn<$FlowFixMe, void>;
+  let handleError: JestMockFn<$FlowFixMe, void>;
+  let handleLoad: JestMockFn<$FlowFixMe, void>;
+  let handleReadyStateChange: JestMockFn<$FlowFixMe, void>;
+  let handleLoadEnd: JestMockFn<$FlowFixMe, void>;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -80,22 +80,13 @@ describe('XMLHttpRequest', function () {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    xhr = null;
-    handleTimeout = null;
-    handleError = null;
-    handleLoad = null;
-    handleLoadEnd = null;
-    handleReadyStateChange = null;
-  });
-
   it('should transition readyState correctly', function () {
     expect(xhr.readyState).toBe(xhr.UNSENT);
 
     xhr.open('GET', 'blabla');
 
-    expect(xhr.onreadystatechange.mock.calls.length).toBe(1);
-    expect(handleReadyStateChange.mock.calls.length).toBe(1);
+    expect(xhr.onreadystatechange).toHaveBeenCalledTimes(1);
+    expect(handleReadyStateChange).toHaveBeenCalledTimes(1);
     expect(xhr.readyState).toBe(xhr.OPENED);
   });
 
@@ -105,12 +96,14 @@ describe('XMLHttpRequest', function () {
     jest.spyOn(console, 'warn').mockReturnValue(undefined);
 
     // Setting responseType to an unsupported value has no effect.
+    // $FlowFixMe[incompatible-type]
     xhr.responseType = 'arrayblobbuffertextfile';
     expect(xhr.responseType).toBe('');
 
     expect(console.warn).toBeCalledWith(
       "The provided value 'arrayblobbuffertextfile' is not a valid 'responseType'.",
     );
+    // $FlowFixMe[prop-missing]
     console.warn.mockRestore();
 
     xhr.responseType = 'arraybuffer';
@@ -139,6 +132,7 @@ describe('XMLHttpRequest', function () {
 
     // responseText is read-only.
     expect(() => {
+      // $FlowExpectedError[cannot-write]
       xhr.responseText = 'hi';
     }).toThrow();
     expect(xhr.responseText).toBe('');
@@ -160,13 +154,13 @@ describe('XMLHttpRequest', function () {
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
-    expect(xhr.ontimeout.mock.calls.length).toBe(1);
-    expect(xhr.onloadend.mock.calls.length).toBe(1);
+    expect(xhr.ontimeout).toHaveBeenCalledTimes(1);
+    expect(xhr.onloadend).toHaveBeenCalledTimes(1);
     expect(xhr.onerror).not.toBeCalled();
     expect(xhr.onload).not.toBeCalled();
 
-    expect(handleTimeout.mock.calls.length).toBe(1);
-    expect(handleLoadEnd.mock.calls.length).toBe(1);
+    expect(handleTimeout).toHaveBeenCalledTimes(1);
+    expect(handleLoadEnd).toHaveBeenCalledTimes(1);
     expect(handleError).not.toBeCalled();
     expect(handleLoad).not.toBeCalled();
   });
@@ -175,19 +169,20 @@ describe('XMLHttpRequest', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(4);
+    // $FlowFixMe[incompatible-call]
     xhr.__didCompleteResponse(requestId, 'Generic error');
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
-    expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
-    expect(xhr.onerror.mock.calls.length).toBe(1);
-    expect(xhr.onloadend.mock.calls.length).toBe(1);
+    expect(xhr.onreadystatechange).toHaveBeenCalledTimes(2);
+    expect(xhr.onerror).toHaveBeenCalledTimes(1);
+    expect(xhr.onloadend).toHaveBeenCalledTimes(1);
     expect(xhr.ontimeout).not.toBeCalled();
     expect(xhr.onload).not.toBeCalled();
 
-    expect(handleReadyStateChange.mock.calls.length).toBe(2);
-    expect(handleError.mock.calls.length).toBe(1);
-    expect(handleLoadEnd.mock.calls.length).toBe(1);
+    expect(handleReadyStateChange).toHaveBeenCalledTimes(2);
+    expect(handleError).toHaveBeenCalledTimes(1);
+    expect(handleLoadEnd).toHaveBeenCalledTimes(1);
     expect(handleTimeout).not.toBeCalled();
     expect(handleLoad).not.toBeCalled();
   });
@@ -196,19 +191,20 @@ describe('XMLHttpRequest', function () {
     xhr.open('GET', 'blabla');
     xhr.send();
     setRequestId(5);
+    // $FlowFixMe[incompatible-call]
     xhr.__didCompleteResponse(requestId, null);
 
     expect(xhr.readyState).toBe(xhr.DONE);
 
-    expect(xhr.onreadystatechange.mock.calls.length).toBe(2);
-    expect(xhr.onload.mock.calls.length).toBe(1);
-    expect(xhr.onloadend.mock.calls.length).toBe(1);
+    expect(xhr.onreadystatechange).toHaveBeenCalledTimes(2);
+    expect(xhr.onload).toHaveBeenCalledTimes(1);
+    expect(xhr.onloadend).toHaveBeenCalledTimes(1);
     expect(xhr.onerror).not.toBeCalled();
     expect(xhr.ontimeout).not.toBeCalled();
 
-    expect(handleReadyStateChange.mock.calls.length).toBe(2);
-    expect(handleLoad.mock.calls.length).toBe(1);
-    expect(handleLoadEnd.mock.calls.length).toBe(1);
+    expect(handleReadyStateChange).toHaveBeenCalledTimes(2);
+    expect(handleLoad).toHaveBeenCalledTimes(1);
+    expect(handleLoadEnd).toHaveBeenCalledTimes(1);
     expect(handleError).not.toBeCalled();
     expect(handleTimeout).not.toBeCalled();
   });
@@ -223,10 +219,14 @@ describe('XMLHttpRequest', function () {
     setRequestId(6);
     xhr.__didUploadProgress(requestId, 42, 100);
 
-    expect(xhr.upload.onprogress.mock.calls.length).toBe(1);
-    expect(handleProgress.mock.calls.length).toBe(1);
+    expect(xhr.upload.onprogress).toHaveBeenCalledTimes(1);
+    expect(handleProgress).toHaveBeenCalledTimes(1);
 
+    // $FlowFixMe[incompatible-use]
+    // $FlowFixMe[prop-missing]
     expect(xhr.upload.onprogress.mock.calls[0][0].loaded).toBe(42);
+    // $FlowFixMe[incompatible-use]
+    // $FlowFixMe[prop-missing]
     expect(xhr.upload.onprogress.mock.calls[0][0].total).toBe(100);
     expect(handleProgress.mock.calls[0][0].loaded).toBe(42);
     expect(handleProgress.mock.calls[0][0].total).toBe(100);

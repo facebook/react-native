@@ -12,7 +12,9 @@
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/primitives.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
+#endif
 
 std::shared_ptr<facebook::react::TurboModule>
 NativeMutationObserverModuleProvider(
@@ -36,21 +38,11 @@ void NativeMutationObserver::observe(
     NativeMutationObserverObserveOptions options) {
   auto mutationObserverId = options.mutationObserverId;
   auto subtree = options.subtree;
-  auto shadowNode =
-      shadowNodeFromValue(runtime, std::move(options).targetShadowNode);
+  auto shadowNode = options.targetShadowNode;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   mutationObserverManager_.observe(
       mutationObserverId, shadowNode, subtree, uiManager);
-}
-
-// TODO: remove in the next version
-void NativeMutationObserver::unobserve(
-    jsi::Runtime& /*runtime*/,
-    MutationObserverId mutationObserverId,
-    jsi::Object targetShadowNode) {
-  // This will not be used but cannot be removed yet because the compatibility
-  // check does not allow it.
 }
 
 void NativeMutationObserver::unobserveAll(
@@ -106,7 +98,7 @@ jsi::Value NativeMutationObserver::getPublicInstanceFromShadowNode(
 
 std::vector<jsi::Value>
 NativeMutationObserver::getPublicInstancesFromShadowNodes(
-    const std::vector<ShadowNode::Shared>& shadowNodes) const {
+    const std::vector<std::shared_ptr<const ShadowNode>>& shadowNodes) const {
   std::vector<jsi::Value> publicInstances;
   publicInstances.reserve(shadowNodes.size());
 

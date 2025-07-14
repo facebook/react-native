@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include <folly/dynamic.h>
+#include <react/utils/FollyConvert.h>
 
-namespace facebook::react {
+// This file has been moved to `react/utils/FollyConvert.h`.
+// We are keeping the header here for backwards compatibility.
 
-folly::dynamic convertIdToFollyDynamic(id json);
-id convertFollyDynamicToId(const folly::dynamic& dyn);
-
-} // namespace facebook::react
+#warning \
+    "[DEPRECATION] `React/RCTFollyconvert.h` is deprecated and will be removed in the future. \
+    If this warning appears due to a library, please open an issue in that library, and ask for an update. \
+    Please, replace the `#include <React/RCTFollyConvert.h>` statements \
+    with `#include <react/utils/FollyConvert.h>`."

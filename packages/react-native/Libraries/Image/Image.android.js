@@ -8,13 +8,15 @@
  * @format
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
+import type {ImageProps} from './ImageProps';
 import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import TextAncestor from '../Text/TextAncestor';
+import TextAncestorContext from '../Text/TextAncestorContext';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import {
   unstable_getImageComponentDecorator,
@@ -126,125 +128,129 @@ async function queryCache(
  *
  * See https://reactnative.dev/docs/image
  */
-let BaseImage: AbstractImageAndroid = React.forwardRef(
-  (props, forwardedRef) => {
-    let source = getImageSourcesFromImageProps(props) || {
-      uri: undefined,
-      width: undefined,
-      height: undefined,
-    };
-    const defaultSource = resolveAssetSource(props.defaultSource);
-    const loadingIndicatorSource = resolveAssetSource(
-      props.loadingIndicatorSource,
+let BaseImage: AbstractImageAndroid = ({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<HostInstance>,
+  ...ImageProps,
+}) => {
+  let source = getImageSourcesFromImageProps(props) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
+  const defaultSource = resolveAssetSource(props.defaultSource);
+  const loadingIndicatorSource = resolveAssetSource(
+    props.loadingIndicatorSource,
+  );
+
+  if (props.children != null) {
+    throw new Error(
+      'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
     );
+  }
 
-    if (props.children != null) {
-      throw new Error(
-        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
-      );
+  if (props.defaultSource != null && props.loadingIndicatorSource != null) {
+    throw new Error(
+      'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
+    );
+  }
+
+  let style: ImageStyleProp;
+  let sources;
+  if (Array.isArray(source)) {
+    style = [styles.base, props.style];
+    sources = source;
+  } else {
+    const {uri} = source;
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
+    const width = source.width ?? props.width;
+    const height = source.height ?? props.height;
+    style = [{width, height}, styles.base, props.style];
+    sources = [source];
+  }
 
-    if (props.defaultSource != null && props.loadingIndicatorSource != null) {
-      throw new Error(
-        'The <Image> component cannot have defaultSource and loadingIndicatorSource at the same time. Please use either defaultSource or loadingIndicatorSource.',
-      );
-    }
+  const {onLoadStart, onLoad, onLoadEnd, onError} = props;
+  const nativeProps = {
+    ...props,
+    style,
+    shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
+    // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
+    // (for historical reasons). So in the latter case we populate both "src" and "source",
+    // in order to have a better alignment between platforms in the future.
+    src: sources,
+    source: sources,
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
+    defaultSource: defaultSource ? defaultSource.uri : null,
+    loadingIndicatorSrc: loadingIndicatorSource
+      ? loadingIndicatorSource.uri
+      : null,
+    accessibilityLabel:
+      props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
+    accessibilityLabelledBy:
+      props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
+    accessible: props.alt !== undefined ? true : props.accessible,
+    accessibilityState: {
+      busy: props['aria-busy'] ?? props.accessibilityState?.busy,
+      checked: props['aria-checked'] ?? props.accessibilityState?.checked,
+      disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
+      expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
+      selected: props['aria-selected'] ?? props.accessibilityState?.selected,
+    },
+  };
 
-    let style: ImageStyleProp;
-    let sources;
-    if (Array.isArray(source)) {
-      style = [styles.base, props.style];
-      sources = source;
-    } else {
-      const {uri} = source;
-      if (uri === '') {
-        console.warn('source.uri should not be an empty string');
-      }
-      const width = source.width ?? props.width;
-      const height = source.height ?? props.height;
-      style = [{width, height}, styles.base, props.style];
-      sources = [source];
-    }
+  const flattenedStyle = flattenStyle<ImageStyleProp>(style);
+  const objectFit = convertObjectFitToResizeMode(flattenedStyle?.objectFit);
+  const resizeMode =
+    objectFit || props.resizeMode || flattenedStyle?.resizeMode || 'cover';
 
-    const {onLoadStart, onLoad, onLoadEnd, onError} = props;
-    const nativeProps = {
-      ...props,
-      style,
-      shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
-      // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
-      // (for historical reasons). So in the latter case we populate both "src" and "source",
-      // in order to have a better alignment between platforms in the future.
-      src: sources,
-      source: sources,
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
-      defaultSource: defaultSource ? defaultSource.uri : null,
-      loadingIndicatorSrc: loadingIndicatorSource
-        ? loadingIndicatorSource.uri
-        : null,
-      accessibilityLabel:
-        props['aria-label'] ?? props.accessibilityLabel ?? props.alt,
-      accessibilityLabelledBy:
-        props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy,
-      accessible: props.alt !== undefined ? true : props.accessible,
-      accessibilityState: {
-        busy: props['aria-busy'] ?? props.accessibilityState?.busy,
-        checked: props['aria-checked'] ?? props.accessibilityState?.checked,
-        disabled: props['aria-disabled'] ?? props.accessibilityState?.disabled,
-        expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
-        selected: props['aria-selected'] ?? props.accessibilityState?.selected,
-      },
-    };
+  const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
-    const flattenedStyle = flattenStyle<ImageStyleProp>(style);
-    const objectFit = convertObjectFitToResizeMode(flattenedStyle?.objectFit);
-    const resizeMode =
-      objectFit || props.resizeMode || flattenedStyle?.resizeMode || 'cover';
-
-    const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
-
-    return (
-      <ImageAnalyticsTagContext.Consumer>
-        {analyticTag => {
-          const nativePropsWithAnalytics =
-            analyticTag !== null
-              ? {
-                  ...nativeProps,
-                  internal_analyticTag: analyticTag,
-                }
-              : nativeProps;
-          return (
-            <TextAncestor.Consumer>
-              {hasTextAncestor => {
-                if (hasTextAncestor) {
-                  return (
-                    <TextInlineImageNativeComponent
-                      // $FlowFixMe[incompatible-type]
-                      style={style}
-                      resizeMode={resizeMode}
-                      headers={nativeProps.headers}
-                      src={sources}
-                      ref={actualRef}
-                    />
-                  );
-                }
-
+  return (
+    <ImageAnalyticsTagContext.Consumer>
+      {analyticTag => {
+        const nativePropsWithAnalytics =
+          analyticTag !== null
+            ? {
+                ...nativeProps,
+                internal_analyticTag: analyticTag,
+              }
+            : nativeProps;
+        return (
+          <TextAncestorContext.Consumer>
+            {hasTextAncestor => {
+              if (hasTextAncestor) {
                 return (
-                  <ImageViewNativeComponent
-                    {...nativePropsWithAnalytics}
+                  <TextInlineImageNativeComponent
+                    // $FlowFixMe[incompatible-type]
+                    style={style}
                     resizeMode={resizeMode}
+                    headers={nativeProps.headers}
+                    src={sources}
                     ref={actualRef}
                   />
                 );
-              }}
-            </TextAncestor.Consumer>
-          );
-        }}
-      </ImageAnalyticsTagContext.Consumer>
-    );
-  },
-);
+              }
+
+              return (
+                <ImageViewNativeComponent
+                  {...nativePropsWithAnalytics}
+                  resizeMode={resizeMode}
+                  ref={actualRef}
+                />
+              );
+            }}
+          </TextAncestorContext.Consumer>
+        );
+      }}
+    </ImageAnalyticsTagContext.Consumer>
+  );
+};
 
 const imageComponentDecorator = unstable_getImageComponentDecorator();
 if (imageComponentDecorator != null) {

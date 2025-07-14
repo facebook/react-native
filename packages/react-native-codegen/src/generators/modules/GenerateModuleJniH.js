@@ -63,7 +63,8 @@ std::shared_ptr<TurboModule> ${libraryName}_ModuleProvider(const std::string &mo
 // Note: this CMakeLists.txt template includes dependencies for both NativeModule and components.
 const CMakeListsTemplate = ({
   libraryName,
-}: $ReadOnly<{libraryName: string}>) => {
+  targetName,
+}: $ReadOnly<{libraryName: string, targetName: string}>) => {
   return `# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -75,35 +76,27 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/${libraryName}/*.cpp)
 
 add_library(
-  react_codegen_${libraryName}
+  react_codegen_${targetName}
   OBJECT
   \${react_codegen_SRCS}
 )
 
-target_include_directories(react_codegen_${libraryName} PUBLIC . react/renderer/components/${libraryName})
+target_include_directories(react_codegen_${targetName} PUBLIC . react/renderer/components/${libraryName})
 
 target_link_libraries(
-  react_codegen_${libraryName}
+  react_codegen_${targetName}
   fbjni
   jsi
   # We need to link different libraries based on whether we are building rncore or not, that's necessary
   # because we want to break a circular dependency between react_codegen_rncore and reactnative
   ${
-    libraryName !== 'rncore'
+    targetName !== 'rncore'
       ? 'reactnative'
       : 'folly_runtime glog react_debug react_nativemodule_core react_renderer_componentregistry react_renderer_core react_renderer_debug react_renderer_graphics react_renderer_imagemanager react_renderer_mapbuffer react_utils rrc_image rrc_view turbomodulejsijni yoga'
   }
 )
 
-target_compile_options(
-  react_codegen_${libraryName}
-  PRIVATE
-  -DLOG_TAG=\\"ReactNative\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_${targetName} PRIVATE)
 `;
 };
 
@@ -133,9 +126,12 @@ module.exports = {
       modules: modules,
       libraryName: libraryName.replace(/-/g, '_'),
     });
+    // Use rncore as target name for backwards compat
+    const targetName =
+      libraryName === 'FBReactNativeSpec' ? 'rncore' : libraryName;
     return new Map([
       [`jni/${fileName}`, replacedTemplate],
-      ['jni/CMakeLists.txt', CMakeListsTemplate({libraryName: libraryName})],
+      ['jni/CMakeLists.txt', CMakeListsTemplate({libraryName, targetName})],
     ]);
   },
 };

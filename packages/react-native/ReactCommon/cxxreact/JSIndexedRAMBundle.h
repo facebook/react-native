@@ -7,8 +7,12 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
+#include <functional>
 #include <istream>
 #include <memory>
+#include <string>
 
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSModulesUnbundle.h>
@@ -69,3 +73,5 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

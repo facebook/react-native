@@ -54,7 +54,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendReduceMotionChangeEvent()
           }
         }
@@ -67,7 +67,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
 
         override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
+          if (reactApplicationContext.hasActiveReactInstance()) {
             updateAndSendHighTextContrastChangeEvent()
           }
         }
@@ -90,7 +90,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val appContext = context.applicationContext
     accessibilityManager =
         appContext.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
-    contentResolver = getReactApplicationContext().getContentResolver()
+    contentResolver = reactApplicationContext.contentResolver
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
@@ -121,14 +121,13 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
 
   private val isInvertColorsEnabledValue: Boolean
-    get() {
-      try {
-        return Settings.Secure.getInt(
-            contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
-      } catch (e: Settings.SettingNotFoundException) {
-        return false
-      }
-    }
+    get() =
+        try {
+          Settings.Secure.getInt(
+              contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
+        } catch (e: Settings.SettingNotFoundException) {
+          false
+        }
 
   private val isGrayscaleEnabledValue: Boolean
     get() {
@@ -181,10 +180,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isReduceMotionEnabled = isReduceMotionEnabledValue
     if (reduceMotionEnabled != isReduceMotionEnabled) {
       reduceMotionEnabled = isReduceMotionEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
     }
   }
 
@@ -192,10 +189,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isInvertColorsEnabled = isInvertColorsEnabledValue
     if (invertColorsEnabled != isInvertColorsEnabled) {
       invertColorsEnabled = isInvertColorsEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(INVERT_COLOR_EVENT_NAME, invertColorsEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(INVERT_COLOR_EVENT_NAME, invertColorsEnabled)
     }
   }
 
@@ -203,13 +198,11 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isHighTextContrastEnabled = isHighTextContrastEnabledValue
     if (highTextContrastEnabled != isHighTextContrastEnabled) {
       highTextContrastEnabled = isHighTextContrastEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(
-            HIGH_TEXT_CONTRAST_EVENT_NAME,
-            highTextContrastEnabled,
-        )
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(
+              HIGH_TEXT_CONTRAST_EVENT_NAME,
+              highTextContrastEnabled,
+          )
     }
   }
 
@@ -239,10 +232,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val isGrayscaleModeEnabled = isGrayscaleEnabledValue
     if (grayscaleModeEnabled != isGrayscaleModeEnabled) {
       grayscaleModeEnabled = isGrayscaleModeEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(GRAYSCALE_MODE_EVENT_NAME, grayscaleModeEnabled)
-      }
+      getReactApplicationContextIfActiveOrWarn()
+          ?.emitDeviceEvent(GRAYSCALE_MODE_EVENT_NAME, grayscaleModeEnabled)
     }
   }
 

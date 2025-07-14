@@ -22,12 +22,14 @@ import Platform from '../../Utilities/Platform';
 import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
 import * as React from 'react';
+import {cloneElement} from 'react';
 
-type TVProps = {
+type TouchableNativeFeedbackTVProps = {
   /**
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
    * @platform ios
+   * @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: ?boolean,
 
@@ -69,7 +71,7 @@ type TVProps = {
 
 export type TouchableNativeFeedbackProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableNativeFeedbackTVProps,
   /**
    * Determines the type of background drawable that's going to be used to display feedback.
    * It takes an object with type property and extra data depending on the type.
@@ -334,7 +336,7 @@ class TouchableNativeFeedback extends React.Component<
 
     const accessibilityLabel =
       this.props['aria-label'] ?? this.props.accessibilityLabel;
-    return React.cloneElement(
+    return cloneElement(
       element,
       {
         ...eventHandlersWithoutBlurAndFocus,

@@ -7,10 +7,11 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include <reactperflogger/ReactPerfettoCategories.h>
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 namespace facebook::react {
 
@@ -24,14 +25,16 @@ class ReactPerfettoLogger {
 
   static void mark(
       const std::string_view& eventName,
-      double startTime,
-      const std::optional<std::string_view>& trackName);
+      HighResTimeStamp startTime,
+      const std::optional<std::string_view>& trackName = std::nullopt,
+      const std::optional<std::string_view>& trackGroup = std::nullopt);
 
   static void measure(
       const std::string_view& eventName,
-      double startTime,
-      double endTime,
-      const std::optional<std::string_view>& trackName);
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime,
+      const std::optional<std::string_view>& trackName = std::nullopt,
+      const std::optional<std::string_view>& trackGroup = std::nullopt);
 };
 
 } // namespace facebook::react

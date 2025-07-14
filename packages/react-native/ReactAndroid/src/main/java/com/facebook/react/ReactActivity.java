@@ -11,11 +11,13 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.util.AndroidVersion;
 import org.jetbrains.annotations.NotNull;
 
 /** Base Activity for React Native applications. */
@@ -23,6 +25,18 @@ public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
+
+  // Due to enforced predictive back on targetSdk 36, 'onBackPressed()' is disabled by default.
+  // Using a workaround to trigger it manually.
+  private final OnBackPressedCallback mBackPressedCallback =
+      new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+          setEnabled(false);
+          onBackPressed();
+          setEnabled(true);
+        }
+      };
 
   protected ReactActivity() {
     mDelegate = createReactActivityDelegate();
@@ -45,6 +59,9 @@ public abstract class ReactActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     mDelegate.onCreate(savedInstanceState);
+    if (AndroidVersion.isAtLeastTargetSdk36(this)) {
+      getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
+    }
   }
 
   @Override
@@ -103,6 +120,9 @@ public abstract class ReactActivity extends AppCompatActivity
 
   @Override
   public void invokeDefaultOnBackPressed() {
+    // Disabling callback so the fallback logic (finish activity) can run
+    // as super.onBackPressed() will call all enabled callbacks in the dispatcher.
+    mBackPressedCallback.setEnabled(false);
     super.onBackPressed();
   }
 

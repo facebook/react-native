@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -177,7 +177,7 @@ exports.examples = [
   },
   {
     title: 'Elliptical Radial Gradient',
-    name: 'radial-gradient-8',
+    name: 'elliptical',
     render(): React.Node {
       return (
         <GradientBox
@@ -192,7 +192,7 @@ exports.examples = [
   },
   {
     title: 'Radial Gradient with Platform colors',
-    name: 'radial-gradient-9',
+    name: 'platform-colors',
     render(): React.Node {
       return (
         <GradientBox
@@ -223,7 +223,7 @@ exports.examples = [
   },
   {
     title: 'Transition hint with percentages',
-    name: 'radial-gradient-10',
+    name: 'transition-hint',
     render(): React.Node {
       return (
         <GradientBox
@@ -237,7 +237,7 @@ exports.examples = [
   },
   {
     title: 'Multiple radial gradients',
-    name: 'radial-gradient-11',
+    name: 'multiple',
     render(): React.Node {
       return (
         <GradientBox
@@ -249,6 +249,38 @@ exports.examples = [
                   radial-gradient(circle at 80% 80%, rgba(123, 192, 67, 0.8), rgba(123, 192, 67, 0) 70%)
             `,
             borderRadius: 16,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Radial gradient with non-square bounds',
+    name: 'non-square-bounds',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 200,
+            height: 100,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Radial gradient with non-square bounds. height > width',
+    name: 'non-square-bounds-height-gt-width',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds-height-gt-width"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 100,
+            height: 300,
           }}
         />
       );

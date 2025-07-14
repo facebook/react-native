@@ -10,12 +10,12 @@
 #include <android/log.h>
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#include <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #include <react/renderer/components/androidswitch/AndroidSwitchComponentDescriptor.h>
 #include <react/renderer/components/androidtextinput/AndroidTextInputComponentDescriptor.h>
 #include <react/renderer/components/image/ImageComponentDescriptor.h>
 #include <react/renderer/components/modal/ModalHostViewComponentDescriptor.h>
 #include <react/renderer/components/progressbar/AndroidProgressBarComponentDescriptor.h>
-#include <react/renderer/components/rncore/ComponentDescriptors.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewComponentDescriptor.h>
 #include <react/renderer/components/scrollview/AndroidHorizontalScrollContentViewComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -24,6 +24,8 @@
 #include <react/renderer/components/text/TextComponentDescriptor.h>
 #include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
+#include <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
+#include <react/renderer/components/virtualviewexperimental/VirtualViewExperimentalComponentDescriptor.h>
 
 namespace facebook::react::CoreComponentsRegistry {
 
@@ -69,6 +71,10 @@ sharedProviderRegistry() {
                           DebuggingOverlayComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           LayoutConformanceComponentDescriptor>());
+    providerRegistry->add(
+        concreteComponentDescriptorProvider<VirtualViewComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          VirtualViewExperimentalComponentDescriptor>());
 
     return providerRegistry;
   }();

@@ -31,7 +31,7 @@ const getUIManagerConstants: ?() => {[viewManagerName: string]: Object} =
 
 const getUIManagerConstantsCached = (function () {
   let wasCalledOnce = false;
-  let result = {};
+  let result: {[viewManagerName: string]: Object} = {};
   return (): {[viewManagerName: string]: Object} => {
     if (!wasCalledOnce) {
       result = nullthrows(getUIManagerConstants)();

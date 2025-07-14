@@ -9,7 +9,7 @@
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/renderer/runtimescheduler/Task.h>
-#include <chrono>
+#include <react/timing/primitives.h>
 #include <utility>
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
@@ -36,7 +36,7 @@ class IdleTaskRef : public jsi::NativeState {
 jsi::Function makeTimeRemainingFunction(
     jsi::Runtime& runtime,
     std::shared_ptr<RuntimeScheduler> runtimeScheduler,
-    RuntimeSchedulerTimePoint deadline) {
+    HighResTimeStamp deadline) {
   return jsi::Function::createFromHostFunction(
       runtime,
       jsi::PropNameID::forAscii(runtime, "timeRemaining"),
@@ -55,13 +55,8 @@ jsi::Function makeTimeRemainingFunction(
             expired = true;
           } else {
             auto now = runtimeScheduler->now();
-
-            remainingTime = std::max(
-                static_cast<double>(
-                    std::chrono::duration_cast<std::chrono::milliseconds>(
-                        deadline - now)
-                        .count()),
-                0.0);
+            auto diff = deadline - now;
+            remainingTime = std::max(diff.toDOMHighResTimeStamp(), 0.0);
 
             if (remainingTime == 0) {
               expired = true;
@@ -86,15 +81,13 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
   auto runtimeScheduler = binding->getRuntimeScheduler();
 
   // handle timeout parameter
-  std::optional<RuntimeSchedulerTimeout> timeout;
-  std::optional<RuntimeSchedulerTimePoint> expirationTime;
+  std::optional<HighResDuration> timeout;
+  std::optional<HighResTimeStamp> expirationTime;
 
   if (options.has_value() && options.value().timeout.has_value()) {
-    auto userTimeout = (options.value().timeout.value());
-    if (userTimeout > 0) {
-      timeout = std::chrono::duration_cast<std::chrono::milliseconds>(
-          std::chrono::duration<double, std::milli>(userTimeout));
-      expirationTime = runtimeScheduler->now() + timeout.value();
+    HighResDuration userTimeout = options.value().timeout.value();
+    if (userTimeout > HighResDuration::zero()) {
+      expirationTime = runtimeScheduler->now() + userTimeout;
     }
   }
 
@@ -110,7 +103,7 @@ CallbackHandle NativeIdleCallbacks::requestIdleCallback(
     // we interrupt the current one. The general outcome should be the same.
 
     auto executionStartTime = runtimeScheduler->now();
-    auto deadline = executionStartTime + std::chrono::milliseconds(50);
+    auto deadline = executionStartTime + HighResDuration::fromMilliseconds(50);
     auto didTimeout = expirationTime.has_value()
         ? executionStartTime > expirationTime
         : false;

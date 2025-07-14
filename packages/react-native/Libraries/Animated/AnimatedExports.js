@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 import typeof AnimatedFlatList from './components/AnimatedFlatList';
@@ -25,7 +24,7 @@ const Animated: typeof AnimatedImplementation = Platform.isDisableAnimations
   : AnimatedImplementation;
 
 export default {
-  get FlatList(): AnimatedFlatList {
+  get FlatList(): AnimatedFlatList<any> {
     return require('./components/AnimatedFlatList').default;
   },
   get Image(): AnimatedImage {
@@ -34,7 +33,7 @@ export default {
   get ScrollView(): AnimatedScrollView {
     return require('./components/AnimatedScrollView').default;
   },
-  get SectionList(): AnimatedSectionList {
+  get SectionList(): AnimatedSectionList<any, any> {
     return require('./components/AnimatedSectionList').default;
   },
   get Text(): AnimatedText {

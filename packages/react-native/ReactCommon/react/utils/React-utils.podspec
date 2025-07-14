@@ -17,7 +17,7 @@ else
 end
 
 Pod::Spec.new do |s|
-  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  source_files = ["*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"]
   header_search_paths = [
     "\"$(PODS_TARGET_SRCROOT)/../../\"",
   ]
@@ -30,11 +30,11 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = source_files
+  s.source_files           = podspec_sources(source_files, ["*.h", "platform/ios/**/*.h"])
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_utils"
     s.header_mappings_dir  = "../.."
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   add_dependency(s, "React-debug")
 end

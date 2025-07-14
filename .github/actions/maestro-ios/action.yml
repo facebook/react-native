@@ -7,9 +7,6 @@ inputs:
   app-id:
     required: true
     description: The id of the app to test
-  jsengine:
-    required: true
-    description: The js engine we are using
   maestro-flow:
     required: true
     description: the folder that contains the maestro tests
@@ -21,10 +18,6 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
-  architecture:
-    required: false
-    default: "NewArch"
-    description: The react native architecture to test
 
 runs:
   using: composite
@@ -66,24 +59,24 @@ runs:
           "${{ inputs.app-path }}" \
           "${{ inputs.app-id }}" \
           "${{ inputs.maestro-flow }}" \
-          "${{ inputs.jsengine }}" \
+          "Hermes" \
           "${{ inputs.flavor }}" \
           "${{ inputs.working-directory }}"
     - name: Store video record
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.flavor }}_NewArch
         path: |
-          video_record_${{ inputs.jsengine }}_1.mov
-          video_record_${{ inputs.jsengine }}_2.mov
-          video_record_${{ inputs.jsengine }}_3.mov
-          video_record_${{ inputs.jsengine }}_4.mov
-          video_record_${{ inputs.jsengine }}_5.mov
+          video_record_1.mov
+          video_record_2.mov
+          video_record_3.mov
+          video_record_4.mov
+          video_record_5.mov
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.flavor }}-NewArch
         path: /tmp/MaestroLogs

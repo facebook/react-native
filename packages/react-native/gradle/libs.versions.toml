@@ -1,12 +1,12 @@
 [versions]
 # Android versions
 minSdk = "24"
-targetSdk = "35"
-compileSdk = "35"
-buildTools = "35.0.0"
+targetSdk = "36"
+compileSdk = "36"
+buildTools = "36.0.0"
 ndkVersion = "27.1.12297006"
 # Dependencies versions
-agp = "8.9.2"
+agp = "8.11.0"
 androidx-annotation = "1.6.0"
 androidx-appcompat = "1.7.0"
 androidx-autofill = "1.1.0"
@@ -31,7 +31,7 @@ junit = "4.13.2"
 kotlin = "2.1.20"
 mockito = "3.12.4"
 mockito-kotlin = "3.2.0"
-nexus-publish = "1.3.0"
+nexus-publish = "2.0.0"
 okhttp = "4.9.2"
 okio = "2.9.0"
 robolectric = "4.9.2"
@@ -46,7 +46,8 @@ fastFloat="8.0.0"
 fmt="11.0.2"
 folly="2024.11.18.00"
 glog="0.3.5"
-gtest="1.12.1"
+gflags="2.2.0"
+nlohmannjson="3.11.2"
 
 [libraries]
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }

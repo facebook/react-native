@@ -25,19 +25,21 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files         = "jsireact/*.{cpp,h}"
+  s.source_files           = podspec_sources("jsireact/*.{cpp,h}", "jsireact/*.h")
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "React-perflogger", version
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
-  if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
+  if use_hermes()
     s.dependency 'hermes-engine'
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

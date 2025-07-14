@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2482f57e0652cfaa4806b5333c50ad9f>>
+ * @generated SignedSource<<8168412a7d792853fa19e10a621012c4>>
  */
 
 /**
@@ -25,17 +25,19 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
-
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
-  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+  @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
 
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
@@ -47,6 +49,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
 
+  @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
@@ -57,15 +61,19 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
+  @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
+
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
-  @DoNotStrip public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
+  @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
-  @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
+  @DoNotStrip public fun enableMainQueueCoordinatorOnIOS(): Boolean
+
+  @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
   @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
@@ -89,13 +97,23 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
-  @DoNotStrip public fun incorporateMaxLinesDuringAndroidLayout(): Boolean
+  @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun preparedTextCacheSize(): Double
+
+  @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -116,4 +134,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip public fun useTurboModules(): Boolean
+
+  @DoNotStrip public fun virtualViewPrerenderRatio(): Double
 }

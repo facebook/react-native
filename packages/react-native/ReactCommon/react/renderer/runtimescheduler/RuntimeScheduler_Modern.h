@@ -10,7 +10,6 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/Task.h>
 #include <atomic>
 #include <memory>
@@ -23,7 +22,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now,
+      std::function<HighResTimeStamp()> now,
       RuntimeSchedulerTaskErrorHandler onTaskError);
 
   /*
@@ -77,7 +76,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleIdleTask(
       jsi::Function&& callback,
-      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+      HighResDuration customTimeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
@@ -86,7 +85,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    */
   std::shared_ptr<Task> scheduleIdleTask(
       RawCallback&& callback,
-      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+      HighResDuration customTimeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
@@ -118,7 +117,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  RuntimeSchedulerTimePoint now() const noexcept override;
+  HighResTimeStamp now() const noexcept override;
 
   /*
    * Expired task is a task that should have been already executed. Designed to
@@ -152,6 +151,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   void setEventTimingDelegate(
       RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
+  void setIntersectionObserverDelegate(
+      RuntimeSchedulerIntersectionObserverDelegate*
+          intersectionObserverDelegate) override;
+
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
 
@@ -162,10 +165,10 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       taskQueue_;
 
   Task* currentTask_{};
-  RuntimeSchedulerTimePoint lastYieldingOpportunity_;
-  RuntimeSchedulerDuration longestPeriodWithoutYieldingOpportunity_{};
+  HighResTimeStamp lastYieldingOpportunity_;
+  HighResDuration longestPeriodWithoutYieldingOpportunity_;
 
-  void markYieldingOpportunity(RuntimeSchedulerTimePoint currentTime);
+  void markYieldingOpportunity(HighResTimeStamp currentTime);
 
   /**
    * This protects the access to `taskQueue_` and `isevent loopScheduled_`.
@@ -176,11 +179,9 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
   void scheduleEventLoop();
-  void runEventLoop(jsi::Runtime& runtime, bool onlyExpired);
+  void runEventLoop(jsi::Runtime& runtime);
 
-  std::shared_ptr<Task> selectTask(
-      RuntimeSchedulerTimePoint currentTime,
-      bool onlyExpired);
+  std::shared_ptr<Task> selectTask();
 
   void scheduleTask(std::shared_ptr<Task> task);
 
@@ -190,10 +191,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * In the future, this will include other steps in the Web event loop, like
    * updating the UI in native, executing resize observer callbacks, etc.
    */
-  void runEventLoopTick(
-      jsi::Runtime& runtime,
-      Task& task,
-      RuntimeSchedulerTimePoint currentTime);
+  void runEventLoopTick(jsi::Runtime& runtime, Task& task);
 
   void executeTask(
       jsi::Runtime& runtime,
@@ -207,14 +205,14 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   void reportLongTasks(
       const Task& task,
-      RuntimeSchedulerTimePoint startTime,
-      RuntimeSchedulerTimePoint endTime);
+      HighResTimeStamp startTime,
+      HighResTimeStamp endTime);
 
   /*
    * Returns a time point representing the current point in time. May be called
    * from multiple threads.
    */
-  std::function<RuntimeSchedulerTimePoint()> now_;
+  std::function<HighResTimeStamp()> now_;
 
   /*
    * Flag indicating if callback on JavaScript queue has been
@@ -225,11 +223,17 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
   std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
 
-  ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
+  // TODO(T227212654) eventTimingDelegate_ is only set once during startup, so
+  // the real fix here would be to delay runEventLoop until
+  // setEventTimingDelegate.
+  std::atomic<ShadowTreeRevisionConsistencyManager*>
+      shadowTreeRevisionConsistencyManager_{nullptr};
+  std::atomic<RuntimeSchedulerEventTimingDelegate*> eventTimingDelegate_{
       nullptr};
 
   PerformanceEntryReporter* performanceEntryReporter_{nullptr};
-  RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};
+  RuntimeSchedulerIntersectionObserverDelegate* intersectionObserverDelegate_{
+      nullptr};
 
   RuntimeSchedulerTaskErrorHandler onTaskError_;
 };

@@ -7,6 +7,7 @@
 
 #import "RCTAttributedTextUtils.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/accessibilityPropsConversions.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/textlayoutmanager/RCTFontProperties.h>
@@ -291,12 +292,12 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
   return attributes;
 }
 
-void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+static void RCTApplyBaselineOffsetForRange(NSMutableAttributedString *attributedText, NSRange attributedTextRange)
 {
   __block CGFloat maximumLineHeight = 0;
 
   [attributedText enumerateAttribute:NSParagraphStyleAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
+                             inRange:attributedTextRange
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:^(NSParagraphStyle *paragraphStyle, __unused NSRange range, __unused BOOL *stop) {
                             if (!paragraphStyle) {
@@ -314,7 +315,7 @@ void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
   __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
-                             inRange:NSMakeRange(0, attributedText.length)
+                             inRange:attributedTextRange
                              options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
                           usingBlock:^(UIFont *font, NSRange range, __unused BOOL *stop) {
                             if (!font) {
@@ -330,9 +331,25 @@ void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
 
   CGFloat baseLineOffset = (maximumLineHeight - maximumFontLineHeight) / 2.0;
 
-  [attributedText addAttribute:NSBaselineOffsetAttributeName
-                         value:@(baseLineOffset)
-                         range:NSMakeRange(0, attributedText.length)];
+  [attributedText addAttribute:NSBaselineOffsetAttributeName value:@(baseLineOffset) range:attributedTextRange];
+}
+
+void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText)
+{
+  if (ReactNativeFeatureFlags::enableIOSTextBaselineOffsetPerLine()) {
+    [attributedText.string
+        enumerateSubstringsInRange:NSMakeRange(0, attributedText.length)
+                           options:NSStringEnumerationByLines | NSStringEnumerationSubstringNotRequired
+                        usingBlock:^(
+                            NSString *_Nullable substring,
+                            NSRange substringRange,
+                            NSRange enclosingRange,
+                            BOOL *_Nonnull stop) {
+                          RCTApplyBaselineOffsetForRange(attributedText, enclosingRange);
+                        }];
+  } else {
+    RCTApplyBaselineOffsetForRange(attributedText, NSMakeRange(0, attributedText.length));
+  }
 }
 
 static NSMutableAttributedString *RCTNSAttributedStringFragmentFromFragment(

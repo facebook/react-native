@@ -5,17 +5,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
+/*::
+import type {IncomingMessage} from 'https';
+*/
+
+// $FlowFixMe[untyped-import]
 const {name, version: currentVersion} = require('./package.json');
-const chalk = require('chalk');
 const {spawn} = require('child_process');
 const {get} = require('https');
 const semver = require('semver');
 const {URL} = require('url');
+const {styleText} = require('util');
 
 const deprecated = () => {
   throw new Error(
@@ -23,23 +29,29 @@ const deprecated = () => {
   );
 };
 
-function findCommunityCli(startDir = process.cwd()) {
+function findCommunityCli(startDir /*: string */ = process.cwd()) {
   // With isolated node_modules (eg pnpm), we won't be able to find
   // `@react-native-community/cli` starting from the `react-native` directory.
   // Instead, we should use the project root, which we assume to be the cwd.
   const options = {paths: [startDir]};
   const rncli = require.resolve('@react-native-community/cli', options);
+  // $FlowFixMe[unsupported-syntax]
   return require(rncli);
 }
 
-function isMissingCliDependency(error) {
+function isMissingCliDependency(error /*: Error */) {
   return (
+    // $FlowFixMe[prop-missing]
     error.code === 'MODULE_NOT_FOUND' &&
     /@react-native-community\/cli/.test(error.message)
   );
 }
 
-let cli = {
+let cli /*: $ReadOnly<{
+  bin: string,
+  loadConfig: $FlowFixMe,
+  run: () => void
+}> */ = {
   bin: '/dev/null',
   loadConfig: deprecated,
   run: deprecated,
@@ -57,21 +69,23 @@ const HEAD = '1000.0.0';
 // See https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0759-react-native-frameworks.md
 const CLI_DEPRECATION_DATE = new Date('2024-12-31');
 
-async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
-  return new Promise((res, rej) => {
+function getLatestVersion(
+  registryHost /*: string */ = DEFAULT_REGISTRY_HOST,
+) /*: Promise<string> */ {
+  return new Promise((resolve, reject) => {
     const url = new URL(registryHost);
     url.pathname = 'react-native/latest';
-    get(url.toString(), resp => {
+    get(url.toString(), (resp /*: IncomingMessage */) => {
       const buffer = [];
       resp.on('data', data => buffer.push(data));
       resp.on('end', () => {
         try {
-          res(JSON.parse(Buffer.concat(buffer).toString('utf8')).version);
+          resolve(JSON.parse(Buffer.concat(buffer).toString('utf8')).version);
         } catch (e) {
-          rej(e);
+          reject(e);
         }
       });
-    }).on('error', e => rej(e));
+    }).on('error', e => reject(e));
   });
 }
 
@@ -85,7 +99,7 @@ async function getLatestVersion(registryHost = DEFAULT_REGISTRY_HOST) {
 function warnWhenRunningInit() {
   if (isInitCommand) {
     console.warn(
-      `\nRunning: ${chalk.grey.bold('npx @react-native-community/cli init')}\n`,
+      `\nRunning: ${styleText(['grey', 'bold'], 'npx @react-native-community/cli init')}\n`,
     );
   }
 }
@@ -106,21 +120,21 @@ function warnWithDeprecationSchedule() {
     (CLI_DEPRECATION_DATE.getTime() - new Date().getTime()) / 86_400_000,
   );
 
-  const emphasis =
+  const emphasis = (text /*: string */) =>
     daysRemaining < 10
-      ? chalk.bgRed.white.bold
+      ? styleText(['bgRed', 'white', 'bold'], text)
       : daysRemaining < 30
-        ? chalk.red.bold
+        ? styleText(['red', 'bold'], text)
         : daysRemaining < 60
-          ? chalk.green.bold
-          : chalk.blueBright.bold;
+          ? styleText(['green', 'bold'], text)
+          : styleText(['blueBright', 'bold'], text);
 
   console.warn(`
-${chalk.yellow('⚠️')} The \`init\` command is deprecated.
-The behavior will be changed on ${chalk.white.bold(CLI_DEPRECATION_DATE.toLocaleDateString())} ${emphasis(`(${daysRemaining} day${daysRemaining > 1 ? 's' : ''})`)}.
+${styleText('yellow', '⚠️')} The \`init\` command is deprecated.
+The behavior will be changed on ${styleText(['white', 'bold'], CLI_DEPRECATION_DATE.toLocaleDateString())} ${emphasis(`(${daysRemaining} day${daysRemaining > 1 ? 's' : ''})`)}.
 
-- Switch to ${chalk.grey.bold('npx @react-native-community/cli init')} for the identical behavior.
-- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
+- Switch to ${styleText(['grey', 'bold'], 'npx @react-native-community/cli init')} for the identical behavior.
+- Refer to the documentation for information about alternative tools: ${styleText('dim', 'https://reactnative.dev/docs/getting-started')}`);
 }
 
 function warnWithDeprecated() {
@@ -130,19 +144,22 @@ function warnWithDeprecated() {
   console.warn(`
 🚨️ The \`init\` command is deprecated.
 
-- Switch to ${chalk.grey.bold('npx @react-native-community/cli init')} for the identical behavior.
-- Refer to the documentation for information about alternative tools: ${chalk.dim('https://reactnative.dev/docs/getting-started')}`);
+- Switch to ${styleText(['grey', 'bold'], 'npx @react-native-community/cli init')} for the identical behavior.
+- Refer to the documentation for information about alternative tools: ${styleText('dim', 'https://reactnative.dev/docs/getting-started')}`);
 }
 
-function warnWithExplicitDependency(version = '*') {
+function warnWithExplicitDependency(version /*: string */ = '*') {
   console.warn(`
-${chalk.yellow('⚠')}️ ${chalk.dim('react-native')} depends on ${chalk.dim('@react-native-community/cli')} for cli commands. To fix update your ${chalk.dim('package.json')} to include:
+${styleText('yellow', '⚠')}️ ${styleText(['dim'], 'react-native')} depends on ${styleText('dim', '@react-native-community/cli')} for cli commands. To fix update your ${styleText(['dim'], 'package.json')} to include:
 
-${chalk.white.bold(`
+${styleText(
+  ['white', 'bold'],
+  `
   "devDependencies": {
     "@react-native-community/cli": "latest",
   }
-`)}
+`,
+)}
 
 `);
 }
@@ -159,7 +176,7 @@ ${chalk.white.bold(`
 async function main() {
   if (
     isNpxRuntime &&
-    !process.env.SKIP &&
+    !Boolean(process.env.SKIP) &&
     currentVersion !== HEAD &&
     isInitCommand
   ) {
@@ -168,11 +185,13 @@ async function main() {
       // TODO: T184416093 When cli is deprecated, remove semver from package.json
       if (semver.lt(currentVersion, latest)) {
         const msg = `
-  ${chalk.bold.yellow('WARNING:')} You should run ${chalk.white.bold(
+  ${styleText(['bold', 'yellow'], 'WARNING:')} You should run ${styleText(
+    ['white', 'bold'],
     'npx react-native@latest',
-  )} to ensure you're always using the most current version of the CLI. NPX has cached version (${chalk.bold.yellow(
+  )} to ensure you're always using the most current version of the CLI. NPX has cached version (${styleText(
+    ['bold', 'yellow'],
     currentVersion,
-  )}) != current release (${chalk.bold.green(latest)})
+  )}) != current release (${styleText(['bold', 'green'], latest)})
   `;
         console.warn(msg);
       }
@@ -200,7 +219,7 @@ async function main() {
       warnWithDeprecated();
       // We only exit if the user calls `init` and it's deprecated. All other cases should proxy to to @react-native-community/cli.
       // Be careful with this as it can break a lot of users.
-      console.warn(`${chalk.green('Exiting...')}`);
+      console.warn(`${styleText('green', 'Exiting...')}`);
       process.exit(1);
     } else if (
       currentVersion.startsWith('0.75') ||
@@ -219,7 +238,7 @@ async function main() {
       },
     );
 
-    const code = await new Promise(resolve => {
+    const code /*: number */ = await new Promise(resolve => {
       proc.on('exit', resolve);
     });
     process.exit(code);
@@ -237,7 +256,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  main();
+  void main();
 } else {
   try {
     cli = findCommunityCli();

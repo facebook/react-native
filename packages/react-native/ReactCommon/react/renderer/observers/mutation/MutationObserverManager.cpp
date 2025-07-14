@@ -16,7 +16,7 @@ MutationObserverManager::MutationObserverManager() = default;
 
 void MutationObserverManager::observe(
     MutationObserverId mutationObserverId,
-    ShadowNode::Shared shadowNode,
+    std::shared_ptr<const ShadowNode> shadowNode,
     bool observeSubtree,
     const UIManager& uiManager) {
   TraceSection s("MutationObserverManager::observe");

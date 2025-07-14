@@ -28,6 +28,8 @@ int majorAxisDistanceRaw(
     case FocusDirection::FocusDown:
       return static_cast<int>(
           dest.origin.y - (source.origin.y + source.size.height));
+    default:
+      return INT_MAX;
   }
 }
 
@@ -45,6 +47,8 @@ int minorAxisDistance(FocusDirection direction, Rect source, Rect dest) {
     case FocusDirection::FocusDown:
       // the distance between the center horizontals
       return static_cast<int>(abs((source.getMidX() - dest.getMidX())));
+    default:
+      return INT_MAX;
   }
 }
 
@@ -79,6 +83,24 @@ bool isCandidate(Rect source, Rect dest, FocusDirection focusDirection) {
               (source.origin.y + source.size.height) <= dest.origin.y) &&
           ((source.origin.y + source.size.height) <
            (dest.origin.y + dest.size.height));
+    case FocusDirection::FocusForward:
+      return ((source.origin.y < dest.origin.y ||
+               (source.origin.y + source.size.height) <= dest.origin.y) &&
+              ((source.origin.y + source.size.height) <
+               (dest.origin.y + dest.size.height))) ||
+          ((source.origin.x < dest.origin.x ||
+            (source.origin.x + source.size.width) <= dest.origin.x) &&
+           (source.origin.x + source.size.width) <
+               (dest.origin.x + dest.size.width));
+    case FocusDirection::FocusBackward:
+      return (((source.origin.y + source.size.height) >
+                   (dest.origin.y + dest.size.height) ||
+               source.origin.y >= (dest.origin.y + dest.size.height)) &&
+              source.origin.y > dest.origin.y) ||
+          (((source.origin.x + source.size.width) >
+                (dest.origin.x + dest.size.width) ||
+            source.origin.x >= (dest.origin.x + dest.size.width)) &&
+           source.origin.x > dest.origin.x);
   }
 }
 
@@ -91,26 +113,93 @@ bool isBetterCandidate(
     return false;
   }
 
-  int candidateWeightedDistance = getWeightedDistanceFor(
-      majorAxisDistance(focusDirection, source, candidate),
-      minorAxisDistance(focusDirection, source, candidate));
+  int candidateWeightedDistance = 0;
+  int currentWeightedDistance = 0;
 
-  int currentWeightedDistance = getWeightedDistanceFor(
-      majorAxisDistance(focusDirection, source, current),
-      minorAxisDistance(focusDirection, source, current));
+  switch (focusDirection) {
+    case FocusDirection::FocusLeft:
+    case FocusDirection::FocusRight:
+    case FocusDirection::FocusUp:
+    case FocusDirection::FocusDown:
+      candidateWeightedDistance = getWeightedDistanceFor(
+          majorAxisDistance(focusDirection, source, candidate),
+          minorAxisDistance(focusDirection, source, candidate));
 
-  return candidateWeightedDistance < currentWeightedDistance;
+      currentWeightedDistance = getWeightedDistanceFor(
+          majorAxisDistance(focusDirection, source, current),
+          minorAxisDistance(focusDirection, source, current));
+
+      return candidateWeightedDistance < currentWeightedDistance;
+    /*
+     * For forward and backward, Android uses a different algorithm to tell the
+     * order in which to focus. It sorts the children of the root by top to
+     * bottom and then groups the views into "rows". Then, it looks for the
+     * index of the current focused, and focuses the next or previous element.
+     *
+     * We are not implementing this algorithm, but instead, we are using the
+     * same comparison logic android uses to sort the children to find the next
+     * focusable.
+     *
+     * See:
+     * https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/view/FocusFinder.java;l=833;drc=61197364367c9e404c7da6900658f1b16c42d0da
+     */
+    case FocusDirection::FocusForward: {
+      Float currentRowBottom = source.origin.y + source.size.height;
+      Float candidateRowBottom = candidate.origin.y + candidate.size.height;
+      Float result = NAN;
+
+      if (candidate.origin.y < currentRowBottom &&
+          candidateRowBottom > source.origin.y) {
+        result = candidate.origin.x - current.origin.x;
+        if (result == 0.0) {
+          result = (candidate.origin.x + candidate.size.width) -
+              (current.origin.x + current.size.width);
+        }
+        return result < 0.0;
+      } else {
+        result = candidate.origin.y - current.origin.y;
+        if (result == 0.0) {
+          result = (candidate.origin.y + candidate.size.height) -
+              (current.origin.y + current.size.height);
+        }
+        return result < 0.0;
+      }
+    }
+    case FocusDirection::FocusBackward: {
+      Float currentRowBottom = source.origin.y + source.size.height;
+      Float candidateRowBottom = candidate.origin.y + candidate.size.height;
+      Float result = NAN;
+
+      if (candidate.origin.y < currentRowBottom &&
+          candidateRowBottom > source.origin.y) {
+        result = current.origin.x - candidate.origin.x;
+        if (result == 0.0) {
+          result = (current.origin.x + current.size.width) -
+              (candidate.origin.x + candidate.size.width);
+        }
+        return result < 0.0;
+      } else {
+        result = current.origin.y - candidate.origin.y;
+        if (result == 0.0) {
+          result = (current.origin.y + current.size.height) -
+              (candidate.origin.y + candidate.size.height);
+        }
+        return result < 0.0;
+      }
+    }
+  }
+  return false;
 }
 
 void FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
-    const ShadowNode::Shared& parentShadowNode,
-    const ShadowNode::Shared& focusedShadowNode,
-    const ShadowNode::Shared& currNode,
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
+    const std::shared_ptr<const ShadowNode>& focusedShadowNode,
+    const std::shared_ptr<const ShadowNode>& currNode,
     FocusDirection focusDirection,
     const UIManager& uimanager,
     Rect sourceRect,
     std::optional<Rect>& nextRect,
-    ShadowNode::Shared& nextNode) {
+    std::shared_ptr<const ShadowNode>& nextNode) {
   const auto* props =
       dynamic_cast<const ViewProps*>(currNode->getProps().get());
 
@@ -155,8 +244,9 @@ void FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
   };
 };
 
-ShadowNode::Shared FocusOrderingHelper::findShadowNodeByTagRecursively(
-    const ShadowNode::Shared& parentShadowNode,
+std::shared_ptr<const ShadowNode>
+FocusOrderingHelper::findShadowNodeByTagRecursively(
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
     Tag tag) {
   if (parentShadowNode->getTag() == tag) {
     return parentShadowNode;
@@ -178,6 +268,8 @@ std::optional<FocusDirection> FocusOrderingHelper::resolveFocusDirection(
     case FocusDirection::FocusUp:
     case FocusDirection::FocusRight:
     case FocusDirection::FocusLeft:
+    case FocusDirection::FocusForward:
+    case FocusDirection::FocusBackward:
       return static_cast<FocusDirection>(direction);
   }
 

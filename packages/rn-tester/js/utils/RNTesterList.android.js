@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -223,6 +223,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'DisplayContentsExample',
     category: 'UI',
     module: require('../examples/DisplayContents/DisplayContentsExample')
+      .default,
+  },
+  {
+    key: 'FocusEventsExample',
+    module: require('../examples/FocusEventsExample/FocusEventsExample')
       .default,
   },
   {

@@ -200,7 +200,7 @@ jint FabricUIManagerBinding::findNextFocusableElement(
     jint parentTag,
     jint focusedTag,
     jint direction) {
-  ShadowNode::Shared nextNode;
+  std::shared_ptr<const ShadowNode> nextNode;
 
   std::optional<FocusDirection> focusDirection =
       FocusOrderingHelper::resolveFocusDirection(direction);
@@ -211,14 +211,14 @@ jint FabricUIManagerBinding::findNextFocusableElement(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared parentShadowNode =
+  std::shared_ptr<const ShadowNode> parentShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
 
   if (parentShadowNode == nullptr) {
     return -1;
   }
 
-  ShadowNode::Shared focusedShadowNode =
+  std::shared_ptr<const ShadowNode> focusedShadowNode =
       FocusOrderingHelper::findShadowNodeByTagRecursively(
           parentShadowNode, focusedTag);
 
@@ -260,9 +260,9 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared childShadowNode =
+  std::shared_ptr<const ShadowNode> childShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(childTag);
-  ShadowNode::Shared rootShadowNode =
+  std::shared_ptr<const ShadowNode> rootShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
 
   if (childShadowNode == nullptr || rootShadowNode == nullptr) {
@@ -281,10 +281,7 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
   for (auto it = std::next(ancestorList.begin()); it != ancestorList.end();
        ++it) {
     auto& ancestor = *it;
-    if (ancestor.first.get().getTraits().check(
-            ShadowNodeTraits::Trait::FormsStackingContext)) {
-      ancestorTags.push_back(ancestor.first.get().getTag());
-    }
+    ancestorTags.push_back(ancestor.first.get().getTag());
   }
 
   jintArray result = env->NewIntArray(static_cast<jint>(ancestorTags.size()));
@@ -630,7 +627,8 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto mountingTransaction = mountingCoordinator->pullTransaction();
+    auto mountingTransaction = mountingCoordinator->pullTransaction(
+        /* willPerformAsynchronously = */ true);
     if (mountingTransaction.has_value()) {
       auto transaction = std::move(*mountingTransaction);
       mountingManager->executeMount(transaction);
@@ -719,6 +717,11 @@ void FabricUIManagerBinding::schedulerShouldSynchronouslyUpdateViewOnUIThread(
   if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() && mountingManager_) {
     mountingManager_->synchronouslyUpdateViewOnUIThread(tag, props);
   }
+}
+
+void FabricUIManagerBinding::schedulerDidUpdateShadowTree(
+    const std::unordered_map<Tag, folly::dynamic>& /*tagToProps*/) {
+  // no-op
 }
 
 void FabricUIManagerBinding::onAnimationStarted() {

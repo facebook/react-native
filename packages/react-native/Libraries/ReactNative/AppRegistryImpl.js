@@ -22,9 +22,7 @@ import type {
   WrapperComponentProvider,
 } from './AppRegistry.flow';
 
-import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
-import infoLog from '../Utilities/infoLog';
 import SceneTracker from '../Utilities/SceneTracker';
 import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
@@ -37,7 +35,6 @@ type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
 const runnables: Runnables = {};
-let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
@@ -167,11 +164,7 @@ export function runApplication(
   if (appKey !== 'LogBox') {
     const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
     const msg = `Running "${appKey}"${logParams}`;
-    infoLog(msg);
-    BugReporting.addSource(
-      'AppRegistry.runApplication' + runCount++,
-      () => msg,
-    );
+    console.log(msg);
   }
   invariant(
     runnables[appKey],
@@ -199,11 +192,7 @@ export function setSurfaceProps(
       appKey +
       '" with ' +
       JSON.stringify(appParameters);
-    infoLog(msg);
-    BugReporting.addSource(
-      'AppRegistry.setSurfaceProps' + runCount++,
-      () => msg,
-    );
+    console.log(msg);
   }
   invariant(
     runnables[appKey],

@@ -11,6 +11,7 @@ import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.annotations.StableReactNativeAPI
 import com.facebook.react.common.mapbuffer.MapBuffer.Companion.KEY_RANGE
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import java.lang.StringBuilder
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -86,7 +87,11 @@ private constructor(
 
   private fun readDataType(bucketIndex: Int): MapBuffer.DataType {
     val value = readUnsignedShort(getKeyOffsetForBucketIndex(bucketIndex) + TYPE_OFFSET).toInt()
-    return MapBuffer.DataType.values()[value]
+    return if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+      DATA_TYPES[value]
+    } else {
+      MapBuffer.DataType.values()[value]
+    }
   }
 
   private fun getTypedValueOffsetForKey(key: Int, expected: MapBuffer.DataType): Int {
@@ -140,9 +145,9 @@ private constructor(
     var curLen = 0
     while (curLen < sizeMapBufferList) {
       val sizeMapBuffer = buffer.getInt(offset + curLen)
-      curLen = curLen + Int.SIZE_BYTES
+      curLen += Int.SIZE_BYTES
       readMapBufferList.add(cloneWithOffset(offset + curLen))
-      curLen = curLen + sizeMapBuffer
+      curLen += sizeMapBuffer
     }
     return readMapBufferList
   }
@@ -264,7 +269,12 @@ private constructor(
       get() = readUnsignedShort(bucketOffset).toInt()
 
     override val type: MapBuffer.DataType
-      get() = MapBuffer.DataType.values()[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+      get() =
+          if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+            DATA_TYPES[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+          } else {
+            MapBuffer.DataType.values()[readUnsignedShort(bucketOffset + TYPE_OFFSET).toInt()]
+          }
 
     override val doubleValue: Double
       get() {
@@ -318,5 +328,7 @@ private constructor(
 
     // 4 bytes = 2 (key) + 2 (type)
     private const val VALUE_OFFSET = 4
+
+    private val DATA_TYPES = MapBuffer.DataType.values()
   }
 }

@@ -12,6 +12,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -63,6 +64,9 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
 static void
 RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag, NSString *eventName)
 {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
+    return;
+  }
   static uint16_t coalescingKey = 0;
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:[NSNumber numberWithInt:tag]

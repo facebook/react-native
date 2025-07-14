@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type AnimatedProps from '../../../Libraries/Animated/nodes/AnimatedProps';
@@ -32,8 +31,8 @@ type CompositeKey = {
 
 type CompositeKeyComponent =
   | AnimatedNode
-  | Array<CompositeKeyComponent | null>
-  | {[string]: CompositeKeyComponent};
+  | $ReadOnlyArray<CompositeKeyComponent | null>
+  | $ReadOnly<{[string]: CompositeKeyComponent}>;
 
 type $ReadOnlyCompositeKey = $ReadOnly<{
   style?: $ReadOnly<{[string]: CompositeKeyComponent}>,

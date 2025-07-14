@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
+
+import type {ColorValue} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
@@ -196,7 +198,7 @@ function PlatformColorsExample() {
 }
 
 function FallbackColorsExample() {
-  let color = {};
+  let color: {label?: string, color?: ColorValue} = {};
   if (Platform.OS === 'ios') {
     color = {
       label: "PlatformColor('bogus', 'systemGreenColor')",

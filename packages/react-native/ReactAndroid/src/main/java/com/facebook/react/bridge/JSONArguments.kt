@@ -7,21 +7,11 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-@LegacyArchitecture
 public object JSONArguments {
-
-  init {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
-        "JSONArguments", LegacyArchitectureLogLevel.WARNING)
-  }
-
   /**
    * Parse JSONObject to ReadableMap
    *
@@ -31,27 +21,26 @@ public object JSONArguments {
   @JvmStatic
   @Throws(JSONException::class)
   public fun fromJSONObject(obj: JSONObject): ReadableMap {
-    val result: WritableMap = Arguments.createMap()
     val keys = obj.keys()
 
-    while (keys.hasNext()) {
-      val key = keys.next()
-      val value = obj.get(key)
-
-      when (value) {
-        is JSONObject -> result.putMap(key, fromJSONObject(value))
-        is JSONArray -> result.putArray(key, fromJSONArray(value))
-        is String -> result.putString(key, value)
-        is Boolean -> result.putBoolean(key, value)
-        is Int -> result.putInt(key, value)
-        is Double -> result.putDouble(key, value)
-        is Long -> result.putInt(key, value.toInt())
-        else ->
-            if (obj.isNull(key)) {
-              result.putNull(key)
-            } else {
-              throw JSONException("Unexpected value when parsing JSON object. key: $key")
-            }
+    val result = buildReadableMap {
+      while (keys.hasNext()) {
+        val key = keys.next()
+        when (val value = obj.get(key)) {
+          is JSONObject -> put(key, fromJSONObject(value))
+          is JSONArray -> put(key, fromJSONArray(value))
+          is String -> put(key, value)
+          is Boolean -> put(key, value)
+          is Int -> put(key, value)
+          is Double -> put(key, value)
+          is Long -> put(key, value.toInt())
+          else ->
+              if (obj.isNull(key)) {
+                putNull(key)
+              } else {
+                throw JSONException("Unexpected value when parsing JSON object. key: $key")
+              }
+        }
       }
     }
 
@@ -79,25 +68,23 @@ public object JSONArguments {
   @JvmStatic
   @Throws(JSONException::class)
   public fun fromJSONArray(arr: JSONArray): ReadableArray {
-    val result: WritableArray = Arguments.createArray()
-
-    for (i in 0 until arr.length()) {
-      val value = arr.get(i)
-
-      when (value) {
-        is JSONObject -> result.pushMap(fromJSONObject(value))
-        is JSONArray -> result.pushArray(fromJSONArray(value))
-        is String -> result.pushString(value)
-        is Boolean -> result.pushBoolean(value)
-        is Int -> result.pushInt(value)
-        is Double -> result.pushDouble(value)
-        is Long -> result.pushInt(value.toInt())
-        else ->
-            if (arr.isNull(i)) {
-              result.pushNull()
-            } else {
-              throw JSONException("Unexpected value when parsing JSON array. index: $i")
-            }
+    val result = buildReadableArray {
+      repeat(arr.length()) {
+        when (val value = arr.get(it)) {
+          is JSONObject -> add(fromJSONObject(value))
+          is JSONArray -> add(fromJSONArray(value))
+          is String -> add(value)
+          is Boolean -> add(value)
+          is Int -> add(value)
+          is Double -> add(value)
+          is Long -> add(value.toInt())
+          else ->
+              if (arr.isNull(it)) {
+                addNull()
+              } else {
+                throw JSONException("Unexpected value when parsing JSON array. index: $it")
+              }
+        }
       }
     }
 

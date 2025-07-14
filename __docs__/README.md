@@ -45,6 +45,8 @@ TODO: Explain the different components of React Native at a high level.
     - UI / Fabric
       - Events
       - Shadow Tree Lifecycle
+        - [Runtime Shadow Node Reference Update](../packages/react-native/ReactCommon/react/renderer/core/__docs__/RSNRU.md)
+        - [passChildrenWhenCloningPersistedNodes](../packages/react-native/ReactCommon/react/renderer/core/__docs__/passChildrenWhenCloning.md)
       - Layout
       - Mounting
     - Native Modules / TurboModules
@@ -88,7 +90,7 @@ TODO: Explain the different components of React Native at a high level.
     - Jest
     - ESLint
   - Integration / E2E
-    - [Fantom](../packages/react-native-fantom/__docs__/README.md)
+    - [Fantom](../private/react-native-fantom/__docs__/README.md)
 - Tooling
   - React Native DevTools
 

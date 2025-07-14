@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.header_dir             = header_dir
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
@@ -49,15 +49,16 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "React-featureflags"
-  s.dependency "React-runtimeexecutor", version
+  add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-jsi"
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+  if use_hermes()
     s.dependency "hermes-engine"
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

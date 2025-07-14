@@ -915,6 +915,10 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnClonedNode) {
  * │ └──────────────────────┘│
  * └─────────────────────────┘
  */
+// We're not running this on Android as ModalHostViewShadowNode
+// need to go through JNI to resolve the initial screen size
+// in order to position the modal.
+#ifndef ANDROID
 TEST(
     LayoutableShadowNodeTest,
     relativeLayoutMetricsOnNodesCrossingRootKindNode) {
@@ -951,6 +955,7 @@ TEST(
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 10);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 10);
 }
+#endif
 
 TEST(LayoutableShadowNodeTest, includeViewportOffset) {
   auto builder = simpleComponentBuilder();

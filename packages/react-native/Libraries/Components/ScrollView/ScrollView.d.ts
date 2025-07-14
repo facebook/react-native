@@ -10,6 +10,7 @@
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
 import {Insets} from '../../../types/public/Insets';
+import {HostInstance} from '../../../types/public/ReactNativeTypes';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
@@ -19,6 +20,7 @@ import {
 import {RefreshControlProps} from '../RefreshControl/RefreshControl';
 import {Touchable} from '../Touchable/Touchable';
 import {ViewProps} from '../View/ViewPropTypes';
+import {View} from '../View/View';
 
 // See https://reactnative.dev/docs/scrollview#contentoffset
 export interface PointProp {
@@ -565,16 +567,20 @@ export interface ScrollViewPropsAndroid {
   nestedScrollEnabled?: boolean | undefined;
 
   /**
-   * Fades out the edges of the scroll content.
+   * Controls the fading effect at the edges of the scroll content.
    *
-   * If the value is greater than 0, the fading edges will be set accordingly
-   * to the current scroll direction and position,
-   * indicating if there is more content to show.
+   * A value greater than 0 will apply the fading effect, indicating more content is available
+   * to scroll.
+   *
+   * You can specify a single number to apply the same fading length to both edges.
+   * Alternatively, use an object with `start` and `end` properties to set different
+   * fading lengths for the start and end of the scroll content.
    *
    * The default value is 0.
+   *
    * @platform android
    */
-  fadingEdgeLength?: number | undefined;
+  fadingEdgeLength?: number | {start: number; end: number} | undefined;
 
   /**
    * Causes the scrollbars not to turn transparent when they are not in use. The default value is false.
@@ -603,6 +609,19 @@ export interface ScrollViewProps
    *   });
    */
   contentContainerStyle?: StyleProp<ViewStyle> | undefined;
+
+  /**
+   * A ref to the inner View element of the ScrollView. This should be used
+   * instead of calling `getInnerViewRef`.
+   */
+  innerViewRef?: React.RefObject<View> | undefined;
+
+  /**
+   * A ref to the Native ScrollView component. This ref can be used to call
+   * all of ScrollView's public methods, in addition to native methods like
+   * measure, measureLayout, etc.
+   */
+  scrollViewRef?: React.RefObject<ScrollView> | undefined;
 
   /**
    * A floating-point number that determines how quickly the scroll view
@@ -659,7 +678,9 @@ export interface ScrollViewProps
    * It's implemented using onLayout handler attached to the content container which this ScrollView renders.
    *
    */
-  onContentSizeChange?: ((w: number, h: number) => void) | undefined;
+  onContentSizeChange?:
+    | ((contentWidth: number, contentHeight: number) => void)
+    | undefined;
 
   /**
    * Fires at most once per frame during scrolling.
@@ -859,6 +880,12 @@ export class ScrollView extends ScrollViewBase {
 
   // Undocumented
   getInnerViewNode(): any;
+
+  /**
+   * Returns a reference to the underlying native scroll view, or null if the
+   * native instance is not mounted.
+   */
+  getNativeScrollRef: () => HostInstance | null;
 
   /**
    * @deprecated Use scrollTo instead

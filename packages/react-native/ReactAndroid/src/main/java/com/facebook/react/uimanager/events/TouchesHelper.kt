@@ -86,7 +86,7 @@ internal object TouchesHelper {
    */
   @Suppress("DEPRECATION")
   @JvmStatic
-  public fun sendTouchesLegacy(rctEventEmitter: RCTEventEmitter, touchEvent: TouchEvent) {
+  fun sendTouchesLegacy(rctEventEmitter: RCTEventEmitter, touchEvent: TouchEvent) {
     val type = touchEvent.getTouchEventType()
 
     val pointers = getWritableArray(/* copyObjects */ false, createPointersArray(touchEvent))
@@ -122,7 +122,7 @@ internal object TouchesHelper {
    * @param event the touch event to extract data from
    */
   @JvmStatic
-  public fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
+  fun sendTouchEvent(eventEmitter: RCTModernEventEmitter, event: TouchEvent) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT,
         "TouchesHelper.sentTouchEventModern(" + event.getEventName() + ")")

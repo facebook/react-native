@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -23,7 +24,7 @@ const {
   shouldUsePrebuiltHermesC,
 } = require('./hermes-utils');
 
-async function main(isInCI) {
+async function main(isInCI /*: boolean */) {
   if (!shouldBuildHermesFromSource(isInCI)) {
     copyPodSpec();
     return;
@@ -41,6 +42,6 @@ async function main(isInCI) {
 
 const isInCI = process.env.CI === 'true';
 
-main(isInCI).then(() => {
+void main(isInCI).then(() => {
   process.exit(0);
 });

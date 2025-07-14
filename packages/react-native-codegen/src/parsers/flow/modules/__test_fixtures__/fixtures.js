@@ -691,6 +691,37 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_OPAQUE_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export opaque type Task = mixed;
+export opaque type TimeoutID = number;
+
+export interface Spec extends TurboModule {
+  +createTask: (callback: () => void) => Task;
+  +cancelTask: (task: Task) => void;
+
+  +setTimeout: (callback: () => void) => TimeoutID;
+  +clearTimeout: (timeoutID: TimeoutID) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 const ANDROID_ONLY_NATIVE_MODULE = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -976,6 +1007,7 @@ module.exports = {
   NATIVE_MODULE_WITH_UNION,
   NATIVE_MODULE_WITH_UNION_RETURN_TYPES,
   NATIVE_MODULE_WITH_EVENT_EMITTERS,
+  NATIVE_MODULE_WITH_OPAQUE_TYPES,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,

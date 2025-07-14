@@ -10,4 +10,5 @@
 
 export * from '../../src/private/specs_DEPRECATED/modules/NativeHeadlessJsTaskSupport';
 import NativeHeadlessJsTaskSupport from '../../src/private/specs_DEPRECATED/modules/NativeHeadlessJsTaskSupport';
+
 export default NativeHeadlessJsTaskSupport;

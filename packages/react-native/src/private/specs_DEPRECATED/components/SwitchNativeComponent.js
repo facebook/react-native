@@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type SwitchChangeEvent = $ReadOnly<{
+type NativeSwitchChangeEvent = $ReadOnly<{
   value: boolean,
   target: Int32,
 }>;
 
-type NativeProps = $ReadOnly<{
+type SwitchNativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -42,10 +42,10 @@ type NativeProps = $ReadOnly<{
   trackColorForTrue?: ?ColorValue,
 
   // Events
-  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
+  onChange?: ?BubblingEventHandler<NativeSwitchChangeEvent>,
 }>;
 
-type ComponentType = HostComponent<NativeProps>;
+type ComponentType = HostComponent<SwitchNativeProps>;
 
 interface NativeCommands {
   +setValue: (viewRef: React.ElementRef<ComponentType>, value: boolean) => void;
@@ -55,7 +55,7 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['setValue'],
 });
 
-export default (codegenNativeComponent<NativeProps>('Switch', {
+export default (codegenNativeComponent<SwitchNativeProps>('Switch', {
   paperComponentName: 'RCTSwitch',
   excludedPlatforms: ['android'],
 }): ComponentType);

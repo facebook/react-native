@@ -11,8 +11,9 @@
 
 namespace facebook::react {
 void updateMountedFlag(
-    const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren) {
+    const std::vector<std::shared_ptr<const ShadowNode>>& oldChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& newChildren,
+    ShadowTreeCommitSource commitSource) {
   // This is a simplified version of Diffing algorithm that only updates
   // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
   // "unmounted" to allow `ShadowNode` detect a situation where the node was
@@ -49,11 +50,13 @@ void updateMountedFlag(
     newChild->setMounted(true);
     oldChild->setMounted(false);
 
-    if (ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
+    if (commitSource == ShadowTreeCommitSource::React &&
+        ReactNativeFeatureFlags::updateRuntimeShadowNodeReferencesOnCommit()) {
       newChild->updateRuntimeShadowNodeReference(newChild);
     }
 
-    updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
+    updateMountedFlag(
+        oldChild->getChildren(), newChild->getChildren(), commitSource);
   }
 
   size_t lastIndexAfterFirstStage = index;
@@ -62,14 +65,14 @@ void updateMountedFlag(
   for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
     const auto& newChild = newChildren[index];
     newChild->setMounted(true);
-    updateMountedFlag({}, newChild->getChildren());
+    updateMountedFlag({}, newChild->getChildren(), commitSource);
   }
 
   // State 3: Unmount old children.
   for (index = lastIndexAfterFirstStage; index < oldChildren.size(); index++) {
     const auto& oldChild = oldChildren[index];
     oldChild->setMounted(false);
-    updateMountedFlag(oldChild->getChildren(), {});
+    updateMountedFlag(oldChild->getChildren(), {}, commitSource);
   }
 }
 } // namespace facebook::react

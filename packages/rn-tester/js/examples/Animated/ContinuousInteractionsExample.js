@@ -12,10 +12,11 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Text} from 'react-native';
 
 function AnimatedContinuousInteractionsExample(): React.Node {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   return (
     <Text style={{color: theme.SecondaryLabelColor}}>
       Checkout the Gratuitous Animation App!

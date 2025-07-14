@@ -242,8 +242,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             }
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              // Do not throw any error to match web spec
-              return timerIndex_++;
+              // Do not throw any error to match web spec; instead return 0, an
+              // invalid timer id
+              return 0;
             }
 
             auto callback = args[0].getObject(rt).getFunction(rt);
@@ -300,8 +301,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             }
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-              throw jsi::JSError(
-                  rt, "The first argument to setInterval must be a function.");
+              // Do not throw any error to match web spec; instead return 0, an
+              // invalid timer id
+              return 0;
             }
             auto callback = args[0].getObject(rt).getFunction(rt);
             auto delay = count > 1

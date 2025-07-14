@@ -60,16 +60,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    animatedShouldSignalBatch: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-03-07',
-        description: 'Enables start- and finishOperationBatch on any platform.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -81,11 +71,11 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableMainQueueSyncDispatchIOS: {
+    cxxNativeAnimatedRemoveJsSync: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-04-02',
-        description: 'Disable sync dispatch on the main queue on iOS',
+        dateAdded: '2025-06-16',
+        description: 'Removes JS sync at end of native animation',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -98,6 +88,17 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread',
         expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    disableTextLayoutManagerCacheAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-28',
+        description:
+          'Turns off the global measurement cache used by TextLayoutManager on Android.',
+        expectedReleaseValue: false,
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
@@ -119,6 +120,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-12-10',
         description:
           'When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAndroidTextMeasurementOptimizations: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-01',
+        description:
+          'Enables various optimizations throughout the path of measuring text on Android.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -176,6 +188,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableEagerMainQueueModulesOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'This infra allows native modules to initialize on the main thread, during React Native init.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {
@@ -227,6 +249,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableIOSTextBaselineOffsetPerLine: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-21',
+        description:
+          'Applies base offset for each line of text separately on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {
@@ -237,12 +270,14 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableJSRuntimeGCOnMemoryPressureOnIOS: {
+    enableInteropViewManagerClassLookUpOptimizationIOS: {
       defaultValue: false,
       metadata: {
-        description: 'Trigger JS runtime GC on memory pressure event on iOS',
+        dateAdded: '2025-06-17',
+        description:
+          'This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -266,11 +301,22 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableMainQueueModulesOnIOS: {
+    enableMainQueueCoordinatorOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-05-17',
+        description:
+          'Make RCTUnsafeExecuteOnMainQueueSync less likely to deadlock, when used in conjuction with sync rendering/events.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableModuleArgumentNSNullConversionIOS: {
       defaultValue: false,
       metadata: {
         description:
-          'Makes modules requiring main queue setup initialize on the main thread, during React Native init.',
+          'Enable NSNull conversion when handling module arguments on iOS',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -394,6 +440,36 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableVirtualViewDebugFeatures: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables VirtualView debug features such as logging and overlays.',
+        expectedReleaseValue: false,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableVirtualViewRenderState: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables reading render state when dispatching VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableVirtualViewWindowFocusDetection: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enables window focus detection for prioritizing VirtualView events.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      ossReleaseStage: 'none',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -426,15 +502,37 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    incorporateMaxLinesDuringAndroidLayout: {
-      defaultValue: true,
+    hideOffscreenVirtualViewsOnIOS: {
+      defaultValue: false,
       metadata: {
+        dateAdded: '2025-06-30',
         description:
-          'Set maxLines and ellipsization during Android layout creation',
+          'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
-      ossReleaseStage: 'stable',
+      ossReleaseStage: 'none',
+    },
+    preparedTextCacheSize: {
+      defaultValue: 200,
+      metadata: {
+        dateAdded: '2025-06-25',
+        description: 'Number cached PreparedLayouts in TextLayoutManager cache',
+        expectedReleaseValue: 200,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    releaseImageDataWhenConsumed: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-10',
+        description:
+          'Releases the cached image data when it is consumed by the observers.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
@@ -542,11 +640,31 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    virtualViewPrerenderRatio: {
+      defaultValue: 5,
+      metadata: {
+        dateAdded: '2025-05-30',
+        description: 'Initial prerender ratio for VirtualView.',
+        expectedReleaseValue: 5,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
   },
 
   jsOnly: {
     ...testDefinitions.jsOnly,
-
+    alwaysFlattenAnimatedStyles: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-06-02',
+        description:
+          'Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {
@@ -570,11 +688,21 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     avoidStateUpdateInAnimatedPropsMemo: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2025-02-05',
         description:
           'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    deferFlatListFocusChangeRenderUpdate: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-02',
+        description:
+          'Use the deferred cell render update mechanism for focus change in FlatList.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -621,6 +749,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    reduceDefaultPropsInView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-5-12',
+        description:
+          'Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     scheduleAnimatedCleanupInMicrotask: {
       defaultValue: true,
       metadata: {
@@ -658,6 +797,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    utilizeTokensInIntersectionObserver: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-05-06',
+        description: 'Use tokens in IntersectionObserver vs ShadowNode.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

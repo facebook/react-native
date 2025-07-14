@@ -8,13 +8,13 @@
 package com.facebook.react.modules.appearance
 
 import android.content.Context
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.views.common.UiModeUtils
 
 /** Module that exposes the user's preferred color scheme. */
 @ReactModule(name = NativeAppearanceSpec.NAME)
@@ -41,13 +41,7 @@ constructor(
       return overrideColorScheme.getScheme()
     }
 
-    val currentNightMode =
-        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    return when (currentNightMode) {
-      Configuration.UI_MODE_NIGHT_NO -> "light"
-      Configuration.UI_MODE_NIGHT_YES -> "dark"
-      else -> "light"
-    }
+    return if (UiModeUtils.isDarkMode(context)) "dark" else "light"
   }
 
   public override fun getColorScheme(): String {
@@ -89,8 +83,7 @@ constructor(
 
   /** Sends an event to the JS instance that the preferred color scheme has changed. */
   public fun emitAppearanceChanged(colorScheme: String) {
-    val appearancePreferences = Arguments.createMap()
-    appearancePreferences.putString("colorScheme", colorScheme)
+    val appearancePreferences = buildReadableMap { put("colorScheme", colorScheme) }
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     reactApplicationContext?.emitDeviceEvent(APPEARANCE_CHANGED_EVENT_NAME, appearancePreferences)
   }

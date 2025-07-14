@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
@@ -58,6 +58,9 @@ export type StatusBarAnimation = $Keys<{
 export type StatusBarPropsAndroid = $ReadOnly<{
   /**
    * The background color of the status bar.
+   *
+   * Please note that this prop has no effect on Android 15+
+   *
    * @platform android
    */
   backgroundColor?: ?ColorValue,
@@ -65,6 +68,8 @@ export type StatusBarPropsAndroid = $ReadOnly<{
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.
    * This is useful when using a semi transparent status bar color.
+   *
+   * Please note that this prop has no effect on Android 15+
    *
    * @platform android
    */

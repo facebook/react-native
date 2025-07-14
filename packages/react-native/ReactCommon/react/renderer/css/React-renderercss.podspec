@@ -18,7 +18,7 @@ end
 
 header_search_paths = []
 
-if ENV['USE_FRAMEWORKS']
+if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the renderer/css access its own files
 end
 
@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = podspec_sources("**/*.{cpp,h}", "**/*.h")
   s.header_dir             = "react/renderer/css"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_renderercss"
     s.header_mappings_dir  = "../../.."
   end

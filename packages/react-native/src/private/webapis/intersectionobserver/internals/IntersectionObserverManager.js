@@ -23,9 +23,11 @@ import type IntersectionObserver, {
   IntersectionObserverCallback,
 } from '../IntersectionObserver';
 import type IntersectionObserverEntry from '../IntersectionObserverEntry';
+import type {NativeIntersectionObserverToken} from '../specs/NativeIntersectionObserver';
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {
   getInstanceHandle,
   getNativeNodeReference,
@@ -74,6 +76,29 @@ const targetToShadowNodeMap: WeakMap<
   ReturnType<typeof getNativeNodeReference>,
 > = new WeakMap();
 
+const targetToTokenMap: WeakMap<
+  ReactNativeElement,
+  NativeIntersectionObserverToken,
+> = new WeakMap();
+
+let modernNativeIntersectionObserver =
+  NativeIntersectionObserver == null
+    ? null
+    : NativeIntersectionObserver.observeV2 == null ||
+        NativeIntersectionObserver.unobserveV2 == null
+      ? null
+      : {
+          observe: NativeIntersectionObserver.observeV2,
+          unobserve: NativeIntersectionObserver.unobserveV2,
+        };
+
+if (
+  modernNativeIntersectionObserver &&
+  !ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()
+) {
+  modernNativeIntersectionObserver = null;
+}
+
 /**
  * Registers the given intersection observer and returns a unique ID for it,
  * which is required to start observing targets.
@@ -115,9 +140,11 @@ export function unregisterObserver(
  */
 export function observe({
   intersectionObserverId,
+  root,
   target,
 }: {
   intersectionObserverId: IntersectionObserverId,
+  root: ?ReactNativeElement,
   target: ReactNativeElement,
 }): boolean {
   if (NativeIntersectionObserver == null) {
@@ -149,24 +176,47 @@ export function observe({
     return false;
   }
 
+  const rootNativeNodeReference =
+    root != null ? getNativeNodeReference(root) : null;
+  if (root != null && rootNativeNodeReference == null) {
+    console.error(
+      'IntersectionObserverManager: could not find shadow node for observation root',
+    );
+    return false;
+  }
+
   // Store the mapping between the instance handle and the target so we can
   // access it even after the instance handle has been unmounted.
   setTargetForInstanceHandle(instanceHandle, target);
 
-  // Same for the mapping between the target and its shadow node.
-  targetToShadowNodeMap.set(target, targetNativeNodeReference);
+  if (modernNativeIntersectionObserver == null) {
+    // Same for the mapping between the target and its shadow node.
+    targetToShadowNodeMap.set(target, targetNativeNodeReference);
+  }
 
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
     isConnected = true;
   }
 
-  NativeIntersectionObserver.observe({
-    intersectionObserverId,
-    targetShadowNode: targetNativeNodeReference,
-    thresholds: registeredObserver.observer.thresholds,
-    rootThresholds: registeredObserver.observer.rnRootThresholds,
-  });
+  if (modernNativeIntersectionObserver == null) {
+    NativeIntersectionObserver.observe({
+      intersectionObserverId,
+      rootShadowNode: rootNativeNodeReference,
+      targetShadowNode: targetNativeNodeReference,
+      thresholds: registeredObserver.observer.thresholds,
+      rootThresholds: registeredObserver.observer.rnRootThresholds,
+    });
+  } else {
+    const token = modernNativeIntersectionObserver.observe({
+      intersectionObserverId,
+      rootShadowNode: rootNativeNodeReference,
+      targetShadowNode: targetNativeNodeReference,
+      thresholds: registeredObserver.observer.thresholds,
+      rootThresholds: registeredObserver.observer.rnRootThresholds,
+    });
+    targetToTokenMap.set(target, token);
+  }
 
   return true;
 }
@@ -190,18 +240,33 @@ export function unobserve(
     return;
   }
 
-  const targetNativeNodeReference = targetToShadowNodeMap.get(target);
-  if (targetNativeNodeReference == null) {
-    console.error(
-      'IntersectionObserverManager: could not find registration data for target',
-    );
-    return;
-  }
+  if (modernNativeIntersectionObserver == null) {
+    const targetNativeNodeReference = targetToShadowNodeMap.get(target);
+    if (targetNativeNodeReference == null) {
+      console.error(
+        'IntersectionObserverManager: could not find registration data for target',
+      );
+      return;
+    }
 
-  NativeIntersectionObserver.unobserve(
-    intersectionObserverId,
-    targetNativeNodeReference,
-  );
+    NativeIntersectionObserver.unobserve(
+      intersectionObserverId,
+      targetNativeNodeReference,
+    );
+  } else {
+    const targetToken = targetToTokenMap.get(target);
+    if (targetToken == null) {
+      console.error(
+        'IntersectionObserverManager: could not find registration data for target',
+      );
+      return;
+    }
+
+    modernNativeIntersectionObserver.unobserve(
+      intersectionObserverId,
+      targetToken,
+    );
+  }
 }
 
 /**

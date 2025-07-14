@@ -25,6 +25,6 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{c,h,m,mm,cpp}"
+  s.source_files           = podspec_sources("**/*.{c,h,m,mm,cpp}", "**/*.h")
   s.header_dir             = "RCTRequired"
 end

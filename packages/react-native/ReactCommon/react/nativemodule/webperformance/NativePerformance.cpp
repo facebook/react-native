@@ -116,29 +116,111 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
-double NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return JSExecutor::performanceNow();
+HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
+  return forcedCurrentTimeStamp_.value_or(HighResTimeStamp::now());
 }
 
-double NativePerformance::markWithResult(
+HighResTimeStamp NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
-    std::optional<double> startTime) {
-  auto entry =
-      PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+    std::optional<HighResTimeStamp> startTime) {
+  auto entry = PerformanceEntryReporter::getInstance()->reportMark(
+      name, startTime.value_or(now(rt)));
   return entry.startTime;
 }
 
-std::tuple<double, double> NativePerformance::measureWithResult(
-    jsi::Runtime& rt,
+std::tuple<HighResTimeStamp, HighResDuration> NativePerformance::measure(
+    jsi::Runtime& runtime,
     std::string name,
-    double startTime,
-    double endTime,
-    std::optional<double> duration,
+    std::optional<HighResTimeStamp> startTime,
+    std::optional<HighResTimeStamp> endTime,
+    std::optional<HighResDuration> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      name, startTime, endTime, duration, startMark, endMark);
+  auto reporter = PerformanceEntryReporter::getInstance();
+
+  HighResTimeStamp startTimeValue;
+
+  // If the start time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (startTime) {
+    startTimeValue = *startTime;
+  } else if (startMark) {
+    if (auto startMarkBufferedTime = reporter->getMarkTime(*startMark)) {
+      startTimeValue = *startMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *startMark + "' does not exist.");
+    }
+  } else {
+    startTimeValue = HighResTimeStamp::fromDOMHighResTimeStamp(0);
+  }
+
+  HighResTimeStamp endTimeValue;
+
+  if (endTime) {
+    endTimeValue = *endTime;
+  } else if (duration) {
+    endTimeValue = startTimeValue + *duration;
+  } else if (endMark) {
+    if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
+      endTimeValue = *endMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *endMark + "' does not exist.");
+    }
+  } else {
+    // The end time is not specified, take the current time, according to the
+    // standard
+    endTimeValue = now(runtime);
+  }
+
+  auto entry = reporter->reportMeasure(name, startTimeValue, endTimeValue);
+  return std::tuple{entry.startTime, entry.duration};
+}
+
+std::tuple<HighResTimeStamp, HighResDuration>
+NativePerformance::measureWithResult(
+    jsi::Runtime& runtime,
+    std::string name,
+    HighResTimeStamp startTime,
+    HighResTimeStamp endTime,
+    std::optional<HighResDuration> duration,
+    std::optional<std::string> startMark,
+    std::optional<std::string> endMark) {
+  auto reporter = PerformanceEntryReporter::getInstance();
+
+  HighResTimeStamp startTimeValue = startTime;
+  // If the start time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (startMark) {
+    if (auto startMarkBufferedTime = reporter->getMarkTime(*startMark)) {
+      startTimeValue = *startMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *startMark + "' does not exist.");
+    }
+  }
+
+  HighResTimeStamp endTimeValue = endTime;
+  // If the end time mark name is specified, it takes precedence over the
+  // startTime parameter, which can be set to 0 by default from JavaScript.
+  if (endMark) {
+    if (auto endMarkBufferedTime = reporter->getMarkTime(*endMark)) {
+      endTimeValue = *endMarkBufferedTime;
+    } else {
+      throw jsi::JSError(
+          runtime, "The mark '" + *endMark + "' does not exist.");
+    }
+  } else if (duration) {
+    endTimeValue = startTimeValue + *duration;
+  } else if (endTimeValue < startTimeValue) {
+    // The end time is not specified, take the current time, according to the
+    // standard
+    endTimeValue = now(runtime);
+  }
+
+  auto entry = reporter->reportMeasure(name, startTime, endTime);
   return std::tuple{entry.startTime, entry.duration};
 }
 
@@ -314,7 +396,8 @@ void NativePerformance::observe(
     return;
   }
 
-  auto durationThreshold = options.durationThreshold.value_or(0.0);
+  auto durationThreshold =
+      options.durationThreshold.value_or(HighResDuration::zero());
 
   // observer of type multiple
   if (options.entryTypes.has_value()) {
@@ -371,6 +454,18 @@ std::vector<PerformanceEntryType>
 NativePerformance::getSupportedPerformanceEntryTypes(jsi::Runtime& /*rt*/) {
   auto supportedEntryTypes = PerformanceEntryReporter::getSupportedEntryTypes();
   return {supportedEntryTypes.begin(), supportedEntryTypes.end()};
+}
+
+#pragma mark - Testing
+
+void NativePerformance::setCurrentTimeStampForTesting(
+    jsi::Runtime& /*rt*/,
+    HighResTimeStamp ts) {
+  forcedCurrentTimeStamp_ = ts;
+}
+
+void NativePerformance::clearEventCountsForTesting(jsi::Runtime& /*rt*/) {
+  PerformanceEntryReporter::getInstance()->clearEventCounts();
 }
 
 } // namespace facebook::react

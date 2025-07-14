@@ -22,6 +22,7 @@ import javax.inject.Provider
 /** Abstract class that supports lazy loading of NativeModules by default. */
 public abstract class BaseReactPackage : ReactPackage {
 
+  @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     throw UnsupportedOperationException(
         "createNativeModules method is not supported. Use getModule() method instead.")

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
@@ -82,6 +81,7 @@ export default function createDevMiddleware({
   projectRoot,
   serverBaseUrl,
   logger,
+  // $FlowFixMe[prop-missing]
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
@@ -141,6 +141,7 @@ function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
+    enableStandaloneFuseboxShell: config.enableStandaloneFuseboxShell ?? false,
   };
 }
 

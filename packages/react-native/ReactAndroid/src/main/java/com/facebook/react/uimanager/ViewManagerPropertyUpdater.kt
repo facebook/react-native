@@ -10,7 +10,6 @@ package com.facebook.react.uimanager
 import android.view.View
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.uimanager.ViewManagersPropertyCache.PropSetter
 import java.util.HashMap
 
@@ -70,8 +69,8 @@ public object ViewManagerPropertyUpdater {
     }
   }
 
-  @DeprecatedInNewArchitecture
   @JvmStatic
+  @Deprecated("Use ViewManager#updateProperties to update a view's properties")
   public fun <T : ReactShadowNode<T>> updateProps(node: T, props: ReactStylesDiffMap) {
     val setter = findNodeSetter(node.javaClass)
     val iterator = props.backingMap.entryIterator
@@ -186,6 +185,6 @@ public object ViewManagerPropertyUpdater {
     }
 
     @Suppress("ACCIDENTAL_OVERRIDE")
-    override fun receiveCommand(view: T, commandName: String, args: ReadableArray?) = Unit
+    override fun receiveCommand(view: T, commandName: String, args: ReadableArray) = Unit
   }
 }

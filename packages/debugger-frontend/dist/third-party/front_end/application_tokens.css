@@ -1,0 +1,407 @@
+/*
+ * Copyright 2023 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+ /**
+  * Application-specific tokens list tokens that differ from our core design system.
+  *
+  * Before adding to this file, make sure that there's really no usable --sys-* definition
+  * in design_system_tokens.css. Additions to this file should be an exception.
+  */
+:root {
+  /* Colors */
+
+  --icon-action: var(--sys-color-primary-bright);
+  --icon-arrow-main-thread: var(--sys-color-primary-bright);
+  --icon-checkmark-green: var(--sys-color-green-bright);
+  --icon-default: var(--sys-color-on-surface-subtle);
+  --icon-default-hover: var(--sys-color-on-surface);
+  --icon-disabled: var(--sys-color-state-disabled);
+  --icon-error: var(--sys-color-error-bright);
+  --icon-file-authored: var(--sys-color-orange-bright);
+  --icon-file-default: var(--sys-color-on-surface-subtle);
+  --icon-file-document: var(--sys-color-blue-bright);
+  --icon-file-font: var(--sys-color-cyan-bright);
+  --icon-file-media: var(--sys-color-green-bright);
+  --icon-file-image: var(--sys-color-green-bright);
+  --icon-file-script: var(--sys-color-orange-bright);
+  --icon-file-styles: var(--sys-color-purple-bright);
+  --icon-fold-marker: var(--sys-color-on-surface-subtle);
+  --icon-folder-authored: var(--sys-color-orange);
+  --icon-folder-primary: var(--sys-color-on-surface-subtle);
+  --icon-folder-deployed: var(--sys-color-primary-bright);
+  --icon-folder-workspace: var(--sys-color-orange);
+  --icon-gap-focus-selected: var(--sys-color-tonal-container);
+  --icon-gap-default: var(--sys-color-cdt-base-container);
+  --icon-gap-inactive: var(--sys-color-neutral-container);
+  --icon-gap-hover: var(--sys-color-state-hover-on-subtle);
+  --icon-gap-toolbar: var(--sys-color-surface1);
+  --icon-gap-toolbar-hover: var(--sys-color-state-header-hover);
+  --icon-info: var(--sys-color-primary-bright);
+  --icon-link: var(--sys-color-primary-bright);
+  --icon-no-request: var(--sys-color-orange-bright);
+  --icon-primary: var(--sys-color-primary-bright);
+  --icon-request-response: var(--sys-color-primary-bright);
+  --icon-request: var(--sys-color-on-surface-subtle);
+  --icon-css: var(--sys-color-purple-bright);
+  --icon-css-hover: var(--sys-color-purple);
+  --icon-toggled: var(--sys-color-primary-bright);
+  --icon-warning: var(--sys-color-orange-bright);
+  --ui-text: var(--sys-color-on-surface-subtle);
+  --text-disabled: var(--ref-palette-neutral60);
+  --text-primary: var(--sys-color-on-surface);
+  --text-secondary: var(--sys-color-token-subtle);
+  --text-link: var(--sys-color-primary);
+  --color-grid-stripe: var(--sys-color-surface1);
+  --color-grid-default: var(--sys-color-surface);
+  --color-grid-focus-selected: var(--sys-color-tonal-container);
+  --color-grid-selected: var(--sys-color-surface-variant);
+  --color-grid-hovered: var(--sys-color-state-hover-on-subtle);
+  --color-primary-old: rgb(26 115 232);
+  --color-primary-variant: rgb(66 133 244);
+  --color-background: rgb(255 255 255);
+  --color-background-inverted: rgb(0 0 0);
+  --color-background-inverted-opacity-0: rgb(0 0 0 / 0%);
+  --color-background-inverted-opacity-2: rgb(0 0 0 / 2%);
+  --color-background-inverted-opacity-30: rgb(0 0 0 / 30%);
+  --color-background-inverted-opacity-50: rgb(0 0 0 / 50%);
+  --color-background-opacity-50: rgb(255 255 255 / 50%);
+  --color-background-opacity-80: rgb(255 255 255 / 80%);
+  --color-background-elevation-1: rgb(241 243 244);
+  --color-background-elevation-2: rgb(222 225 230);
+  /** Used when the elevation is visible only on dark theme */
+  --color-background-elevation-dark-only: var(--color-background);
+  /** To draw grid lines behind elements */
+  --divider-line: rgb(0 0 0 / 10%);
+  --color-text-primary: rgb(32 33 36);
+  --color-text-secondary: rgb(95 99 104);
+  --color-text-disabled: rgb(128 134 139);
+  --color-red: rgb(238 68 47);
+  --drop-shadow:
+    0 0 0 1px rgb(0 0 0 / 5%),
+    0 2px 4px rgb(0 0 0 / 20%),
+    0 2px 6px rgb(0 0 0 / 10%);
+  --drop-shadow-depth-1:
+    0 1px 2px rgb(60 64 67 / 30%),
+    0 1px 3px 1px rgb(60 64 67 / 15%);
+  --drop-shadow-depth-3:
+    0 4px 8px 3px rgb(60 64 67 / 15%),
+    0 1px 3px rgb(60 64 67 / 30%);
+  --box-shadow-outline-color: rgb(0 0 0 / 50%);
+  /** These are the colors of the native Mac scrollbars */
+  --color-scrollbar-mac: rgb(143 143 143 / 60%);
+  --color-scrollbar-mac-hover: rgb(64 64 64 / 60%);
+  /** These colors are used on all non-Mac platforms for scrollbars */
+  --color-scrollbar-other: rgb(0 0 0 / 50%);
+  --color-scrollbar-other-hover: rgb(0 0 0 / 50%);
+  /** The colors are for issue icons and related highlights */
+  --issue-color-red: rgb(235 57 65);
+  --issue-color-yellow: rgb(242 153 0);
+  --issue-color-blue: rgb(26 115 232);
+  /** Used to indicate an input box */
+  --input-outline: rgb(202 205 209);
+
+  /** These colors are used to show errors */
+  --color-error-text: #f00;
+
+  /* Colors used by the code editor */
+  --color-continue-to-location: var(--ref-palette-blue90);
+  --color-continue-to-location-hover: var(--ref-palette-blue80);
+  --color-continue-to-location-hover-border: var(--ref-palette-blue70);
+  --color-continue-to-location-async: var(--ref-palette-green90);
+  --color-continue-to-location-async-hover: var(--ref-palette-green80);
+  --color-continue-to-location-async-hover-border: var(--ref-palette-green70);
+  --color-evaluated-expression: var(--ref-palette-yellow95);
+  --color-evaluated-expression-border: var(--ref-palette-yellow70);
+  --color-variable-values: var(--ref-palette-orange90);
+
+  /* Color tokens for icons */
+  --color-primary: rgb(11 87 208);
+  --legacy-accent-color: #1a73e8;
+  --legacy-focus-ring-inactive-shadow-color: #e0e0e0;
+  --legacy-input-validation-error: #db1600;
+  --legacy-selection-bg-color: var(--legacy-accent-color);
+  --legacy-focus-ring-inactive-shadow: 0 0 0 1px var(--legacy-focus-ring-inactive-shadow-color);
+  --legacy-focus-ring-active-shadow: 0 0 0 1px var(--legacy-accent-color);
+
+  /* Color for strokestyle of canvas in flame chart */
+  /* It is the same color as sys-color-primary but with a 10% opacity */
+  --app-color-strokestyle: rgb(11 87 208 / 10%);
+
+  /* Colors for data grid in Performance Panel */
+
+  --app-color-selected-progress-bar: var(--ref-palette-primary80);
+  --app-border-selected-progress-bar: var(--ref-palette-primary70);
+
+  /* Colors for timeline in Performance Panel */
+
+  --app-color-loading: var(--ref-palette-blue70);
+  --app-color-loading-children: var(--ref-palette-blue80);
+  --app-color-scripting: var(--ref-palette-yellow70);
+  --app-color-scripting-children: var(--ref-palette-yellow80);
+  --app-color-rendering: var(--ref-palette-purple70);
+  --app-color-rendering-children: var(--ref-palette-purple80);
+  --app-color-painting: var(--ref-palette-green70);
+  --app-color-painting-children: var(--ref-palette-green80);
+  --app-color-messaging: var(--ref-palette-cyan70);
+  --app-color-messaging-children: var(--ref-palette-cyan80);
+  --app-color-task: var(--ref-palette-neutral80);
+  --app-color-task-children: var(--ref-palette-neutral90);
+  --app-color-system: var(--ref-palette-neutral80);
+  --app-color-system-children: var(--ref-palette-neutral90);
+  --app-color-idle: var(--ref-palette-neutral90);
+  --app-color-idle-children: var(--ref-palette-neutral100);
+  --app-color-async: var(--ref-palette-error60);
+  --app-color-async-children: var(--ref-palette-error70);
+  --app-color-other: var(--ref-palette-neutral87);
+  --app-color-doc: var(--ref-palette-blue60);
+  --app-color-css: var(--ref-palette-purple60);
+  --app-color-image: var(--ref-palette-green80);
+  --app-color-media: var(--ref-palette-green60);
+  --app-color-font: var(--ref-palette-cyan60);
+  --app-color-wasm: var(--ref-palette-indigo60);
+
+  /**
+   * Color for the active breadcrumb in the Performance Panel timeline.
+   */
+  --app-color-active-breadcrumb: var(--ref-palette-blue40);
+
+  /**
+   * Colors for the pie chart in the Memory panel.
+   */
+  --app-color-code: var(--ref-palette-cyan70);
+  --app-color-strings: var(--ref-palette-purple70);
+  --app-color-js-arrays: var(--ref-palette-green70);
+  --app-color-typed-arrays: var(--ref-palette-indigo60);
+  --app-color-other-js-objects: var(--ref-palette-blue70);
+  --app-color-other-non-js-objects: var(--ref-palette-yellow70);
+
+  /**
+   * Colors for Coverage visualization.
+   */
+  --app-color-coverage-used: var(--ref-palette-neutral80);
+  --app-color-coverage-unused: var(--sys-color-error-bright);
+  --app-color-toolbar-background: var(--sys-color-surface4);
+
+  /**
+   * Colors for menus.
+   */
+  --app-color-menu-background: var(--sys-color-surface);
+
+  /**
+   * Colors for navigation drawers.
+   */
+  --app-color-navigation-drawer-label-selected: var(--sys-color-on-surface);
+  --app-color-navigation-drawer-background-selected: var(--ref-palette-primary95);
+
+   /**
+   * Colors for performance panel metric ratings.
+   */
+  --app-color-performance-bad: var(--sys-color-error-bright);
+  --app-color-performance-ok: var(--sys-color-orange-bright);
+  --app-color-performance-good: var(--sys-color-green-bright);
+  --app-color-performance-bad-dim: var(--sys-color-error);
+  --app-color-performance-ok-dim: var(--sys-color-orange);
+  --app-color-performance-good-dim: var(--sys-color-green);
+
+  /**
+   * Colors for performance panel annotations list in sidebar.
+   */
+  --app-color-performance-sidebar-time-range: var(--ref-palette-pink60);
+  --app-color-performance-sidebar-label-text-dark: var(--ref-palette-neutral10);
+  --app-color-performance-sidebar-label-text-light: var(--ref-palette-neutral100);
+
+  /**
+   * Colors for cards.
+   */
+  --app-color-card-background: var(--sys-color-base-container-elevated);
+  --app-color-card-divider: color-mix(in srgb, var(--ref-palette-neutral0) 6%, transparent);
+
+  /**
+   * Colors for element panel sidebar subtitle
+   */
+  --app-color-element-sidebar-subtitle: var(--ref-palette-neutral50);
+
+  /**
+   * Color for input driver for AI assistance chat
+   */
+  --app-color-ai-assistance-input-divider: rgb(0 0 0 / 10%);
+
+  &.baseline-default {
+    /**
+     * Color for navigation drawers.
+     */
+    --app-color-navigation-drawer-label-selected: var(--sys-color-primary);
+
+    &.theme-with-dark-background {
+      /**
+       * Color for navigation drawers.
+       */
+      --app-color-navigation-drawer-label-selected: var(--sys-color-surface);
+    }
+  }
+
+  /**
+   * Combobox image.
+   */
+   --combobox-dropdown-arrow: var(--image-file-arrow-drop-down-light);
+
+  &.theme-with-dark-background {
+    --color-primary-old: rgb(138 180 248);
+    --color-primary-variant: rgb(102 157 246);
+    --color-background: rgb(32 33 36);
+    --color-background-inverted: rgb(255 255 255);
+    --color-background-inverted-opacity-2: rgb(255 255 255 / 2%);
+    --color-background-inverted-opacity-30: rgb(255 255 255 / 30%);
+    --color-background-inverted-opacity-50: rgb(255 255 255 / 50%);
+    --color-background-opacity-50: rgb(32 33 36 / 50%);
+    --color-background-opacity-80: rgb(32 33 36 / 80%);
+    --color-background-elevation-1: rgb(41 42 45);
+    --color-background-elevation-2: rgb(53 54 58);
+    --color-background-elevation-dark-only: var(--color-background-elevation-1);
+    --divider-line: rgb(255 255 255 / 10%);
+    --color-text-primary: rgb(232 234 237);
+    --color-text-secondary: rgb(154 160 166);
+    --color-text-disabled: rgb(128 134 139);
+    --color-red: rgb(237 78 76);
+    --drop-shadow:
+      0 0 0 1px rgb(255 255 255 / 20%),
+      0 2px 4px 2px rgb(0 0 0 / 20%),
+      0 2px 6px 2px rgb(0 0 0 / 10%);
+    --drop-shadow-depth-1:
+      0 1px 2px rgb(0 0 0 / 30%),
+      0 1px 3px 1px rgb(0 0 0 / 15%);
+    --drop-shadow-depth-3:
+      0 4px 8px 3px rgb(0 0 0 / 15%),
+      0 1px 3px rgb(0 0 0 / 30%);
+    --box-shadow-outline-color: rgb(0 0 0 / 50%);
+    --color-scrollbar-mac: rgb(51 51 51);
+    --color-scrollbar-mac-hover: rgb(75 76 79);
+    --color-scrollbar-other: rgb(51 51 51);
+    --color-scrollbar-other-hover: rgb(75 76 79);
+    --color-error-text: hsl(0deg 100% 75%);
+
+    /* Colors used by the code editor */
+    --color-continue-to-location: var(--ref-palette-yellow30);
+    --color-continue-to-location-hover: var(--ref-palette-yellow40);
+    --color-continue-to-location-hover-border: var(--ref-palette-yellow50);
+    --color-continue-to-location-async: var(--ref-palette-green30);
+    --color-continue-to-location-async-hover: var(--ref-palette-green4);
+    --color-continue-to-location-async-hover-border: var(--ref-palette-green50);
+    --color-evaluated-expression: var(--ref-palette-yellow30);
+    --color-evaluated-expression-border: var(--ref-palette-yellow40);
+    --color-variable-values: var(--sys-color-surface-error);
+
+    /* Color tokens for icons */
+    --color-primary: rgb(168 199 250);
+
+    /**
+    * Inherit the native form control colors when using a dark theme.
+    * Override them using CSS variables if needed.
+    */
+    color-scheme: dark;
+
+    --legacy-accent-color: #0e639c;
+    --legacy-focus-ring-inactive-shadow-color: #5a5a5a;
+    --legacy-focus-ring-inactive-shadow: 0 0 0 1px var(--legacy-focus-ring-inactive-shadow-color);
+
+    /* Color for strokestyle of canvas in flame chart */
+    /* It is the same color as sys-color-primary but with a 10% opacity */
+    --app-color-strokestyle: rgb(168 199 250 / 10%);
+
+    /* Colors for data grid in Performance Panel */
+
+    --app-color-selected-progress-bar: var(--ref-palette-secondary40);
+    --app-border-selected-progress-bar: var(--ref-palette-secondary50);
+
+    /* Colors for timeline in Performance Panel */
+
+    --app-color-loading: var(--ref-palette-blue60);
+    --app-color-loading-children: var(--ref-palette-blue50);
+    --app-color-scripting: var(--ref-palette-yellow70);
+    --app-color-scripting-children: var(--ref-palette-yellow60);
+    --app-color-rendering: var(--ref-palette-purple60);
+    --app-color-rendering-children: var(--ref-palette-purple50);
+    --app-color-painting: var(--ref-palette-green70);
+    --app-color-painting-children: var(--ref-palette-green60);
+    --app-color-task: var(--ref-palette-neutral80);
+    --app-color-task-children: var(--ref-palette-neutral70);
+    --app-color-system: var(--ref-palette-neutral50);
+    --app-color-system-children: var(--ref-palette-neutral40);
+    --app-color-idle: var(--ref-palette-neutral30);
+    --app-color-idle-children: var(--ref-palette-neutral20);
+    --app-color-async: var(--ref-palette-error60);
+    --app-color-async-children: var(--ref-palette-error50);
+    --app-color-other: var(--ref-palette-neutral60);
+    --app-color-doc: var(--ref-palette-blue60);
+    --app-color-css: var(--ref-palette-purple60);
+    --app-color-image: var(--ref-palette-green80);
+    --app-color-media: var(--ref-palette-green60);
+    --app-color-font: var(--ref-palette-cyan60);
+    --app-color-wasm: var(--ref-palette-indigo60);
+
+    /**
+     * Color for the active breadcrumb in the Performance Panel timeline.
+     */
+    --app-color-active-breadcrumb: var(--ref-palette-blue40);
+
+    /**
+     * Colors for the pie chart in the Memory panel.
+     */
+    --app-color-code: var(--ref-palette-cyan70);
+    --app-color-strings: var(--ref-palette-purple60);
+    --app-color-js-arrays: var(--ref-palette-green70);
+    --app-color-typed-arrays: var(--ref-palette-indigo60);
+    --app-color-other-js-objects: var(--ref-palette-blue60);
+    --app-color-other-non-js-objects: var(--ref-palette-yellow70);
+
+    /**
+    * Gradients
+    */
+    --sys-color-gradient-primary: var(--ref-palette-primary30);
+    --sys-color-gradient-tertiary: var(--ref-palette-tertiary30);
+
+    /**
+     * Colors for Coverage visualization.
+     */
+    --app-color-coverage-used: var(--ref-palette-neutral40);
+    --app-color-coverage-unused: var(--sys-color-error-bright);
+    --app-color-toolbar-background: var(--sys-color-base);
+
+    /**
+     * Colors for menus.
+     */
+    --app-color-menu-background: var(--sys-color-surface3);
+
+    /**
+     * Colors for navigation drawers.
+     */
+    --app-color-navigation-drawer-label-selected: var(--sys-color-surface);
+    --app-color-navigation-drawer-background-selected: var(--ref-palette-primary70);
+
+    /**
+     * Colors for cards.
+     */
+    --app-color-card-divider: color-mix(in srgb, var(--ref-palette-neutral100) 10%, transparent);
+    --app-color-card-background: var(--sys-color-surface2);
+
+    /**
+     * Colors for element panel sidebar subtitle
+     */
+    --app-color-element-sidebar-subtitle: var(--sys-color-token-subtle);
+
+    /**
+     * Color for input driver for AI assistance chat
+     */
+    --app-color-ai-assistance-input-divider: rgb(255 255 255 / 15%);
+
+    /**
+    * Combobox image.
+    */
+    --combobox-dropdown-arrow: var(--image-file-arrow-drop-down-dark);
+  }
+
+  /* Colors end */
+}

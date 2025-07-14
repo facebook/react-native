@@ -23,7 +23,7 @@ import com.facebook.react.bridge.ReadableMap
  * in which the style key that was previously present in a map has been removed).
  *
  * NOTE: Accessor method with default value will throw an exception when the key is not present in
- * the map. Style applicator logic should verify whether the key exists in the map using [.hasKey]
+ * the map. Style applicator logic should verify whether the key exists in the map using [hasKey]
  * before fetching the value. The motivation behind this is that in case when the updated style diff
  * map doesn't contain a certain style key it means that the corresponding view property shouldn't
  * be updated (whereas in all other cases it should be updated to the new value or the property
@@ -31,7 +31,12 @@ import com.facebook.react.bridge.ReadableMap
  */
 public class ReactStylesDiffMap(props: ReadableMap) {
 
-  @JvmField internal val backingMap: ReadableMap = props
+  /**
+   * This backing map is annotated as JvmName("internal_backingMap") so can be accessed by Java
+   * consumers. This is used in Expo to override setting properties in some subclassed view-manager
+   * as this provides faster access to the underlying values.
+   */
+  @get:JvmName("internal_backingMap") internal val backingMap: ReadableMap = props
 
   public fun toMap(): Map<String, Any?> = backingMap.toHashMap()
 

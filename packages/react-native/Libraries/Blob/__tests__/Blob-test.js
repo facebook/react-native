@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
-jest.setMock('../../BatchedBridge/NativeModules', {
+jest.mock('../../BatchedBridge/NativeModules', () => ({
   __esModule: true,
   default: {
-    BlobModule: require('../__mocks__/BlobModule'),
+    BlobModule: require('../__mocks__/BlobModule').default,
   },
-});
+}));
 
 const Blob = require('../Blob').default;
 

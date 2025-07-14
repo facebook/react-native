@@ -21,20 +21,20 @@ import * as React from 'react';
 import {useCallback, useContext, useState} from 'react';
 import {Modal, Platform, StyleSheet, Switch, Text, View} from 'react-native';
 
-const animationTypes = ['slide', 'none', 'fade'];
+const animationTypes = ['slide', 'none', 'fade'] as const;
 const presentationStyles = [
   'fullScreen',
   'pageSheet',
   'formSheet',
   'overFullScreen',
-];
+] as const;
 const supportedOrientations = [
   'portrait',
   'portrait-upside-down',
   'landscape',
   'landscape-left',
   'landscape-right',
-];
+] as const;
 
 const backdropColors = ['red', 'blue', undefined];
 
@@ -49,6 +49,7 @@ function ModalPresentation() {
 
   const onRequestClose = useCallback(() => {
     console.log('onRequestClose');
+    setProps(prev => ({...prev, visible: false}));
   }, []);
 
   const [props, setProps] = useState<ModalProps>({
@@ -61,6 +62,7 @@ function ModalPresentation() {
       ios: 'fullScreen',
       default: undefined,
     }),
+    allowSwipeDismissal: false,
     supportedOrientations: Platform.select({
       ios: ['portrait'],
       default: undefined,
@@ -74,6 +76,7 @@ function ModalPresentation() {
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
   const navigationBarTranslucent = props.navigationBarTranslucent;
+  const allowSwipeDismissal = props.allowSwipeDismissal;
   const backdropColor = props.backdropColor;
   const backgroundColor = useContext(RNTesterThemeContext).BackgroundColor;
 
@@ -127,6 +130,21 @@ function ModalPresentation() {
             setProps(prev => ({
               ...prev,
               hardwareAccelerated: enabled,
+            }))
+          }
+        />
+      </View>
+
+      <View style={styles.inlineBlock}>
+        <RNTesterText style={styles.title}>
+          Allow Swipe Dismissal ⚫️
+        </RNTesterText>
+        <Switch
+          value={allowSwipeDismissal}
+          onValueChange={enabled =>
+            setProps(prev => ({
+              ...prev,
+              allowSwipeDismissal: enabled,
             }))
           }
         />

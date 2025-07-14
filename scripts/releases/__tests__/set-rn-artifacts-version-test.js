@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 const readFileMock = jest.fn();
@@ -21,7 +20,7 @@ jest.mock('fs', () => ({
   },
 }));
 
-const {REPO_ROOT} = require('../../consts');
+const {REPO_ROOT} = require('../../shared/consts');
 const {updateReactNativeArtifacts} = require('../set-rn-artifacts-version');
 const path = require('path');
 

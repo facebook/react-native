@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -146,6 +145,7 @@ describe('LogBox', () => {
       finalFormat: 'Custom format',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error(
@@ -154,8 +154,8 @@ describe('LogBox', () => {
     );
     expect(LogBoxData.addLog).toBeCalledWith(
       expect.objectContaining({
-        message: {content: 'Warning: Custom format', substitutions: []},
-        category: 'Warning: Custom format',
+        message: {content: 'Custom format', substitutions: []},
+        category: 'Custom format',
       }),
     );
     expect(LogBoxData.checkWarningFilter).toBeCalledWith(
@@ -169,6 +169,7 @@ describe('LogBox', () => {
 
     mockFilterResult({});
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error(
@@ -189,6 +190,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning_unhandled',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error(
@@ -210,6 +212,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error(
@@ -230,6 +233,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error(
@@ -249,13 +253,14 @@ describe('LogBox', () => {
       finalFormat: 'Custom format',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('Warning: ...');
     expect(LogBoxData.addLog).toBeCalledWith(
       expect.objectContaining({
-        message: {content: 'Warning: Custom format', substitutions: []},
-        category: 'Warning: Custom format',
+        message: {content: 'Custom format', substitutions: []},
+        category: 'Custom format',
       }),
     );
     expect(LogBoxData.checkWarningFilter).toBeCalledWith('...');
@@ -267,6 +272,7 @@ describe('LogBox', () => {
 
     mockFilterResult({});
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('Warning: ...');
@@ -285,6 +291,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('Warning: ...');
@@ -302,6 +309,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('Warning: ...');
@@ -319,6 +327,7 @@ describe('LogBox', () => {
       monitorEvent: 'warning',
     });
 
+    ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('Warning: ...');
@@ -547,39 +556,37 @@ describe('LogBox', () => {
 
   it('registers errors without component stack as errors by default, when ExceptionManager is registered first', () => {
     jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addException');
+    jest.spyOn(LogBoxData, 'addLog');
 
     ExceptionsManager.installConsoleErrorReporter();
     LogBox.install();
 
     console.error('HIT');
 
-    // Errors without a component stack skip the warning filter and
-    // fall through to the ExceptionManager, which are then reported
-    // back to LogBox as non-fatal exceptions, in a convuluted dance
-    // in the most legacy cruft way.
-    expect(LogBoxData.addException).toBeCalledWith(
-      expect.objectContaining({originalMessage: 'HIT'}),
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({
+        category: 'HIT',
+        message: {content: 'HIT', substitutions: []},
+      }),
     );
-    expect(LogBoxData.checkWarningFilter).not.toBeCalled();
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith('HIT');
   });
 
   it('registers errors without component stack as errors by default, when ExceptionManager is registered second', () => {
     jest.spyOn(LogBoxData, 'checkWarningFilter');
-    jest.spyOn(LogBoxData, 'addException');
+    jest.spyOn(LogBoxData, 'addLog');
 
     LogBox.install();
     ExceptionsManager.installConsoleErrorReporter();
 
     console.error('HIT');
 
-    // Errors without a component stack skip the warning filter and
-    // fall through to the ExceptionManager, which are then reported
-    // back to LogBox as non-fatal exceptions, in a convuluted dance
-    // in the most legacy cruft way.
-    expect(LogBoxData.addException).toBeCalledWith(
-      expect.objectContaining({originalMessage: 'HIT'}),
+    expect(LogBoxData.addLog).toBeCalledWith(
+      expect.objectContaining({
+        category: 'HIT',
+        message: {content: 'HIT', substitutions: []},
+      }),
     );
-    expect(LogBoxData.checkWarningFilter).not.toBeCalled();
+    expect(LogBoxData.checkWarningFilter).toBeCalledWith('HIT');
   });
 });

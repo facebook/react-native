@@ -60,10 +60,6 @@ Size AndroidTextInputShadowNode::measureContent(
     attributedString = getPlaceholderAttributedString(layoutContext);
   }
 
-  if (attributedString.isEmpty() && getStateData().mostRecentEventCount != 0) {
-    return {.width = 0, .height = 0};
-  }
-
   auto textSize = textLayoutManager_
                       ->measure(
                           AttributedStringBox{attributedString},
@@ -154,7 +150,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded(
       : props.mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString(layoutContext);
 
-  setStateData(TextInputState{
+  setStateData(AndroidTextInputState{
       AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
       props.paragraphAttributes,
@@ -217,27 +213,20 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString(
                                    : reactTreeAttributedString);
 }
 
-// For measurement purposes, we want to make sure that there's at least a
-// single character in the string so that the measured height is greater
-// than zero. Otherwise, empty TextInputs with no placeholder don't
-// display at all.
-// TODO T67606511: We will redefine the measurement of empty strings as part
-// of T67606511
 AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString(
     const LayoutContext& layoutContext) const {
   const auto& props = BaseShadowNode::getConcreteProps();
 
   AttributedString attributedString;
-  auto placeholderString = !props.placeholder.empty()
-      ? props.placeholder
-      : BaseTextShadowNode::getEmptyPlaceholder();
-  auto textAttributes = TextAttributes::defaultTextAttributes();
-  textAttributes.fontSizeMultiplier = layoutContext.fontSizeMultiplier;
-  textAttributes.apply(props.textAttributes);
-  attributedString.appendFragment(
-      {.string = std::move(placeholderString),
-       .textAttributes = textAttributes,
-       .parentShadowView = ShadowView(*this)});
+  attributedString.setBaseTextAttributes(
+      props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier));
+
+  if (!props.placeholder.empty()) {
+    attributedString.appendFragment(
+        {.string = props.placeholder,
+         .textAttributes = attributedString.getBaseTextAttributes(),
+         .parentShadowView = {}});
+  }
   return attributedString;
 }
 

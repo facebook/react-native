@@ -9,6 +9,7 @@ require 'pathname'
 require_relative './react_native_pods_utils/script_phases.rb'
 require_relative './cocoapods/jsengine.rb'
 require_relative './cocoapods/rndependencies.rb'
+require_relative './cocoapods/rncore.rb'
 require_relative './cocoapods/fabric.rb'
 require_relative './cocoapods/codegen.rb'
 require_relative './cocoapods/codegen_utils.rb'
@@ -19,6 +20,7 @@ require_relative './cocoapods/runtime.rb'
 require_relative './cocoapods/helpers.rb'
 require_relative './cocoapods/privacy_manifest_utils.rb'
 require_relative './cocoapods/spm.rb'
+require_relative './cocoapods/rncore.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
@@ -64,12 +66,14 @@ def use_react_native! (
   fabric_enabled: false,
   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
   production: false, # deprecated
-  hermes_enabled: ENV['USE_HERMES'] && ENV['USE_HERMES'] == '0' ? false : true,
+  hermes_enabled: true, # deprecated. Hermes is the default engine and JSC has been moved to community support
   app_path: '..',
   config_file_dir: '',
   privacy_file_aggregation_enabled: true
 )
+  error_if_try_to_use_jsc_from_core()
 
+  hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
@@ -93,7 +97,6 @@ def use_react_native! (
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
-  ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
   ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
 
@@ -104,6 +107,9 @@ def use_react_native! (
   # Update ReactNativeDependencies so that we can easily switch between source and prebuilt
   ReactNativeDependenciesUtils.setup_react_native_dependencies(prefix, react_native_version)
 
+  # Update ReactNativeCoreUtils so that we can easily switch between source and prebuilt
+  ReactNativeCoreUtils.setup_rncore(prefix, react_native_version)
+
   Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
   # The Pods which should be included in all projects
@@ -111,6 +117,9 @@ def use_react_native! (
   pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
   pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
   pod 'React', :path => "#{prefix}/"
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+  end
   pod 'React-Core', :path => "#{prefix}/"
   pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
   pod 'React-RCTRuntime', :path => "#{prefix}/React/Runtime"
@@ -125,7 +134,6 @@ def use_react_native! (
   pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
   pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
   pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
-  pod 'React-rncore', :path => "#{prefix}/ReactCommon"
   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
   pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
   pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
@@ -143,8 +151,6 @@ def use_react_native! (
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
-  else
-    setup_jsc!(:react_native_path => prefix, :fabric_enabled => fabric_enabled)
   end
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
@@ -168,6 +174,8 @@ def use_react_native! (
   pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
   pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
   pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
+  setup_fabric!(:react_native_path => prefix)
+  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
     pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
@@ -178,9 +186,18 @@ def use_react_native! (
     pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
     pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
   else
+    # Install prebuilt React Native Core and React Native Dependencies
+    ReactNativeCoreUtils.rncore_log("Using React Native Core and React Native Dependencies prebuilt versions.")
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
+
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+      pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+    end
   end
 
+  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  # Not needed, but run_codegen expects this to be set.
   folly_config = get_folly_config()
   run_codegen!(
     app_path,
@@ -194,15 +211,6 @@ def use_react_native! (
     :package_json_file => File.join(__dir__, "..", "package.json"),
     :folly_version => folly_config[:version]
   )
-
-  pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-
-  # Always need fabric to access the RCTSurfacePresenterBridgeAdapter which allow to enable the RuntimeScheduler
-  # If the New Arch is turned off, we will use the Old Renderer, though.
-  # RNTester always installed Fabric, this change is required to make the template work.
-  setup_fabric!(:react_native_path => prefix)
-  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
   pods_to_update = LocalPodspecPatch.pods_to_update(:react_native_path => prefix)
   if !pods_to_update.empty?
@@ -265,6 +273,22 @@ end
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   folly_config = get_folly_config()
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
+end
+
+# This function is used by podspecs that needs to use the prebuilt sources for React Native.
+# It returns the sources to use for the podspec.
+#
+# Parameters:
+# - original_sources: The original sources of the podspec
+# - sources_for_prebuilds: The sources to use for prebuilt pods
+#
+# Returns: The sources to use for the podspec
+def podspec_sources(original_sources, sources_for_prebuilds)
+  if ReactNativeCoreUtils.build_rncore_from_source()
+    return original_sources
+  else
+    return sources_for_prebuilds
+  end
 end
 
 
@@ -386,8 +410,7 @@ end
 def print_jsc_removal_message()
   puts ''
   puts '=============== JavaScriptCore is being moved ==============='.yellow
-  puts 'JavaScriptCore has been extracted from react-native core'.yellow
-  puts 'and will be removed in a future release. It can now be'.yellow
+  puts 'JavaScriptCore has been removed from React Native. It can now be'.yellow
   puts 'installed from `@react-native-community/javascriptcore`'.yellow
   puts 'See: https://github.com/react-native-community/javascriptcore'.yellow
   puts '============================================================='.yellow
@@ -413,6 +436,19 @@ def print_cocoapods_deprecation_message()
 
 end
 
+def error_if_try_to_use_jsc_from_core()
+  explicitly_not_use_hermes = ENV['USE_HERMES'] != nil && ENV['USE_HERMES'] == '0'
+  not_use_3rd_party_jsc = ENV['USE_THIRD_PARTY_JSC'] == nil || ENV['USE_THIRD_PARTY_JSC'] == '0'
+  if (explicitly_not_use_hermes && not_use_3rd_party_jsc)
+    message = "Hermes is the default engine and JSC has been moved to community support.\n" +
+    "Please remove the USE_HERMES=0, as it is not supported anymore.\n" +
+    "If you want to use JSC, you can install it from `@react-native-community/javascriptcore`.\n" +
+    "See: https://github.com/react-native-community/javascriptcore"
+    puts message.red
+    exit()
+  end
+end
+
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
@@ -430,24 +466,20 @@ def react_native_post_install(
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
-  hermes_enabled = ENV['USE_HERMES'] == '1'
   privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
-  if hermes_enabled
+  if use_hermes()
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
   end
   ReactNativePodsUtils.set_gcc_preprocessor_definition_for_debugger(installer)
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
-  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
+  ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: use_hermes())
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "REACT_NATIVE_PATH", value: File.join("${PODS_ROOT}", "..", react_native_path))
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ACTIVE_COMPILATION_CONDITIONS", value: ['$(inherited)', 'DEBUG'], config_name: "Debug")
 
   ReactNativePodsUtils.set_ccache_compiler_and_linker_build_settings(installer, react_native_path, ccache_enabled)
-  if Environment.new().ruby_platform().include?('darwin')
-    ReactNativePodsUtils.apply_xcode_15_patch(installer)
-  end
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
@@ -463,7 +495,7 @@ def react_native_post_install(
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
   NewArchitectureHelper.set_RCTNewArchEnabled_in_info_plist(installer, NewArchitectureHelper.new_arch_enabled)
 
-  if ENV['USE_HERMES'] == '0' && ENV['USE_THIRD_PARTY_JSC'] != '1'
+  if !use_hermes() && !use_third_party_jsc()
     print_jsc_removal_message()
   end
 

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -18,7 +18,7 @@ import type {ImageResizeMode} from './ImageResizeMode';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 
-type NativeProps = $ReadOnly<{
+type RCTTextInlineImageNativeProps = $ReadOnly<{
   ...ViewProps,
   resizeMode?: ?ImageResizeMode,
   src?: ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
@@ -40,8 +40,8 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
   },
 };
 
-const TextInlineImage: HostComponent<NativeProps> =
-  NativeComponentRegistry.get<NativeProps>(
+const TextInlineImage: HostComponent<RCTTextInlineImageNativeProps> =
+  NativeComponentRegistry.get<RCTTextInlineImageNativeProps>(
     'RCTTextInlineImage',
     () => __INTERNAL_VIEW_CONFIG,
   );

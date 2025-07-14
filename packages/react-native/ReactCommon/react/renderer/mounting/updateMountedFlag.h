@@ -8,12 +8,14 @@
 #pragma once
 
 #include <react/renderer/core/ShadowNode.h>
+#include <react/renderer/mounting/ShadowTree.h>
 
 namespace facebook::react {
 /*
  * Traverses the shadow tree and updates the `mounted` flag on all nodes.
  */
 void updateMountedFlag(
-    const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren);
+    const std::vector<std::shared_ptr<const ShadowNode>>& oldChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& newChildren,
+    ShadowTreeCommitSource commitSource);
 } // namespace facebook::react

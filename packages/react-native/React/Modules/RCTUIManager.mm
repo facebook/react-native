@@ -40,6 +40,101 @@
 #import "RCTViewManager.h"
 #import "UIView+React.h"
 
+NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    Class managerClass,
+    NSString *name,
+    NSDictionary<NSString *, id> *viewConfig)
+{
+  NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
+
+  // Register which event-types this view dispatches.
+  // React needs this for the event plugin.
+  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
+  // Add manager class
+  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(managerClass);
+
+  // Add native props
+  moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+  moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+  moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+  moduleConstants[@"directEventTypes"] = directEventTypes;
+  // In the Old Architecture the "Commands" and "Constants" properties of view manager config are populated by
+  // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
+  // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
+  // native.
+  if (facebook::react::ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
+    moduleConstants[@"Commands"] = viewConfig[@"Commands"];
+    moduleConstants[@"Constants"] = viewConfig[@"Constants"];
+  }
+  // Add direct events
+  for (NSString *eventName in viewConfig[@"directEvents"]) {
+    if (!directEvents[eventName]) {
+      directEvents[eventName] = @{
+        @"registrationName" : [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+      };
+    }
+    directEventTypes[eventName] = directEvents[eventName];
+    if (RCT_DEBUG && bubblingEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered bubbling event '%@' as a "
+           "direct event",
+          name,
+          eventName);
+    }
+  }
+
+  // Add bubbling events
+  for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+        @"phasedRegistrationNames" : @{
+          @"bubbled" : bubbleName,
+          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
+        }
+      };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered direct event '%@' as a "
+           "bubbling event",
+          name,
+          eventName);
+    }
+  }
+
+  // Add capturing events (added as bubbling events but with the 'skipBubbling' flag)
+  for (NSString *eventName in viewConfig[@"capturingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+        @"phasedRegistrationNames" : @{
+          @"bubbled" : bubbleName,
+          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
+          @"skipBubbling" : @YES
+        }
+      };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(
+          @"Component '%@' re-registered direct event '%@' as a "
+           "bubbling event",
+          name,
+          eventName);
+    }
+  }
+
+  return moduleConstants;
+}
+
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
   if (view.reactTag) {
@@ -1412,99 +1507,6 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
-NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
-    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
-    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
-    Class managerClass,
-    NSString *name,
-    NSDictionary<NSString *, id> *viewConfig)
-{
-  NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
-
-  // Register which event-types this view dispatches.
-  // React needs this for the event plugin.
-  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
-  NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
-
-  // Add manager class
-  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(managerClass);
-
-  // Add native props
-  moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
-  moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
-  moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
-  moduleConstants[@"directEventTypes"] = directEventTypes;
-  // In the Old Architecture the "Commands" and "Constants" properties of view manager config are populated by
-  // lazifyViewManagerConfig function in JS. This fuction uses NativeModules global object that is not available in the
-  // New Architecture. To make native view configs work in the New Architecture we will populate these properties in
-  // native.
-  if (facebook::react::ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
-    moduleConstants[@"Commands"] = viewConfig[@"Commands"];
-    moduleConstants[@"Constants"] = viewConfig[@"Constants"];
-  }
-  // Add direct events
-  for (NSString *eventName in viewConfig[@"directEvents"]) {
-    if (!directEvents[eventName]) {
-      directEvents[eventName] = @{
-        @"registrationName" : [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
-      };
-    }
-    directEventTypes[eventName] = directEvents[eventName];
-    if (RCT_DEBUG && bubblingEvents[eventName]) {
-      RCTLogError(
-          @"Component '%@' re-registered bubbling event '%@' as a "
-           "direct event",
-          name,
-          eventName);
-    }
-  }
-
-  // Add bubbling events
-  for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
-    if (!bubblingEvents[eventName]) {
-      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-      bubblingEvents[eventName] = @{
-        @"phasedRegistrationNames" : @{
-          @"bubbled" : bubbleName,
-          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
-        }
-      };
-    }
-    bubblingEventTypes[eventName] = bubblingEvents[eventName];
-    if (RCT_DEBUG && directEvents[eventName]) {
-      RCTLogError(
-          @"Component '%@' re-registered direct event '%@' as a "
-           "bubbling event",
-          name,
-          eventName);
-    }
-  }
-
-  // Add capturing events (added as bubbling events but with the 'skipBubbling' flag)
-  for (NSString *eventName in viewConfig[@"capturingEvents"]) {
-    if (!bubblingEvents[eventName]) {
-      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-      bubblingEvents[eventName] = @{
-        @"phasedRegistrationNames" : @{
-          @"bubbled" : bubbleName,
-          @"captured" : [bubbleName stringByAppendingString:@"Capture"],
-          @"skipBubbling" : @YES
-        }
-      };
-    }
-    bubblingEventTypes[eventName] = bubblingEvents[eventName];
-    if (RCT_DEBUG && directEvents[eventName]) {
-      RCTLogError(
-          @"Component '%@' re-registered direct event '%@' as a "
-           "bubbling event",
-          name,
-          eventName);
-    }
-  }
-
-  return moduleConstants;
-}
-
 static NSMutableDictionary<NSString *, id> *moduleConstantsForComponentData(
     NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
@@ -1650,6 +1652,117 @@ static UIView *_jsResponder;
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+
+@implementation RCTUIManager
+- (void)registerRootViewTag:(NSNumber *)rootTag
+{
+}
+
+- (void)registerRootView:(UIView *)rootView
+{
+}
+
+- (UIView *)viewForReactTag:(NSNumber *)reactTag
+{
+  return nil;
+}
+
+- (void)removeViewFromRegistry:(NSNumber *)reactTag
+{
+}
+
+- (NSString *)viewNameForReactTag:(NSNumber *)reactTag
+{
+  return nil;
+}
+
+- (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
+{
+  return nil;
+}
+
+- (void)setAvailableSize:(CGSize)availableSize forRootView:(UIView *)rootView
+{
+}
+
+- (void)setLocalData:(NSObject *)localData forView:(UIView *)view
+{
+}
+
+- (void)setSize:(CGSize)size forView:(UIView *)view
+{
+}
+
+- (void)setIntrinsicContentSize:(CGSize)intrinsicContentSize forView:(UIView *)view
+{
+}
+
+- (void)setNextLayoutAnimationGroup:(RCTLayoutAnimationGroup *)layoutAnimationGroup
+{
+}
+
+- (void)addUIBlock:(__strong RCTViewManagerUIBlock)block
+{
+}
+
+- (void)prependUIBlock:(__strong RCTViewManagerUIBlock)block
+{
+}
+
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag viewName:(NSString *)viewName props:(NSDictionary *)props
+{
+}
+
+- (void)rootViewForReactTag:(NSNumber *)reactTag withCompletion:(void (^__strong)(UIView *__strong))completion
+{
+}
+
+- (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
+{
+  return nil;
+}
+
+- (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
+{
+}
+
+- (void)setNeedsLayout
+{
+}
+
++ (UIView *)JSResponder
+{
+  return nil;
+}
+
++ (UIView *)paperViewOrCurrentView:(UIView *)view
+{
+  return nil;
+}
+
++ (NSString *)moduleName
+{
+  return @"UIManager";
+}
+
+- (void)invalidate
+{
+}
+
+@end
+
+@implementation RCTBridge (RCTUIManager)
+
+- (RCTUIManager *)uiManager
+{
+  return [self moduleForClass:[RCTUIManager class]];
+}
+
+@end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 @implementation RCTComposedViewRegistry {
   __weak RCTUIManager *_uiManager;

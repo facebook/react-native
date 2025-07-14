@@ -10,6 +10,7 @@
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -165,7 +166,13 @@ type SwitchRef = React.ElementRef<
 const Switch: component(
   ref?: React.RefSetter<SwitchRef>,
   ...props: SwitchProps
-) = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+) = function Switch({
+  ref: forwardedRef,
+  ...props
+}: {
+  ref?: React.RefSetter<SwitchRef>,
+  ...SwitchProps,
+}): React.Node {
   const {
     disabled,
     ios_backgroundColor,
@@ -225,7 +232,7 @@ const Switch: component(
     const _disabled =
       disabled != null ? disabled : accessibilityState?.disabled;
 
-    const _accessibilityState =
+    const _accessibilityState: ?AccessibilityState =
       _disabled !== accessibilityState?.disabled
         ? {...accessibilityState, disabled: _disabled}
         : accessibilityState;
@@ -285,6 +292,6 @@ const Switch: component(
       />
     );
   }
-});
+};
 
 export default Switch;

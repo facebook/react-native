@@ -6,13 +6,13 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
+import {useState} from 'react';
 import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 type Props = $ReadOnly<{
@@ -48,6 +48,7 @@ function LayeredImage(props: Props) {
         <ImageBackground
           source={require('../../assets/rainbow.jpeg')}
           style={[styles.backdrop, {width: 200}]}>
+          {/* $FlowFixMe - ImageStyle is not compatible with ViewStyle */}
           <Image
             source={require('../../assets/alpha-hotdog.png')}
             style={[styles.commonImage, props.style]}
@@ -59,14 +60,14 @@ function LayeredImage(props: Props) {
 }
 
 function LayeredViewWithState(props: Props): React.Node {
-  const [s, setS] = React.useState(true);
+  const [s, setS] = useState(true);
   setTimeout(() => setS(!s), 5000);
 
   return <LayeredView style={s ? [props.style] : null} testID={props.testID} />;
 }
 
 function LayeredImageWithState(props: Props): React.Node {
-  const [s, setS] = React.useState(true);
+  const [s, setS] = useState(true);
   setTimeout(() => setS(!s), 5000);
 
   return (
@@ -130,7 +131,7 @@ const mixBlendModes = [
   'saturation',
   'color',
   'luminosity',
-];
+] as const;
 
 const examples: Array<RNTesterModuleExample> = mixBlendModes.map(mode => ({
   title: mode,

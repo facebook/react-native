@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
@@ -13,15 +13,15 @@ import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{
+type AndroidHorizontalScrollContentViewNativeProps = $ReadOnly<{
   ...ViewProps,
 
   removeClippedSubviews?: ?boolean,
 }>;
 
-type NativeType = HostComponent<NativeProps>;
+type NativeType = HostComponent<AndroidHorizontalScrollContentViewNativeProps>;
 
-export default (codegenNativeComponent<NativeProps>(
+export default (codegenNativeComponent<AndroidHorizontalScrollContentViewNativeProps>(
   'AndroidHorizontalScrollContentView',
   {interfaceOnly: true},
 ): NativeType);

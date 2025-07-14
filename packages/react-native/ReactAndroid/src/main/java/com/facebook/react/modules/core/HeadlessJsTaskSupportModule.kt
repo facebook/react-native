@@ -23,7 +23,7 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
     NativeHeadlessJsTaskSupportSpec(reactContext) {
   override fun notifyTaskRetry(taskIdDouble: Double, promise: Promise) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       val retryPosted = headlessJsTaskContext.retryTask(taskId)
       promise.resolve(retryPosted)
@@ -38,7 +38,7 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
 
   override fun notifyTaskFinished(taskIdDouble: Double) {
     val taskId = taskIdDouble.toInt()
-    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(getReactApplicationContext())
+    val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (headlessJsTaskContext.isTaskRunning(taskId)) {
       headlessJsTaskContext.finishTask(taskId)
     } else {
@@ -47,5 +47,9 @@ internal open class HeadlessJsTaskSupportModule(reactContext: ReactApplicationCo
           "Tried to finish non-active task with id %d. Did it time out?",
           taskId)
     }
+  }
+
+  companion object {
+    const val NAME: String = NativeHeadlessJsTaskSupportSpec.NAME
   }
 }

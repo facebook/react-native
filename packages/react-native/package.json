@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">= 22.14.0"
   },
   "bin": {
     "react-native": "cli.js"
@@ -50,6 +50,11 @@
       "default": "./Libraries/*.d.ts"
     },
     "./scripts/*": "./scripts/*",
+    "./src/*": {
+      "react-native-strict-api": null,
+      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/src/*.d.ts",
+      "default": "./src/*.js"
+    },
     "./types/*.d.ts": {
       "react-native-strict-api": null,
       "default": "./types/*.d.ts"
@@ -61,7 +66,6 @@
     "./ReactCommon/*": null,
     "./sdks/*": null,
     "./src/fb_internal/*": "./src/fb_internal/*",
-    "./src/*": null,
     "./third-party-podspecs/*": null,
     "./types/*": null,
     "./types_generated/*": null,
@@ -74,16 +78,17 @@
   "files": [
     "build.gradle.kts",
     "cli.js",
-    "flow",
     "gradle.properties",
     "gradle/libs.versions.toml",
     "index.js",
+    "index.js.flow",
     "interface.js",
     "jest-preset.js",
     "jest",
     "Libraries",
     "LICENSE",
     "React-Core.podspec",
+    "React-Core-prebuilt.podspec",
     "react-native.config.js",
     "React.podspec",
     "React",
@@ -155,32 +160,31 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.80.0-main",
-    "@react-native/codegen": "0.80.0-main",
-    "@react-native/community-cli-plugin": "0.80.0-main",
-    "@react-native/gradle-plugin": "0.80.0-main",
-    "@react-native/js-polyfills": "0.80.0-main",
-    "@react-native/normalize-colors": "0.80.0-main",
-    "@react-native/virtualized-lists": "0.80.0-main",
+    "@react-native/assets-registry": "0.81.0-main",
+    "@react-native/codegen": "0.81.0-main",
+    "@react-native/community-cli-plugin": "0.81.0-main",
+    "@react-native/gradle-plugin": "0.81.0-main",
+    "@react-native/js-polyfills": "0.81.0-main",
+    "@react-native/normalize-colors": "0.81.0-main",
+    "@react-native/virtualized-lists": "0.81.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "babel-jest": "^29.7.0",
-    "babel-plugin-syntax-hermes-parser": "0.28.1",
+    "babel-plugin-syntax-hermes-parser": "0.29.1",
     "base64-js": "^1.5.1",
-    "chalk": "^4.0.0",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
     "glob": "^7.1.1",
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.82.3",
-    "metro-source-map": "^0.82.3",
+    "metro-runtime": "^0.83.0",
+    "metro-source-map": "^0.83.0",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
-    "react-devtools-core": "^6.1.1",
+    "react-devtools-core": "^6.1.5",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.26.0",
@@ -194,7 +198,7 @@
     "libraries": [
       {
         "name": "FBReactNativeSpec",
-        "type": "modules",
+        "type": "all",
         "ios": {
           "modules": {
             "AccessibilityManager": {
@@ -217,13 +221,6 @@
             }
           }
         },
-        "android": {},
-        "jsSrcsDir": "src"
-      },
-      {
-        "name": "rncore",
-        "type": "components",
-        "ios": {},
         "android": {},
         "jsSrcsDir": "src"
       }

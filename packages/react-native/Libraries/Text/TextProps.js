@@ -12,9 +12,7 @@
 
 import type {
   AccessibilityActionEvent,
-  AccessibilityActionInfo,
-  AccessibilityRole,
-  AccessibilityState,
+  AccessibilityProps,
   Role,
 } from '../Components/View/ViewAccessibility';
 import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
@@ -34,7 +32,7 @@ export type PressRetentionOffset = $ReadOnly<{
   right: number,
 }>;
 
-type PointerEventProps = $ReadOnly<{
+type TextPointerEventProps = $ReadOnly<{
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
@@ -124,20 +122,7 @@ export type TextPropsAndroid = {
 };
 
 type TextBaseProps = $ReadOnly<{
-  /**
-   * Indicates whether the view is an accessibility element.
-   *
-   * See https://reactnative.dev/docs/text#accessible
-   */
-  accessible?: ?boolean,
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  accessibilityHint?: ?Stringish,
-  accessibilityLanguage?: ?Stringish,
-  accessibilityLabel?: ?Stringish,
-  accessibilityRole?: ?AccessibilityRole,
-  accessibilityState?: ?AccessibilityState,
-  'aria-label'?: ?string,
 
   /**
    * Whether fonts should scale to respect Text Size accessibility settings.
@@ -152,24 +137,6 @@ type TextBaseProps = $ReadOnly<{
    *
    */
   android_hyphenationFrequency?: ?('normal' | 'none' | 'full'),
-
-  /**
-   * alias for accessibilityState
-   *
-   * see https://reactnative.dev/docs/accessibility#accessibilitystate
-   */
-  'aria-busy'?: ?boolean,
-  'aria-checked'?: ?boolean | 'mixed',
-  'aria-disabled'?: ?boolean,
-  'aria-expanded'?: ?boolean,
-  'aria-selected'?: ?boolean,
-
-  /**
-   * Represents the nativeID of the associated label text. When the assistive technology focuses on the component with this props, the text is read aloud.
-   * This prop is listed for cross-platform reasons and has no real effect on Android or iOS.
-   */
-  'aria-labelledby'?: ?string,
-
   children?: ?React.Node,
 
   /**
@@ -302,8 +269,9 @@ type TextBaseProps = $ReadOnly<{
  * @see https://reactnative.dev/docs/text#reference
  */
 export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+  ...TextPointerEventProps,
   ...TextPropsIOS,
   ...TextPropsAndroid,
   ...TextBaseProps,
+  ...AccessibilityProps,
 }>;

@@ -19,7 +19,7 @@ namespace jsi {
 
 class Runtime;
 
-using RuntimeFactory = std::function<std::unique_ptr<Runtime>()>;
+using RuntimeFactory = std::function<std::shared_ptr<Runtime>()>;
 
 std::vector<RuntimeFactory> runtimeGenerators();
 
@@ -42,7 +42,7 @@ class JSITestBase : public ::testing::TestWithParam<RuntimeFactory> {
   }
 
   RuntimeFactory factory;
-  std::unique_ptr<Runtime> runtime;
+  std::shared_ptr<Runtime> runtime;
   Runtime& rt;
 };
 } // namespace jsi

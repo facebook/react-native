@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const {
@@ -21,7 +20,7 @@ const fetchMock = jest.fn();
 
 jest.mock('child_process', () => ({execSync}));
 jest.mock('shelljs', () => ({exec: execMock}));
-jest.mock('../../utils/monorepo', () => ({
+jest.mock('../../shared/monorepoUtils', () => ({
   getPackages: getPackagesMock,
 }));
 // $FlowIgnore[cannot-write]

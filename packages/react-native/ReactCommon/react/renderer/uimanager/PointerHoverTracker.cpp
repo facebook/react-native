@@ -7,7 +7,6 @@
 
 #include "PointerHoverTracker.h"
 
-#include <ranges>
 #include <utility>
 
 namespace facebook::react {
@@ -15,13 +14,13 @@ namespace facebook::react {
 using EventPath = PointerHoverTracker::EventPath;
 
 PointerHoverTracker::PointerHoverTracker(
-    ShadowNode::Shared target,
+    std::shared_ptr<const ShadowNode> target,
     const UIManager& uiManager)
     : target_(std::move(target)) {
   if (target_ != nullptr) {
     // Retrieve the root shadow node at this current revision so that we can
     // leverage it to get the event path list at the moment the event occured
-    auto rootShadowNode = ShadowNode::Shared{};
+    auto rootShadowNode = std::shared_ptr<const ShadowNode>{};
     auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
     shadowTreeRegistry.visit(
         target_->getSurfaceId(),

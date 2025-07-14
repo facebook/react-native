@@ -17,6 +17,8 @@ import android.view.View
 import com.facebook.common.logging.FLog
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.JSPointerDispatcher
@@ -24,11 +26,13 @@ import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.Objects
+import kotlin.math.max
 
 /**
  * A view created by [com.facebook.react.interfaces.fabric.ReactSurface] that's responsible for
  * rendering a React component.
  */
+@OptIn(FrameworkAPI::class, UnstableReactNativeAPI::class)
 public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
@@ -52,7 +56,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
       for (i in 0 until childCount) {
         val child = getChildAt(i)
         val childSize = (child.left + child.measuredWidth + child.paddingLeft + child.paddingRight)
-        width = Math.max(width, childSize)
+        width = max(width, childSize)
       }
     } else {
       width = MeasureSpec.getSize(widthMeasureSpec)
@@ -62,7 +66,7 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
       for (i in 0 until childCount) {
         val child = getChildAt(i)
         val childSize = (child.top + child.measuredHeight + child.paddingTop + child.paddingBottom)
-        height = Math.max(height, childSize)
+        height = max(height, childSize)
       }
     } else {
       height = MeasureSpec.getSize(heightMeasureSpec)

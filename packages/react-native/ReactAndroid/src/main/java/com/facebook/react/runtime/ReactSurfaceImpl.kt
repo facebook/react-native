@@ -18,6 +18,8 @@ import com.facebook.react.ReactHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.annotations.FrameworkAPI
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.fabric.SurfaceHandlerBinding
 import com.facebook.react.interfaces.TaskInterface
@@ -30,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 /** A class responsible for creating and rendering a full-screen React surface. */
 @ThreadSafe
+@OptIn(FrameworkAPI::class, UnstableReactNativeAPI::class)
 public class ReactSurfaceImpl
 @VisibleForTesting
 internal constructor(
@@ -185,7 +188,6 @@ internal constructor(
   internal val eventDispatcher: EventDispatcher?
     get() = reactHost?.eventDispatcher
 
-  @get:VisibleForTesting
   internal val isAttached: Boolean
     get() = reactHost != null
 

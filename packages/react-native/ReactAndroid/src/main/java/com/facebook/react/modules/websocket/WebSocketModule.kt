@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.network.CustomClientBuilder
@@ -56,7 +57,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
     contentHandlers.clear()
   }
 
-  private fun sendEvent(eventName: String, params: WritableMap) {
+  private fun sendEvent(eventName: String, params: ReadableMap) {
     val reactAppContext = reactApplicationContext
     if (reactAppContext.hasActiveReactInstance()) {
       reactAppContext.emitDeviceEvent(eventName, params)
@@ -130,7 +131,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
           protocolsValue.append(",")
         }
       }
-      if (protocolsValue.length > 0) {
+      if (protocolsValue.isNotEmpty()) {
         protocolsValue.replace(protocolsValue.length - 1, protocolsValue.length, "")
         builder.addHeader("Sec-WebSocket-Protocol", protocolsValue.toString())
       }
@@ -141,9 +142,10 @@ public class WebSocketModule(context: ReactApplicationContext) :
         object : WebSocketListener() {
           override fun onOpen(webSocket: WebSocket, response: Response) {
             webSocketConnections[id] = webSocket
-            val params = Arguments.createMap()
-            params.putInt("id", id)
-            params.putString("protocol", response.header("Sec-WebSocket-Protocol", ""))
+            val params = buildReadableMap {
+              put("id", id)
+              put("protocol", response.header("Sec-WebSocket-Protocol", ""))
+            }
             sendEvent("websocketOpen", params)
           }
 
@@ -152,10 +154,11 @@ public class WebSocketModule(context: ReactApplicationContext) :
           }
 
           override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            val params = Arguments.createMap()
-            params.putInt("id", id)
-            params.putInt("code", code)
-            params.putString("reason", reason)
+            val params = buildReadableMap {
+              put("id", id)
+              put("code", code)
+              put("reason", reason)
+            }
             sendEvent("websocketClosed", params)
           }
 
@@ -221,14 +224,16 @@ public class WebSocketModule(context: ReactApplicationContext) :
     val client = webSocketConnections[id]
     if (client == null) {
       // This is a programmer error -- display development warning
-      var params: WritableMap = Arguments.createMap()
-      params.putInt("id", id)
-      params.putString("message", "client is null")
+      var params = buildReadableMap {
+        put("id", id)
+        put("message", "client is null")
+      }
       sendEvent("websocketFailed", params)
-      params = Arguments.createMap()
-      params.putInt("id", id)
-      params.putInt("code", 0)
-      params.putString("reason", "client is null")
+      params = buildReadableMap {
+        put("id", id)
+        put("code", 0)
+        put("reason", "client is null")
+      }
       sendEvent("websocketClosed", params)
       webSocketConnections.remove(id)
       contentHandlers.remove(id)
@@ -246,14 +251,16 @@ public class WebSocketModule(context: ReactApplicationContext) :
     val client = webSocketConnections[id]
     if (client == null) {
       // This is a programmer error -- display development warning
-      var params: WritableMap = Arguments.createMap()
-      params.putInt("id", id)
-      params.putString("message", "client is null")
+      var params = buildReadableMap {
+        put("id", id)
+        put("message", "client is null")
+      }
       sendEvent("websocketFailed", params)
-      params = Arguments.createMap()
-      params.putInt("id", id)
-      params.putInt("code", 0)
-      params.putString("reason", "client is null")
+      params = buildReadableMap {
+        put("id", id)
+        put("code", 0)
+        put("reason", "client is null")
+      }
       sendEvent("websocketClosed", params)
       webSocketConnections.remove(id)
       contentHandlers.remove(id)
@@ -271,14 +278,16 @@ public class WebSocketModule(context: ReactApplicationContext) :
     val client = webSocketConnections[id]
     if (client == null) {
       // This is a programmer error -- display development warning
-      var params: WritableMap = Arguments.createMap()
-      params.putInt("id", id)
-      params.putString("message", "client is null")
+      var params = buildReadableMap {
+        put("id", id)
+        put("message", "client is null")
+      }
       sendEvent("websocketFailed", params)
-      params = Arguments.createMap()
-      params.putInt("id", id)
-      params.putInt("code", 0)
-      params.putString("reason", "client is null")
+      params = buildReadableMap {
+        put("id", id)
+        put("code", 0)
+        put("reason", "client is null")
+      }
       sendEvent("websocketClosed", params)
       webSocketConnections.remove(id)
       contentHandlers.remove(id)
@@ -296,14 +305,16 @@ public class WebSocketModule(context: ReactApplicationContext) :
     val client = webSocketConnections[id]
     if (client == null) {
       // This is a programmer error -- display development warning
-      var params: WritableMap = Arguments.createMap()
-      params.putInt("id", id)
-      params.putString("message", "client is null")
+      var params = buildReadableMap {
+        put("id", id)
+        put("message", "client is null")
+      }
       sendEvent("websocketFailed", params)
-      params = Arguments.createMap()
-      params.putInt("id", id)
-      params.putInt("code", 0)
-      params.putString("reason", "client is null")
+      params = buildReadableMap {
+        put("id", id)
+        put("code", 0)
+        put("reason", "client is null")
+      }
       sendEvent("websocketClosed", params)
       webSocketConnections.remove(id)
       contentHandlers.remove(id)
@@ -317,9 +328,10 @@ public class WebSocketModule(context: ReactApplicationContext) :
   }
 
   private fun notifyWebSocketFailed(id: Int, message: String?) {
-    val params = Arguments.createMap()
-    params.putInt("id", id)
-    params.putString("message", message)
+    val params = buildReadableMap {
+      put("id", id)
+      put("message", message)
+    }
     sendEvent("websocketFailed", params)
   }
 

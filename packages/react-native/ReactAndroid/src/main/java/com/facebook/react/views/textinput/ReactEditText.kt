@@ -35,6 +35,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -359,9 +360,24 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       super.onTextContextMenuItem(
           if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
 
-  override fun clearFocus() {
-    super.clearFocus()
+  internal fun clearFocusAndMaybeRefocus() {
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode) {
+      super.clearFocus()
+    } else {
+      // Avoid refocusing to a new view on old versions of Android by default
+      // by preventing `requestFocus()` on the rootView from moving focus to any child.
+      // https://cs.android.com/android/_/android/platform/frameworks/base/+/bdc66cb5a0ef513f4306edf9156cc978b08e06e4
+      val rootViewGroup = rootView as ViewGroup
+      val oldDescendantFocusability = rootViewGroup.descendantFocusability
+      rootViewGroup.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+      super.clearFocus()
+      rootViewGroup.descendantFocusability = oldDescendantFocusability
+    }
     hideSoftKeyboard()
+  }
+
+  internal fun clearFocusFromJS() {
+    clearFocusAndMaybeRefocus()
   }
 
   // For cases like autoFocus, or ref.focus() where we request focus programmatically and not
@@ -598,10 +614,6 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     requestFocusProgrammatically()
   }
 
-  internal fun clearFocusFromJS() {
-    clearFocus()
-  }
-
   public fun incrementAndGetEventCounter(): Int = ++nativeEventCount
 
   public fun maybeSetTextFromJS(reactTextUpdate: ReactTextUpdate) {
@@ -791,7 +803,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       workingText.setSpan(
           CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length, spanFlags)
     }
@@ -808,7 +820,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     }
 
     val lineHeight = textAttributes.effectiveLineHeight
-    if (!java.lang.Float.isNaN(lineHeight)) {
+    if (!lineHeight.isNaN()) {
       workingText.setSpan(CustomLineHeightSpan(lineHeight), 0, workingText.length, spanFlags)
     }
   }
@@ -983,7 +995,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
   public fun setBorderRadius(borderRadius: Float, position: Int) {
     val radius =
-        if (java.lang.Float.isNaN(borderRadius)) {
+        if (borderRadius.isNaN()) {
           null
         } else {
           LengthPercentage(toDIPFromPixel(borderRadius), LengthPercentageType.POINT)
@@ -1040,7 +1052,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     setTextSize(TypedValue.COMPLEX_UNIT_PX, textAttributes.effectiveFontSize.toFloat())
 
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-    if (!java.lang.Float.isNaN(effectiveLetterSpacing)) {
+    if (!effectiveLetterSpacing.isNaN()) {
       letterSpacing = effectiveLetterSpacing
     }
   }

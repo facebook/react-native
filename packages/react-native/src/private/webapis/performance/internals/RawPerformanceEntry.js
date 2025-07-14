@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 import type {PerformanceEntryType} from '../PerformanceEntry';
@@ -17,6 +17,7 @@ import type {
 import {PerformanceEventTiming} from '../EventTiming';
 import {PerformanceLongTaskTiming} from '../LongTasks';
 import {PerformanceEntry} from '../PerformanceEntry';
+import {PerformanceResourceTiming} from '../ResourceTiming';
 import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
 
 export const RawPerformanceEntryTypeValues = {
@@ -30,38 +31,52 @@ export const RawPerformanceEntryTypeValues = {
 export function rawToPerformanceEntry(
   entry: RawPerformanceEntry,
 ): PerformanceEntry {
-  if (entry.entryType === RawPerformanceEntryTypeValues.EVENT) {
-    return new PerformanceEventTiming({
-      name: entry.name,
-      startTime: entry.startTime,
-      duration: entry.duration,
-      processingStart: entry.processingStart,
-      processingEnd: entry.processingEnd,
-      interactionId: entry.interactionId,
-    });
-  } else if (entry.entryType === RawPerformanceEntryTypeValues.LONGTASK) {
-    return new PerformanceLongTaskTiming({
-      name: entry.name,
-      entryType: rawToPerformanceEntryType(entry.entryType),
-      startTime: entry.startTime,
-      duration: entry.duration,
-    });
-  } else if (entry.entryType === RawPerformanceEntryTypeValues.MARK) {
-    return new PerformanceMark(entry.name, {
-      startTime: entry.startTime,
-    });
-  } else if (entry.entryType === RawPerformanceEntryTypeValues.MEASURE) {
-    return new PerformanceMeasure(entry.name, {
-      startTime: entry.startTime,
-      duration: entry.duration,
-    });
-  } else {
-    return new PerformanceEntry({
-      name: entry.name,
-      entryType: rawToPerformanceEntryType(entry.entryType),
-      startTime: entry.startTime,
-      duration: entry.duration,
-    });
+  switch (entry.entryType) {
+    case RawPerformanceEntryTypeValues.EVENT:
+      return new PerformanceEventTiming({
+        name: entry.name,
+        startTime: entry.startTime,
+        duration: entry.duration,
+        processingStart: entry.processingStart,
+        processingEnd: entry.processingEnd,
+        interactionId: entry.interactionId,
+      });
+    case RawPerformanceEntryTypeValues.LONGTASK:
+      return new PerformanceLongTaskTiming({
+        name: entry.name,
+        entryType: rawToPerformanceEntryType(entry.entryType),
+        startTime: entry.startTime,
+        duration: entry.duration,
+      });
+    case RawPerformanceEntryTypeValues.MARK:
+      return new PerformanceMark(entry.name, {
+        startTime: entry.startTime,
+      });
+    case RawPerformanceEntryTypeValues.MEASURE:
+      return new PerformanceMeasure(entry.name, {
+        startTime: entry.startTime,
+        duration: entry.duration,
+      });
+    case RawPerformanceEntryTypeValues.RESOURCE:
+      return new PerformanceResourceTiming({
+        name: entry.name,
+        startTime: entry.startTime,
+        duration: entry.duration,
+        fetchStart: entry.fetchStart ?? 0,
+        requestStart: entry.requestStart ?? 0,
+        connectStart: entry.connectStart ?? 0,
+        connectEnd: entry.connectEnd ?? 0,
+        responseStart: entry.responseStart ?? 0,
+        responseEnd: entry.responseEnd ?? 0,
+        responseStatus: entry.responseStatus,
+      });
+    default:
+      return new PerformanceEntry({
+        name: entry.name,
+        entryType: rawToPerformanceEntryType(entry.entryType),
+        startTime: entry.startTime,
+        duration: entry.duration,
+      });
   }
 }
 

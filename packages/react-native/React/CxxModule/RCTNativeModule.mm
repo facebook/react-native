@@ -7,15 +7,17 @@
 
 #import "RCTNativeModule.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import <Foundation/Foundation.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxUtils.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <React/RCTProfile.h>
 #import <React/RCTUtils.h>
+#import <react/utils/FollyConvert.h>
 #import <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #ifdef WITH_FBSYSTRACE
@@ -235,3 +237,5 @@ static MethodCallResult invokeInner(
 }
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

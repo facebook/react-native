@@ -6,6 +6,7 @@
 require 'shellwords'
 
 require_relative "./helpers.rb"
+require_relative "./jsengine.rb"
 
 # Utilities class for React Native Cocoapods
 class ReactNativePodsUtils
@@ -32,7 +33,7 @@ class ReactNativePodsUtils
             flags[:hermes_enabled] = true
         end
 
-        if ENV['USE_HERMES'] == '0'
+        if !use_hermes()
             flags[:hermes_enabled] = false
         end
 
@@ -177,27 +178,6 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.apply_xcode_15_patch(installer, xcodebuild_manager: Xcodebuild)
-        projects = self.extract_projects(installer)
-
-        other_ld_flags_key = 'OTHER_LDFLAGS'
-        xcode15_compatibility_flags = '-Wl -ld_classic '
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                # fix for weak linking
-                self.safe_init(config, other_ld_flags_key)
-                if self.is_using_xcode15_0(:xcodebuild_manager => xcodebuild_manager)
-                    self.add_value_to_setting_if_missing(config, other_ld_flags_key, xcode15_compatibility_flags)
-                else
-                    self.remove_value_from_setting_if_present(config, other_ld_flags_key, xcode15_compatibility_flags)
-                end
-            end
-            project.save()
-        end
-
-    end
-
     private
 
     def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
@@ -275,18 +255,26 @@ class ReactNativePodsUtils
     end
 
     def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
-        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
         search_paths = []
 
-        if platforms.empty?() || platforms.length() == 1
-            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
-            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-        else
-            platforms.each { |platform|
-                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+        # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
+        if ReactNativeCoreUtils.build_rncore_from_source()
+            platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+
+            if platforms.empty?() || platforms.length() == 1
+                base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
                 self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-            }
+            else
+                platforms.each { |platform|
+                    base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                    self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+                }
+            end
+        else
+            base_path = File.join("${PODS_ROOT}", "#{pod_name}")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
         end
+
         return search_paths
     end
 
@@ -421,16 +409,6 @@ class ReactNativePodsUtils
             new_config = old_config.gsub(trimmed_value,  "")
             config.build_settings[setting_name] = new_config.strip()
         end
-    end
-
-    def self.is_using_xcode15_0(xcodebuild_manager: Xcodebuild)
-        xcodebuild_version = xcodebuild_manager.version
-
-        if version = self.parse_xcode_version(xcodebuild_version)
-            return version["major"] == 15 && version["minor"] == 0
-        end
-
-        return false
     end
 
     def self.parse_xcode_version(version_string)
@@ -643,7 +621,6 @@ class ReactNativePodsUtils
             "React-logger",
             "React-oscompat",
             "React-perflogger",
-            "React-rncore",
             "React-runtimeexecutor",
             "React-timing",
             "ReactCommon",

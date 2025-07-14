@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -16,9 +15,10 @@ import type {ItemDataType} from '../components/itemData';
 import {LIST_1000_ITEMS} from '../components/itemData';
 import ItemList from '../components/ItemList';
 import * as React from 'react';
+import {memo} from 'react';
 
 const {useState, useEffect} = React;
-const ItemListMemo = React.memo(ItemList);
+const ItemListMemo = memo(ItemList);
 
 function BadExample(props: {listData: ItemDataType[], filteredText: string}) {
   const {listData, filteredText} = props;

@@ -4,21 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @noflow
  * @format
  */
 
 'use strict';
-
-const path = require('node:path');
-
-require('eslint-plugin-lint').load(path.join(__dirname, 'tools/eslint/rules'));
 
 module.exports = {
   root: true,
 
   extends: ['@react-native'],
 
-  plugins: ['@react-native/eslint-plugin-specs', 'lint'],
+  plugins: ['@react-native/monorepo', '@react-native/specs'],
 
   overrides: [
     // overriding the JS config from @react-native/eslint-config to ensure
@@ -27,29 +24,34 @@ module.exports = {
       files: ['*.js', '*.js.flow', '*.jsx'],
       parser: 'hermes-eslint',
       rules: {
+        '@react-native/monorepo/sort-imports': 'warn',
+        'eslint-comments/no-unlimited-disable': 'off',
+        'ft-flow/require-valid-file-annotation': ['error', 'always'],
+        'no-extra-boolean-cast': 'off',
+        'no-void': 'off',
         // These rules are not required with hermes-eslint
-        'ft-flow/define-flow-type': 0,
-        'ft-flow/use-flow-type': 0,
-        'lint/sort-imports': 1,
+        'ft-flow/define-flow-type': 'off',
+        'ft-flow/use-flow-type': 'off',
         // Flow handles these checks for us, so they aren't required
-        'no-undef': 0,
-        'no-unreachable': 0,
+        'no-undef': 'off',
+        'no-unreachable': 'off',
       },
     },
     {
       files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
       rules: {
-        '@react-native/no-deep-imports': 0,
+        '@react-native/no-deep-imports': 'off',
       },
     },
     {
       files: [
-        './packages/react-native/**/*.{js,flow}',
+        './packages/react-native/Libraries/**/*.{js,flow}',
+        './packages/react-native/src/**/*.{js,flow}',
         './packages/assets/registry.js',
       ],
       parser: 'hermes-eslint',
       rules: {
-        'lint/no-commonjs-exports': 1,
+        '@react-native/monorepo/no-commonjs-exports': 'warn',
       },
     },
     {
@@ -59,15 +61,17 @@ module.exports = {
     {
       files: ['package.json'],
       rules: {
-        'lint/react-native-manifest': 2,
+        '@react-native/monorepo/react-native-manifest': 'error',
       },
     },
     {
-      files: ['flow-typed/**/*.js'],
+      files: ['flow-typed/**/*.js', 'packages/react-native/flow/**/*'],
       rules: {
-        'lint/valid-flow-typed-signature': 2,
-        'no-unused-vars': 0,
-        quotes: 0,
+        '@react-native/monorepo/valid-flow-typed-signature': 'error',
+        'ft-flow/require-valid-file-annotation': 'off',
+        'no-shadow': 'off',
+        'no-unused-vars': 'off',
+        quotes: 'off',
       },
     },
     {
@@ -76,14 +80,14 @@ module.exports = {
         'packages/react-native/src/**/*.js',
       ],
       rules: {
-        '@react-native/platform-colors': 2,
-        '@react-native/specs/react-native-modules': 2,
-        'lint/no-haste-imports': 2,
-        'lint/no-react-native-imports': 2,
-        'lint/require-extends-error': 2,
-        'lint/no-react-node-imports': 2,
-        'lint/no-react-default-imports': 2,
-        'lint/no-react-named-type-imports': 2,
+        '@react-native/monorepo/no-haste-imports': 'error',
+        '@react-native/monorepo/no-react-default-imports': 'error',
+        '@react-native/monorepo/no-react-named-type-imports': 'error',
+        '@react-native/monorepo/no-react-native-imports': 'error',
+        '@react-native/monorepo/no-react-node-imports': 'error',
+        '@react-native/monorepo/require-extends-error': 'error',
+        '@react-native/platform-colors': 'error',
+        '@react-native/specs/react-native-modules': 'error',
       },
     },
     {
@@ -135,9 +139,9 @@ module.exports = {
       },
     },
     {
-      files: ['**/*-itest{.fb,}.js'],
+      files: ['**/__tests__/**'],
       rules: {
-        'lint/no-react-native-imports': 'off',
+        '@react-native/monorepo/no-react-native-imports': 'off',
       },
     },
   ],

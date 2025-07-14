@@ -55,10 +55,12 @@ const ComponentTemplate = ({
   className,
   extendClasses,
   props,
+  diffProps,
 }: {
   className: string,
   extendClasses: string,
   props: string,
+  diffProps: string,
 }) =>
   `
 ${className}::${className}(
@@ -66,10 +68,93 @@ ${className}::${className}(
     const ${className} &sourceProps,
     const RawProps &rawProps):${extendClasses}
 
-    ${props}
-      {}
+    ${props} {}
+    ${diffProps}
+
 `.trim();
 
+function generatePropsDiffString(
+  className: string,
+  componentName: string,
+  component: ComponentShape,
+) {
+  const diffProps = component.props
+    .map(prop => {
+      const typeAnnotation = prop.typeAnnotation;
+      switch (typeAnnotation.type) {
+        case 'StringTypeAnnotation':
+        case 'Int32TypeAnnotation':
+        case 'BooleanTypeAnnotation':
+        case 'MixedTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
+        case 'DoubleTypeAnnotation':
+        case 'FloatTypeAnnotation':
+          return `
+  if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
+    result["${prop.name}"] = ${prop.name};
+  }`;
+        case 'ArrayTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'StringEnumTypeAnnotation':
+        case 'Int32EnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
+        case 'ReservedPropTypeAnnotation':
+          switch (typeAnnotation.name) {
+            case 'ColorPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = *${prop.name};
+  }`;
+            case 'ImageSourcePrimitive':
+            case 'PointPrimitive':
+            case 'EdgeInsetsPrimitive':
+            case 'DimensionPrimitive':
+              return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
+            case 'ImageRequestPrimitive':
+              // Shouldn't be used in props
+              throw new Error(
+                'ImageRequestPrimitive should not be used in Props',
+              );
+            default:
+              (typeAnnotation.name: empty);
+              throw new Error('Received unknown ReservedPropTypeAnnotation');
+          }
+        default:
+          return '';
+      }
+    })
+    .join('\n' + '    ');
+
+  return `
+#ifdef RN_SERIALIZABLE_STATE
+ComponentName ${className}::getDiffPropsImplementationTarget() const {
+  return "${componentName}";
+}
+
+folly::dynamic ${className}::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = ${className}();
+  const ${className}* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const ${className}*>(prevProps);
+  if (this == oldProps) {
+    return folly::dynamic::object();
+  }
+  folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
+  ${diffProps}
+  return result;
+}
+#endif`;
+}
 function generatePropsString(componentName: string, component: ComponentShape) {
   return component.props
     .map(prop => {
@@ -144,6 +229,11 @@ module.exports = {
 
             const propsString = generatePropsString(componentName, component);
             const extendString = getClassExtendString(component);
+            const diffPropsString = generatePropsDiffString(
+              newName,
+              componentName,
+              component,
+            );
 
             const imports = getImports(component.props);
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -153,6 +243,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              diffProps: diffPropsString,
             });
 
             return replacedTemplate;

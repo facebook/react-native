@@ -84,7 +84,7 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
         .count();
   });
 
-  auto allNodes = std::vector<ShadowNode::Shared>{};
+  auto allNodes = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   for (int i = 0; i < repeats; i++) {
     allNodes.clear();
@@ -117,11 +117,12 @@ static void testShadowNodeTreeLifeCycleLayoutAnimations(
     auto currentRootNode = std::static_pointer_cast<const RootShadowNode>(
         emptyRootNode->ShadowNode::clone(ShadowNodeFragment{
             ShadowNodeFragment::propsPlaceholder(),
-            std::make_shared<ShadowNode::ListOfShared>(
-                ShadowNode::ListOfShared{singleRootChildNode})}));
+            std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+                std::vector<std::shared_ptr<const ShadowNode>>{
+                    singleRootChildNode})}));
 
     // Building an initial view hierarchy.
-    auto viewTree = buildStubViewTreeWithoutUsingDifferentiator(*emptyRootNode);
+    auto viewTree = StubViewTree(ShadowView(*emptyRootNode));
     viewTree.mutate(
         calculateShadowViewMutations(*emptyRootNode, *currentRootNode));
 

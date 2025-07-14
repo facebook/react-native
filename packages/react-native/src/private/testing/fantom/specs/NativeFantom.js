@@ -8,7 +8,10 @@
  * @format
  */
 
-import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
+import type {
+  RootTag,
+  TurboModule,
+} from '../../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
@@ -65,12 +68,13 @@ export type ScrollOptions = {
 
 interface Spec extends TurboModule {
   startSurface: (
-    surfaceId: number,
     viewportWidth: number,
     viewportHeight: number,
     devicePixelRatio: number,
-  ) => void;
-  stopSurface: (surfaceId: number) => void;
+    viewportOffsetX?: number,
+    viewportOffsetY?: number,
+  ) => RootTag;
+  stopSurface: (surfaceId: RootTag) => void;
   enqueueNativeEvent: (
     shadowNode: mixed /* ShadowNode */,
     type: string,
@@ -87,15 +91,30 @@ interface Spec extends TurboModule {
     height: number,
     width: number,
   ) => void;
-  takeMountingManagerLogs: (surfaceId: number) => Array<string>;
+  takeMountingManagerLogs: (surfaceId: RootTag) => Array<string>;
+  getDirectManipulationProps: (
+    shadowNode: mixed /* ShadowNode */,
+  ) => $ReadOnly<{
+    [string]: mixed,
+  }>;
+  getFabricUpdateProps: (shadowNode: mixed /* ShadowNode */) => $ReadOnly<{
+    [string]: mixed,
+  }>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
+  produceFramesForDuration: (miliseconds: number) => void;
   validateEmptyMessageQueue: () => void;
-  getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
+  getRenderedOutput: (
+    surfaceId: RootTag,
+    config: RenderFormatOptions,
+  ) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
   createShadowNodeReferenceCounter(
     shadowNode: mixed /* ShadowNode */,
   ): () => number;
+  createShadowNodeRevisionGetter(
+    shadowNode: mixed /* ShadowNode */,
+  ): () => ?number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
 }
 

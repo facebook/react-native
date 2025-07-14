@@ -25,5 +25,5 @@ target_link_libraries(react_cxxreact
         runtimeexecutor
         react_debug)
 
-target_compile_reactnative_options(react_cxxreact PRIVATE "ReactNative")
+target_compile_reactnative_options(react_cxxreact PRIVATE)
 target_compile_options(react_cxxreact PRIVATE -Wno-unused-lambda-capture)

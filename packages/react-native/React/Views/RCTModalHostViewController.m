@@ -22,8 +22,6 @@
     return nil;
   }
 
-  self.modalInPresentation = YES;
-
   _preferredStatusBarStyle = [RCTUIStatusBarManager() statusBarStyle];
   _preferredStatusBarHidden = [RCTUIStatusBarManager() isStatusBarHidden];
 

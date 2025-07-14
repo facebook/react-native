@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -88,3 +90,5 @@ class RN_EXPORT ModuleRegistry {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
