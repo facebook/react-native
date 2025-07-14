@@ -65,15 +65,15 @@ const TestTemplate = ({
   propValue: string,
 }) => `
 TEST(${componentName}_${testName}, etc) {
-  auto propParser = RawPropsParser();
+  RawPropsParser propParser{};
   propParser.prepare<${componentName}>();
-  auto const &sourceProps = ${componentName}();
-  auto const &rawProps = RawProps(folly::dynamic::object("${propName}", ${propValue}));
+  ${componentName} sourceProps{};
+  RawProps rawProps(folly::dynamic::object("${propName}", ${propValue}));
 
   ContextContainer contextContainer{};
   PropsParserContext parserContext{-1, contextContainer};
 
-  rawProps.parse(propParser, parserContext);
+  rawProps.parse(propParser);
   ${componentName}(parserContext, sourceProps, rawProps);
 }
 `;

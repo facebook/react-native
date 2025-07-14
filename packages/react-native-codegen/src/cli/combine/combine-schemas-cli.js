@@ -51,12 +51,13 @@ if (!schemaQuery.startsWith('@')) {
 const schemaQueryOutputFile = schemaQuery.replace(/^@/, '');
 const schemaQueryOutput = fs.readFileSync(schemaQueryOutputFile, 'utf8');
 
-const schemaFiles = schemaQueryOutput.split(' ');
 const modules: {
   [hasteModuleName: string]: NativeModuleSchema | ComponentSchema,
 } = {};
 const specNameToFile: {[hasteModuleName: string]: string} = {};
 
+const schemaFiles =
+  schemaQueryOutput.length > 0 ? schemaQueryOutput.split(' ') : [];
 for (const file of schemaFiles) {
   const schema: SchemaType = JSON.parse(fs.readFileSync(file, 'utf8'));
 
