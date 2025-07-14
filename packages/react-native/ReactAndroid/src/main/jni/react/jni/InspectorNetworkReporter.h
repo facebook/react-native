@@ -44,6 +44,12 @@ class InspectorNetworkReporter
       jint requestId,
       jlong encodedDataLength);
 
+  static void maybeStoreResponseBody(
+      jni::alias_ref<jclass> /*unused*/,
+      jint requestId,
+      jni::alias_ref<jstring> body,
+      jboolean base64Encoded);
+
   static void registerNatives();
 
  private:

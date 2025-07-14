@@ -60,8 +60,10 @@ public class NetworkingModule(
     /** Returns if the handler should be used for an URI. */
     public fun supports(uri: Uri, responseType: String): Boolean
 
-    /** Fetch the URI and return the JS body payload. */
-    @Throws(IOException::class) public fun fetch(uri: Uri): WritableMap
+    /**
+     * Fetch the URI and return a tuple containing the JS body payload and the raw response body.
+     */
+    @Throws(IOException::class) public fun fetch(uri: Uri): Pair<WritableMap, ByteArray>
   }
 
   /** Allows adding custom handling to build the [RequestBody] from the JS body payload. */
@@ -79,7 +81,7 @@ public class NetworkingModule(
     public fun supports(responseType: String): Boolean
 
     /** Returns the JS body payload for the [ResponseBody]. */
-    @Throws(IOException::class) public fun toResponseData(body: ResponseBody): WritableMap
+    @Throws(IOException::class) public fun toResponseData(data: ByteArray): WritableMap
   }
 
   private val client: OkHttpClient
@@ -254,7 +256,7 @@ public class NetworkingModule(
       // Check if a handler is registered
       for (handler in uriHandlers) {
         if (handler.supports(uri, responseType)) {
-          val res = handler.fetch(uri)
+          val (res, rawBody) = handler.fetch(uri)
           val encodedDataLength = res.toString().toByteArray().size
           // fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line
           // https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
@@ -266,7 +268,7 @@ public class NetworkingModule(
                   .message("OK")
                   .build()
           NetworkEventUtil.onResponseReceived(reactApplicationContext, requestId, url, response)
-          NetworkEventUtil.onDataReceived(reactApplicationContext, requestId, res)
+          NetworkEventUtil.onDataReceived(reactApplicationContext, requestId, res, rawBody)
           NetworkEventUtil.onRequestSuccess(
               reactApplicationContext, requestId, encodedDataLength.toLong())
           return
@@ -543,8 +545,10 @@ public class NetworkingModule(
                   // Check if a handler is registered
                   for (responseHandler in responseHandlers) {
                     if (responseHandler.supports(responseType)) {
-                      val res = responseHandler.toResponseData(responseBody)
-                      NetworkEventUtil.onDataReceived(reactApplicationContext, requestId, res)
+                      val responseData = responseBody.bytes()
+                      val res = responseHandler.toResponseData(responseData)
+                      NetworkEventUtil.onDataReceived(
+                          reactApplicationContext, requestId, res, responseData)
                       NetworkEventUtil.onRequestSuccess(
                           reactApplicationContext, requestId, responseBody.contentLength())
                       return
@@ -582,7 +586,7 @@ public class NetworkingModule(
                     responseString = Base64.encodeToString(responseBody.bytes(), Base64.NO_WRAP)
                   }
                   NetworkEventUtil.onDataReceived(
-                      reactApplicationContext, requestId, responseString)
+                      reactApplicationContext, requestId, responseString, responseType)
                   NetworkEventUtil.onRequestSuccess(
                       reactApplicationContext, requestId, responseBody.contentLength())
                 } catch (e: IOException) {

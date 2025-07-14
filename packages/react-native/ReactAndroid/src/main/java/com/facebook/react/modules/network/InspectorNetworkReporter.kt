@@ -64,4 +64,11 @@ internal object InspectorNetworkReporter {
    * - Corresponds to `PerformanceResourceTiming.responseEnd`.
    */
   @JvmStatic external fun reportResponseEnd(requestId: Int, encodedDataLength: Long)
+
+  /**
+   * Store response body preview. This is an optional reporting method, and is a no-op if CDP
+   * debugging is disabled.
+   */
+  @JvmStatic
+  external fun maybeStoreResponseBody(requestId: Int, body: String, base64Encoded: Boolean)
 }

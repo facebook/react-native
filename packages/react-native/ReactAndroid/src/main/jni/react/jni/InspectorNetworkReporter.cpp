@@ -101,6 +101,23 @@ std::string limitRequestBodySize(std::string requestBody) {
       std::to_string(requestId), static_cast<std::int64_t>(encodedDataLength));
 }
 
+/* static */ void InspectorNetworkReporter::maybeStoreResponseBody(
+    jni::alias_ref<jclass> /*unused*/,
+    jint requestId,
+    jni::alias_ref<jstring> body,
+    jboolean base64Encoded) {
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+  // Debug build: Process response body and report to NetworkReporter
+  auto& networkReporter = NetworkReporter::getInstance();
+  if (!networkReporter.isDebuggingEnabled()) {
+    return;
+  }
+
+  networkReporter.storeResponseBody(
+      std::to_string(requestId), body->toStdString(), base64Encoded != 0u);
+#endif
+}
+
 /* static */ void InspectorNetworkReporter::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
@@ -112,6 +129,9 @@ std::string limitRequestBodySize(std::string requestBody) {
       makeNativeMethod(
           "reportConnectionTiming",
           InspectorNetworkReporter::reportConnectionTiming),
+      makeNativeMethod(
+          "maybeStoreResponseBody",
+          InspectorNetworkReporter::maybeStoreResponseBody),
   });
 }
 
