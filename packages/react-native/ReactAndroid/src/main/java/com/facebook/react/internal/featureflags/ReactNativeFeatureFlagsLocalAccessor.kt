@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d6024891cd1852741976e94cd6d637c6>>
+ * @generated SignedSource<<d645897d5c2e27e7de611605686d8413>>
  */
 
 /**
@@ -69,6 +69,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
+  private var releaseImageDataWhenConsumedCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -527,6 +528,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.preparedTextCacheSize()
       accessedFeatureFlags.add("preparedTextCacheSize")
       preparedTextCacheSizeCache = cached
+    }
+    return cached
+  }
+
+  override fun releaseImageDataWhenConsumed(): Boolean {
+    var cached = releaseImageDataWhenConsumedCache
+    if (cached == null) {
+      cached = currentProvider.releaseImageDataWhenConsumed()
+      accessedFeatureFlags.add("releaseImageDataWhenConsumed")
+      releaseImageDataWhenConsumedCache = cached
     }
     return cached
   }
