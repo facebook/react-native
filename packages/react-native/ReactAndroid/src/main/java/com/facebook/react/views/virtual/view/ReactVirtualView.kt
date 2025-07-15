@@ -101,7 +101,7 @@ public class ReactVirtualView(context: Context) :
     ReactScrollViewHelper.removeScrollListener(this)
     ReactScrollViewHelper.removeLayoutChangeListener(this)
     if (detectWindowFocus) {
-      viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+      viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
     cleanupLayoutListeners()
   }
