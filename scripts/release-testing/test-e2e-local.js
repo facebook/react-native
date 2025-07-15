@@ -130,9 +130,6 @@ async function testRNTesterIOS(
 
     // install app on device
     exec(`xcrun simctl install booted ${appOutputFolder}`);
-
-    // launch the app on iOS simulator
-    exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
   } else {
     exec(
       `USE_HERMES=${
@@ -140,11 +137,18 @@ async function testRNTesterIOS(
       } CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
-    // launch the app on iOS simulator
+    // build the app on iOS simulator
     exec(
-      'npx react-native run-ios --scheme RNTester --simulator "iPhone 15 Pro"',
+      'xcodebuild -workspace RNTesterPods.xcworkspace -scheme RNTester -sdk "iphonesimulator" -destination "generic/platform=iOS Simulator" -derivedDataPath "/tmp/RNTesterBuild"',
     );
+
+    exec('xcrun simctl boot "iPhone 16 Pro"');
+    exec(
+      'xcrun simctl install booted "/tmp/RNTesterBuild/Build/Products/Debug-iphonesimulator/RNTester.app"',
+    );
+    exec('open -a simulator');
   }
+  exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
 }
 
 /**
