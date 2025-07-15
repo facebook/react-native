@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<133c1ad1e5f96679faeeba9e500dba33>>
+ * @generated SignedSource<<ce7268c5f71d95c5214909fbcfa9355e>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics
+   */
+  RN_EXPORT static bool disableOldAndroidAttachmentMetricsWorkarounds();
 
   /**
    * Turns off the global measurement cache used by TextLayoutManager on Android.
