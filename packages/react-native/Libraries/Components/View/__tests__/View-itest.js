@@ -10,9 +10,14 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
+import type {HostInstance} from 'react-native';
+
+import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {createRef} from 'react';
 import {View} from 'react-native';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('<View>', () => {
   describe('width and height style', () => {
@@ -180,6 +185,40 @@ describe('<View>', () => {
       expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
         <rn-view transform='[{"translateX": 10.000000}]' />,
       );
+    });
+
+    [
+      [undefined, {x: -5, y: 0, width: 20, height: 10}],
+      ['50% 50%', {x: -5, y: 0, width: 20, height: 10}],
+      ['top left', {x: 0, y: 0, width: 20, height: 10}],
+      ['right bottom', {x: -10, y: 0, width: 20, height: 10}],
+    ].forEach(([transformOrigin, expectedBounds]) => {
+      it(`applies transformOrigin correctly for ${String(transformOrigin)}`, () => {
+        const root = Fantom.createRoot();
+
+        const viewRef = createRef<HostInstance>();
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              ref={viewRef}
+              style={{
+                width: 10,
+                height: 10,
+                transform: [{scaleX: 2}],
+                transformOrigin,
+              }}
+            />,
+          );
+        });
+
+        const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+
+        const viewBounds = viewElement.getBoundingClientRect();
+        expect(viewBounds.x).toBe(expectedBounds.x);
+        expect(viewBounds.y).toBe(expectedBounds.y);
+        expect(viewBounds.width).toBe(expectedBounds.width);
+        expect(viewBounds.height).toBe(expectedBounds.height);
+      });
     });
   });
 

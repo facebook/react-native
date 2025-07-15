@@ -55,7 +55,9 @@ struct TransformOperation {
 };
 
 struct TransformOrigin {
-  std::array<ValueUnit, 2> xy;
+  std::array<ValueUnit, 2> xy = {
+      ValueUnit(0.0f, UnitType::Undefined),
+      ValueUnit(0.0f, UnitType::Undefined)};
   float z = 0.0f;
 
   bool operator==(const TransformOrigin& other) const {
