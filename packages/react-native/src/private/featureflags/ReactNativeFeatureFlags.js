@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b4d192e4eb07d03a9e3aa0fb0e988ba5>>
+ * @generated SignedSource<<a7c3a84a71ad519991a021d994b92dc0>>
  * @flow strict
  * @noformat
  */
@@ -98,6 +98,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   releaseImageDataWhenConsumed: Getter<boolean>,
+  shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -383,6 +384,10 @@ export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('pre
  * Releases the cached image data when it is consumed by the observers.
  */
 export const releaseImageDataWhenConsumed: Getter<boolean> = createNativeFlagGetter('releaseImageDataWhenConsumed', false);
+/**
+ * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+ */
+export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

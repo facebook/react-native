@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<854d17fee309ed9228698bd773c5d44e>>
+ * @generated SignedSource<<93e0517ee3719166c6ebb94adbc31614>>
  */
 
 /**
@@ -129,6 +129,8 @@ class NativeReactNativeFeatureFlags
   double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
+
+  bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

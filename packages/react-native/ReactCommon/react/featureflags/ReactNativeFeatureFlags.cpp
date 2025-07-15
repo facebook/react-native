@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0ebe67635de9568917a9ed02d92a88e2>>
+ * @generated SignedSource<<ba4f08126eaaa542fffad5e3a724877f>>
  */
 
 /**
@@ -212,6 +212,10 @@ double ReactNativeFeatureFlags::preparedTextCacheSize() {
 
 bool ReactNativeFeatureFlags::releaseImageDataWhenConsumed() {
   return getAccessor().releaseImageDataWhenConsumed();
+}
+
+bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
+  return getAccessor().shouldPressibilityUseW3CPointerEventsForHover();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

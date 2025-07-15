@@ -545,6 +545,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    shouldPressibilityUseW3CPointerEventsForHover: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

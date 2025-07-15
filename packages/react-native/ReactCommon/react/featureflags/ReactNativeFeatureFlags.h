@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce7268c5f71d95c5214909fbcfa9355e>>
+ * @generated SignedSource<<18ea2e997f7d1bd7c963801b119424bd>>
  */
 
 /**
@@ -273,6 +273,11 @@ class ReactNativeFeatureFlags {
    * Releases the cached image data when it is consumed by the observers.
    */
   RN_EXPORT static bool releaseImageDataWhenConsumed();
+
+  /**
+   * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+   */
+  RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

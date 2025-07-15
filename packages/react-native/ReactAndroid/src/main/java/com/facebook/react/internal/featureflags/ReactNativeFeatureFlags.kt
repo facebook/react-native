@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b580dfb56a10ebe9e80bc7ce0c2ca36>>
+ * @generated SignedSource<<1dab3320bdcc6201900deba808c98070>>
  */
 
 /**
@@ -311,6 +311,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
+
+  /**
+   * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+   */
+  @JvmStatic
+  public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -15,8 +15,8 @@ import type {ReactDevToolsAgent} from '../../../../../Libraries/Types/ReactDevTo
 import type {InspectedElement} from './Inspector';
 
 import View from '../../../../../Libraries/Components/View/View';
-import ReactNativeFeatureFlags from '../../../../../Libraries/ReactNative/ReactNativeFeatureFlags';
 import StyleSheet from '../../../../../Libraries/StyleSheet/StyleSheet';
+import * as ReactNativeFeatureFlags from '../../../../../src/private/featureflags/ReactNativeFeatureFlags';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 
@@ -129,7 +129,7 @@ export default function ReactDevToolsOverlay({
   if (isInspecting) {
     const events =
       // Pointer events only work on fabric
-      ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()
+      ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()
         ? {
             onPointerMove,
             onPointerDown: onPointerMove,
