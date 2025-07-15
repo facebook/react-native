@@ -86,14 +86,12 @@ class PerformanceEntryReporter {
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
 
-  PerformanceMark reportMark(
-      const std::string& name,
-      const std::optional<HighResTimeStamp>& startTime = std::nullopt);
+  void reportMark(const std::string& name, HighResTimeStamp startTime);
 
-  PerformanceMeasure reportMeasure(
+  void reportMeasure(
       const std::string& name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
+      HighResDuration duration,
       const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
           trackMetadata = std::nullopt);
 
@@ -107,7 +105,7 @@ class PerformanceEntryReporter {
 
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
 
-  PerformanceResourceTiming reportResourceTiming(
+  void reportResourceTiming(
       const std::string& url,
       HighResTimeStamp fetchStart,
       HighResTimeStamp requestStart,

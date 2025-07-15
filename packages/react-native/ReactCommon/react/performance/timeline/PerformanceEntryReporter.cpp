@@ -167,12 +167,10 @@ void PerformanceEntryReporter::clearEntries(
   getBufferRef(entryType).clear(entryName);
 }
 
-PerformanceMark PerformanceEntryReporter::reportMark(
+void PerformanceEntryReporter::reportMark(
     const std::string& name,
-    const std::optional<HighResTimeStamp>& startTime) {
-  // Resolve timings
-  auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
-  const auto entry = PerformanceMark{{.name = name, .startTime = startTimeVal}};
+    const HighResTimeStamp startTime) {
+  const auto entry = PerformanceMark{{.name = name, .startTime = startTime}};
 
   traceMark(entry);
 
@@ -183,18 +181,14 @@ PerformanceMark PerformanceEntryReporter::reportMark(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
-PerformanceMeasure PerformanceEntryReporter::reportMeasure(
+void PerformanceEntryReporter::reportMeasure(
     const std::string& name,
     HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
+    HighResDuration duration,
     const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
         trackMetadata) {
-  HighResDuration duration = endTime - startTime;
-
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
        .startTime = startTime,
@@ -209,8 +203,6 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
 void PerformanceEntryReporter::clearEventCounts() {
@@ -275,7 +267,7 @@ void PerformanceEntryReporter::reportLongTask(
   observerRegistry_->queuePerformanceEntry(entry);
 }
 
-PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
+void PerformanceEntryReporter::reportResourceTiming(
     const std::string& url,
     HighResTimeStamp fetchStart,
     HighResTimeStamp requestStart,
@@ -302,8 +294,6 @@ PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
 void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {

@@ -54,27 +54,14 @@ export type PerformanceObserverInit = {
 
 export interface Spec extends TurboModule {
   +now?: () => number;
-  +markWithResult?: (
-    name: string,
-    startTime?: number,
-  ) => NativePerformanceMarkResult;
-  +measure?: (
-    name: string,
-    startTime?: number,
-    endTime?: number,
-    duration?: number,
-    startMark?: string,
-    endMark?: string,
-  ) => NativePerformanceMeasureResult;
-  // DEPRECATED: Use measure instead.
-  +measureWithResult?: (
+  +reportMark?: (name: string, startTime: number, entry: mixed) => void;
+  +reportMeasure?: (
     name: string,
     startTime: number,
-    endTime: number,
-    duration?: number,
-    startMark?: string,
-    endMark?: string,
-  ) => NativePerformanceMeasureResult;
+    duration: number,
+    entry: mixed,
+  ) => void;
+  +getMarkTime?: (name: string) => ?number;
   +clearMarks?: (entryName?: string) => void;
   +clearMeasures?: (entryName?: string) => void;
   +getEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
