@@ -92,6 +92,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableOldAndroidAttachmentMetricsWorkarounds: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-07-02',
+        description:
+          'Disable some workarounds for old Android versions in TextLayoutManager logic for retrieving attachment metrics',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableTextLayoutManagerCacheAndroid: {
       defaultValue: false,
       metadata: {

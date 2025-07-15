@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46d82eb7ba3a33e1411f576ef5d2f28b>>
+ * @generated SignedSource<<854d17fee309ed9228698bd773c5d44e>>
  */
 
 /**
@@ -43,6 +43,8 @@ class NativeReactNativeFeatureFlags
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
 
