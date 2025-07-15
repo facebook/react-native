@@ -59,7 +59,9 @@ function buildError(
   sourceMapPath: string,
 ): Error {
   const error = new Error(failureDetail.message);
-  error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  if (failureDetail.stack != null) {
+    error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  }
   if (failureDetail.cause != null) {
     error.cause = buildError(failureDetail.cause, sourceMapPath);
   }
