@@ -23,10 +23,16 @@ import {use} from 'react';
  *
  * @see https://reactnative.dev/docs/view
  */
-export default component View(
+const ViewImpl: component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
-) {
+) = ({
+  ref,
+  ...props
+}: {
+  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
+  ...ViewProps,
+}) => {
   const hasTextAncestor = use(TextAncestorContext);
 
   let actualView;
@@ -212,4 +218,7 @@ export default component View(
     );
   }
   return actualView;
-}
+};
+
+ViewImpl.displayName = 'View';
+export default ViewImpl;
