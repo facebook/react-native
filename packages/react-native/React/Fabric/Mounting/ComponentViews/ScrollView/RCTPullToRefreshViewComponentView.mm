@@ -24,7 +24,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTPullToRefreshViewComponentView {
-  BOOL _isBeforeInitialLayout;
   UIRefreshControl *_refreshControl;
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
 }
@@ -36,8 +35,6 @@ using namespace facebook::react;
     // attaching and detaching of a pull-to-refresh view to a scroll view.
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
-
-    _isBeforeInitialLayout = YES;
     [self _initializeUIRefreshControl];
   }
 
@@ -63,19 +60,11 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _scrollViewComponentView = nil;
-  _props = nil;
-  _isBeforeInitialLayout = YES;
   [self _initializeUIRefreshControl];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  // Prop updates are ignored by _refreshControl until after the initial layout, so just store them in _props until then
-  if (_isBeforeInitialLayout) {
-    _props = std::static_pointer_cast<const PullToRefreshViewProps>(props);
-    return;
-  }
-
   const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
   const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
@@ -110,6 +99,10 @@ using namespace facebook::react;
     } else {
       [_refreshControl endRefreshing];
     }
+  }
+
+  if (newConcreteProps.zIndex != oldConcreteProps.zIndex) {
+    _refreshControl.layer.zPosition = newConcreteProps.zIndex.value_or(0);
   }
 }
 
@@ -155,10 +148,12 @@ using namespace facebook::react;
 
   // Attempts to begin refreshing before the initial layout are ignored by _refreshControl. So if the control is
   // refreshing when mounted, we need to call beginRefreshing in layoutSubviews or it won't work.
-  if (_isBeforeInitialLayout) {
-    _isBeforeInitialLayout = NO;
+  if (self.window) {
+    const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
 
-    [self updateProps:_props oldProps:PullToRefreshViewShadowNode::defaultSharedProps()];
+    if (concreteProps.refreshing) {
+      [self beginRefreshingProgrammatically];
+    }
   }
 }
 
@@ -214,11 +209,12 @@ using namespace facebook::react;
 
   // When refreshing programmatically (i.e. without pulling down), we must explicitly adjust the ScrollView content
   // offset, or else the _refreshControl won't be visible
-  UIScrollView *scrollView = _scrollViewComponentView.scrollView;
-  CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - _refreshControl.frame.size.height};
-  [scrollView setContentOffset:offset];
-
-  [_refreshControl beginRefreshing];
+  if (!_refreshControl.isRefreshing) {
+    UIScrollView *scrollView = _scrollViewComponentView.scrollView;
+    CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - _refreshControl.frame.size.height};
+    [scrollView setContentOffset:offset];
+    [_refreshControl beginRefreshing];
+  }
 }
 
 #pragma mark - Native commands
