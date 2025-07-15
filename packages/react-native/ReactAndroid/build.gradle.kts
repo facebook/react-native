@@ -19,6 +19,7 @@ plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.download)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.ktfmt)
 }
 
 version = project.findProperty("VERSION_NAME")?.toString()!!
