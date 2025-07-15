@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @fantom_flags enableFixForParentTagDuringReparenting:true
- * @fantom_flags enableSynchronousStateUpdates:true
  * @fantom_flags enableViewCulling:true
  * @flow strict-local
  * @format

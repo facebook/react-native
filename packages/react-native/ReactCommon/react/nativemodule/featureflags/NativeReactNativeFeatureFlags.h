@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<854d17fee309ed9228698bd773c5d44e>>
+ * @generated SignedSource<<130929d2cc38d298a27dd6afc5c746ca>>
  */
 
 /**
@@ -101,8 +101,6 @@ class NativeReactNativeFeatureFlags
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
-
-  bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableViewCulling(jsi::Runtime& runtime);
 

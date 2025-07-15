@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f7c839906f0f5c784d05cd4dae80171c>>
+ * @generated SignedSource<<d8c2161445fd7dead9c4d3444b3c9065>>
  */
 
 /**
@@ -340,15 +340,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
-  }
-
-  bool enableSynchronousStateUpdates() override {
-    auto value = values_["enableSynchronousStateUpdates"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableSynchronousStateUpdates();
   }
 
   bool enableViewCulling() override {

@@ -20,10 +20,6 @@ EventQueue::EventQueue(
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       [this](jsi::Runtime& runtime) { onBeat(runtime); });
-
-  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
-    eventBeat_->unstable_setInduceCallback([this]() { flushStateUpdates(); });
-  }
 }
 
 void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
@@ -89,9 +85,7 @@ void EventQueue::experimental_flushSync() const {
 }
 
 void EventQueue::onBeat(jsi::Runtime& runtime) const {
-  if (!ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
-    flushStateUpdates();
-  }
+  flushStateUpdates();
   flushEvents(runtime);
 }
 
