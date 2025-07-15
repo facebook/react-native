@@ -2,25 +2,7 @@
 
 ## v0.81.0-rc.1
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
-
-
-
-#### Android specific
-
-
 
 #### iOS specific
 
@@ -30,7 +12,7 @@
 
 ### Changed
 
-
+- Bump Metro to 0.83.0 ([6b9f5d622f](https://github.com/facebook/react-native/commit/6b9f5d622ffbe79da8f4e7b7d8094504a480425e) by [@robhogan](https://github.com/robhogan))
 
 #### Android specific
 
@@ -38,76 +20,14 @@
 - Expose `react_renderer_bridging` headers via prefab ([d1730ff960](https://github.com/facebook/react-native/commit/d1730ff960fcb9a01ee94b9e46e5a9fbb7d73f4a) by [@tomekzaw](https://github.com/tomekzaw))
 - Introduce more deprecation warnings for Legacy Arch classes ([625f69f284](https://github.com/facebook/react-native/commit/625f69f284ddfd9c6beecaa4052a871d092053ef) by [@cortinico](https://github.com/cortinico))
 
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
 
 ### Fixed
 
 - Fixed nodes with `display: contents` set being cloned with the wrong owner ([d4b36b0300](https://github.com/facebook/react-native/commit/d4b36b03003eb2de9eaf5b57bb639bae8cc12f20) by [@j-piasecki](https://github.com/j-piasecki))
 
-#### Android specific
-
-
-
 #### iOS specific
 
 - Fixed premature return in header file generation from podspec globs ([f2b064c2d4](https://github.com/facebook/react-native/commit/f2b064c2d40c39017ac2a31bf3caf8acef23038c) by [@chrfalch](https://github.com/chrfalch))
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.81.0-rc.1 ([b06bb89ddd](https://github.com/facebook/react-native/commit/b06bb89ddd3cebddea4716036a4368b87a65f492) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Metro to 0.83.0 ([6b9f5d622f](https://github.com/facebook/react-native/commit/6b9f5d622ffbe79da8f4e7b7d8094504a480425e) by [@robhogan](https://github.com/robhogan))
-- Bump podfile.lock ([87c8e687d9](https://github.com/facebook/react-native/commit/87c8e687d952c8d5afbb726230b777bc949a47c7) by [@cipolleschi](https://github.com/cipolleschi))
-- Release 0.81.0-rc.0 ([1fc81fe216](https://github.com/facebook/react-native/commit/1fc81fe2169863de2c302ad6d8f77097925ee336) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
 
 
 ## v0.81.0-rc.0
