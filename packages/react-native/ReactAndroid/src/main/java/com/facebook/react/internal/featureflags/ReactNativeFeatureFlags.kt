@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b580dfb56a10ebe9e80bc7ce0c2ca36>>
+ * @generated SignedSource<<2d4b6e579aaa2b8392fa65d7f86d0351>>
  */
 
 /**
@@ -227,12 +227,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
-
-  /**
-   * Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).
-   */
-  @JvmStatic
-  public fun enableSynchronousStateUpdates(): Boolean = accessor.enableSynchronousStateUpdates()
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
