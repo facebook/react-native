@@ -48,6 +48,11 @@ export type PerformanceMeasureOptions =
       detail?: DetailType,
       start?: DOMHighResTimeStamp | string,
       end?: DOMHighResTimeStamp | string,
+    }>
+  | $ReadOnly<{
+      detail?: DetailType,
+      duration?: DOMHighResTimeStamp | string,
+      end?: DOMHighResTimeStamp | string,
     }>;
 
 const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
