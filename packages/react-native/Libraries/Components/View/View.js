@@ -23,7 +23,7 @@ import {use} from 'react';
  *
  * @see https://reactnative.dev/docs/view
  */
-const ViewImpl: component(
+const View: component(
   ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 ) = ({
@@ -220,5 +220,5 @@ const ViewImpl: component(
   return actualView;
 };
 
-ViewImpl.displayName = 'View';
-export default ViewImpl;
+View.displayName = 'View';
+export default View;
