@@ -1,6 +1,6 @@
 {
   "name": "@react-native/new-app-screen",
-  "version": "0.81.0-rc.0",
+  "version": "0.81.0-rc.1",
   "description": "NewAppScreen component for React Native",
   "keywords": [
     "react-native"

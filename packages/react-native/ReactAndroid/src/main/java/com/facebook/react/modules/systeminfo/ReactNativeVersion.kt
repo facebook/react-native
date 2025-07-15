@@ -15,6 +15,6 @@ public object ReactNativeVersion {
     "major" to 0,
     "minor" to 81,
     "patch" to 0,
-    "prerelease" to "rc.0"
+    "prerelease" to "rc.1"
   )
 }
