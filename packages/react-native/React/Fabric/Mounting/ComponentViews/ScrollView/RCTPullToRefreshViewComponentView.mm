@@ -26,6 +26,11 @@ using namespace facebook::react;
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
+  // This variable keeps track of whether the view is recycled or not. Once the view is recycled, the component
+  // creates a new instance of UIRefreshControl, resetting the native props to the default values.
+  // However, when recycling, we are keeping around the old _props. The flag is used to force the application
+  // of the current props to the newly created UIRefreshControl the first time that updateProps is called.
+  BOOL _recycled;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -35,6 +40,7 @@ using namespace facebook::react;
     // attaching and detaching of a pull-to-refresh view to a scroll view.
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
+    _recycled = NO;
     [self _initializeUIRefreshControl];
   }
 
@@ -61,6 +67,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   _scrollViewComponentView = nil;
   [self _initializeUIRefreshControl];
+  _recycled = YES;
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -68,32 +75,32 @@ using namespace facebook::react;
   const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
   const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
-  if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {
+  if (_recycled || newConcreteProps.tintColor != oldConcreteProps.tintColor) {
     _refreshControl.tintColor = RCTUIColorFromSharedColor(newConcreteProps.tintColor);
   }
 
-  if (newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
+  if (_recycled || newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
     [self _updateProgressViewOffset:newConcreteProps.progressViewOffset];
   }
 
   BOOL needsUpdateTitle = NO;
 
-  if (newConcreteProps.title != oldConcreteProps.title) {
+  if (_recycled || newConcreteProps.title != oldConcreteProps.title) {
     needsUpdateTitle = YES;
   }
 
-  if (newConcreteProps.titleColor != oldConcreteProps.titleColor) {
+  if (_recycled || newConcreteProps.titleColor != oldConcreteProps.titleColor) {
     needsUpdateTitle = YES;
   }
 
   [super updateProps:props oldProps:oldProps];
 
-  if (needsUpdateTitle) {
+  if (_recycled || needsUpdateTitle) {
     [self _updateTitle];
   }
 
   // All prop updates must happen above the call to begin refreshing, or else _refreshControl will ignore the updates
-  if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
+  if (_recycled || newConcreteProps.refreshing != oldConcreteProps.refreshing) {
     if (newConcreteProps.refreshing) {
       [self beginRefreshingProgrammatically];
     } else {
@@ -101,9 +108,11 @@ using namespace facebook::react;
     }
   }
 
-  if (newConcreteProps.zIndex != oldConcreteProps.zIndex) {
+  if (_recycled || newConcreteProps.zIndex != oldConcreteProps.zIndex) {
     _refreshControl.layer.zPosition = newConcreteProps.zIndex.value_or(0);
   }
+
+  _recycled = NO;
 }
 
 #pragma mark -
