@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38ab47539ec62bb4be34a46bb567e28a>>
+ * @generated SignedSource<<ffb12a4ed7e7caeff8f492c9f9738b42>>
  */
 
 /**
@@ -277,6 +277,11 @@ double NativeReactNativeFeatureFlags::preparedTextCacheSize(
 bool NativeReactNativeFeatureFlags::releaseImageDataWhenConsumed(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
+}
+
+bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

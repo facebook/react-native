@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99871d495699fdea7f67b3b29af2d28f>>
+ * @generated SignedSource<<c1eea751571d2e82767cbca6515b7497>>
  */
 
 /**
@@ -67,6 +67,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var releaseImageDataWhenConsumedCache: Boolean? = null
+  private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -498,6 +499,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.releaseImageDataWhenConsumed()
       releaseImageDataWhenConsumedCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean {
+    var cached = shouldPressibilityUseW3CPointerEventsForHoverCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.shouldPressibilityUseW3CPointerEventsForHover()
+      shouldPressibilityUseW3CPointerEventsForHoverCache = cached
     }
     return cached
   }
