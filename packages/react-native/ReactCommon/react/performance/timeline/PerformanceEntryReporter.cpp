@@ -37,6 +37,42 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   return supportedEntryTypes;
 }
 
+std::optional<std::string> getTrackFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrack = maybeDevtools["track"];
+  if (!maybeTrack.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrack.asString();
+}
+
+std::optional<std::string> getTrackGroupFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrackGroup = maybeDevtools["trackGroup"];
+  if (!maybeTrackGroup.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrackGroup.asString();
+}
+
 } // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
@@ -142,10 +178,11 @@ void PerformanceEntryReporter::clearEntries(
 
 void PerformanceEntryReporter::reportMark(
     const std::string& name,
-    const HighResTimeStamp startTime) {
+    const HighResTimeStamp startTime,
+    UserTimingDetailProvider&& detailProvider) {
   const auto entry = PerformanceMark{{.name = name, .startTime = startTime}};
 
-  traceMark(entry);
+  traceMark(entry, std::move(detailProvider));
 
   // Add to buffers & notify observers
   {
@@ -160,14 +197,13 @@ void PerformanceEntryReporter::reportMeasure(
     const std::string& name,
     HighResTimeStamp startTime,
     HighResDuration duration,
-    const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-        trackMetadata) {
+    UserTimingDetailProvider&& detailProvider) {
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
        .startTime = startTime,
        .duration = duration}};
 
-  traceMeasure(entry);
+  traceMeasure(entry, std::move(detailProvider));
 
   // Add to buffers & notify observers
   {
@@ -269,33 +305,45 @@ void PerformanceEntryReporter::reportResourceTiming(
   observerRegistry_->queuePerformanceEntry(entry);
 }
 
-void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
+void PerformanceEntryReporter::traceMark(
+    const PerformanceMark& entry,
+    UserTimingDetailProvider&& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
-    if (performanceTracer.isTracing()) {
-      performanceTracer.reportMark(entry.name, entry.startTime);
-    }
-
     if (ReactPerfettoLogger::isTracing()) {
       ReactPerfettoLogger::mark(entry.name, entry.startTime);
+    }
+
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMark(
+          entry.name,
+          entry.startTime,
+          detailProvider != nullptr ? detailProvider() : nullptr);
     }
   }
 }
 
 void PerformanceEntryReporter::traceMeasure(
-    const PerformanceMeasure& entry) const {
+    const PerformanceMeasure& entry,
+    UserTimingDetailProvider&& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
-    if (performanceTracer.isTracing()) {
-      performanceTracer.reportMeasure(
-          entry.name, entry.startTime, entry.duration);
-    }
+    auto detail = detailProvider != nullptr ? detailProvider() : nullptr;
 
     if (ReactPerfettoLogger::isTracing()) {
       ReactPerfettoLogger::measure(
-          entry.name, entry.startTime, entry.startTime + entry.duration);
+          entry.name,
+          entry.startTime,
+          entry.startTime + entry.duration,
+          detail != nullptr ? getTrackFromDetail(detail) : std::nullopt,
+          detail != nullptr ? getTrackGroupFromDetail(detail) : std::nullopt);
+    }
+
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMeasure(
+          entry.name, entry.startTime, entry.duration, std::move(detail));
     }
   }
 }
