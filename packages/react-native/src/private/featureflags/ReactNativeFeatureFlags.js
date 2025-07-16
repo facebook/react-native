@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<857b706fde7e65836bb46967b13742e8>>
+ * @generated SignedSource<<b9c8d94d7d92f41abddad172b14c9a30>>
  * @flow strict
  * @noformat
  */
@@ -102,6 +102,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean>,
+  useNativeTransformHelperAndroid: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
@@ -399,6 +400,10 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
  * Use a native implementation of equals in NativeReadableArray.
  */
 export const useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean> = createNativeFlagGetter('useNativeEqualsInNativeReadableArrayAndroid', false);
+/**
+ * Use a native implementation of TransformHelper
+ */
+export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlagGetter('useNativeTransformHelperAndroid', false);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

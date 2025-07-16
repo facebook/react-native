@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e0c26557fd379a071cbfd65d0a90a7d5>>
+ * @generated SignedSource<<977c111cdd608b0b05d56c450d5b647f>>
  */
 
 /**
@@ -75,6 +75,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeEqualsInNativeReadableArrayAndroidCache: Boolean? = null
+  private var useNativeTransformHelperAndroidCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
@@ -589,6 +590,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeEqualsInNativeReadableArrayAndroid()
       accessedFeatureFlags.add("useNativeEqualsInNativeReadableArrayAndroid")
       useNativeEqualsInNativeReadableArrayAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useNativeTransformHelperAndroid(): Boolean {
+    var cached = useNativeTransformHelperAndroidCache
+    if (cached == null) {
+      cached = currentProvider.useNativeTransformHelperAndroid()
+      accessedFeatureFlags.add("useNativeTransformHelperAndroid")
+      useNativeTransformHelperAndroidCache = cached
     }
     return cached
   }

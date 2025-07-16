@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0b48e4e39d70dcf6a437a7d3d05a8b6e>>
+ * @generated SignedSource<<1b5ec51de5af04adcaf19a0118e2b7a7>>
  */
 
 /**
@@ -83,6 +83,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
   bool useNativeEqualsInNativeReadableArrayAndroid();
+  bool useNativeTransformHelperAndroid();
   bool useNativeViewConfigsInBridgelessMode();
   bool useOptimizedEventBatchingOnAndroid();
   bool useRawPropsJsiValue();
@@ -101,7 +102,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 58> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 59> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
@@ -154,6 +155,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeEqualsInNativeReadableArrayAndroid_;
+  std::atomic<std::optional<bool>> useNativeTransformHelperAndroid_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
