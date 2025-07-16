@@ -78,7 +78,8 @@ class PerformanceTracer {
       const std::string_view& name,
       HighResTimeStamp start,
       HighResDuration duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      const std::optional<DevToolsTrackEntryPayload>& trackMetadata =
+          std::nullopt);
 
   /**
    * Record a "TimeStamp" Trace Event - a labelled entry on Performance
