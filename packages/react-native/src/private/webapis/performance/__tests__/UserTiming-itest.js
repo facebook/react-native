@@ -36,7 +36,7 @@ function toJSON(entries: PerformanceEntryList): Array<PerformanceEntryJSON> {
   return entries.map(entry => entry.toJSON());
 }
 
-describe('Performance', () => {
+describe('User Timing', () => {
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
