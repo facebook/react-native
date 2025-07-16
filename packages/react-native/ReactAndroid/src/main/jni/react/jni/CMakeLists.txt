@@ -31,6 +31,7 @@ add_library(
           OnLoad-common.cpp
           ReadableNativeArray.cpp
           ReadableNativeMap.cpp
+          TransformHelper.cpp
           WritableNativeArray.cpp
           WritableNativeMap.cpp
 )
