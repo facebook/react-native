@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ccc72ace017fc6a3a09a56d7eb0a3fd8>>
+ * @generated SignedSource<<a045579d42e45fa80831856734a063aa>>
  */
 
 /**
@@ -32,6 +32,10 @@ class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatur
   }
 
   bool useNativeEqualsInNativeReadableArrayAndroid() override {
+    return true;
+  }
+
+  bool useNativeTransformHelperAndroid() override {
     return true;
   }
 };
