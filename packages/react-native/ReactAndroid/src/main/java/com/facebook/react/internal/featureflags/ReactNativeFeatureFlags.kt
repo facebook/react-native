@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d78523bf7df6a47a898691ff0fb3cb31>>
+ * @generated SignedSource<<9c5b3d6c75738162b6fde47b009d4e9e>>
  */
 
 /**
@@ -161,6 +161,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * Dispatches state updates for content offset changes synchronously on the main thread.
+   */
+  @JvmStatic
+  public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = accessor.enableImmediateUpdateModeForContentOffsetChanges()
 
   /**
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.

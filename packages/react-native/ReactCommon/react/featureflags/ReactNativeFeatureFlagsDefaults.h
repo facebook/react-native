@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f31feb5c82de06491aa9a2b3e2ab03e>>
+ * @generated SignedSource<<4e6c53c15a651daf5d138f13e4708495>>
  */
 
 /**
@@ -112,6 +112,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableIOSViewClipToPaddingBox() override {
+    return false;
+  }
+
+  bool enableImmediateUpdateModeForContentOffsetChanges() override {
     return false;
   }
 
