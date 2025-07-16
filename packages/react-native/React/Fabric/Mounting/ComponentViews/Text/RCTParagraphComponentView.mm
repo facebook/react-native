@@ -9,7 +9,6 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
-#import <React/RCTViewAccessibilityElement.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>
@@ -226,10 +225,6 @@ using namespace facebook::react;
       if ([elements count] > 0 && [cooptingCandidates count] > 0) {
         for (NSObject *element in elements) {
           if ([element isKindOfClass:[UIView class]] && [cooptingCandidates containsObject:((UIView *)element)]) {
-            return YES;
-          } else if (
-              [element isKindOfClass:[RCTViewAccessibilityElement class]] &&
-              [cooptingCandidates containsObject:((RCTViewAccessibilityElement *)element).view]) {
             return YES;
           }
         }
