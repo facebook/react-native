@@ -20,6 +20,7 @@
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
 #import <React/RCTRadialGradient.h>
+#import <ReactSwiftUtils/RCTSwiftUIContainerViewWrapper.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
@@ -53,6 +54,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
   NSMutableArray<NSObject *> *_accessibilityElements;
   RCTViewAccessibilityElement *_axElementDescribingSelf;
+  RCTSwiftUIContainerViewWrapper* _swiftUIWrapper;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -575,6 +577,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
   }
+
+  if (_swiftUIWrapper) {
+    _swiftUIWrapper.hostingView.frame = self.bounds;
+    if (_swiftUIWrapper.contentView) {
+      _swiftUIWrapper.contentView.frame = self.bounds;
+    }
+  }
 }
 
 - (BOOL)isJSResponder
@@ -793,44 +802,88 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       ((!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth)) || _props->outlineWidth != 0);
 }
 
+- (UIView *)childContainerView
+{
+  UIView *childContainerView = self;
+
+  if (self.styleNeedsSwiftUIContainer) {
+    if (!_swiftUIWrapper) {
+      _swiftUIWrapper = [RCTSwiftUIContainerViewWrapper new];
+      _swiftUIWrapper.hostingView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+      UIView *swiftUIContentView =
+          [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+      for (UIView *subview in self.subviews) {
+        [swiftUIContentView addSubview:subview];
+      }
+      swiftUIContentView.clipsToBounds = self.clipsToBounds;
+      self.clipsToBounds = NO;
+      swiftUIContentView.layer.mask = self.layer.mask;
+      self.layer.mask = nil;
+      [_swiftUIWrapper updateContentView:swiftUIContentView];
+      [self addSubview:_swiftUIWrapper.hostingView];
+
+      [self transferVisualPropertiesFromView:self toView:swiftUIContentView];
+    }
+
+    childContainerView = _swiftUIWrapper.contentView;
+  } else {
+    if (_swiftUIWrapper) {
+      UIView *swiftUIContentView = _swiftUIWrapper.contentView;
+      for (UIView *subview in swiftUIContentView.subviews) {
+        [self addSubview:subview];
+      }
+      self.clipsToBounds = swiftUIContentView.clipsToBounds;
+      self.layer.mask = swiftUIContentView.layer.mask;
+
+      [self transferVisualPropertiesFromView:swiftUIContentView toView:self];
+
+      [_swiftUIWrapper.hostingView removeFromSuperview];
+      _swiftUIWrapper = nil;
+    }
+  }
+
+  return childContainerView;
+}
+
 // This UIView is the UIView that holds all subviews. It is sometimes not self
 // because we want to render "overflow ink" that extends beyond the bounds of
 // the view and is not affected by clipping.
 - (UIView *)currentContainerView
 {
+  UIView* childContainerView = self.childContainerView;
+
   if (_useCustomContainerView) {
     if (!_containerView) {
       _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-      for (UIView *subview in self.subviews) {
+      for (UIView *subview in childContainerView.subviews) {
         [_containerView addSubview:subview];
       }
-      _containerView.clipsToBounds = self.clipsToBounds;
-      self.clipsToBounds = NO;
-      _containerView.layer.mask = self.layer.mask;
-      self.layer.mask = nil;
-      [self addSubview:_containerView];
+      _containerView.clipsToBounds = childContainerView.clipsToBounds;
+      childContainerView.clipsToBounds = NO;
+      _containerView.layer.mask = childContainerView.layer.mask;
+      childContainerView.layer.mask = nil;
+      [childContainerView addSubview:_containerView];
     }
 
-    return _containerView;
+    childContainerView = _containerView;
   } else {
     if (_containerView) {
       for (UIView *subview in _containerView.subviews) {
-        [self addSubview:subview];
+        [childContainerView addSubview:subview];
       }
-      self.clipsToBounds = _containerView.clipsToBounds;
-      self.layer.mask = _containerView.layer.mask;
+      childContainerView.clipsToBounds = _containerView.clipsToBounds;
+      childContainerView.layer.mask = _containerView.layer.mask;
       [_containerView removeFromSuperview];
       _containerView = nil;
     }
-
-    return self;
   }
+  return childContainerView;
 }
 
 - (void)invalidateLayer
 {
-  CALayer *layer = self.layer;
-
+  CALayer *layer = self.childContainerView.layer;
+ 
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
     return;
   }
@@ -910,7 +963,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     if (!_backgroundColorLayer) {
       _backgroundColorLayer = [CALayer layer];
       _backgroundColorLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-      [self.layer addSublayer:_backgroundColorLayer];
+      [layer addSublayer:_backgroundColorLayer];
     }
     [self shapeLayerToMatchView:_backgroundColorLayer borderMetrics:borderMetrics];
     _backgroundColorLayer.backgroundColor = backgroundColor.CGColor;
@@ -986,31 +1039,43 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // filter
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
+  if (_swiftUIWrapper) {
+    [_swiftUIWrapper updateBlurRadius:@(0)];
+  }
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
+    bool hasBrightnessFilter = false;
     for (const auto &primitive : _props->filter) {
       if (std::holds_alternative<Float>(primitive.parameters)) {
         if (primitive.type == FilterType::Brightness) {
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
+          hasBrightnessFilter = true;
         } else if (primitive.type == FilterType::Opacity) {
           self.layer.opacity *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Blur) {
+          if (_swiftUIWrapper) {
+            Float blurRadius = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateBlurRadius:@(blurRadius)];
+          }
         }
       }
     }
-
-    _filterLayer = [CALayer layer];
-    [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
-    _filterLayer.compositingFilter = @"multiplyBlendMode";
-    _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
-                                                   green:multiplicativeBrightness
-                                                    blue:multiplicativeBrightness
-                                                   alpha:self.layer.opacity]
-                                       .CGColor;
-    // So that this layer is always above any potential sublayers this view may
-    // add
-    _filterLayer.zPosition = CGFLOAT_MAX;
-    [self.layer addSublayer:_filterLayer];
+    
+    if (hasBrightnessFilter) {
+      _filterLayer = [CALayer layer];
+      [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
+      _filterLayer.compositingFilter = @"multiplyBlendMode";
+      _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
+                                                     green:multiplicativeBrightness
+                                                      blue:multiplicativeBrightness
+                                                     alpha:self.layer.opacity]
+        .CGColor;
+      // So that this layer is always above any potential sublayers this view may
+      // add
+      _filterLayer.zPosition = CGFLOAT_MAX;
+      [layer addSublayer:_filterLayer];
+    }
   }
 
   // background image
@@ -1025,7 +1090,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [self.layer addSublayer:backgroundImageLayer];
+        [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       } else if (std::holds_alternative<RadialGradient>(backgroundImage)) {
         const auto &radialGradient = std::get<RadialGradient>(backgroundImage);
@@ -1034,7 +1099,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
         [self shapeLayerToMatchView:backgroundImageLayer borderMetrics:borderMetrics];
         backgroundImageLayer.masksToBounds = YES;
         backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-        [self.layer addSublayer:backgroundImageLayer];
+        [layer addSublayer:backgroundImageLayer];
         [_backgroundImageLayers addObject:backgroundImageLayer];
       }
     }
@@ -1056,7 +1121,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
           self.layer.bounds.size);
       shadowLayer.zPosition = _borderLayer.zPosition;
-      [self.layer addSublayer:shadowLayer];
+      [layer addSublayer:shadowLayer];
       [_boxShadowLayers addObject:shadowLayer];
     }
   }
@@ -1421,6 +1486,65 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (NSString *)componentViewName_DO_NOT_USE_THIS_IS_BROKEN
 {
   return RCTNSStringFromString([[self class] componentDescriptorProvider].name);
+}
+
+- (BOOL) styleNeedsSwiftUIContainer {
+  if (!_props->filter.empty()) {
+    for (const auto &primitive : _props->filter) {
+      if (primitive.type == FilterType::Blur) {
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
+- (void)transferVisualPropertiesFromView:(UIView *)sourceView toView:(UIView *)destinationView
+{
+  // shadow
+  destinationView.layer.shadowColor = sourceView.layer.shadowColor;
+  sourceView.layer.shadowColor = nil;
+  destinationView.layer.shadowOffset = sourceView.layer.shadowOffset;
+  sourceView.layer.shadowOffset = CGSizeZero;
+  destinationView.layer.shadowOpacity = sourceView.layer.shadowOpacity;
+  sourceView.layer.shadowOpacity = 0;
+  destinationView.layer.shadowRadius = sourceView.layer.shadowRadius;
+  sourceView.layer.shadowRadius = 0;
+
+  // background
+  destinationView.layer.backgroundColor = sourceView.layer.backgroundColor;
+  sourceView.layer.backgroundColor = nil;
+  if (_backgroundColorLayer) {
+    [destinationView.layer addSublayer:_backgroundColorLayer];
+  }
+
+  // border
+  destinationView.layer.borderColor = sourceView.layer.borderColor;
+  sourceView.layer.borderColor = nil;
+  destinationView.layer.borderWidth = sourceView.layer.borderWidth;
+  sourceView.layer.borderWidth = 0;
+
+  // corner
+  destinationView.layer.cornerRadius = sourceView.layer.cornerRadius;
+  sourceView.layer.cornerRadius = 0;
+  destinationView.layer.cornerCurve = sourceView.layer.cornerCurve;
+
+  // custom layers
+  if (_borderLayer) {
+    [destinationView.layer addSublayer:_borderLayer];
+  }
+  if (_outlineLayer) {
+    [destinationView.layer addSublayer:_outlineLayer];
+  }
+  if (_filterLayer) {
+    [destinationView.layer addSublayer:_filterLayer];
+  }
+  for (CALayer *layer in _backgroundImageLayers) {
+    [destinationView.layer addSublayer:layer];
+  }
+  for (CALayer *layer in _boxShadowLayers) {
+    [destinationView.layer addSublayer:layer];
+  }
 }
 
 @end
