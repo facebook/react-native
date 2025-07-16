@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<75581e9d2c5e88cc2aece9ccd8e8bd38>>
+ * @generated SignedSource<<89bdd3d1323ca1dc1c57d3da6c830984>>
  */
 
 /**
@@ -345,6 +345,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool useNativeTransformHelperAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeTransformHelperAndroid");
+    return method(javaProvider_);
+  }
+
   bool useNativeViewConfigsInBridgelessMode() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useNativeViewConfigsInBridgelessMode");
@@ -646,6 +652,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAnd
   return ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useNativeTransformHelperAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
@@ -865,6 +876,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useNativeEqualsInNativeReadableArrayAndroid",
         JReactNativeFeatureFlagsCxxInterop::useNativeEqualsInNativeReadableArrayAndroid),
+      makeNativeMethod(
+        "useNativeTransformHelperAndroid",
+        JReactNativeFeatureFlagsCxxInterop::useNativeTransformHelperAndroid),
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),

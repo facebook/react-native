@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc1670daa430290ac289b8b427a49851>>
+ * @generated SignedSource<<328b45ca68417a7acb71989cf18bd05e>>
  */
 
 /**
@@ -293,6 +293,11 @@ class ReactNativeFeatureFlags {
    * Use a native implementation of equals in NativeReadableArray.
    */
   RN_EXPORT static bool useNativeEqualsInNativeReadableArrayAndroid();
+
+  /**
+   * Use a native implementation of TransformHelper
+   */
+  RN_EXPORT static bool useNativeTransformHelperAndroid();
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

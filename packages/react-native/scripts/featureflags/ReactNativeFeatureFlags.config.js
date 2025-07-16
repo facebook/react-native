@@ -586,6 +586,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useNativeTransformHelperAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-15',
+        description: 'Use a native implementation of TransformHelper',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
