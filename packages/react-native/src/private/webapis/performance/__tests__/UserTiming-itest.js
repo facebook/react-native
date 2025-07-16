@@ -293,6 +293,48 @@ describe('User Timing', () => {
         expect(measure.detail).toBe(null);
       });
 
+      // TODO fix case
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('works with an end timestamp and a duration', () => {
+        const measure = performance.measure(
+          'measure-with-end-timestamp-and-duration',
+          {
+            end: 40,
+            duration: 30,
+          },
+        );
+
+        expect(measure).toBeInstanceOf(PerformanceMeasure);
+        expect(measure.entryType).toBe('measure');
+        expect(measure.name).toBe('measure-with-end-timestamp-and-duration');
+        expect(measure.startTime).toBe(10);
+        expect(measure.duration).toBe(30);
+        expect(measure.detail).toBe(null);
+      });
+
+      // TODO fix case
+      // eslint-disable-next-line jest/no-disabled-tests
+      it.skip('works with an end mark and a duration', () => {
+        performance.mark('end-mark', {
+          startTime: 40,
+        });
+
+        const measure = performance.measure(
+          'measure-with-end-mark-and-duration',
+          {
+            end: 'end-mark',
+            duration: 30,
+          },
+        );
+
+        expect(measure).toBeInstanceOf(PerformanceMeasure);
+        expect(measure.entryType).toBe('measure');
+        expect(measure.name).toBe('measure-with-end-mark-and-duration');
+        expect(measure.startTime).toBe(10);
+        expect(measure.duration).toBe(30);
+        expect(measure.detail).toBe(null);
+      });
+
       it('throws if the specified mark does NOT exist', () => {
         const missingStartMarkError = ensureInstance(
           getThrownError(() => {
