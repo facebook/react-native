@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5204d6bd93886d7819cd90cf73a972e>>
+ * @generated SignedSource<<b553a8bf75d7047328c26c4b9029d509>>
  */
 
 /**
@@ -277,6 +277,11 @@ double NativeReactNativeFeatureFlags::preparedTextCacheSize(
 bool NativeReactNativeFeatureFlags::releaseImageDataWhenConsumed(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
+}
+
+bool NativeReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

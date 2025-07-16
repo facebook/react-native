@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f70c3e858384d57098bf82cbd9cf837>>
+ * @generated SignedSource<<07caa03ff4d6e1e624a9a71d5aeceebe>>
  */
 
 /**
@@ -116,6 +116,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preparedTextCacheSize(): Double
 
   @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

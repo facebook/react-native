@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<97ceb9172696ba8f5a449397ef0bb66e>>
+ * @generated SignedSource<<8663dc63e60ec71e7bf1d5645c39c77f>>
  */
 
 /**
@@ -71,6 +71,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var releaseImageDataWhenConsumedCache: Boolean? = null
+  private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -551,6 +552,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.releaseImageDataWhenConsumed()
       accessedFeatureFlags.add("releaseImageDataWhenConsumed")
       releaseImageDataWhenConsumedCache = cached
+    }
+    return cached
+  }
+
+  override fun skipActivityIdentityAssertionOnHostPause(): Boolean {
+    var cached = skipActivityIdentityAssertionOnHostPauseCache
+    if (cached == null) {
+      cached = currentProvider.skipActivityIdentityAssertionOnHostPause()
+      accessedFeatureFlags.add("skipActivityIdentityAssertionOnHostPause")
+      skipActivityIdentityAssertionOnHostPauseCache = cached
     }
     return cached
   }

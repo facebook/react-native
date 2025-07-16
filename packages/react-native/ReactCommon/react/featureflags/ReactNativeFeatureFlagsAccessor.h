@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<35af0fe356d9a0b8697e038dd41e1f16>>
+ * @generated SignedSource<<822091facf02e7a8e4d34e62881a1a7b>>
  */
 
 /**
@@ -79,6 +79,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool hideOffscreenVirtualViewsOnIOS();
   double preparedTextCacheSize();
   bool releaseImageDataWhenConsumed();
+  bool skipActivityIdentityAssertionOnHostPause();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
@@ -103,7 +104,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 60> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 61> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
@@ -152,6 +153,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> releaseImageDataWhenConsumed_;
+  std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;

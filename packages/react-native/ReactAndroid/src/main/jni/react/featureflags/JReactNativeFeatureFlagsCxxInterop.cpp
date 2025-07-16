@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1125d68204066d96780bf6bedea13a29>>
+ * @generated SignedSource<<8121b9fc632bb1db16a1554ea5dd0b87>>
  */
 
 /**
@@ -318,6 +318,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool releaseImageDataWhenConsumed() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("releaseImageDataWhenConsumed");
+    return method(javaProvider_);
+  }
+
+  bool skipActivityIdentityAssertionOnHostPause() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("skipActivityIdentityAssertionOnHostPause");
     return method(javaProvider_);
   }
 
@@ -638,6 +644,11 @@ bool JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed(
   return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -875,6 +886,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "releaseImageDataWhenConsumed",
         JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed),
+      makeNativeMethod(
+        "skipActivityIdentityAssertionOnHostPause",
+        JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

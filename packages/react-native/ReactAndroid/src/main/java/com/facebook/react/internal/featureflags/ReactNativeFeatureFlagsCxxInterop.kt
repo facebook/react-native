@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<76620030b48d203be3b6e5af0b5878e0>>
+ * @generated SignedSource<<69a932d66b50ac8c059b0dab68313616>>
  */
 
 /**
@@ -121,6 +121,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun preparedTextCacheSize(): Double
 
   @DoNotStrip @JvmStatic public external fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

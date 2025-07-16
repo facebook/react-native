@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fc75c05c5860a59c20f1985fdae9cb9>>
+ * @generated SignedSource<<9a7737303df151e91a4a6fdbec353e76>>
  * @flow strict
  * @noformat
  */
@@ -98,6 +98,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   releaseImageDataWhenConsumed: Getter<boolean>,
+  skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -385,6 +386,10 @@ export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('pre
  * Releases the cached image data when it is consumed by the observers.
  */
 export const releaseImageDataWhenConsumed: Getter<boolean> = createNativeFlagGetter('releaseImageDataWhenConsumed', false);
+/**
+ * Skip activity identity assertion in ReactHostImpl::onHostPause()
+ */
+export const skipActivityIdentityAssertionOnHostPause: Getter<boolean> = createNativeFlagGetter('skipActivityIdentityAssertionOnHostPause', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c5b3d6c75738162b6fde47b009d4e9e>>
+ * @generated SignedSource<<3212fc0e52bffab8e56359d207a22357>>
  */
 
 /**
@@ -311,6 +311,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
+
+  /**
+   * Skip activity identity assertion in ReactHostImpl::onHostPause()
+   */
+  @JvmStatic
+  public fun skipActivityIdentityAssertionOnHostPause(): Boolean = accessor.skipActivityIdentityAssertionOnHostPause()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
