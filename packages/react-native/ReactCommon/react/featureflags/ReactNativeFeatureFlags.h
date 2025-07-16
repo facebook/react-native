@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6df25d8c333bf7656ade934b404020d>>
+ * @generated SignedSource<<dc1670daa430290ac289b8b427a49851>>
  */
 
 /**
@@ -288,6 +288,11 @@ class ReactNativeFeatureFlags {
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
    */
   RN_EXPORT static bool useFabricInterop();
+
+  /**
+   * Use a native implementation of equals in NativeReadableArray.
+   */
+  RN_EXPORT static bool useNativeEqualsInNativeReadableArrayAndroid();
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.
