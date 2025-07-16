@@ -24,10 +24,6 @@ import com.facebook.react.common.build.ReactBuildConfig
 public object ReactNativeNewArchitectureFeatureFlags {
 
   @JvmStatic
-  public fun isNewArchitectureStrictModeEnabled(): Boolean =
-      ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
-
-  @JvmStatic
   public fun enableBridgelessArchitecture(): Boolean {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
