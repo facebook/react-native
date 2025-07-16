@@ -13,6 +13,7 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
+#include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
@@ -111,6 +112,19 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
   return observerWrapper ? observerWrapper->observer : nullptr;
 }
 
+PerformanceEntryReporter::UserTimingDetailProvider getDetailProviderFromEntry(
+    jsi::Runtime& rt,
+    jsi::Value& entry) {
+  return [&rt, &entry]() -> folly::dynamic {
+    try {
+      auto detail = entry.asObject(rt).getProperty(rt, "detail");
+      return jsi::dynamicFromValue(rt, detail);
+    } catch (jsi::JSIException& ex) {
+      return nullptr;
+    }
+  };
+}
+
 } // namespace
 
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
@@ -124,8 +138,9 @@ void NativePerformance::reportMark(
     jsi::Runtime& rt,
     std::string name,
     HighResTimeStamp startTime,
-    jsi::Value /*entry*/) {
-  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
+    jsi::Value entry) {
+  PerformanceEntryReporter::getInstance()->reportMark(
+      name, startTime, getDetailProviderFromEntry(rt, entry));
 }
 
 void NativePerformance::reportMeasure(
@@ -133,9 +148,9 @@ void NativePerformance::reportMeasure(
     std::string name,
     HighResTimeStamp startTime,
     HighResDuration duration,
-    jsi::Value /*entry*/) {
+    jsi::Value entry) {
   PerformanceEntryReporter::getInstance()->reportMeasure(
-      name, startTime, duration);
+      name, startTime, duration, getDetailProviderFromEntry(rt, entry));
 }
 
 std::optional<double> NativePerformance::getMarkTime(

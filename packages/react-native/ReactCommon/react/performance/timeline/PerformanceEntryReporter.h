@@ -11,7 +11,7 @@
 #include "PerformanceEntryKeyedBuffer.h"
 #include "PerformanceObserverRegistry.h"
 
-#include <jsinspector-modern/tracing/CdpTracing.h>
+#include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
 #include <memory>
@@ -86,14 +86,18 @@ class PerformanceEntryReporter {
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
 
-  void reportMark(const std::string& name, HighResTimeStamp startTime);
+  using UserTimingDetailProvider = std::function<folly::dynamic()>;
+
+  void reportMark(
+      const std::string& name,
+      HighResTimeStamp startTime,
+      UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportMeasure(
       const std::string& name,
       HighResTimeStamp startTime,
       HighResDuration duration,
-      const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-          trackMetadata = std::nullopt);
+      UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportEvent(
       std::string name,
@@ -167,8 +171,12 @@ class PerformanceEntryReporter {
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(const PerformanceMark& entry) const;
-  void traceMeasure(const PerformanceMeasure& entry) const;
+  void traceMark(
+      const PerformanceMark& entry,
+      UserTimingDetailProvider&& detailProvider) const;
+  void traceMeasure(
+      const PerformanceMeasure& entry,
+      UserTimingDetailProvider&& detailProvider) const;
 };
 
 } // namespace facebook::react

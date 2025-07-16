@@ -19,4 +19,5 @@ target_link_libraries(react_performance_timeline
         jsinspector_tracing
         reactperflogger
         react_featureflags
-        react_timing)
+        react_timing
+        folly_runtime)
