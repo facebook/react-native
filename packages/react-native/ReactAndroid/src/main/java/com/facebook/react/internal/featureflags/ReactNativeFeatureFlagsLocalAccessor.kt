@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<872fdabc2969e8c8e77993d73a152a4b>>
+ * @generated SignedSource<<4fd320d5aaf0ef9574dc0f8a683edc75>>
  */
 
 /**
@@ -46,6 +46,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
@@ -298,6 +299,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean {
+    var cached = enableImmediateUpdateModeForContentOffsetChangesCache
+    if (cached == null) {
+      cached = currentProvider.enableImmediateUpdateModeForContentOffsetChanges()
+      accessedFeatureFlags.add("enableImmediateUpdateModeForContentOffsetChanges")
+      enableImmediateUpdateModeForContentOffsetChangesCache = cached
     }
     return cached
   }

@@ -610,7 +610,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
         auto newData = oldData;
         newData.contentOffset = contentOffset;
         return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
-      });
+      },
+      ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges()
+          ? EventQueue::UpdateMode::unstable_Immediate
+          : EventQueue::UpdateMode::Asynchronous);
 }
 
 - (void)prepareForRecycle

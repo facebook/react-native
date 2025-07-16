@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<116217d3620e8ba52a6e0427a0d46fde>>
+ * @generated SignedSource<<94c8f90b4e1eb81ba1332e5d75e8ae85>>
  */
 
 /**
@@ -168,6 +168,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
+    return method(javaProvider_);
+  }
+
+  bool enableImmediateUpdateModeForContentOffsetChanges() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImmediateUpdateModeForContentOffsetChanges");
     return method(javaProvider_);
   }
 
@@ -495,6 +501,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
@@ -767,6 +778,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
+        "enableImmediateUpdateModeForContentOffsetChanges",
+        JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges),
       makeNativeMethod(
         "enableInteropViewManagerClassLookUpOptimizationIOS",
         JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7dd91dc5181b06ffb8909245da18c347>>
+ * @generated SignedSource<<a7b9dcda5645dac9cf3afc769c79294e>>
  */
 
 /**
@@ -54,6 +54,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFontScaleChangesUpdatingLayout();
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
+  bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
@@ -100,7 +101,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 57> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 58> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
@@ -124,6 +125,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFontScaleChangesUpdatingLayout_;
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
+  std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;

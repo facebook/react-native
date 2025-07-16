@@ -25,6 +25,18 @@ namespace facebook::react {
  */
 class EventQueue {
  public:
+  /* The update mode is used to inform how to apply changes. */
+  enum class UpdateMode {
+    /** Apply the update off the main thread. */
+    Asynchronous,
+    /**
+     * Apply the update on the main thread.
+     * The immediate update mode will **immediately** block the executing thread
+     * applying updates.
+     */
+    unstable_Immediate,
+  };
+
   EventQueue(
       EventQueueProcessor eventProcessor,
       std::unique_ptr<EventBeat> eventBeat);
@@ -46,7 +58,9 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given state update.
    * Can be called on any thread.
    */
-  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
+  void enqueueStateUpdate(
+      StateUpdate&& stateUpdate,
+      UpdateMode updateMode = UpdateMode::Asynchronous) const;
 
   /*
    * Experimental API exposed to support EventEmitter::experimental_flushSync.

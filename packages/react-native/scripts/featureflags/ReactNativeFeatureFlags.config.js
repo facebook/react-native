@@ -281,6 +281,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImmediateUpdateModeForContentOffsetChanges: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-15',
+        description:
+          'Dispatches state updates for content offset changes synchronously on the main thread.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableInteropViewManagerClassLookUpOptimizationIOS: {
       defaultValue: false,
       metadata: {

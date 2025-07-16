@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d8c2161445fd7dead9c4d3444b3c9065>>
+ * @generated SignedSource<<dda949ef8688ce3c8785d5ae02318606>>
  */
 
 /**
@@ -241,6 +241,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableIOSViewClipToPaddingBox();
+  }
+
+  bool enableImmediateUpdateModeForContentOffsetChanges() override {
+    auto value = values_["enableImmediateUpdateModeForContentOffsetChanges"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImmediateUpdateModeForContentOffsetChanges();
   }
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
