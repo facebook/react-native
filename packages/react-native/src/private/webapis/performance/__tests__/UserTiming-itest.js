@@ -293,9 +293,7 @@ describe('User Timing', () => {
         expect(measure.detail).toBe(null);
       });
 
-      // TODO fix case
-      // eslint-disable-next-line jest/no-disabled-tests
-      it.skip('works with an end timestamp and a duration', () => {
+      it('works with an end timestamp and a duration', () => {
         const measure = performance.measure(
           'measure-with-end-timestamp-and-duration',
           {
@@ -312,9 +310,7 @@ describe('User Timing', () => {
         expect(measure.detail).toBe(null);
       });
 
-      // TODO fix case
-      // eslint-disable-next-line jest/no-disabled-tests
-      it.skip('works with an end mark and a duration', () => {
+      it('works with an end mark and a duration', () => {
         performance.mark('end-mark', {
           startTime: 40,
         });
