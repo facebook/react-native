@@ -37,33 +37,6 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   return supportedEntryTypes;
 }
 
-#if defined(__clang__)
-#define NO_DESTROY [[clang::no_destroy]]
-#else
-#define NO_DESTROY
-#endif
-
-NO_DESTROY const std::string TRACK_PREFIX = "Track:";
-
-std::tuple<std::optional<std::string>, std::string_view> parseTrackName(
-    const std::string& name) {
-  // Until there's a standard way to pass through track information, parse it
-  // manually, e.g., "Track:Foo:Event name"
-  // https://github.com/w3c/user-timing/issues/109
-  std::optional<std::string> trackName;
-  std::string_view eventName(name);
-  if (name.starts_with(TRACK_PREFIX)) {
-    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
-    if (trackNameDelimiter != std::string::npos) {
-      trackName = name.substr(
-          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
-      eventName = std::string_view(name).substr(trackNameDelimiter + 1);
-    }
-  }
-
-  return std::make_tuple(trackName, eventName);
-}
-
 } // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
@@ -300,14 +273,12 @@ void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
-    auto [trackName, eventName] = parseTrackName(entry.name);
-
     if (performanceTracer.isTracing()) {
       performanceTracer.reportMark(entry.name, entry.startTime);
     }
 
     if (ReactPerfettoLogger::isTracing()) {
-      ReactPerfettoLogger::mark(eventName, entry.startTime, trackName);
+      ReactPerfettoLogger::mark(entry.name, entry.startTime);
     }
   }
 }
@@ -317,25 +288,14 @@ void PerformanceEntryReporter::traceMeasure(
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
-    auto [trackName, eventName] = parseTrackName(entry.name);
-
     if (performanceTracer.isTracing()) {
-      std::optional<jsinspector_modern::DevToolsTrackEntryPayload>
-          trackMetadata;
-
-      if (trackName.has_value()) {
-        trackMetadata = {.track = trackName.value()};
-      }
       performanceTracer.reportMeasure(
-          eventName, entry.startTime, entry.duration, trackMetadata);
+          entry.name, entry.startTime, entry.duration);
     }
 
     if (ReactPerfettoLogger::isTracing()) {
       ReactPerfettoLogger::measure(
-          eventName,
-          entry.startTime,
-          entry.startTime + entry.duration,
-          trackName);
+          entry.name, entry.startTime, entry.startTime + entry.duration);
     }
   }
 }
