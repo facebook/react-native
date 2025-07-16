@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d2506af091e796331f473dbb38aae518>>
+ * @generated SignedSource<<de04d72490f2c09abdcea51e6f02796c>>
  */
 
 /**
@@ -127,6 +127,8 @@ class NativeReactNativeFeatureFlags
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
   double preparedTextCacheSize(jsi::Runtime& runtime);
+
+  bool preventShadowTreeCommitExhaustionWithLocking(jsi::Runtime& runtime);
 
   bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
 

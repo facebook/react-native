@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1cfdc8abd4434d8b40d685b9beb79e3c>>
+ * @generated SignedSource<<8c1da07c0b7d2053f7fdaac4326c3ac1>>
  */
 
 /**
@@ -166,6 +166,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static double preparedTextCacheSize(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool preventShadowTreeCommitExhaustionWithLocking(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool releaseImageDataWhenConsumed(

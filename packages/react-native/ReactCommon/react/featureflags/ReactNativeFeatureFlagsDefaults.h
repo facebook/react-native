@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efd96785ae3ffd19a4730e5f3eef76b2>>
+ * @generated SignedSource<<d7534fe6e3b398e56c179da8233e3b0a>>
  */
 
 /**
@@ -209,6 +209,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   double preparedTextCacheSize() override {
     return 200.0;
+  }
+
+  bool preventShadowTreeCommitExhaustionWithLocking() override {
+    return false;
   }
 
   bool releaseImageDataWhenConsumed() override {
