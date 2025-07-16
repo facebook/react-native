@@ -46,7 +46,7 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given state update.
    * Can be called on any thread.
    */
-  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
+  void enqueueStateUpdate(StateUpdate&& stateUpdate, bool flushSync) const;
 
   /*
    * Experimental API exposed to support EventEmitter::experimental_flushSync.
