@@ -1106,8 +1106,16 @@ class VirtualizedList extends StateSafePureComponent<
           : this.props.inverted,
       stickyHeaderIndices,
       style: inversionStyle
-        ? [inversionStyle, this.props.style]
-        : this.props.style,
+        ? [
+            inversionStyle,
+            this.props.style,
+            // Only apply minHeight if suppressHeightWarning is not set
+            !this.props.suppressHeightWarning && { minHeight: 1 },
+          ]
+        : [
+            this.props.style,
+            !this.props.suppressHeightWarning && { minHeight: 1 },
+          ],
       isInvertedVirtualizedList: this.props.inverted,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null

@@ -282,6 +282,10 @@ type OptionalVirtualizedListProps = {
    * chance that fast scrolling may reveal momentary blank areas of unrendered content.
    */
   windowSize?: ?number,
+  /**
+   * Suppress the web height warning for dynamic content.
+   */
+  suppressHeightWarning?: boolean,
 };
 
 export type VirtualizedListProps = {

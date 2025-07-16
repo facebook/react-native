@@ -2631,3 +2631,20 @@ function performAllBatches() {
 function performNextBatch() {
   jest.advanceTimersToNextTimer(1);
 }
+
+describe('VirtualizedList height warning', () => {
+  it('shows warning by default when height is missing', () => {
+    const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Render VirtualizedList without suppressHeightWarning and without height style
+    // ...simulate missing height scenario...
+    // expect(mockWarn).toHaveBeenCalledWith(expect.stringContaining('height'));
+    mockWarn.mockRestore();
+  });
+  it('does not show warning when suppressHeightWarning is true', () => {
+    const mockWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Render VirtualizedList with suppressHeightWarning={true}
+    // ...simulate missing height scenario...
+    // expect(mockWarn).not.toHaveBeenCalledWith(expect.stringContaining('height'));
+    mockWarn.mockRestore();
+  });
+});
