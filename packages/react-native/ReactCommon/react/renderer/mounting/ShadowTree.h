@@ -109,13 +109,6 @@ class ShadowTree final {
    * and expecting a `newRootShadowNode` as a return value.
    * The `transaction` function can cancel commit returning `nullptr`.
    */
-  CommitStatus tryCommit(
-      const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
-
-  /*
-   * Calls `tryCommit` in a loop until it finishes successfully.
-   */
   CommitStatus commit(
       const ShadowTreeCommitTransaction& transaction,
       const CommitOptions& commitOptions) const;
@@ -149,7 +142,7 @@ class ShadowTree final {
 
   const SurfaceId surfaceId_;
   const ShadowTreeDelegate& delegate_;
-  mutable std::shared_mutex commitMutex_;
+  mutable std::recursive_mutex commitMutex_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
