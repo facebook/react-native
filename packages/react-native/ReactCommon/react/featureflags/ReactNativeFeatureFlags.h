@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6df25d8c333bf7656ade934b404020d>>
+ * @generated SignedSource<<c276ff032bc266cc713862c560f1a7fe>>
  */
 
 /**
@@ -148,6 +148,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * Dispatches state updates for content offset changes synchronously on the main thread.
+   */
+  RN_EXPORT static bool enableImmediateUpdateModeForContentOffsetChanges();
 
   /**
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
