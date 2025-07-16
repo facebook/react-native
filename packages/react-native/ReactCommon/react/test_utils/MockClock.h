@@ -11,9 +11,8 @@
 
 class MockClock {
  public:
-  typedef std::chrono::
-      time_point<std::chrono::steady_clock, std::chrono::nanoseconds>
-          time_point;
+  using time_point = std::chrono::
+      time_point<std::chrono::steady_clock, std::chrono::nanoseconds>;
 
   static time_point now() noexcept {
     return time_;
