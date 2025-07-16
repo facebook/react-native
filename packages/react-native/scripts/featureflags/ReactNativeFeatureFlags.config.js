@@ -534,6 +534,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    skipActivityIdentityAssertionOnHostPause: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-15',
+        description:
+          'Skip activity identity assertion in ReactHostImpl::onHostPause()',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

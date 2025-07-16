@@ -253,11 +253,18 @@ public class ReactHostImpl(
 
     val currentActivity = this.currentActivity
     if (currentActivity != null) {
-      val currentActivityClass = currentActivity.javaClass.simpleName
-      val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
-      Assertions.assertCondition(
-          activity === currentActivity,
-          "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass")
+      val isSameActivity = activity === currentActivity
+      if (!isSameActivity) {
+        val currentActivityClass = currentActivity.javaClass.simpleName
+        val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
+        val isNotSameActivityMessage =
+            "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass"
+        if (ReactNativeFeatureFlags.skipActivityIdentityAssertionOnHostPause()) {
+          log(method, isNotSameActivityMessage)
+        } else {
+          Assertions.assertCondition(isSameActivity, isNotSameActivityMessage)
+        }
+      }
     }
 
     maybeEnableDevSupport(false)

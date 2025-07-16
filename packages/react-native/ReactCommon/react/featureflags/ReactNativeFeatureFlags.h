@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6df25d8c333bf7656ade934b404020d>>
+ * @generated SignedSource<<3feded6939d93458b5dfdcc00c05ca95>>
  */
 
 /**
@@ -268,6 +268,11 @@ class ReactNativeFeatureFlags {
    * Releases the cached image data when it is consumed by the observers.
    */
   RN_EXPORT static bool releaseImageDataWhenConsumed();
+
+  /**
+   * Skip activity identity assertion in ReactHostImpl::onHostPause()
+   */
+  RN_EXPORT static bool skipActivityIdentityAssertionOnHostPause();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

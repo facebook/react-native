@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b2d63ddc60c2a236d578b13ecd5ad9f>>
+ * @generated SignedSource<<2d8ec26ee7271ff041d8168a2ac1bcb4>>
  * @flow strict
  * @noformat
  */
@@ -71,6 +71,7 @@ export interface Spec extends TurboModule {
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +releaseImageDataWhenConsumed?: () => boolean;
+  +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;

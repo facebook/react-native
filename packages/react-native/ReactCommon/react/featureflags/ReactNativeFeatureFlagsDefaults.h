@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64cac29f0902d801e8a7e1d2ab17ddd5>>
+ * @generated SignedSource<<cc069268658afc1d892a1750f72162ec>>
  */
 
 /**
@@ -208,6 +208,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool releaseImageDataWhenConsumed() override {
+    return false;
+  }
+
+  bool skipActivityIdentityAssertionOnHostPause() override {
     return false;
   }
 
