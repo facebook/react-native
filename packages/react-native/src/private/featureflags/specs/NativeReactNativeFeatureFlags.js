@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b84b6e04c214f6c2798010372937990>>
+ * @generated SignedSource<<1c47c6a2547badec31526142e4fc1798>>
  * @flow strict
  * @noformat
  */
@@ -77,6 +77,7 @@ export interface Spec extends TurboModule {
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
+  +useNativeEqualsInNativeReadableArrayAndroid?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;
