@@ -24,7 +24,8 @@ CullingContext CullingContext::adjustCullingContextIfNeeded(
     if (auto scrollViewShadowNode =
             dynamic_cast<const ScrollViewShadowNode*>(pair.shadowNode)) {
       if (scrollViewShadowNode->getConcreteProps().yogaStyle.overflow() !=
-          yoga::Overflow::Visible) {
+              yoga::Overflow::Visible &&
+          !scrollViewShadowNode->getStateData().disableViewCulling) {
         auto layoutMetrics = scrollViewShadowNode->getLayoutMetrics();
         cullingContext.frame.origin =
             -scrollViewShadowNode->getContentOriginOffset(

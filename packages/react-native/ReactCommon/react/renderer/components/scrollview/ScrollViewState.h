@@ -34,6 +34,14 @@ class ScrollViewState final {
   int scrollAwayPaddingTop;
 
   /*
+   * View Culling has to be disabled when accessibility features are used.
+   * View Culling removes views from view hierarchy and for example VoiceOver
+   * wouldn't recognise there is a view outside of the viewport that it can
+   * scroll to.
+   */
+  bool disableViewCulling{false};
+
+  /*
    * Returns size of scrollable area.
    */
   Size getContentSize() const;
