@@ -783,16 +783,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    scheduleAnimatedCleanupInMicrotask: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       metadata: {

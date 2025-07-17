@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99d6ed3c0a9bfd543d58de5b2fdfffdf>>
+ * @generated SignedSource<<fd428af720f8a8cf58e5beb582078825>>
  * @flow strict
  * @noformat
  */
@@ -36,7 +36,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   reduceDefaultPropsInView: Getter<boolean>,
-  scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -151,11 +150,6 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
  * Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.
  */
 export const reduceDefaultPropsInView: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInView', true);
-
-/**
- * Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).
- */
-export const scheduleAnimatedCleanupInMicrotask: Getter<boolean> = createJavaScriptFlagGetter('scheduleAnimatedCleanupInMicrotask', true);
 
 /**
  * Enables use of AnimatedObject for animating transform values.
