@@ -730,16 +730,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    avoidStateUpdateInAnimatedPropsMemo: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     deferFlatListFocusChangeRenderUpdate: {
       defaultValue: false,
       metadata: {
