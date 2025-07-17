@@ -348,7 +348,8 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
 
 template <typename P0>
 struct NativeEnumTurboModuleStateType {
-  P0 state;
+  P0 state{};
+
   bool operator==(const NativeEnumTurboModuleStateType &other) const {
     return state == other.state;
   }
@@ -389,11 +390,12 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
-  P0 state;
-  P1 regular;
-  P2 str;
-  P3 num;
-  P4 lowerCase;
+  P0 state{};
+  P1 regular{};
+  P2 str{};
+  P3 num{};
+  P4 lowerCase{};
+
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
     return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
   }
@@ -862,8 +864,9 @@ private:
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleSomeObj {
-  P0 a;
-  P1 b;
+  P0 a{};
+  P1 b{};
+
   bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
   }
@@ -1055,7 +1058,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
@@ -1257,7 +1261,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleArraysAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
@@ -1459,7 +1464,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleNullableAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
@@ -1661,7 +1667,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleNullableAndOptionalAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
@@ -1865,7 +1872,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleOptionalAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }
@@ -2478,7 +2486,8 @@ struct Bridging<NativeEnumTurboModuleStatusStrEnum> {
 
 template <typename P0>
 struct NativeEnumTurboModuleStateType {
-  P0 state;
+  P0 state{};
+
   bool operator==(const NativeEnumTurboModuleStateType &other) const {
     return state == other.state;
   }
@@ -2519,11 +2528,12 @@ struct NativeEnumTurboModuleStateTypeBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeEnumTurboModuleStateTypeWithEnums {
-  P0 state;
-  P1 regular;
-  P2 str;
-  P3 num;
-  P4 lowerCase;
+  P0 state{};
+  P1 regular{};
+  P2 str{};
+  P3 num{};
+  P4 lowerCase{};
+
   bool operator==(const NativeEnumTurboModuleStateTypeWithEnums &other) const {
     return state == other.state && regular == other.regular && str == other.str && num == other.num && lowerCase == other.lowerCase;
   }
@@ -2992,8 +3002,9 @@ private:
 
 template <typename P0, typename P1>
 struct NativePartialAnnotationTurboModuleSomeObj {
-  P0 a;
-  P1 b;
+  P0 a{};
+  P1 b{};
+
   bool operator==(const NativePartialAnnotationTurboModuleSomeObj &other) const {
     return a == other.a && b == other.b;
   }
@@ -3185,7 +3196,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleAnimal &other) const {
     return name == other.name;
   }
@@ -3387,7 +3399,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleArraysAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleArraysAnimal &other) const {
     return name == other.name;
   }
@@ -3589,7 +3602,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleNullableAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleNullableAnimal &other) const {
     return name == other.name;
   }
@@ -3791,7 +3805,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleNullableAndOptionalAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleNullableAndOptionalAnimal &other) const {
     return name == other.name;
   }
@@ -3995,7 +4010,8 @@ private:
 
 template <typename P0>
 struct NativeSampleTurboModuleOptionalAnimal {
-  P0 name;
+  P0 name{};
+
   bool operator==(const NativeSampleTurboModuleOptionalAnimal &other) const {
     return name == other.name;
   }

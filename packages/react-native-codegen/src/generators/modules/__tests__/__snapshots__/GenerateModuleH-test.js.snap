@@ -336,9 +336,10 @@ struct Bridging<NativeSampleTurboModuleEnumStr> {
 
 template <typename P0, typename P1, typename P2>
 struct NativeSampleTurboModuleConstantsStruct {
-  P0 const1;
-  P1 const2;
-  P2 const3;
+  P0 const1{};
+  P1 const2{};
+  P2 const3{};
+
   bool operator==(const NativeSampleTurboModuleConstantsStruct &other) const {
     return const1 == other.const1 && const2 == other.const2 && const3 == other.const3;
   }
@@ -392,9 +393,10 @@ struct NativeSampleTurboModuleConstantsStructBridging {
 
 template <typename P0>
 struct NativeSampleTurboModuleBinaryTreeNode {
-  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> left;
-  P0 value;
-  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> right;
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> left{};
+  P0 value{};
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> right{};
+
   bool operator==(const NativeSampleTurboModuleBinaryTreeNode &other) const {
     return left == other.left && value == other.value && right == other.right;
   }
@@ -451,8 +453,9 @@ struct NativeSampleTurboModuleBinaryTreeNodeBridging {
 
 template <typename P0>
 struct NativeSampleTurboModuleGraphNode {
-  P0 label;
-  std::optional<std::vector<NativeSampleTurboModuleGraphNode<P0>>> neighbors;
+  P0 label{};
+  std::optional<std::vector<NativeSampleTurboModuleGraphNode<P0>>> neighbors{};
+
   bool operator==(const NativeSampleTurboModuleGraphNode &other) const {
     return label == other.label && neighbors == other.neighbors;
   }
@@ -501,9 +504,10 @@ struct NativeSampleTurboModuleGraphNodeBridging {
 
 template <typename P0, typename P1, typename P2>
 struct NativeSampleTurboModuleObjectStruct {
-  P0 a;
-  P1 b;
-  P2 c;
+  P0 a{};
+  P1 b{};
+  P2 c{};
+
   bool operator==(const NativeSampleTurboModuleObjectStruct &other) const {
     return a == other.a && b == other.b && c == other.c;
   }
@@ -558,9 +562,10 @@ struct NativeSampleTurboModuleObjectStructBridging {
 
 template <typename P0, typename P1, typename P2>
 struct NativeSampleTurboModuleValueStruct {
-  P0 x;
-  P1 y;
-  P2 z;
+  P0 x{};
+  P1 y{};
+  P2 z{};
+
   bool operator==(const NativeSampleTurboModuleValueStruct &other) const {
     return x == other.x && y == other.y && z == other.z;
   }
@@ -613,10 +618,11 @@ struct NativeSampleTurboModuleValueStructBridging {
 
 template <typename P0, typename P1, typename P2>
 struct NativeSampleTurboModuleMenuItem {
-  P0 label;
-  P1 onPress;
-  P2 shortcut;
-  std::optional<std::vector<NativeSampleTurboModuleMenuItem<P0, P1, P2>>> items;
+  P0 label{};
+  P1 onPress{};
+  P2 shortcut{};
+  std::optional<std::vector<NativeSampleTurboModuleMenuItem<P0, P1, P2>>> items{};
+
   bool operator==(const NativeSampleTurboModuleMenuItem &other) const {
     return label == other.label && onPress == other.onPress && shortcut == other.shortcut && items == other.items;
   }
@@ -1059,9 +1065,10 @@ namespace facebook::react {
 
 template <typename P0, typename P1, typename P2>
 struct NativeSampleTurboModuleObjectStruct {
-  P0 a;
-  P1 b;
-  P2 c;
+  P0 a{};
+  P1 b{};
+  P2 c{};
+
   bool operator==(const NativeSampleTurboModuleObjectStruct &other) const {
     return a == other.a && b == other.b && c == other.c;
   }
@@ -1235,11 +1242,12 @@ namespace facebook::react {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct AliasTurboModuleOptions {
-  P0 offset;
-  P1 size;
-  P2 displaySize;
-  P3 resizeMode;
-  P4 allowExternalStorage;
+  P0 offset{};
+  P1 size{};
+  P2 displaySize{};
+  P3 resizeMode{};
+  P4 allowExternalStorage{};
+
   bool operator==(const AliasTurboModuleOptions &other) const {
     return offset == other.offset && size == other.size && displaySize == other.displaySize && resizeMode == other.resizeMode && allowExternalStorage == other.allowExternalStorage;
   }
@@ -1395,12 +1403,13 @@ namespace facebook::react {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
 struct NativeCameraRollManagerPhotoIdentifierImage {
-  P0 uri;
-  P1 playableDuration;
-  P2 width;
-  P3 height;
-  P4 isStored;
-  P5 filename;
+  P0 uri{};
+  P1 playableDuration{};
+  P2 width{};
+  P3 height{};
+  P4 isStored{};
+  P5 filename{};
+
   bool operator==(const NativeCameraRollManagerPhotoIdentifierImage &other) const {
     return uri == other.uri && playableDuration == other.playableDuration && width == other.width && height == other.height && isStored == other.isStored && filename == other.filename;
   }
@@ -1473,7 +1482,8 @@ struct NativeCameraRollManagerPhotoIdentifierImageBridging {
 
 template <typename P0>
 struct NativeCameraRollManagerPhotoIdentifier {
-  P0 node;
+  P0 node{};
+
   bool operator==(const NativeCameraRollManagerPhotoIdentifier &other) const {
     return node == other.node;
   }
@@ -1514,8 +1524,9 @@ struct NativeCameraRollManagerPhotoIdentifierBridging {
 
 template <typename P0, typename P1>
 struct NativeCameraRollManagerPhotoIdentifiersPage {
-  P0 edges;
-  P1 page_info;
+  P0 edges{};
+  P1 page_info{};
+
   bool operator==(const NativeCameraRollManagerPhotoIdentifiersPage &other) const {
     return edges == other.edges && page_info == other.page_info;
   }
@@ -1562,13 +1573,14 @@ struct NativeCameraRollManagerPhotoIdentifiersPageBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
 struct NativeCameraRollManagerGetPhotosParams {
-  P0 first;
-  P1 after;
-  P2 groupName;
-  P3 groupTypes;
-  P4 assetType;
-  P5 maxSize;
-  P6 mimeTypes;
+  P0 first{};
+  P1 after{};
+  P2 groupName{};
+  P3 groupTypes{};
+  P4 assetType{};
+  P5 maxSize{};
+  P6 mimeTypes{};
+
   bool operator==(const NativeCameraRollManagerGetPhotosParams &other) const {
     return first == other.first && after == other.after && groupName == other.groupName && groupTypes == other.groupTypes && assetType == other.assetType && maxSize == other.maxSize && mimeTypes == other.mimeTypes;
   }
@@ -1737,11 +1749,12 @@ private:
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
 struct NativeExceptionsManagerStackFrame {
-  P0 column;
-  P1 file;
-  P2 lineNumber;
-  P3 methodName;
-  P4 collapse;
+  P0 column{};
+  P1 file{};
+  P2 lineNumber{};
+  P3 methodName{};
+  P4 collapse{};
+
   bool operator==(const NativeExceptionsManagerStackFrame &other) const {
     return column == other.column && file == other.file && lineNumber == other.lineNumber && methodName == other.methodName && collapse == other.collapse;
   }
@@ -1812,14 +1825,15 @@ struct NativeExceptionsManagerStackFrameBridging {
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
 struct NativeExceptionsManagerExceptionData {
-  P0 message;
-  P1 originalMessage;
-  P2 name;
-  P3 componentStack;
-  P4 stack;
-  P5 id;
-  P6 isFatal;
-  P7 extraData;
+  P0 message{};
+  P1 originalMessage{};
+  P2 name{};
+  P3 componentStack{};
+  P4 stack{};
+  P5 id{};
+  P6 isFatal{};
+  P7 extraData{};
+
   bool operator==(const NativeExceptionsManagerExceptionData &other) const {
     return message == other.message && originalMessage == other.originalMessage && name == other.name && componentStack == other.componentStack && stack == other.stack && id == other.id && isFatal == other.isFatal && extraData == other.extraData;
   }
