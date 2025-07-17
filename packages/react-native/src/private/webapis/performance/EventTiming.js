@@ -86,14 +86,14 @@ function getCachedEventCounts(): Map<string, number> {
     return cachedEventCounts;
   }
 
-  if (!NativePerformance || !NativePerformance?.getEventCounts) {
+  if (!NativePerformance) {
     warnNoNativePerformance();
     cachedEventCounts = new Map();
     return cachedEventCounts;
   }
 
   const eventCounts = new Map<string, number>(
-    NativePerformance.getEventCounts?.() ?? [],
+    NativePerformance.getEventCounts() ?? [],
   );
   cachedEventCounts = eventCounts;
 

@@ -98,53 +98,56 @@ export default class Performance {
 
   // Get the current JS memory information.
   get memory(): MemoryInfo {
-    if (NativePerformance?.getSimpleMemoryInfo) {
-      // JSI API implementations may have different variants of names for the JS
-      // heap information we need here. We will parse the result based on our
-      // guess of the implementation for now.
-      const memoryInfo = NativePerformance.getSimpleMemoryInfo();
-      if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
-        // We got memory information from Hermes
-        const {
-          hermes_heapSize: totalJSHeapSize,
-          hermes_allocatedBytes: usedJSHeapSize,
-        } = memoryInfo;
-
-        return new MemoryInfo({
-          jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
-          totalJSHeapSize,
-          usedJSHeapSize,
-        });
-      } else {
-        // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
-        return new MemoryInfo();
-      }
+    if (!NativePerformance) {
+      warnNoNativePerformance();
+      return new MemoryInfo();
     }
 
-    return new MemoryInfo();
+    // JSI API implementations may have different variants of names for the JS
+    // heap information we need here. We will parse the result based on our
+    // guess of the implementation for now.
+    const memoryInfo = NativePerformance.getSimpleMemoryInfo();
+    if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
+      // We got memory information from Hermes
+      const {
+        hermes_heapSize: totalJSHeapSize,
+        hermes_allocatedBytes: usedJSHeapSize,
+      } = memoryInfo;
+
+      return new MemoryInfo({
+        jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
+        totalJSHeapSize,
+        usedJSHeapSize,
+      });
+    } else {
+      // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
+      return new MemoryInfo();
+    }
   }
 
   // Startup metrics is not used in web, but only in React Native.
   get rnStartupTiming(): ReactNativeStartupTiming {
-    if (NativePerformance?.getReactNativeStartupTiming) {
-      const {
-        startTime,
-        endTime,
-        initializeRuntimeStart,
-        initializeRuntimeEnd,
-        executeJavaScriptBundleEntryPointStart,
-        executeJavaScriptBundleEntryPointEnd,
-      } = NativePerformance.getReactNativeStartupTiming();
-      return new ReactNativeStartupTiming({
-        startTime,
-        endTime,
-        initializeRuntimeStart,
-        initializeRuntimeEnd,
-        executeJavaScriptBundleEntryPointStart,
-        executeJavaScriptBundleEntryPointEnd,
-      });
+    if (!NativePerformance) {
+      warnNoNativePerformance();
+      return new ReactNativeStartupTiming();
     }
-    return new ReactNativeStartupTiming();
+
+    const {
+      startTime,
+      endTime,
+      initializeRuntimeStart,
+      initializeRuntimeEnd,
+      executeJavaScriptBundleEntryPointStart,
+      executeJavaScriptBundleEntryPointEnd,
+    } = NativePerformance.getReactNativeStartupTiming();
+    return new ReactNativeStartupTiming({
+      startTime,
+      endTime,
+      initializeRuntimeStart,
+      initializeRuntimeEnd,
+      executeJavaScriptBundleEntryPointStart,
+      executeJavaScriptBundleEntryPointEnd,
+    });
   }
 
   mark(
@@ -434,10 +437,11 @@ export default class Performance {
    * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
    */
   getEntries(): PerformanceEntryList {
-    if (!NativePerformance?.getEntries) {
+    if (!NativePerformance) {
       warnNoNativePerformance();
       return [];
     }
+
     return NativePerformance.getEntries().map(rawToPerformanceEntry);
   }
 
@@ -450,7 +454,7 @@ export default class Performance {
       return [];
     }
 
-    if (!NativePerformance?.getEntriesByType) {
+    if (!NativePerformance) {
       warnNoNativePerformance();
       return [];
     }
@@ -472,7 +476,7 @@ export default class Performance {
       return [];
     }
 
-    if (!NativePerformance?.getEntriesByName) {
+    if (!NativePerformance) {
       warnNoNativePerformance();
       return [];
     }
