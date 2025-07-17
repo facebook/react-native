@@ -34,10 +34,6 @@ export type NativeIntersectionObserverObserveOptions = {
 export opaque type NativeIntersectionObserverToken = mixed;
 
 export interface Spec extends TurboModule {
-  // TODO(T223605846): Remove legacy observe method
-  +observe: (options: NativeIntersectionObserverObserveOptions) => void;
-  // TODO(T223605846): Remove legacy unobserve method
-  +unobserve: (intersectionObserverId: number, targetShadowNode: mixed) => void;
   +observeV2?: (
     options: NativeIntersectionObserverObserveOptions,
   ) => NativeIntersectionObserverToken;
