@@ -256,7 +256,7 @@ CommitStatus ShadowTree::commit(
 
     {
       std::unique_lock lock(commitMutex_);
-      return tryCommit(transaction, commitOptions, true);
+      return tryCommit(transaction, commitOptions);
     }
   } else {
     while (true) {
@@ -276,8 +276,7 @@ CommitStatus ShadowTree::commit(
 
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
-    const CommitOptions& commitOptions,
-    bool hasLocked) const {
+    const CommitOptions& commitOptions) const {
   TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
@@ -289,10 +288,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_, std::defer_lock);
-    if (!hasLocked) {
-      lock.lock();
-    }
+    std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -333,10 +329,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_, std::defer_lock);
-    if (!hasLocked) {
-      lock.lock();
-    }
+    std::unique_lock lock(commitMutex_);
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;

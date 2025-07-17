@@ -111,8 +111,7 @@ class ShadowTree final {
    */
   CommitStatus tryCommit(
       const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions,
-      bool hasLocked = false) const;
+      const CommitOptions& commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
