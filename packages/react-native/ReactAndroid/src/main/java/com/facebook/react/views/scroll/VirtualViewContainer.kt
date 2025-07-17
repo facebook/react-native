@@ -46,18 +46,13 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   return true
 }
 
-internal class VirtualViewContainerState(private val scrollView: ViewGroup) :
-    ReactScrollViewHelper.ScrollListener {
+internal class VirtualViewContainerState(private val scrollView: ViewGroup) {
 
   private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
   private val emptyRect: Rect = Rect()
   private val visibleRect: Rect = Rect()
   private val prerenderRect: Rect = Rect()
-
-  init {
-    ReactScrollViewHelper.addScrollListener(this)
-  }
 
   public fun onChange(virtualView: VirtualView) {
     if (virtualViews.add(virtualView)) {
@@ -75,29 +70,10 @@ internal class VirtualViewContainerState(private val scrollView: ViewGroup) :
     debugLog("remove", { "virtualViewID=${virtualView.virtualViewID}" })
   }
 
-  // ReactScrollViewHelper.ScrollListener.onLayout
-  // Emitted from ScrollView's onLayout
-  override fun onLayout(scrollView: ViewGroup?) {
-    // ReactScrollViewHelper is global
-    if (this.scrollView == scrollView) {
-      debugLog("ReactScrollViewHelper.onLayout")
-      updateModes()
-    }
-  }
-
-  // ReactScrollViewHelper.ScrollListener.onScroll
-  // Emitted from ScrollView's onLayout
-  override fun onScroll(
-      scrollView: ViewGroup?,
-      scrollEventType: ScrollEventType?,
-      xVelocity: Float,
-      yVelocity: Float
-  ) {
-    // ReactScrollViewHelper is global
-    if (this.scrollView == scrollView) {
-      debugLog("ReactScrollViewHelper.onScroll")
-      updateModes()
-    }
+  // Called on ScrollView onLayout or onScroll
+  public fun updateState() {
+    debugLog("VirtualViewContainer.updateState")
+    updateModes()
   }
 
   private fun updateModes(virtualView: VirtualView? = null) {
