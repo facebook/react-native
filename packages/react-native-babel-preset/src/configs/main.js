@@ -51,9 +51,6 @@ const defaultPlugins = [
   [require('@babel/plugin-transform-unicode-regex')],
 ];
 
-// For Static Hermes testing (experimental), the hermes-canary transformProfile
-// is used to enable regenerator (and some related lowering passes) because SH
-// requires more Babel lowering than Hermes temporarily.
 const getPreset = (src, options) => {
   const transformProfile =
     (options && options.unstable_transformProfile) || 'default';
@@ -124,8 +121,8 @@ const getPreset = (src, options) => {
     extraPlugins.push([
       require('@babel/plugin-transform-named-capturing-groups-regex'),
     ]);
-    // Needed for regenerator for hermes-canary
-    if (isHermesCanary) {
+    // Needed for regenerator
+    if (isHermes && options.dev) {
       extraPlugins.push([
         require('@babel/plugin-transform-optional-catch-binding'),
       ]);
@@ -158,17 +155,15 @@ const getPreset = (src, options) => {
   ) {
     extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
   }
-  // Check !isHermesStable because this is needed for regenerator for
-  // hermes-canary
-  if (!isHermesStable && (isNull || src.indexOf('?.') !== -1)) {
+  // Also check options.dev because this is needed for regenerator
+  if ((!isHermes || options.dev) && (isNull || src.indexOf('?.') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-optional-chaining'),
       {loose: true},
     ]);
   }
-  // Check !isHermesStable because this is needed for regenerator for
-  // hermes-canary
-  if (!isHermesStable && (isNull || src.indexOf('??') !== -1)) {
+  // Also check options.dev because this is needed for regenerator
+  if ((!isHermes || options.dev) && (isNull || src.indexOf('??') !== -1)) {
     extraPlugins.push([
       require('@babel/plugin-transform-nullish-coalescing-operator'),
       {loose: true},
@@ -196,7 +191,7 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
   }
 
-  if (isHermesCanary) {
+  if (isHermes && options.dev) {
     const hasForOf =
       isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
     if (hasForOf) {
@@ -216,11 +211,11 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
-        regenerator: !isHermesStable,
+        regenerator: !isHermes || options.dev,
         ...(isVersion && {version: options.enableBabelRuntime}),
       },
     ]);
-  } else if (isHermesCanary) {
+  } else if (isHermes && options.dev) {
     extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
   }
 
