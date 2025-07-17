@@ -14,6 +14,7 @@ import type ReadOnlyElement from '../../webapis/dom/nodes/ReadOnlyElement';
 import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
+import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
 import VirtualViewNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -59,8 +60,15 @@ const NotHidden = null;
 
 type State = HiddenHeight | typeof NotHidden;
 
-function createVirtualView(initialState: State): VirtualViewComponent {
+function createVirtualView(
+  initialState: State,
+  experimental: boolean,
+): VirtualViewComponent {
   const initialHidden = initialState !== NotHidden;
+
+  const NativeComponent = experimental
+    ? VirtualViewExperimentalNativeComponent
+    : VirtualViewNativeComponent;
 
   component VirtualView(
     children?: React.Node,
@@ -112,7 +120,7 @@ function createVirtualView(initialState: State): VirtualViewComponent {
     };
 
     return (
-      <VirtualViewNativeComponent
+      <NativeComponent
         initialHidden={initialHidden}
         nativeID={nativeID}
         ref={ref}
@@ -130,16 +138,24 @@ function createVirtualView(initialState: State): VirtualViewComponent {
         }
         onModeChange={handleModeChange}>
         {isHidden ? null : children}
-      </VirtualViewNativeComponent>
+      </NativeComponent>
     );
   }
   return VirtualView;
 }
 
-export default createVirtualView(NotHidden) as VirtualViewComponent;
+export default createVirtualView(NotHidden, false) as VirtualViewComponent;
 
-export function createHiddenVirtualView(height: number): VirtualViewComponent {
-  return createVirtualView(height as HiddenHeight);
+export const VirtualViewExperimental = createVirtualView(
+  NotHidden,
+  true,
+) as VirtualViewComponent;
+
+export function createHiddenVirtualView(
+  height: number,
+  experimental: boolean,
+): VirtualViewComponent {
+  return createVirtualView(height as HiddenHeight, experimental);
 }
 
 export const _logs: {states?: Array<State>} = {};
