@@ -13,7 +13,7 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type Performance from 'react-native/src/private/webapis/performance/Performance';
 import type {PerformanceObserverEntryList} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
-import NativePerformance from '../specs/NativePerformance';
+import MaybeNativePerformance from '../specs/NativePerformance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import {useState} from 'react';
@@ -21,6 +21,8 @@ import {Text, View} from 'react-native';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
 import {PerformanceEventTiming} from 'react-native/src/private/webapis/performance/EventTiming';
 import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
+
+const NativePerformance = nullthrows(MaybeNativePerformance);
 
 setUpPerformanceObserver();
 
@@ -193,7 +195,7 @@ describe('Event Timing API', () => {
   });
 
   it('reports number of dispatched events via performance.eventCounts', () => {
-    NativePerformance?.clearEventCountsForTesting?.();
+    NativePerformance.clearEventCountsForTesting?.();
 
     const root = Fantom.createRoot();
     Fantom.runTask(() => {
