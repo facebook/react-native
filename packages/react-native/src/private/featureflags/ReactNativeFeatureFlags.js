@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<742172e146c6eeb22c2b5058058b1b83>>
+ * @generated SignedSource<<9e32976a750c636ff0187a3530bb0657>>
  * @flow strict
  * @noformat
  */
@@ -31,7 +31,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
-  avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
@@ -128,11 +127,6 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
-
-/**
- * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
- */
-export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('avoidStateUpdateInAnimatedPropsMemo', true);
 
 /**
  * Use the deferred cell render update mechanism for focus change in FlatList.
