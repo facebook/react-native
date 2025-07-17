@@ -10,21 +10,21 @@
 
 import typeof {enable} from 'promise/setimmediate/rejection-tracking';
 
-import LogBox from './LogBox/LogBox';
+import ExceptionsManager from './Core/ExceptionsManager';
 
 let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
   allRejections: true,
-  onUnhandled: (id, rejection = {}) => {
+  onUnhandled: (id, rejection) => {
     let message: string;
-    let stack: ?string;
 
-    // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-    const stringValue = Object.prototype.toString.call(rejection);
-    if (stringValue === '[object Error]') {
+    if (rejection === undefined) {
+      message = '';
+    } else if (
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      Object.prototype.toString.call(rejection) === '[object Error]'
+    ) {
       // $FlowFixMe[method-unbinding] added when improving typing for this parameters
       message = Error.prototype.toString.call(rejection);
-      const error: Error = (rejection: $FlowFixMe);
-      stack = error.stack;
     } else {
       try {
         message = require('pretty-format').format(rejection);
@@ -34,37 +34,23 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
             ? rejection
             : JSON.stringify((rejection: $FlowFixMe));
       }
-      // It could although this object is not a standard error, it still has stack information to unwind
-      // $FlowFixMe ignore types just check if stack is there
-      if (rejection?.stack && typeof rejection.stack === 'string') {
-        stack = rejection.stack;
-      }
     }
 
-    const warning = `Possible unhandled promise rejection (id: ${id}):\n${
-      message ?? ''
-    }`;
-    if (__DEV__) {
-      LogBox.addLog({
-        level: 'warn',
-        message: {
-          content: warning,
-          substitutions: [],
+    ExceptionsManager.handleException(
+      new Error(
+        `Uncaught (in promise, id: ${id})${message ? `: "${message}"` : ''}`,
+        {
+          cause: rejection,
         },
-        componentStack: [],
-        componentStackType: null,
-        stack,
-        category: 'possible_unhandled_promise_rejection',
-      });
-    } else {
-      console.warn(warning);
-    }
+      ),
+      false /* isFatal */,
+    );
   },
   onHandled: id => {
     const warning =
       `Promise rejection handled (id: ${id})\n` +
       'This means you can ignore any previous messages of the form ' +
-      `"Possible unhandled promise rejection (id: ${id}):"`;
+      `"Uncaught (in promise, id: ${id})"`;
     console.warn(warning);
   },
 };
