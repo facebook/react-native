@@ -14,23 +14,23 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: hermes-workspace
-        path: 'D:\tmp\hermes'
+        path: 'C:\tmp\hermes'
     - name: Set up workspace
       shell: powershell
       run: |
-        mkdir -p D:\tmp\hermes\osx-bin
+        mkdir -p C:\tmp\hermes\osx-bin
         mkdir -p .\packages\react-native\sdks\hermes
-        cp -r -Force D:\tmp\hermes\hermes\* .\packages\react-native\sdks\hermes\.
+        cp -r -Force C:\tmp\hermes\hermes\* .\packages\react-native\sdks\hermes\.
         cp -r -Force .\packages\react-native\sdks\hermes-engine\utils\* .\packages\react-native\sdks\hermes\.
     - name: Windows cache
       uses: actions/cache@v4
       with:
         key: v3-hermes-${{ github.job }}-windows-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}
         path: |
-          D:\tmp\hermes\win64-bin\
-          D:\tmp\hermes\hermes\icu\
-          D:\tmp\hermes\hermes\deps\
-          D:\tmp\hermes\hermes\build_release\
+          C:\tmp\hermes\win64-bin\
+          C:\tmp\hermes\hermes\icu\
+          C:\tmp\hermes\hermes\deps\
+          C:\tmp\hermes\hermes\build_release\
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1.3.2
     - name: Set up workspace
@@ -83,4 +83,4 @@ runs:
       uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-win64-bin
-        path: D:\tmp\hermes\win64-bin\
+        path: C:\tmp\hermes\win64-bin\
