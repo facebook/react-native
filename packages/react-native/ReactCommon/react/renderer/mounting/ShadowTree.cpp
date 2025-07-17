@@ -251,7 +251,6 @@ CommitStatus ShadowTree::commit(
       if (status != CommitStatus::Failed) {
         return status;
       }
-      attempts++;
     }
 
     {
