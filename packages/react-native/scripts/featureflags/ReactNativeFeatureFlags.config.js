@@ -462,22 +462,24 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableVirtualViewRenderState: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
+        dateAdded: '2025-06-25',
         description:
           'Enables reading render state when dispatching VirtualView events.',
         expectedReleaseValue: true,
-        purpose: 'operational',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
     enableVirtualViewWindowFocusDetection: {
       defaultValue: false,
       metadata: {
+        dateAdded: '2025-06-24',
         description:
           'Enables window focus detection for prioritizing VirtualView events.',
         expectedReleaseValue: true,
-        purpose: 'operational',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
