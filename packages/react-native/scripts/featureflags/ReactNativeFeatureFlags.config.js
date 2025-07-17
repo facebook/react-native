@@ -741,16 +741,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    disableInteractionManager: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
