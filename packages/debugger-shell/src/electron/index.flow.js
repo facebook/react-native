@@ -28,7 +28,7 @@ if (version) {
 }
 
 const gotTheLock = app.requestSingleInstanceLock({
-  argv: process.argv.slice(2),
+  argv: process.argv.slice(app.isPackaged ? 1 : 2),
 });
 
 if (!gotTheLock) {
