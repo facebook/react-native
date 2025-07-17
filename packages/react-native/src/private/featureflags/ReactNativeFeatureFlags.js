@@ -221,7 +221,7 @@ export const disableMainQueueSyncDispatchIOS: Getter<boolean> = createNativeFlag
 /**
  * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
  */
-export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', true);
 /**
  * Turns off the global measurement cache used by TextLayoutManager on Android.
  */

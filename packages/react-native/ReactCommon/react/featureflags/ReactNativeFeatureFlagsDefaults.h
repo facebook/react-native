@@ -48,7 +48,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableMountItemReorderingAndroid() override {
-    return false;
+    return true;
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {

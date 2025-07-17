@@ -33,7 +33,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableMainQueueSyncDispatchIOS(): Boolean = false
 
-  override fun disableMountItemReorderingAndroid(): Boolean = false
+  override fun disableMountItemReorderingAndroid(): Boolean = true
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
 
