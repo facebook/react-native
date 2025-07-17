@@ -563,9 +563,9 @@ void UIManager::visitBinding(
     const std::function<void(const UIManagerBinding& uiManagerBinding)>&
         callback,
     jsi::Runtime& runtime) const {
-  auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-  if (uiManagerBinding) {
-    callback(*uiManagerBinding);
+  auto binding = UIManagerBinding::getBinding(runtime);
+  if (binding) {
+    callback(*binding);
   }
 }
 
