@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d30fc4e36ad600353c9b9098fd71430a>>
+ * @generated SignedSource<<742172e146c6eeb22c2b5058058b1b83>>
  * @flow strict
  * @noformat
  */
@@ -29,7 +29,6 @@ import {
 
 export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
-  alwaysFlattenAnimatedStyles: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
@@ -119,11 +118,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
  * JS-only flag for testing. Do NOT modify.
  */
 export const jsOnlyTestFlag: Getter<boolean> = createJavaScriptFlagGetter('jsOnlyTestFlag', false);
-
-/**
- * Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.
- */
-export const alwaysFlattenAnimatedStyles: Getter<boolean> = createJavaScriptFlagGetter('alwaysFlattenAnimatedStyles', false);
 
 /**
  * Enables an experimental flush-queue debouncing in Animated.js.
