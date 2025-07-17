@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd428af720f8a8cf58e5beb582078825>>
+ * @generated SignedSource<<abb7c04a41689edfe7a46e371125ab30>>
  * @flow strict
  * @noformat
  */
@@ -334,7 +334,7 @@ export const enableVirtualViewDebugFeatures: Getter<boolean> = createNativeFlagG
 /**
  * Enables reading render state when dispatching VirtualView events.
  */
-export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGetter('enableVirtualViewRenderState', false);
+export const enableVirtualViewRenderState: Getter<boolean> = createNativeFlagGetter('enableVirtualViewRenderState', true);
 /**
  * Enables window focus detection for prioritizing VirtualView events.
  */
