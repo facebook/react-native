@@ -34,6 +34,7 @@ public class ReactVirtualViewExperimental(context: Context) :
   override val containerRelativeRect: Rect = Rect()
   private var offsetX: Int = 0
   private var offsetY: Int = 0
+  private var hadLayout: Boolean = false
 
   internal val nativeId: String?
     get() = getTag(R.id.view_tag_native_id) as? String
@@ -45,14 +46,20 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   @VisibleForTesting
   internal fun doAttachedToWindow() {
-    // Assuming that layout has been called before this
-    scrollView = getScrollView()?.also { scrollView?.virtualViewContainerState?.add(this) }
+    scrollView = getScrollView()
+    // onAttachedToWindow is usually called before layout but there are cases where it's called
+    // after. If called after, we need to report the updated layout to the VirtualViewContainer
+    if (hadLayout) {
+      updateParentOffset()
+      reportChangeToContainer()
+    }
   }
 
   /** From [View#onLayout] */
   // This is when the view itself has layout changes
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     super.onLayout(changed, left, top, right, bottom)
+    hadLayout = true
     if (changed) {
       containerRelativeRect.set(
           left + offsetX,
@@ -60,7 +67,7 @@ public class ReactVirtualViewExperimental(context: Context) :
           right + offsetX,
           bottom + offsetY,
       )
-      updateContainer()
+      reportChangeToContainer()
     }
   }
 
@@ -77,24 +84,8 @@ public class ReactVirtualViewExperimental(context: Context) :
       oldBottom: Int
   ) {
     if (oldLeft != left || oldTop != top) {
-      val virtualViewScrollView = scrollView ?: return
-      offsetX = 0
-      offsetY = 0
-      var parent: ViewParent? = parent
-      while (parent != null && parent != virtualViewScrollView) {
-        if (parent is View) {
-          offsetX += parent.left
-          offsetY += parent.top
-        }
-        parent = parent.parent
-      }
-      containerRelativeRect.set(
-          left + offsetX,
-          top + offsetY,
-          right + offsetX,
-          bottom + offsetY,
-      )
-      updateContainer()
+      updateParentOffset()
+      reportChangeToContainer()
     }
   }
 
@@ -109,6 +100,8 @@ public class ReactVirtualViewExperimental(context: Context) :
     scrollView = null
     mode = null
     modeChangeEmitter = null
+    hadLayout = false
+    containerRelativeRect.setEmpty()
   }
 
   override val virtualViewID: String
@@ -156,8 +149,28 @@ public class ReactVirtualViewExperimental(context: Context) :
     }
   }
 
-  private fun updateContainer() {
-    scrollView?.virtualViewContainerState?.update(this)
+  private fun updateParentOffset() {
+    val virtualViewScrollView = scrollView ?: return
+    offsetX = 0
+    offsetY = 0
+    var parent: ViewParent? = parent
+    while (parent != null && parent != virtualViewScrollView) {
+      if (parent is View) {
+        offsetX += parent.left
+        offsetY += parent.top
+      }
+      parent = parent.parent
+    }
+    containerRelativeRect.set(
+        left + offsetX,
+        top + offsetY,
+        right + offsetX,
+        bottom + offsetY,
+    )
+  }
+
+  private fun reportChangeToContainer() {
+    scrollView?.virtualViewContainerState?.onChange(this)
   }
 
   private fun getScrollView(): VirtualViewContainer? = traverseParentStack(true)
