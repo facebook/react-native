@@ -31,8 +31,8 @@ public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Ser
 	public fun <init> ()V
 	public static final fun acquireWakeLockNow (Landroid/content/Context;)V
 	protected final fun getReactContext ()Lcom/facebook/react/bridge/ReactContext;
-	protected final fun getReactHost ()Lcom/facebook/react/ReactHost;
-	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
+	protected fun getReactHost ()Lcom/facebook/react/ReactHost;
+	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	protected fun getTaskConfig (Landroid/content/Intent;)Lcom/facebook/react/jstasks/HeadlessJsTaskConfig;
 	public fun onBind (Landroid/content/Intent;)Landroid/os/IBinder;
 	public fun onDestroy ()V
