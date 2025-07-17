@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags utilizeTokensInIntersectionObserver:*
  * @flow strict-local
  * @format
  */
@@ -20,7 +19,6 @@ import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef, useState} from 'react';
 import {ScrollView, View} from 'react-native';
-import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import DOMRectReadOnly from 'react-native/src/private/webapis/geometry/DOMRectReadOnly';
@@ -1494,44 +1492,42 @@ describe('IntersectionObserver', () => {
       });
     });
 
-    if (ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()) {
-      it('should not retain initial children of observed targets', () => {
-        const root = Fantom.createRoot();
-        observer = new IntersectionObserver(() => {});
+    it('should not retain initial children of observed targets', () => {
+      const root = Fantom.createRoot();
+      observer = new IntersectionObserver(() => {});
 
-        const [getReferenceCount, ref] = createShadowNodeReferenceCountingRef();
+      const [getReferenceCount, ref] = createShadowNodeReferenceCountingRef();
 
-        const observeRef: React.RefSetter<
-          React.ElementRef<typeof View>,
-        > = instance => {
-          const element = ensureReactNativeElement(instance);
-          observer.observe(element);
-          return () => {
-            observer.unobserve(element);
-          };
+      const observeRef: React.RefSetter<
+        React.ElementRef<typeof View>,
+      > = instance => {
+        const element = ensureReactNativeElement(instance);
+        observer.observe(element);
+        return () => {
+          observer.unobserve(element);
         };
+      };
 
-        function Observe({children}: $ReadOnly<{children?: React.Node}>) {
-          return <View ref={observeRef}>{children}</View>;
-        }
+      function Observe({children}: $ReadOnly<{children?: React.Node}>) {
+        return <View ref={observeRef}>{children}</View>;
+      }
 
-        Fantom.runTask(() => {
-          root.render(
-            <Observe>
-              <View ref={ref} />
-            </Observe>,
-          );
-        });
-
-        expect(getReferenceCount()).toBeGreaterThan(0);
-
-        Fantom.runTask(() => {
-          root.render(<Observe />);
-        });
-
-        expect(getReferenceCount()).toBe(0);
+      Fantom.runTask(() => {
+        root.render(
+          <Observe>
+            <View ref={ref} />
+          </Observe>,
+        );
       });
-    }
+
+      expect(getReferenceCount()).toBeGreaterThan(0);
+
+      Fantom.runTask(() => {
+        root.render(<Observe />);
+      });
+
+      expect(getReferenceCount()).toBe(0);
+    });
 
     it('should NOT report multiple entries when observing a target that exists and we modify it later in the same tick', () => {
       const root = Fantom.createRoot({
