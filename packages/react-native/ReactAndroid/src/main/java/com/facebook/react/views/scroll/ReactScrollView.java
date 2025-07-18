@@ -407,6 +407,9 @@ public class ReactScrollView extends ScrollView
     if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.stop();
     }
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.cleanup();
+    }
   }
 
   @Override

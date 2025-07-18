@@ -9,6 +9,7 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Rect
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
@@ -46,13 +47,34 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   return true
 }
 
-internal class VirtualViewContainerState(private val scrollView: ViewGroup) {
+internal class VirtualViewContainerState {
 
   private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
+  private val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
+
   private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
   private val emptyRect: Rect = Rect()
   private val visibleRect: Rect = Rect()
   private val prerenderRect: Rect = Rect()
+  private val onWindowFocusChangeListener =
+      ViewTreeObserver.OnWindowFocusChangeListener {
+        debugLog("onWindowFocusChanged")
+        updateModes()
+      }
+  private val scrollView: ViewGroup
+
+  constructor(scrollView: ViewGroup) {
+    this.scrollView = scrollView
+    if (detectWindowFocus) {
+      scrollView.viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
+  }
+
+  public fun cleanup() {
+    if (detectWindowFocus) {
+      scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
+  }
 
   public fun onChange(virtualView: VirtualView) {
     if (virtualViews.add(virtualView)) {
@@ -72,7 +94,7 @@ internal class VirtualViewContainerState(private val scrollView: ViewGroup) {
 
   // Called on ScrollView onLayout or onScroll
   public fun updateState() {
-    debugLog("VirtualViewContainer.updateState")
+    debugLog("updateState")
     updateModes()
   }
 
@@ -92,8 +114,16 @@ internal class VirtualViewContainerState(private val scrollView: ViewGroup) {
       when {
         rect.isEmpty -> {}
         rectsOverlap(rect, visibleRect) -> {
-          mode = VirtualViewMode.Visible
           thresholdRect = visibleRect
+          if (detectWindowFocus) {
+            if (scrollView.hasWindowFocus()) {
+              mode = VirtualViewMode.Visible
+            } else {
+              mode = VirtualViewMode.Prerender
+            }
+          } else {
+            mode = VirtualViewMode.Visible
+          }
         }
         rectsOverlap(rect, prerenderRect) -> {
           mode = VirtualViewMode.Prerender
