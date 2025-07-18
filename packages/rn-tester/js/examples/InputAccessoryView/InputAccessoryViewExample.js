@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import {useTheme} from '../../components/RNTesterTheme';
 import {useState} from 'react';
 import {
@@ -111,4 +113,4 @@ exports.examples = [
       return <InputAccessoryViewExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import {useState} from 'react';
 import {Alert, Pressable, StyleSheet, TextInput, View} from 'react-native';
@@ -184,5 +186,5 @@ export default {
         return <PressableExample />;
       },
     },
-  ],
+  ] as Array<RNTesterModuleExample>,
 };

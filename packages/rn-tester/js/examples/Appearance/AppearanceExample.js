@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ColorSchemeName} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -245,4 +246,4 @@ exports.examples = [
       return <ToggleNativeAppearance />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

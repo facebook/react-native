@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {PanResponder, ScrollView, StyleSheet, View} from 'react-native';
@@ -60,7 +62,7 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;
 
 const styles = StyleSheet.create({
   container: {
