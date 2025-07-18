@@ -26,7 +26,6 @@ import com.facebook.react.defaults.DefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
-import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage
 import com.facebook.react.popupmenu.PopupMenuPackage
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
@@ -54,7 +53,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
         return listOf(
             MainReactPackage(),
             PopupMenuPackage(),
-            OSSLibraryExamplePackage(),
             object : BaseReactPackage() {
               override fun getModule(
                   name: String,
