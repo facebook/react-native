@@ -16,7 +16,7 @@ InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
     InstanceTarget& target,
     SessionState& sessionState)
-    : frontendChannel_(frontendChannel),
+    : frontendChannel_(std::move(frontendChannel)),
       target_(target),
       sessionState_(sessionState) {
   (void)target_;
@@ -36,7 +36,7 @@ bool InstanceAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
 void InstanceAgent::setCurrentRuntime(RuntimeTarget* runtimeTarget) {
   auto previousRuntimeAgent = std::move(runtimeAgent_);
-  if (runtimeTarget) {
+  if (runtimeTarget != nullptr) {
     runtimeAgent_ = runtimeTarget->createAgent(frontendChannel_, sessionState_);
   } else {
     runtimeAgent_.reset();
