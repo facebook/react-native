@@ -190,7 +190,8 @@ TextMeasurement TextLayoutManager::measure(
   };
 
   auto measurement =
-      ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid()
+      (ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid() ||
+       ReactNativeFeatureFlags::enablePreparedTextLayout())
       ? measureText()
       : textMeasureCache_.get(
             {.attributedString = attributedString,
