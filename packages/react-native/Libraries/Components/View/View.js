@@ -214,6 +214,6 @@ component View(
   return actualView;
 }
 
-View.displayName = "View";
+View.displayName = 'View';
 
 export default View;
