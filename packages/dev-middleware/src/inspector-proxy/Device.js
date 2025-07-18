@@ -844,6 +844,23 @@ export default class Device {
 
       this.#isLegacyPageReloading = false;
     }
+
+    if (payload.method === 'Runtime.consoleAPICalled') {
+      const callFrames = payload.params?.stackTrace?.callFrames ?? [];
+      for (const callFrame of callFrames) {
+        if (callFrame.url) {
+          const parsedUrl = this.#tryParseHTTPURL(callFrame.url);
+          if (parsedUrl) {
+            // Rewrite device-relative URLs pointing to the server so that they're
+            // reachable from the frontend.
+            callFrame.url = this.#deviceRelativeUrlToDebuggerRelativeUrl(
+              parsedUrl,
+              debuggerInfo,
+            ).href;
+          }
+        }
+      }
+    }
   }
 
   /**
