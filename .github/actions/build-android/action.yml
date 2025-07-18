@@ -31,10 +31,11 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: /github/home/.cache/ccache
-        key: v1-ccache-android-${{ github.job }}-${{ github.ref }}
+        key: v2-ccache-android-${{ github.job }}-${{ github.ref }}-${{ hashFiles('packages/react-native/ReactAndroid/**/*.cpp', 'packages/react-native/ReactAndroid/**/*.h', 'packages/react-native/ReactCommon/**/*.cpp', 'packages/react-native/ReactAndroid/**/CMakeLists.txt', 'packages/react-native/ReactCommon/**/CMakeLists.txt') }}
         restore-keys: |
-          v1-ccache-android-${{ github.job }}-
-          v1-ccache-android-
+          v2-ccache-android-${{ github.job }}-${{ github.ref }}-
+          v2-ccache-android-${{ github.job }}-
+          v2-ccache-android-
     - name: Show ccache stats
       shell: bash
       run: ccache -s -v
@@ -63,7 +64,7 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: /github/home/.cache/ccache
-        key: v1-ccache-android-${{ github.job }}-${{ github.ref }}
+        key: v2-ccache-android-${{ github.job }}-${{ github.ref }}-${{ hashFiles('packages/react-native/ReactAndroid/**/*.cpp', 'packages/react-native/ReactAndroid/**/*.h', 'packages/react-native/ReactCommon/**/*.cpp', 'packages/react-native/ReactAndroid/**/CMakeLists.txt', 'packages/react-native/ReactCommon/**/CMakeLists.txt') }}
     - name: Show ccache stats
       shell: bash
       run: ccache -s -v
