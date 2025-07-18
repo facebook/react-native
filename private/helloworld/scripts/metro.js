@@ -23,7 +23,7 @@ program
           android: {},
         },
         root: path.join(__dirname, '../'),
-        reactNativePath: path.join(__dirname, '../../react-native'),
+        reactNativePath: path.join(__dirname, '../../../packages/react-native'),
       },
       {
         experimentalDebugger: false,

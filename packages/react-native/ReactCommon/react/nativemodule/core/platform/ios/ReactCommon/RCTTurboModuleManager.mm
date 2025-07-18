@@ -159,7 +159,7 @@ class LegacyModuleNativeMethodCallInvoker : public ModuleNativeMethodCallInvoker
 
 bool isTurboModuleClass(Class cls)
 {
-  return [cls conformsToProtocol:@protocol(RCTTurboModule)];
+  return [cls conformsToProtocol:@protocol(RCTModule)];
 }
 
 bool isTurboModuleInstance(id module)
@@ -339,18 +339,24 @@ typedef struct {
   /**
    * Step 2: Look for platform-specific modules.
    */
-  id<RCTModuleProvider> module = [self _moduleProviderForName:moduleName];
+  id<RCTModuleProvider> moduleProvider = [self _moduleProviderForName:moduleName];
 
   TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
   // If the class doesn't exist, then _provideObjCModule returns nil
-  if (!module) {
+  if (!moduleProvider) {
     return nullptr;
   }
+  
+  id<RCTModuleProvider> module = nullptr;
+  if ([moduleProvider respondsToSelector:@selector(getAppleModule)]) {
+    module = (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:moduleProvider];
+  }
+  id<RCTModuleProvider> moduleOrProvider = module ? module : moduleProvider;
 
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker = nullptr;
-  dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
+  dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(moduleOrProvider, &kAssociatedMethodQueueKey);
   if (methodQueue) {
     /**
      * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
@@ -370,11 +376,11 @@ typedef struct {
    * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
    */
-  Class moduleClass = [module class];
+  Class moduleClass = [moduleOrProvider class];
   if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
     // Use TurboCxxModule compat class to wrap the CxxModule instance.
     // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
+    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)moduleOrProvider) createModule], _jsInvoker);
     _turboModuleCache.insert({moduleName, turboModule});
     return turboModule;
   }
@@ -385,27 +391,27 @@ typedef struct {
    * Use respondsToSelector: below to infer conformance to @protocol(RCTTurboModule). Using conformsToProtocol: is
    * expensive.
    */
-  if ([module respondsToSelector:@selector(getTurboModule:)]) {
+  if ([moduleProvider respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
-        .instance = (id<RCTBridgeModule>)module,
+        .instance = (id<RCTBridgeModule>)moduleOrProvider,
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
         .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
     };
 
-    auto turboModule = [(id<RCTTurboModule>)module getTurboModule:params];
+    auto turboModule = [(id<RCTTurboModule>)moduleProvider getTurboModule:params];
     if (turboModule == nullptr) {
       RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
     }
     _turboModuleCache.insert({moduleName, turboModule});
 
-    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
-      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
-    } else if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+    if ([moduleOrProvider respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)moduleOrProvider installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
+    } else if ([moduleOrProvider respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
       // Old API without CallInvoker (deprecated)
-      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
+      [(id<RCTTurboModuleWithJSIBindings>)moduleOrProvider installJSIBindingsWithRuntime:*runtime];
     }
     return turboModule;
   }
@@ -496,16 +502,16 @@ typedef struct {
   if ([_delegate respondsToSelector:@selector(getModuleProvider:)]) {
     moduleProvider = [_delegate getModuleProvider:moduleName];
   }
-
+  
   if (RCTTurboModuleInteropEnabled() && ![self _isTurboModule:moduleName] && !moduleProvider) {
     return nil;
   }
-
+  
   if (moduleProvider) {
-    if ([moduleProvider conformsToProtocol:@protocol(RCTTurboModule)]) {
-      // moduleProvider is also a TM, we need to initialize objectiveC properties, like the dispatch queue
+    if ([moduleProvider conformsToProtocol:@protocol(RCTModule)]) {
       return (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:moduleProvider];
     }
+      
     // module is Cxx module
     return moduleProvider;
   }
@@ -585,7 +591,12 @@ typedef struct {
     /**
      * Step 2a: Resolve platform-specific class.
      */
-    Class moduleClass = moduleProvider ? [moduleProvider class] : [self _getModuleClassFromName:moduleName];
+    Class moduleClass = moduleProvider ?
+      ([moduleProvider respondsToSelector:@selector(getAppleModule)] ?
+        [moduleProvider getAppleModule] :
+        [moduleProvider class]) :
+      [self _getModuleClassFromName:moduleName];
+    
 
     __block id<RCTBridgeModule> module = nil;
 
@@ -640,7 +651,7 @@ typedef struct {
     return [moduleClass conformsToProtocol:@protocol(RCTBridgeModule)];
   }
 
-  return [moduleClass conformsToProtocol:@protocol(RCTTurboModule)];
+  return [moduleClass conformsToProtocol:@protocol(RCTModule)];
 }
 
 /**
@@ -1104,3 +1115,4 @@ typedef struct {
 }
 
 @end
+

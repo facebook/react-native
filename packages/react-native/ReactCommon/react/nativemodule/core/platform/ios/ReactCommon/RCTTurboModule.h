@@ -19,8 +19,10 @@
 #import <string>
 #import <unordered_map>
 
+#import "RCTModule.h"
+
 #define RCT_IS_TURBO_MODULE_CLASS(klass) \
-  ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
+  ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
 
 namespace facebook::react {
@@ -186,13 +188,20 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
  */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
+
+@optional
+/**
+ * Return an instance of an Apple Module
+ */
+- (Class<RCTModule>)getAppleModule;
+
 @end
 
 /**
  * Protocol that objects can inherit to conform to be treated as turbomodules.
  * It inherits from RCTTurboModuleProvider, meaning that a TurboModule can create itself
  */
-@protocol RCTTurboModule <RCTModuleProvider>
+@protocol RCTTurboModule <RCTModule, RCTModuleProvider>
 
 @optional
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
@@ -210,3 +219,4 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 - (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
     (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)nativeMethodCallInvoker;
 @end
+
