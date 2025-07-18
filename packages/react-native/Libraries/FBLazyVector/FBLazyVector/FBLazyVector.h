@@ -50,8 +50,9 @@ class LazyVector {
 
   const_reference at(size_type pos) const {
 #ifndef _LIBCPP_NO_EXCEPTIONS
-    if (!(pos < _size))
+    if (!(pos < _size)) {
       throw std::out_of_range("out of range");
+    }
 #else
     assert(pos < _size || !"out of range");
 #endif
