@@ -82,6 +82,13 @@ const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
 
 const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
+const VALID_FANTOM_PRAGMAS = [
+  'fantom_mode',
+  'fantom_flags',
+  'fantom_hermes_variant',
+  'fantom_react_fb_flags',
+];
+
 /**
  * Extracts the Fantom configurations from the test file, specified as part of
  * the docblock comment. E.g.:
@@ -117,6 +124,8 @@ export default function getFantomTestConfigs(
 ): Array<FantomTestConfig> {
   const docblock = extract(testContents);
   const pragmas = parse(docblock) as DocblockPragmas;
+
+  verifyFantomPragmas(pragmas);
 
   const config: FantomTestConfig = {
     mode: DEFAULT_MODE,
@@ -399,5 +408,21 @@ function parseFeatureFlagValue<T: boolean | number | string>(
       return value;
     default:
       throw new Error(`Unsupported feature flag type: ${typeof defaultValue}`);
+  }
+}
+
+function verifyFantomPragmas(pragmas: DocblockPragmas): void {
+  for (const pragma of Object.keys(pragmas)) {
+    if (
+      pragma.startsWith('fantom_') &&
+      !VALID_FANTOM_PRAGMAS.includes(pragma)
+    ) {
+      const validFantomPragmas = VALID_FANTOM_PRAGMAS.map(p => `@${p}`).join(
+        ', ',
+      );
+      throw new Error(
+        `Unrecognized Fantom pragma @${pragma}. Valid pragmas are ${validFantomPragmas}.`,
+      );
+    }
   }
 }
