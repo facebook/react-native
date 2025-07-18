@@ -817,16 +817,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    utilizeTokensInIntersectionObserver: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-05-06',
-        description: 'Use tokens in IntersectionObserver vs ShadowNode.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
   },
 };
 

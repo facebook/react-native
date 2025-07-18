@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<abb7c04a41689edfe7a46e371125ab30>>
+ * @generated SignedSource<<a5b97c3df370225b7601f7375bb03ce0>>
  * @flow strict
  * @noformat
  */
@@ -39,7 +39,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
-  utilizeTokensInIntersectionObserver: Getter<boolean>,
 }>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
@@ -165,11 +164,6 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
  * Enables use of setNativeProps in JS driven animations.
  */
 export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
-
-/**
- * Use tokens in IntersectionObserver vs ShadowNode.
- */
-export const utilizeTokensInIntersectionObserver: Getter<boolean> = createJavaScriptFlagGetter('utilizeTokensInIntersectionObserver', true);
 
 /**
  * Common flag for testing. Do NOT modify.
