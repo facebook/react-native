@@ -42,6 +42,16 @@ internal object AgpConfiguratorUtils {
                   getByName("release").apply {
                     manifestPlaceholders["usesCleartextTraffic"] = "false"
                   }
+                  maybeCreate("debugOptimized").apply {
+                    manifestPlaceholders["usesCleartextTraffic"] = "true"
+                    initWith(debug)
+                    externalNativeBuild {
+                      cmake {
+                        arguments("-DCMAKE_BUILD_TYPE=Release")
+                        matchingFallbacks += listOf("release")
+                      }
+                    }
+                  }
                 }
               }
         }
