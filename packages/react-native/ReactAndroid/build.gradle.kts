@@ -599,13 +599,22 @@ android {
   publishing {
     multipleVariants {
       withSourcesJar()
-      includeBuildTypeValues("debug", "release")
+      includeBuildTypeValues("debug", "release", "debugOptimized")
     }
   }
 
   testOptions {
     unitTests { isIncludeAndroidResources = true }
     targetSdk = libs.versions.targetSdk.get().toInt()
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(getByName("debug"))
+      externalNativeBuild {
+        cmake { arguments("-DCMAKE_BUILD_TYPE=Release", "-DREACT_NATIVE_DEBUG_OPTIMIZED=True") }
+      }
+    }
   }
 }
 

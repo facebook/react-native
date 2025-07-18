@@ -25,4 +25,6 @@ target_link_libraries(
         reactnative
 )
 target_compile_reactnative_options(hermes_executor PRIVATE)
-target_compile_options(hermes_executor PRIVATE $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(hermes_executor PRIVATE -DHERMES_ENABLE_DEBUGGER=1)
+endif()
