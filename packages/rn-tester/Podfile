@@ -54,7 +54,6 @@ def pods(target_name, options = {})
   pod 'ScreenshotManager', :path => "NativeModuleExample"
   pod 'MyNativeView', :path => "NativeComponentExample"
   pod 'NativeCxxModuleExample', :path => "NativeCxxModuleExample"
-  pod 'OSSLibraryExample', :path => '../react-native-test-library'
 end
 
 target 'RNTester' do
