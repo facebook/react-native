@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.ReactRoot
 import com.facebook.react.views.scroll.VirtualView
 import com.facebook.react.views.scroll.VirtualViewContainer
@@ -202,7 +203,7 @@ public class ReactVirtualViewExperimental(context: Context) :
   }
 
   internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-    if (IS_DEBUG_BUILD) {
+    if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
       FLog.d("$DEBUG_TAG:$subtag", "${block()} [$id][$nativeId]")
     }
   }

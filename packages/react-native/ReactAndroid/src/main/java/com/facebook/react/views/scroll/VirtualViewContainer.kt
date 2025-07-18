@@ -115,7 +115,7 @@ private val IS_DEBUG_BUILD =
     ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO
 
 internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-  if (IS_DEBUG_BUILD) {
+  if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
     FLog.d("$DEBUG_TAG:$subtag", block())
   }
 }
