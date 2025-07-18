@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {EventSubscription, GestureResponderEvent} from 'react-native';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
@@ -2250,4 +2251,4 @@ exports.examples = [
       return <LabelCooptingExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

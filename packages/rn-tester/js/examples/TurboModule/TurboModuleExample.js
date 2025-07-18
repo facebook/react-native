@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const SampleTurboModuleExample = require('./SampleTurboModuleExample');
 const React = require('react');
 
@@ -24,4 +26,4 @@ exports.examples = [
       return <SampleTurboModuleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

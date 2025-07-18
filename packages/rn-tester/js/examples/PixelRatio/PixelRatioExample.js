@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
@@ -209,4 +211,4 @@ exports.examples = [
       return <RoundToNearestPixel />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

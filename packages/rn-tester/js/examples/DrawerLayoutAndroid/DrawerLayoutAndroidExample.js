@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Node} from 'react';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -104,4 +105,4 @@ exports.examples = [
       return <Drawer />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

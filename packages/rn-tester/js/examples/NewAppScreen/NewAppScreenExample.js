@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const {NewAppScreen} = require('@react-native/new-app-screen');
 const React = require('react');
 const {ScrollView} = require('react-native');
@@ -27,4 +29,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

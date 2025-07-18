@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const React = require('react');
 const {
   ScrollView,
@@ -141,4 +143,4 @@ exports.examples = [
       return <ScrollViewSimpleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

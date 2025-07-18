@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
 const React = require('react');
@@ -97,4 +98,4 @@ exports.examples = [
       return <ScrollViewAnimatedExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

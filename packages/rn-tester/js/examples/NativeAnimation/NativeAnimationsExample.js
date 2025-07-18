@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
 import RNTesterSettingSwitchRow from '../../components/RNTesterSettingSwitchRow';
@@ -657,4 +658,4 @@ exports.examples = [
       return <InternalSettings />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

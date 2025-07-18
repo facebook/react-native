@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
@@ -412,4 +414,4 @@ exports.examples = [
       return <TranslatePercentage />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;
