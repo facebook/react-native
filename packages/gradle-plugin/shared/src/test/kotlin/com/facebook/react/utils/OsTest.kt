@@ -55,7 +55,7 @@ class OsTest {
 
   @Test
   fun unixifyPath_withAWindowsPath_convertsItCorrectly() {
-    val aWindowsPath = "C:\\just\\a\\windows\\path\\"
+    val aWindowsPath = "D:\\just\\a\\windows\\path\\"
 
     assertThat("/D/just/a/windows/path/").isEqualTo(aWindowsPath.unixifyPath())
   }
