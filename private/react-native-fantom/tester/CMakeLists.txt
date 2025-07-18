@@ -5,6 +5,10 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
+if(UNIX AND NOT APPLE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+endif()
 
 project(fantom_tester)
 
@@ -231,10 +235,4 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_utils
 )
 
-target_compile_options(fantom_tester
-  PRIVATE
-    -Wall
-    -Werror
-    -fexceptions
-    -frtti
-    -std=c++20)
+target_compile_options(fantom_tester PRIVATE -std=c++20)

@@ -26,4 +26,6 @@ target_link_libraries(react_cxxreact
         react_debug)
 
 target_compile_reactnative_options(react_cxxreact PRIVATE)
-target_compile_options(react_cxxreact PRIVATE -Wno-unused-lambda-capture)
+target_compile_options(react_cxxreact PRIVATE
+    -Wno-unused-lambda-capture
+    -Wno-unused-command-line-argument)

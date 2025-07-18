@@ -28,6 +28,14 @@
 
 #endif
 
+#ifndef __unused
+#if defined(__GNUC__) || defined(__clang__)
+#define __unused __attribute__((unused))
+#else
+#define __unused
+#endif
+#endif
+
 namespace facebook::react {
 
 /**

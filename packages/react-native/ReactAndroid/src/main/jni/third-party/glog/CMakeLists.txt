@@ -26,8 +26,6 @@ target_include_directories(glog PRIVATE .)
 # include folder.
 target_include_directories(glog PUBLIC exported)
 
-target_compile_reactnative_options(glog PRIVATE)
-
 target_compile_options(glog PRIVATE
         -Wwrite-strings
         -Woverloaded-virtual
@@ -36,5 +34,5 @@ target_compile_options(glog PRIVATE
         -g
         -O2
         -DHAVE_PREAD=1
+        -Wno-unused-result
 )
-
