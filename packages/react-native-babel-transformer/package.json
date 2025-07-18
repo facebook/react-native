@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">= 22.14.0"
+    "node": ">= 20.19.4"
   },
   "main": "src/index.js",
   "files": [

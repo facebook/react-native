@@ -17,7 +17,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 22.14.0"
+    "node": ">= 20.19.4"
   },
   "exports": {
     ".": {
