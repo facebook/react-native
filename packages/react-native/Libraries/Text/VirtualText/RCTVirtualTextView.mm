@@ -7,6 +7,10 @@
 
 #import <React/RCTVirtualTextView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @implementation RCTVirtualTextView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

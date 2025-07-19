@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @class RCTBridge;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,3 +20,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

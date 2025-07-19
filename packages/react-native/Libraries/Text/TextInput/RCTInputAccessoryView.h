@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @class RCTBridge;
 @class RCTInputAccessoryViewContent;
 
@@ -15,3 +17,5 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -7,6 +7,8 @@
 
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTBaseTextViewManager : RCTViewManager
@@ -14,3 +16,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

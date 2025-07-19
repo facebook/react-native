@@ -7,6 +7,8 @@
 
 #import "RCTWrapperReactRootViewController.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <RCTWrapper/RCTWrapper.h>
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
@@ -44,3 +46,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -9,6 +9,8 @@
 #import <React/RCTView.h>
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @class RCTBridge;
 @class RCTImageSource;
 
@@ -25,3 +27,5 @@
 @property (nonatomic, copy) NSString *internal_analyticTag;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

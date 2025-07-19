@@ -8,6 +8,8 @@
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTConvert (UIScrollView)
 
 + (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
@@ -17,3 +19,5 @@
 @interface RCTScrollViewManager : RCTViewManager
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

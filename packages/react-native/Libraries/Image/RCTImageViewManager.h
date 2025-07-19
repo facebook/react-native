@@ -7,6 +7,10 @@
 
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTImageViewManager : RCTViewManager
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

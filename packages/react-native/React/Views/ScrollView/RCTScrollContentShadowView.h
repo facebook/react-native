@@ -7,8 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTShadowView.h>
 
 @interface RCTScrollContentShadowView : RCTShadowView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

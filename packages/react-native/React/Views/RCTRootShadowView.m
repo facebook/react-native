@@ -7,6 +7,8 @@
 
 #import "RCTRootShadowView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTI18nUtil.h"
 #import "RCTShadowView+Layout.h"
 
@@ -39,3 +41,13 @@
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_COMPONENT
+
+@implementation RCTRootShadowView
+- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
+{
+}
+@end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

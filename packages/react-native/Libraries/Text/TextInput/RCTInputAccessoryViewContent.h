@@ -7,6 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTInputAccessoryViewContent : UIView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -7,6 +7,8 @@
 
 #import <React/RCTInputAccessoryViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTInputAccessoryShadowView.h>
 #import <React/RCTInputAccessoryView.h>
 
@@ -27,3 +29,5 @@ RCT_EXPORT_MODULE()
 RCT_REMAP_VIEW_PROPERTY(backgroundColor, inputAccessoryView.backgroundColor, UIColor)
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

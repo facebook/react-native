@@ -7,6 +7,8 @@
 
 #import "RCTWrapperReactRootViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <RCTWrapper/RCTWrapperView.h>
 #import <RCTWrapper/RCTWrapperViewControllerHostingView.h>
 
@@ -29,3 +31,5 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

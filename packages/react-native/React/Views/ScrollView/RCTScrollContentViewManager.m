@@ -7,6 +7,8 @@
 
 #import "RCTScrollContentViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTScrollContentShadowView.h"
 #import "RCTScrollContentView.h"
 
@@ -25,3 +27,5 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

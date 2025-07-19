@@ -7,6 +7,8 @@
 
 #import "RCTSafeAreaViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTSafeAreaShadowView.h"
 #import "RCTSafeAreaView.h"
 #import "RCTUIManager.h"
@@ -26,3 +28,5 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

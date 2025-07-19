@@ -7,6 +7,8 @@
 
 #import "RCTSwitch.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "UIView+React.h"
 
 @implementation RCTSwitch
@@ -18,3 +20,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

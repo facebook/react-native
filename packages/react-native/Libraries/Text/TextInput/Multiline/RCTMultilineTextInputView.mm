@@ -7,6 +7,8 @@
 
 #import <React/RCTMultilineTextInputView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTUtils.h>
 
 #import <React/RCTUITextView.h>
@@ -61,3 +63,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

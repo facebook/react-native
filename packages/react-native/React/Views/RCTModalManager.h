@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 
@@ -15,3 +17,5 @@
 - (void)modalDismissed:(NSNumber *)modalID;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

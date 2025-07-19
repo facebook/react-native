@@ -7,6 +7,8 @@
 
 #import <React/RCTShadowView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTRawTextShadowView : RCTShadowView
@@ -16,3 +18,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

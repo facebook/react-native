@@ -7,6 +7,8 @@
 
 #import "RCTScrollContentView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTAssert.h>
 #import <React/UIView+React.h>
 
@@ -30,3 +32,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

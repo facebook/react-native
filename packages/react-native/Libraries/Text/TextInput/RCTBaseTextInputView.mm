@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextInputView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
@@ -840,3 +842,5 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
