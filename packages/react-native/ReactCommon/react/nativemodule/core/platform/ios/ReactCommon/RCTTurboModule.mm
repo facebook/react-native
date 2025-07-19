@@ -847,7 +847,7 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
 
 void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
 {
-  if ([instance_ conformsToProtocol:@protocol(RCTTurboModule)] &&
+  if ([instance_ conformsToProtocol:@protocol(RCTModule)] &&
       [instance_ respondsToSelector:@selector(setEventEmitterCallback:)]) {
     EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
     wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
@@ -859,3 +859,4 @@ void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterC
 
 @implementation EventEmitterCallbackWrapper
 @end
+
