@@ -9,7 +9,6 @@
 
 #include "UniqueMonostate.h"
 
-#include <cinttypes>
 #include <optional>
 #include <string>
 #include <unordered_set>
@@ -19,7 +18,7 @@ namespace facebook::react::jsinspector_modern {
 
 struct ExecutionContextDescription {
   int32_t id{};
-  std::string origin{""};
+  std::string origin;
   std::string name{"<anonymous>"};
   std::optional<std::string> uniqueId;
 };

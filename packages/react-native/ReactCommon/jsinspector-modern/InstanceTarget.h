@@ -16,9 +16,7 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 
-#include <list>
 #include <memory>
-#include <optional>
 
 namespace facebook::react::jsinspector_modern {
 
