@@ -9,7 +9,7 @@
 
 #import <React/RCTViewManager.h>
 
-typedef dispatch_block_t RCTUIManagerMountingBlock;
+using RCTUIManagerMountingBlock = dispatch_block_t;
 
 /**
  * Allows hooking into UIManager internals. This can be used to execute code at
