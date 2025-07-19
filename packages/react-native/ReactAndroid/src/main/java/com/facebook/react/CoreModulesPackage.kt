@@ -55,6 +55,7 @@ import com.facebook.systrace.Systrace
             TimingModule::class,
             UIManagerModule::class])
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Suppress("DEPRECATION")
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
