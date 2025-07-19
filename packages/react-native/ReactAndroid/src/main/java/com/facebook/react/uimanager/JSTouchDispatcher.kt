@@ -8,16 +8,19 @@
 package com.facebook.react.uimanager
 
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewGroup
 import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.uimanager.TouchTargetHelper.findTouchTargetViewWithPointerEvents
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
+import com.facebook.react.views.textinput.ReactEditText
 
 /**
  * JSTouchDispatcher handles dispatching touches to JS from RootViews. If you implement RootView you
@@ -184,6 +187,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
       FLog.w(
           ReactConstants.TAG, "Warning : touch event was ignored. Action=$action Target=$targetTag")
     }
+
+    val editTextInZeroContainer = getEditTextInZeroContainer(ev, action)
+    if (editTextInZeroContainer != null) forwardTouchEventToView(ev, editTextInZeroContainer)
   }
 
   private fun markActiveTouchForTag(surfaceId: Int, reactTag: Int, reactContext: ReactContext?) {
@@ -207,6 +213,28 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
     return TouchTargetHelper.findTargetTagAndCoordinatesForTouch(
         ev.x, ev.y, viewGroup, targetCoordinates, null)
   }
+
+  private fun getEditTextInZeroContainer(ev: MotionEvent, action: Int): ReactEditText? {
+    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE || action == MotionEvent.ACTION_UP) {
+      val eventCoords = FloatArray(2)
+      eventCoords[0] = ev.x
+      eventCoords[1] = ev.y
+      val targetView = findTouchTargetViewWithPointerEvents(eventCoords, viewGroup)
+
+      if (targetView is ReactEditText && TouchTargetHelper.isInZeroSizedZIndexContainer(targetView, viewGroup)) {
+        return targetView
+      }
+    }
+    return null
+  }
+
+  private fun forwardTouchEventToView(ev: MotionEvent,targetView: View) {
+    val newEvent = MotionEvent.obtain(ev)
+    newEvent.setLocation(targetCoordinates[0], targetCoordinates[1])
+    targetView.onTouchEvent(newEvent)
+    newEvent.recycle()
+  }
+
 
   private fun dispatchCancelEvent(androidEvent: MotionEvent, eventDispatcher: EventDispatcher) {
     // This means the gesture has already ended, via some other CANCEL or UP event. This is not
