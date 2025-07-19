@@ -79,7 +79,7 @@ ReactHost::ReactHost(
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
-    ReactInstance::BindingsInstallFunc bindingsInstallFunc) noexcept
+    ReactInstance::BindingsInstallFunc bindingsInstallFunc)
     : reactInstanceConfig_(std::move(reactInstanceConfig)) {
   auto componentRegistryFactory =
       mountingManager->getComponentRegistryFactory();
@@ -107,14 +107,12 @@ ReactHost::ReactHost(
   if (!reactInstanceData_->contextContainer
            ->find<HttpClientFactory>(HttpClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        HttpClientFactoryKey, getHttpClientFactory());
+    throw std::runtime_error("No HttpClientFactory provided");
   }
   if (!reactInstanceData_->contextContainer
            ->find<WebSocketClientFactory>(WebSocketClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        WebSocketClientFactoryKey, getWebSocketClientFactory());
+    throw std::runtime_error("No WebSocketClientFactory provided");
   }
   createReactInstance();
 }
