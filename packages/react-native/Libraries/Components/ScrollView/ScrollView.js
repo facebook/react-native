@@ -11,8 +11,7 @@
 import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {ColorValue} from '../../StyleSheet/StyleSheet';
+import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   GestureResponderEvent,
   LayoutChangeEvent,
@@ -35,12 +34,12 @@ import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import UIManager from '../../ReactNative/UIManager';
+import StyleSheet from '../../StyleSheet/StyleSheet';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import splitLayoutProps from '../../StyleSheet/splitLayoutProps';
-import StyleSheet from '../../StyleSheet/StyleSheet';
 import Dimensions from '../../Utilities/Dimensions';
-import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Platform from '../../Utilities/Platform';
+import dismissKeyboard from '../../Utilities/dismissKeyboard';
 import Keyboard from '../Keyboard/Keyboard';
 import TextInputState from '../TextInput/TextInputState';
 import View from '../View/View';
@@ -48,6 +47,8 @@ import processDecelerationRate from './processDecelerationRate';
 import Commands from './ScrollViewCommands';
 import ScrollViewContext, {HORIZONTAL, VERTICAL} from './ScrollViewContext';
 import ScrollViewStickyHeader from './ScrollViewStickyHeader';
+import processDecelerationRate from './processDecelerationRate';
+
 import invariant from 'invariant';
 import memoize from 'memoize-one';
 import nullthrows from 'nullthrows';
@@ -334,6 +335,7 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    * Enables nested scrolling for Android API level 21+.
    * Nested scrolling is supported by default on iOS
    * @platform android
+   * @deprecated this will be removed in a future version of React Native as it no longer has any effect. This will also be enabled by default on android.
    */
   nestedScrollEnabled?: ?boolean,
   /**
