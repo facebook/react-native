@@ -58,6 +58,13 @@ async function executeFlowInFolder(flowFolder) {
   const files = fs.readdirSync(flowFolder);
   for (const file of files) {
     const filePath = `${flowFolder}/${file}`;
+
+    if (IS_DEBUG) {
+      const file = fs.readFileSync(filePath, 'utf8');
+      file.includes('- exclude-from-debug');
+      continue;
+    }
+
     if (fs.lstatSync(filePath).isDirectory()) {
       await executeFlowInFolder(filePath);
     } else {
