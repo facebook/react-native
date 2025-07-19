@@ -379,9 +379,9 @@ std::shared_ptr<ShadowNode> ShadowNode::cloneTree(
   }
 
   auto& parent = ancestors.back();
-  auto& oldShadowNode = parent.first.get().getChildren().at(parent.second);
+  auto& targetShadowNode = parent.first.get().getChildren().at(parent.second);
 
-  auto newShadowNode = callback(*oldShadowNode);
+  auto newShadowNode = callback(*targetShadowNode);
 
   react_native_assert(
       newShadowNode &&
