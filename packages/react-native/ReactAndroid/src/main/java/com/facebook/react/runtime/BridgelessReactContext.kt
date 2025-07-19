@@ -21,7 +21,6 @@ import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.UIManager
-import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
@@ -105,9 +104,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
       private val reactHost: ReactHostImpl,
       private val jsModuleInterface: Class<out JavaScriptModule>
   ) : InvocationHandler {
-    override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
-      val jsArgs: NativeArray =
-          if (args != null) Arguments.fromJavaArgs(args) else WritableNativeArray()
+    override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
+      val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
       reactHost.callFunctionOnModule(
           JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface), method.name, jsArgs)
       return null
