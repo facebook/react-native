@@ -441,6 +441,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 {
   if (!_displayLink && _activeAnimations.count > 0) {
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(stepAnimations:)];
+    _displayLink.preferredFramesPerSecond = [UIScreen mainScreen].maximumFramesPerSecond;
     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   }
 }
