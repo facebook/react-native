@@ -599,7 +599,7 @@ android {
   publishing {
     multipleVariants {
       withSourcesJar()
-      includeBuildTypeValues("debug", "release", "debugOptimized")
+      allVariants()
     }
   }
 
