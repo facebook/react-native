@@ -157,4 +157,11 @@ allprojects {
           com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask::class,
           com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask::class)
       .forEach { tasks.withType(it) { exclude(excludePatterns) } }
+
+  // Disable the problematic ktfmt script tasks due to symbolic link issues in subprojects
+  afterEvaluate {
+    listOf("ktfmtCheckScripts", "ktfmtFormatScripts").forEach {
+      tasks.findByName(it)?.enabled = false
+    }
+  }
 }
