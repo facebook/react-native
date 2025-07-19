@@ -42,7 +42,7 @@ export type CompositeAnimation = {
   start: (callback?: ?EndCallback, isLooping?: boolean) => void,
   stop: () => void,
   reset: () => void,
-  _startNativeLoop: (iterations?: number) => void,
+  _startNativeLoop: (iterations: number, callback: ?EndCallback) => void,
   _isUsingNativeDriver: () => boolean,
   ...
 };
@@ -192,9 +192,9 @@ const springImpl = function (
         value.resetAnimation();
       },
 
-      _startNativeLoop: function (iterations?: number): void {
+      _startNativeLoop(iterations: number, callback: ?EndCallback): void {
         const singleConfig = {...config, iterations};
-        start(value, singleConfig);
+        start(value, singleConfig, callback);
       },
 
       _isUsingNativeDriver: function (): boolean {
@@ -246,9 +246,9 @@ const timingImpl = function (
         value.resetAnimation();
       },
 
-      _startNativeLoop: function (iterations?: number): void {
+      _startNativeLoop(iterations: number, callback: ?EndCallback): void {
         const singleConfig = {...config, iterations};
-        start(value, singleConfig);
+        start(value, singleConfig, callback);
       },
 
       _isUsingNativeDriver: function (): boolean {
@@ -288,9 +288,9 @@ const decayImpl = function (
         value.resetAnimation();
       },
 
-      _startNativeLoop: function (iterations?: number): void {
+      _startNativeLoop(iterations: number, callback: ?EndCallback): void {
         const singleConfig = {...config, iterations};
-        start(value, singleConfig);
+        start(value, singleConfig, callback);
       },
 
       _isUsingNativeDriver: function (): boolean {
@@ -484,7 +484,7 @@ const loopImpl = function (
         callback && callback({finished: true});
       } else {
         if (animation._isUsingNativeDriver()) {
-          animation._startNativeLoop(iterations);
+          animation._startNativeLoop(iterations, callback);
         } else {
           restart(); // Start looping recursively on the js thread
         }
