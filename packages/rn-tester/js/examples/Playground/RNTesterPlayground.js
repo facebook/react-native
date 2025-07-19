@@ -8,27 +8,68 @@
  * @format
  */
 
-import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Button,
+  View,
+  NativeModules,
+  AppState,
+  Text,
+  EmitterSubscription,
+  NativeEventEmitter
+} from 'react-native';
 
-import RNTesterText from '../../components/RNTesterText';
-import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+const { ForcedAlert } = NativeModules;
+const {EVENT_SYNC, EVENT_ASYNC} = ForcedAlert.getConstants();
 
-function Playground() {
+function Playground(): React.JSX.Element {
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  useEffect(() => {
+    var subscriptions: EmitterSubscription[] = []
+    subscriptions.push(AppState.addEventListener('change', nextAppState => {
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    }));
+
+    const eventEmitter = new NativeEventEmitter(ForcedAlert);
+    subscriptions.push(eventEmitter.addListener(EVENT_SYNC, message => {
+      console.log('Event sync: ', message);
+    }));
+    subscriptions.push(eventEmitter.addListener(EVENT_ASYNC, async message => {
+      await sleep(500);
+      console.log('Event async: ', message);
+    }));
+
+    return () => {
+      subscriptions.forEach((s) => s.remove());
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
-      </RNTesterText>
-    </View>
+    <View>
+        <Text>Current state is: {appStateVisible}</Text>
+        <View>
+         <Button 
+          title='Open Alert'
+          onPress={async () => {
+            console.log('\n');
+            await sleep(500);
+            console.log('Local JS works before Alert opened');
+            ForcedAlert.alert("Native Alert", "Custom Android Activity")
+            await sleep(500);
+            console.log('Local JS works after Alert opened');
+          }}
+         />
+        </View>
+      </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 10,
-  },
-});
+function sleep(ms: number) {
+  return new Promise( async resolve => { await fetch("https://google.com"); resolve()});
+}
 
 export default ({
   title: 'Playground',
