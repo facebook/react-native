@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.compiler_flags  = '-Wno-nullability-completeness'
   s.author          = "Meta Platforms, Inc. and its affiliates"
   s.source          = { :git => "https://github.com/facebook/react-native.git", :tag => "#{s.version}" }
-  s.source_files    = "**/*.{h,cpp}"
+  s.source_files    = "*.{h,cpp}"
   s.requires_arc    = true
   s.pod_target_xcconfig = {
     "USE_HEADERMAP" => "YES",
