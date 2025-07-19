@@ -10,7 +10,7 @@
 #include <folly/portability/Windows.h>
 #endif
 
-#include <ReactCommon/CallInvoker.h>
+#include <ReactCommon/TestCallInvoker.h>
 #include <folly/json.h>
 #include <gtest/gtest.h>
 #include <hermes/hermes.h>
@@ -21,25 +21,11 @@
 
 namespace facebook::react {
 
-class TestCallInvoker : public CallInvoker {
- public:
-  void invokeAsync(CallFunc&& fn) noexcept override {
-    queue_.push_back(std::move(fn));
-  }
-
-  void invokeSync(CallFunc&& /*func*/) override {
-    FAIL() << "JSCallInvoker does not support invokeSync()";
-  }
-
- private:
-  std::list<CallFunc> queue_;
-};
-
 class NetworkingModuleTests : public testing::Test {
  protected:
   void SetUp() override {
     rt_ = facebook::hermes::makeHermesRuntime();
-    jsInvoker_ = std::make_shared<TestCallInvoker>();
+    jsInvoker_ = std::make_shared<TestCallInvoker>(rt_);
   }
 
   static void verifyFormData(
@@ -55,7 +41,7 @@ class NetworkingModuleTests : public testing::Test {
     }
   }
 
-  std::unique_ptr<facebook::hermes::HermesRuntime> rt_;
+  std::shared_ptr<facebook::hermes::HermesRuntime> rt_;
   std::shared_ptr<CallInvoker> jsInvoker_;
 };
 
