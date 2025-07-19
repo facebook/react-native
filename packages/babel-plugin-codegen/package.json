@@ -30,5 +30,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"
+  },
+  "peerDependencies": {
+    "@babel/preset-env": "^7.1.6"
   }
 }
