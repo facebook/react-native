@@ -18,7 +18,7 @@ std::shared_ptr<InstanceTarget> InstanceTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<InstanceTarget> instanceTarget{
       new InstanceTarget(executionContextManager, delegate)};
-  instanceTarget->setExecutor(executor);
+  instanceTarget->setExecutor(std::move(executor));
   return instanceTarget;
 }
 
