@@ -4433,10 +4433,6 @@ public abstract interface class com/facebook/react/uimanager/UIManagerModule$Cus
 	public abstract fun resolveCustomEventName (Ljava/lang/String;)Ljava/lang/String;
 }
 
-public abstract interface class com/facebook/react/uimanager/UIManagerModuleListener {
-	public abstract fun willDispatchViewUpdates (Lcom/facebook/react/uimanager/UIManagerModule;)V
-}
-
 public class com/facebook/react/uimanager/UIViewOperationQueue {
 	public static final field DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS I
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/uimanager/NativeViewHierarchyManager;I)V
