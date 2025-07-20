@@ -34,5 +34,18 @@
   },
   "engines": {
     "node": ">= 20.19.4"
-  }
+  },
+  "codegenConfig": {
+     "name": "NativeLocalStorageSpec",
+     "type": "modules",
+     "jsSrcsDir": "specs",
+     "android": {
+       "javaPackageName": "com.nativelocalstorage"
+     },
+     "ios": {
+        "modulesProvider": {
+          "NativeLocalStorage": "RCTNativeLocalStorageModuleProvider"
+        }
+    }
+   }
 }
