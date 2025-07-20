@@ -43,6 +43,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
@@ -54,7 +55,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
 
   private static final String TAG = "ReactAccessibilityDelegate";
-  private static int sCounter = 0x3f000000;
+  private static int sCustomActionCounter = 0x3f000000;
+  private static final Map<String, Integer> sCustomActionIdMap = new HashMap<>();
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
   private static final int SEND_EVENT = 1;
   private static final String delimiter = ", ";
@@ -189,17 +191,26 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
-        if (!action.hasKey("name")) {
+        if (!action.hasKey("name") || !action.hasKey("label")) {
           throw new IllegalArgumentException("Unknown accessibility action.");
         }
-        int actionId = sCounter;
-        String actionLabel = action.hasKey("label") ? action.getString("label") : null;
-        if (sActionIdMap.containsKey(action.getString("name"))) {
-          actionId = sActionIdMap.get(action.getString("name"));
+
+        String actionName = action.getString("name");
+        String actionLabel = action.getString("label");
+        int actionId;
+
+        if (sActionIdMap.containsKey(actionName)) {
+          actionId = sActionIdMap.get(actionName);
         } else {
-          sCounter++;
+          if (sCustomActionIdMap.containsKey(actionName)) {
+            actionId = sCustomActionIdMap.get(actionName);
+          } else {
+            actionId = sCustomActionCounter++;
+            sCustomActionIdMap.put(actionName, actionId);
+          }
         }
-        mAccessibilityActionsMap.put(actionId, action.getString("name"));
+
+        mAccessibilityActionsMap.put(actionId, actionName);
         final AccessibilityActionCompat accessibilityAction =
             new AccessibilityActionCompat(actionId, actionLabel);
         info.addAction(accessibilityAction);
