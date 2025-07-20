@@ -529,29 +529,29 @@ ChuiHW))
 
 #### Android specific
 
-- RNGP - Add support for `exclusiveEnterpriseRepository` to specify an internal Maven mirror. ([6cb8dc37c7](https://github.com/facebook/react-native/commit/6cb8dc37c74995cba3f9f0a845919f305de53c3d) by [@cortinico](https://github.com/cortinico))
+- **Gradle**: RNGP - Add support for `exclusiveEnterpriseRepository` to specify an internal Maven mirror. ([6cb8dc37c7](https://github.com/facebook/react-native/commit/6cb8dc37c74995cba3f9f0a845919f305de53c3d) by [@cortinico](https://github.com/cortinico))
 
 ### Changed
 
-- Bump Metro minimum ^0.81.3 -> ^0.81.5 ([dfa81638dd](https://github.com/facebook/react-native/commit/dfa81638dd17e46f70f10b25c4f4fd9f370a4b0e) by [@robhogan](https://github.com/robhogan))
+- **Metro**: Bump Metro minimum version from `^0.81.3` to `^0.81.5`. ([dfa81638dd](https://github.com/facebook/react-native/commit/dfa81638dd17e46f70f10b25c4f4fd9f370a4b0e) by [@robhogan](https://github.com/robhogan))
 
 ### Fixed
 
-- Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+- **Timers**: Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
 
 #### Android specific
 
-- Fix Modal first frame being rendered on top-left corner ([b950fa2afb](https://github.com/facebook/react-native/commit/b950fa2afb20e2213ff6c733cb1c2465b90406ef) by [@cortinico](https://github.com/cortinico))
-- Wrong borderBottomEndRadius on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
-- `FLAG_SECURE` not respected in Modal dialog ([7e029b0dcf](https://github.com/facebook/react-native/commit/7e029b0dcf6d1a6455a8a6343457b70e353d0ff6) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Backout #46896 - Attempt to fix #50274 ([c43952ac22](https://github.com/facebook/react-native/commit/c43952ac22b2356be3130c906329f61e246082cb) by [@robhogan](https://github.com/robhogan))
+- **Modal**: Fix Modal first frame being rendered on top-left corner. ([b950fa2afb](https://github.com/facebook/react-native/commit/b950fa2afb20e2213ff6c733cb1c2465b90406ef) by [@cortinico](https://github.com/cortinico))
+- **layout**: Fix wrong `borderBottomEndRadius` on RTL. ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+- **Modal**: Fix `FLAG_SECURE` not respected in Modal dialog. ([7e029b0dcf](https://github.com/facebook/react-native/commit/7e029b0dcf6d1a6455a8a6343457b70e353d0ff6) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **lifecylcle**: Legacy arch: fix #50274, Fast Refresh sometimes breaks after full refresh. ([c43952ac22](https://github.com/facebook/react-native/commit/c43952ac22b2356be3130c906329f61e246082cb) by [@robhogan](https://github.com/robhogan))
 
 #### iOS specific
 
-- Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
-- Restore "Paused in debugger" overlay icon ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
-- Layout direction changes are now honored on bundle reload. ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
-- App crash caused by the `[RCTFileRequestHanlder invalidate]` method ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
+- **Interop Layer**: Fixed adding child views to a native view using the interop layer. ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **Debugger**: Restore "Paused in debugger" overlay icon. ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
+- **layout**: Layout direction changes are now honored on bundle reload. ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
+- **Networking**: Fix crash caused by `[RCTFileRequestHanlder invalidate]`. ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.77.2
 
