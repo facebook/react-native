@@ -256,8 +256,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
     if (createNewDialog) {
       dismiss()
     } else {
-      updateProperties()
-      return
+      // With Props 2.0 the view creation could include initial props. This means the dialog might
+      // still have to be created before the properties can be set. We only update properties if the
+      // dialog was already initialized.
+      dialog?.let {
+        updateProperties()
+        return
+      }
     }
 
     // Reset the flag since we are going to create a new dialog
