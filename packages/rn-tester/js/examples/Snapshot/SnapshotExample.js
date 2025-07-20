@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const ScreenshotManager = require('../../../NativeModuleExample/NativeScreenshotManager');
 const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
@@ -71,4 +73,4 @@ exports.examples = [
       return <ScreenshotExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

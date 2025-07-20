@@ -113,7 +113,8 @@ void PerformanceTracer::collectEvents(
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
-    HighResTimeStamp start) {
+    HighResTimeStamp start,
+    folly::dynamic&& detail) {
   if (!tracingAtomic_) {
     return;
   }
@@ -123,6 +124,13 @@ void PerformanceTracer::reportMark(
     return;
   }
 
+  folly::dynamic eventArgs = folly::dynamic::object();
+  if (detail != nullptr) {
+    eventArgs = folly::dynamic::object(
+        "data",
+        folly::dynamic::object("detail", folly::toJson(std::move(detail))));
+  }
+
   buffer_.emplace_back(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -130,6 +138,7 @@ void PerformanceTracer::reportMark(
       .ts = start,
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
+      .args = eventArgs,
   });
 }
 
@@ -137,18 +146,15 @@ void PerformanceTracer::reportMeasure(
     const std::string_view& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+    folly::dynamic&& detail) {
   if (!tracingAtomic_) {
     return;
   }
 
   folly::dynamic beginEventArgs = folly::dynamic::object();
-  if (trackMetadata.has_value()) {
-    folly::dynamic devtoolsObject = folly::dynamic::object(
-        "devtools",
-        folly::dynamic::object("track", trackMetadata.value().track));
+  if (detail != nullptr) {
     beginEventArgs =
-        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
+        folly::dynamic::object("detail", folly::toJson(std::move(detail)));
   }
 
   auto currentThreadId = oscompat::getCurrentThreadId();

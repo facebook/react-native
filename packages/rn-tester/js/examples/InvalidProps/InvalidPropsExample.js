@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {View} from 'react-native';
@@ -19,7 +21,7 @@ export const category = 'Other';
 export const description =
   'Examples of passing invalid prop values and how they fall back to expected defaults.';
 
-export const examples = [
+export const examples: Array<RNTesterModuleExample> = [
   {
     title: 'View flex',
     render(): React.Node {

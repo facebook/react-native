@@ -11,6 +11,14 @@ import type * as React from 'react';
 
 export type NewAppScreenProps = Readonly<{
   templateFileName?: string | undefined;
+  safeAreaInsets?:
+    | Readonly<{
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      }>
+    | undefined;
 }>;
 
 export function NewAppScreen(props: NewAppScreenProps): React.ReactNode;

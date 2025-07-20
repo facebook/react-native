@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {NativeComponentType} from '@react-native/oss-library-example';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -126,4 +127,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

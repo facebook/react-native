@@ -7,21 +7,11 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 public object JSONArguments {
-
-  init {
-    LegacyArchitectureLogger.assertLegacyArchitecture(
-        "JSONArguments", LegacyArchitectureLogLevel.ERROR)
-  }
-
   /**
    * Parse JSONObject to ReadableMap
    *

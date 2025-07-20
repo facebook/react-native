@@ -20,10 +20,6 @@ EventQueue::EventQueue(
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       [this](jsi::Runtime& runtime) { onBeat(runtime); });
-
-  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
-    eventBeat_->unstable_setInduceCallback([this]() { flushStateUpdates(); });
-  }
 }
 
 void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
@@ -65,7 +61,9 @@ void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
   enqueueEvent(std::move(rawEvent));
 }
 
-void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
+void EventQueue::enqueueStateUpdate(
+    StateUpdate&& stateUpdate,
+    UpdateMode updateMode) const {
   {
     std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
@@ -77,7 +75,11 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
     stateUpdateQueue_.push_back(std::move(stateUpdate));
   }
 
-  onEnqueue();
+  if (updateMode == UpdateMode::unstable_Immediate) {
+    flushStateUpdates();
+  } else {
+    onEnqueue();
+  }
 }
 
 void EventQueue::onEnqueue() const {
@@ -89,9 +91,7 @@ void EventQueue::experimental_flushSync() const {
 }
 
 void EventQueue::onBeat(jsi::Runtime& runtime) const {
-  if (!ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
-    flushStateUpdates();
-  }
+  flushStateUpdates();
   flushEvents(runtime);
 }
 

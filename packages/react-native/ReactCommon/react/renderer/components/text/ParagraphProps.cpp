@@ -135,7 +135,7 @@ void ParagraphProps::setProp(
   }
 
   switch (hash) {
-    RAW_SET_PROP_SWITCH_CASE_BASIC(isSelectable);
+    RAW_SET_PROP_SWITCH_CASE(isSelectable, "selectable");
     RAW_SET_PROP_SWITCH_CASE_BASIC(onTextLayout);
   }
 
@@ -154,7 +154,7 @@ SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
   return ViewProps::getDebugProps() + BaseTextProps::getDebugProps() +
       paragraphAttributes.getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("isSelectable", isSelectable)};
+          debugStringConvertibleItem("selectable", isSelectable)};
 }
 #endif
 

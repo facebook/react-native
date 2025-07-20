@@ -17,7 +17,7 @@ add_library(hermes_inspector_modern
 
 target_compile_reactnative_options(hermes_inspector_modern PRIVATE)
 
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
         target_compile_options(
                 hermes_inspector_modern
                 PRIVATE

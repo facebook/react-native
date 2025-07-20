@@ -91,7 +91,10 @@ public abstract class BaseViewManagerDelegate<
         val dynamicFromObject: Dynamic = DynamicFromObject(value)
         mViewManager.setAccessibilityLabelledBy(view, dynamicFromObject)
       }
+      ViewProps.ACCESSIBILITY_ORDER ->
+          mViewManager.setAccessibilityOrder(view, value as ReadableArray?)
       ViewProps.OPACITY -> mViewManager.setOpacity(view, (value as Double?)?.toFloat() ?: 1.0f)
+
       ViewProps.OUTLINE_COLOR -> mViewManager.setOutlineColor(view, value as Int?)
 
       ViewProps.OUTLINE_OFFSET ->

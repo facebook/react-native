@@ -34,6 +34,9 @@ const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
 
+const PERFORMANCE_TRACK_NAME = 'Network (JS-initiated only)';
+const PERFORMANCE_TRACK_GROUP = 'Chrome DevTools Temp Compat';
+
 declare var performance: Performance;
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
@@ -385,6 +388,9 @@ class XMLHttpRequest extends EventTarget {
     if (requestId !== this._requestId) {
       return;
     }
+
+    const start = XMLHttpRequest._profiling ? performance.now() : undefined;
+
     if (!this._response) {
       this._response = responseText;
     } else {
@@ -392,8 +398,12 @@ class XMLHttpRequest extends EventTarget {
     }
 
     if (XMLHttpRequest._profiling) {
-      performance.mark(
-        'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
+      console.timeStamp(
+        'Incremental Data: ' + this._getMeasureURL(),
+        start,
+        undefined,
+        PERFORMANCE_TRACK_NAME,
+        PERFORMANCE_TRACK_GROUP,
       );
     }
     XMLHttpRequest._interceptor &&
@@ -442,10 +452,13 @@ class XMLHttpRequest extends EventTarget {
       this.setReadyState(this.DONE);
       if (XMLHttpRequest._profiling && this._startTime != null) {
         const start = this._startTime;
-        performance.measure('Track:XMLHttpRequest:' + this._getMeasureURL(), {
+        console.timeStamp(
+          this._getMeasureURL(),
           start,
-          end: performance.now(),
-        });
+          undefined,
+          PERFORMANCE_TRACK_NAME,
+          PERFORMANCE_TRACK_GROUP,
+        );
       }
       if (error) {
         XMLHttpRequest._interceptor &&
@@ -646,6 +659,8 @@ class XMLHttpRequest extends EventTarget {
         this.withCredentials,
       );
     };
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (DEBUG_NETWORK_SEND_DELAY) {
       setTimeout(doSend, DEBUG_NETWORK_SEND_DELAY);
     } else {

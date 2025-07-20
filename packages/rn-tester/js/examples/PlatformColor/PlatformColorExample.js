@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ColorValue} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -357,4 +358,4 @@ exports.examples = [
       return <VariantColorsExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

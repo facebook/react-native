@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @fantom_flags enableFixForParentTagDuringReparenting:true
- * @fantom_flags enableSynchronousStateUpdates:true
  * @fantom_flags enableViewCulling:true
  * @flow strict-local
  * @format
@@ -2554,5 +2553,58 @@ describe('culling inside ScrollView with overflow visible', () => {
     expect(root.takeMountingManagerLogs()).toContain(
       'Create {type: "View", nativeID: "child"}',
     );
+  });
+});
+
+describe('horizontal ScrollView in RTL script', () => {
+  it('renders item 1', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView
+          style={{direction: 'rtl', height: 100, width: 100}}
+          horizontal={true}>
+          <View nativeID={'item1'} style={{height: 90, width: 90, margin: 5}} />
+          <View nativeID={'item2'} style={{height: 90, width: 90, margin: 5}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "AndroidHorizontalScrollContentView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "item1"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "item1"}',
+      'Insert {type: "AndroidHorizontalScrollContentView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+
+  it('takes contentOffset into account', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView
+          style={{direction: 'rtl', height: 100, width: 100}}
+          horizontal={true}
+          contentOffset={{x: 100, y: 0}}>
+          <View nativeID={'item1'} style={{height: 90, width: 90, margin: 5}} />
+          <View nativeID={'item2'} style={{height: 90, width: 90, margin: 5}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "AndroidHorizontalScrollContentView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "item2"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "item2"}',
+      'Insert {type: "AndroidHorizontalScrollContentView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
   });
 });

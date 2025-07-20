@@ -128,7 +128,7 @@ jobs:
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-14
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -141,31 +141,12 @@ jobs:
           ruby-version: "3.2.0"
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-
-  test_ios_rntester_dynamic_frameworks:
-    runs-on: macos-14
-    needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
-    env:
-      HERMES_WS_DIR: /tmp/hermes
-      HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run it
-        uses: ./.github/actions/test-ios-rntester
-        with:
-          use-frameworks: DynamicFrameworks
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: Debug
 
   test_ios_rntester:
     runs-on: macos-14-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -174,14 +155,14 @@ jobs:
       fail-fast: false
       matrix:
         flavor: [Debug, Release]
+        frameworks: [StaticLibraries, DynamicFrameworks]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run it
         uses: ./.github/actions/test-ios-rntester
         with:
-          run-unit-tests: "false"
-          use-frameworks: StaticLibraries
+          use-frameworks: ${{ matrix.frameworks }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
@@ -264,6 +245,14 @@ jobs:
       - name: Print third-party folder
         shell: bash
         run: ls -lR /tmp/third-party
+      - name: Download React Native Prebuilds
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactCore${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/ReactCore
+      - name: Print ReactCore folder
+        shell: bash
+        run: ls -lR /tmp/ReactCore
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
@@ -286,6 +275,7 @@ jobs:
           NEW_ARCH_ENABLED=1
 
           export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ matrix.flavor }}.xcframework.tar.gz"
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
@@ -392,9 +382,9 @@ jobs:
     runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
-      HERMES_WS_DIR: 'D:\tmp\hermes'
-      HERMES_TARBALL_ARTIFACTS_DIR: 'D:\tmp\hermes\hermes-runtime-darwin'
-      HERMES_OSXBIN_ARTIFACTS_DIR: 'D:\tmp\hermes\osx-bin'
+      HERMES_WS_DIR: 'C:\tmp\hermes'
+      HERMES_TARBALL_ARTIFACTS_DIR: 'C:\tmp\hermes\hermes-runtime-darwin'
+      HERMES_OSXBIN_ARTIFACTS_DIR: 'C:\tmp\hermes\osx-bin'
       ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
       MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       CMAKE_DIR: 'C:\Program Files\CMake\bin'
@@ -548,7 +538,7 @@ jobs:
 
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     env:
       PROJECT_NAME: iOSTemplateProject
       HERMES_WS_DIR: /tmp/hermes
@@ -565,7 +555,7 @@ jobs:
 
   test_ios_helloworld:
     runs-on: macos-14
-    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies, prebuild_react_native_core] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     strategy:
       matrix:
         flavor: [Debug, Release]
@@ -593,7 +583,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["24", "22"]
+        node-version: ["24", "22", "20"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

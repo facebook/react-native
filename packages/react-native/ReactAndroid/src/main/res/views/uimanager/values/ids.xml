@@ -12,7 +12,10 @@
   <!-- tag is used to store whether the view is coopted by an accessibilityOrder-->
   <item type="id" name="accessibility_order_parent"/>
 
-  <!-- tag is used to store the original focusability value of a view -->
+  <!-- tag is used to store the current state of the accessibility order tree-->
+  <item type="id" name="accessibility_order_dirty"/>
+
+  <!-- tag is used to store the original focusability value of a view within the accessibility order tree if it was changed-->
   <item type="id" name="original_focusability"/>
 
   <!-- tag is used to store the nativeID tag -->

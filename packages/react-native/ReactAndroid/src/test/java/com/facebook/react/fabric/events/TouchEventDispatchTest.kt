@@ -11,12 +11,10 @@ import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.modules.core.ReactChoreographer
@@ -26,6 +24,7 @@ import com.facebook.react.uimanager.events.FabricEventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
 import com.facebook.react.uimanager.events.TouchEventCoalescingKeyHelper
 import com.facebook.react.uimanager.events.TouchEventType
+import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -34,8 +33,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -43,7 +40,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(shadows = [ShadowSoLoader::class])
+@Config(shadows = [ShadowSoLoader::class, ShadowArguments::class])
 class TouchEventDispatchTest {
   private val touchEventCoalescingKeyHelper = TouchEventCoalescingKeyHelper()
 
@@ -460,16 +457,12 @@ class TouchEventDispatchTest {
 
   private lateinit var eventDispatcher: EventDispatcher
   private lateinit var eventEmitter: FabricEventEmitter
-  private lateinit var arguments: MockedStatic<Arguments>
   private var reactChoreographerOriginal: ReactChoreographer? = null
 
   @Before
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
 
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
     val metrics = DisplayMetrics()
     metrics.xdpi = 1f
     metrics.ydpi = 1f
@@ -488,7 +481,6 @@ class TouchEventDispatchTest {
 
   @After
   fun tearDown() {
-    arguments.close()
     ReactChoreographer.overrideInstanceForTest(reactChoreographerOriginal)
   }
 

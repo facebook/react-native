@@ -37,31 +37,40 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   return supportedEntryTypes;
 }
 
-#if defined(__clang__)
-#define NO_DESTROY [[clang::no_destroy]]
-#else
-#define NO_DESTROY
-#endif
-
-NO_DESTROY const std::string TRACK_PREFIX = "Track:";
-
-std::tuple<std::optional<std::string>, std::string_view> parseTrackName(
-    const std::string& name) {
-  // Until there's a standard way to pass through track information, parse it
-  // manually, e.g., "Track:Foo:Event name"
-  // https://github.com/w3c/user-timing/issues/109
-  std::optional<std::string> trackName;
-  std::string_view eventName(name);
-  if (name.starts_with(TRACK_PREFIX)) {
-    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
-    if (trackNameDelimiter != std::string::npos) {
-      trackName = name.substr(
-          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
-      eventName = std::string_view(name).substr(trackNameDelimiter + 1);
-    }
+std::optional<std::string> getTrackFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
   }
 
-  return std::make_tuple(trackName, eventName);
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrack = maybeDevtools["track"];
+  if (!maybeTrack.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrack.asString();
+}
+
+std::optional<std::string> getTrackGroupFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrackGroup = maybeDevtools["trackGroup"];
+  if (!maybeTrackGroup.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrackGroup.asString();
 }
 
 } // namespace
@@ -167,14 +176,13 @@ void PerformanceEntryReporter::clearEntries(
   getBufferRef(entryType).clear(entryName);
 }
 
-PerformanceMark PerformanceEntryReporter::reportMark(
+void PerformanceEntryReporter::reportMark(
     const std::string& name,
-    const std::optional<HighResTimeStamp>& startTime) {
-  // Resolve timings
-  auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
-  const auto entry = PerformanceMark{{.name = name, .startTime = startTimeVal}};
+    const HighResTimeStamp startTime,
+    UserTimingDetailProvider&& detailProvider) {
+  const auto entry = PerformanceMark{{.name = name, .startTime = startTime}};
 
-  traceMark(entry);
+  traceMark(entry, std::move(detailProvider));
 
   // Add to buffers & notify observers
   {
@@ -183,24 +191,19 @@ PerformanceMark PerformanceEntryReporter::reportMark(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
-PerformanceMeasure PerformanceEntryReporter::reportMeasure(
+void PerformanceEntryReporter::reportMeasure(
     const std::string& name,
     HighResTimeStamp startTime,
-    HighResTimeStamp endTime,
-    const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-        trackMetadata) {
-  HighResDuration duration = endTime - startTime;
-
+    HighResDuration duration,
+    UserTimingDetailProvider&& detailProvider) {
   const auto entry = PerformanceMeasure{
       {.name = std::string(name),
        .startTime = startTime,
        .duration = duration}};
 
-  traceMeasure(entry);
+  traceMeasure(entry, std::move(detailProvider));
 
   // Add to buffers & notify observers
   {
@@ -209,8 +212,10 @@ PerformanceMeasure PerformanceEntryReporter::reportMeasure(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+}
 
-  return entry;
+void PerformanceEntryReporter::clearEventCounts() {
+  eventCounts_.clear();
 }
 
 std::optional<HighResTimeStamp> PerformanceEntryReporter::getMarkTime(
@@ -271,7 +276,7 @@ void PerformanceEntryReporter::reportLongTask(
   observerRegistry_->queuePerformanceEntry(entry);
 }
 
-PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
+void PerformanceEntryReporter::reportResourceTiming(
     const std::string& url,
     HighResTimeStamp fetchStart,
     HighResTimeStamp requestStart,
@@ -298,50 +303,47 @@ PerformanceResourceTiming PerformanceEntryReporter::reportResourceTiming(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  return entry;
 }
 
-void PerformanceEntryReporter::traceMark(const PerformanceMark& entry) const {
+void PerformanceEntryReporter::traceMark(
+    const PerformanceMark& entry,
+    UserTimingDetailProvider&& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
-    auto [trackName, eventName] = parseTrackName(entry.name);
-
-    if (performanceTracer.isTracing()) {
-      performanceTracer.reportMark(entry.name, entry.startTime);
+    if (ReactPerfettoLogger::isTracing()) {
+      ReactPerfettoLogger::mark(entry.name, entry.startTime);
     }
 
-    if (ReactPerfettoLogger::isTracing()) {
-      ReactPerfettoLogger::mark(eventName, entry.startTime, trackName);
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMark(
+          entry.name,
+          entry.startTime,
+          detailProvider != nullptr ? detailProvider() : nullptr);
     }
   }
 }
 
 void PerformanceEntryReporter::traceMeasure(
-    const PerformanceMeasure& entry) const {
+    const PerformanceMeasure& entry,
+    UserTimingDetailProvider&& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
   if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
-    auto [trackName, eventName] = parseTrackName(entry.name);
-
-    if (performanceTracer.isTracing()) {
-      std::optional<jsinspector_modern::DevToolsTrackEntryPayload>
-          trackMetadata;
-
-      if (trackName.has_value()) {
-        trackMetadata = {.track = trackName.value()};
-      }
-      performanceTracer.reportMeasure(
-          eventName, entry.startTime, entry.duration, trackMetadata);
-    }
+    auto detail = detailProvider != nullptr ? detailProvider() : nullptr;
 
     if (ReactPerfettoLogger::isTracing()) {
       ReactPerfettoLogger::measure(
-          eventName,
+          entry.name,
           entry.startTime,
           entry.startTime + entry.duration,
-          trackName);
+          detail != nullptr ? getTrackFromDetail(detail) : std::nullopt,
+          detail != nullptr ? getTrackGroupFromDetail(detail) : std::nullopt);
+    }
+
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMeasure(
+          entry.name, entry.startTime, entry.duration, std::move(detail));
     }
   }
 }

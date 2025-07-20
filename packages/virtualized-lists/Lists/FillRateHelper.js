@@ -33,6 +33,8 @@ const DEBUG = false;
 
 let _listeners: Array<(Info) => void> = [];
 let _minSampleCount = 10;
+/* $FlowFixMe[constant-condition] Error discovered during Constant Condition
+ * roll out. See https://fburl.com/workplace/1v97vimq. */
 let _sampleRate = DEBUG ? 1 : null;
 
 /**
@@ -82,6 +84,8 @@ class FillRateHelper {
 
   activate() {
     if (this._enabled && this._samplesStartTime == null) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       DEBUG && console.debug('FillRateHelper: activate');
       this._samplesStartTime = global.performance.now();
     }
@@ -93,6 +97,8 @@ class FillRateHelper {
     }
     const start = this._samplesStartTime; // const for flow
     if (start == null) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       DEBUG &&
         console.debug('FillRateHelper: bail on deactivate with no start time');
       return;
@@ -107,6 +113,8 @@ class FillRateHelper {
       ...this._info,
       total_time_spent,
     };
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     if (DEBUG) {
       const derived = {
         avg_blankness: this._info.pixels_blank / this._info.pixels_sampled,

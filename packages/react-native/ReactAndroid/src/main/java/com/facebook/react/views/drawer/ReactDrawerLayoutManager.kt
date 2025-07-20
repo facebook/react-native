@@ -108,20 +108,20 @@ public class ReactDrawerLayoutManager :
     view.setDrawerWidth(widthInPx)
   }
 
-  public override fun setDrawerWidth(view: ReactDrawerLayout, width: Float?) {
-    val widthInPx = width?.let { Math.round(it.dpToPx()) } ?: ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
+  public override fun setDrawerWidth(view: ReactDrawerLayout, value: Float?) {
+    val widthInPx = value?.let { Math.round(it.dpToPx()) } ?: ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
     view.setDrawerWidth(widthInPx)
   }
 
   @ReactProp(name = "drawerLockMode")
-  public override fun setDrawerLockMode(view: ReactDrawerLayout, drawerLockMode: String?) {
-    when (drawerLockMode) {
+  public override fun setDrawerLockMode(view: ReactDrawerLayout, value: String?) {
+    when (value) {
       null,
       "unlocked" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
       "locked-closed" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
       "locked-open" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
       else -> {
-        FLog.w(ReactConstants.TAG, "Unknown drawerLockMode $drawerLockMode")
+        FLog.w(ReactConstants.TAG, "Unknown drawerLockMode $value")
         view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
       }
     }

@@ -6,6 +6,7 @@
  */
 
 #include "TesterAppDelegate.h"
+#include "platform/TesterTurboModuleManagerDelegate.h"
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
@@ -90,7 +91,8 @@ TesterAppDelegate::TesterAppDelegate(
         } else {
           return nullptr;
         }
-      }};
+      },
+      TesterTurboModuleManagerDelegate::getTurboModuleManagerDelegate()};
 
   g_setNativeAnimatedNowTimestampFunction(StubClock::now);
 

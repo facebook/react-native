@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterPage from '../../components/RNTesterPage';
 import RNTesterText from '../../components/RNTesterText';
@@ -282,4 +284,4 @@ exports.examples = [
       return <AccessibilityAndroidExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

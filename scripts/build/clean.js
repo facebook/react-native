@@ -8,7 +8,7 @@
  * @format
  */
 
-require('../babel-register').registerForScript();
+require('../shared/babelRegister').registerForScript();
 
 const {BUILD_DIR, PACKAGES_DIR} = require('./build');
 const {buildConfig} = require('./config');

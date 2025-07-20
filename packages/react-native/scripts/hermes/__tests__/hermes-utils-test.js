@@ -25,7 +25,8 @@ const {
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
-const MemoryFs = require('metro-memory-fs');
+// $FlowFixMe[untyped-import] (OSS) memfs
+const {memfs} = require('memfs');
 const os = require('os');
 
 const hermesTag =
@@ -147,16 +148,8 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock(
-      'fs',
-      () =>
-        new MemoryFs({
-          platform: process.platform === 'win32' ? 'win32' : 'posix',
-        }),
-    );
+    jest.mock('fs', () => memfs().fs);
     fs = require('fs');
-    // $FlowFixMe[prop-missing]
-    fs.reset();
 
     populateMockFilesystemWithHermesBuildScripts();
 

@@ -491,45 +491,6 @@ inline static void updateAccessibilityStateProp(
   result["accessibilityState"] = resultState;
 }
 
-static folly::dynamic toDynamic(const std::vector<BoxShadow>& boxShadow) {
-  folly::dynamic boxShadowResult = folly::dynamic::array();
-  for (const auto& boxShadowValue : boxShadow) {
-    folly::dynamic boxShadowValueResult = folly::dynamic::object();
-    boxShadowValueResult["offsetX"] = boxShadowValue.offsetX;
-    boxShadowValueResult["offsetY"] = boxShadowValue.offsetY;
-    boxShadowValueResult["blurRadius"] = boxShadowValue.blurRadius;
-    boxShadowValueResult["spreadDistance"] = boxShadowValue.spreadDistance;
-    boxShadowValueResult["color"] = *boxShadowValue.color;
-    boxShadowValueResult["inset"] = boxShadowValue.inset;
-    boxShadowResult.push_back(boxShadowValueResult);
-  }
-  return boxShadowResult;
-}
-
-static folly::dynamic toDynamic(const std::vector<FilterFunction>& filter) {
-  folly::dynamic filterResult = folly::dynamic::array();
-  for (const auto& filterFunction : filter) {
-    folly::dynamic filterFunctionResult = folly::dynamic::object();
-    std::string typeKey = toString(filterFunction.type);
-    if (std::holds_alternative<Float>(filterFunction.parameters)) {
-      filterFunctionResult[typeKey] =
-          std::get<Float>(filterFunction.parameters);
-    } else if (std::holds_alternative<DropShadowParams>(
-                   filterFunction.parameters)) {
-      const auto& parameters =
-          std::get<DropShadowParams>(filterFunction.parameters);
-      folly::dynamic parametersResult = folly::dynamic::object();
-      parametersResult["offsetX"] = parameters.offsetX;
-      parametersResult["offsetY"] = parameters.offsetY;
-      parametersResult["standardDeviation"] = parameters.standardDeviation;
-      parametersResult["color"] = *parameters.color;
-      filterFunctionResult[typeKey] = parametersResult;
-    }
-    filterResult.push_back(filterFunctionResult);
-  }
-  return filterResult;
-}
-
 ComponentName HostPlatformViewProps::getDiffPropsImplementationTarget() const {
   return "View";
 }

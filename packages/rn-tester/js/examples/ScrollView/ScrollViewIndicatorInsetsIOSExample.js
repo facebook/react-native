@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {useState} from 'react';
 import {
@@ -134,4 +136,4 @@ exports.examples = [
     title: '<ScrollView> automaticallyAdjustsScrollIndicatorInsets Example',
     render: (): React.Node => <ScrollViewIndicatorInsetsExample />,
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -8,7 +8,6 @@
 #pragma once
 
 #include <array>
-#include <string>
 #include <vector>
 
 #include <react/renderer/debug/flags.h>
@@ -37,7 +36,7 @@ inline bool isZero(Float n) {
  * An "Arbitrary" operation means that the transform was seeded with some
  * arbitrary initial result.
  */
-enum class TransformOperationType {
+enum class TransformOperationType : uint8_t {
   Arbitrary,
   Identity,
   Perspective,
@@ -56,7 +55,9 @@ struct TransformOperation {
 };
 
 struct TransformOrigin {
-  std::array<ValueUnit, 2> xy;
+  std::array<ValueUnit, 2> xy = {
+      ValueUnit(0.0f, UnitType::Undefined),
+      ValueUnit(0.0f, UnitType::Undefined)};
   float z = 0.0f;
 
   bool operator==(const TransformOrigin& other) const {
@@ -104,47 +105,47 @@ struct Transform {
   /*
    * Returns the identity transform (`[1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1]`).
    */
-  static Transform Identity();
+  static Transform Identity() noexcept;
 
   /*
    * Returns the vertival inversion transform (`[1 0 0 0; 0 -1 0 0; 0 0 1 0; 0 0
    * 0 1]`).
    */
-  static Transform VerticalInversion();
+  static Transform VerticalInversion() noexcept;
 
   /*
    * Returns the horizontal inversion transform (`[-1 0 0 0; 0 1 0 0; 0 0 1 0; 0
    * 0 0 1]`).
    */
-  static Transform HorizontalInversion();
+  static Transform HorizontalInversion() noexcept;
 
   /*
    * Returns a Perspective transform.
    */
-  static Transform Perspective(Float perspective);
+  static Transform Perspective(Float perspective) noexcept;
 
   /*
    * Returns a Scale transform.
    */
-  static Transform Scale(Float factorX, Float factorY, Float factorZ);
+  static Transform Scale(Float factorX, Float factorY, Float factorZ) noexcept;
 
   /*
    * Returns a Translate transform.
    */
-  static Transform Translate(Float x, Float y, Float z);
+  static Transform Translate(Float x, Float y, Float z) noexcept;
 
   /*
    * Returns a Skew transform.
    */
-  static Transform Skew(Float x, Float y);
+  static Transform Skew(Float x, Float y) noexcept;
 
   /*
    * Returns a transform that rotates by `angle` radians along the given axis.
    */
-  static Transform RotateX(Float radians);
-  static Transform RotateY(Float radians);
-  static Transform RotateZ(Float radians);
-  static Transform Rotate(Float angleX, Float angleY, Float angleZ);
+  static Transform RotateX(Float radians) noexcept;
+  static Transform RotateY(Float radians) noexcept;
+  static Transform RotateZ(Float radians) noexcept;
+  static Transform Rotate(Float angleX, Float angleY, Float angleZ) noexcept;
 
   /**
    * Perform an interpolation between lhs and rhs, given progress.
@@ -163,20 +164,20 @@ struct Transform {
       const Transform& rhs,
       const Size& size);
 
-  static bool isVerticalInversion(const Transform& transform);
-  static bool isHorizontalInversion(const Transform& transform);
+  static bool isVerticalInversion(const Transform& transform) noexcept;
+  static bool isHorizontalInversion(const Transform& transform) noexcept;
 
   /*
    * Equality operators.
    */
-  bool operator==(const Transform& rhs) const;
-  bool operator!=(const Transform& rhs) const;
+  bool operator==(const Transform& rhs) const noexcept;
+  bool operator!=(const Transform& rhs) const noexcept;
 
   /*
    * Matrix subscript.
    */
-  Float& at(int i, int j);
-  const Float& at(int i, int j) const;
+  Float& at(int i, int j) noexcept;
+  const Float& at(int i, int j) const noexcept;
 
   /*
    * Concatenates (multiplies) transform matrices.

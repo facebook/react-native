@@ -678,6 +678,18 @@ public class FabricUIManager
   @AnyThread
   @ThreadConfined(ANY)
   @UnstableReactNativeAPI
+  public PreparedLayout reusePreparedLayoutWithNewReactTags(
+      PreparedLayout preparedLayout, int[] reactTags) {
+    return new PreparedLayout(
+        preparedLayout.getLayout(),
+        preparedLayout.getMaximumNumberOfLines(),
+        preparedLayout.getVerticalOffset(),
+        reactTags);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
   public float[] measurePreparedLayout(
       PreparedLayout preparedLayout,
       float minWidth,

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import ContentInset from './SectionList-contentInset';
 import inverted from './SectionList-inverted';
 import onEndReached from './SectionList-onEndReached';
@@ -43,4 +45,4 @@ exports.examples = [
   onViewableItemsChanged_horizontal_waitForInteraction,
   onViewableItemsChanged_horizontal_offScreen_noWaitForInteraction,
   onViewableItemsChanged_offScreen_noWaitForInteraction,
-];
+] as Array<RNTesterModuleExample>;

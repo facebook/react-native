@@ -30,7 +30,7 @@ export type TestCaseResult = {
 
 export type FailureDetail = {
   message: string,
-  stack: string,
+  stack?: string,
   cause?: FailureDetail,
 };
 
@@ -320,7 +320,7 @@ function runSpec(spec: Spec): TestCaseResult {
   }
 
   let status: 'passed' | 'failed' | 'pending';
-  let error;
+  let error: mixed;
 
   const start = Date.now();
   snapshotContext.setTargetTest(result.fullName);
@@ -331,16 +331,21 @@ function runSpec(spec: Spec): TestCaseResult {
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
-  } catch (e) {
+  } catch (e: mixed) {
     error = e;
     status = 'failed';
   }
 
   result.status = status;
   result.duration = Date.now() - start;
-  if (status === 'failed' && error) {
-    result.failureMessages = [error.stack ?? error.message ?? String(error)];
-    result.failureDetails = [serializeError(error)];
+  if (status === 'failed' && error != null) {
+    if (error instanceof Error) {
+      result.failureMessages = [error.stack ?? error.message ?? String(error)];
+      result.failureDetails = [serializeError(error)];
+    } else {
+      result.failureMessages = [`Non-error value thrown: ${String(error)}`];
+      result.failureDetails = [];
+    }
   } else {
     result.failureMessages = [];
     result.failureDetails = [];

@@ -9,6 +9,18 @@ require 'rexml/document'
 
 require_relative './utils.rb'
 
+### Adds ReactNativeCore-prebuilt as a dependency to the given podspec if we're not
+### building ReactNativeCore from source (then this function does nothing).
+def add_rncore_dependency(s)
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+        current_pod_target_xcconfig = s.to_hash["pod_target_xcconfig"] || {}
+        current_pod_target_xcconfig = current_pod_target_xcconfig.to_h unless current_pod_target_xcconfig.is_a?(Hash)
+        s.dependency "React-Core-prebuilt"
+        current_pod_target_xcconfig["HEADER_SEARCH_PATHS"] ||= [] << "$(PODS_ROOT)/React-Core-prebuilt/React.xcframework/Headers"
+        s.pod_target_xcconfig = current_pod_target_xcconfig
+    end
+end
+
 ## - RCT_USE_PREBUILT_RNCORE: If set to 1, it will use the release tarball from Maven instead of building from source.
 ## - RCT_TESTONLY_RNCORE_TARBALL_PATH: **TEST ONLY** If set, it will use a local tarball of RNCore if it exists.
 ## - RCT_TESTONLY_RNCORE_VERSION: **TEST ONLY** If set, it will override the version of RNCore to be used.
@@ -113,13 +125,18 @@ class ReactNativeCoreUtils
 
         url = stable_tarball_url(@@react_native_version, :debug)
         rncore_log("Using tarball from URL: #{url}")
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
-        download_stable_rndeps(@@react_native_path, @@react_native_version, :release)
+        download_stable_rncore(@@react_native_path, @@react_native_version, :debug)
+        download_stable_rncore(@@react_native_path, @@react_native_version, :release)
         return {:http => url}
     end
 
     def self.stable_tarball_url(version, build_type)
-        maven_repo_url = "https://repo1.maven.org/maven2"
+        ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
+        ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
+        maven_repo_url =
+            ENV['ENTERPRISE_REPOSITORY'] != nil && ENV['ENTERPRISE_REPOSITORY'] != "" ?
+            ENV['ENTERPRISE_REPOSITORY'] :
+            "https://repo1.maven.org/maven2"
         group = "com/facebook/react"
         # Sample url from Maven:
         # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.81.0/react-native-artifacts-0.81.0-reactnative-core-debug.tar.gz
@@ -145,9 +162,9 @@ class ReactNativeCoreUtils
         end
     end
 
-    def self.download_stable_rndeps(react_native_path, version, configuration)
+    def self.download_stable_rncore(react_native_path, version, configuration)
         tarball_url = stable_tarball_url(version, configuration)
-        download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+        download_rncore_tarball(react_native_path, tarball_url, version, configuration)
     end
 
     def self.podspec_source_download_prebuilt_nightly_tarball(version)
@@ -156,14 +173,14 @@ class ReactNativeCoreUtils
         return {:http => url}
     end
 
-    def self.download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+    def self.download_rncore_tarball(react_native_path, tarball_url, version, configuration)
         destination_path = configuration == nil ?
-            "#{artifacts_dir()}/reactnative-core-debug.tar.gz-#{version}.tar.gz" :
-            "#{artifacts_dir()}/reactnative-core-debug.tar.gz-#{version}-#{configuration}.tar.gz"
+            "#{artifacts_dir()}/reactnative-core-#{version}.tar.gz" :
+            "#{artifacts_dir()}/reactnative-core-#{version}-#{configuration}.tar.gz"
 
         unless File.exist?(destination_path)
           # Download to a temporary file first so we don't cache incomplete downloads.
-          tmp_file = "#{artifacts_dir()}/reactnative-core-debug.tar.gz.download"
+          tmp_file = "#{artifacts_dir()}/reactnative-core.download"
           `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
         end
 

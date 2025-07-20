@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "CdpTracing.h"
 #include "ConsoleTimeStamp.h"
 #include "TraceEvent.h"
 #include "TraceEventProfile.h"
@@ -60,13 +59,17 @@ class PerformanceTracer {
       const std::function<void(const folly::dynamic& eventsChunk)>&
           resultCallback,
       uint16_t chunkSize);
+
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
    * currently tracing, this is a no-op.
    *
    * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void reportMark(const std::string_view& name, HighResTimeStamp start);
+  void reportMark(
+      const std::string_view& name,
+      HighResTimeStamp start,
+      folly::dynamic&& detail = nullptr);
 
   /**
    * Record a `Performance.measure()` event - a labelled duration. If not
@@ -78,7 +81,7 @@ class PerformanceTracer {
       const std::string_view& name,
       HighResTimeStamp start,
       HighResDuration duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      folly::dynamic&& detail = nullptr);
 
   /**
    * Record a "TimeStamp" Trace Event - a labelled entry on Performance

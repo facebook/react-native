@@ -92,6 +92,8 @@ public abstract class LazyReactPackage : ReactPackage {
    * @param reactContext react application context that can be used to create modules
    * @return A [List]<[NativeModule]> to register
    */
+  @Suppress("DEPRECATION")
+  @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
       buildList {
         for (holder in getNativeModules(reactContext)) {

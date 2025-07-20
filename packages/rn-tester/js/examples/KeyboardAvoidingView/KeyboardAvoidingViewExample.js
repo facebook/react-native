@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import React, {useState} from 'react';
 import {
   Alert,
@@ -276,4 +278,4 @@ exports.examples = [
       return <KeyboardAvoidingContentContainerStyle />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

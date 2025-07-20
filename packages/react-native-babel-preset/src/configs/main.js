@@ -38,19 +38,6 @@ function isFirstParty(fileName) {
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-const defaultPlugins = [
-  [require('babel-plugin-syntax-hermes-parser'), {parseLangTypes: 'flow'}],
-  [require('babel-plugin-transform-flow-enums')],
-  [require('@babel/plugin-transform-block-scoping')],
-  [require('@babel/plugin-transform-class-properties'), {loose}],
-  [require('@babel/plugin-transform-private-methods'), {loose}],
-  [require('@babel/plugin-transform-private-property-in-object'), {loose}],
-  [require('@babel/plugin-syntax-dynamic-import')],
-  [require('@babel/plugin-syntax-export-default-from')],
-  ...passthroughSyntaxPlugins,
-  [require('@babel/plugin-transform-unicode-regex')],
-];
-
 // For Static Hermes testing (experimental), the hermes-canary transformProfile
 // is used to enable regenerator (and some related lowering passes) because SH
 // requires more Babel lowering than Hermes temporarily.
@@ -234,7 +221,28 @@ const getPreset = (src, options) => {
         plugins: [require('@babel/plugin-transform-flow-strip-types')],
       },
       {
-        plugins: defaultPlugins,
+        plugins: [
+          [
+            require('babel-plugin-syntax-hermes-parser'),
+            {
+              parseLangTypes: 'flow',
+              reactRuntimeTarget: '19',
+              ...options.hermesParserOptions,
+            },
+          ],
+          [require('babel-plugin-transform-flow-enums')],
+          [require('@babel/plugin-transform-block-scoping')],
+          [require('@babel/plugin-transform-class-properties'), {loose}],
+          [require('@babel/plugin-transform-private-methods'), {loose}],
+          [
+            require('@babel/plugin-transform-private-property-in-object'),
+            {loose},
+          ],
+          [require('@babel/plugin-syntax-dynamic-import')],
+          [require('@babel/plugin-syntax-export-default-from')],
+          ...passthroughSyntaxPlugins,
+          [require('@babel/plugin-transform-unicode-regex')],
+        ],
       },
       {
         test: isTypeScriptSource,

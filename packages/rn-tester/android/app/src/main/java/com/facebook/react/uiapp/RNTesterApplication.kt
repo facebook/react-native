@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uiapp
 
 import android.app.Application
@@ -37,6 +39,9 @@ import com.facebook.react.views.view.setEdgeToEdgeFeatureFlagOn
 import com.facebook.soloader.SoLoader
 
 internal class RNTesterApplication : Application(), ReactApplication {
+  @Deprecated(
+      "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
+      replaceWith = ReplaceWith("reactHost"))
   override val reactNativeHost: ReactNativeHost by lazy {
     object : DefaultReactNativeHost(this) {
       public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
@@ -86,10 +91,6 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   }
             },
             object : ReactPackage, ViewManagerOnDemandReactPackage {
-              override fun createNativeModules(
-                  reactContext: ReactApplicationContext
-              ): List<NativeModule> = emptyList()
-
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
                   listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
 

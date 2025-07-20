@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTexterText from '../../components/RNTesterText';
 import React from 'react';
 import {
@@ -830,4 +832,4 @@ exports.examples = [
       return <BorderExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <string>
-
 #include <glog/logging.h>
 
 #include <fb/glog_init.h>
@@ -14,6 +12,7 @@
 
 #include "CatalystInstanceImpl.h"
 #include "CxxModuleWrapperBase.h"
+#include "InspectorNetworkReporter.h"
 #include "InspectorNetworkRequestListener.h"
 #include "JInspector.h"
 #include "JavaScriptExecutorHolder.h"
@@ -46,6 +45,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JInspector::registerNatives();
     ReactInstanceManagerInspectorTarget::registerNatives();
     InspectorNetworkRequestListener::registerNatives();
+    InspectorNetworkReporter::registerNatives();
   });
 }
 
