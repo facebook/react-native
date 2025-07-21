@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6502c090532e1d7d2ac67cf6e711d9f4>>
+ * @generated SignedSource<<0c0f09e9761d64995750cac8cd7c3291>>
  */
 
 /**
@@ -475,6 +475,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::releaseImageDataWhenConsumed();
+  }
+
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    auto value = values_["shouldPressibilityUseW3CPointerEventsForHover"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::shouldPressibilityUseW3CPointerEventsForHover();
   }
 
   bool skipActivityIdentityAssertionOnHostPause() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f310a5dc27fd655eab4445cb25d4c85c>>
+ * @generated SignedSource<<1c3be6a8e7e298c649449d87349f1979>>
  */
 
 /**
@@ -324,6 +324,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool releaseImageDataWhenConsumed() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("releaseImageDataWhenConsumed");
+    return method(javaProvider_);
+  }
+
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("shouldPressibilityUseW3CPointerEventsForHover");
     return method(javaProvider_);
   }
 
@@ -655,6 +661,11 @@ bool JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed(
   return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause();
@@ -900,6 +911,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "releaseImageDataWhenConsumed",
         JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed),
+      makeNativeMethod(
+        "shouldPressibilityUseW3CPointerEventsForHover",
+        JReactNativeFeatureFlagsCxxInterop::shouldPressibilityUseW3CPointerEventsForHover),
       makeNativeMethod(
         "skipActivityIdentityAssertionOnHostPause",
         JReactNativeFeatureFlagsCxxInterop::skipActivityIdentityAssertionOnHostPause),

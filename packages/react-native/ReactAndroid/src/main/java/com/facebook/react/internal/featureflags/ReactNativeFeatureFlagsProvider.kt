@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<780793412b76f101be1569d7a866c435>>
+ * @generated SignedSource<<e13be1abf192a3fe614863c9114ca5d4>>
  */
 
 /**
@@ -118,6 +118,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun preventShadowTreeCommitExhaustionWithLocking(): Boolean
 
   @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
   @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 

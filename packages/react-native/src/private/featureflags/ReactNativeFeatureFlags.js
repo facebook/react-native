@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5b97c3df370225b7601f7375bb03ce0>>
+ * @generated SignedSource<<3f35149de427b2ee7338a3fddd268083>>
  * @flow strict
  * @noformat
  */
@@ -94,6 +94,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustionWithLocking: Getter<boolean>,
   releaseImageDataWhenConsumed: Getter<boolean>,
+  shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
@@ -361,6 +362,10 @@ export const preventShadowTreeCommitExhaustionWithLocking: Getter<boolean> = cre
  * Releases the cached image data when it is consumed by the observers.
  */
 export const releaseImageDataWhenConsumed: Getter<boolean> = createNativeFlagGetter('releaseImageDataWhenConsumed', false);
+/**
+ * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+ */
+export const shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean> = createNativeFlagGetter('shouldPressibilityUseW3CPointerEventsForHover', false);
 /**
  * Skip activity identity assertion in ReactHostImpl::onHostPause()
  */
