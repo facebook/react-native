@@ -257,18 +257,17 @@ declare const Image: ImageType
 declare const ImageViewNativeComponent_default: HostComponent<ImageHostComponentProps>
 declare const InputAccessoryView: typeof InputAccessoryView_default
 declare const InputAccessoryView_default: React.ComponentType<InputAccessoryViewProps>
-declare const InteractionManager: typeof InteractionManager_default
-declare const InteractionManager_default: typeof InteractionManagerImpl
-declare const InteractionManagerImpl: {
+declare const InteractionManager: typeof InteractionManagerStub_default
+declare const InteractionManagerStub_default: {
   Events: {
     interactionComplete: "interactionComplete"
     interactionStart: "interactionStart"
   }
-  addListener: (
+  addListener(
     eventType: string,
     listener: (...args: any) => unknown,
     context: unknown,
-  ) => EventSubscription
+  ): EventSubscription
   clearInteractionHandle(handle: Handle): void
   createInteractionHandle(): Handle
   runAfterInteractions(task: null | Task | undefined): {

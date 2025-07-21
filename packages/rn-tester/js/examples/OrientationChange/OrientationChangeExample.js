@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useEffect, useState} from 'react';
@@ -57,4 +59,4 @@ exports.examples = [
       return <OrientationChangeExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

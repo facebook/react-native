@@ -36,8 +36,8 @@ namespace facebook::react::jsinspector_modern {
 class HostAgent::Impl final {
  public:
   explicit Impl(
-      HostAgent& hostAgent,
-      FrontendChannel frontendChannel,
+      HostAgent& /*hostAgent*/,
+      const FrontendChannel& frontendChannel,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
@@ -126,11 +126,11 @@ class HostAgent::Impl final {
     else if (req.method == "Page.reload") {
       targetController_.getDelegate().onReload({
           .ignoreCache =
-              req.params.isObject() && req.params.count("ignoreCache")
+              req.params.isObject() && (req.params.count("ignoreCache") != 0u)
               ? std::optional(req.params.at("ignoreCache").asBool())
               : std::nullopt,
           .scriptToEvaluateOnLoad = req.params.isObject() &&
-                  req.params.count("scriptToEvaluateOnLoad")
+                  (req.params.count("scriptToEvaluateOnLoad") != 0u)
               ? std::optional(
                     req.params.at("scriptToEvaluateOnLoad").asString())
               : std::nullopt,
@@ -139,7 +139,8 @@ class HostAgent::Impl final {
       shouldSendOKResponse = true;
       isFinishedHandlingRequest = true;
     } else if (req.method == "Overlay.setPausedInDebuggerMessage") {
-      auto message = req.params.isObject() && req.params.count("message")
+      auto message =
+          req.params.isObject() && (req.params.count("message") != 0u)
           ? std::optional(req.params.at("message").asString())
           : std::nullopt;
       if (!isPausedInDebuggerOverlayVisible_ && message.has_value()) {

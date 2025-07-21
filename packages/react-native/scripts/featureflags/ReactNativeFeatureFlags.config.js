@@ -462,22 +462,24 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableVirtualViewRenderState: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
+        dateAdded: '2025-06-25',
         description:
           'Enables reading render state when dispatching VirtualView events.',
         expectedReleaseValue: true,
-        purpose: 'operational',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
     enableVirtualViewWindowFocusDetection: {
       defaultValue: false,
       metadata: {
+        dateAdded: '2025-06-24',
         description:
           'Enables window focus detection for prioritizing VirtualView events.',
         expectedReleaseValue: true,
-        purpose: 'operational',
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -543,7 +545,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     releaseImageDataWhenConsumed: {
       defaultValue: false,
@@ -708,17 +710,6 @@ const definitions: FeatureFlagDefinitions = {
 
   jsOnly: {
     ...testDefinitions.jsOnly,
-    alwaysFlattenAnimatedStyles: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-06-02',
-        description:
-          'Changes `Animated` to always flatten style, fixing a bug with shadowed `AnimatedNode` instances.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
       metadata: {
@@ -741,16 +732,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    avoidStateUpdateInAnimatedPropsMemo: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     deferFlatListFocusChangeRenderUpdate: {
       defaultValue: false,
       metadata: {
@@ -759,16 +740,6 @@ const definitions: FeatureFlagDefinitions = {
           'Use the deferred cell render update mechanism for focus change in FlatList.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    disableInteractionManager: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -814,16 +785,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    scheduleAnimatedCleanupInMicrotask: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes the cleanup of `AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       metadata: {
@@ -851,16 +812,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    utilizeTokensInIntersectionObserver: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2025-05-06',
-        description: 'Use tokens in IntersectionObserver vs ShadowNode.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

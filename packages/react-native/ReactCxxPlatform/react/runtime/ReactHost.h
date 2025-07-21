@@ -52,8 +52,7 @@ class ReactHost {
       std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate = nullptr,
       std::shared_ptr<NativeAnimatedNodesManagerProvider>
           animatedNodesManagerProvider = nullptr,
-      ReactInstance::BindingsInstallFunc bindingsInstallFunc =
-          nullptr) noexcept;
+      ReactInstance::BindingsInstallFunc bindingsInstallFunc = nullptr);
   ReactHost(const ReactHost&) = delete;
   ReactHost& operator=(const ReactHost&) = delete;
   ReactHost(ReactHost&&) noexcept = delete;

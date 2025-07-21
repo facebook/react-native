@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
@@ -168,4 +170,4 @@ exports.examples = [
       return <OpenSettingsExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -14,7 +14,7 @@ enum ReactNativeLogLevel {
   ReactNativeLogLevelFatal = 4
 };
 
-typedef void (*reactnativelogfunctype)(ReactNativeLogLevel, const char*);
+using reactnativelogfunctype = void (*)(ReactNativeLogLevel, const char*);
 
 #ifdef __cplusplus
 extern "C" {

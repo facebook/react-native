@@ -6,7 +6,12 @@
  */
 
 #include "TesterAppDelegate.h"
+#include "NativeFantom.h"
 #include "platform/TesterTurboModuleManagerDelegate.h"
+#include "stubs/StubClock.h"
+#include "stubs/StubHttpClient.h"
+#include "stubs/StubQueue.h"
+#include "stubs/StubWebSocketClient.h"
 
 #include <folly/dynamic.h>
 #include <folly/json.h>
@@ -25,10 +30,6 @@
 #include <react/utils/RunLoopObserverManager.h>
 #include <iostream>
 #include <vector>
-
-#include "NativeFantom.h"
-#include "stubs/StubClock.h"
-#include "stubs/StubQueue.h"
 
 namespace facebook::react {
 
@@ -75,6 +76,9 @@ TesterAppDelegate::TesterAppDelegate(
         queue_ = queue;
         return queue;
       }));
+  contextContainer->insert(HttpClientFactoryKey, getHttpClientFactory());
+  contextContainer->insert(
+      WebSocketClientFactoryKey, getWebSocketClientFactory());
 
   runLoopObserverManager_ = std::make_shared<RunLoopObserverManager>();
 

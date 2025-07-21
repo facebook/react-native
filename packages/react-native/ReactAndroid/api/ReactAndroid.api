@@ -531,20 +531,21 @@ public abstract interface class com/facebook/react/bridge/ActivityEventListener 
 	public fun onUserLeaveHint (Landroid/app/Activity;)V
 }
 
-public class com/facebook/react/bridge/Arguments {
-	public fun <init> ()V
-	public static fun createArray ()Lcom/facebook/react/bridge/WritableArray;
-	public static fun createMap ()Lcom/facebook/react/bridge/WritableMap;
-	public static fun fromArray (Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableArray;
-	public static fun fromBundle (Landroid/os/Bundle;)Lcom/facebook/react/bridge/WritableMap;
-	public static fun fromJavaArgs ([Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableNativeArray;
-	public static fun fromList (Ljava/util/List;)Lcom/facebook/react/bridge/WritableArray;
-	public static fun makeNativeArray (Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableNativeArray;
-	public static fun makeNativeArray (Ljava/util/List;)Lcom/facebook/react/bridge/WritableNativeArray;
-	public static fun makeNativeMap (Landroid/os/Bundle;)Lcom/facebook/react/bridge/WritableNativeMap;
-	public static fun makeNativeMap (Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;
-	public static fun toBundle (Lcom/facebook/react/bridge/ReadableMap;)Landroid/os/Bundle;
-	public static fun toList (Lcom/facebook/react/bridge/ReadableArray;)Ljava/util/ArrayList;
+public final class com/facebook/react/bridge/Arguments {
+	public static final field INSTANCE Lcom/facebook/react/bridge/Arguments;
+	public static final fun createArray ()Lcom/facebook/react/bridge/WritableArray;
+	public static final fun createMap ()Lcom/facebook/react/bridge/WritableMap;
+	public static final fun fromArray (Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableArray;
+	public static final fun fromBundle (Landroid/os/Bundle;)Lcom/facebook/react/bridge/WritableMap;
+	public static final fun fromJavaArgs (Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableNativeArray;
+	public static final fun fromJavaArgs ([Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableNativeArray;
+	public static final fun fromList (Ljava/util/List;)Lcom/facebook/react/bridge/WritableArray;
+	public static final fun makeNativeArray (Ljava/lang/Object;)Lcom/facebook/react/bridge/WritableNativeArray;
+	public static final fun makeNativeArray (Ljava/util/List;)Lcom/facebook/react/bridge/WritableNativeArray;
+	public static final fun makeNativeMap (Landroid/os/Bundle;)Lcom/facebook/react/bridge/WritableNativeMap;
+	public static final fun makeNativeMap (Ljava/util/Map;)Lcom/facebook/react/bridge/WritableNativeMap;
+	public static final fun toBundle (Lcom/facebook/react/bridge/ReadableMap;)Landroid/os/Bundle;
+	public static final fun toList (Lcom/facebook/react/bridge/ReadableArray;)Ljava/util/ArrayList;
 }
 
 public final class com/facebook/react/bridge/AssertionException : java/lang/RuntimeException {

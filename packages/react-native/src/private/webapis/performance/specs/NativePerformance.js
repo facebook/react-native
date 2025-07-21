@@ -53,7 +53,7 @@ export type PerformanceObserverInit = {
 };
 
 export interface Spec extends TurboModule {
-  +now?: () => number;
+  +now: () => number;
   +reportMark?: (name: string, startTime: number, entry: mixed) => void;
   +reportMeasure?: (
     name: string,
@@ -62,36 +62,36 @@ export interface Spec extends TurboModule {
     entry: mixed,
   ) => void;
   +getMarkTime?: (name: string) => ?number;
-  +clearMarks?: (entryName?: string) => void;
-  +clearMeasures?: (entryName?: string) => void;
-  +getEntries?: () => $ReadOnlyArray<RawPerformanceEntry>;
-  +getEntriesByName?: (
+  +clearMarks: (entryName?: string) => void;
+  +clearMeasures: (entryName?: string) => void;
+  +getEntries: () => $ReadOnlyArray<RawPerformanceEntry>;
+  +getEntriesByName: (
     entryName: string,
     entryType?: ?RawPerformanceEntryType,
   ) => $ReadOnlyArray<RawPerformanceEntry>;
-  +getEntriesByType?: (
+  +getEntriesByType: (
     entryType: RawPerformanceEntryType,
   ) => $ReadOnlyArray<RawPerformanceEntry>;
-  +getEventCounts?: () => $ReadOnlyArray<[string, number]>;
+  +getEventCounts: () => $ReadOnlyArray<[string, number]>;
   +getSimpleMemoryInfo: () => NativeMemoryInfo;
   +getReactNativeStartupTiming: () => ReactNativeStartupTiming;
 
-  +createObserver?: (
+  +createObserver: (
     callback: NativeBatchedObserverCallback,
   ) => OpaqueNativeObserverHandle;
-  +getDroppedEntriesCount?: (observer: OpaqueNativeObserverHandle) => number;
+  +getDroppedEntriesCount: (observer: OpaqueNativeObserverHandle) => number;
 
-  +observe?: (
+  +observe: (
     observer: OpaqueNativeObserverHandle,
     options: PerformanceObserverInit,
   ) => void;
-  +disconnect?: (observer: OpaqueNativeObserverHandle) => void;
-  +takeRecords?: (
+  +disconnect: (observer: OpaqueNativeObserverHandle) => void;
+  +takeRecords: (
     observer: OpaqueNativeObserverHandle,
     sort: boolean,
   ) => $ReadOnlyArray<RawPerformanceEntry>;
 
-  +getSupportedPerformanceEntryTypes?: () => $ReadOnlyArray<RawPerformanceEntryType>;
+  +getSupportedPerformanceEntryTypes: () => $ReadOnlyArray<RawPerformanceEntryType>;
 
   +setCurrentTimeStampForTesting?: (timeStamp: number) => void;
   +clearEventCountsForTesting?: () => void;

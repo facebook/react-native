@@ -31,12 +31,8 @@ function mockQueueMicrotask() {
 }
 
 describe('Animated', () => {
-  let ReactNativeFeatureFlags;
-
   beforeEach(() => {
     jest.resetModules();
-
-    ReactNativeFeatureFlags = require('../../../src/private/featureflags/ReactNativeFeatureFlags');
   });
 
   mockQueueMicrotask();
@@ -113,50 +109,7 @@ describe('Animated', () => {
       expect(callback.mock.calls.length).toBe(1);
     });
 
-    it('does not detach on updates', async () => {
-      ReactNativeFeatureFlags.override({
-        scheduleAnimatedCleanupInMicrotask: () => false,
-      });
-
-      const opacity = new Animated.Value(0);
-      jest.spyOn(opacity, '__detach');
-
-      const root = await create(<Animated.View style={{opacity}} />);
-      expect(opacity.__detach).not.toBeCalled();
-
-      await update(root, <Animated.View style={{opacity}} />);
-      expect(opacity.__detach).not.toBeCalled();
-
-      await unmount(root);
-      expect(opacity.__detach).toBeCalled();
-    });
-
-    it('stops animation when detached', async () => {
-      ReactNativeFeatureFlags.override({
-        scheduleAnimatedCleanupInMicrotask: () => false,
-      });
-
-      const opacity = new Animated.Value(0);
-      const callback = jest.fn();
-
-      const root = await create(<Animated.View style={{opacity}} />);
-
-      Animated.timing(opacity, {
-        toValue: 10,
-        duration: 1000,
-        useNativeDriver: false,
-      }).start(callback);
-
-      await unmount(root);
-
-      expect(callback).toBeCalledWith({finished: false});
-    });
-
     it('detaches only on unmount (in a microtask)', async () => {
-      ReactNativeFeatureFlags.override({
-        scheduleAnimatedCleanupInMicrotask: () => true,
-      });
-
       const opacity = new Animated.Value(0);
       jest.spyOn(opacity, '__detach');
 
@@ -175,10 +128,6 @@ describe('Animated', () => {
     });
 
     it('restores default values only on update (in a microtask)', async () => {
-      ReactNativeFeatureFlags.override({
-        scheduleAnimatedCleanupInMicrotask: () => true,
-      });
-
       const __restoreDefaultValues = jest.spyOn(
         AnimatedProps.prototype,
         '__restoreDefaultValues',
@@ -213,10 +162,6 @@ describe('Animated', () => {
     });
 
     it('stops animation when detached (in a microtask)', async () => {
-      ReactNativeFeatureFlags.override({
-        scheduleAnimatedCleanupInMicrotask: () => true,
-      });
-
       const opacity = new Animated.Value(0);
       const callback = jest.fn();
 

@@ -18,15 +18,18 @@ import org.robolectric.annotation.Implements
 import org.robolectric.shadow.api.Shadow
 
 @Implements(Arguments::class)
-object ShadowArguments {
-  @JvmStatic @Implementation fun createArray(): WritableArray = JavaOnlyArray()
+class ShadowArguments {
 
-  @JvmStatic @Implementation fun createMap(): WritableMap = JavaOnlyMap()
+  companion object {
+    @JvmStatic @Implementation fun createArray(): WritableArray = JavaOnlyArray()
 
-  @JvmStatic
-  @Implementation
-  fun fromJavaArgs(args: Array<Any?>): WritableNativeArray =
-      WritableNativeArray().apply {
-        (Shadow.extract(this) as ShadowNativeArray).backingArray = JavaOnlyArray.of(*args)
-      }
+    @JvmStatic @Implementation fun createMap(): WritableMap = JavaOnlyMap()
+
+    @JvmStatic
+    @Implementation
+    fun fromJavaArgs(args: Array<Any?>): WritableNativeArray =
+        WritableNativeArray().apply {
+          (Shadow.extract(this) as ShadowNativeArray).backingArray = JavaOnlyArray.of(*args)
+        }
+  }
 }

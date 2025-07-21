@@ -10,8 +10,6 @@
 #include <cassert>
 #include <list>
 #include <mutex>
-#include <tuple>
-#include <unordered_map>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -24,7 +22,7 @@ IRemoteConnection::~IRemoteConnection() {}
 IInspector::~IInspector() {}
 IPageStatusListener::~IPageStatusListener() {}
 
-const folly::dynamic targetCapabilitiesToDynamic(
+folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities) {
   return folly::dynamic::object(
       "nativePageReloads", capabilities.nativePageReloads)(
@@ -56,7 +54,7 @@ class InspectorImpl : public IInspector {
    public:
     Page(
         int id,
-        const std::string& title,
+        const std::string& description,
         const std::string& vm,
         ConnectFunc connectFunc,
         InspectorTargetCapabilities capabilities);
@@ -87,7 +85,7 @@ InspectorImpl::Page::Page(
       description_(description),
       vm_(vm),
       connectFunc_(std::move(connectFunc)),
-      capabilities_(std::move(capabilities)) {}
+      capabilities_(capabilities) {}
 
 InspectorImpl::Page::operator InspectorPageDescription() const {
   return InspectorPageDescription{
@@ -124,7 +122,7 @@ void InspectorImpl::removePage(int pageId) {
   std::scoped_lock lock(mutex_);
 
   if (pages_.erase(pageId) != 0) {
-    for (auto listenerWeak : listeners_) {
+    for (auto& listenerWeak : listeners_) {
       if (auto listener = listenerWeak.lock()) {
         listener->onPageRemoved(pageId);
       }
@@ -138,6 +136,7 @@ std::vector<InspectorPageDescription> InspectorImpl::getPages() const {
   std::vector<InspectorPageDescription> inspectorPages;
   // pages_ is a std::map keyed on an incremental id, so this is insertion
   // ordered.
+  inspectorPages.reserve(pages_.size());
   for (auto& it : pages_) {
     inspectorPages.push_back(InspectorPageDescription(it.second));
   }

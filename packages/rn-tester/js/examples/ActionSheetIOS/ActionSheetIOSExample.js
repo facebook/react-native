@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {HostInstance} from 'react-native';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -573,4 +574,4 @@ exports.examples = [
       return <ShareScreenshotAnchorExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -184,7 +184,7 @@ describe.each(['HTTP', 'HTTPS'])(
     describe.each(['10.0.2.2:8080', '[::1]', 'example.com:2000'])(
       '%s aliasing to and from localhost',
       sourceHost => {
-        test('in source map fetching during Debugger.scriptParsed', async () => {
+        test('Debugger.scriptParsed - in source map fetching', async () => {
           serverRef.app.use('/source-map', serveStaticJson({version: 3}));
           const {device, debugger_} = await createAndConnectTarget(
             serverRef,
@@ -214,6 +214,53 @@ describe.each(['HTTP', 'HTTPS'])(
             expect(scriptParsedMessage.params.sourceMapURL).toEqual(
               `${serverRef.serverBaseUrl}/source-map`,
             );
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+
+        test('Runtime.consoleAPICalled - in location resolutions', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            {
+              app: 'bar-app',
+              id: 'page1',
+              title: 'bar-title',
+              vm: 'bar-vm',
+            },
+            {
+              deviceHostHeader: sourceHost,
+            },
+          );
+          try {
+            const consoleMessage = await sendFromTargetToDebugger(
+              device,
+              debugger_,
+              'page1',
+              {
+                method: 'Runtime.consoleAPICalled',
+                params: {
+                  stackTrace: {
+                    callFrames: [
+                      {
+                        url: `${protocol.toLowerCase()}://${sourceHost}/bundleFile:1:2`,
+                        field2: 'aaa',
+                      },
+                      {
+                        url: `${protocol.toLowerCase()}://${sourceHost}/bundleFile:5:4`,
+                        field3: 'bbb',
+                      },
+                    ],
+                  },
+                },
+              },
+            );
+            expect(consoleMessage.params.stackTrace.callFrames).toEqual([
+              {url: `${serverRef.serverBaseUrl}/bundleFile:1:2`, field2: 'aaa'},
+              {url: `${serverRef.serverBaseUrl}/bundleFile:5:4`, field3: 'bbb'},
+            ]);
           } finally {
             device.close();
             debugger_.close();

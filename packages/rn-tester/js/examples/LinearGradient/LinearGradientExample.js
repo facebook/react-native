@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -305,4 +306,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

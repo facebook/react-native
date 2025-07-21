@@ -190,7 +190,8 @@ TextMeasurement TextLayoutManager::measure(
   };
 
   auto measurement =
-      ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid()
+      (ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid() ||
+       ReactNativeFeatureFlags::enablePreparedTextLayout())
       ? measureText()
       : textMeasureCache_.get(
             {.attributedString = attributedString,
@@ -310,14 +311,19 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat)>("prepareTextLayout");
 
-  return preparedTextCache_.get(
+  static auto reusePreparedLayoutWithNewReactTags =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<JPreparedLayout::javaobject(
+              JPreparedLayout::javaobject, jintArray)>(
+              "reusePreparedLayoutWithNewReactTags");
+
+  const auto [key, preparedText] = preparedTextCache_.getWithKey(
       {.attributedString = attributedString,
        .paragraphAttributes = paragraphAttributes,
        .layoutConstraints = layoutConstraints},
-      [&] {
+      [&]() {
         const auto& fabricUIManager =
             contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
         auto attributedStringMB = JReadableMapBuffer::createWithContents(
             toMapBuffer(attributedString));
         auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
@@ -336,6 +342,39 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
             minimumSize.height,
             maximumSize.height))};
       });
+
+  // PreparedTextCacheKey allows equality of layouts which are the same
+  // display-wise, but ShadowView fragments (and thus react tags) may have
+  // changed.
+  const auto& fragments = attributedString.getFragments();
+  const auto& cacheKeyFragments = key->attributedString.getFragments();
+  bool needsNewReactTags = [&] {
+    for (size_t i = 0; i < fragments.size(); i++) {
+      if (fragments[i].parentShadowView.tag !=
+          cacheKeyFragments[i].parentShadowView.tag) {
+        return true;
+      }
+    }
+    return false;
+  }();
+
+  if (needsNewReactTags) {
+    std::vector<int> reactTags(fragments.size());
+    for (size_t i = 0; i < reactTags.size(); i++) {
+      reactTags[i] = fragments[i].parentShadowView.tag;
+    }
+
+    auto javaReactTags = jni::JArrayInt::newArray(fragments.size());
+    javaReactTags->setRegion(
+        0, static_cast<jsize>(reactTags.size()), reactTags.data());
+
+    const auto& fabricUIManager =
+        contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+    return PreparedLayout{jni::make_global(reusePreparedLayoutWithNewReactTags(
+        fabricUIManager, preparedText->get(), javaReactTags.get()))};
+  } else {
+    return PreparedLayout{*preparedText};
+  }
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(

@@ -66,7 +66,7 @@
 
 static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
-typedef void (^RCTPendingCall)();
+using RCTPendingCall = void (^)();
 
 using namespace facebook::jsi;
 using namespace facebook::react;

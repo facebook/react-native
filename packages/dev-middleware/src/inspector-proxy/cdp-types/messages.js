@@ -48,6 +48,7 @@ export type CDPClientMessage =
 
 export type CDPServerMessage =
   | CDPEvent<'Debugger.scriptParsed'>
+  | CDPEvent<'Runtime.consoleAPICalled'>
   | CDPEvent<>
   | CDPResponse<'Debugger.getScriptSource'>
   | CDPResponse<>;

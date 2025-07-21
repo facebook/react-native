@@ -35,8 +35,9 @@ import {
 } from './internals/Utilities';
 import MemoryInfo from './MemoryInfo';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
-import NativePerformance from './specs/NativePerformance';
+import MaybeNativePerformance from './specs/NativePerformance';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
+import nullthrows from 'nullthrows';
 
 export type PerformanceMeasureOptions =
   | $ReadOnly<{
@@ -58,11 +59,13 @@ export type PerformanceMeasureOptions =
 const ENTRY_TYPES_AVAILABLE_FROM_TIMELINE: $ReadOnlyArray<PerformanceEntryType> =
   ['mark', 'measure'];
 
-const cachedReportMark = NativePerformance?.reportMark;
-const cachedReportMeasure = NativePerformance?.reportMeasure;
-const cachedGetMarkTime = NativePerformance?.getMarkTime;
-const cachedNativeClearMarks = NativePerformance?.clearMarks;
-const cachedNativeClearMeasures = NativePerformance?.clearMeasures;
+const NativePerformance = nullthrows(MaybeNativePerformance);
+
+const cachedReportMark = NativePerformance.reportMark;
+const cachedReportMeasure = NativePerformance.reportMeasure;
+const cachedGetMarkTime = NativePerformance.getMarkTime;
+const cachedNativeClearMarks = NativePerformance.clearMarks;
+const cachedNativeClearMeasures = NativePerformance.clearMeasures;
 
 const MARK_OPTIONS_REUSABLE_OBJECT: {...PerformanceMarkOptions} = {
   startTime: 0,
@@ -98,53 +101,46 @@ export default class Performance {
 
   // Get the current JS memory information.
   get memory(): MemoryInfo {
-    if (NativePerformance?.getSimpleMemoryInfo) {
-      // JSI API implementations may have different variants of names for the JS
-      // heap information we need here. We will parse the result based on our
-      // guess of the implementation for now.
-      const memoryInfo = NativePerformance.getSimpleMemoryInfo();
-      if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
-        // We got memory information from Hermes
-        const {
-          hermes_heapSize: totalJSHeapSize,
-          hermes_allocatedBytes: usedJSHeapSize,
-        } = memoryInfo;
+    // JSI API implementations may have different variants of names for the JS
+    // heap information we need here. We will parse the result based on our
+    // guess of the implementation for now.
+    const memoryInfo = NativePerformance.getSimpleMemoryInfo();
+    if (memoryInfo.hasOwnProperty('hermes_heapSize')) {
+      // We got memory information from Hermes
+      const {
+        hermes_heapSize: totalJSHeapSize,
+        hermes_allocatedBytes: usedJSHeapSize,
+      } = memoryInfo;
 
-        return new MemoryInfo({
-          jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
-          totalJSHeapSize,
-          usedJSHeapSize,
-        });
-      } else {
-        // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
-        return new MemoryInfo();
-      }
+      return new MemoryInfo({
+        jsHeapSizeLimit: null, // We don't know the heap size limit from Hermes.
+        totalJSHeapSize,
+        usedJSHeapSize,
+      });
+    } else {
+      // JSC and V8 has no native implementations for memory information in JSI::Instrumentation
+      return new MemoryInfo();
     }
-
-    return new MemoryInfo();
   }
 
   // Startup metrics is not used in web, but only in React Native.
   get rnStartupTiming(): ReactNativeStartupTiming {
-    if (NativePerformance?.getReactNativeStartupTiming) {
-      const {
-        startTime,
-        endTime,
-        initializeRuntimeStart,
-        initializeRuntimeEnd,
-        executeJavaScriptBundleEntryPointStart,
-        executeJavaScriptBundleEntryPointEnd,
-      } = NativePerformance.getReactNativeStartupTiming();
-      return new ReactNativeStartupTiming({
-        startTime,
-        endTime,
-        initializeRuntimeStart,
-        initializeRuntimeEnd,
-        executeJavaScriptBundleEntryPointStart,
-        executeJavaScriptBundleEntryPointEnd,
-      });
-    }
-    return new ReactNativeStartupTiming();
+    const {
+      startTime,
+      endTime,
+      initializeRuntimeStart,
+      initializeRuntimeEnd,
+      executeJavaScriptBundleEntryPointStart,
+      executeJavaScriptBundleEntryPointEnd,
+    } = NativePerformance.getReactNativeStartupTiming();
+    return new ReactNativeStartupTiming({
+      startTime,
+      endTime,
+      initializeRuntimeStart,
+      initializeRuntimeEnd,
+      executeJavaScriptBundleEntryPointStart,
+      executeJavaScriptBundleEntryPointEnd,
+    });
   }
 
   mark(
@@ -217,11 +213,6 @@ export default class Performance {
   }
 
   clearMarks(markName?: string): void {
-    if (!cachedNativeClearMarks) {
-      warnNoNativePerformance();
-      return;
-    }
-
     cachedNativeClearMarks(markName);
   }
 
@@ -414,11 +405,6 @@ export default class Performance {
   }
 
   clearMeasures(measureName?: string): void {
-    if (!cachedNativeClearMeasures) {
-      warnNoNativePerformance();
-      return;
-    }
-
     cachedNativeClearMeasures(measureName);
   }
 
@@ -434,10 +420,6 @@ export default class Performance {
    * https://www.w3.org/TR/performance-timeline/#extensions-to-the-performance-interface
    */
   getEntries(): PerformanceEntryList {
-    if (!NativePerformance?.getEntries) {
-      warnNoNativePerformance();
-      return [];
-    }
     return NativePerformance.getEntries().map(rawToPerformanceEntry);
   }
 
@@ -447,11 +429,6 @@ export default class Performance {
       !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
     ) {
       console.warn('Deprecated API for given entry type.');
-      return [];
-    }
-
-    if (!NativePerformance?.getEntriesByType) {
-      warnNoNativePerformance();
       return [];
     }
 
@@ -469,11 +446,6 @@ export default class Performance {
       !ENTRY_TYPES_AVAILABLE_FROM_TIMELINE.includes(entryType)
     ) {
       console.warn('Deprecated API for given entry type.');
-      return [];
-    }
-
-    if (!NativePerformance?.getEntriesByName) {
-      warnNoNativePerformance();
       return [];
     }
 
