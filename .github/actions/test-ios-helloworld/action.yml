@@ -23,6 +23,8 @@ runs:
       uses: ./.github/actions/setup-xcode
     - name: Setup node.js
       uses: ./.github/actions/setup-node
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
     - name: Create Hermes folder
       shell: bash
       run: mkdir -p "$HERMES_WS_DIR"
@@ -34,8 +36,6 @@ runs:
     - name: Print Downloaded hermes
       shell: bash
       run: ls -lR "$HERMES_WS_DIR"
-    - name: Run yarn
-      uses: ./.github/actions/yarn-install
     - name: Setup ruby
       uses: ruby/setup-ruby@v1
       with:
