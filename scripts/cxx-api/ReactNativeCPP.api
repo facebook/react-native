@@ -19567,7 +19567,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     return traits;
   }
-  void setImageManager(const SharedImageManager& imageManager);
+  void setImageManager(const std::shared_ptr<ImageManager>& imageManager);
   static ImageState initialStateData(
       const Props::Shared& props,
       const ShadowNodeFamily::Shared&,
@@ -35159,7 +35159,7 @@ inline long double floor(long double value) noexcept {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/imagemanager/ImageManager.h}:
 namespace facebook::react {
-using SharedImageManager = std::shared_ptr<ImageManager>;
+using std::shared_ptr<ImageManager> = std::shared_ptr<ImageManager>;
 class ImageManager {
  public:
   ImageManager(const ContextContainer::Shared& contextContainer);
