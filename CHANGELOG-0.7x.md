@@ -551,7 +551,7 @@ ChuiHW))
 - **Interop Layer**: Fixed adding child views to a native view using the interop layer. ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
 - **Debugger**: Restore "Paused in debugger" overlay icon. ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
 - **layout**: Layout direction changes are now honored on bundle reload. ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
-- **Networking**: Fix crash caused by `[RCTFileRequestHanlder invalidate]`. ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
+- **file reads**: Fix crash caused by `[RCTFileRequestHanlder invalidate]`. ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.77.2
 
