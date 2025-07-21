@@ -13,8 +13,11 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.window.layout.WindowMetricsCalculator
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -52,27 +55,54 @@ public object DisplayMetricsHolder {
   }
 
   @JvmStatic
-  public fun initDisplayMetricsIfNotInitialized(context: Context) {
+  public fun initDisplayMetricsIfNotInitialized(activity: Activity?) {
     if (screenDisplayMetrics != null) {
       return
     }
-    initDisplayMetrics(context)
+    initDisplayMetrics(activity)
   }
 
   @JvmStatic
-  public fun initDisplayMetrics(context: Context) {
-    val displayMetrics = context.resources.displayMetrics
-    windowDisplayMetrics = displayMetrics
-    val screenDisplayMetrics = DisplayMetrics()
-    screenDisplayMetrics.setTo(displayMetrics)
-    val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    // Get the real display metrics if we are using API level 17 or higher.
-    // The real metrics include system decor elements (e.g. soft menu bar).
-    //
-    // See:
-    // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
-    DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
+  public fun initDisplayMetricsIfNotInitialized(reactContext: ReactContext?) {
+    if (screenDisplayMetrics != null) {
+      return
+    }
+    initDisplayMetrics(reactContext)
+  }
+
+  @JvmStatic
+  public fun initDisplayMetrics(activity: Activity?) {
+    activity?.let {
+      val displayMetrics = it.resources.displayMetrics
+      val windowDisplayMetrics = DisplayMetrics()
+      val screenDisplayMetrics = DisplayMetrics()
+
+      windowDisplayMetrics.setTo(displayMetrics)
+      screenDisplayMetrics.setTo(displayMetrics)
+
+      if (isEdgeToEdgeFeatureFlagOn) {
+        WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(it).let { windowMetrics ->
+          windowDisplayMetrics.widthPixels = windowMetrics.bounds.width()
+          windowDisplayMetrics.heightPixels = windowMetrics.bounds.height()
+        }
+      }
+
+      val wm = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+      // Get the real display metrics if we are using API level 17 or higher.
+      // The real metrics include system decor elements (e.g. soft menu bar).
+      //
+      // See:
+      // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
+      @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
+
+      DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
+      DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
+    }
+  }
+
+  @JvmStatic
+  public fun initDisplayMetrics(reactContext: ReactContext?) {
+    initDisplayMetrics(reactContext?.currentActivity)
   }
 
   @JvmStatic
