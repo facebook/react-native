@@ -25,6 +25,10 @@ namespace facebook::react {
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
 
+namespace {
+const int MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING = 3;
+}
+
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
  * objects. If all `State` objects in the tree are not obsolete for the moment
@@ -241,23 +245,39 @@ CommitStatus ShadowTree::commit(
     const CommitOptions& commitOptions) const {
   [[maybe_unused]] int attempts = 0;
 
-  while (true) {
-    attempts++;
-
-    auto status = tryCommit(transaction, commitOptions);
-    if (status != CommitStatus::Failed) {
-      return status;
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking()) {
+    while (attempts < MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING) {
+      auto status = tryCommit(transaction, commitOptions);
+      if (status != CommitStatus::Failed) {
+        return status;
+      }
+      attempts++;
     }
 
-    // After multiple attempts, we failed to commit the transaction.
-    // Something internally went terribly wrong.
-    react_native_assert(attempts < 1024);
+    {
+      std::unique_lock lock(commitMutex_);
+      return tryCommit(transaction, commitOptions, true);
+    }
+  } else {
+    while (true) {
+      attempts++;
+
+      auto status = tryCommit(transaction, commitOptions);
+      if (status != CommitStatus::Failed) {
+        return status;
+      }
+
+      // After multiple attempts, we failed to commit the transaction.
+      // Something internally went terribly wrong.
+      react_native_assert(attempts < 1024);
+    }
   }
 }
 
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
-    const CommitOptions& commitOptions) const {
+    const CommitOptions& commitOptions,
+    bool hasLocked) const {
   TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
@@ -269,7 +289,10 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_);
+    std::shared_lock lock(commitMutex_, std::defer_lock);
+    if (!hasLocked) {
+      lock.lock();
+    }
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -310,7 +333,10 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_);
+    std::unique_lock lock(commitMutex_, std::defer_lock);
+    if (!hasLocked) {
+      lock.lock();
+    }
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
