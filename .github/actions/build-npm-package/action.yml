@@ -116,12 +116,12 @@ runs:
     - name: Print Artifacts Directory
       shell: bash
       run: ls -lR ./packages/react-native/ReactAndroid/external-artifacts/artifacts/
-    - name: Setup node.js
-      uses: ./.github/actions/setup-node
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
         cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
     - name: Install dependencies
       uses: ./.github/actions/yarn-install
     - name: Build packages
