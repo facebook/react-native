@@ -11,6 +11,7 @@
 
 #include "ValueAnimatedNode.h"
 
+#include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 
@@ -33,6 +34,11 @@ ValueAnimatedNode::ValueAnimatedNode(
 }
 
 bool ValueAnimatedNode::setRawValue(double value) noexcept {
+#ifdef REACT_NATIVE_DEBUG
+  LOG(INFO) << "Value node tag= " << tag() << " debugID= " << debugID()
+            << " type= " << getConfig()["type"].asString() << " value set to "
+            << value;
+#endif
   if (value_ != value) {
     value_ = value;
 
