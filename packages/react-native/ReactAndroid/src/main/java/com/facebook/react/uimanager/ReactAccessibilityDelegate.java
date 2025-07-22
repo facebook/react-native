@@ -191,7 +191,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
         final ReadableMap action = accessibilityActions.getMap(i);
-        if (!action.hasKey("name") || !action.hasKey("label")) {
+        if (!action.hasKey("name")) {
           throw new IllegalArgumentException("Unknown accessibility action.");
         }
 
