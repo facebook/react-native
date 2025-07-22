@@ -12,6 +12,7 @@
 #include <cxxreact/TraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <utility>
+#include <react/utils/OnScopeExit.h>
 
 namespace facebook::react {
 
@@ -24,6 +25,40 @@ RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     : runtimeExecutor_(std::move(runtimeExecutor)),
       now_(std::move(now)),
       onTaskError_(std::move(onTaskError)) {}
+
+void RuntimeScheduler_Legacy::performMicrotaskCheckpoint(jsi::Runtime& runtime) noexcept {
+  if (performingMicrotaskCheckpoint_) {
+    return;
+  }
+  performingMicrotaskCheckpoint_ = true;
+  OnScopeExit restoreFlag([&]() { performingMicrotaskCheckpoint_ = false; });
+  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+
+  try {
+    // Get the global object
+    auto global = runtime.global();
+
+    // Check if _flushReactNativeMicrotasks exists on the global object
+    if (global.hasProperty(runtime, "_flushReactNativeMicrotasks")) {
+      auto flushFunction = global.getProperty(runtime, "_flushReactNativeMicrotasks");
+
+      // Check if it's actually a function
+      if (flushFunction.isObject() && flushFunction.getObject(runtime).isFunction(runtime)) {
+        auto function = flushFunction.getObject(runtime).getFunction(runtime);
+
+        // Call the function with no arguments
+        function.call(runtime);
+      }
+    }
+  } catch (jsi::JSError& error) {
+    // If there's an error calling the function, handle it gracefully
+    onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    // Handle any other exceptions
+    jsi::JSError error(runtime, std::string("Non-js exception in performMicrotaskCheckpoint: ") + ex.what());
+    onTaskError_(runtime, error);
+  }
+}
 
 void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
   TraceSection s("RuntimeScheduler::scheduleWork");
@@ -240,6 +275,7 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       }
 
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
+      performMicrotaskCheckpoint(runtime);
     }
   } catch (jsi::JSError& error) {
     onTaskError_(runtime, error);

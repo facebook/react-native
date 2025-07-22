@@ -486,4 +486,12 @@ BatchedBridge.setReactNativeMicrotasksCallback(
   JSTimers.callReactNativeMicrotasks,
 );
 
+/**
+ * This is a hack to allow us to flush react native microtasks
+ * from the native side when bridgeless mode is disabled.
+ */
+global._flushReactNativeMicrotasks = () => {
+  return JSTimers.callReactNativeMicrotasks();
+}
+
 export default ExportedJSTimers;
