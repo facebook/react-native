@@ -23,7 +23,7 @@ TesterMountingManager::TesterMountingManager(
 void TesterMountingManager::executeMount(
     SurfaceId surfaceId,
     MountingTransaction&& mountingTransaction) {
-  auto mutations = mountingTransaction.getMutations();
+  const auto& mutations = mountingTransaction.getMutations();
   LOG(INFO) << "executeMount: surfaceId = " << surfaceId;
 
   if (viewTrees_.find(surfaceId) != viewTrees_.end()) {
