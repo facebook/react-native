@@ -187,7 +187,7 @@ async function buildFile(
   const prettierConfig = {parser: 'babel'};
 
   // Transform source file using Babel
-  const transformed = prettier.format(
+  const transformed = await prettier.format(
     (await babel.transformFileAsync(file, getBabelConfig(packageName))).code,
     /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
