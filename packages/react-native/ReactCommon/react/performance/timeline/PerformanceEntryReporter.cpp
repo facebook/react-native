@@ -310,17 +310,16 @@ void PerformanceEntryReporter::traceMark(
     UserTimingDetailProvider&& detailProvider) const {
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
-  if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
-    if (ReactPerfettoLogger::isTracing()) {
-      ReactPerfettoLogger::mark(entry.name, entry.startTime);
-    }
 
-    if (performanceTracer.isTracing()) {
-      performanceTracer.reportMark(
-          entry.name,
-          entry.startTime,
-          detailProvider != nullptr ? detailProvider() : nullptr);
-    }
+  if (ReactPerfettoLogger::isTracing()) {
+    ReactPerfettoLogger::mark(entry.name, entry.startTime);
+  }
+
+  if (performanceTracer.isTracing()) {
+    performanceTracer.reportMark(
+        entry.name,
+        entry.startTime,
+        detailProvider != nullptr ? detailProvider() : nullptr);
   }
 }
 
