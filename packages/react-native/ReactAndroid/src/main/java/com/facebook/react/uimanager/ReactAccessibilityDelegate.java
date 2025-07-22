@@ -196,7 +196,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         }
 
         String actionName = action.getString("name");
-        String actionLabel = action.getString("label");
+        String actionLabel = action.hasKey("label") ? action.getString("label") : null;
         int actionId;
 
         if (sActionIdMap.containsKey(actionName)) {
