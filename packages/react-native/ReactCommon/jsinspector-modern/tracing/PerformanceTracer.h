@@ -61,6 +61,12 @@ class PerformanceTracer {
       uint16_t chunkSize);
 
   /**
+   * Flush out buffered CDP Trace Events into a folly::dynamic collection of
+   * chunks, which can be sent over CDP later.
+   */
+  folly::dynamic collectEvents(uint16_t chunkSize);
+
+  /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
    * currently tracing, this is a no-op.
    *
