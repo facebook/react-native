@@ -4355,7 +4355,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTMountingManager : NSObject
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
-- (void)setContextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+- (void)setContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 - (void)attachSurfaceToView:(UIView *)view surfaceId:(facebook::react::SurfaceId)surfaceId;
 - (void)detachSurfaceFromView:(UIView *)view surfaceId:(facebook::react::SurfaceId)surfaceId;
 - (void)scheduleTransaction:(std::shared_ptr<const facebook::react::MountingCoordinator>)mountingCoordinator;
@@ -4668,10 +4668,10 @@ NS_ASSUME_NONNULL_END
 /// @src {packages/react-native/React/Fabric/RCTSurfacePresenter.h}:
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
-- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
-@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) std::shared_ptr<const facebook::react::ContextContainer> contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
 - (BOOL)suspend;
 - (BOOL)resume;
@@ -4698,7 +4698,7 @@ NS_ASSUME_NONNULL_BEGIN
 facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge);
 @interface RCTSurfacePresenterBridgeAdapter : NSObject
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-              contextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+              contextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 @property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;
 @property (nonatomic, weak) RCTBridge *bridge;
 @end
@@ -17755,7 +17755,7 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate)
       : LayoutAnimationKeyFrameManager(
             runtimeExecutor,
@@ -17777,7 +17777,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate);
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime& runtime,
@@ -19404,7 +19404,7 @@ namespace facebook::react {
 using ComponentRegistryFactory =
     std::function<SharedComponentDescriptorRegistry(
         const EventDispatcher::Weak& eventDispatcher,
-        const ContextContainer::Shared& contextContainer)>;
+        const std::shared_ptr<const ContextContainer>& contextContainer)>;
 ComponentRegistryFactory getDefaultComponentRegistryFactory();
 } // namespace facebook::react
 
@@ -19465,7 +19465,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
       const ComponentDescriptorProviderRegistry& providerRegistry,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
   const ComponentDescriptor*
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle componentHandle) const;
@@ -19477,7 +19477,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
 };
   const ComponentDescriptorProviderRegistry& providerRegistry_;
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react
 
@@ -19988,7 +19988,7 @@ namespace facebook::react {
 class AndroidProgressBarMeasurementsManager {
  public:
   AndroidProgressBarMeasurementsManager(
-      const ContextContainer::Shared& contextContainer)
+      const std::shared_ptr<const ContextContainer>& contextContainer)
       : contextContainer_(contextContainer) {}
   Size measure(
       SurfaceId surfaceId,
@@ -20550,7 +20550,7 @@ namespace facebook::react {
 class AndroidSwitchMeasurementsManager {
  public:
   AndroidSwitchMeasurementsManager(
-      const ContextContainer::Shared& contextContainer)
+      const std::shared_ptr<const ContextContainer>& contextContainer)
       : contextContainer_(contextContainer) {}
   Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
 };
@@ -27874,7 +27874,7 @@ class ComponentDescriptor {
 class ComponentDescriptorParameters {
  public:
   EventDispatcher::Weak eventDispatcher;
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
   ComponentDescriptor::Flavor flavor;
 };
 } // namespace facebook::react
@@ -29058,7 +29058,7 @@ class ShadowNode : public Sealable,
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
   const ComponentDescriptor& getComponentDescriptor() const;
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
   const State::Shared& getState() const;
   State::Shared getMostRecentState() const;
   int getOrderIndex() const;
@@ -33733,7 +33733,7 @@ class ElementFragment final {
 /// @src {packages/react-native/ReactCommon/react/renderer/element/testUtils.h}:
 namespace facebook::react {
 inline ComponentBuilder simpleComponentBuilder(
-    ContextContainer::Shared contextContainer = nullptr) {
+    std::shared_ptr<const ContextContainer> contextContainer = nullptr) {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =
@@ -35162,7 +35162,7 @@ namespace facebook::react {
 using std::shared_ptr<ImageManager> = std::shared_ptr<ImageManager>;
 class ImageManager {
  public:
-  ImageManager(const ContextContainer::Shared& contextContainer);
+  ImageManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~ImageManager();
   virtual ImageRequest requestImage(
       const ImageSource& imageSource,
@@ -35277,7 +35277,7 @@ class ImageTelemetry final {
 namespace facebook::react {
 class ImageFetcher {
  public:
-  ImageFetcher(ContextContainer::Shared contextContainer)
+  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer)
       : contextContainer_(std::move(contextContainer)) {}
   ImageRequest requestImage(
       const ImageSource& imageSource,
@@ -37116,7 +37116,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldRemoveEventListener(
       const std::shared_ptr<const EventListener>& listener) final;
   void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
   std::shared_ptr<UIManager> getUIManager() const;
   void reportMount(SurfaceId surfaceId) const;
   void addEventListener(std::shared_ptr<const EventListener> listener);
@@ -37165,7 +37165,7 @@ class SchedulerDelegate {
 /// @src {packages/react-native/ReactCommon/react/renderer/scheduler/SchedulerToolbox.h}:
 namespace facebook::react {
 struct SchedulerToolbox final {
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
   ComponentRegistryFactory componentRegistryFactory;
   std::optional<RuntimeExecutor> bridgelessBindingsExecutor;
   RuntimeExecutor runtimeExecutor;
@@ -37190,7 +37190,7 @@ class SurfaceHandler {
   SurfaceHandler& operator=(SurfaceHandler&& other) noexcept;
   SurfaceHandler& operator=(const SurfaceHandler& other) noexcept = delete;
   void setContextContainer(
-      ContextContainer::Shared contextContainer) const noexcept;
+      std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
   Status getStatus() const noexcept;
   void start() const noexcept;
   void stop() const noexcept;
@@ -37217,7 +37217,7 @@ class SurfaceHandler {
     folly::dynamic props{};
     LayoutConstraints layoutConstraints{};
     LayoutContext layoutContext{};
-    ContextContainer::Shared contextContainer{};
+    std::shared_ptr<const ContextContainer> contextContainer{};
   };
   struct Link {
     Status status{Status::Unregistered};
@@ -37704,7 +37704,7 @@ namespace facebook::react {
 class TextLayoutManager {
  public:
   using PreparedLayout = SafeReleaseJniRef<jni::global_ref<JPreparedLayout>>;
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -37739,7 +37739,7 @@ class TextLayoutManager {
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~TextLayoutManager() = default;
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
@@ -37958,7 +37958,7 @@ inline static UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38145,7 +38145,7 @@ inline static RCTUIColor *_Nullable RCTUIColorFromSharedColor(const facebook::re
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38167,7 +38167,7 @@ class TextLayoutManager {
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38348,7 +38348,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       const RuntimeExecutor& runtimeExecutor,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
   ~UIManager() override;
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry& componentDescriptorRegistry);
@@ -38448,7 +38448,7 @@ class UIManager final : public ShadowTreeDelegate {
   std::weak_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
   mutable std::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook*> commitHooks_;
   mutable std::shared_mutex mountHookMutex_;

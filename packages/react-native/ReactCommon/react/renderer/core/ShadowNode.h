@@ -168,7 +168,7 @@ class ShadowNode : public Sealable,
   /*
    * Returns the `ContextContainer` used by this ShadowNode.
    */
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
 
   /*
    * Returns a state associated with the particular node.

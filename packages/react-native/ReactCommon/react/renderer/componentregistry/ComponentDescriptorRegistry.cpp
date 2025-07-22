@@ -23,7 +23,7 @@ namespace facebook::react {
 ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     ComponentDescriptorParameters parameters,
     const ComponentDescriptorProviderRegistry& providerRegistry,
-    ContextContainer::Shared contextContainer)
+    std::shared_ptr<const ContextContainer> contextContainer)
     : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
       contextContainer_(std::move(contextContainer)) {}

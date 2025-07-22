@@ -38,7 +38,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
       const ComponentDescriptorProviderRegistry& providerRegistry,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
 
   /*
    * This is broken. Please do not use.
@@ -81,7 +81,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor::Shared _fallbackComponentDescriptor;
   ComponentDescriptorParameters parameters_{};
   const ComponentDescriptorProviderRegistry& providerRegistry_;
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 };
 
 } // namespace facebook::react

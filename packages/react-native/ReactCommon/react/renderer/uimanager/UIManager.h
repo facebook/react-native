@@ -41,7 +41,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       const RuntimeExecutor& runtimeExecutor,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
 
   ~UIManager() override;
 
@@ -247,7 +247,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook*> commitHooks_;

@@ -27,7 +27,8 @@ void DefaultComponentsRegistry::setRegistryRunction(
     ComponentFactory* delegate) {
   delegate
       ->buildRegistryFunction = [](const EventDispatcher::Weak& eventDispatcher,
-                                   const ContextContainer::Shared&
+                                   const std::shared_ptr<
+                                       const ContextContainer>&
                                        contextContainer) {
     ComponentDescriptorParameters params{
         .eventDispatcher = eventDispatcher,

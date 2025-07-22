@@ -21,7 +21,7 @@ namespace facebook::react {
  */
 class ImageManager {
  public:
-  ImageManager(const ContextContainer::Shared& contextContainer);
+  ImageManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~ImageManager();
 
   virtual ImageRequest requestImage(

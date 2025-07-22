@@ -348,7 +348,7 @@ void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }
 
-ContextContainer::Shared Scheduler::getContextContainer() const {
+std::shared_ptr<const ContextContainer> Scheduler::getContextContainer() const {
   return contextContainer_;
 }
 

@@ -46,7 +46,7 @@ SurfaceHandler& SurfaceHandler::operator=(SurfaceHandler&& other) noexcept {
 #pragma mark - Surface Life-Cycle Management
 
 void SurfaceHandler::setContextContainer(
-    ContextContainer::Shared contextContainer) const noexcept {
+    std::shared_ptr<const ContextContainer> contextContainer) const noexcept {
   parameters_.contextContainer = std::move(contextContainer);
 }
 

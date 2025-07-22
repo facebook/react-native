@@ -516,7 +516,7 @@ void FabricUIManagerBinding::installFabricUIManager(
   mountingManager_ =
       std::make_shared<FabricMountingManager>(globalJavaUiManager);
 
-  ContextContainer::Shared contextContainer =
+  std::shared_ptr<const ContextContainer> contextContainer =
       std::make_shared<ContextContainer>();
 
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();

@@ -15,7 +15,7 @@ namespace facebook::react {
 
 class ImageFetcher {
  public:
-  ImageFetcher(ContextContainer::Shared contextContainer)
+  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer)
       : contextContainer_(std::move(contextContainer)) {}
 
   ImageRequest requestImage(
@@ -25,6 +25,6 @@ class ImageFetcher {
       Tag tag) const;
 
  private:
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react
