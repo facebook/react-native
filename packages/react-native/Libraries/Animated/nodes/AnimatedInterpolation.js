@@ -21,6 +21,7 @@ import {validateInterpolation} from '../../../src/private/animated/NativeAnimate
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import processColor from '../../StyleSheet/processColor';
 import Easing from '../Easing';
+import getDefaultDebugID from '../getDefaultDebugID';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
@@ -329,7 +330,10 @@ export default class AnimatedInterpolation<
   _interpolation: ?(input: number) => OutputT;
 
   constructor(parent: AnimatedNode, config: InterpolationConfigType<OutputT>) {
-    super(config);
+    super({
+      ...config,
+      debugID: config.debugID ?? getDefaultDebugID(),
+    });
     this._parent = parent;
     this._config = config;
 

@@ -19,6 +19,7 @@ import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import InteractionManager from '../../Interaction/InteractionManager';
+import getDefaultDebugID from '../getDefaultDebugID';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -95,7 +96,10 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _tracking: ?AnimatedTracking;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
-    super(config);
+    super({
+      ...config,
+      debugID: config?.debugID ?? getDefaultDebugID(),
+    });
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
