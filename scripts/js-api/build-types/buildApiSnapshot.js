@@ -262,13 +262,13 @@ async function getProcessedSnapshotResult(
     postTransforms(options),
   );
 
-  return prettier
-    .format(transformedRollup, {
+  return (
+    await prettier.format(transformedRollup, {
       parser: 'typescript',
       semi: false,
       trailingComma: 'all',
     })
-    .trimEnd();
+  ).trimEnd();
 }
 
 async function generateConfigFiles(tempDirectory: string) {
