@@ -84,10 +84,10 @@ function EventEmitterTemplate(
       : ''
   }) {
     mEventEmitterCallback.invoke("${eventEmitter.name}"${
-    eventEmitter.typeAnnotation.typeAnnotation.type !== 'VoidTypeAnnotation'
-      ? ', value'
-      : ''
-  });
+      eventEmitter.typeAnnotation.typeAnnotation.type !== 'VoidTypeAnnotation'
+        ? ', value'
+        : ''
+    });
   }`;
 }
 
@@ -113,8 +113,8 @@ function MethodTemplate(
   const methodClosing = abstract
     ? ';'
     : methodBody != null && methodBody.length > 0
-    ? ` { ${methodBody} }`
-    : ' {}';
+      ? ` { ${methodBody} }`
+      : ' {}';
   return `  ${methodJavaAnnotation}
   public ${methodQualifier}${translatedReturnType} ${methodName}(${traversedArgs.join(
     ', ',

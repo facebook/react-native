@@ -233,8 +233,8 @@ class TypeScriptParser implements Parser {
       enumMembersType === 'StringTypeAnnotation'
         ? 'StringLiteral'
         : enumMembersType === 'NumberTypeAnnotation'
-        ? 'NumericLiteral'
-        : null;
+          ? 'NumericLiteral'
+          : null;
 
     typeAnnotation.members.forEach(member => {
       const isNegative =
@@ -263,19 +263,19 @@ class TypeScriptParser implements Parser {
               value: -1 * member.initializer?.argument?.value,
             }
           : typeof member.initializer?.value === 'number'
-          ? {
-              type: 'NumberLiteralTypeAnnotation',
-              value: member.initializer?.value,
-            }
-          : typeof member.initializer?.value === 'string'
-          ? {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.initializer?.value,
-            }
-          : {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.id.name,
-            };
+            ? {
+                type: 'NumberLiteralTypeAnnotation',
+                value: member.initializer?.value,
+              }
+            : typeof member.initializer?.value === 'string'
+              ? {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: member.initializer?.value,
+                }
+              : {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: member.id.name,
+                };
 
       return {
         name: member.id.name,

@@ -32,7 +32,7 @@ const prettier = require('prettier');
 const {styleText} = require('util');
 
 const prettierConfig = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, '..', '.prettierrc'), 'utf8'),
+  fs.readFileSync(path.resolve(__dirname, '..', 'build.prettierrc'), 'utf8'),
 );
 
 const SRC_DIR = 'src';
