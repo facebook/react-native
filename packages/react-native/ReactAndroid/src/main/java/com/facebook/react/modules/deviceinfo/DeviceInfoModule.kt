@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritableMap
-import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
+import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetrics
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /** Module that exposes Android Constants to JS. */
@@ -26,7 +26,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
   private var previousDisplayMetrics: ReadableMap? = null
 
   init {
-    initDisplayMetricsIfNotInitialized(reactContext)
+    initDisplayMetrics(reactContext)
     reactContext.addLifecycleEventListener(this)
   }
 

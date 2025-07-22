@@ -3360,7 +3360,6 @@ public final class com/facebook/react/uimanager/DisplayMetricsHolder {
 	public static final fun getScreenDisplayMetrics ()Landroid/util/DisplayMetrics;
 	public static final fun getWindowDisplayMetrics ()Landroid/util/DisplayMetrics;
 	public static final fun initDisplayMetrics (Landroid/content/Context;)V
-	public static final fun initDisplayMetricsIfNotInitialized (Landroid/content/Context;)V
 	public static final fun setScreenDisplayMetrics (Landroid/util/DisplayMetrics;)V
 	public static final fun setWindowDisplayMetrics (Landroid/util/DisplayMetrics;)V
 }
