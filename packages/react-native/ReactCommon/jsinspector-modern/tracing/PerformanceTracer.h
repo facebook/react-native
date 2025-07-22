@@ -22,6 +22,16 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
+namespace {
+
+/**
+ * Threshold for the size Trace Event chunk, that will be flushed out with
+ * Tracing.dataCollected event.
+ */
+const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
+
+} // namespace
+
 // TODO: Review how this API is integrated into jsinspector_modern (singleton
 // design is copied from earlier FuseboxTracer prototype).
 
@@ -58,13 +68,13 @@ class PerformanceTracer {
   void collectEvents(
       const std::function<void(const folly::dynamic& eventsChunk)>&
           resultCallback,
-      uint16_t chunkSize);
+      uint16_t chunkSize = TRACE_EVENT_CHUNK_SIZE);
 
   /**
    * Flush out buffered CDP Trace Events into a folly::dynamic collection of
    * chunks, which can be sent over CDP later.
    */
-  folly::dynamic collectEvents(uint16_t chunkSize);
+  folly::dynamic collectEvents(uint16_t chunkSize = TRACE_EVENT_CHUNK_SIZE);
 
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
