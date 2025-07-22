@@ -83,11 +83,19 @@ public object DisplayMetricsHolder {
     windowDisplayMetrics.setTo(displayMetrics)
     screenDisplayMetrics.setTo(displayMetrics)
 
-    if (isEdgeToEdgeFeatureFlagOn && isUiContext(context)) {
-      WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context).let {
-        windowDisplayMetrics.widthPixels = it.bounds.width()
-        windowDisplayMetrics.heightPixels = it.bounds.height()
+    if (isEdgeToEdgeFeatureFlagOn) {
+      if (isUiContext(context)) {
+        WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context).let {
+          windowDisplayMetrics.widthPixels = it.bounds.width()
+          windowDisplayMetrics.heightPixels = it.bounds.height()
+        }
+
+        DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
+      } else if (DisplayMetricsHolder.windowDisplayMetrics == null) {
+        DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
       }
+    } else {
+      DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
     }
 
     val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -98,7 +106,6 @@ public object DisplayMetricsHolder {
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
     @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
 
-    DisplayMetricsHolder.windowDisplayMetrics = windowDisplayMetrics
     DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
   }
 
