@@ -10,7 +10,7 @@
 namespace facebook::react {
 
 ImageManager::ImageManager(
-    const ContextContainer::Shared& /*contextContainer*/) {
+    const std::shared_ptr<const ContextContainer>& /*contextContainer*/) {
   // Silence unused-private-field warning.
   (void)self_;
   // Not implemented.

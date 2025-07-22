@@ -12,7 +12,8 @@
 
 namespace facebook::react {
 
-ImageManager::ImageManager(const ContextContainer::Shared& contextContainer)
+ImageManager::ImageManager(
+    const std::shared_ptr<const ContextContainer>& contextContainer)
     : self_(new ImageFetcher(contextContainer)) {}
 
 ImageManager::~ImageManager() {

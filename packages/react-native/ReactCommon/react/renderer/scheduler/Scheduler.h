@@ -106,7 +106,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
 
 #pragma mark - ContextContainer
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
 
 #pragma mark - UIManager
   std::shared_ptr<UIManager> getUIManager() const;
@@ -148,7 +148,7 @@ class Scheduler final : public UIManagerDelegate {
    * Hold onto ContextContainer. See SchedulerToolbox.
    * Must not be nullptr.
    */
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 
   RuntimeScheduler* runtimeScheduler_{nullptr};
 

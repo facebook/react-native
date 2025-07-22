@@ -40,7 +40,7 @@ int countAttachments(const AttributedString& attributedString) {
 }
 
 Size measureText(
-    const ContextContainer::Shared& contextContainer,
+    const std::shared_ptr<const ContextContainer>& contextContainer,
     Tag rootTag,
     MapBuffer attributedString,
     MapBuffer paragraphAttributes,
@@ -82,7 +82,7 @@ Size measureText(
 }
 
 TextMeasurement doMeasure(
-    const ContextContainer::Shared& contextContainer,
+    const std::shared_ptr<const ContextContainer>& contextContainer,
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
@@ -155,7 +155,7 @@ TextMeasurement doMeasure(
 } // namespace
 
 TextLayoutManager::TextLayoutManager(
-    const ContextContainer::Shared& contextContainer)
+    const std::shared_ptr<const ContextContainer>& contextContainer)
     : contextContainer_(contextContainer),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),

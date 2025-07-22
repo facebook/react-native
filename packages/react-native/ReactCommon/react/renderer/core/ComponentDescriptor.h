@@ -161,7 +161,7 @@ class ComponentDescriptor {
 class ComponentDescriptorParameters {
  public:
   EventDispatcher::Weak eventDispatcher;
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
   ComponentDescriptor::Flavor flavor;
 };
 

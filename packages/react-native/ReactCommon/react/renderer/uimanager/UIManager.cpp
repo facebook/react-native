@@ -44,7 +44,7 @@ ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
-    ContextContainer::Shared contextContainer)
+    std::shared_ptr<const ContextContainer> contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       shadowTreeRegistry_(),
       contextContainer_(std::move(contextContainer)),
