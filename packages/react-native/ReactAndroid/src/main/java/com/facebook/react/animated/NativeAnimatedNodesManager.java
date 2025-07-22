@@ -445,6 +445,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       // "disconnectAnimatedNodes: Animated node with tag (parent) ["
       // + parentNodeTag
       // + "] does not exist");
+      return;
     }
     AnimatedNode childNode = mAnimatedNodes.get(childNodeTag);
     if (childNode == null) {
@@ -453,6 +454,7 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
       // "disconnectAnimatedNodes: Animated node with tag (child) ["
       // + childNodeTag
       // + "] does not exist");
+      return;
     }
     parentNode.removeChild(childNode);
     mUpdatedNodes.put(childNodeTag, childNode);
