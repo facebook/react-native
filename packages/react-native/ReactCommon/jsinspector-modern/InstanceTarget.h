@@ -15,6 +15,7 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/tracing/InstanceTargetTracingProfile.h>
 
 #include <memory>
 
@@ -86,6 +87,21 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    */
   void unregisterRuntime(RuntimeTarget& runtime);
 
+  /**
+   * Start tracing this InstanceTarget. Can throw, if already tracing.
+   */
+  void startTracing();
+
+  /**
+   * Stop tracing this InstanceTarget. Can throw, if wasn't tracing.
+   */
+  void stopTracing();
+
+  /**
+   * Returns the full tracing profile for the last tracing session.
+   */
+  tracing::InstanceTargetTracingProfile collectTracingProfile();
+
  private:
   /**
    * Constructs a new InstanceTarget. The caller must call setExecutor
@@ -103,6 +119,35 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
   WeakList<InstanceAgent> agents_;
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
+
+  /**
+   * Whether this InstanceTarget is currently being traced.
+   * Keeping a local state is necessary to start tracing RuntimeTarget right
+   * after its reinitialization.
+   */
+  bool isTracing_{false};
+
+  /**
+   * A container for tracing profiles of all RuntimeTargets that were
+   * registered during this tracing session.
+   */
+  std::vector<tracing::RuntimeSamplingProfile>
+      storedRuntimeTargetSamplingProfiles_;
+
+  /**
+   * Start tracing already registered RuntimeTarget, or the one that is about
+   * to be registered, in case of reinitialization.
+   */
+  void startTracingRuntimeTarget(RuntimeTarget* runtimeTarget);
+
+  /**
+   * Stop tracing already registered RuntimeTarget, of the one that is about to
+   * be unregistered, in case of reinitialization.
+   *
+   * Collects the tracing profile and stores it in
+   * \c storedRuntimeTargetSamplingProfiles_.
+   */
+  void stopTracingRuntimeTarget(RuntimeTarget* runtimeTarget);
 };
 
 } // namespace facebook::react::jsinspector_modern
