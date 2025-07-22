@@ -17,7 +17,8 @@ namespace facebook::react {
 
 const char ImageComponentName[] = "Image";
 
-void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
+void ImageShadowNode::setImageManager(
+    const std::shared_ptr<ImageManager>& imageManager) {
   ensureUnsealed();
   imageManager_ = imageManager;
 
