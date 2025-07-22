@@ -6,7 +6,10 @@
  */
 
 #include "ImageFetcher.h"
+
+#include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
+#include <utility>
 
 namespace facebook::react {
 
@@ -40,4 +43,5 @@ ImageRequest ImageFetcher::requestImage(
 
   return {imageSource, telemetry};
 }
+
 } // namespace facebook::react

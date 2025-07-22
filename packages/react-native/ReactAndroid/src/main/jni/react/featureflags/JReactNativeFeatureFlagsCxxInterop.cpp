@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f310a5dc27fd655eab4445cb25d4c85c>>
+ * @generated SignedSource<<1ec5b2dea32e6f318622cb24a9d66ef2>>
  */
 
 /**
@@ -168,6 +168,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
+    return method(javaProvider_);
+  }
+
+  bool enableImagePrefetchingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
     return method(javaProvider_);
   }
 
@@ -525,6 +531,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
@@ -822,6 +833,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
+        "enableImagePrefetchingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
       makeNativeMethod(
         "enableImmediateUpdateModeForContentOffsetChanges",
         JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges),
