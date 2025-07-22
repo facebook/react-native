@@ -376,8 +376,9 @@ describe('Value.flattenOffset', () => {
 
     expect(transform.translateY).toBeCloseTo(40, 0.001);
 
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
+    if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+      Fantom.runWorkLoop();
+    }
   });
 });
 
@@ -475,8 +476,9 @@ describe('Value.extractOffset', () => {
     // Previously we set offset to 35. The final value is 35.
     expect(transform.translateY).toBeCloseTo(35, 0.001);
 
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
+    if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+      Fantom.runWorkLoop();
+    }
   });
 });
 
