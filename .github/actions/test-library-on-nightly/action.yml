@@ -31,7 +31,7 @@ runs:
       run: |
         cd /tmp/RNApp/ios
         bundle install
-        bundle exec pod install
+        RCT_USE_RN_DEP=1 RCT_USE_PREBUILT_RNCORE=1 bundle exec pod install
         xcodebuild build \
           -workspace RNApp.xcworkspace \
           -scheme RNApp \
