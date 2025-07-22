@@ -71,7 +71,7 @@ class RootViewTest {
     reactContext = spy(BridgeReactContext(RuntimeEnvironment.getApplication()))
     reactContext.initializeWithInstance(catalystInstanceMock)
 
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)
+    DisplayMetricsHolder.initDisplayMetrics(reactContext)
     val uiManagerModuleMock: UIManagerModule = mock()
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManagerModuleMock)
