@@ -1,5 +1,114 @@
 # Changelog
 
+## v0.81.0-rc.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+- Added support to `react-native/babel-preset` for a `hermesParserOptions` option, that expects an object that enables overriding `hermes-parser` options. ([0508eddfe6](https://github.com/facebook/react-native/commit/0508eddfe60df60cb3bfa4074ae199bd0e492d5f) by [@yungsters](https://github.com/yungsters))
+- `NewAppScreen` no longer internally handles device safe area, use optional `safeAreaInsets` prop (aligned in 0.81 template) ([732bd12dc2](https://github.com/facebook/react-native/commit/732bd12dc21460641ef01b23f2eb722f26b060d5) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fixed issue with RNDeps release/debug switch failing ([4ee2b60a1e](https://github.com/facebook/react-native/commit/4ee2b60a1eacca744d58a7ad336ca9d3714289f6) by [@chrfalch](https://github.com/chrfalch))
+- Fixed missing script for resolving prebuilt xcframework when switching between release/debug ([2e55241a90](https://github.com/facebook/react-native/commit/2e55241a901b4cd95917de68ce9078928820a208) by [@chrfalch](https://github.com/chrfalch))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.81.0-rc.2 ([68ef746ec5](https://github.com/facebook/react-native/commit/68ef746ec5dd7d2874d190733e75bb8197034c5a) by [@react-native-bot](https://github.com/react-native-bot))
+- Fix E2E test script when the ci flag is not specified ([cdd7f99581](https://github.com/facebook/react-native/commit/cdd7f995813727b630ff38abc8a910a0f8f10b37) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix E2E script when using CI artifacts ([d8bf94489a](https://github.com/facebook/react-native/commit/d8bf94489ab7498eba7e5f45d09dd2819fe739c3) by [@cipolleschi](https://github.com/cipolleschi))
+- Bump Podfile.lock ([10b63c15b6](https://github.com/facebook/react-native/commit/10b63c15b6faaf54d555ede879f82ac565f030a9) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.81.0-rc.1 ([b06bb89ddd](https://github.com/facebook/react-native/commit/b06bb89ddd3cebddea4716036a4368b87a65f492) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.81.0-rc.1
 
 ### Added
