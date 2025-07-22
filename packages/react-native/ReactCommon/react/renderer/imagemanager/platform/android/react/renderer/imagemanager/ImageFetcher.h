@@ -7,15 +7,9 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-
-#include <react/common/mapbuffer/JReadableMapBuffer.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
 #include <react/utils/ContextContainer.h>
-
-#include <utility>
 
 namespace facebook::react {
 

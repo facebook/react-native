@@ -6,9 +6,9 @@
  */
 
 #include "ImageManager.h"
+#include "ImageFetcher.h"
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include "ImageFetcher.h"
 
 namespace facebook::react {
 
@@ -30,6 +30,10 @@ ImageRequest ImageManager::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) const {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    return static_cast<ImageFetcher*>(self_)->requestImage(
+        imageSource, imageRequestParams, surfaceId, tag);
+  }
   return {imageSource, nullptr, {}};
 }
 
