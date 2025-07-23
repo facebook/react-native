@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a2b156d961a4da075b6a8b318252cf3>>
+ * @generated SignedSource<<2b9624673a7fd8b4f820921ba0a088d6>>
  * @flow strict
  * @noformat
  */
@@ -72,7 +72,6 @@ export interface Spec extends TurboModule {
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
   +preparedTextCacheSize?: () => number;
-  +preventShadowTreeCommitExhaustionWithLocking?: () => boolean;
   +releaseImageDataWhenConsumed?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
