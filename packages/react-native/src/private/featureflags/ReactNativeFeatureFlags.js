@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b75fccb46a36b07c692d890f0659f9a3>>
+ * @generated SignedSource<<bd2acd901f794a0d6e13712a34aaac5d>>
  * @flow strict
  * @noformat
  */
@@ -44,6 +44,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   utilizeTokensInIntersectionObserver: Getter<boolean>,
+  preventShadowTreeCommitExhaustion: Getter<boolean>,
 }>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
@@ -190,6 +191,11 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Use tokens in IntersectionObserver vs ShadowNode.
  */
 export const utilizeTokensInIntersectionObserver: Getter<boolean> = createJavaScriptFlagGetter('utilizeTokensInIntersectionObserver', true);
+
+/**
+ * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
+ */
+export const preventShadowTreeCommitExhaustion: Getter<boolean> = createJavaScriptFlagGetter('preventShadowTreeCommitExhaustion', false);
 
 /**
  * Common flag for testing. Do NOT modify.
