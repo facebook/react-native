@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d58efde14af4dc22dc2079ff08f76c6a>>
+ * @generated SignedSource<<84fc9cb4ade1c9a321e7d739b403fa72>>
  */
 
 /**
@@ -79,7 +79,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
   double preparedTextCacheSize();
-  bool preventShadowTreeCommitExhaustionWithLocking();
   bool releaseImageDataWhenConsumed();
   bool shouldPressibilityUseW3CPointerEventsForHover();
   bool skipActivityIdentityAssertionOnHostPause();
@@ -107,7 +106,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 64> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 63> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
@@ -156,7 +155,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
-  std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustionWithLocking_;
   std::atomic<std::optional<bool>> releaseImageDataWhenConsumed_;
   std::atomic<std::optional<bool>> shouldPressibilityUseW3CPointerEventsForHover_;
   std::atomic<std::optional<bool>> skipActivityIdentityAssertionOnHostPause_;

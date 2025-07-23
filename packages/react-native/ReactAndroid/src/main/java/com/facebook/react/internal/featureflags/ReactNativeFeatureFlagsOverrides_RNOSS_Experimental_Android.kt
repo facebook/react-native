@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14d71bf5be397fb0c139a47061ee4928>>
+ * @generated SignedSource<<636ec2163060c2ef6fdbc5e27ef41716>>
  */
 
 /**
@@ -22,8 +22,6 @@ package com.facebook.react.internal.featureflags
 public open class ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android : ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android() {
   // We could use JNI to get the defaults from C++,
   // but that is more expensive than just duplicating the defaults here.
-
-  override fun preventShadowTreeCommitExhaustionWithLocking(): Boolean = true
 
   override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = true
 

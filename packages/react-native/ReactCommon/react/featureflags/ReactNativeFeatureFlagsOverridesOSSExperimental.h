@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83a7e70db7081b98df66692159636e60>>
+ * @generated SignedSource<<c35e74abcb9b95a9c31854a32c282edd>>
  */
 
 /**
@@ -26,10 +26,6 @@ namespace facebook::react {
 class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatureFlagsOverridesOSSCanary {
  public:
     ReactNativeFeatureFlagsOverridesOSSExperimental() = default;
-
-  bool preventShadowTreeCommitExhaustionWithLocking() override {
-    return true;
-  }
 
   bool useNativeEqualsInNativeReadableArrayAndroid() override {
     return true;
