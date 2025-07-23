@@ -24,24 +24,20 @@ class TestCallInvoker : public CallInvoker {
   }
 
   void invokeSync(CallFunc&& func) override {
-    if (auto runtime = runtime_.lock()) {
-      func(*runtime);
-    }
+    func(*runtime_);
   }
 
   void flushQueue() {
-    if (auto runtime = runtime_.lock()) {
-      while (!queue_.empty()) {
-        queue_.front()(*runtime);
-        queue_.pop_front();
-        runtime->drainMicrotasks(); // Run microtasks every cycle.
-      }
+    while (!queue_.empty()) {
+      queue_.front()(*runtime_);
+      queue_.pop_front();
+      runtime_->drainMicrotasks(); // Run microtasks every cycle.
     }
   }
 
  private:
   std::list<CallFunc> queue_{};
-  std::weak_ptr<facebook::jsi::Runtime> runtime_{};
+  std::shared_ptr<facebook::jsi::Runtime> runtime_{};
 };
 
 } // namespace facebook::react
