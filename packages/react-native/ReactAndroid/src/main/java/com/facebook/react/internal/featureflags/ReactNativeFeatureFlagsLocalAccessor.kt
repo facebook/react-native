@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c4bee4de12fc3e38a09f2ddf9b39601>>
+ * @generated SignedSource<<4c1cfcf144eb98e871358413340a7651>>
  */
 
 /**
@@ -73,6 +73,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionWithLockingCache: Boolean? = null
   private var releaseImageDataWhenConsumedCache: Boolean? = null
+  private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
@@ -574,6 +575,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.releaseImageDataWhenConsumed()
       accessedFeatureFlags.add("releaseImageDataWhenConsumed")
       releaseImageDataWhenConsumedCache = cached
+    }
+    return cached
+  }
+
+  override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean {
+    var cached = shouldPressibilityUseW3CPointerEventsForHoverCache
+    if (cached == null) {
+      cached = currentProvider.shouldPressibilityUseW3CPointerEventsForHover()
+      accessedFeatureFlags.add("shouldPressibilityUseW3CPointerEventsForHover")
+      shouldPressibilityUseW3CPointerEventsForHoverCache = cached
     }
     return cached
   }

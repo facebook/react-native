@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8051b5c10479f9ad92faad99586578d9>>
+ * @generated SignedSource<<9a2b156d961a4da075b6a8b318252cf3>>
  * @flow strict
  * @noformat
  */
@@ -74,6 +74,7 @@ export interface Spec extends TurboModule {
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustionWithLocking?: () => boolean;
   +releaseImageDataWhenConsumed?: () => boolean;
+  +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;

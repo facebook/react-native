@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f50c9b7a356260abf8afc022aba8fc2>>
+ * @generated SignedSource<<ebfa5c471b394293aebdb37c6b679903>>
  */
 
 /**
@@ -323,6 +323,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
+
+  /**
+   * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+   */
+  @JvmStatic
+  public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = accessor.shouldPressibilityUseW3CPointerEventsForHover()
 
   /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()

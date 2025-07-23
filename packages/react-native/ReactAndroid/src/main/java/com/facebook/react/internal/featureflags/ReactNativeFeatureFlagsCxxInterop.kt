@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb4ba3fd4ce8434f993793febcb8d481>>
+ * @generated SignedSource<<cca36c1bf21945b7a44ff33e77fa1e50>>
  */
 
 /**
@@ -125,6 +125,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun preventShadowTreeCommitExhaustionWithLocking(): Boolean
 
   @DoNotStrip @JvmStatic public external fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
   @DoNotStrip @JvmStatic public external fun skipActivityIdentityAssertionOnHostPause(): Boolean
 

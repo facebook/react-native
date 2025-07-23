@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd80e3802bf97fabf66e24db211bf1f4>>
+ * @generated SignedSource<<b88dbe3dfa3c7899a267ac8b31a7185b>>
  */
 
 /**
@@ -220,6 +220,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool releaseImageDataWhenConsumed() override {
+    return false;
+  }
+
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
     return false;
   }
 

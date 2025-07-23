@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1c8a4501d6e0d7d0b162283cbbdf6a87>>
+ * @generated SignedSource<<9aa9bee329a282a5acffebdd0fe10aff>>
  */
 
 /**
@@ -220,6 +220,10 @@ bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking() {
 
 bool ReactNativeFeatureFlags::releaseImageDataWhenConsumed() {
   return getAccessor().releaseImageDataWhenConsumed();
+}
+
+bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
+  return getAccessor().shouldPressibilityUseW3CPointerEventsForHover();
 }
 
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {

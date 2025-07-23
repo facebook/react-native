@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3edca00b84d9b4d30c7d9bf5a8dee039>>
+ * @generated SignedSource<<c1517df16c88db5d1ecab53a0368891e>>
  */
 
 /**
@@ -283,6 +283,11 @@ class ReactNativeFeatureFlags {
    * Releases the cached image data when it is consumed by the observers.
    */
   RN_EXPORT static bool releaseImageDataWhenConsumed();
+
+  /**
+   * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
+   */
+  RN_EXPORT static bool shouldPressibilityUseW3CPointerEventsForHover();
 
   /**
    * Skip activity identity assertion in ReactHostImpl::onHostPause()

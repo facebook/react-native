@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<082c6d17eec877d054193eb9dea45b6d>>
+ * @generated SignedSource<<77b10024ee8f8d4494641f98d06e3086>>
  */
 
 /**
@@ -74,6 +74,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustionWithLocking() = 0;
   virtual bool releaseImageDataWhenConsumed() = 0;
+  virtual bool shouldPressibilityUseW3CPointerEventsForHover() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool updateRuntimeShadowNodeReferencesOnCommit() = 0;
