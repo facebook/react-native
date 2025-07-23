@@ -640,7 +640,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     useNativeTransformHelperAndroid: {
       defaultValue: false,
@@ -650,7 +650,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
