@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<773ddcede573164ba82db671341ddc3f>>
+ * @generated SignedSource<<9b6d83d6ea0acbc13bce19d869699079>>
  */
 
 /**
@@ -67,7 +67,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
-  private var preventShadowTreeCommitExhaustionWithLockingCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -499,15 +498,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.preparedTextCacheSize()
       preparedTextCacheSizeCache = cached
-    }
-    return cached
-  }
-
-  override fun preventShadowTreeCommitExhaustionWithLocking(): Boolean {
-    var cached = preventShadowTreeCommitExhaustionWithLockingCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.preventShadowTreeCommitExhaustionWithLocking()
-      preventShadowTreeCommitExhaustionWithLockingCache = cached
     }
     return cached
   }

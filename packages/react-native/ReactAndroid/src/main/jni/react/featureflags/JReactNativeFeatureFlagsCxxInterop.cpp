@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7fac1c2c0c3ce131442319925e4231dc>>
+ * @generated SignedSource<<5effd7d4ac8034424144ea68c82b61a7>>
  */
 
 /**
@@ -321,12 +321,6 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool preventShadowTreeCommitExhaustionWithLocking() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventShadowTreeCommitExhaustionWithLocking");
-    return method(javaProvider_);
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -632,11 +626,6 @@ double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
   return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -864,9 +853,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
-      makeNativeMethod(
-        "preventShadowTreeCommitExhaustionWithLocking",
-        JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

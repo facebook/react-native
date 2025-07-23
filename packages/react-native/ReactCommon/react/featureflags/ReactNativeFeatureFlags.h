@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5055890d2cb2fb46a940f8308f014f0b>>
+ * @generated SignedSource<<20809734183aa7bfd7aad9b8d01ea080>>
  */
 
 /**
@@ -273,11 +273,6 @@ class ReactNativeFeatureFlags {
    * Number cached PreparedLayouts in TextLayoutManager cache
    */
   RN_EXPORT static double preparedTextCacheSize();
-
-  /**
-   * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
-   */
-  RN_EXPORT static bool preventShadowTreeCommitExhaustionWithLocking();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

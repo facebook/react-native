@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0179ba45718903d6fec6dcc19b0e1aaa>>
+ * @generated SignedSource<<20c25bf5541e37cd5c918684925726df>>
  */
 
 /**
@@ -212,10 +212,6 @@ bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
 
 double ReactNativeFeatureFlags::preparedTextCacheSize() {
   return getAccessor().preparedTextCacheSize();
-}
-
-bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking() {
-  return getAccessor().preventShadowTreeCommitExhaustionWithLocking();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
