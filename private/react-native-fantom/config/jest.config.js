@@ -13,15 +13,6 @@
 const baseConfig = require('../../../jest.config');
 const path = require('path');
 
-const isCI =
-  Boolean(process.env.SANDCASTLE) || Boolean(process.env.GITHUB_ACTIONS);
-
-// In CI, we want to prewarm the caches/builds before running the tests so
-// that time isn't attributed to the first test that runs.
-const globalSetup /*: ?string */ = isCI
-  ? '<rootDir>/private/react-native-fantom/runner/warmup/index.js'
-  : null;
-
 module.exports = {
   displayName: 'fantom',
   rootDir: path.resolve(__dirname, '../../..') /*:: as string */,
@@ -42,5 +33,6 @@ module.exports = {
   transformIgnorePatterns: ['.*'],
   testRunner: '<rootDir>/private/react-native-fantom/runner/index.js',
   watchPathIgnorePatterns: ['<rootDir>/private/react-native-fantom/build/'],
-  globalSetup,
+  globalSetup:
+    '<rootDir>/private/react-native-fantom/runner/global-setup/setup.js',
 };
