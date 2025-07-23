@@ -109,6 +109,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   __weak UIView *_contentView;
 
   CGRect _prevFirstVisibleFrame;
+  NSInteger _firstVisibleViewTag;
   __weak UIView *_firstVisibleView;
 
   CGFloat _endDraggingSensitivityMultiplier;
@@ -677,6 +678,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   self.frame = oldFrame;
   _contentView = nil;
   _prevFirstVisibleFrame = CGRectZero;
+  _firstVisibleViewTag = 0;
   _firstVisibleView = nil;
 }
 
@@ -1036,6 +1038,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     }
     if (hasNewView || ii == _contentView.subviews.count - 1) {
       _prevFirstVisibleFrame = subview.frame;
+      _firstVisibleViewTag = subview.tag;
       _firstVisibleView = subview;
       break;
     }
@@ -1047,6 +1050,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (!props.maintainVisibleContentPosition) {
     return;
+  }
+
+  if(_firstVisibleView && _firstVisibleView.tag != _firstVisibleViewTag) {
+    _prevFirstVisibleFrame = CGRectZero;
+    _firstVisibleViewTag = 0;
+    _firstVisibleView = nil;
   }
 
   std::optional<int> autoscrollThreshold = props.maintainVisibleContentPosition.value().autoscrollToTopThreshold;
