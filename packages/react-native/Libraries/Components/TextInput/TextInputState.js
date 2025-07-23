@@ -105,7 +105,11 @@ function focusTextInput(textField: ?ComponentRef) {
 
   if (textField != null) {
     const fieldCanBeFocused =
-      currentlyFocusedInputRef !== textField &&
+      // [macOS currentlyFocusedInputRef does not account for the fact that any arbritrary view can
+      // recieve focus on desktop. https://github.com/facebook/react-native/pull/52472/ fixes this,
+      // disable the check for now
+      // currentlyFocusedInputRef !== textField &&
+      // macOS]
       // $FlowFixMe - `currentProps` is missing in `NativeMethods`
       textField.currentProps?.editable !== false;
 

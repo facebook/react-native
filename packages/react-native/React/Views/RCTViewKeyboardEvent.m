@@ -63,6 +63,30 @@
     return @"PageUp";
   } else if (code == NSPageDownFunctionKey) {
     return @"PageDown";
+  } else if (code == NSF1FunctionKey) {
+    return @"F1";
+  } else if (code == NSF2FunctionKey) {
+    return @"F2";
+  } else if (code == NSF3FunctionKey) {
+    return @"F3";
+  } else if (code == NSF4FunctionKey) {
+    return @"F4";
+  } else if (code == NSF5FunctionKey) {
+    return @"F5";
+  } else if (code == NSF6FunctionKey) {
+    return @"F6";
+  } else if (code == NSF7FunctionKey) {
+    return @"F7";
+  } else if (code == NSF8FunctionKey) {
+    return @"F8";
+  } else if (code == NSF9FunctionKey) {
+    return @"F9";
+  } else if (code == NSF10FunctionKey) {
+    return @"F10";
+  } else if (code == NSF11FunctionKey) {
+    return @"F11";
+  } else if (code == NSF12FunctionKey) {
+    return @"F12";
   }
 
   return key;
