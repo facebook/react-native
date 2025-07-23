@@ -8,6 +8,14 @@
  * @format
  */
 
-require('../../../../scripts/shared/babelRegister').registerForMonorepo();
+import {isOSS} from '../EnvironmentOptions';
+import build from './build';
 
-module.exports = require('./warmup');
+export default async function globalSetup(
+  globalConfig: {...},
+  projectConfig: {...},
+): Promise<void> {
+  if (!isOSS) {
+    await build();
+  }
+}
