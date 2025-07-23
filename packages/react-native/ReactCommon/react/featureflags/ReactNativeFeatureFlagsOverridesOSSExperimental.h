@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16c5fdf431579bbfd454a28c06f28c41>>
+ * @generated SignedSource<<83a7e70db7081b98df66692159636e60>>
  */
 
 /**
@@ -28,6 +28,14 @@ class ReactNativeFeatureFlagsOverridesOSSExperimental : public ReactNativeFeatur
     ReactNativeFeatureFlagsOverridesOSSExperimental() = default;
 
   bool preventShadowTreeCommitExhaustionWithLocking() override {
+    return true;
+  }
+
+  bool useNativeEqualsInNativeReadableArrayAndroid() override {
+    return true;
+  }
+
+  bool useNativeTransformHelperAndroid() override {
     return true;
   }
 };
