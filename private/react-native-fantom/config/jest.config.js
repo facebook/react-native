@@ -23,6 +23,7 @@ const globalSetup /*: ?string */ = isCI
   : null;
 
 module.exports = {
+  displayName: 'fantom',
   rootDir: path.resolve(__dirname, '../../..') /*:: as string */,
   roots: [
     '<rootDir>/packages/react-native',
