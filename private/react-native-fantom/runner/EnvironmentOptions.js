@@ -17,3 +17,10 @@ export const enableCppDebugging: boolean = Boolean(
 );
 
 export const isOSS: boolean = Boolean(process.env.FANTOM_FORCE_OSS_BUILD);
+
+export const isCI: boolean =
+  Boolean(process.env.SANDCASTLE) || Boolean(process.env.GITHUB_ACTIONS);
+
+export const forceTestModeForBenchmarks: boolean = Boolean(
+  process.env.FANTOM_FORCE_TEST_MODE,
+);
