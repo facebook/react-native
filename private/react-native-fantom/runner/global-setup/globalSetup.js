@@ -8,13 +8,15 @@
  * @format
  */
 
-import {isOSS} from '../EnvironmentOptions';
+import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
 import build from './build';
 
 export default async function globalSetup(
   globalConfig: {...},
   projectConfig: {...},
 ): Promise<void> {
+  validateEnvironmentVariables();
+
   if (!isOSS) {
     await build();
   }

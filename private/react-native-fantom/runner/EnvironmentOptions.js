@@ -8,6 +8,16 @@
  * @format
  */
 
+const VALID_ENVIRONMENT_VARIABLES = [
+  'FANTOM_DEBUG_CPP',
+  'FANTOM_ENABLE_CPP_DEBUGGING',
+  'FANTOM_FORCE_CI_MODE',
+  'FANTOM_FORCE_OSS_BUILD',
+  'FANTOM_FORCE_TEST_MODE',
+  'FANTOM_LOG_COMMANDS',
+  'FANTOM_PRINT_OUTPUT',
+];
+
 /**
  * Prints the output of the Fantom tester to the test output.
  */
@@ -49,3 +59,20 @@ export const isCI: boolean =
 export const forceTestModeForBenchmarks: boolean = Boolean(
   process.env.FANTOM_FORCE_TEST_MODE,
 );
+
+/**
+ * Throws an error if there is an environment variable defined with the FANTOM_
+ * prefix that is not recognized.
+ */
+export function validateEnvironmentVariables(): void {
+  for (const key of Object.keys(process.env)) {
+    if (
+      key.startsWith('FANTOM_') &&
+      !VALID_ENVIRONMENT_VARIABLES.includes(key)
+    ) {
+      throw new Error(
+        `Unexpected Fantom environment variable: ${key}=${String(process.env[key])}. Accepted variables are: ${VALID_ENVIRONMENT_VARIABLES.join(', ')}`,
+      );
+    }
+  }
+}
