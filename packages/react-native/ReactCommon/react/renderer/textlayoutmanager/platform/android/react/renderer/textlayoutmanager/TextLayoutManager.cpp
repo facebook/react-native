@@ -156,7 +156,7 @@ TextMeasurement doMeasure(
 
 TextLayoutManager::TextLayoutManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
-    : contextContainer_(contextContainer),
+    : contextContainer_(std::move(contextContainer)),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       preparedTextCache_(static_cast<size_t>(
@@ -236,7 +236,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
-  return TextMeasurement{size, attachments};
+  return TextMeasurement{.size = size, .attachments = attachments};
 }
 
 LinesMeasurements TextLayoutManager::measureLines(

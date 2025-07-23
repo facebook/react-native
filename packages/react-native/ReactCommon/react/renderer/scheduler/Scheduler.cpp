@@ -27,10 +27,9 @@ namespace facebook::react {
 Scheduler::Scheduler(
     const SchedulerToolbox& schedulerToolbox,
     UIManagerAnimationDelegate* animationDelegate,
-    SchedulerDelegate* delegate) {
-  runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
-  contextContainer_ = schedulerToolbox.contextContainer;
-
+    SchedulerDelegate* delegate)
+    : runtimeExecutor_(schedulerToolbox.runtimeExecutor),
+      contextContainer_(schedulerToolbox.contextContainer) {
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
