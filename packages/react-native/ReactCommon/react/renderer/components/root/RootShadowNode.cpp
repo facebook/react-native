@@ -12,6 +12,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 const char RootComponentName[] = "RootView";
 
 bool RootShadowNode::layoutIfNeeded(
