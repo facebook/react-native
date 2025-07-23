@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4f92fba9ba8b4d457587446ce069d32>>
+ * @generated SignedSource<<34c0a7def872e270cd542785d9bfde40>>
  */
 
 /**
@@ -67,6 +67,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
+  private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var releaseImageDataWhenConsumedCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
@@ -503,6 +504,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.preparedTextCacheSize()
       preparedTextCacheSizeCache = cached
+    }
+    return cached
+  }
+
+  override fun preventShadowTreeCommitExhaustion(): Boolean {
+    var cached = preventShadowTreeCommitExhaustionCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.preventShadowTreeCommitExhaustion()
+      preventShadowTreeCommitExhaustionCache = cached
     }
     return cached
   }

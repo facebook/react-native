@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<72907a7058f38e80b54947d321b0062d>>
+ * @generated SignedSource<<c7559d37ffcb752e95b8313dcd1ee681>>
  */
 
 /**
@@ -466,6 +466,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preparedTextCacheSize();
+  }
+
+  bool preventShadowTreeCommitExhaustion() override {
+    auto value = values_["preventShadowTreeCommitExhaustion"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
   }
 
   bool releaseImageDataWhenConsumed() override {

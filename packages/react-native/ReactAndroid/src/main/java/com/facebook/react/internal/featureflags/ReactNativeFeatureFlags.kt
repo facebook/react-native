@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5908495c093849007082e6297647f8a>>
+ * @generated SignedSource<<92170b32c13dc405a81b4a5cf5677afb>>
  */
 
 /**
@@ -311,6 +311,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preparedTextCacheSize(): Double = accessor.preparedTextCacheSize()
+
+  /**
+   * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
+   */
+  @JvmStatic
+  public fun preventShadowTreeCommitExhaustion(): Boolean = accessor.preventShadowTreeCommitExhaustion()
 
   /**
    * Releases the cached image data when it is consumed by the observers.
