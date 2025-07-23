@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4b5f7535318d03c648dd81ca9a81277c>>
+ * @generated SignedSource<<6a5b796b26a689b4b8ebaa101c60b5c8>>
  * @flow strict
  * @noformat
  */
@@ -93,6 +93,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
+  preventShadowTreeCommitExhaustion: Getter<boolean>,
   releaseImageDataWhenConsumed: Getter<boolean>,
   shouldPressibilityUseW3CPointerEventsForHover: Getter<boolean>,
   skipActivityIdentityAssertionOnHostPause: Getter<boolean>,
@@ -358,6 +359,10 @@ export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagG
  * Number cached PreparedLayouts in TextLayoutManager cache
  */
 export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 200);
+/**
+ * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
+ */
+export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustion', false);
 /**
  * Releases the cached image data when it is consumed by the observers.
  */
