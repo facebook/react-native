@@ -289,6 +289,9 @@ module.exports = {
   get requireNativeComponent() {
     return require('./Libraries/ReactNative/requireNativeComponent').default;
   },
+  get ReactNativeVersion() {
+    return require('./Libraries/Core/ReactNativeVersion').default;
+  },
   get RootTagContext() {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
   },

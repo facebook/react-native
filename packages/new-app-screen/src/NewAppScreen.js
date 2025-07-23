@@ -13,6 +13,7 @@ import {ThemedText, useTheme} from './Theme';
 import * as React from 'react';
 import {
   Image,
+  ReactNativeVersion,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,7 +23,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
-import {version as ReactNativeVersion} from 'react-native/Libraries/Core/ReactNativeVersion';
 
 export type NewAppScreenProps = $ReadOnly<{
   templateFileName?: string,
@@ -109,19 +109,9 @@ export default function NewAppScreen({
 }
 
 function getVersionLabel(): React.Node {
-  const version =
-    [
-      ReactNativeVersion.major,
-      ReactNativeVersion.minor,
-      ReactNativeVersion.patch,
-    ].join('.') +
-    (ReactNativeVersion.prerelease != null
-      ? '-' + ReactNativeVersion.prerelease
-      : '');
-
   return (
     <ThemedText color="secondary" style={styles.label}>
-      Version: {version}
+      Version: {ReactNativeVersion.getVersionString()}
     </ThemedText>
   );
 }
