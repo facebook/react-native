@@ -34,11 +34,6 @@ ImageManager::~ImageManager()
   self_ = nullptr;
 }
 
-ImageRequest ImageManager::requestImage(const ImageSource &imageSource, SurfaceId surfaceId) const
-{
-  return requestImage(imageSource, surfaceId, ImageRequestParams{}, {});
-}
-
 ImageRequest ImageManager::requestImage(
     const ImageSource &imageSource,
     SurfaceId surfaceId,
