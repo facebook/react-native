@@ -71,17 +71,10 @@ void ImageShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto state = ImageState{
+  ImageState state{
       newImageSource,
       imageManager_->requestImage(
-          newImageSource,
-          getSurfaceId()
-#ifdef ANDROID
-              ,
-          newImageRequestParams,
-          getTag()
-#endif
-              ),
+          newImageSource, getSurfaceId(), newImageRequestParams, getTag()),
       newImageRequestParams};
   setStateData(std::move(state));
 }

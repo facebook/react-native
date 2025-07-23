@@ -22,12 +22,6 @@ ImageManager::~ImageManager() {
 
 ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
-    SurfaceId surfaceId) const {
-  return requestImage(imageSource, surfaceId, ImageRequestParams{}, {});
-}
-
-ImageRequest ImageManager::requestImage(
-    const ImageSource& imageSource,
     SurfaceId /*surfaceId*/,
     const ImageRequestParams& /*imageRequestParams*/,
     Tag /*tag*/) const {
