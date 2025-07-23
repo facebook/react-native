@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c1517df16c88db5d1ecab53a0368891e>>
+ * @generated SignedSource<<0bbb98a247e0cb3d1a54228507f98b49>>
  */
 
 /**
@@ -273,11 +273,6 @@ class ReactNativeFeatureFlags {
    * Number cached PreparedLayouts in TextLayoutManager cache
    */
   RN_EXPORT static double preparedTextCacheSize();
-
-  /**
-   * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
-   */
-  RN_EXPORT static bool preventShadowTreeCommitExhaustionWithLocking();
 
   /**
    * Releases the cached image data when it is consumed by the observers.

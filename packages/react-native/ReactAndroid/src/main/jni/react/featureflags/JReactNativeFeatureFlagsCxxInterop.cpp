@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd77d71fb46a3015fd6705b9a3520f1e>>
+ * @generated SignedSource<<c00ad0b31911831b23dd4c9ebab1c494>>
  */
 
 /**
@@ -318,12 +318,6 @@ class ReactNativeFeatureFlagsJavaProvider
   double preparedTextCacheSize() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("preparedTextCacheSize");
-    return method(javaProvider_);
-  }
-
-  bool preventShadowTreeCommitExhaustionWithLocking() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventShadowTreeCommitExhaustionWithLocking");
     return method(javaProvider_);
   }
 
@@ -662,11 +656,6 @@ double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
   return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
@@ -919,9 +908,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
-      makeNativeMethod(
-        "preventShadowTreeCommitExhaustionWithLocking",
-        JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking),
       makeNativeMethod(
         "releaseImageDataWhenConsumed",
         JReactNativeFeatureFlagsCxxInterop::releaseImageDataWhenConsumed),
