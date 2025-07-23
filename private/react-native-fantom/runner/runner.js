@@ -336,7 +336,7 @@ module.exports = async function runTest(
             ...rnTesterCommandArgs,
           ],
           {
-            withFDB: EnvironmentOptions.enableCppDebugging,
+            withFDB: EnvironmentOptions.debugCpp,
           },
         );
 
