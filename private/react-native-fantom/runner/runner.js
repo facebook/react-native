@@ -32,7 +32,6 @@ import {
   getDebugInfoFromCommandResult,
   getHermesCompilerTarget,
   getShortHash,
-  isRunningFromCI,
   printConsoleLog,
   runBuck2,
   runBuck2Sync,
@@ -273,7 +272,6 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
-      isRunningFromCI: isRunningFromCI(),
     });
 
     const entrypointPath = path.join(

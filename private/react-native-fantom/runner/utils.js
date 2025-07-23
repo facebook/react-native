@@ -101,16 +101,6 @@ export type SyncCommandResult = {
   stderr: string,
 };
 
-function isEmpty(value: ?string): boolean {
-  return value == null || value === '';
-}
-
-export function isRunningFromCI(): boolean {
-  return (
-    !isEmpty(process.env.SANDCASTLE) || !isEmpty(process.env.GITHUB_ACTIONS)
-  );
-}
-
 function maybeLogCommand(command: string, args: Array<string>): void {
   if (EnvironmentOptions.logCommands) {
     console.log(`RUNNING \`${command} ${args.join(' ')}\``);
