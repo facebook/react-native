@@ -61,7 +61,7 @@ export function suite(
       throw new Error('No benchmark tests defined');
     }
 
-    const {isRunningFromCI} = getConstants();
+    const {isRunningFromCI, forceTestModeForBenchmarks} = getConstants();
 
     // If we're running from CI and there's no verification function, there's
     // no point in running the benchmark.
@@ -69,6 +69,7 @@ export function suite(
     // logic in the benchmark doesn't break.
     const isTestOnly =
       suiteOptions.testOnly === true ||
+      forceTestModeForBenchmarks ||
       (isRunningFromCI && verifyFns.length === 0);
 
     const benchOptions: BenchOptions = isTestOnly
