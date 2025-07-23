@@ -59,7 +59,7 @@ TimerManager::TimerManager(
 
 void TimerManager::setRuntimeExecutor(
     RuntimeExecutor runtimeExecutor) noexcept {
-  runtimeExecutor_ = runtimeExecutor;
+  runtimeExecutor_ = std::move(runtimeExecutor);
 }
 
 TimerHandle TimerManager::createReactNativeMicrotask(
@@ -232,7 +232,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           3, // Function, delay, ...args
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -272,7 +272,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
@@ -291,7 +291,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           3, // Function, delay, ...args
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -332,7 +332,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {
@@ -351,7 +351,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // callback
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count == 0) {
@@ -373,9 +373,9 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                 [callbackContainer = std::make_shared<jsi::Function>(
                      args[0].getObject(rt).getFunction(rt))](
                     jsi::Runtime& rt,
-                    const jsi::Value& thisVal,
-                    const jsi::Value* args,
-                    size_t count) {
+                    const jsi::Value& /*thisVal*/,
+                    const jsi::Value* /*args*/,
+                    size_t /*count*/) {
                   auto performance =
                       rt.global().getPropertyAsObject(rt, "performance");
                   auto nowFn = performance.getPropertyAsFunction(rt, "now");
@@ -402,7 +402,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           1, // timerID
           [this](
               jsi::Runtime& rt,
-              const jsi::Value& thisVal,
+              const jsi::Value& /*thisVal*/,
               const jsi::Value* args,
               size_t count) {
             if (count > 0 && args[0].isNumber()) {

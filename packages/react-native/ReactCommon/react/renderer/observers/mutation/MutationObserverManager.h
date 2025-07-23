@@ -16,6 +16,8 @@
 
 namespace facebook::react {
 
+using OnMutations = std::function<void(std::vector<MutationRecord>&)>;
+
 class MutationObserverManager final : public UIManagerCommitHook {
  public:
   MutationObserverManager();
@@ -28,9 +30,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
 
   void unobserveAll(MutationObserverId mutationObserverId);
 
-  void connect(
-      UIManager& uiManager,
-      std::function<void(std::vector<MutationRecord>&)> onMutations);
+  void connect(UIManager& uiManager, OnMutations&& onMutations);
 
   void disconnect(UIManager& uiManager);
 
@@ -51,7 +51,7 @@ class MutationObserverManager final : public UIManagerCommitHook {
       std::unordered_map<MutationObserverId, MutationObserver>>
       observersBySurfaceId_;
 
-  std::function<void(std::vector<MutationRecord>&)> onMutations_;
+  OnMutations onMutations_;
   bool commitHookRegistered_{};
 
   void runMutationObservations(

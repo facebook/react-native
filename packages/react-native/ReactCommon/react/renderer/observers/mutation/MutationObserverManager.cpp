@@ -18,7 +18,7 @@ void MutationObserverManager::observe(
     MutationObserverId mutationObserverId,
     std::shared_ptr<const ShadowNode> shadowNode,
     bool observeSubtree,
-    const UIManager& uiManager) {
+    const UIManager& /*uiManager*/) {
   TraceSection s("MutationObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
@@ -55,7 +55,7 @@ void MutationObserverManager::unobserveAll(
 
 void MutationObserverManager::connect(
     UIManager& uiManager,
-    std::function<void(std::vector<MutationRecord>&)> onMutations) {
+    OnMutations&& onMutations) {
   TraceSection s("MutationObserverManager::connect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
@@ -63,7 +63,7 @@ void MutationObserverManager::connect(
     return;
   }
 
-  onMutations_ = onMutations;
+  onMutations_ = std::move(onMutations);
 
   uiManager.registerCommitHook(*this);
   commitHookRegistered_ = true;
@@ -123,8 +123,6 @@ void MutationObserverManager::runMutationObservations(
   if (!mutationRecords.empty()) {
     onMutations_(mutationRecords);
   }
-
-  return;
 }
 
 } // namespace facebook::react

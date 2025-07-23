@@ -44,7 +44,7 @@ void IntersectionObserverManager::observe(
     const ShadowNodeFamily::Shared& shadowNodeFamily,
     std::vector<Float> thresholds,
     std::optional<std::vector<Float>> rootThresholds,
-    const UIManager& uiManager) {
+    const UIManager& /*uiManager*/) {
   TraceSection s("IntersectionObserverManager::observe");
 
   auto surfaceId = shadowNodeFamily->getSurfaceId();

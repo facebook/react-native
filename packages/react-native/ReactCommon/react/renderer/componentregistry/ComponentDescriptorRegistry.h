@@ -71,7 +71,8 @@ class ComponentDescriptorRegistry {
    * To be used by `ComponentDescriptorProviderRegistry` only.
    * Thread safe.
    */
-  void add(ComponentDescriptorProvider componentDescriptorProvider) const;
+  void add(
+      const ComponentDescriptorProvider& componentDescriptorProvider) const;
 
   mutable std::shared_mutex mutex_;
   mutable std::unordered_map<ComponentHandle, SharedComponentDescriptor>
