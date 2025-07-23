@@ -8,6 +8,7 @@
  * @format
  */
 
+import {isCI} from '../EnvironmentOptions';
 import {
   getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
@@ -37,28 +38,27 @@ async function tryOrLog(
   }
 }
 
-export default async function warmUp(
-  globalConfig: {...},
-  projectConfig: {...},
-): Promise<void> {
-  await tryOrLog(
-    () => warmUpHermesCompiler(false),
-    'Error warming up Hermes compiler (dev)',
-  );
-  await tryOrLog(
-    () => warmUpHermesCompiler(true),
-    'Error warming up Hermes compiler (opt)',
-  );
-  await tryOrLog(
-    () => warmUpRNTesterCLI(false),
-    'Error warming up RN Tester CLI (dev)',
-  );
-  await tryOrLog(
-    () => warmUpRNTesterCLI(true),
-    'Error warming up RN Tester CLI (opt)',
-  );
-  await tryOrLog(() => warmUpMetro(false), 'Error warming up Metro (dev)');
-  await tryOrLog(() => warmUpMetro(true), 'Error warming up Metro (opt)');
+export default async function build(): Promise<void> {
+  if (isCI) {
+    await tryOrLog(
+      () => warmUpHermesCompiler(false),
+      'Error warming up Hermes compiler (dev)',
+    );
+    await tryOrLog(
+      () => warmUpHermesCompiler(true),
+      'Error warming up Hermes compiler (opt)',
+    );
+    await tryOrLog(
+      () => warmUpRNTesterCLI(false),
+      'Error warming up RN Tester CLI (dev)',
+    );
+    await tryOrLog(
+      () => warmUpRNTesterCLI(true),
+      'Error warming up RN Tester CLI (opt)',
+    );
+    await tryOrLog(() => warmUpMetro(false), 'Error warming up Metro (dev)');
+    await tryOrLog(() => warmUpMetro(true), 'Error warming up Metro (opt)');
+  }
 }
 
 async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
