@@ -47,7 +47,7 @@ class HostAgent::Impl final {
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel)) {}
+        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -205,26 +205,6 @@ class HostAgent::Impl final {
       return {
           .isFinishedHandlingRequest = true,
           .shouldSendOKResponse = true,
-      };
-    }
-    if (req.method == "Tracing.start") {
-      if (sessionState_.isDebuggerDomainEnabled) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InternalError,
-            "Debugger domain is expected to be disabled before starting Tracing"));
-
-        return {
-            .isFinishedHandlingRequest = true,
-            .shouldSendOKResponse = false,
-        };
-      }
-
-      // We delegate handling of this request to TracingAgent. If not handled,
-      // then something unexpected happened - don't send an OK response.
-      return {
-          .isFinishedHandlingRequest = false,
-          .shouldSendOKResponse = false,
       };
     }
 
