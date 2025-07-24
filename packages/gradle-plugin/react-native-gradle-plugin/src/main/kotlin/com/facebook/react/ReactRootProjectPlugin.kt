@@ -26,5 +26,21 @@ class ReactRootProjectPlugin : Plugin<Project> {
         it.evaluationDependsOn(":app")
       }
     }
+    // We need to make sure that `:app:preBuild` task depends on all other subprojects' preBuild
+    // tasks. This is necessary in order to have all the codegen generated code before the CMake
+    // configuration build kicks in.
+    project.gradle.projectsEvaluated {
+      val appProject = project.rootProject.subprojects.find { it.name == "app" }
+      val appPreBuild = appProject?.tasks?.findByName("preBuild")
+      if (appPreBuild != null) {
+        // Find all other subprojects' preBuild tasks
+        val otherPreBuildTasks =
+            project.rootProject.subprojects
+                .filter { it != appProject }
+                .mapNotNull { it.tasks.findByName("preBuild") }
+        // Make :app:preBuild depend on all others
+        appPreBuild.dependsOn(otherPreBuildTasks)
+      }
+    }
   }
 }
