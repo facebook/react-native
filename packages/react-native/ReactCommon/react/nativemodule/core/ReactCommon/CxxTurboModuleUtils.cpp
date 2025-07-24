@@ -7,6 +7,8 @@
 
 #include "CxxTurboModuleUtils.h"
 
+#include <utility>
+
 namespace facebook::react {
 
 std::unordered_map<
@@ -26,7 +28,8 @@ void registerCxxModuleToGlobalModuleMap(
     std::string name,
     std::function<std::shared_ptr<TurboModule>(
         std::shared_ptr<CallInvoker> jsInvoker)> moduleProviderFunc) {
-  globalExportedCxxTurboModuleMap()[name] = moduleProviderFunc;
+  globalExportedCxxTurboModuleMap()[std::move(name)] =
+      std::move(moduleProviderFunc);
 }
 
 } // namespace facebook::react

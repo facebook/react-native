@@ -136,7 +136,7 @@ HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
 
 void NativePerformance::reportMark(
     jsi::Runtime& rt,
-    std::string name,
+    const std::string& name,
     HighResTimeStamp startTime,
     jsi::Value entry) {
   PerformanceEntryReporter::getInstance()->reportMark(
@@ -145,7 +145,7 @@ void NativePerformance::reportMark(
 
 void NativePerformance::reportMeasure(
     jsi::Runtime& rt,
-    std::string name,
+    const std::string& name,
     HighResTimeStamp startTime,
     HighResDuration duration,
     jsi::Value entry) {
@@ -154,8 +154,8 @@ void NativePerformance::reportMeasure(
 }
 
 std::optional<double> NativePerformance::getMarkTime(
-    jsi::Runtime& rt,
-    std::string name) {
+    jsi::Runtime& /*rt*/,
+    const std::string& name) {
   auto markTime = PerformanceEntryReporter::getInstance()->getMarkTime(name);
   return markTime ? std::optional{(*markTime).toDOMHighResTimeStamp()}
                   : std::nullopt;
@@ -200,7 +200,7 @@ std::vector<NativePerformanceEntry> NativePerformance::getEntries(
 
 std::vector<NativePerformanceEntry> NativePerformance::getEntriesByName(
     jsi::Runtime& /*rt*/,
-    std::string entryName,
+    const std::string& entryName,
     std::optional<PerformanceEntryType> entryType) {
   std::vector<PerformanceEntry> entries;
 
@@ -253,7 +253,7 @@ std::unordered_map<std::string, double> NativePerformance::getSimpleMemoryInfo(
 }
 
 std::unordered_map<std::string, double>
-NativePerformance::getReactNativeStartupTiming(jsi::Runtime& rt) {
+NativePerformance::getReactNativeStartupTiming(jsi::Runtime& /*rt*/) {
   std::unordered_map<std::string, double> result;
 
   ReactMarker::StartupLogger& startupLogger =

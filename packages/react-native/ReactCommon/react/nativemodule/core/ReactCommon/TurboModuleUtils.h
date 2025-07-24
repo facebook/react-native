@@ -19,7 +19,7 @@ struct Promise : public LongLivedObject {
   Promise(jsi::Runtime& rt, jsi::Function resolve, jsi::Function reject);
 
   void resolve(const jsi::Value& result);
-  void reject(const std::string& error);
+  void reject(const std::string& message);
 
   jsi::Function resolve_;
   jsi::Function reject_;
