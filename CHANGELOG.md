@@ -327,6 +327,26 @@
 - **TextInput:** Fixed blank space at the bottom of multiline `TextInput` on iOS ([2da4a6059a](https://github.com/facebook/react-native/commit/2da4a6059a82430fa7c1c078f0dcd38f0d3fe3cb) by [@tomekzaw](https://github.com/tomekzaw))
 - **Turbo Modules:** Turbo Modules- Fixes dictionary stripped out when value is `null` ([4a4fd1cb8b](https://github.com/facebook/react-native/commit/4a4fd1cb8bb06eee185a3b2463caec4d2b7e9235) by [@zhongwuzw](https://github.com/zhongwuzw))
 
+## v0.80.2
+
+### Added
+
+- **Hermes:** Added method to reset the timezone cache ([5c7dbc0a78](https://github.com/facebook/hermes/commit/5c7dbc0a78cb2d2a8bc81c41c617c3abecf209ff) by [@troZee](https://github.com/troZee))
+
+#### Android specific
+
+- **RNGP:** Add support for `exclusiveEnterpriseRepository` ([8e47e5486f](https://github.com/facebook/react-native/commit/8e47e5486f1b3dd8aa8e4965e8b8beeed215acd9) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **Cocoapods:** Add the `ENTERPRISE_REPOSITORY` env var to let user consume artifacts from their personal maven mirror ([183be8e12c](https://github.com/facebook/react-native/commit/183be8e12c0de2efc5faf89ac250db8b646972b4) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+#### Android specific
+
+- **InteropLayer:** Fix `ConcurrentModificationException` in `InteropUIBlockListener` ([d8b5a5570e](https://github.com/facebook/react-native/commit/d8b5a5570ee1f70483706a69acbacf8796679ade) by [@jkoutavas](https://github.com/jkoutavas))
+
 ## v0.80.1
 
 ### Added
