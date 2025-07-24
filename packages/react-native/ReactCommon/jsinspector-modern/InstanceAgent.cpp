@@ -10,6 +10,8 @@
 
 #include <jsinspector-modern/cdp/CdpJson.h>
 
+#include <utility>
+
 namespace facebook::react::jsinspector_modern {
 
 InstanceAgent::InstanceAgent(

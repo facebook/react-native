@@ -10,6 +10,8 @@
 
 #include <jsinspector-modern/InstanceTarget.h>
 
+#include <utility>
+
 namespace facebook::react::jsinspector_modern {
 
 std::shared_ptr<InstanceTarget> InstanceTarget::create(
@@ -30,10 +32,10 @@ InstanceTarget::InstanceTarget(
   (void)delegate_;
 }
 
-InstanceTargetDelegate::~InstanceTargetDelegate() {}
+InstanceTargetDelegate::~InstanceTargetDelegate() = default;
 
 std::shared_ptr<InstanceAgent> InstanceTarget::createAgent(
-    FrontendChannel channel,
+    const FrontendChannel& channel,
     SessionState& sessionState) {
   auto instanceAgent =
       std::make_shared<InstanceAgent>(channel, *this, sessionState);
@@ -61,7 +63,7 @@ RuntimeTarget& InstanceTarget::registerRuntime(
           .name = "main",
           .uniqueId = std::nullopt},
       delegate,
-      jsExecutor,
+      std::move(jsExecutor),
       makeVoidExecutor(executorFromThis()));
 
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
