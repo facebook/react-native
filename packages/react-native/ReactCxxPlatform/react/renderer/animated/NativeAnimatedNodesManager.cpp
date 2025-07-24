@@ -406,47 +406,51 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
   if (!isOnRenderThread_) {
     return;
   }
+  if (eventDrivers_.empty()) {
+    return;
+  }
 
-  if (!eventDrivers_.empty()) {
-    bool foundAtLeastOneDriver = false;
+  bool foundAtLeastOneDriver = false;
 
-    const auto key = EventAnimationDriverKey{
-        .viewTag = viewTag,
-        .eventName = EventEmitter::normalizeEventType(eventName)};
-    if (auto driversIter = eventDrivers_.find(key);
-        driversIter != eventDrivers_.end()) {
-      auto& drivers = driversIter->second;
-      if (!drivers.empty()) {
-        foundAtLeastOneDriver = true;
-      }
-      for (const auto& driver : drivers) {
-        if (auto value = driver->getValueFromPayload(eventPayload)) {
-          auto node =
-              getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedNodeTag());
-          stopAnimationsForNode(node->tag());
-          if (node->setRawValue(value.value())) {
-            updatedNodeTags_.insert(node->tag());
-          }
+  const auto key = EventAnimationDriverKey{
+      .viewTag = viewTag,
+      .eventName = EventEmitter::normalizeEventType(eventName)};
+  if (auto driversIter = eventDrivers_.find(key);
+      driversIter != eventDrivers_.end()) {
+    auto& drivers = driversIter->second;
+    if (!drivers.empty()) {
+      foundAtLeastOneDriver = true;
+    }
+    for (const auto& driver : drivers) {
+      if (auto value = driver->getValueFromPayload(eventPayload)) {
+        auto node =
+            getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedNodeTag());
+        if (node == nullptr) {
+          continue;
+        }
+        stopAnimationsForNode(node->tag());
+        if (node->setRawValue(value.value())) {
+          updatedNodeTags_.insert(node->tag());
         }
       }
     }
+  }
 
-    if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
-      // There is an animation driver handling this event and
-      // event driven animation has not been started yet.
-      isEventAnimationInProgress_ = true;
-      // Some platforms (e.g. iOS) have UI tick listener disable
-      // when there are no active animations. Calling
-      // `startRenderCallbackIfNeeded` will call platform specific code to
-      // register UI tick listener.
-      startRenderCallbackIfNeeded();
-      // Calling startOnRenderCallback_ will register a UI tick listener.
-      // The UI ticker listener will not be called until the next frame.
-      // That's why, in case this is called from the UI thread, we need to
-      // proactivelly trigger the animation loop to avoid showing stale
-      // frames.
-      onRender();
-    }
+  if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
+    // There is an animation driver handling this event and
+    // event driven animation has not been started yet.
+    isEventAnimationInProgress_ = true;
+    // Some platforms (e.g. iOS) have UI tick listener disable
+    // when there are no active animations. Calling
+    // `startRenderCallbackIfNeeded` will call platform specific code to
+    // register UI tick listener.
+    startRenderCallbackIfNeeded();
+    // Calling startOnRenderCallback_ will register a UI tick listener.
+    // The UI ticker listener will not be called until the next frame.
+    // That's why, in case this is called from the UI thread, we need to
+    // proactivelly trigger the animation loop to avoid showing stale
+    // frames.
+    onRender();
   }
 }
 
