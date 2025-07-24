@@ -157,8 +157,7 @@ void PerformanceTracer::reportMark(
   folly::dynamic eventArgs = folly::dynamic::object();
   if (detail != nullptr) {
     eventArgs = folly::dynamic::object(
-        "data",
-        folly::dynamic::object("detail", folly::toJson(std::move(detail))));
+        "data", folly::dynamic::object("detail", folly::toJson(detail)));
   }
 
   buffer_.emplace_back(TraceEvent{
@@ -183,8 +182,7 @@ void PerformanceTracer::reportMeasure(
 
   folly::dynamic beginEventArgs = folly::dynamic::object();
   if (detail != nullptr) {
-    beginEventArgs =
-        folly::dynamic::object("detail", folly::toJson(std::move(detail)));
+    beginEventArgs = folly::dynamic::object("detail", folly::toJson(detail));
   }
 
   auto currentThreadId = oscompat::getCurrentThreadId();

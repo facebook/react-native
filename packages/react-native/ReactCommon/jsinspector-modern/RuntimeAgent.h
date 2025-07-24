@@ -45,7 +45,7 @@ class RuntimeAgent final {
   RuntimeAgent(
       FrontendChannel frontendChannel,
       RuntimeTargetController& targetController,
-      const ExecutionContextDescription& executionContextDescription,
+      ExecutionContextDescription executionContextDescription,
       SessionState& sessionState,
       std::unique_ptr<RuntimeAgentDelegate> delegate);
 
