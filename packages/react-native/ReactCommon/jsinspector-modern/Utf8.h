@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern {
