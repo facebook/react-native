@@ -111,14 +111,14 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
    */
   void emitDeviceEvent(
       const std::string& eventName,
-      ArgFactory argFactory = nullptr);
+      ArgFactory&& argFactory = nullptr);
 
   // Backwards compatibility version
   void emitDeviceEvent(
       jsi::Runtime& /*runtime*/,
 
       const std::string& eventName,
-      ArgFactory argFactory = nullptr) {
+      ArgFactory&& argFactory = nullptr) {
     emitDeviceEvent(eventName, std::move(argFactory));
   }
 

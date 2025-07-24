@@ -92,18 +92,18 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 
   void reportMark(
       jsi::Runtime& rt,
-      std::string name,
+      const std::string& name,
       HighResTimeStamp time,
       jsi::Value entry);
 
   void reportMeasure(
       jsi::Runtime& rt,
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
       HighResDuration duration,
       jsi::Value entry);
 
-  std::optional<double> getMarkTime(jsi::Runtime& rt, std::string name);
+  std::optional<double> getMarkTime(jsi::Runtime& rt, const std::string& name);
 
   // https://w3c.github.io/user-timing/#clearmarks-method
   void clearMarks(
@@ -128,7 +128,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<NativePerformanceEntry> getEntriesByName(
       jsi::Runtime& rt,
-      std::string entryName,
+      const std::string& entryName,
       std::optional<PerformanceEntryType> entryType = std::nullopt);
 
 #pragma mark - Performance Observer (https://w3c.github.io/performance-timeline/#the-performanceobserver-interface)
