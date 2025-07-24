@@ -28,14 +28,6 @@
 
 #endif
 
-#ifndef __unused
-#if defined(__GNUC__) || defined(__clang__)
-#define __unused __attribute__((unused))
-#else
-#define __unused
-#endif
-#endif
-
 namespace facebook::react {
 
 /**
@@ -62,8 +54,8 @@ struct TraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit TraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {
     TRACE_EVENT_BEGIN("react-native", perfetto::DynamicString{name}, args...);
   }
 
@@ -90,8 +82,8 @@ struct DummyTraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit DummyTraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {}
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {}
 };
 using TraceSectionUnwrapped = DummyTraceSection;
 #endif
