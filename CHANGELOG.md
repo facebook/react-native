@@ -1,5 +1,111 @@
 # Changelog
 
+## v0.80.2
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.80.2 ([99d714c22d](https://github.com/facebook/react-native/commit/99d714c22d3341e1417401bba6212736c5d7662d) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Hermes ([cf48e47982](https://github.com/facebook/react-native/commit/cf48e4798235c0f17f6080840da31351c769eb8f) by [@cipolleschi](https://github.com/cipolleschi))
+- Add the ENTERPRISE_REPOSITORY env var to let user consume artifacts from their personal maven mirror ([183be8e12c](https://github.com/facebook/react-native/commit/183be8e12c0de2efc5faf89ac250db8b646972b4) by [@cipolleschi](https://github.com/cipolleschi))
+- Release 0.80.1 ([d0843bd53c](https://github.com/facebook/react-native/commit/d0843bd53c1f4d7a773df3684819ed7895eea262) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.81.0-rc.2
 
 ### Breaking
