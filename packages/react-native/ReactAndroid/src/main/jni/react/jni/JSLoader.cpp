@@ -21,7 +21,7 @@ class AssetManagerString : public JSBigString {
  public:
   AssetManagerString(AAsset* asset) : asset_(asset){};
 
-  virtual ~AssetManagerString() {
+  ~AssetManagerString() override {
     AAsset_close(asset_);
   }
 
@@ -52,19 +52,19 @@ __attribute__((visibility("default"))) std::unique_ptr<const JSBigString>
 loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
   TraceSection s(
       "reactbridge_jni_loadScriptFromAssets", "assetName", assetName);
-  if (manager) {
+  if (manager != nullptr) {
     auto asset = AAssetManager_open(
         manager,
         assetName.c_str(),
         AASSET_MODE_STREAMING); // Optimized for sequential read: see
                                 // AssetManager.java for docs
-    if (asset) {
+    if (asset != nullptr) {
       auto script = std::make_unique<AssetManagerString>(asset);
       if (script->size() >= sizeof(BundleHeader)) {
         // When using bytecode, it's safe for the underlying buffer to not be \0
         // terminated. In all other scenarios, we will force a copy of the
         // script to ensure we have a terminator.
-        const BundleHeader* header =
+        const auto* header =
             reinterpret_cast<const BundleHeader*>(script->c_str());
         if (isHermesBytecodeBundle(*header)) {
           return script;

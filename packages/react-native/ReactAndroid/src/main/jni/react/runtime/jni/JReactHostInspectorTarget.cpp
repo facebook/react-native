@@ -62,7 +62,7 @@ JReactHostInspectorTarget::~JReactHostInspectorTarget() {
 
 local_ref<JReactHostInspectorTarget::jhybriddata>
 JReactHostInspectorTarget::initHybrid(
-    alias_ref<JReactHostInspectorTarget::jhybridobject> self,
+    alias_ref<JReactHostInspectorTarget::jhybridobject> /*self*/,
     jni::alias_ref<JReactHostImpl> reactHostImpl,
     jni::alias_ref<JExecutor::javaobject> javaExecutor) {
   return makeCxxInstance(reactHostImpl, javaExecutor);
@@ -114,7 +114,7 @@ JReactHostInspectorTarget::getMetadata() {
   return metadata;
 }
 
-void JReactHostInspectorTarget::onReload(const PageReloadRequest& request) {
+void JReactHostInspectorTarget::onReload(const PageReloadRequest& /*request*/) {
   if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
     javaReactHostImplStrong->reload("CDP Page.reload");
   }
