@@ -19,6 +19,7 @@
 #include <folly/json.h>
 
 #include <memory>
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -180,7 +181,7 @@ HostTarget::~HostTarget() {
       "HostTargetSession objects must be destroyed before their HostTarget. Did you call getInspectorInstance().removePage()?");
 }
 
-HostTargetDelegate::~HostTargetDelegate() {}
+HostTargetDelegate::~HostTargetDelegate() = default;
 
 InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");

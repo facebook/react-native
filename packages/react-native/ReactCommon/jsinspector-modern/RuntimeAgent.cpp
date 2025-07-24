@@ -8,19 +8,21 @@
 #include "RuntimeAgent.h"
 #include "SessionState.h"
 
+#include <utility>
+
 namespace facebook::react::jsinspector_modern {
 
 RuntimeAgent::RuntimeAgent(
     FrontendChannel frontendChannel,
     RuntimeTargetController& targetController,
-    const ExecutionContextDescription& executionContextDescription,
+    ExecutionContextDescription executionContextDescription,
     SessionState& sessionState,
     std::unique_ptr<RuntimeAgentDelegate> delegate)
     : frontendChannel_(std::move(frontendChannel)),
       targetController_(targetController),
       sessionState_(sessionState),
       delegate_(std::move(delegate)),
-      executionContextDescription_(executionContextDescription) {
+      executionContextDescription_(std::move(executionContextDescription)) {
   for (auto& [name, contextSelectors] : sessionState_.subscribedBindings) {
     if (matchesAny(executionContextDescription_, contextSelectors)) {
       targetController_.installBindingHandler(name);
@@ -43,7 +45,7 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Right now, there's only ever one context (Runtime) in a Host, so we can
     // handle it here for simplicity, and use session state to propagate
     // bindings to the next RuntimeAgent.
-    if (req.params.count("executionContextId")) {
+    if (req.params.count("executionContextId") != 0u) {
       auto executionContextId = req.params["executionContextId"].getInt();
       if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
           executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
@@ -56,14 +58,14 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
       contextSelector =
           ExecutionContextSelector::byId((int32_t)executionContextId);
 
-      if (req.params.count("executionContextName")) {
+      if (req.params.count("executionContextName") != 0u) {
         frontendChannel_(cdp::jsonError(
             req.id,
             cdp::ErrorCode::InvalidParams,
             "executionContextName is mutually exclusive with executionContextId"));
         return true;
       }
-    } else if (req.params.count("executionContextName")) {
+    } else if (req.params.count("executionContextName") != 0u) {
       contextSelector = ExecutionContextSelector::byName(
           req.params["executionContextName"].getString());
     }
@@ -119,7 +121,7 @@ void RuntimeAgent::notifyBindingCalled(
   // React Native intentionally replicates this behavior for the sake of
   // bug-for-bug compatibility with Chrome, but clients should probably not rely
   // on it.
-  if (!sessionState_.subscribedBindings.count(bindingName)) {
+  if (sessionState_.subscribedBindings.count(bindingName) == 0u) {
     return;
   }
 

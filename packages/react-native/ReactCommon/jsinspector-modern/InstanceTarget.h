@@ -65,7 +65,7 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   ~InstanceTarget();
 
   std::shared_ptr<InstanceAgent> createAgent(
-      FrontendChannel channel,
+      const FrontendChannel& channel,
       SessionState& sessionState);
 
   /**

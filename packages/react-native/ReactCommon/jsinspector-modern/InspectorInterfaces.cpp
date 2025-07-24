@@ -10,17 +10,18 @@
 #include <cassert>
 #include <list>
 #include <mutex>
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
 // pure destructors in C++ are odd. You would think they don't want an
 // implementation, but in fact the linker requires one. Define them to be
 // empty so that people don't count on them for any particular behaviour.
-IDestructible::~IDestructible() {}
-ILocalConnection::~ILocalConnection() {}
-IRemoteConnection::~IRemoteConnection() {}
-IInspector::~IInspector() {}
-IPageStatusListener::~IPageStatusListener() {}
+IDestructible::~IDestructible() = default;
+ILocalConnection::~ILocalConnection() = default;
+IRemoteConnection::~IRemoteConnection() = default;
+IInspector::~IInspector() = default;
+IPageStatusListener::~IPageStatusListener() = default;
 
 folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities) {
@@ -54,8 +55,8 @@ class InspectorImpl : public IInspector {
    public:
     Page(
         int id,
-        const std::string& description,
-        const std::string& vm,
+        std::string description,
+        std::string vm,
         ConnectFunc connectFunc,
         InspectorTargetCapabilities capabilities);
     operator InspectorPageDescription() const;
@@ -77,13 +78,13 @@ class InspectorImpl : public IInspector {
 
 InspectorImpl::Page::Page(
     int id,
-    const std::string& description,
-    const std::string& vm,
+    std::string description,
+    std::string vm,
     ConnectFunc connectFunc,
     InspectorTargetCapabilities capabilities)
     : id_(id),
-      description_(description),
-      vm_(vm),
+      description_(std::move(description)),
+      vm_(std::move(vm)),
       connectFunc_(std::move(connectFunc)),
       capabilities_(capabilities) {}
 
@@ -122,7 +123,7 @@ void InspectorImpl::removePage(int pageId) {
   std::scoped_lock lock(mutex_);
 
   if (pages_.erase(pageId) != 0) {
-    for (auto& listenerWeak : listeners_) {
+    for (const auto& listenerWeak : listeners_) {
       if (auto listener = listenerWeak.lock()) {
         listener->onPageRemoved(pageId);
       }
