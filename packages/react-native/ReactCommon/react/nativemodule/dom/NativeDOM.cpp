@@ -299,7 +299,7 @@ NativeDOM::getScrollSize(
 }
 
 std::string NativeDOM::getTagName(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::shared_ptr<const ShadowNode> shadowNode) {
   return dom::getTagName(*shadowNode);
 }

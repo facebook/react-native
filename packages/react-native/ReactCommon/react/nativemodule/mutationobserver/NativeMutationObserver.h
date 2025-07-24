@@ -51,7 +51,7 @@ class NativeMutationObserver
 
   void observe(
       jsi::Runtime& runtime,
-      NativeMutationObserverObserveOptions options);
+      const NativeMutationObserverObserveOptions& options);
 
   void unobserveAll(
       jsi::Runtime& runtime,

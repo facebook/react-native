@@ -54,7 +54,7 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
      */
     std::string moduleName = name.utf8(runtime);
     if (moduleName == "__esModule") {
-      return jsi::Value(false);
+      return {false};
     }
 
     auto turboModule = turboBinding_.getModule(runtime, moduleName);

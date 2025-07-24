@@ -20,10 +20,9 @@ namespace facebook::react {
 
 namespace {
 CxxModule::Callback makeTurboCxxModuleCallback(
-    jsi::Runtime& runtime,
     std::weak_ptr<CallbackWrapper> weakWrapper) {
-  return [weakWrapper,
-          wrapperWasCalled = false](std::vector<folly::dynamic> args) mutable {
+  return [weakWrapper, wrapperWasCalled = false](
+             const std::vector<folly::dynamic>& args) mutable {
     if (wrapperWasCalled) {
       LOG(FATAL) << "callback arg cannot be called more than once";
     }
@@ -77,9 +76,9 @@ jsi::Value TurboCxxModule::create(
         0,
         [this](
             jsi::Runtime& rt,
-            const jsi::Value& thisVal,
-            const jsi::Value* args,
-            size_t count) {
+            const jsi::Value& /*thisVal*/,
+            const jsi::Value* /*args*/,
+            size_t /*count*/) {
           jsi::Object result(rt);
           auto constants = cxxModule_->getConstants();
           for (auto& pair : constants) {
@@ -97,7 +96,7 @@ jsi::Value TurboCxxModule::create(
             0,
             [this, propNameUtf8](
                 jsi::Runtime& rt,
-                const jsi::Value& thisVal,
+                const jsi::Value& /*thisVal*/,
                 const jsi::Value* args,
                 size_t count) {
               return invokeMethod(rt, propNameUtf8, args, count);
@@ -114,8 +113,8 @@ std::vector<jsi::PropNameID> TurboCxxModule::getPropertyNames(
   std::vector<jsi::PropNameID> result;
   result.reserve(cxxMethods_.size() + 1);
   result.push_back(jsi::PropNameID::forUtf8(runtime, "getConstants"));
-  for (auto it = cxxMethods_.begin(); it != cxxMethods_.end(); it++) {
-    result.push_back(jsi::PropNameID::forUtf8(runtime, it->name));
+  for (auto& cxxMethod : cxxMethods_) {
+    result.push_back(jsi::PropNameID::forUtf8(runtime, cxxMethod.name));
   }
   return result;
 }
@@ -164,7 +163,7 @@ jsi::Value TurboCxxModule::invokeMethod(
           args[count - 1].getObject(runtime).getFunction(runtime),
           runtime,
           jsInvoker_);
-      first = makeTurboCxxModuleCallback(runtime, wrapper);
+      first = makeTurboCxxModuleCallback(wrapper);
     } else if (method.callbacks == 2) {
       auto wrapper1 = CallbackWrapper::createWeak(
           args[count - 2].getObject(runtime).getFunction(runtime),
@@ -174,8 +173,8 @@ jsi::Value TurboCxxModule::invokeMethod(
           args[count - 1].getObject(runtime).getFunction(runtime),
           runtime,
           jsInvoker_);
-      first = makeTurboCxxModuleCallback(runtime, wrapper1);
-      second = makeTurboCxxModuleCallback(runtime, wrapper2);
+      first = makeTurboCxxModuleCallback(wrapper1);
+      second = makeTurboCxxModuleCallback(wrapper2);
     }
 
     auto innerArgs = folly::dynamic::array();
@@ -194,9 +193,9 @@ jsi::Value TurboCxxModule::invokeMethod(
           auto rejectWrapper = CallbackWrapper::createWeak(
               promise->reject_.getFunction(rt), rt, jsInvoker_);
           CxxModule::Callback resolve =
-              makeTurboCxxModuleCallback(rt, resolveWrapper);
+              makeTurboCxxModuleCallback(resolveWrapper);
           CxxModule::Callback reject =
-              makeTurboCxxModuleCallback(rt, rejectWrapper);
+              makeTurboCxxModuleCallback(rejectWrapper);
 
           auto innerArgs = folly::dynamic::array();
           for (size_t i = 0; i < count; i++) {
