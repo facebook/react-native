@@ -25,8 +25,9 @@ class TracingAgent {
    * \param frontendChannel A channel used to send responses to the
    * frontend.
    */
-  explicit TracingAgent(FrontendChannel frontendChannel)
-      : frontendChannel_(std::move(frontendChannel)) {}
+  TracingAgent(
+      FrontendChannel frontendChannel,
+      const SessionState& sessionState);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -60,6 +61,8 @@ class TracingAgent {
    * in this trace.
    */
   HighResTimeStamp instanceTracingStartTimestamp_;
+
+  const SessionState& sessionState_;
 };
 
 } // namespace facebook::react::jsinspector_modern
