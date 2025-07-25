@@ -90,6 +90,8 @@ class NativeAnimatedNodesManager {
 
   void disconnectAnimatedNodeFromView(Tag propsNodeTag, Tag viewTag) noexcept;
 
+  void disconnectAnimationsForView(Tag viewTag) noexcept;
+
   void restoreDefaultValues(Tag tag) noexcept;
 
   void dropAnimatedNode(Tag tag) noexcept;
@@ -175,7 +177,7 @@ class NativeAnimatedNodesManager {
   void updateNodes(
       const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
 
-  folly::dynamic managedProps(Tag tag) noexcept;
+  folly::dynamic managedProps(Tag tag) const noexcept;
 
   bool isOnRenderThread() const noexcept;
 
@@ -209,7 +211,7 @@ class NativeAnimatedNodesManager {
       eventDrivers_;
   std::unordered_set<Tag> updatedNodeTags_;
 
-  std::mutex connectedAnimatedNodesMutex_;
+  mutable std::mutex connectedAnimatedNodesMutex_;
 
   std::mutex uiTasksMutex_;
   std::vector<UiTask> operations_;

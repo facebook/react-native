@@ -195,15 +195,29 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
 
   auto node = getAnimatedNode<PropsAnimatedNode>(propsNodeTag);
   if (node != nullptr) {
-    node->disconnectFromView(viewTag);
-    {
-      std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
-      connectedAnimatedNodes_.erase(viewTag);
+    std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+    if (auto it = connectedAnimatedNodes_.find(viewTag);
+        it != connectedAnimatedNodes_.end()) {
+      node->disconnectFromView(viewTag);
+      connectedAnimatedNodes_.erase(it);
     }
     updatedNodeTags_.insert(node->tag());
   } else {
     LOG(WARNING)
         << "Cannot DisconnectAnimatedNodeToView, animated node has to be props type";
+  }
+}
+
+void NativeAnimatedNodesManager::disconnectAnimationsForView(
+    Tag viewTag) noexcept {
+  std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+  if (auto it = connectedAnimatedNodes_.find(viewTag);
+      it != connectedAnimatedNodes_.end()) {
+    auto node = getAnimatedNode<PropsAnimatedNode>(it->second);
+    if (node != nullptr) {
+      node->disconnectFromView(viewTag);
+    }
+    connectedAnimatedNodes_.erase(it);
   }
 }
 
@@ -707,7 +721,8 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(Tag tag) noexcept {
+folly::dynamic NativeAnimatedNodesManager::managedProps(
+    Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
   const auto iter = connectedAnimatedNodes_.find(tag);
   if (iter != connectedAnimatedNodes_.end()) {

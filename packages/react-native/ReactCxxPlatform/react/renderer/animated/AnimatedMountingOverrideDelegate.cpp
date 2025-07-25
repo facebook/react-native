@@ -6,6 +6,7 @@
  */
 
 #include "AnimatedMountingOverrideDelegate.h"
+#include "NativeAnimatedNodesManager.h"
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/view/ViewProps.h>
@@ -16,14 +17,14 @@
 namespace facebook::react {
 
 AnimatedMountingOverrideDelegate::AnimatedMountingOverrideDelegate(
-    std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
+    NativeAnimatedNodesManager& animatedManager,
     const Scheduler& scheduler)
     : MountingOverrideDelegate(),
-      getAnimatedManagedProps_(std::move(getAnimatedManagedProps)),
+      animatedManager_(&animatedManager),
       scheduler_(&scheduler){};
 
 bool AnimatedMountingOverrideDelegate::shouldOverridePullTransaction() const {
-  return getAnimatedManagedProps_ != nullptr;
+  return animatedManager_ != nullptr;
 }
 
 std::optional<MountingTransaction>
@@ -32,19 +33,17 @@ AnimatedMountingOverrideDelegate::pullTransaction(
     MountingTransaction::Number transactionNumber,
     const TransactionTelemetry& telemetry,
     ShadowViewMutationList mutations) const {
-  if (!getAnimatedManagedProps_) {
-    return MountingTransaction{
-        surfaceId, transactionNumber, std::move(mutations), telemetry};
-  }
-
   std::unordered_map<Tag, folly::dynamic> animatedManagedProps;
   for (const auto& mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Update) {
       const auto tag = mutation.newChildShadowView.tag;
-      auto props = getAnimatedManagedProps_(tag);
+      auto props = animatedManager_->managedProps(tag);
       if (!props.isNull()) {
         animatedManagedProps.insert({tag, std::move(props)});
       }
+    } else if (mutation.type == ShadowViewMutation::Delete) {
+      const auto tag = mutation.oldChildShadowView.tag;
+      animatedManager_->disconnectAnimationsForView(tag);
     }
   }
 
