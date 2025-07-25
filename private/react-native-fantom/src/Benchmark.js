@@ -35,9 +35,32 @@ type TestOptions = $ReadOnly<{
 
 type SuiteResults = Array<$ReadOnly<TaskResult>>;
 
+type TestWithArgName<TestArgType> = string | ((testArg: TestArgType) => string);
+
+type TestWithArgOptions<TestArgType> =
+  | FnOptions
+  | ((testArg: TestArgType) => FnOptions);
+
+interface ParameterizedTestFunction {
+  <TestArgType>(
+    testArgs: $ReadOnlyArray<TestArgType>,
+    name: TestWithArgName<TestArgType>,
+    fn: (testArg: TestArgType) => void,
+    options?: TestWithArgOptions<TestArgType>,
+  ): SuiteAPI;
+  only: <TestArgType>(
+    testArgs: $ReadOnlyArray<TestArgType>,
+    name: TestWithArgName<TestArgType>,
+    fn: (testArg: TestArgType) => void,
+    options?: TestWithArgOptions<TestArgType>,
+  ) => SuiteAPI;
+}
+
 interface TestFunction {
   (name: string, fn: () => void, options?: FnOptions): SuiteAPI;
   only: (name: string, fn: () => void, options?: FnOptions) => SuiteAPI;
+  // `each` allows to run the same test multiple times with different arguments, provided as an array of values:
+  each: ParameterizedTestFunction;
 }
 
 interface SuiteAPI {
@@ -45,15 +68,17 @@ interface SuiteAPI {
   verify(fn: (results: SuiteResults) => void): SuiteAPI;
 }
 
+interface TestTask {
+  name: string;
+  fn: () => void;
+  options: TestOptions | void;
+}
+
 export function suite(
   suiteName: string,
   suiteOptions?: SuiteOptions = {},
 ): SuiteAPI {
-  const tasks: Array<{
-    name: string,
-    fn: () => void,
-    options: TestOptions | void,
-  }> = [];
+  const tasks: Array<TestTask> = [];
   const verifyFns = [];
 
   global.it(suiteName, () => {
@@ -164,6 +189,45 @@ export function suite(
     tasks.push({name, fn, options: {...options, only: true}});
     return suiteAPI;
   };
+
+  const testWithArg = <TestArgType>(
+    testArg: TestArgType,
+    name: TestWithArgName<TestArgType>,
+    fn: (testArg: TestArgType) => void,
+    options?: TestWithArgOptions<TestArgType>,
+    only?: boolean = false,
+  ): TestTask => {
+    const taskName =
+      typeof name === 'function'
+        ? name(testArg)
+        : `${name} [arg=${String(testArg)}]`;
+    const taskOptions =
+      typeof options === 'function' ? options(testArg) : options;
+    const taskFn = () => fn(testArg);
+    return {name: taskName, fn: taskFn, options: {...taskOptions, only}};
+  };
+
+  // $FlowIssue[incompatible-type]
+  const testEach: ParameterizedTestFunction = <TestArgType>(
+    testArgs: $ReadOnlyArray<TestArgType>,
+    name: TestWithArgName<TestArgType>,
+    fn: (testArg: TestArgType) => void,
+    options?: TestWithArgOptions<TestArgType>,
+  ): SuiteAPI => {
+    for (const testArg of testArgs) {
+      tasks.push(testWithArg(testArg, name, fn, options));
+    }
+    return suiteAPI;
+  };
+
+  testEach.only = (testArgs, name, fn, options) => {
+    for (const testArg of testArgs) {
+      tasks.push(testWithArg(testArg, name, fn, options, true));
+    }
+    return suiteAPI;
+  };
+
+  test.each = testEach;
 
   const suiteAPI = {
     test,
