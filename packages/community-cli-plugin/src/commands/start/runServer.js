@@ -127,6 +127,8 @@ async function runServer(
   const reporter: Reporter = {
     update(event: TerminalReportableEvent) {
       terminalReporter.update(event);
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (reportEvent) {
         reportEvent(event);
       }
