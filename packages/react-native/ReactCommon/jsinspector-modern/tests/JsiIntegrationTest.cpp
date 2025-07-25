@@ -385,6 +385,55 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
                                })");
 }
 
+#pragma region JsiIntegrationPortableTestWithEarlyAddedBinding
+// A test with some special setup to cover an edge case in the CDP backend:
+// bindings can be added before there's even a Runtime in the session, and
+// they should still work seamlessly once there is one.
+
+TYPED_TEST_SUITE(JsiIntegrationPortableTestWithEarlyAddedBinding, AllEngines);
+
+template <typename EngineAdapter>
+class JsiIntegrationPortableTestWithEarlyAddedBinding
+    : public JsiIntegrationPortableTest<EngineAdapter> {
+  void setupRuntimeBeforeRegistration(jsi::Runtime& /*unused*/) override {
+    // Connect early, before the RuntimeTarget is created. This session will not
+    // have a RuntimeAgent yet.
+    this->connect();
+
+    // Add a binding.
+    this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+    this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+    // The binding is not installed yet, because the runtime is not registered
+    // with the CDP backend yet.
+    EXPECT_TRUE(this->eval("typeof globalThis.foo === 'undefined'").getBool());
+  }
+};
+
+TYPED_TEST(
+    JsiIntegrationPortableTestWithEarlyAddedBinding,
+    AddBindingBeforeRuntimeRegistered) {
+  // Now there is a RuntimeTarget / RuntimeAgent in the session, as per the
+  // normal test setup. Note that we're already connect()ed - not repeating that
+  // here.
+
+  // The binding is now installed, callable and working.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.bindingCalled"),
+      AtJsonPtr("/params/name", "foo"),
+      AtJsonPtr("/params/payload", "bar"))));
+  this->eval("globalThis.foo('bar');");
+}
+
+#pragma endregion // JsiIntegrationPortableTestWithEarlyAddedBinding
+
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
 

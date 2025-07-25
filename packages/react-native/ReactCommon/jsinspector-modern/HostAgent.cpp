@@ -141,9 +141,11 @@ class HostAgent::Impl final {
           .shouldSendOKResponse = true,
       };
     }
-    // Methods other than domain enables/disables: handle anything we know how
-    // to handle, and delegate to the InstanceAgent otherwise.
 
+    // Methods other than domain enables/disables: handle anything we know how
+    // to handle, and delegate to the InstanceAgent otherwise. (In some special
+    // cases we may handle the request *and* delegate to the InstanceAgent for
+    // some side effect.)
     if (req.method == "Page.reload") {
       targetController_.getDelegate().onReload({
           .ignoreCache =
@@ -202,6 +204,72 @@ class HostAgent::Impl final {
     if (req.method == "ReactNativeApplication.disable") {
       sessionState_.isReactNativeApplicationDomainEnabled = false;
 
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.addBinding") {
+      // @cdp Runtime.addBinding and @cdp Runtime.removeBinding are explicitly
+      // supported at any time during a session, even while the JS runtime
+      // hasn't been created yet. For this reason they are handled by the
+      // HostAgent.
+      std::string bindingName = req.params["name"].getString();
+
+      ExecutionContextSelector contextSelector =
+          ExecutionContextSelector::all();
+
+      if (req.params.count("executionContextId") != 0u) {
+        auto executionContextId = req.params["executionContextId"].getInt();
+        if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
+            executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
+          frontendChannel_(cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidParams,
+              "Invalid execution context id"));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+        contextSelector =
+            ExecutionContextSelector::byId((int32_t)executionContextId);
+
+        if (req.params.count("executionContextName") != 0u) {
+          frontendChannel_(cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidParams,
+              "executionContextName is mutually exclusive with executionContextId"));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+      } else if (req.params.count("executionContextName") != 0u) {
+        contextSelector = ExecutionContextSelector::byName(
+            req.params["executionContextName"].getString());
+      }
+
+      sessionState_.subscribedBindings[bindingName].insert(contextSelector);
+
+      // We need this request to percolate down to the RuntimeAgent via the
+      // InstanceAgent. If there isn't a RuntimeAgent, it's OK: the next
+      // RuntimeAgent will pick up the binding via session state.
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.removeBinding") {
+      // @cdp Runtime.removeBinding has no targeting by execution context. We
+      // interpret it to mean "unsubscribe, and stop installing the binding on
+      // all new contexts". This diverges slightly from V8, which continues
+      // to install the binding on new contexts after it's "removed", but *only*
+      // if the subscription is targeted by context name.
+      sessionState_.subscribedBindings.erase(req.params["name"].getString());
+
+      // Because of the above, we don't need to pass this request down to the
+      // RuntimeAgent.
       return {
           .isFinishedHandlingRequest = true,
           .shouldSendOKResponse = true,

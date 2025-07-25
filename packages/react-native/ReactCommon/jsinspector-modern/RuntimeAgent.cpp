@@ -39,56 +39,21 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Runtime.addBinding") {
     std::string bindingName = req.params["name"].getString();
 
-    ExecutionContextSelector contextSelector = ExecutionContextSelector::all();
-
-    // TODO: Eventually, move execution context targeting out of RuntimeAgent.
-    // Right now, there's only ever one context (Runtime) in a Host, so we can
-    // handle it here for simplicity, and use session state to propagate
-    // bindings to the next RuntimeAgent.
-    if (req.params.count("executionContextId") != 0u) {
-      auto executionContextId = req.params["executionContextId"].getInt();
-      if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
-          executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InvalidParams,
-            "Invalid execution context id"));
-        return true;
+    // Check if the binding has a context selector that matches the current
+    // context. The state will have been updated by HostAgent by the time we
+    // receive the request.
+    // NOTE: We DON'T do the reverse for removeBinding, for reasons explained
+    // in the implementation of HostAgent.
+    auto it = sessionState_.subscribedBindings.find(bindingName);
+    if (it != sessionState_.subscribedBindings.end()) {
+      auto contextSelectors = it->second;
+      if (matchesAny(executionContextDescription_, contextSelectors)) {
+        targetController_.installBindingHandler(bindingName);
       }
-      contextSelector =
-          ExecutionContextSelector::byId((int32_t)executionContextId);
-
-      if (req.params.count("executionContextName") != 0u) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InvalidParams,
-            "executionContextName is mutually exclusive with executionContextId"));
-        return true;
-      }
-    } else if (req.params.count("executionContextName") != 0u) {
-      contextSelector = ExecutionContextSelector::byName(
-          req.params["executionContextName"].getString());
     }
-    if (contextSelector.matches(executionContextDescription_)) {
-      targetController_.installBindingHandler(bindingName);
-    }
-    sessionState_.subscribedBindings[bindingName].insert(contextSelector);
 
-    frontendChannel_(cdp::jsonResult(req.id));
-
-    return true;
-  }
-  if (req.method == "Runtime.removeBinding") {
-    // @cdp Runtime.removeBinding has no targeting by execution context. We
-    // interpret it to mean "unsubscribe, and stop installing the binding on
-    // all new contexts". This diverges slightly from V8, which continues
-    // to install the binding on new contexts after it's "removed", but *only*
-    // if the subscription is targeted by context name.
-    sessionState_.subscribedBindings.erase(req.params["name"].getString());
-
-    frontendChannel_(cdp::jsonResult(req.id));
-
-    return true;
+    // We are not responding to this request, just processing a side effect.
+    return false;
   }
   if (req.method == "Runtime.enable" && sessionState_.isLogDomainEnabled) {
     targetController_.notifyDebuggerSessionCreated();
