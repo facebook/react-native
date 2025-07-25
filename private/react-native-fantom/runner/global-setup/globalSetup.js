@@ -15,6 +15,8 @@ export default async function globalSetup(
   globalConfig: {...},
   projectConfig: {...},
 ): Promise<void> {
+  process.env.__FANTOM_RUN_ID__ ??= `run-${Date.now()}`;
+
   validateEnvironmentVariables();
 
   if (!isOSS) {
