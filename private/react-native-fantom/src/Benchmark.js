@@ -115,6 +115,11 @@ export function suite(
         continue;
       }
 
+      if (task.fn.name === '') {
+        // $FlowExpectedError[cannot-write]
+        Object.defineProperty(task.fn, 'name', {value: task.name});
+      }
+
       const {only, ...options} = task.options ?? {};
       bench.add(task.name, task.fn, options);
     }
