@@ -370,6 +370,25 @@ jobs:
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
+  run_fantom_tests:
+    runs-on: 8-core-ubuntu
+    needs: [set_release_type]
+    container:
+      image: reactnativecommunity/react-native-android:latest
+      env:
+        TERM: "dumb"
+        GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+        ORG_GRADLE_PROJECT_SIGNING_PWD: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_PWD }}
+        ORG_GRADLE_PROJECT_SIGNING_KEY: ${{ secrets.ORG_GRADLE_PROJECT_SIGNING_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and Test Fantom
+        uses: ./.github/actions/run-fantom-tests
+        with:
+          release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
+
   build_hermesc_windows:
     runs-on: windows-2025
     needs: prepare_hermes_workspace

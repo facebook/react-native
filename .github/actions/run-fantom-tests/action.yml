@@ -1,0 +1,59 @@
+name: Run Fantom Tests
+inputs:
+  release-type:
+    required: true
+    description: The type of release we are building. It could be nightly, release or dry-run
+  gradle-cache-encryption-key:
+    description: "The encryption key needed to store the Gradle Configuration cache"
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install -y git cmake openssl libssl-dev clang
+    - name: Setup git safe folders
+      shell: bash
+      run: git config --global --add safe.directory '*'
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Install node dependencies
+      uses: ./.github/actions/yarn-install
+    - name: Set React Native Version
+      shell: bash
+      run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
+    - name: Setup gradle
+      uses: ./.github/actions/setup-gradle
+      with:
+        cache-read-only: "false"
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
+    - name: Restore Android ccache
+      uses: actions/cache/restore@v4
+      with:
+        path: /github/home/.cache/ccache
+        key: v1-ccache-android-${{ github.job }}-${{ github.ref }}
+        restore-keys: |
+          v1-ccache-android-${{ github.job }}-
+          v1-ccache-android-
+    - name: Show ccache stats
+      shell: bash
+      run: ccache -s -v
+    - name: Run Fantom Tests
+      shell: bash
+      run: yarn fantom
+      env:
+        CC: clang
+        CXX: clang++
+    - name: Upload test results
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: run-fantom-tests-results
+        compression-level: 1
+        path: |
+          packages/react-native-gradle-plugin/react-native-gradle-plugin/build/reports
+          packages/react-native-gradle-plugin/settings-plugin/build/reports
+          packages/react-native/ReactAndroid/build/reports
+          private/react-native-fantom/build/reports
+          build/reports
