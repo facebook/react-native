@@ -51,11 +51,17 @@ import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
+const fantomRunID = process.env.__FANTOM_RUN_ID__;
+if (fantomRunID == null) {
+  throw new Error(
+    'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
+  );
+}
+
 const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
-fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
-const BUILD_OUTPUT_PATH = fs.mkdtempSync(
-  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
-);
+const BUILD_OUTPUT_PATH = path.join(BUILD_OUTPUT_ROOT, fantomRunID);
+
+fs.mkdirSync(BUILD_OUTPUT_PATH, {recursive: true});
 
 function buildError(
   failureDetail: FailureDetail,
