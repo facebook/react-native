@@ -18,11 +18,11 @@ class RemoteConnection : public jsinspector_modern::IRemoteConnection {
   RemoteConnection(jni::alias_ref<JRemoteConnection::javaobject> connection)
       : connection_(jni::make_global(connection)) {}
 
-  virtual void onMessage(std::string message) override {
+  void onMessage(std::string message) override {
     connection_->onMessage(message);
   }
 
-  virtual void onDisconnect() override {
+  void onDisconnect() override {
     connection_->onDisconnect();
   }
 
@@ -74,7 +74,7 @@ void JLocalConnection::registerNatives() {
 }
 
 jni::global_ref<JInspector::javaobject> JInspector::instance(
-    jni::alias_ref<jclass>) {
+    jni::alias_ref<jclass> /*unused*/) {
   static auto instance = jni::make_global(
       newObjectCxxArgs(&jsinspector_modern::getInspectorInstance()));
   return instance;

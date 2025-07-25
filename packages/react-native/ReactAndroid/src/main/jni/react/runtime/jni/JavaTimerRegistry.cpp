@@ -7,11 +7,13 @@
 
 #include "JavaTimerRegistry.h"
 
+#include <utility>
+
 namespace facebook::react {
 
 JavaTimerRegistry::JavaTimerRegistry(
     jni::global_ref<JJavaTimerManager::javaobject> javaTimerManager)
-    : javaTimerManager_(javaTimerManager) {}
+    : javaTimerManager_(std::move(javaTimerManager)) {}
 
 void JavaTimerRegistry::createTimer(uint32_t timerID, double delayMS) {
   javaTimerManager_->createTimer(timerID, delayMS, /* repeat */ false);
