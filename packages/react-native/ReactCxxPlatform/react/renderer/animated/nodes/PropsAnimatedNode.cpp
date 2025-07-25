@@ -58,9 +58,6 @@ void PropsAnimatedNode::connectToView(Tag viewTag) {
 }
 
 void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
-  react_native_assert(
-      connectedViewTag_ == viewTag &&
-      "Attempting to disconnect view that has not been connected with the given animated node.");
   connectedViewTag_ = animated::undefinedAnimatedNodeIdentifier;
 }
 

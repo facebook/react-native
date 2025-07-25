@@ -17,11 +17,12 @@
 namespace facebook::react {
 
 class Scheduler;
+class NativeAnimatedNodesManager;
 
 class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
  public:
   AnimatedMountingOverrideDelegate(
-      std::function<folly::dynamic(Tag)> getAnimatedManagedProps,
+      NativeAnimatedNodesManager& animatedManager,
       const Scheduler& scheduler);
 
   bool shouldOverridePullTransaction() const override;
@@ -33,7 +34,7 @@ class AnimatedMountingOverrideDelegate : public MountingOverrideDelegate {
       ShadowViewMutationList mutations) const override;
 
  private:
-  std::function<folly::dynamic(Tag)> getAnimatedManagedProps_;
+  mutable NativeAnimatedNodesManager* animatedManager_;
 
   const Scheduler* scheduler_;
 };

@@ -88,16 +88,7 @@ NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
     auto* scheduler = (Scheduler*)uiManager->getDelegate();
     animatedMountingOverrideDelegate_ =
         std::make_shared<AnimatedMountingOverrideDelegate>(
-            [nativeAnimatedNodesManager =
-                 std::weak_ptr<NativeAnimatedNodesManager>(
-                     nativeAnimatedNodesManager_)](Tag tag) -> folly::dynamic {
-              if (auto nativeAnimatedNodesManagerStrong =
-                      nativeAnimatedNodesManager.lock()) {
-                return nativeAnimatedNodesManagerStrong->managedProps(tag);
-              }
-              return nullptr;
-            },
-            *scheduler);
+            *nativeAnimatedNodesManager_, *scheduler);
 
     // Register on existing surfaces
     uiManager->getShadowTreeRegistry().enumerate(
