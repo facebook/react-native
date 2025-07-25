@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c7559d37ffcb752e95b8313dcd1ee681>>
+ * @generated SignedSource<<5899c2e14a7b8108c11d7336e9cfbfa4>>
  */
 
 /**
@@ -70,6 +70,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::cxxNativeAnimatedRemoveJsSync();
+  }
+
+  bool disableFabricCommitInCXXAnimated() override {
+    auto value = values_["disableFabricCommitInCXXAnimated"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::disableFabricCommitInCXXAnimated();
   }
 
   bool disableMountItemReorderingAndroid() override {

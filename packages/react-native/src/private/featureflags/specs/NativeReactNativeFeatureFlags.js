@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<119985fbbfbc9ace52b26a7fb3b91f03>>
+ * @generated SignedSource<<db142564f084e707f3ac10cf5bb3a6f3>>
  * @flow strict
  * @noformat
  */
@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +cxxNativeAnimatedRemoveJsSync?: () => boolean;
+  +disableFabricCommitInCXXAnimated?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
   +disableOldAndroidAttachmentMetricsWorkarounds?: () => boolean;
   +disableTextLayoutManagerCacheAndroid?: () => boolean;

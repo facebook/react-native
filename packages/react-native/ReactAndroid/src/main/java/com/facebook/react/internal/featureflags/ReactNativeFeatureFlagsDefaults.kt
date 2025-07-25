@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<728ae563ec31340ccc8c4c593d566c64>>
+ * @generated SignedSource<<1221da6338bb06cd57e14b00a342b815>>
  */
 
 /**
@@ -28,6 +28,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
+
+  override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 

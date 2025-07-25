@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a5b0bdc0bd9ab0889e548b25cfe5371>>
+ * @generated SignedSource<<2c5eebdefa26052c1a20fcf55f68c931>>
  */
 
 /**
@@ -27,6 +27,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var commonTestFlagCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
+  private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
@@ -115,6 +116,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.cxxNativeAnimatedRemoveJsSync()
       accessedFeatureFlags.add("cxxNativeAnimatedRemoveJsSync")
       cxxNativeAnimatedRemoveJsSyncCache = cached
+    }
+    return cached
+  }
+
+  override fun disableFabricCommitInCXXAnimated(): Boolean {
+    var cached = disableFabricCommitInCXXAnimatedCache
+    if (cached == null) {
+      cached = currentProvider.disableFabricCommitInCXXAnimated()
+      accessedFeatureFlags.add("disableFabricCommitInCXXAnimated")
+      disableFabricCommitInCXXAnimatedCache = cached
     }
     return cached
   }

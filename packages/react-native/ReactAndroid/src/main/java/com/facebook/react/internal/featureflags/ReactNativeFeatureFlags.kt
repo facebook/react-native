@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92170b32c13dc405a81b4a5cf5677afb>>
+ * @generated SignedSource<<b236df3f1d4b9e0a263f80018743557b>>
  */
 
 /**
@@ -47,6 +47,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun cxxNativeAnimatedRemoveJsSync(): Boolean = accessor.cxxNativeAnimatedRemoveJsSync()
+
+  /**
+   * Prevents use of Fabric commit in C++ Animated implementation
+   */
+  @JvmStatic
+  public fun disableFabricCommitInCXXAnimated(): Boolean = accessor.disableFabricCommitInCXXAnimated()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread
