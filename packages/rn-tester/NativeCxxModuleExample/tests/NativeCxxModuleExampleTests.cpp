@@ -154,6 +154,16 @@ TEST_F(NativeCxxModuleExampleTests, GetValueReturnsCorrectValues) {
   EXPECT_EQ(result.z.c, "seven");
 }
 
+TEST_F(NativeCxxModuleExampleTests, GetValueWithPromiseReturnsCorrectValues) {
+  auto promise1 = module_->getValueWithPromise(*runtime_, false);
+  auto result = resolvePromise(promise1);
+  EXPECT_EQ(result, "result!");
+
+  auto promise2 = module_->getValueWithPromise(*runtime_, true);
+  auto message = handleError(promise2);
+  EXPECT_EQ(message, "intentional promise rejection");
+}
+
 TEST_F(
     NativeCxxModuleExampleTests,
     GetWithWithOptionalArgsReturnsCorrectValues) {
