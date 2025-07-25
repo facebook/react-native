@@ -8,12 +8,39 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.jstasks.HeadlessJsTaskConfig
+import com.facebook.react.jstasks.HeadlessJsTaskContext
 
 public class AlertDialogActivity: Activity() {
+
+  private var taskID: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         displayAlert()
+
+      val taskConfig = HeadlessJsTaskConfig(
+        taskKey = "MY_TESTING_KEY",
+        timeout = 0,
+        data = Arguments.createMap(),
+        isAllowedInForeground = true)
+      ForcedAlertModule.currentContext?.let {
+        val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(it)
+        taskID = headlessJsTaskContext.startTask(taskConfig)
+      }
     }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    ForcedAlertModule.currentContext?.let {
+      taskID?.let { id ->
+        val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(it)
+        headlessJsTaskContext.finishTask(id)
+        taskID = null
+      }
+    }
+  }
 
     private fun displayAlert() {
         val builder = AlertDialog.Builder(this)

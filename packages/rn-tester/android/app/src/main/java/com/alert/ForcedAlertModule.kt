@@ -1,11 +1,14 @@
 package com.alert
 
 import android.content.Intent
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.jstasks.HeadlessJsTaskConfig
+import com.facebook.react.jstasks.HeadlessJsTaskContext
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -29,19 +32,19 @@ public class ForcedAlertModule internal constructor(private val context: ReactAp
 
   @ReactMethod
   public fun alert(title: String?, message: String?) {
+    currentContext = context
     val dialogIntent = Intent(reactApplicationContext, AlertDialogActivity::class.java)
     dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     dialogIntent.putExtra("title", title)
     dialogIntent.putExtra("message", message)
     context?.startActivity(dialogIntent)
-    currentContext = context
   }
 
   public companion object {
     public const val EVENT_SYNC: String = "EVENT_SYNC"
     public const val EVENT_ASYNC: String = "EVENT_ASYNC"
 
-    private var currentContext: ReactApplicationContext? = null
+    public var currentContext: ReactApplicationContext? = null
 
     public fun sendSyncEvent(body: String) {
       currentContext?.getJSModule(ReactContext.RCTDeviceEventEmitter::class.java)
