@@ -153,6 +153,8 @@
   },
   "peerDependencies": {
     "@types/react": "^19.1.0",
+    "@babel/core": "^7.8.0",
+    "@babel/preset-env": "^7.1.6",
     "react": "^19.1.0"
   },
   "peerDependenciesMeta": {
