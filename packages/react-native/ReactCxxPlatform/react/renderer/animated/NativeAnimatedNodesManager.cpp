@@ -201,6 +201,8 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
       connectedAnimatedNodes_.erase(viewTag);
     }
     updatedNodeTags_.insert(node->tag());
+
+    onManagedPropsRemoved(viewTag);
   } else {
     LOG(WARNING)
         << "Cannot DisconnectAnimatedNodeToView, animated node has to be props type";
@@ -711,16 +713,48 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(Tag tag) noexcept {
+folly::dynamic NativeAnimatedNodesManager::managedProps(
+    Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
-  const auto iter = connectedAnimatedNodes_.find(tag);
-  if (iter != connectedAnimatedNodes_.end()) {
+  if (const auto iter = connectedAnimatedNodes_.find(tag);
+      iter != connectedAnimatedNodes_.end()) {
     if (const auto node = getAnimatedNode<PropsAnimatedNode>(iter->second)) {
       return node->props();
+    }
+  } else {
+    std::lock_guard<std::mutex> lockUnsyncedDirectViewProps(
+        unsyncedDirectViewPropsMutex_);
+    if (auto it = unsyncedDirectViewProps_.find(tag);
+        it != unsyncedDirectViewProps_.end()) {
+      return it->second;
     }
   }
 
   return nullptr;
+}
+
+bool NativeAnimatedNodesManager::hasManagedProps() const noexcept {
+  {
+    std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+    if (!connectedAnimatedNodes_.empty()) {
+      return true;
+    }
+  }
+  {
+    std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+    if (!unsyncedDirectViewProps_.empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
+  std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+  if (auto iter = unsyncedDirectViewProps_.find(tag);
+      iter != unsyncedDirectViewProps_.end()) {
+    unsyncedDirectViewProps_.erase(iter);
+  }
 }
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
@@ -771,6 +805,10 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     mergeObjects(updateViewPropsDirect_[viewTag], props);
   } else if (directManipulationCallback_ != nullptr) {
     mergeObjects(updateViewPropsDirect_[viewTag], props);
+    {
+      std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+      mergeObjects(unsyncedDirectViewProps_[viewTag], props);
+    }
   }
 }
 
