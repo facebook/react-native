@@ -151,6 +151,66 @@ test('animation driven by onScroll event', () => {
   expect(viewElement.getBoundingClientRect().y).toBe(100);
 });
 
+test('animation driven by onScroll event when animated view is unmounted', () => {
+  const scrollViewRef = createRef<HostInstance>();
+
+  component PressableWithNativeDriver(mountAnimatedView: boolean) {
+    const currScroll = useAnimatedValue(0);
+
+    return (
+      <View style={{flex: 1}}>
+        {mountAnimatedView ? (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              width: 10,
+              height: 10,
+              transform: [{translateY: currScroll}],
+            }}
+          />
+        ) : null}
+        <Animated.ScrollView
+          ref={scrollViewRef}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    y: currScroll,
+                  },
+                },
+              },
+            ],
+            {useNativeDriver: true},
+          )}>
+          <View style={{height: 1000, width: 100}} />
+        </Animated.ScrollView>
+      </View>
+    );
+  }
+
+  const root = Fantom.createRoot();
+  Fantom.runTask(() => {
+    root.render(<PressableWithNativeDriver mountAnimatedView={true} />);
+  });
+
+  Fantom.runTask(() => {
+    root.render(<PressableWithNativeDriver mountAnimatedView={false} />);
+  });
+
+  const scrollViewelement = ensureInstance(
+    scrollViewRef.current,
+    ReactNativeElement,
+  );
+
+  Fantom.scrollTo(scrollViewelement, {
+    x: 0,
+    y: 50,
+  });
+
+  Fantom.runWorkLoop();
+});
+
 test('animated opacity', () => {
   let _opacity;
   let _opacityAnimation;
