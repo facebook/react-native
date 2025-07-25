@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1b3fcfce5950ad1439d30f8165e73491>>
+ * @generated SignedSource<<7ca0c460a5b96f0cb8555054d24c8c2c>>
  */
 
 /**
@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
+    return false;
+  }
+
+  bool cdpInteractionMetricsEnabled() override {
     return false;
   }
 
@@ -212,6 +216,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
+  bool perfMonitorV2Enabled() override {
     return false;
   }
 

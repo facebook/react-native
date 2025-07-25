@@ -60,6 +60,17 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    cdpInteractionMetricsEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-16',
+        description:
+          'Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     cxxNativeAnimatedEnabled: {
       defaultValue: false,
       metadata: {
@@ -543,6 +554,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-30',
         description:
           'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    perfMonitorV2Enabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-16',
+        description:
+          'Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

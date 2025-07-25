@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bcd6d9b502d0dc374fc239fb860dd2b9>>
+ * @generated SignedSource<<afd38d105b3b7ab92f98f39dbce40925>>
  */
 
 /**
@@ -24,6 +24,8 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
+
+  @DoNotStrip public fun cdpInteractionMetricsEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
@@ -116,6 +118,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
 
   @DoNotStrip public fun preparedTextCacheSize(): Double
 

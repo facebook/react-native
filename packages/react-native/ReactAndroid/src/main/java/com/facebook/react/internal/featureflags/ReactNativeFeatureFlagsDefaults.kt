@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1221da6338bb06cd57e14b00a342b815>>
+ * @generated SignedSource<<275f6f2c36b2a0f7d83765d98ab60daf>>
  */
 
 /**
@@ -24,6 +24,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
+
+  override fun cdpInteractionMetricsEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
@@ -116,6 +118,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
+
+  override fun perfMonitorV2Enabled(): Boolean = false
 
   override fun preparedTextCacheSize(): Double = 200.0
 
