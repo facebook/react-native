@@ -1,4 +1,3 @@
-# This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
 trigger:
@@ -14,11 +13,15 @@ trigger:
 pr: none
 
 variables:
-  - template: /.ado/variables/vars.yml@self
   - group: React-native-macos Secrets
   - group: InfoSec-SecurityResults
   - name: tags
     value: production,externalfacing
+      # CodeQL Still has not fixed their bug running on Apple ARM64 jobs where they inject x64 binaries into arm64 processes and just make it crash :(
+      # Only workaround for now is to disable CodeQL on Apple jobs.
+  - name: Codeql.Enabled
+    value: false
+  - template: /.ado/variables/vars.yml@self
 
 resources:
   repositories:
@@ -47,28 +50,7 @@ extends:
         # Justification: js files in this repo are flow files. the built-in eslint does not support this. Adding a separate step to run the sdl rules for flow files.
         exclusionPatterns: '**/*.js'
     stages:
-      - stage: main
+      - stage: NPM
+        dependsOn: []
         jobs:
-         - job: RNGithubNpmJSPublish
-           displayName: NPM Publish React-native-macos
-           pool:
-             name: cxeiss-ubuntu-20-04-large
-             image: cxe-ubuntu-20-04-1es-pt
-             os: linux
-           variables:
-             - name: BUILDSECMON_OPT_IN
-               value: true
-           timeoutInMinutes: 90 # how long to run the job before automatically cancelling
-           cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
-           templateContext:
-             outputs:
-               - output: pipelineArtifact
-                 targetPath: $(System.DefaultWorkingDirectory)
-                 artifactName: github-npm-js-publish
-           steps:
-             - checkout: self # self represents the repo where the initial Pipelines YAML file was found
-               clean: true # whether to fetch clean each time
-               fetchFilter: blob:none # partial clone for faster clones while maintaining history
-               persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
-
-             - template: /.ado/jobs/npm-publish.yml@self
+         - template: /.ado/jobs/npm-publish.yml@self
