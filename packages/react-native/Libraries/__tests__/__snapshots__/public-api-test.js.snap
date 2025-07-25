@@ -5783,7 +5783,7 @@ declare export default typeof NativeLinkingManager;
 
 exports[`public API should not change unintentionally Libraries/Lists/FillRateHelper.js 1`] = `
 "declare const FillRateHelper: FillRateHelperType;
-export type { FillRateInfo } from \\"@react-native-mac/virtualized-lists\\";
+export type { FillRateInfo } from \\"@react-native-macos/virtualized-lists\\";
 declare module.exports: FillRateHelper;
 "
 `;
@@ -6015,7 +6015,7 @@ exports[`public API should not change unintentionally Libraries/Lists/Viewabilit
   ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
-} from \\"@react-native-mac/virtualized-lists\\";
+} from \\"@react-native-macos/virtualized-lists\\";
 declare const ViewabilityHelper: ViewabilityHelperType;
 declare module.exports: ViewabilityHelper;
 "
@@ -6033,7 +6033,7 @@ export type {
   RenderItemProps,
   RenderItemType,
   Separators,
-} from \\"@react-native-mac/virtualized-lists\\";
+} from \\"@react-native-macos/virtualized-lists\\";
 declare module.exports: VirtualizedList;
 "
 `;
@@ -6051,7 +6051,7 @@ exports[`public API should not change unintentionally Libraries/Lists/Virtualize
 export type {
   SectionBase,
   ScrollToLocationParamsType,
-} from \\"@react-native-mac/virtualized-lists\\";
+} from \\"@react-native-macos/virtualized-lists\\";
 declare module.exports: VirtualizedSectionList;
 "
 `;

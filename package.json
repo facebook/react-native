@@ -1,8 +1,9 @@
 {
-  "name": "@react-native-mac/monorepo",
+  "name": "@react-native-macos/monorepo",
   "private": true,
   "version": "1000.0.0",
   "license": "MIT",
+  "packageManager": "yarn@4.9.2",
   "scripts": {
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
@@ -48,7 +49,7 @@
     "@babel/preset-flow": "^7.24.7",
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.6.3",
-    "@nx/js": "~20.0.0",
+    "@nx/js": "^21.2.4",
     "@pkgjs/parseargs": "^0.11.0",
     "@react-native/metro-babel-transformer": "0.76.9",
     "@react-native/metro-config": "0.76.9",
@@ -93,7 +94,7 @@
     "mkdirp": "^0.5.1",
     "node-fetch": "^2.2.0",
     "nullthrows": "^1.1.1",
-    "nx": "~20.0.0",
+    "nx": "21.2.4",
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.23.1",
     "react": "18.3.1",
@@ -124,6 +125,5 @@
     "readable-stream": "Eliminates dependency on outdated string_decoder component",
     "shell-quote": "Versions prior to 1.7.3 have an RCE vulnerability. Should be removable once we upgrade CLI tools to ^8.0.0 with RN 0.69.",
     "tough-cookie": "@definitelytyped/dtslint indirectly depends on this through an out-of-date library, and our particular use case doesn't need cookies"
-  },
-  "packageManager": "yarn@4.5.0"
+  }
 }

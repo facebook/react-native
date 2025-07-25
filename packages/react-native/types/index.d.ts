@@ -117,7 +117,7 @@ export * from '../Libraries/LayoutAnimation/LayoutAnimation';
 export * from '../Libraries/Linking/Linking';
 export * from '../Libraries/Lists/FlatList';
 export * from '../Libraries/Lists/SectionList';
-export * from '@react-native-mac/virtualized-lists'; // [macOS]
+export * from '@react-native-macos/virtualized-lists'; // [macOS]
 export * from '../Libraries/LogBox/LogBox';
 export * from '../Libraries/Modal/Modal';
 export * as Systrace from '../Libraries/Performance/Systrace';

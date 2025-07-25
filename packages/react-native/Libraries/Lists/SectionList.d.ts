@@ -11,7 +11,7 @@ import type * as React from 'react';
 import type {
   ListRenderItemInfo,
   VirtualizedListWithoutRenderItemProps,
-} from '@react-native-mac/virtualized-lists'; // [macOS]
+} from '@react-native-macos/virtualized-lists'; // [macOS]
 import type {
   ScrollView,
   ScrollViewProps,

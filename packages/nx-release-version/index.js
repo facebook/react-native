@@ -1,17 +1,16 @@
 // @ts-check
 
-const { releaseVersionGenerator } = require('@nx/js/src/generators/release-version/release-version');
+const {REPO_ROOT} = require('../../scripts/consts');
+const JsVersionActions = require('@nx/js/src/release/version-actions').default;
 const fs = require('node:fs');
 const path = require('node:path');
-const { REPO_ROOT } = require('../../scripts/consts');
 
 async function runSetVersion() {
-  const rnmPkgJson = require.resolve('react-native-macos/package.json');
-  const { REPO_ROOT } = require('../../scripts/consts');
-  const { updateReactNativeArtifacts } = require('../../scripts/releases/set-rn-artifacts-version');
+  const rnmPkgJsonPath = path.join(REPO_ROOT, 'packages', 'react-native', 'package.json');
+  const {updateReactNativeArtifacts} = require('../../scripts/releases/set-rn-artifacts-version');
 
-  const manifest = fs.readFileSync(rnmPkgJson, { encoding: 'utf-8' });
-  const { version } = JSON.parse(manifest);
+  const manifest = fs.readFileSync(rnmPkgJsonPath, {encoding: 'utf-8'});
+  const {version} = JSON.parse(manifest);
 
   await updateReactNativeArtifacts(version);
 
@@ -64,21 +63,42 @@ async function runSetVersion() {
   ];
 }
 
-/** @type {typeof releaseVersionGenerator} */
-module.exports = async function(tree, options) {
-  const { data, callback } = await releaseVersionGenerator(tree, options);
+/**
+ * Custom afterAllProjectsVersioned hook for React Native macOS
+ * Updates React Native artifacts after all projects have been versioned
+ * @param {string} _cwd - Current working directory (unused)
+ * @param {object} _opts - Options object containing versioning information (unused)
+ * @returns {Promise<{changedFiles: string[], deletedFiles: string[]}>}
+ */
+const afterAllProjectsVersioned = async (_cwd, _opts) => {
+  const changedFiles = [];
+
+  try {
+    // Create the .rnm-publish file to indicate versioning has occurred
+    fs.writeFileSync(path.join(REPO_ROOT, '.rnm-publish'), '');
+
+    // Update React Native artifacts
+    const versionedFiles = await runSetVersion();
+
+    // Return the versioned files so Nx can track them
+    changedFiles.push(...versionedFiles);
+
+    console.log('✅ Updated React Native artifacts');
+    console.log('🏷️  Created .rnm-publish marker file');
+
+  } catch (error) {
+    console.error('Failed to update React Native artifacts:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Failed to update React Native artifacts: ${errorMessage}`);
+    throw error;
+  }
+
   return {
-    data,
-    callback: async (tree, options) => {
-      const result = await callback(tree, options);
-
-      const versionedFiles = await runSetVersion();
-      if (versionedFiles) {
-        const changedFiles = Array.isArray(result) ? result : result.changedFiles;
-        changedFiles.push(...versionedFiles);
-      }
-
-      return result;
-    },
+    changedFiles,
+    deletedFiles: [],
   };
 };
+
+module.exports = JsVersionActions;
+module.exports.default = JsVersionActions;
+module.exports.afterAllProjectsVersioned = afterAllProjectsVersioned;

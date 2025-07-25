@@ -17,7 +17,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
-import {VirtualizedListContextResetter} from '@react-native-mac/virtualized-lists'; // [macOS]
+import {VirtualizedListContextResetter} from '@react-native-macos/virtualized-lists'; // [macOS]
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');

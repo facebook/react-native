@@ -12,13 +12,11 @@ const RNMACOS_LATEST = "react-native-macos@latest";
 const RNMACOS_NEXT = "react-native-macos@next";
 
 /**
- * @typedef {import("nx/src/command-line/release/version").ReleaseVersionGeneratorSchema} ReleaseVersionGeneratorSchema;
+ * @typedef {import("nx/src/config/nx-json").NxReleaseVersionConfiguration} NxReleaseVersionConfiguration;
  * @typedef {{
  *   defaultBase: string;
  *   release: {
- *     version: {
- *       generatorOptions: ReleaseVersionGeneratorSchema;
- *     };
+ *     version: NxReleaseVersionConfiguration;
  *   };
  * }} NxConfig;
  * @typedef {{
@@ -273,36 +271,36 @@ function enablePublishing(config, currentBranch, { npmTag: tag, prerelease, isNe
   }
 
   // Determines whether we need to add "nightly" or "rc" to the version string.
-  const { generatorOptions } = release.version;
-  if (generatorOptions.preid !== prerelease) {
+  const { versionActionsOptions = {} } = release.version;
+  if (versionActionsOptions.preid !== prerelease) {
     if (prerelease) {
-      errors.push(`'release.version.generatorOptions.preid' must be set to '${prerelease}'`);
-      generatorOptions.preid = prerelease;
+      errors.push(`'release.version.versionActionsOptions.preid' must be set to '${prerelease}'`);
+      versionActionsOptions.preid = prerelease;
     } else {
-      errors.push(`'release.version.generatorOptions.preid' must be removed`);
-      generatorOptions.preid = undefined;
+      errors.push(`'release.version.versionActionsOptions.preid' must be removed`);
+      versionActionsOptions.preid = undefined;
     }
   }
 
   // What the published version should be tagged as e.g., "latest" or "nightly".
-  const { currentVersionResolverMetadata } = generatorOptions;
-  if (currentVersionResolverMetadata?.tag !== tag) {
-    errors.push(`'release.version.generatorOptions.currentVersionResolverMetadata.tag' must be set to '${tag}'`);
-    generatorOptions.currentVersionResolverMetadata ??= {};
-    generatorOptions.currentVersionResolverMetadata.tag = tag;
+  const currentVersionResolverMetadata = /** @type {{ tag?: string }} */ (versionActionsOptions.currentVersionResolverMetadata || {});
+  if (currentVersionResolverMetadata.tag !== tag) {
+    errors.push(`'release.version.versionActionsOptions.currentVersionResolverMetadata.tag' must be set to '${tag}'`);
+    versionActionsOptions.currentVersionResolverMetadata ??= {};
+    /** @type {any} */ (versionActionsOptions.currentVersionResolverMetadata).tag = tag;
   }
 
   // If we're demoting a branch, we will need to create a new tag. This will
   // make Nx trip if we don't specify a fallback. In all other scenarios, the
   // tags should exist and therefore prefer it to fail.
   if (isNewTag) {
-    if (generatorOptions.fallbackCurrentVersionResolver !== "disk") {
-      errors.push("'release.version.generatorOptions.fallbackCurrentVersionResolver' must be set to 'disk'");
-      generatorOptions.fallbackCurrentVersionResolver = "disk";
+    if (versionActionsOptions.fallbackCurrentVersionResolver !== "disk") {
+      errors.push("'release.version.versionActionsOptions.fallbackCurrentVersionResolver' must be set to 'disk'");
+      versionActionsOptions.fallbackCurrentVersionResolver = "disk";
     }
-  } else if (typeof generatorOptions.fallbackCurrentVersionResolver === "string") {
-    errors.push("'release.version.generatorOptions.fallbackCurrentVersionResolver' must be removed");
-    generatorOptions.fallbackCurrentVersionResolver = undefined;
+  } else if (typeof versionActionsOptions.fallbackCurrentVersionResolver === "string") {
+    errors.push("'release.version.versionActionsOptions.fallbackCurrentVersionResolver' must be removed");
+    versionActionsOptions.fallbackCurrentVersionResolver = undefined;
   }
 
   if (errors.length > 0) {

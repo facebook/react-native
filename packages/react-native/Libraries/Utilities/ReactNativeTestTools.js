@@ -18,7 +18,7 @@ const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
 const Text = require('../Text/Text');
-const {VirtualizedList} = require('@react-native-mac/virtualized-lists'); // [macOS]
+const {VirtualizedList} = require('@react-native-macos/virtualized-lists'); // [macOS]
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 

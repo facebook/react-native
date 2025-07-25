@@ -15,14 +15,14 @@ import type {
   RenderItemType,
   ViewabilityConfigCallbackPair,
   ViewToken,
-} from '@react-native-mac/virtualized-lists'; // [macOS]
+} from '@react-native-macos/virtualized-lists'; // [macOS]
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import {
   VirtualizedList,
   keyExtractor as defaultKeyExtractor,
-} from '@react-native-mac/virtualized-lists'; // [macOS]
+} from '@react-native-macos/virtualized-lists'; // [macOS]
 import memoizeOne from 'memoize-one';
 
 const View = require('../Components/View/View');

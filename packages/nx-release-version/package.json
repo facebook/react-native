@@ -1,14 +1,11 @@
 {
-  "private": true,
-  "name": "@react-native-mac/nx-release-version",
+  "name": "@react-native-macos/nx-release-version",
   "version": "0.0.1-dev",
-  "description": "Nx Release plugin that adds post-versioning logic",
+  "description": "Nx Release Version Actions for React Native macOS",
   "homepage": "https://github.com/microsoft/react-native-macos/tree/HEAD/packages/nx-release-version#readme",
   "license": "MIT",
   "files": [
-    "generators.json",
-    "index.js",
-    "schema.json"
+    "index.js"
   ],
   "main": "index.js",
   "repository": {
@@ -17,7 +14,7 @@
     "directory": "packages/nx-release-version"
   },
   "dependencies": {
-    "@nx/js": "~20.0.0"
+    "@nx/js": "^21.2.4"
   },
   "devDependencies": {
     "@rnx-kit/tsconfig": "^2.0.0",
@@ -25,6 +22,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "generators": "./generators.json"
+  }
 }
