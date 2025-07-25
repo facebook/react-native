@@ -89,6 +89,40 @@ const VALID_FANTOM_PRAGMAS = [
   'fantom_react_fb_flags',
 ];
 
+export function getOverrides(
+  config: FantomTestConfig,
+): PartialFantomTestConfig {
+  const overrides: PartialFantomTestConfig = {};
+
+  if (config.mode !== DEFAULT_MODE) {
+    overrides.mode = config.mode;
+  }
+
+  if (config.hermesVariant !== DEFAULT_HERMES_VARIANT) {
+    overrides.hermesVariant = config.hermesVariant;
+  }
+
+  const flags: FantomTestConfigFeatureFlags = {
+    common: {},
+    jsOnly: {},
+    reactInternal: {},
+  };
+
+  for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
+    for (const [flagName, flagValue] of Object.entries(
+      config.flags[flagType],
+    )) {
+      if (flagValue !== DEFAULT_FEATURE_FLAGS[flagType][flagName]) {
+        flags[flagType][flagName] = flagValue;
+      }
+    }
+  }
+
+  overrides.flags = {...flags};
+
+  return overrides;
+}
+
 /**
  * Extracts the Fantom configurations from the test file, specified as part of
  * the docblock comment. E.g.:
