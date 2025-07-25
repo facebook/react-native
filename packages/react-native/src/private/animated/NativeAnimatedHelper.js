@@ -140,6 +140,8 @@ const NativeOperations = createNativeOperations();
 const API = {
   getValue: (isSingleOpBatching
     ? (tag, saveValueCallback) => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         if (saveValueCallback) {
           eventListenerGetValueCallbacks[tag] = saveValueCallback;
         }
@@ -264,6 +266,8 @@ const API = {
 
   startAnimatingNode: (isSingleOpBatching
     ? (animationId, nodeTag, config, endCallback) => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         if (endCallback) {
           eventListenerAnimationFinishedCallbacks[animationId] = endCallback;
         }
@@ -349,6 +353,8 @@ function ensureGlobalEventEmitterListeners() {
     params => {
       const {tag} = params;
       const callback = eventListenerGetValueCallbacks[tag];
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (!callback) {
         return;
       }
@@ -365,6 +371,8 @@ function ensureGlobalEventEmitterListeners() {
         for (const animation of animations) {
           const {animationId} = animation;
           const callback = eventListenerAnimationFinishedCallbacks[animationId];
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           if (callback) {
             callback(animation);
             delete eventListenerAnimationFinishedCallbacks[animationId];
