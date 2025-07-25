@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b236df3f1d4b9e0a263f80018743557b>>
+ * @generated SignedSource<<23d0b6132cde79fd2e82e329aec3ba97>>
  */
 
 /**
@@ -35,6 +35,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
+
+  /**
+   * Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.
+   */
+  @JvmStatic
+  public fun cdpInteractionMetricsEnabled(): Boolean = accessor.cdpInteractionMetricsEnabled()
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -311,6 +317,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun perfMonitorV2Enabled(): Boolean = accessor.perfMonitorV2Enabled()
 
   /**
    * Number cached PreparedLayouts in TextLayoutManager cache

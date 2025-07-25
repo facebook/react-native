@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c57d0ebc129949455002a4ff424c4a93>>
+ * @generated SignedSource<<4a82f02f08467a26ec38ec44d21484cf>>
  * @flow strict
  * @noformat
  */
@@ -47,6 +47,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
+  cdpInteractionMetricsEnabled: Getter<boolean>,
   cxxNativeAnimatedEnabled: Getter<boolean>,
   cxxNativeAnimatedRemoveJsSync: Getter<boolean>,
   disableFabricCommitInCXXAnimated: Getter<boolean>,
@@ -93,6 +94,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
+  perfMonitorV2Enabled: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
   releaseImageDataWhenConsumed: Getter<boolean>,
@@ -176,6 +178,10 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Common flag for testing (without native implementation). Do NOT modify.
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
+/**
+ * Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.
+ */
+export const cdpInteractionMetricsEnabled: Getter<boolean> = createNativeFlagGetter('cdpInteractionMetricsEnabled', false);
 /**
  * Use a C++ implementation of Native Animated instead of the platform implementation.
  */
@@ -360,6 +366,10 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
  */
 export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagGetter('hideOffscreenVirtualViewsOnIOS', false);
+/**
+ * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
+ */
+export const perfMonitorV2Enabled: Getter<boolean> = createNativeFlagGetter('perfMonitorV2Enabled', false);
 /**
  * Number cached PreparedLayouts in TextLayoutManager cache
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc0218eb6355a909a3edc83d06d4fd56>>
+ * @generated SignedSource<<2281d2471c8f55a0e04d223aabb846c7>>
  */
 
 /**
@@ -33,6 +33,7 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
+  bool cdpInteractionMetricsEnabled();
   bool cxxNativeAnimatedEnabled();
   bool cxxNativeAnimatedRemoveJsSync();
   bool disableFabricCommitInCXXAnimated();
@@ -79,6 +80,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
+  bool perfMonitorV2Enabled();
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
   bool releaseImageDataWhenConsumed();
@@ -108,9 +110,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 65> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 67> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableFabricCommitInCXXAnimated_;
@@ -157,6 +160,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
+  std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> releaseImageDataWhenConsumed_;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4eb0f274d0fd18431a2b04bc58f198ec>>
+ * @generated SignedSource<<2579c7c4f358b76bf9a8315cf0fd5976>>
  */
 
 /**
@@ -47,6 +47,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
+}
+
+bool NativeReactNativeFeatureFlags::cdpInteractionMetricsEnabled(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::cdpInteractionMetricsEnabled();
 }
 
 bool NativeReactNativeFeatureFlags::cxxNativeAnimatedEnabled(
@@ -277,6 +282,11 @@ bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
 bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::perfMonitorV2Enabled(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::perfMonitorV2Enabled();
 }
 
 double NativeReactNativeFeatureFlags::preparedTextCacheSize(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91037081ca8fbfe3c43a4bc5fd58ba15>>
+ * @generated SignedSource<<a31953c44fa5eac616d97cd1b206c2f7>>
  */
 
 /**
@@ -37,6 +37,8 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
+
+  bool cdpInteractionMetricsEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
@@ -129,6 +131,8 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
+
+  bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
   double preparedTextCacheSize(jsi::Runtime& runtime);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85d8fba6c2a5db872d20bbe89fa93f7f>>
+ * @generated SignedSource<<de705ded06ca10697411e99c91903724>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var cdpInteractionMetricsEnabledCache: Boolean? = null
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
@@ -67,6 +68,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
+  private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var releaseImageDataWhenConsumedCache: Boolean? = null
@@ -91,6 +93,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun cdpInteractionMetricsEnabled(): Boolean {
+    var cached = cdpInteractionMetricsEnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.cdpInteractionMetricsEnabled()
+      cdpInteractionMetricsEnabledCache = cached
     }
     return cached
   }
@@ -505,6 +516,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.hideOffscreenVirtualViewsOnIOS()
       hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun perfMonitorV2Enabled(): Boolean {
+    var cached = perfMonitorV2EnabledCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.perfMonitorV2Enabled()
+      perfMonitorV2EnabledCache = cached
     }
     return cached
   }

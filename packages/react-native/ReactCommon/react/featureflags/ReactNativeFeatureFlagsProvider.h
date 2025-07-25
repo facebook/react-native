@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<baaded1c11337e4be05f66ba70bdfcfe>>
+ * @generated SignedSource<<931c7edabc7d3087f02157c92698941a>>
  */
 
 /**
@@ -26,6 +26,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual ~ReactNativeFeatureFlagsProvider() = default;
 
   virtual bool commonTestFlag() = 0;
+  virtual bool cdpInteractionMetricsEnabled() = 0;
   virtual bool cxxNativeAnimatedEnabled() = 0;
   virtual bool cxxNativeAnimatedRemoveJsSync() = 0;
   virtual bool disableFabricCommitInCXXAnimated() = 0;
@@ -72,6 +73,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool hideOffscreenVirtualViewsOnIOS() = 0;
+  virtual bool perfMonitorV2Enabled() = 0;
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
   virtual bool releaseImageDataWhenConsumed() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae065932c2095d9dbb802a1979624ab8>>
+ * @generated SignedSource<<0d4e71457a51a22e6c8bb7315371bca8>>
  */
 
 /**
@@ -42,6 +42,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
+    return method(javaProvider_);
+  }
+
+  bool cdpInteractionMetricsEnabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("cdpInteractionMetricsEnabled");
     return method(javaProvider_);
   }
 
@@ -321,6 +327,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  bool perfMonitorV2Enabled() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("perfMonitorV2Enabled");
+    return method(javaProvider_);
+  }
+
   double preparedTextCacheSize() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("preparedTextCacheSize");
@@ -436,6 +448,11 @@ class ReactNativeFeatureFlagsJavaProvider
 bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::commonTestFlag();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::cdpInteractionMetricsEnabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::cdpInteractionMetricsEnabled();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled(
@@ -668,6 +685,11 @@ bool JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS(
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::perfMonitorV2Enabled();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::preparedTextCacheSize();
@@ -792,6 +814,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
+      makeNativeMethod(
+        "cdpInteractionMetricsEnabled",
+        JReactNativeFeatureFlagsCxxInterop::cdpInteractionMetricsEnabled),
       makeNativeMethod(
         "cxxNativeAnimatedEnabled",
         JReactNativeFeatureFlagsCxxInterop::cxxNativeAnimatedEnabled),
@@ -930,6 +955,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "hideOffscreenVirtualViewsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS),
+      makeNativeMethod(
+        "perfMonitorV2Enabled",
+        JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled),
       makeNativeMethod(
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),

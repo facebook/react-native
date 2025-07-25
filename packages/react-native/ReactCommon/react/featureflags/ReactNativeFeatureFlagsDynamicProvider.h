@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5899c2e14a7b8108c11d7336e9cfbfa4>>
+ * @generated SignedSource<<66b0a1b0ac4605ca5bf29ab8351efe92>>
  */
 
 /**
@@ -52,6 +52,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::commonTestFlag();
+  }
+
+  bool cdpInteractionMetricsEnabled() override {
+    auto value = values_["cdpInteractionMetricsEnabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::cdpInteractionMetricsEnabled();
   }
 
   bool cxxNativeAnimatedEnabled() override {
@@ -466,6 +475,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::hideOffscreenVirtualViewsOnIOS();
+  }
+
+  bool perfMonitorV2Enabled() override {
+    auto value = values_["perfMonitorV2Enabled"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::perfMonitorV2Enabled();
   }
 
   double preparedTextCacheSize() override {

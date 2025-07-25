@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aa946c3d4a6b602848e59f0eb0dbf957>>
+ * @generated SignedSource<<029a1d8d265538d6d48a2531ca4ca9df>>
  */
 
 /**
@@ -28,6 +28,10 @@ std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
+}
+
+bool ReactNativeFeatureFlags::cdpInteractionMetricsEnabled() {
+  return getAccessor().cdpInteractionMetricsEnabled();
 }
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
@@ -212,6 +216,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
   return getAccessor().hideOffscreenVirtualViewsOnIOS();
+}
+
+bool ReactNativeFeatureFlags::perfMonitorV2Enabled() {
+  return getAccessor().perfMonitorV2Enabled();
 }
 
 double ReactNativeFeatureFlags::preparedTextCacheSize() {

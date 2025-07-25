@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<728daf2946d40a449a702cb0d9c19f66>>
+ * @generated SignedSource<<2baa48305074e8dce143fe6327ef719e>>
  */
 
 /**
@@ -43,6 +43,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
+
+  /**
+   * Enable emitting of InteractionEntry live metrics to the debugger. Requires `enableBridgelessArchitecture`.
+   */
+  RN_EXPORT static bool cdpInteractionMetricsEnabled();
 
   /**
    * Use a C++ implementation of Native Animated instead of the platform implementation.
@@ -273,6 +278,11 @@ class ReactNativeFeatureFlags {
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
+   * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
+   */
+  RN_EXPORT static bool perfMonitorV2Enabled();
 
   /**
    * Number cached PreparedLayouts in TextLayoutManager cache
