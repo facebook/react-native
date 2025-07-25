@@ -8,6 +8,7 @@
 #include "NativeAnimatedNodesManagerProvider.h"
 
 #include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
@@ -37,10 +38,14 @@ NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
   if (nativeAnimatedNodesManager_ == nullptr) {
     auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
 
-    auto fabricCommitCallback =
-        [uiManager](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-          uiManager->updateShadowTree(tagToProps);
-        };
+    NativeAnimatedNodesManager::FabricCommitCallback fabricCommitCallback =
+        nullptr;
+    if (!ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated()) {
+      fabricCommitCallback =
+          [uiManager](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+            uiManager->updateShadowTree(tagToProps);
+          };
+    }
 
     auto directManipulationCallback =
         [uiManager](Tag viewTag, const folly::dynamic& props) {
