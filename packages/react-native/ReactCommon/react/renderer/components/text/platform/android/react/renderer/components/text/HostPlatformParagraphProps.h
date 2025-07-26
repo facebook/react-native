@@ -9,10 +9,12 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include <react/renderer/components/text/BaseParagraphProps.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
 
@@ -38,6 +40,7 @@ class HostPlatformParagraphProps : public BaseParagraphProps {
 #pragma mark - Props
 
   bool disabled{false};
+  std::optional<SharedColor> selectionColor{};
 
 #pragma mark - DebugStringConvertible
 

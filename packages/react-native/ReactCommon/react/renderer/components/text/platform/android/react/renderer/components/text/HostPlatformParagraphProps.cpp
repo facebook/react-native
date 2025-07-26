@@ -10,6 +10,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 
@@ -30,7 +31,16 @@ HostPlatformParagraphProps::HostPlatformParagraphProps(
                     rawProps,
                     "disabled",
                     sourceProps.disabled,
-                    false)){};
+                    false)),
+      selectionColor(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.selectionColor
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "selectionColor",
+                    sourceProps.selectionColor,
+                    {})){};
 
 void HostPlatformParagraphProps::setProp(
     const PropsParserContext& context,
@@ -44,7 +54,10 @@ void HostPlatformParagraphProps::setProp(
 
   static auto defaults = HostPlatformParagraphProps{};
 
-  switch (hash) { RAW_SET_PROP_SWITCH_CASE_BASIC(disabled); }
+  switch (hash) {
+    RAW_SET_PROP_SWITCH_CASE_BASIC(disabled);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor);
+  }
 }
 
 #pragma mark - DebugStringConvertible
@@ -54,7 +67,8 @@ SharedDebugStringConvertibleList HostPlatformParagraphProps::getDebugProps()
     const {
   return BaseParagraphProps::getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("disabled", disabled)};
+          debugStringConvertibleItem("disabled", disabled),
+          debugStringConvertibleItem("selectionColor", selectionColor)};
 }
 #endif
 
@@ -145,6 +159,14 @@ folly::dynamic HostPlatformParagraphProps::getDiffProps(
 
   if (disabled != oldProps->disabled) {
     result["disabled"] = disabled;
+  }
+
+  if (selectionColor != oldProps->selectionColor) {
+    if (selectionColor.has_value()) {
+      result["selectionColor"] = *selectionColor.value();
+    } else {
+      result["selectionColor"] = folly::dynamic(nullptr);
+    }
   }
 
   return result;
