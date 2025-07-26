@@ -12,6 +12,7 @@
 #include <optional>
 
 #include <react/renderer/components/text/BaseParagraphProps.h>
+#include <react/renderer/components/text/primitives.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
@@ -41,6 +42,7 @@ class HostPlatformParagraphProps : public BaseParagraphProps {
 
   bool disabled{false};
   std::optional<SharedColor> selectionColor{};
+  std::optional<DataDetectorType> dataDetectorType{};
 
 #pragma mark - DebugStringConvertible
 

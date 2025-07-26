@@ -10,6 +10,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
+#include <react/renderer/components/text/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
@@ -40,7 +41,18 @@ HostPlatformParagraphProps::HostPlatformParagraphProps(
                     rawProps,
                     "selectionColor",
                     sourceProps.selectionColor,
-                    {})){};
+                    {})),
+      dataDetectorType(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.dataDetectorType
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "dataDetectorType",
+                    sourceProps.dataDetectorType,
+                    {}))
+
+          {};
 
 void HostPlatformParagraphProps::setProp(
     const PropsParserContext& context,
@@ -57,6 +69,7 @@ void HostPlatformParagraphProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE_BASIC(disabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(selectionColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(dataDetectorType);
   }
 }
 
@@ -68,7 +81,8 @@ SharedDebugStringConvertibleList HostPlatformParagraphProps::getDebugProps()
   return BaseParagraphProps::getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem("disabled", disabled),
-          debugStringConvertibleItem("selectionColor", selectionColor)};
+          debugStringConvertibleItem("selectionColor", selectionColor),
+          debugStringConvertibleItem("dataDetectorType", dataDetectorType)};
 }
 #endif
 
@@ -166,6 +180,14 @@ folly::dynamic HostPlatformParagraphProps::getDiffProps(
       result["selectionColor"] = *selectionColor.value();
     } else {
       result["selectionColor"] = folly::dynamic(nullptr);
+    }
+  }
+
+  if (dataDetectorType != oldProps->dataDetectorType) {
+    if (dataDetectorType.has_value()) {
+      result["dataDetectorType"] = toString(dataDetectorType.value());
+    } else {
+      result["dataDetectorType"] = folly::dynamic(nullptr);
     }
   }
 
