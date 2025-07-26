@@ -1719,6 +1719,20 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Disabled',
+    name: 'disabled',
+    render: function (): React.Node {
+      return (
+        <View>
+          <RNTesterText testID="text-disabled" disabled={true}>
+            This text has its corresponding text view in the disabled state for
+            testing purposes.
+          </RNTesterText>
+        </View>
+      );
+    },
+  },
   ...TextSharedExamples,
 ];
 

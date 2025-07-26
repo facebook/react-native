@@ -21,7 +21,16 @@ HostPlatformParagraphProps::HostPlatformParagraphProps(
     const PropsParserContext& context,
     const HostPlatformParagraphProps& sourceProps,
     const RawProps& rawProps)
-    : BaseParagraphProps(context, sourceProps, rawProps) {}
+    : BaseParagraphProps(context, sourceProps, rawProps),
+      disabled(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.disabled
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "disabled",
+                    sourceProps.disabled,
+                    false)){};
 
 void HostPlatformParagraphProps::setProp(
     const PropsParserContext& context,
@@ -32,6 +41,10 @@ void HostPlatformParagraphProps::setProp(
   // call all super::setProp methods, since multiple structs may
   // reuse the same values.
   BaseParagraphProps::setProp(context, hash, propName, value);
+
+  static auto defaults = HostPlatformParagraphProps{};
+
+  switch (hash) { RAW_SET_PROP_SWITCH_CASE_BASIC(disabled); }
 }
 
 #pragma mark - DebugStringConvertible
@@ -39,7 +52,9 @@ void HostPlatformParagraphProps::setProp(
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList HostPlatformParagraphProps::getDebugProps()
     const {
-  return BaseParagraphProps::getDebugProps();
+  return BaseParagraphProps::getDebugProps() +
+      SharedDebugStringConvertibleList{
+          debugStringConvertibleItem("disabled", disabled)};
 }
 #endif
 
@@ -126,6 +141,10 @@ folly::dynamic HostPlatformParagraphProps::getDiffProps(
 
   if (onTextLayout != oldProps->onTextLayout) {
     result["onTextLayout"] = onTextLayout;
+  }
+
+  if (disabled != oldProps->disabled) {
+    result["disabled"] = disabled;
   }
 
   return result;
