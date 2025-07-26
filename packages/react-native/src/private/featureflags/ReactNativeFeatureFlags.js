@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4a82f02f08467a26ec38ec44d21484cf>>
+ * @generated SignedSource<<1f567a382688ca9876d17e9ce8d428ff>>
  * @flow strict
  * @noformat
  */
@@ -35,7 +35,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   enableAccessToHostTreeInFabric: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
-  reduceDefaultPropsInView: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -149,11 +148,6 @@ export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaSc
  * Function used to enable / disabled Layout Animations in React Native.
  */
 export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGetter('isLayoutAnimationEnabled', true);
-
-/**
- * Optimize how default (accessibility) props are processed in View to avoid unnecessary keys.
- */
-export const reduceDefaultPropsInView: Getter<boolean> = createJavaScriptFlagGetter('reduceDefaultPropsInView', true);
 
 /**
  * Enables use of AnimatedObject for animating transform values.
