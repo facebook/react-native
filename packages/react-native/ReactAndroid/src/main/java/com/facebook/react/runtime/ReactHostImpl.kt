@@ -626,7 +626,8 @@ public class ReactHostImpl(
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
-        DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+        DisplayMetricsHolder.initScreenDisplayMetrics(currentReactContext)
+        DisplayMetricsHolder.initWindowDisplayMetrics(currentReactContext, "ReactHostImpl:630")
       }
 
       val appearanceModule = currentReactContext.getNativeModule(AppearanceModule::class.java)

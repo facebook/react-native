@@ -259,7 +259,8 @@ public class ReactInstanceManager {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(applicationContext);
+    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(applicationContext, "ReactInstanceManager:263");
 
     // See {@code ReactInstanceManagerBuilder} for description of all flags here.
     mApplicationContext = applicationContext;

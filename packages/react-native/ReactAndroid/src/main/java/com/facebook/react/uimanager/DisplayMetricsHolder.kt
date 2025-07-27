@@ -9,10 +9,14 @@ package com.facebook.react.uimanager
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
+import android.inputmethodservice.InputMethodService
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.window.layout.WindowMetricsCalculator
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
@@ -22,7 +26,7 @@ import com.facebook.react.bridge.WritableNativeMap
  */
 public object DisplayMetricsHolder {
   private const val INITIALIZATION_MISSING_MESSAGE =
-      "DisplayMetricsHolder must be initialized with initDisplayMetricsIfNotInitialized or initDisplayMetrics"
+      "DisplayMetricsHolder must be initialized with initScreenDisplayMetricsIfNotInitialized, initWindowDisplayMetricsIfNotInitialized, initScreenDisplayMetrics or initWindowDisplayMetrics"
 
   @JvmStatic private var windowDisplayMetrics: DisplayMetrics? = null
   @JvmStatic private var screenDisplayMetrics: DisplayMetrics? = null
@@ -51,28 +55,69 @@ public object DisplayMetricsHolder {
     screenDisplayMetrics = displayMetrics
   }
 
-  @JvmStatic
-  public fun initDisplayMetricsIfNotInitialized(context: Context) {
-    if (screenDisplayMetrics != null) {
-      return
+  private fun isUiContext(context: Context): Boolean {
+    var iterator = context
+
+    while (iterator is ContextWrapper) {
+      when (iterator) {
+        is Activity,
+        is InputMethodService -> return true
+      }
+
+      if (iterator.baseContext == null) {
+        break
+      }
+
+      iterator = iterator.baseContext
     }
-    initDisplayMetrics(context)
+
+    return false
   }
 
   @JvmStatic
-  public fun initDisplayMetrics(context: Context) {
-    val displayMetrics = context.resources.displayMetrics
-    windowDisplayMetrics = displayMetrics
-    val screenDisplayMetrics = DisplayMetrics()
-    screenDisplayMetrics.setTo(displayMetrics)
+  public fun initScreenDisplayMetricsIfNotInitialized(context: Context) {
+    if (screenDisplayMetrics == null) {
+      initScreenDisplayMetrics(context)
+    }
+  }
+
+  @JvmStatic
+  public fun initWindowDisplayMetricsIfNotInitialized(context: Context, id: String) {
+    if (windowDisplayMetrics == null) {
+      initWindowDisplayMetrics(context, id)
+    } else {
+      Log.i("UI_CONTEXT", "$id: ${isUiContext(context)}")
+    }
+  }
+
+  @JvmStatic
+  public fun initScreenDisplayMetrics(context: Context) {
+    val displayMetrics = DisplayMetrics()
+    displayMetrics.setTo(context.resources.displayMetrics)
+
     val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     // Get the real display metrics if we are using API level 17 or higher.
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
     // See:
     // http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(screenDisplayMetrics)
-    DisplayMetricsHolder.screenDisplayMetrics = screenDisplayMetrics
+    @Suppress("DEPRECATION") wm.defaultDisplay.getRealMetrics(displayMetrics)
+    screenDisplayMetrics = displayMetrics
+  }
+
+  @JvmStatic
+  public fun initWindowDisplayMetrics(context: Context, id: String) {
+    Log.i("UI_CONTEXT", "$id: ${isUiContext(context)}")
+
+    val displayMetrics = DisplayMetrics()
+    displayMetrics.setTo(context.resources.displayMetrics)
+
+    WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context).let {
+      displayMetrics.widthPixels = it.bounds.width()
+      displayMetrics.heightPixels = it.bounds.height()
+    }
+
+    windowDisplayMetrics = displayMetrics
   }
 
   @JvmStatic

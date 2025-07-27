@@ -240,7 +240,8 @@ internal class ReactInstance(
         FabricUIManager(context, ViewManagerRegistry(viewManagerResolver), eventBeatManager)
 
     // Misc initialization that needs to be done before Fabric init
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(context)
+    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(context, "ReactInstance:244")
 
     val binding = FabricUIManagerBinding()
     binding.register(
