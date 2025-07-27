@@ -919,6 +919,7 @@ public class ReactHostImpl(
                 val instance =
                     ReactInstance(
                         reactContext,
+                        currentActivity,
                         reactHostDelegate,
                         componentFactory,
                         devSupportManager,

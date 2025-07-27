@@ -7,6 +7,7 @@
 
 package com.facebook.react.runtime
 
+import android.app.Activity
 import android.content.res.AssetManager
 import android.view.View
 import com.facebook.common.logging.FLog
@@ -88,6 +89,7 @@ import kotlin.jvm.JvmStatic
 @UnstableReactNativeAPI
 internal class ReactInstance(
     private val context: BridgelessReactContext,
+    private val activity: Activity?,
     delegate: ReactHostDelegate,
     componentFactory: ComponentFactory,
     devSupportManager: DevSupportManager,
@@ -241,7 +243,8 @@ internal class ReactInstance(
 
     // Misc initialization that needs to be done before Fabric init
     DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(context)
-    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(context, "ReactInstance:244")
+    // DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(context, "ReactInstance:244") // Crash on Android 7, debug mode
+    activity?.let { DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(it, "ReactInstance:244") } // OK
 
     val binding = FabricUIManagerBinding()
     binding.register(
