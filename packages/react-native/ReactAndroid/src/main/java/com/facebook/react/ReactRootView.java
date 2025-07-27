@@ -870,8 +870,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     private int mDeviceRotation = 0;
 
     /* package */ CustomGlobalLayoutListener() {
-      DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
-      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(getContext().getApplicationContext(), "ReactRootView:874");
+      DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(getContext());
+      // DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(getContext().getApplicationContext(), "ReactRootView:874"); // Crash on Android 7, debug mode
+      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(getContext(), "ReactRootView:874"); // OK
       mVisibleViewArea = new Rect();
       mMinKeyboardHeightDetected = (int) PixelUtil.toPixelFromDIP(60);
     }
