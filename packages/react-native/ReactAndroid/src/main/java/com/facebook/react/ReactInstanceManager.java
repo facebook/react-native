@@ -260,7 +260,10 @@ public class ReactInstanceManager {
     initializeSoLoaderIfNecessary(applicationContext);
 
     DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(applicationContext);
-    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(applicationContext, "ReactInstanceManager:263");
+
+    if (currentActivity != null) {
+      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(currentActivity, "ReactInstanceManager:263");
+    }
 
     // See {@code ReactInstanceManagerBuilder} for description of all flags here.
     mApplicationContext = applicationContext;
