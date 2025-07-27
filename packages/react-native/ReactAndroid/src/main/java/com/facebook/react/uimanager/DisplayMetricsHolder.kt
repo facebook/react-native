@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.window.layout.WindowMetricsCalculator
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -86,9 +87,11 @@ public object DisplayMetricsHolder {
     val displayMetrics = DisplayMetrics()
     displayMetrics.setTo(context.resources.displayMetrics)
 
-    WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context).let {
-      displayMetrics.widthPixels = it.bounds.width()
-      displayMetrics.heightPixels = it.bounds.height()
+    if (isEdgeToEdgeFeatureFlagOn) {
+      WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context).let {
+        displayMetrics.widthPixels = it.bounds.width()
+        displayMetrics.heightPixels = it.bounds.height()
+      }
     }
 
     windowDisplayMetrics = displayMetrics
