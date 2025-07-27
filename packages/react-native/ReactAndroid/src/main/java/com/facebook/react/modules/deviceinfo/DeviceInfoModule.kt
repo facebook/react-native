@@ -28,7 +28,8 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
 
   init {
     initScreenDisplayMetricsIfNotInitialized(reactContext)
-    initWindowDisplayMetricsIfNotInitialized(reactContext, "DeviceInfoModule:30")
+    // initWindowDisplayMetricsIfNotInitialized(reactContext, "DeviceInfoModule:30") // Crash on Android 7
+    reactContext.currentActivity?.let { initWindowDisplayMetricsIfNotInitialized(it, "DeviceInfoModule:30") } // OK
     reactContext.addLifecycleEventListener(this)
   }
 
