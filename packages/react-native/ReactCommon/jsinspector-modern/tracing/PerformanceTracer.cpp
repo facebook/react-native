@@ -83,8 +83,7 @@ bool PerformanceTracer::stopTracing() {
 }
 
 void PerformanceTracer::collectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback,
+    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
     uint16_t chunkSize) {
   std::vector<TraceEvent> localBuffer;
   {
@@ -102,12 +101,12 @@ void PerformanceTracer::collectEvents(
     serializedTraceEvents.push_back(serializeTraceEvent(std::move(event)));
 
     if (serializedTraceEvents.size() == chunkSize) {
-      resultCallback(serializedTraceEvents);
+      resultCallback(std::move(serializedTraceEvents));
       serializedTraceEvents = folly::dynamic::array();
     }
   }
   if (!serializedTraceEvents.empty()) {
-    resultCallback(serializedTraceEvents);
+    resultCallback(std::move(serializedTraceEvents));
   }
 }
 
