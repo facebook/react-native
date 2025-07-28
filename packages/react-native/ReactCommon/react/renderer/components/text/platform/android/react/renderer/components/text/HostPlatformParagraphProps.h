@@ -35,6 +35,10 @@ class HostPlatformParagraphProps : public BaseParagraphProps {
       const char* propName,
       const RawValue& value);
 
+#pragma mark - Props
+
+  bool disabled{false};
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
