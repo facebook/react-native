@@ -35,8 +35,6 @@ function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
       return 'hermes';
     case FantomTestConfigHermesVariant.StaticHermesStable:
       return 'shermes 🆕';
-    case FantomTestConfigHermesVariant.StaticHermesStaging:
-      return 'shermes ⏭️';
     case FantomTestConfigHermesVariant.StaticHermesExperimental:
       return 'shermes 🧪';
   }
