@@ -156,14 +156,6 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  /**
-   * Serialize a TraceEvent into a folly::dynamic object.
-   * \param event rvalue reference to the TraceEvent object.
-   * \return folly::dynamic object that represents a serialized into JSON Trace
-   * Event for CDP.
-   */
-  folly::dynamic serializeTraceEvent(TraceEvent&& event) const;
-
   const uint64_t processId_;
 
   /**
