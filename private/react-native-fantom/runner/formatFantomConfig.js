@@ -14,6 +14,7 @@ import type {HermesVariant} from '../runner/utils';
 
 import {
   FantomTestConfigHermesVariant,
+  FantomTestConfigJsMode,
   FantomTestConfigMode,
 } from '../runner/getFantomTestConfigs';
 import {getOverrides} from './getFantomTestConfigs';
@@ -26,6 +27,15 @@ function formatFantomMode(mode: FantomTestConfigMode): string {
       return 'mode 🐛🔢';
     case FantomTestConfigMode.Optimized:
       return 'mode 🚀';
+  }
+}
+
+function formatFantomJsMode(mode: FantomTestConfigJsMode): string {
+  switch (mode) {
+    case FantomTestConfigJsMode.Development:
+      return 'jsMode 🐛';
+    case FantomTestConfigJsMode.Optimized:
+      return 'jsMode 🚀';
   }
 }
 
@@ -59,6 +69,16 @@ export default function formatFantomConfig(config: FantomTestConfig): string {
 
   if (overrides.mode) {
     parts.push(formatFantomMode(overrides.mode));
+  }
+
+  // Show if the jsMode is different from the mode
+  if (
+    (config.jsMode === FantomTestConfigJsMode.Optimized &&
+      config.mode !== FantomTestConfigMode.Optimized) ||
+    (config.jsMode === FantomTestConfigJsMode.Development &&
+      config.mode === FantomTestConfigMode.Optimized)
+  ) {
+    parts.push(formatFantomJsMode(config.jsMode));
   }
 
   if (overrides.hermesVariant) {
