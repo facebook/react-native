@@ -450,8 +450,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  if (props.maxLength) {
-    NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
+  if (props.maxLength.has_value()) {
+    NSInteger allowedLength = props.maxLength.value() - _backedTextInputView.attributedText.string.length + range.length;
 
     if (allowedLength > 0 && text.length > allowedLength) {
       // make sure unicode characters that are longer than 16 bits (such as emojis) are not cut off
