@@ -35,7 +35,6 @@ import {
   getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
   getHermesCompilerTarget,
-  getShortHash,
   printConsoleLog,
   runBuck2,
   runBuck2Sync,
@@ -304,7 +303,7 @@ module.exports = async function runTest(
 
     const entrypointPath = path.join(
       BUILD_OUTPUT_PATH,
-      `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
+      `${Date.now()}-${path.basename(testPath)}`,
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';

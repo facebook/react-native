@@ -10,7 +10,6 @@
 
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {spawn, spawnSync} from 'child_process';
-import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
 // $FlowExpectedError[untyped-import]
@@ -248,10 +247,6 @@ function processArgsForBuck(args: Array<string>): Array<string> {
   }
 
   return args;
-}
-
-export function getShortHash(contents: string): string {
-  return crypto.createHash('md5').update(contents).digest('hex').slice(0, 8);
 }
 
 export function symbolicateStackTrace(
