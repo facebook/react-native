@@ -30,6 +30,7 @@ struct RuntimeSamplingProfile {
  public:
   /// Represents a single frame inside the captured sample stack.
   struct SampleCallStackFrame {
+   public:
     /// Represents type of frame inside of recorded call stack.
     enum class Kind {
       JSFunction, /// JavaScript function frame.
@@ -39,76 +40,21 @@ struct RuntimeSamplingProfile {
       GarbageCollector, /// Garbage collection frame.
     };
 
-   public:
-    SampleCallStackFrame(
-        const Kind kind,
-        const uint32_t scriptId,
-        std::string_view functionName,
-        std::optional<std::string_view> url = std::nullopt,
-        const std::optional<uint32_t>& lineNumber = std::nullopt,
-        const std::optional<uint32_t>& columnNumber = std::nullopt)
-        : kind_(kind),
-          scriptId_(scriptId),
-          functionName_(std::move(functionName)),
-          url_(std::move(url)),
-          lineNumber_(lineNumber),
-          columnNumber_(columnNumber) {}
+    inline bool operator==(const SampleCallStackFrame& rhs) const noexcept =
+        default;
 
-    /// \return type of the call stack frame.
-    Kind getKind() const {
-      return kind_;
-    }
-
-    /// \return id of the corresponding script in the VM.
-    uint32_t getScriptId() const {
-      return scriptId_;
-    }
-
-    /// \return name of the function that represents call frame.
-    std::string_view getFunctionName() const {
-      return functionName_;
-    }
-
-    bool hasUrl() const {
-      return url_.has_value();
-    }
-
-    /// \return source url of the corresponding script in the VM.
-    std::string_view getUrl() const {
-      return url_.value();
-    }
-
-    bool hasLineNumber() const {
-      return lineNumber_.has_value();
-    }
-
-    /// \return 0-based line number of the corresponding call frame.
-    uint32_t getLineNumber() const {
-      return lineNumber_.value();
-    }
-
-    bool hasColumnNumber() const {
-      return columnNumber_.has_value();
-    }
-
-    /// \return 0-based column number of the corresponding call frame.
-    uint32_t getColumnNumber() const {
-      return columnNumber_.value();
-    }
-
-    inline bool operator==(const SampleCallStackFrame& rhs) const noexcept {
-      return kind_ == rhs.kind_ && scriptId_ == rhs.scriptId_ &&
-          functionName_ == rhs.functionName_ && url_ == rhs.url_ &&
-          lineNumber_ == rhs.lineNumber_ && columnNumber_ == rhs.columnNumber_;
-    }
-
-   private:
-    Kind kind_;
-    uint32_t scriptId_;
-    std::string_view functionName_;
-    std::optional<std::string_view> url_;
-    std::optional<uint32_t> lineNumber_;
-    std::optional<uint32_t> columnNumber_;
+    /// type of the call stack frame
+    Kind kind;
+    /// id of the corresponding script in the VM.
+    uint32_t scriptId;
+    /// name of the function that represents call frame.
+    std::string_view functionName;
+    /// source url of the corresponding script in the VM.
+    std::optional<std::string_view> scriptURL = std::nullopt;
+    /// 0-based line number of the corresponding call frame.
+    std::optional<uint32_t> lineNumber = std::nullopt;
+    /// 0-based column number of the corresponding call frame.
+    std::optional<uint32_t> columnNumber = std::nullopt;
   };
 
   /// A pair of a timestamp and a snapshot of the call stack at this point in
