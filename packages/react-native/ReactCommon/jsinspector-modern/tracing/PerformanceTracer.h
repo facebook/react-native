@@ -148,7 +148,7 @@ class PerformanceTracer {
       uint16_t profileId,
       uint64_t threadId,
       HighResTimeStamp chunkTimestamp,
-      const TraceEventProfileChunk& traceEventProfileChunk);
+      TraceEventProfileChunk&& traceEventProfileChunk);
 
  private:
   PerformanceTracer();

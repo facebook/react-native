@@ -401,7 +401,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
     uint16_t profileId,
     uint64_t threadId,
     HighResTimeStamp chunkTimestamp,
-    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
+    tracing::TraceEventProfileChunk&& traceEventProfileChunk) {
   return TraceEventSerializer::serialize(TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
@@ -410,8 +410,10 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
       .ts = chunkTimestamp,
       .pid = processId_,
       .tid = threadId,
-      .args =
-          folly::dynamic::object("data", traceEventProfileChunk.toDynamic()),
+      .args = folly::dynamic::object(
+          "data",
+          TraceEventSerializer::serializeProfileChunk(
+              std::move(traceEventProfileChunk))),
   });
 }
 
