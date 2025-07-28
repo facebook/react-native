@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "selfsigned": "^2.4.1",
-    "undici": "^5.28.5",
+    "undici": "^5.29.0",
     "wait-for-expect": "^3.0.2"
   }
 }
