@@ -19,7 +19,7 @@ namespace {
 // update Hermes to return timestamps in chrono type.
 HighResTimeStamp getHighResTimeStampForSample(
     const RuntimeSamplingProfile::Sample& sample) {
-  auto microsecondsSinceSteadyClockEpoch = sample.getTimestamp();
+  auto microsecondsSinceSteadyClockEpoch = sample.timestamp;
   auto chronoTimePoint = std::chrono::steady_clock::time_point(
       std::chrono::microseconds(microsecondsSinceSteadyClockEpoch));
   return HighResTimeStamp::fromChronoSteadyClockTimePoint(chronoTimePoint);
@@ -191,13 +191,12 @@ void RuntimeSamplingProfileTraceEventSerializer::
 void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     const RuntimeSamplingProfile& profile,
     HighResTimeStamp tracingStartTime) {
-  const std::vector<RuntimeSamplingProfile::Sample>& samples =
-      profile.getSamples();
+  const std::vector<RuntimeSamplingProfile::Sample>& samples = profile.samples;
   if (samples.empty()) {
     return;
   }
 
-  uint64_t firstChunkThreadId = samples.front().getThreadId();
+  uint64_t firstChunkThreadId = samples.front().threadId;
   HighResTimeStamp previousSampleTimestamp = tracingStartTime;
   HighResTimeStamp currentChunkTimestamp = tracingStartTime;
 
@@ -227,7 +226,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   uint32_t idleNodeId = idleNode->getId();
 
   for (const auto& sample : samples) {
-    uint64_t currentSampleThreadId = sample.getThreadId();
+    uint64_t currentSampleThreadId = sample.threadId;
     auto currentSampleTimestamp = getHighResTimeStampForSample(sample);
 
     // We should not attempt to merge samples from different threads.
@@ -245,7 +244,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     }
 
     processCallStack(
-        sample.getCallStack(),
+        sample.callStack,
         chunk,
         rootNode,
         idleNodeId,
