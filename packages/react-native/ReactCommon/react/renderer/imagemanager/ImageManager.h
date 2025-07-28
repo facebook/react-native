@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
@@ -14,6 +16,12 @@
 #include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
+
+class ImageManager;
+
+using SharedImageManager
+    [[deprecated("Use std::shared_ptr<ImageManager> instead.")]] =
+        std::shared_ptr<ImageManager>;
 
 /*
  * Cross platform facade for image management (e.g. iOS-specific
