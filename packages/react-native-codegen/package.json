@@ -45,7 +45,7 @@
     "@babel/preset-env": "^7.25.3",
     "hermes-estree": "0.30.0",
     "micromatch": "^4.0.4",
-    "prettier": "2.8.8",
+    "prettier": "3.6.2",
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
