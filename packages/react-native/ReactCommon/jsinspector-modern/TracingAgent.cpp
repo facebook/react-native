@@ -115,7 +115,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
         dataCollectedCallback,
         PROFILE_TRACE_EVENT_CHUNK_SIZE);
     serializer.serializeAndNotify(
-        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
+        instanceAgent_->collectTracingProfile().runtimeSamplingProfile,
         instanceTracingStartTimestamp_);
 
     frontendChannel_(cdp::jsonNotification(

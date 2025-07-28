@@ -172,7 +172,9 @@ tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
   tracing::RuntimeSamplingProfile runtimeSamplingProfile =
       runtimeAgent_->collectSamplingProfile();
 
-  return tracing::InstanceTracingProfile{std::move(runtimeSamplingProfile)};
+  return tracing::InstanceTracingProfile{
+      .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
+  };
 }
 
 } // namespace facebook::react::jsinspector_modern
