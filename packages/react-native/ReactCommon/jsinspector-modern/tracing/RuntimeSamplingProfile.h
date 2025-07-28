@@ -11,7 +11,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -65,9 +64,9 @@ struct RuntimeSamplingProfile {
         uint64_t timestamp,
         uint64_t threadId,
         std::vector<SampleCallStackFrame> callStack)
-        : timestamp_(timestamp),
-          threadId_(threadId),
-          callStack_(std::move(callStack)) {}
+        : timestamp(timestamp),
+          threadId(threadId),
+          callStack(std::move(callStack)) {}
 
     // Movable.
     Sample& operator=(Sample&&) = default;
@@ -77,40 +76,24 @@ struct RuntimeSamplingProfile {
     Sample(const Sample&) = delete;
     Sample& operator=(const Sample&) = delete;
 
-    /// \return serialized unix timestamp in microseconds granularity. The
-    /// moment when this sample was recorded.
-    uint64_t getTimestamp() const {
-      return timestamp_;
-    }
+    ~Sample() = default;
 
-    /// \return thread id where sample was recorded.
-    uint64_t getThreadId() const {
-      return threadId_;
-    }
-
-    /// \return a snapshot of the call stack. The first element of the vector is
-    /// the lowest frame in the stack.
-    const std::vector<SampleCallStackFrame>& getCallStack() const {
-      return callStack_;
-    }
-
-   private:
     /// When the call stack snapshot was taken (μs).
-    uint64_t timestamp_;
+    uint64_t timestamp;
     /// Thread id where sample was recorded.
-    uint64_t threadId_;
+    uint64_t threadId;
     /// Snapshot of the call stack. The first element of the vector is
     /// the lowest frame in the stack.
-    std::vector<SampleCallStackFrame> callStack_;
+    std::vector<SampleCallStackFrame> callStack;
   };
 
   RuntimeSamplingProfile(
       std::string runtimeName,
       std::vector<Sample> samples,
       std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile)
-      : runtimeName_(std::move(runtimeName)),
-        samples_(std::move(samples)),
-        rawRuntimeProfile_(std::move(rawRuntimeProfile)) {}
+      : runtimeName(std::move(runtimeName)),
+        samples(std::move(samples)),
+        rawRuntimeProfile(std::move(rawRuntimeProfile)) {}
 
   // Movable.
   RuntimeSamplingProfile& operator=(RuntimeSamplingProfile&&) = default;
@@ -120,26 +103,17 @@ struct RuntimeSamplingProfile {
   RuntimeSamplingProfile(const RuntimeSamplingProfile&) = delete;
   RuntimeSamplingProfile& operator=(const RuntimeSamplingProfile&) = delete;
 
-  /// \return name of the JavaScript runtime, where sampling occurred.
-  const std::string& getRuntimeName() const {
-    return runtimeName_;
-  }
+  ~RuntimeSamplingProfile() = default;
 
-  /// \return list of recorded samples, should be chronologically sorted.
-  const std::vector<Sample>& getSamples() const {
-    return samples_;
-  }
-
- private:
   /// Name of the runtime, where sampling occurred: Hermes, V8, etc.
-  std::string runtimeName_;
+  std::string runtimeName;
   /// List of recorded samples, should be chronologically sorted.
-  std::vector<Sample> samples_;
+  std::vector<Sample> samples;
   /// A unique pointer to the original raw runtime profile, collected from the
   /// runtime in RuntimeTargetDelegate. Keeping a pointer to the original
   /// profile allows it to remain alive as long as RuntimeSamplingProfile is
   /// alive, since it may be using the same std::string_view.
-  std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile_;
+  std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
