@@ -15,6 +15,8 @@
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
+#include <jsinspector-modern/tracing/HostTargetTracingProfile.h>
+
 #include <optional>
 #include <string>
 
@@ -166,6 +168,21 @@ class HostTargetController final {
    */
   bool decrementPauseOverlayCounter();
 
+  /**
+   * Start tracing the corresponding HostTarget. Can throw, if already tracing.
+   */
+  void startTracing();
+
+  /**
+   * Stop tracing the corresponding HostTarget. Can throw, if wasn't tracing.
+   */
+  void stopTracing();
+
+  /**
+   * Returns the full tracing profile for the last tracing session.
+   */
+  tracing::HostTargetTracingProfile collectTracingProfile();
+
  private:
   HostTarget& target_;
   size_t pauseOverlayCounter_{0};
@@ -237,6 +254,21 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void sendCommand(HostCommand command);
 
+  /**
+   * Start tracing this HostTarget. Can throw, if already tracing.
+   */
+  void startTracing();
+
+  /**
+   * Stop tracing this HostTarget. Can throw, if wasn't tracing.
+   */
+  void stopTracing();
+
+  /**
+   * Returns the full tracing profile for the last tracing session.
+   */
+  tracing::HostTargetTracingProfile collectTracingProfile();
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -264,6 +296,35 @@ class JSINSPECTOR_EXPORT HostTarget
   inline bool hasInstance() const {
     return currentInstance_ != nullptr;
   }
+
+  /**
+   * Whether this HostTarget is currently being traced.
+   * Keeping a local state is necessary to start tracing InstanceTarget right
+   * after its reinitialization.
+   */
+  bool isTracing_{false};
+
+  /**
+   * A container for tracing profiles of all InstanceTargets that were
+   * registered during this tracing session.
+   */
+  std::vector<tracing::InstanceTargetTracingProfile>
+      storedInstanceTargetTracingProfiles_;
+
+  /**
+   * Start tracing already registered InstanceTarget, or the one that is about
+   * to be registered, in case of reinitialization.
+   */
+  void startTracingInstanceTarget(InstanceTarget* instanceTarget);
+
+  /**
+   * Stop tracing already registered InstanceTarget, of the one that is about to
+   * be unregistered, in case of reinitialization.
+   *
+   * Collects the tracing profile and stores it in
+   * \c storedInstanceTargetTracingProfiles_.
+   */
+  void stopTracingInstanceTarget(InstanceTarget* instanceTarget);
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while

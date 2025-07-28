@@ -187,6 +187,11 @@ InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
   currentInstance_ = InstanceTarget::create(
       executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
+
+  if (isTracing_) {
+    startTracingInstanceTarget(currentInstance_.get());
+  }
+
   sessions_.forEach(
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
@@ -198,6 +203,11 @@ void HostTarget::unregisterInstance(InstanceTarget& instance) {
   assert(
       currentInstance_ && currentInstance_.get() == &instance &&
       "Invalid unregistration");
+
+  if (isTracing_) {
+    stopTracingInstanceTarget(&instance);
+  }
+
   sessions_.forEach(
       [](HostTargetSession& session) { session.setCurrentInstance(nullptr); });
   currentInstance_.reset();
