@@ -196,8 +196,6 @@ public class FabricUIManager
 
   private boolean mDriveCxxAnimations = false;
 
-  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
-
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
@@ -1478,7 +1476,8 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
+      if ((mDriveCxxAnimations || ReactNativeFeatureFlags.cxxNativeAnimatedEnabled())
+          && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 
