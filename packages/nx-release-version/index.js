@@ -84,10 +84,8 @@ const afterAllProjectsVersioned = async (_cwd, _opts) => {
     changedFiles.push(...versionedFiles);
 
     console.log('✅ Updated React Native artifacts');
-    console.log('🏷️  Created .rnm-publish marker file');
-
+    console.table(versionedFiles.map(file => path.relative(REPO_ROOT, file)));
   } catch (error) {
-    console.error('Failed to update React Native artifacts:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error(`❌ Failed to update React Native artifacts: ${errorMessage}`);
     throw error;
