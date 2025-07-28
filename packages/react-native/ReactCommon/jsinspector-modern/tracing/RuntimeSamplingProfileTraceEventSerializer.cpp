@@ -137,10 +137,7 @@ void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
                   TraceEventProfileChunk::CPUProfile{
                       .nodes = std::move(traceEventNodes),
                       .samples = std::move(chunk.samples)},
-              .timeDeltas =
-                  TraceEventProfileChunk::TimeDeltas{
-                      .deltas = std::move(chunk.timeDeltas),
-                  },
+              .timeDeltas = std::move(chunk.timeDeltas),
           }));
 }
 
