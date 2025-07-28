@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd2acd901f794a0d6e13712a34aaac5d>>
+ * @generated SignedSource<<999a8d329cdab258ac64c03b24f1a516>>
  * @flow strict
  * @noformat
  */
@@ -44,7 +44,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   utilizeTokensInIntersectionObserver: Getter<boolean>,
-  preventShadowTreeCommitExhaustion: Getter<boolean>,
 }>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
@@ -99,6 +98,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
+  preventShadowTreeCommitExhaustion: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -191,11 +191,6 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
  * Use tokens in IntersectionObserver vs ShadowNode.
  */
 export const utilizeTokensInIntersectionObserver: Getter<boolean> = createJavaScriptFlagGetter('utilizeTokensInIntersectionObserver', true);
-
-/**
- * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
- */
-export const preventShadowTreeCommitExhaustion: Getter<boolean> = createJavaScriptFlagGetter('preventShadowTreeCommitExhaustion', false);
 
 /**
  * Common flag for testing. Do NOT modify.
@@ -389,6 +384,10 @@ export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagG
  * Number cached PreparedLayouts in TextLayoutManager cache
  */
 export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('preparedTextCacheSize', 200);
+/**
+ * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
+ */
+export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustion', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
