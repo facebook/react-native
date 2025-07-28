@@ -18,7 +18,7 @@ import {
   type TaskResult,
 } from 'tinybench';
 
-type SuiteOptions = $ReadOnly<{
+export type SuiteOptions = $ReadOnly<{
   minIterations?: number,
   minDuration?: number,
   warmup?: boolean,
@@ -28,7 +28,9 @@ type SuiteOptions = $ReadOnly<{
   testOnly?: boolean,
 }>;
 
-type TestOptions = $ReadOnly<{
+export type TestOptions = FnOptions;
+
+type InternalTestOptions = $ReadOnly<{
   ...FnOptions,
   only?: boolean,
 }>;
@@ -71,7 +73,7 @@ interface SuiteAPI {
 interface TestTask {
   name: string;
   fn: () => void;
-  options: TestOptions | void;
+  options: InternalTestOptions | void;
 }
 
 export function suite(
