@@ -56,8 +56,7 @@ class PerformanceTracer {
    * Flush out buffered CDP Trace Events using the given callback.
    */
   void collectEvents(
-      const std::function<void(const folly::dynamic& eventsChunk)>&
-          resultCallback,
+      const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
       uint16_t chunkSize);
 
   /**

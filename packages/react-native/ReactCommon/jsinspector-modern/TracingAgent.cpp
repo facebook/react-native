@@ -102,10 +102,10 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    auto dataCollectedCallback = [this](const folly::dynamic& eventsChunk) {
+    auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
       frontendChannel_(cdp::jsonNotification(
           "Tracing.dataCollected",
-          folly::dynamic::object("value", eventsChunk)));
+          folly::dynamic::object("value", std::move(eventsChunk))));
     };
     performanceTracer.collectEvents(
         dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
@@ -114,8 +114,9 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
         performanceTracer,
         dataCollectedCallback,
         PROFILE_TRACE_EVENT_CHUNK_SIZE);
+    auto tracingProfile = instanceAgent_->collectTracingProfile();
     serializer.serializeAndNotify(
-        instanceAgent_->collectTracingProfile().runtimeSamplingProfile,
+        std::move(tracingProfile.runtimeSamplingProfile),
         instanceTracingStartTimestamp_);
 
     frontendChannel_(cdp::jsonNotification(
