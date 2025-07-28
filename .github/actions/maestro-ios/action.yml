@@ -35,6 +35,8 @@ runs:
       with:
         java-version: '17'
         distribution: 'zulu'
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
     - name: Run yarn install
       uses: ./.github/actions/yarn-install
     - name: Start Metro in Debug
