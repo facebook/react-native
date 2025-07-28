@@ -66,16 +66,25 @@ RuntimeTarget& InstanceTarget::registerRuntime(
       std::move(jsExecutor),
       makeVoidExecutor(executorFromThis()));
 
+  if (isTracing_) {
+    startTracingRuntimeTarget(currentRuntime_.get());
+  }
+
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
   });
   return *currentRuntime_;
 }
 
-void InstanceTarget::unregisterRuntime(RuntimeTarget& Runtime) {
+void InstanceTarget::unregisterRuntime(RuntimeTarget& runtimeTarget) {
   assert(
-      currentRuntime_ && currentRuntime_.get() == &Runtime &&
+      currentRuntime_ && currentRuntime_.get() == &runtimeTarget &&
       "Invalid unregistration");
+
+  if (isTracing_) {
+    stopTracingRuntimeTarget(&runtimeTarget);
+  }
+
   agents_.forEach(
       [](InstanceAgent& agent) { agent.setCurrentRuntime(nullptr); });
   currentRuntime_.reset();
