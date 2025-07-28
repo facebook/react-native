@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ParagraphProps.h"
+#include "BaseParagraphProps.h"
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
@@ -17,9 +17,9 @@
 
 namespace facebook::react {
 
-ParagraphProps::ParagraphProps(
+BaseParagraphProps::BaseParagraphProps(
     const PropsParserContext& context,
-    const ParagraphProps& sourceProps,
+    const BaseParagraphProps& sourceProps,
     const RawProps& rawProps)
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
@@ -57,7 +57,7 @@ ParagraphProps::ParagraphProps(
   textAttributes.backgroundColor = {};
 };
 
-void ParagraphProps::setProp(
+void BaseParagraphProps::setProp(
     const PropsParserContext& context,
     RawPropsPropNameHash hash,
     const char* propName,
@@ -68,7 +68,7 @@ void ParagraphProps::setProp(
   ViewProps::setProp(context, hash, propName, value);
   BaseTextProps::setProp(context, hash, propName, value);
 
-  static auto defaults = ParagraphProps{};
+  static auto defaults = BaseParagraphProps{};
 
   // ParagraphAttributes has its own switch statement - to keep all
   // of these fields together, and because there are some collisions between
@@ -150,99 +150,11 @@ void ParagraphProps::setProp(
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
-SharedDebugStringConvertibleList ParagraphProps::getDebugProps() const {
+SharedDebugStringConvertibleList BaseParagraphProps::getDebugProps() const {
   return ViewProps::getDebugProps() + BaseTextProps::getDebugProps() +
       paragraphAttributes.getDebugProps() +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem("selectable", isSelectable)};
 }
-#endif
-
-#ifdef RN_SERIALIZABLE_STATE
-
-ComponentName ParagraphProps::getDiffPropsImplementationTarget() const {
-  return "Paragraph";
-}
-
-folly::dynamic ParagraphProps::getDiffProps(const Props* prevProps) const {
-  static const auto defaultProps = ParagraphProps();
-
-  const ParagraphProps* oldProps = prevProps == nullptr
-      ? &defaultProps
-      : static_cast<const ParagraphProps*>(prevProps);
-
-  folly::dynamic result = ViewProps::getDiffProps(oldProps);
-
-  BaseTextProps::appendTextAttributesProps(result, oldProps);
-
-  if (paragraphAttributes.maximumNumberOfLines !=
-      oldProps->paragraphAttributes.maximumNumberOfLines) {
-    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
-  }
-
-  if (paragraphAttributes.ellipsizeMode !=
-      oldProps->paragraphAttributes.ellipsizeMode) {
-    result["ellipsizeMode"] = toString(paragraphAttributes.ellipsizeMode);
-  }
-
-  if (paragraphAttributes.textBreakStrategy !=
-      oldProps->paragraphAttributes.textBreakStrategy) {
-    result["textBreakStrategy"] =
-        toString(paragraphAttributes.textBreakStrategy);
-  }
-
-  if (paragraphAttributes.adjustsFontSizeToFit !=
-      oldProps->paragraphAttributes.adjustsFontSizeToFit) {
-    result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
-  }
-
-  if (!floatEquality(
-          paragraphAttributes.minimumFontScale,
-          oldProps->paragraphAttributes.minimumFontScale)) {
-    result["minimumFontScale"] = paragraphAttributes.minimumFontScale;
-  }
-
-  if (!floatEquality(
-          paragraphAttributes.minimumFontSize,
-          oldProps->paragraphAttributes.minimumFontSize)) {
-    result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
-  }
-
-  if (!floatEquality(
-          paragraphAttributes.maximumFontSize,
-          oldProps->paragraphAttributes.maximumFontSize)) {
-    result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
-  }
-
-  if (paragraphAttributes.includeFontPadding !=
-      oldProps->paragraphAttributes.includeFontPadding) {
-    result["includeFontPadding"] = paragraphAttributes.includeFontPadding;
-  }
-
-  if (paragraphAttributes.android_hyphenationFrequency !=
-      oldProps->paragraphAttributes.android_hyphenationFrequency) {
-    result["android_hyphenationFrequency"] =
-        toString(paragraphAttributes.android_hyphenationFrequency);
-  }
-
-  if (paragraphAttributes.textAlignVertical !=
-      oldProps->paragraphAttributes.textAlignVertical) {
-    result["textAlignVertical"] =
-        paragraphAttributes.textAlignVertical.has_value()
-        ? toString(paragraphAttributes.textAlignVertical.value())
-        : nullptr;
-  }
-
-  if (isSelectable != oldProps->isSelectable) {
-    result["selectable"] = isSelectable;
-  }
-
-  if (onTextLayout != oldProps->onTextLayout) {
-    result["onTextLayout"] = onTextLayout;
-  }
-
-  return result;
-}
-
 #endif
 } // namespace facebook::react

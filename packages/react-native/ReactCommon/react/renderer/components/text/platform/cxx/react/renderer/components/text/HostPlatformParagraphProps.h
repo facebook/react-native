@@ -7,14 +7,8 @@
 
 #pragma once
 
-#include <react/renderer/components/text/HostPlatformParagraphProps.h>
+#include <react/renderer/components/text/BaseParagraphProps.h>
 
 namespace facebook::react {
-
-/*
- * Props of <Paragraph> component.
- * Most of the props are directly stored in composed `ParagraphAttributes`
- * object.
- */
-using ParagraphProps = HostPlatformParagraphProps;
+using HostPlatformParagraphProps = BaseParagraphProps;
 } // namespace facebook::react
