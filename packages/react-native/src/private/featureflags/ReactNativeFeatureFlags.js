@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<595a51e39658c12aab12032f7b928615>>
+ * @generated SignedSource<<999a8d329cdab258ac64c03b24f1a516>>
  * @flow strict
  * @noformat
  */
@@ -98,7 +98,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
-  preventShadowTreeCommitExhaustionWithLocking: Getter<boolean>,
+  preventShadowTreeCommitExhaustion: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   updateRuntimeShadowNodeReferencesOnCommit: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
@@ -387,7 +387,7 @@ export const preparedTextCacheSize: Getter<number> = createNativeFlagGetter('pre
 /**
  * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
  */
-export const preventShadowTreeCommitExhaustionWithLocking: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustionWithLocking', false);
+export const preventShadowTreeCommitExhaustion: Getter<boolean> = createNativeFlagGetter('preventShadowTreeCommitExhaustion', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

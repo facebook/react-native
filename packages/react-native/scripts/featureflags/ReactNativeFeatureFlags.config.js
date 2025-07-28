@@ -543,10 +543,10 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    preventShadowTreeCommitExhaustionWithLocking: {
+    preventShadowTreeCommitExhaustion: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2025-07-14',
+        dateAdded: '2025-07-23',
         description:
           'Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.',
         expectedReleaseValue: true,

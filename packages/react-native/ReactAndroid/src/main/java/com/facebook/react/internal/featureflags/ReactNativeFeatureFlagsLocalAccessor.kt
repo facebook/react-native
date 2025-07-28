@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7e62fa950e2716e664e7f6d30d4c941>>
+ * @generated SignedSource<<3ea9946ef21c8ac8bb9bb63712636e89>>
  */
 
 /**
@@ -71,7 +71,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
-  private var preventShadowTreeCommitExhaustionWithLockingCache: Boolean? = null
+  private var preventShadowTreeCommitExhaustionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -554,12 +554,12 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun preventShadowTreeCommitExhaustionWithLocking(): Boolean {
-    var cached = preventShadowTreeCommitExhaustionWithLockingCache
+  override fun preventShadowTreeCommitExhaustion(): Boolean {
+    var cached = preventShadowTreeCommitExhaustionCache
     if (cached == null) {
-      cached = currentProvider.preventShadowTreeCommitExhaustionWithLocking()
-      accessedFeatureFlags.add("preventShadowTreeCommitExhaustionWithLocking")
-      preventShadowTreeCommitExhaustionWithLockingCache = cached
+      cached = currentProvider.preventShadowTreeCommitExhaustion()
+      accessedFeatureFlags.add("preventShadowTreeCommitExhaustion")
+      preventShadowTreeCommitExhaustionCache = cached
     }
     return cached
   }

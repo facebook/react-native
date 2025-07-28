@@ -22,12 +22,12 @@
 
 namespace facebook::react {
 
-using CommitStatus = ShadowTree::CommitStatus;
-using CommitMode = ShadowTree::CommitMode;
-
 namespace {
 const int MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING = 3;
-}
+} // namespace
+
+using CommitStatus = ShadowTree::CommitStatus;
+using CommitMode = ShadowTree::CommitMode;
 
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
@@ -214,7 +214,8 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   auto revision = ShadowTreeRevision{};
 
   {
-    std::unique_lock lock(commitMutex_);
+    ShadowTree::UniqueLock lock = uniqueCommitLock();
+
     if (commitMode_ == commitMode) {
       return;
     }
@@ -231,7 +232,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock lock(commitMutex_);
+  SharedLock lock = sharedCommitLock();
   return commitMode_;
 }
 
@@ -245,7 +246,7 @@ CommitStatus ShadowTree::commit(
     const CommitOptions& commitOptions) const {
   [[maybe_unused]] int attempts = 0;
 
-  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking()) {
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
     while (attempts < MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING) {
       auto status = tryCommit(transaction, commitOptions);
       if (status != CommitStatus::Failed) {
@@ -255,8 +256,8 @@ CommitStatus ShadowTree::commit(
     }
 
     {
-      std::unique_lock lock(commitMutex_);
-      return tryCommit(transaction, commitOptions, true);
+      std::unique_lock lock(commitMutexRecursive_);
+      return tryCommit(transaction, commitOptions);
     }
   } else {
     while (true) {
@@ -276,8 +277,7 @@ CommitStatus ShadowTree::commit(
 
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
-    const CommitOptions& commitOptions,
-    bool hasLocked) const {
+    const CommitOptions& commitOptions) const {
   TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
@@ -289,10 +289,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_, std::defer_lock);
-    if (!hasLocked) {
-      lock.lock();
-    }
+    SharedLock lock = sharedCommitLock();
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -333,10 +330,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_, std::defer_lock);
-    if (!hasLocked) {
-      lock.lock();
-    }
+    UniqueLock lock = uniqueCommitLock();
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
@@ -375,7 +369,7 @@ CommitStatus ShadowTree::tryCommit(
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock lock(commitMutex_);
+  SharedLock lock = sharedCommitLock();
   return currentRevision_;
 }
 
@@ -421,6 +415,22 @@ void ShadowTree::emitLayoutEvents(
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
   delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_, true);
+}
+
+inline ShadowTree::UniqueLock ShadowTree::uniqueCommitLock() const {
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
+    return std::unique_lock{commitMutexRecursive_};
+  } else {
+    return std::unique_lock{commitMutex_};
+  }
+}
+
+inline ShadowTree::SharedLock ShadowTree::sharedCommitLock() const {
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
+    return std::unique_lock{commitMutexRecursive_};
+  } else {
+    return std::shared_lock{commitMutex_};
+  }
 }
 
 } // namespace facebook::react

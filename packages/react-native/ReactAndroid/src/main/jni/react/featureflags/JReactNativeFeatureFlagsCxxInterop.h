@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07daae0284829d56b7eaa330b1973e02>>
+ * @generated SignedSource<<dae981c66bf0751fd2863937ecf255d8>>
  */
 
 /**
@@ -171,7 +171,7 @@ class JReactNativeFeatureFlagsCxxInterop
   static double preparedTextCacheSize(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool preventShadowTreeCommitExhaustionWithLocking(
+  static bool preventShadowTreeCommitExhaustion(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool traceTurboModulePromiseRejectionsOnAndroid(

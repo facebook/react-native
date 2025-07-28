@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5ed90d5ed1a03a16f551cd1cf6cbdeb3>>
+ * @generated SignedSource<<e5a8a196b35c010d92d3f616979891a9>>
  */
 
 /**
@@ -79,7 +79,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
   double preparedTextCacheSize();
-  bool preventShadowTreeCommitExhaustionWithLocking();
+  bool preventShadowTreeCommitExhaustion();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool updateRuntimeShadowNodeReferencesOnCommit();
   bool useAlwaysAvailableJSErrorHandling();
@@ -151,7 +151,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
-  std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustionWithLocking_;
+  std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> updateRuntimeShadowNodeReferencesOnCommit_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;

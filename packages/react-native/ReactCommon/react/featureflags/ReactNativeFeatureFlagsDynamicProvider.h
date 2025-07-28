@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae01d3b37b41ff2ef7fdc26977954b7e>>
+ * @generated SignedSource<<19f0a48bcfa8f8ffaf634e85301adc7e>>
  */
 
 /**
@@ -468,13 +468,13 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::preparedTextCacheSize();
   }
 
-  bool preventShadowTreeCommitExhaustionWithLocking() override {
-    auto value = values_["preventShadowTreeCommitExhaustionWithLocking"];
+  bool preventShadowTreeCommitExhaustion() override {
+    auto value = values_["preventShadowTreeCommitExhaustion"];
     if (!value.isNull()) {
       return value.getBool();
     }
 
-    return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustionWithLocking();
+    return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7fac1c2c0c3ce131442319925e4231dc>>
+ * @generated SignedSource<<cf7b6ff66c614ca2acc6667a80c5590d>>
  */
 
 /**
@@ -321,9 +321,9 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
-  bool preventShadowTreeCommitExhaustionWithLocking() override {
+  bool preventShadowTreeCommitExhaustion() override {
     static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventShadowTreeCommitExhaustionWithLocking");
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("preventShadowTreeCommitExhaustion");
     return method(javaProvider_);
   }
 
@@ -632,9 +632,9 @@ double JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize(
   return ReactNativeFeatureFlags::preparedTextCacheSize();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking(
+bool JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustion(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::preventShadowTreeCommitExhaustionWithLocking();
+  return ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
@@ -865,8 +865,8 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "preparedTextCacheSize",
         JReactNativeFeatureFlagsCxxInterop::preparedTextCacheSize),
       makeNativeMethod(
-        "preventShadowTreeCommitExhaustionWithLocking",
-        JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustionWithLocking),
+        "preventShadowTreeCommitExhaustion",
+        JReactNativeFeatureFlagsCxxInterop::preventShadowTreeCommitExhaustion),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

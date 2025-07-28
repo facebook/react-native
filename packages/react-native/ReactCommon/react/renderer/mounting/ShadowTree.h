@@ -8,6 +8,8 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
+#include <shared_mutex>
 
 #include <react/renderer/components/root/RootShadowNode.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -111,8 +113,7 @@ class ShadowTree final {
    */
   CommitStatus tryCommit(
       const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions,
-      bool hasLocked = false) const;
+      const CommitOptions& commitOptions) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
@@ -151,10 +152,21 @@ class ShadowTree final {
   const SurfaceId surfaceId_;
   const ShadowTreeDelegate& delegate_;
   mutable std::shared_mutex commitMutex_;
+  mutable std::recursive_mutex commitMutexRecursive_;
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
+
+  using UniqueLock = std::variant<
+      std::unique_lock<std::shared_mutex>,
+      std::unique_lock<std::recursive_mutex>>;
+  using SharedLock = std::variant<
+      std::shared_lock<std::shared_mutex>,
+      std::unique_lock<std::recursive_mutex>>;
+
+  inline UniqueLock uniqueCommitLock() const;
+  inline SharedLock sharedCommitLock() const;
 };
 
 } // namespace facebook::react

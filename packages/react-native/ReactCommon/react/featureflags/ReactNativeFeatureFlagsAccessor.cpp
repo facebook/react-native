@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea72f787f16b0c96ad745e82067591a9>>
+ * @generated SignedSource<<681bff71eb87886a108f67b3162b030c>>
  */
 
 /**
@@ -875,8 +875,8 @@ double ReactNativeFeatureFlagsAccessor::preparedTextCacheSize() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::preventShadowTreeCommitExhaustionWithLocking() {
-  auto flagValue = preventShadowTreeCommitExhaustionWithLocking_.load();
+bool ReactNativeFeatureFlagsAccessor::preventShadowTreeCommitExhaustion() {
+  auto flagValue = preventShadowTreeCommitExhaustion_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -884,10 +884,10 @@ bool ReactNativeFeatureFlagsAccessor::preventShadowTreeCommitExhaustionWithLocki
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(47, "preventShadowTreeCommitExhaustionWithLocking");
+    markFlagAsAccessed(47, "preventShadowTreeCommitExhaustion");
 
-    flagValue = currentProvider_->preventShadowTreeCommitExhaustionWithLocking();
-    preventShadowTreeCommitExhaustionWithLocking_ = flagValue;
+    flagValue = currentProvider_->preventShadowTreeCommitExhaustion();
+    preventShadowTreeCommitExhaustion_ = flagValue;
   }
 
   return flagValue.value();
