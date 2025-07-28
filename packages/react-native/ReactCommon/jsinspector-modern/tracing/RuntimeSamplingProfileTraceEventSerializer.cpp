@@ -45,40 +45,43 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
       node.getCallFrame();
   auto traceEventCallFrame =
       TraceEventProfileChunk::CPUProfile::Node::CallFrame{
-          node.getCodeType() == ProfileTreeNode::CodeType::JavaScript ? "JS"
-                                                                      : "other",
-          callFrame.getScriptId(),
-          std::string(callFrame.getFunctionName()),
-          callFrame.hasUrl()
-              ? std::optional<std::string>(std::string(callFrame.getUrl()))
+          .codeType =
+              node.getCodeType() == ProfileTreeNode::CodeType::JavaScript
+              ? "JS"
+              : "other",
+          .scriptId = callFrame.scriptId,
+          .functionName = std::string(callFrame.functionName),
+          .url = callFrame.scriptURL
+              ? std::optional<std::string>(std::string(*callFrame.scriptURL))
               : std::nullopt,
-          callFrame.hasLineNumber()
-              ? std::optional<uint32_t>(callFrame.getLineNumber())
-              : std::nullopt,
-          callFrame.hasColumnNumber()
-              ? std::optional<uint32_t>(callFrame.getColumnNumber())
-              : std::nullopt};
+          .lineNumber = callFrame.lineNumber,
+          .columnNumber = callFrame.columnNumber,
+      };
 
   return TraceEventProfileChunk::CPUProfile::Node{
-      node.getId(),
-      traceEventCallFrame,
-      node.hasParent() ? std::optional<uint32_t>(node.getParentId())
-                       : std::nullopt};
+      .id = node.getId(),
+      .callFrame = traceEventCallFrame,
+      .parentId = node.hasParent() ? std::optional<uint32_t>(node.getParentId())
+                                   : std::nullopt,
+  };
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame createArtificialCallFrame(
     std::string_view callFrameName) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
-      FALLBACK_SCRIPT_ID,
-      callFrameName};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = FALLBACK_SCRIPT_ID,
+      .functionName = callFrameName,
+  };
 };
 
 RuntimeSamplingProfile::SampleCallStackFrame createGarbageCollectorCallFrame() {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
-      FALLBACK_SCRIPT_ID,
-      GARBAGE_COLLECTOR_FRAME_NAME};
+      .kind =
+          RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
+      .scriptId = FALLBACK_SCRIPT_ID,
+      .functionName = GARBAGE_COLLECTOR_FRAME_NAME,
+  };
 };
 
 class ProfileTreeRootNode : public ProfileTreeNode {
@@ -153,7 +156,7 @@ void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
   ProfileTreeNode* previousNode = &rootNode;
   for (auto it = callStack.rbegin(); it != callStack.rend(); ++it) {
     const RuntimeSamplingProfile::SampleCallStackFrame& callFrame = *it;
-    bool isGarbageCollectorFrame = callFrame.getKind() ==
+    bool isGarbageCollectorFrame = callFrame.kind ==
         RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector;
 
     ProfileTreeNode::CodeType childCodeType = isGarbageCollectorFrame
