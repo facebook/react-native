@@ -62,7 +62,7 @@ GEM
     escape (0.0.4)
     ethon (0.16.0)
       ffi (>= 1.15.0)
-    ffi (1.17.0)
+    ffi (1.17.2)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
     gh_inspector (1.1.3)
@@ -104,6 +104,7 @@ DEPENDENCIES
   bigdecimal
   cocoapods (~> 1.13, != 1.15.1, != 1.15.0)
   concurrent-ruby (<= 1.3.4)
+  ffi (= 1.17.2)
   logger
   mutex_m
   xcodeproj (< 1.26.0)
