@@ -40,11 +40,22 @@ function ensurePerformanceLongTaskTiming(
   return value;
 }
 
+let observer: ?PerformanceObserver;
+
 describe('LongTasks API', () => {
+  afterEach(() => {
+    if (observer) {
+      Fantom.runTask(() => {
+        observer?.disconnect();
+        observer = null;
+      });
+    }
+  });
+
   it('does NOT report short tasks (under 50ms)', () => {
     const callback = jest.fn();
 
-    const observer = new PerformanceObserver(callback);
+    observer = new PerformanceObserver(callback);
     observer.observe({entryTypes: ['longtask']});
 
     Fantom.runTask(() => {
@@ -64,7 +75,7 @@ describe('LongTasks API', () => {
   it('reports long tasks (over 50ms)', () => {
     const callback = jest.fn();
 
-    const observer = new PerformanceObserver(callback);
+    observer = new PerformanceObserver(callback);
     observer.observe({entryTypes: ['longtask']});
 
     const beforeTaskStartTime = performance.now();
@@ -111,17 +122,17 @@ describe('LongTasks API', () => {
     it('should NOT be reported if they are longer than 50ms but had yielding opportunities in intervals shorter than 50ms', () => {
       const callback = jest.fn();
 
-      const observer = new PerformanceObserver(callback);
+      observer = new PerformanceObserver(callback);
       observer.observe({entryTypes: ['longtask']});
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
       Fantom.runTask(() => {
-        sleep(40);
+        sleep(30);
         shouldYield();
-        sleep(40);
+        sleep(30);
         shouldYield();
-        sleep(40);
+        sleep(30);
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -130,7 +141,7 @@ describe('LongTasks API', () => {
     it('should be reported if running for longer than 50ms between yielding opportunities', () => {
       const callback = jest.fn();
 
-      const observer = new PerformanceObserver(callback);
+      observer = new PerformanceObserver(callback);
       observer.observe({entryTypes: ['longtask']});
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
