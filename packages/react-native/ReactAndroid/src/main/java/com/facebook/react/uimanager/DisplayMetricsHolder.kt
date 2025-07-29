@@ -23,8 +23,10 @@ import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
  * classes that need it.
  */
 public object DisplayMetricsHolder {
-  private const val INITIALIZATION_MISSING_MESSAGE =
-      "DisplayMetricsHolder must be initialized with initScreenDisplayMetricsIfNotInitialized, initWindowDisplayMetricsIfNotInitialized, initScreenDisplayMetrics or initWindowDisplayMetrics"
+  private const val SCREEN_INITIALIZATION_MISSING_MESSAGE =
+      "DisplayMetricsHolder must be initialized with initScreenDisplayMetricsIfNotInitialized or initScreenDisplayMetrics"
+  private const val WINDOW_INITIALIZATION_MISSING_MESSAGE =
+    "DisplayMetricsHolder must be initialized with initWindowDisplayMetricsIfNotInitialized or initWindowDisplayMetrics"
 
   @JvmStatic private var windowDisplayMetrics: DisplayMetrics? = null
   @JvmStatic private var screenDisplayMetrics: DisplayMetrics? = null
@@ -32,7 +34,7 @@ public object DisplayMetricsHolder {
   /** The metrics of the window associated to the Context used to initialize ReactNative */
   @JvmStatic
   public fun getWindowDisplayMetrics(): DisplayMetrics {
-    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { WINDOW_INITIALIZATION_MISSING_MESSAGE }
     return windowDisplayMetrics as DisplayMetrics
   }
 
@@ -44,7 +46,7 @@ public object DisplayMetricsHolder {
   /** Screen metrics returns the metrics of the default screen on the device. */
   @JvmStatic
   public fun getScreenDisplayMetrics(): DisplayMetrics {
-    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { SCREEN_INITIALIZATION_MISSING_MESSAGE }
     return screenDisplayMetrics as DisplayMetrics
   }
 
@@ -99,8 +101,8 @@ public object DisplayMetricsHolder {
 
   @JvmStatic
   public fun getDisplayMetricsWritableMap(fontScale: Double): WritableMap {
-    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
-    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { WINDOW_INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { SCREEN_INITIALIZATION_MISSING_MESSAGE }
 
     return WritableNativeMap().apply {
       putMap(
