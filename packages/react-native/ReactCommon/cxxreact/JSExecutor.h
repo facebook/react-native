@@ -33,7 +33,7 @@ class RAMBundleRegistry;
 // Executor implementations to call from JS into native code.
 class ExecutorDelegate {
  public:
-  virtual ~ExecutorDelegate() {}
+  virtual ~ExecutorDelegate() = default;
 
   virtual std::shared_ptr<ModuleRegistry> getModuleRegistry() = 0;
 
@@ -53,7 +53,7 @@ class JSExecutorFactory {
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) = 0;
-  virtual ~JSExecutorFactory() {}
+  virtual ~JSExecutorFactory() = default;
 };
 
 class RN_EXPORT JSExecutor {

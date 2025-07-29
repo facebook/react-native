@@ -30,15 +30,12 @@ internal class DebuggingOverlayManager :
 
   override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun highlightTraceUpdates(
-      view: DebuggingOverlay,
-      providedTraceUpdates: ReadableArray
-  ): Unit {
+  override fun highlightTraceUpdates(view: DebuggingOverlay, updates: ReadableArray): Unit {
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedTraceUpdates.size()) {
-      val traceUpdate = providedTraceUpdates.getMap(i) ?: continue
+    for (i in 0 until updates.size()) {
+      val traceUpdate = updates.getMap(i) ?: continue
       val serializedRectangle = traceUpdate.getMap("rectangle")
       if (serializedRectangle == null) {
         ReactSoftExceptionLogger.logSoftException(
@@ -82,12 +79,12 @@ internal class DebuggingOverlayManager :
     }
   }
 
-  override fun highlightElements(view: DebuggingOverlay, providedElements: ReadableArray): Unit {
+  override fun highlightElements(view: DebuggingOverlay, elements: ReadableArray): Unit {
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedElements.size()) {
-      val element = providedElements.getMap(i) ?: continue
+    for (i in 0 until elements.size()) {
+      val element = elements.getMap(i) ?: continue
       try {
         val left = element.getDouble("x").toFloat()
         val top = element.getDouble("y").toFloat()

@@ -82,6 +82,15 @@ class ShadowNodeTraits {
     // Must not be set directly. It is used by the view culling algorithm to
     // efficiently determine if a node is uncullable.
     Unstable_uncullableTrace = 1 << 13,
+
+    // Indicates that the `YogaLayoutableShadowNode` must set `isDirty` flag for
+    // Yoga node when a `ShadowNode` is being cloned. `ShadowNode`s that modify
+    // Yoga styles in the constructor (or later) *after* the `ShadowNode`
+    // is cloned must set this trait.
+    // Any Yoga node (not only Leaf ones) can have this trait.
+    // **Deprecated**: This trait is deprecated and will be removed in a future
+    // version of React Native.
+    DirtyYogaNode = 1 << 14,
   };
 
   /*

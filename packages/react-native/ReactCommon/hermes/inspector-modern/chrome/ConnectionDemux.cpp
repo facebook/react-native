@@ -14,9 +14,10 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 
+#include <utility>
+
 namespace facebook::hermes::inspector_modern::chrome {
 
-using ::facebook::react::jsinspector_modern::IInspector;
 using ::facebook::react::jsinspector_modern::ILocalConnection;
 using ::facebook::react::jsinspector_modern::IRemoteConnection;
 
@@ -27,7 +28,7 @@ class LocalConnection : public ILocalConnection {
   LocalConnection(
       std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn,
       std::shared_ptr<std::unordered_set<std::string>> inspectedContexts);
-  ~LocalConnection();
+  ~LocalConnection() override;
 
   void sendMessage(std::string message) override;
   void disconnect() override;
@@ -40,14 +41,14 @@ class LocalConnection : public ILocalConnection {
 LocalConnection::LocalConnection(
     std::shared_ptr<hermes::inspector_modern::chrome::CDPHandler> conn,
     std::shared_ptr<std::unordered_set<std::string>> inspectedContexts)
-    : conn_(conn), inspectedContexts_(inspectedContexts) {
+    : conn_(conn), inspectedContexts_(std::move(inspectedContexts)) {
   inspectedContexts_->insert(conn->getTitle());
 }
 
 LocalConnection::~LocalConnection() = default;
 
-void LocalConnection::sendMessage(std::string str) {
-  conn_->handle(std::move(str));
+void LocalConnection::sendMessage(std::string message) {
+  conn_->handle(std::move(message));
 }
 
 void LocalConnection::disconnect() {
@@ -76,9 +77,9 @@ DebugSessionToken ConnectionDemux::enableDebugging(
   // register the new CS VM instance, check for any previous CS VM (via strcmp
   // of title) and remove them.
   std::vector<int> pagesToDelete;
-  for (auto it = conns_.begin(); it != conns_.end(); ++it) {
-    if (it->second->getTitle() == title) {
-      pagesToDelete.push_back(it->first);
+  for (auto& conn : conns_) {
+    if (conn.second->getTitle() == title) {
+      pagesToDelete.push_back(conn.first);
     }
   }
 

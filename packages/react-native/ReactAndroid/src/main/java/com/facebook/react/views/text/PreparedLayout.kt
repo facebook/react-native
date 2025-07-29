@@ -18,5 +18,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 internal class PreparedLayout(
     val layout: Layout,
     val maximumNumberOfLines: Int,
-    val verticalOffset: Float
+    val verticalOffset: Float,
+    val reactTags: IntArray,
 )

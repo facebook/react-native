@@ -17,6 +17,8 @@
 
 namespace facebook::react {
 
+namespace {
+
 inline std::string toString(const ImageResizeMode& value) {
   switch (value) {
     case ImageResizeMode::Cover:
@@ -34,21 +36,21 @@ inline std::string toString(const ImageResizeMode& value) {
   }
 }
 
-constexpr static MapBuffer::Key IS_KEY_URI = 0;
-constexpr static MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_MODE = 2;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_METHOD = 3;
-constexpr static MapBuffer::Key IS_KEY_BLUR_RADIUS = 4;
-constexpr static MapBuffer::Key IS_KEY_VIEW_WIDTH = 5;
-constexpr static MapBuffer::Key IS_KEY_VIEW_HEIGHT = 6;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_MULTIPLIER = 7;
-constexpr static MapBuffer::Key IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS = 8;
-constexpr static MapBuffer::Key IS_KEY_OVERLAY_COLOR = 9;
-constexpr static MapBuffer::Key IS_KEY_TINT_COLOR = 10;
-constexpr static MapBuffer::Key IS_KEY_FADE_DURATION = 11;
-constexpr static MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
-constexpr static MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
-constexpr static MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
+constexpr MapBuffer::Key IS_KEY_URI = 0;
+constexpr MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
+constexpr MapBuffer::Key IS_KEY_RESIZE_MODE = 2;
+constexpr MapBuffer::Key IS_KEY_RESIZE_METHOD = 3;
+constexpr MapBuffer::Key IS_KEY_BLUR_RADIUS = 4;
+constexpr MapBuffer::Key IS_KEY_VIEW_WIDTH = 5;
+constexpr MapBuffer::Key IS_KEY_VIEW_HEIGHT = 6;
+constexpr MapBuffer::Key IS_KEY_RESIZE_MULTIPLIER = 7;
+constexpr MapBuffer::Key IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS = 8;
+constexpr MapBuffer::Key IS_KEY_OVERLAY_COLOR = 9;
+constexpr MapBuffer::Key IS_KEY_TINT_COLOR = 10;
+constexpr MapBuffer::Key IS_KEY_FADE_DURATION = 11;
+constexpr MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
+constexpr MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
+constexpr MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
 
 inline void serializeImageSource(
     MapBufferBuilder& builder,
@@ -88,6 +90,8 @@ inline void serializeImageRequestParams(
       imageRequestParams.loadingIndicatorSource.uri);
   builder.putString(IS_KEY_ANALYTIC_TAG, imageRequestParams.analyticTag);
 }
+
+} // namespace
 
 inline MapBuffer serializeImageRequest(
     const ImageSource& imageSource,

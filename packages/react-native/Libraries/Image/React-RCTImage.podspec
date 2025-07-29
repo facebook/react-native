@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

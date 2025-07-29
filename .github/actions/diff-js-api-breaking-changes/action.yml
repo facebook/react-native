@@ -17,7 +17,7 @@ runs:
       env:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-breaking-changes
       run: |
-        node ./scripts/diff-api-snapshot \
+        node ./scripts/js-api/diff-api-snapshot \
         ${{ github.workspace }}/packages/react-native/ReactNativeApi.d.ts  \
         $SCRATCH_DIR/ReactNativeApi-after.d.ts \
         > $SCRATCH_DIR/output.json

@@ -31,7 +31,7 @@ using MethodCallResult = std::optional<folly::dynamic>;
 #ifndef RCT_FIT_RM_OLD_RUNTIME
 class NativeModule {
  public:
-  virtual ~NativeModule() {}
+  virtual ~NativeModule() = default;
   virtual std::string getName() = 0;
   virtual std::string getSyncMethodName(unsigned int methodId) = 0;
   virtual std::vector<MethodDescriptor> getMethods() = 0;

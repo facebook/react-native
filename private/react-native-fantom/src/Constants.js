@@ -10,11 +10,13 @@
 
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,
+  forceTestModeForBenchmarks: boolean,
   fantomConfigSummary: string,
 }>;
 
 let constants: FantomConstants = {
   isRunningFromCI: false,
+  forceTestModeForBenchmarks: false,
   fantomConfigSummary: '',
 };
 

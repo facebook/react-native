@@ -8,7 +8,7 @@
 #import "RCTInspectorNetworkHelper.h"
 #import <React/RCTLog.h>
 
-typedef void (^ListenerBlock)(RCTInspectorNetworkListener *);
+using ListenerBlock = void (^)(RCTInspectorNetworkListener *);
 
 @interface RCTInspectorNetworkHelper () <NSURLSessionDataDelegate>
 @property (nonatomic, strong) NSURLSession *session;

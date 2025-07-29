@@ -23,7 +23,8 @@ namespace facebook::react {
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
 
   /*
    * Not copyable.

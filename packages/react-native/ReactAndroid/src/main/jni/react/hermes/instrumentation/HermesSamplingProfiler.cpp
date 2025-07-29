@@ -11,21 +11,21 @@
 
 namespace facebook::jsi::jni {
 
-void HermesSamplingProfiler::enable(jni::alias_ref<jclass>) {
+void HermesSamplingProfiler::enable(jni::alias_ref<jclass> /*unused*/) {
   auto* hermesAPI =
       castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
   hermesAPI->enableSamplingProfiler();
 }
 
-void HermesSamplingProfiler::disable(jni::alias_ref<jclass>) {
+void HermesSamplingProfiler::disable(jni::alias_ref<jclass> /*unused*/) {
   auto* hermesAPI =
       castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
   hermesAPI->disableSamplingProfiler();
 }
 
 void HermesSamplingProfiler::dumpSampledTraceToFile(
-    jni::alias_ref<jclass>,
-    std::string filename) {
+    jni::alias_ref<jclass> /*unused*/,
+    const std::string& filename) {
   auto* hermesAPI =
       castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
   hermesAPI->dumpSampledTraceToFile(filename);

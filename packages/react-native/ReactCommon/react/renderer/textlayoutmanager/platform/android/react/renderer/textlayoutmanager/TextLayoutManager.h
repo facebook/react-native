@@ -31,7 +31,8 @@ class TextLayoutManager {
  public:
   using PreparedLayout = SafeReleaseJniRef<jni::global_ref<JPreparedLayout>>;
 
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
 
   /*
    * Not copyable.

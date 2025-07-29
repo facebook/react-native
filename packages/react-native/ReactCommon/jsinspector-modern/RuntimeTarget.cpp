@@ -10,6 +10,8 @@
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 
+#include <utility>
+
 using namespace facebook::jsi;
 
 namespace facebook::react::jsinspector_modern {
@@ -34,20 +36,20 @@ std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
     RuntimeTargetDelegate& delegate,
     RuntimeExecutor jsExecutor,
     VoidExecutor selfExecutor) {
-  std::shared_ptr<RuntimeTarget> runtimeTarget{
-      new RuntimeTarget(executionContextDescription, delegate, jsExecutor)};
-  runtimeTarget->setExecutor(selfExecutor);
+  std::shared_ptr<RuntimeTarget> runtimeTarget{new RuntimeTarget(
+      executionContextDescription, delegate, std::move(jsExecutor))};
+  runtimeTarget->setExecutor(std::move(selfExecutor));
   runtimeTarget->installGlobals();
   return runtimeTarget;
 }
 
 RuntimeTarget::RuntimeTarget(
-    const ExecutionContextDescription& executionContextDescription,
+    ExecutionContextDescription executionContextDescription,
     RuntimeTargetDelegate& delegate,
     RuntimeExecutor jsExecutor)
-    : executionContextDescription_(executionContextDescription),
+    : executionContextDescription_(std::move(executionContextDescription)),
       delegate_(delegate),
-      jsExecutor_(jsExecutor) {}
+      jsExecutor_(std::move(jsExecutor)) {}
 
 void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
@@ -56,7 +58,7 @@ void RuntimeTarget::installGlobals() {
 }
 
 std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
-    FrontendChannel channel,
+    const FrontendChannel& channel,
     SessionState& sessionState) {
   auto runtimeAgentState =
       std::move(sessionState.lastRuntimeAgentExportedState);

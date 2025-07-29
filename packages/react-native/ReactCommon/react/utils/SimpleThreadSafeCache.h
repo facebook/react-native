@@ -38,24 +38,20 @@ class SimpleThreadSafeCache {
    */
   ValueT get(const KeyT& key, CacheGeneratorFunction<ValueT> auto generator)
       const {
-    std::lock_guard<std::mutex> lock(mutex_);
+    return getMapIterator(key, std::move(generator))->second->second;
+  }
 
-    if (auto it = map_.find(key); it != map_.end()) {
-      // Move accessed item to front of list
-      list_.splice(list_.begin(), list_, it->second);
-      return it->second->second;
-    }
-
-    auto value = generator();
-    // Add new value to front of list and map
-    list_.emplace_front(key, value);
-    map_[key] = list_.begin();
-    if (list_.size() > maxSize_) {
-      // Evict least recently used item (back of list)
-      map_.erase(list_.back().first);
-      list_.pop_back();
-    }
-    return value;
+  /*
+   * Returns pointers to both the key and value from the map with a given key.
+   * If the value wasn't found in the cache, constructs the value using given
+   * generator function, stores it inside a cache and returns it.
+   * Can be called from any thread.
+   */
+  std::pair<const KeyT*, const ValueT*> getWithKey(
+      const KeyT& key,
+      CacheGeneratorFunction<ValueT> auto generator) const {
+    auto it = getMapIterator(key, std::move(generator));
+    return std::make_pair(&it->first, &it->second->second);
   }
 
   /*
@@ -78,6 +74,29 @@ class SimpleThreadSafeCache {
  private:
   using EntryT = std::pair<KeyT, ValueT>;
   using iterator = typename std::list<EntryT>::iterator;
+
+  auto getMapIterator(
+      const KeyT& key,
+      CacheGeneratorFunction<ValueT> auto generator) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (auto it = map_.find(key); it != map_.end()) {
+      // Move accessed item to front of list
+      list_.splice(list_.begin(), list_, it->second);
+      return it;
+    }
+
+    auto value = generator();
+    // Add new value to front of list and map
+    list_.emplace_front(key, value);
+    auto [it, _] = map_.insert_or_assign(key, list_.begin());
+    if (list_.size() > maxSize_) {
+      // Evict least recently used item (back of list)
+      map_.erase(list_.back().first);
+      list_.pop_back();
+    }
+    return it;
+  }
 
   size_t maxSize_;
   mutable std::mutex mutex_;

@@ -14,8 +14,8 @@
 namespace facebook::react {
 
 template <>
-struct Bridging<ShadowNode::Shared> {
-  static ShadowNode::Shared fromJs(
+struct Bridging<std::shared_ptr<const ShadowNode>> {
+  static std::shared_ptr<const ShadowNode> fromJs(
       jsi::Runtime& rt,
       const jsi::Value& jsiValue) {
     auto object = jsiValue.asObject(rt);
@@ -40,7 +40,9 @@ struct Bridging<ShadowNode::Shared> {
     return shadowNodeWrapper->shadowNode;
   }
 
-  static jsi::Value toJs(jsi::Runtime& rt, const ShadowNode::Shared& value) {
+  static jsi::Value toJs(
+      jsi::Runtime& rt,
+      const std::shared_ptr<const ShadowNode>& value) {
     jsi::Object obj(rt);
     obj.setNativeState(rt, std::make_shared<ShadowNodeWrapper>(value));
     return obj;

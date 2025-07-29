@@ -49,7 +49,7 @@ function getHeaderFilesFromPodspecs(
         let arg2 = match[2]?.trim().replace(/['"]/g, '');
         if (!arg2) {
           // Skip
-          return;
+          continue;
         }
         // Check if arg2 is an array (e.g., ['a', 'b'])
         if (arg2.startsWith('[') && arg2.endsWith(']')) {

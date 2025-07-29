@@ -27,13 +27,13 @@ import type {NativeIntersectionObserverToken} from '../specs/NativeIntersectionO
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
-import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {
   getInstanceHandle,
   getNativeNodeReference,
 } from '../../dom/nodes/internals/NodeInternals';
 import {createIntersectionObserverEntry} from '../IntersectionObserverEntry';
 import NativeIntersectionObserver from '../specs/NativeIntersectionObserver';
+import nullthrows from 'nullthrows';
 
 export type IntersectionObserverId = number;
 
@@ -69,35 +69,10 @@ function setTargetForInstanceHandle(
   instanceHandleToTargetMap.set(key, target);
 }
 
-// The mapping between ReactNativeElement and their corresponding shadow node
-// also needs to be kept here because React removes the link when unmounting.
-const targetToShadowNodeMap: WeakMap<
-  ReactNativeElement,
-  ReturnType<typeof getNativeNodeReference>,
-> = new WeakMap();
-
 const targetToTokenMap: WeakMap<
   ReactNativeElement,
   NativeIntersectionObserverToken,
 > = new WeakMap();
-
-let modernNativeIntersectionObserver =
-  NativeIntersectionObserver == null
-    ? null
-    : NativeIntersectionObserver.observeV2 == null ||
-        NativeIntersectionObserver.unobserveV2 == null
-      ? null
-      : {
-          observe: NativeIntersectionObserver.observeV2,
-          unobserve: NativeIntersectionObserver.unobserveV2,
-        };
-
-if (
-  modernNativeIntersectionObserver &&
-  !ReactNativeFeatureFlags.utilizeTokensInIntersectionObserver()
-) {
-  modernNativeIntersectionObserver = null;
-}
 
 /**
  * Registers the given intersection observer and returns a unique ID for it,
@@ -189,34 +164,19 @@ export function observe({
   // access it even after the instance handle has been unmounted.
   setTargetForInstanceHandle(instanceHandle, target);
 
-  if (modernNativeIntersectionObserver == null) {
-    // Same for the mapping between the target and its shadow node.
-    targetToShadowNodeMap.set(target, targetNativeNodeReference);
-  }
-
   if (!isConnected) {
     NativeIntersectionObserver.connect(notifyIntersectionObservers);
     isConnected = true;
   }
 
-  if (modernNativeIntersectionObserver == null) {
-    NativeIntersectionObserver.observe({
-      intersectionObserverId,
-      rootShadowNode: rootNativeNodeReference,
-      targetShadowNode: targetNativeNodeReference,
-      thresholds: registeredObserver.observer.thresholds,
-      rootThresholds: registeredObserver.observer.rnRootThresholds,
-    });
-  } else {
-    const token = modernNativeIntersectionObserver.observe({
-      intersectionObserverId,
-      rootShadowNode: rootNativeNodeReference,
-      targetShadowNode: targetNativeNodeReference,
-      thresholds: registeredObserver.observer.thresholds,
-      rootThresholds: registeredObserver.observer.rnRootThresholds,
-    });
-    targetToTokenMap.set(target, token);
-  }
+  const token = nullthrows(NativeIntersectionObserver.observeV2)({
+    intersectionObserverId,
+    rootShadowNode: rootNativeNodeReference,
+    targetShadowNode: targetNativeNodeReference,
+    thresholds: registeredObserver.observer.thresholds,
+    rootThresholds: registeredObserver.observer.rnRootThresholds,
+  });
+  targetToTokenMap.set(target, token);
 
   return true;
 }
@@ -240,33 +200,18 @@ export function unobserve(
     return;
   }
 
-  if (modernNativeIntersectionObserver == null) {
-    const targetNativeNodeReference = targetToShadowNodeMap.get(target);
-    if (targetNativeNodeReference == null) {
-      console.error(
-        'IntersectionObserverManager: could not find registration data for target',
-      );
-      return;
-    }
-
-    NativeIntersectionObserver.unobserve(
-      intersectionObserverId,
-      targetNativeNodeReference,
+  const targetToken = targetToTokenMap.get(target);
+  if (targetToken == null) {
+    console.error(
+      'IntersectionObserverManager: could not find registration data for target',
     );
-  } else {
-    const targetToken = targetToTokenMap.get(target);
-    if (targetToken == null) {
-      console.error(
-        'IntersectionObserverManager: could not find registration data for target',
-      );
-      return;
-    }
-
-    modernNativeIntersectionObserver.unobserve(
-      intersectionObserverId,
-      targetToken,
-    );
+    return;
   }
+
+  nullthrows(NativeIntersectionObserver.unobserveV2)(
+    intersectionObserverId,
+    targetToken,
+  );
 }
 
 /**

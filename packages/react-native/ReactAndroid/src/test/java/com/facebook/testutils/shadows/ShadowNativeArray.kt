@@ -9,8 +9,6 @@ package com.facebook.testutils.shadows
 
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.NativeArray
-import com.facebook.react.bridge.ReadableNativeArray
-import com.facebook.react.bridge.WritableNativeArray
 import org.robolectric.annotation.Implements
 import org.robolectric.shadow.api.Shadow
 
@@ -18,20 +16,6 @@ import org.robolectric.shadow.api.Shadow
 @Implements(NativeArray::class)
 open class ShadowNativeArray {
   var backingArray: JavaOnlyArray = JavaOnlyArray()
-
-  @Deprecated(
-      "Use ShadowReadableNativeArray",
-      ReplaceWith(
-          "ShadowReadableNativeArray", "com.facebook.testutils.shadows.ShadowReadableNativeArray"))
-  @Implements(ReadableNativeArray::class)
-  class Readable : ShadowNativeArray()
-
-  @Deprecated(
-      "Use ShadowWritableNativeArray",
-      ReplaceWith(
-          "ShadowWritableNativeArray", "com.facebook.testutils.shadows.ShadowWritableNativeArray"))
-  @Implements(WritableNativeArray::class)
-  class Writable : ShadowNativeArray()
 
   companion object {
     fun getContents(array: NativeArray): List<Any?> =

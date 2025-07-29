@@ -44,8 +44,7 @@ RawProps::RawProps(folly::dynamic dynamic) noexcept {
   dynamic_ = std::move(dynamic);
 }
 
-RawProps::RawProps(const RawProps& other) noexcept {
-  mode_ = other.mode_;
+RawProps::RawProps(const RawProps& other) noexcept : mode_(other.mode_) {
   if (mode_ == Mode::JSI) {
     runtime_ = other.runtime_;
     value_ = jsi::Value(*runtime_, other.value_);

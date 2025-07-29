@@ -49,7 +49,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
 }
 
 JSBigFileString::~JSBigFileString() {
-  if (m_data) {
+  if (m_data != nullptr) {
     munmap((void*)m_data, m_size);
   }
   folly::fileops::close(m_fd);
@@ -59,7 +59,7 @@ const char* JSBigFileString::c_str() const {
   if (m_size == 0) {
     return "";
   }
-  if (!m_data) {
+  if (m_data == nullptr) {
     m_data = (const char*)mmap(
         nullptr, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
     CHECK(m_data != MAP_FAILED)

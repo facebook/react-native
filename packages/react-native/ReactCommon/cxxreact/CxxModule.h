@@ -53,9 +53,9 @@ class CxxModule {
   class SyncTagType {};
 
  public:
-  typedef std::function<std::unique_ptr<CxxModule>()> Provider;
+  using Provider = std::function<std::unique_ptr<CxxModule>()>;
 
-  typedef std::function<void(std::vector<folly::dynamic>)> Callback;
+  using Callback = std::function<void(std::vector<folly::dynamic>)>;
 
   constexpr static AsyncTagType AsyncTag = AsyncTagType();
   constexpr static SyncTagType SyncTag = SyncTagType();
@@ -205,7 +205,7 @@ class CxxModule {
    * This may block, if necessary to complete cleanup before the
    * object is destroyed.
    */
-  virtual ~CxxModule() {}
+  virtual ~CxxModule() = default;
 
   /**
    * @return the name of this module. This will be the name used to {@code

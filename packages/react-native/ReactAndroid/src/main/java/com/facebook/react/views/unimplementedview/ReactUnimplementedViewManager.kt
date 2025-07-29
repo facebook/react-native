@@ -35,8 +35,8 @@ internal class ReactUnimplementedViewManager :
   override fun getName(): String = REACT_CLASS
 
   @ReactProp(name = "name")
-  override fun setName(view: ReactUnimplementedView, name: String?): Unit =
-      view.setName(name ?: "<null component name>")
+  override fun setName(view: ReactUnimplementedView, value: String?): Unit =
+      view.setName(value ?: "<null component name>")
 
   internal companion object {
     const val REACT_CLASS: String = "UnimplementedNativeView"

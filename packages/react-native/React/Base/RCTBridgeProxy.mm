@@ -445,7 +445,7 @@ using namespace facebook;
                cmd:_cmd];
   UIView *view = [_viewRegistry viewForReactTag:reactTag] ? [_viewRegistry viewForReactTag:reactTag]
                                                           : [_legacyViewRegistry objectForKey:reactTag];
-  return [RCTUIManager paperViewOrCurrentView:view];
+  return RCTPaperViewOrCurrentView(view);
 }
 
 - (void)addUIBlock:(RCTViewManagerUIBlock)block

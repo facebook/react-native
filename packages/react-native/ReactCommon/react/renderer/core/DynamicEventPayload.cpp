@@ -36,7 +36,7 @@ std::optional<double> DynamicEventPayload::extractValue(
   if (dynamic.type() == folly::dynamic::Type::DOUBLE) {
     return dynamic.asDouble();
   } else if (dynamic.type() == folly::dynamic::Type::INT64) {
-    return dynamic.asInt();
+    return static_cast<double>(dynamic.asInt());
   }
   return std::nullopt;
 }

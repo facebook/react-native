@@ -353,8 +353,8 @@ function setDefaultValue(
       common.default = ((defaultValue === null
         ? null
         : defaultValue
-        ? defaultValue
-        : 0): number | null);
+          ? defaultValue
+          : 0): number | null);
       break;
     case 'BooleanTypeAnnotation':
       common.default = defaultValue === null ? null : !!defaultValue;

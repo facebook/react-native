@@ -10,6 +10,9 @@
 
 /*:: import type {BuildFlavor} from './types'; */
 
+const {
+  generateFBReactNativeSpecIOS,
+} = require('../codegen/generate-artifacts-executor/generateFBReactNativeSpecIOS');
 const headers = require('./headers');
 const utils = require('./utils');
 const childProcess = require('child_process');
@@ -49,6 +52,9 @@ function buildXCFrameworks(
   buildType /*: BuildFlavor */,
   identity /*: ?string */,
 ) {
+  // Let's run codegen for FBReactNativeSpec otherwise some headers will be missing
+  generateFBReactNativeSpecIOS('.');
+
   const outputPath = path.join(
     buildFolder,
     'output',
@@ -106,9 +112,15 @@ function buildXCFrameworks(
     if (headerFiles.length > 0) {
       // Get podspec name without directory and extension and make sure it is a valid identifier
       // by replacing any non-alphanumeric characters with an underscore.
-      const podSpecName = path
+      let podSpecName = path
         .basename(podspec, '.podspec')
         .replace(/[^a-zA-Z0-9_]/g, '_');
+
+      // Fix for FBReactNativeSpec. RN expect FBReactNative spec headers
+      // To be in a folder named FBReactNativeSpec.
+      if (podSpecName === 'React_RCTFBReactNativeSpec') {
+        podSpecName = 'FBReactNativeSpec';
+      }
 
       // Create a folder for the podspec in the output headers path
       const podSpecFolder = path.join(outputHeadersPath, podSpecName);

@@ -24,6 +24,15 @@ class ErrorWithCustomBlame extends Error {
   #cachedProcessedStack: ?string;
   #customStack: ?string;
 
+  constructor(message?: string, options?: {cause?: mixed, ...}) {
+    super(message, options);
+
+    // The Error constructor forces an own `stack` property that shadows our
+    // getter, so deleting it restores that behavior.
+    // $FlowExpectedError[incompatible-type]
+    delete this.stack;
+  }
+
   blameToPreviousFrame(): this {
     this.#cachedProcessedStack = null;
     this.#ignoredFrameCount++;
@@ -34,6 +43,10 @@ class ErrorWithCustomBlame extends Error {
   get stack(): string {
     if (this.#cachedProcessedStack == null) {
       const originalStack = this.#customStack ?? super.stack;
+      // Calling `super.stack` forces an own `stack` property that shadows our
+      // getter, so deleting it restores that behavior.
+      // $FlowExpectedError[incompatible-type]
+      delete this.stack;
 
       const lines = originalStack.split('\n');
       const index = lines.findIndex(line =>

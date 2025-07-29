@@ -36,7 +36,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
       /* .instanceHandle = */ nullptr,
   });
 
-  ShadowNode::Shared node = descriptor->createShadowNode(
+  std::shared_ptr<const ShadowNode> node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -67,12 +67,13 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
       /* .surfaceId = */ 1,
       /* .instanceHandle = */ nullptr,
   });
-  ShadowNode::Shared node = descriptor->createShadowNode(
+  std::shared_ptr<const ShadowNode> node = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
       family);
-  ShadowNode::Shared cloned = descriptor->cloneShadowNode(*node, {});
+  std::shared_ptr<const ShadowNode> cloned =
+      descriptor->cloneShadowNode(*node, {});
 
   EXPECT_STREQ(cloned->getComponentName(), "Test");
   EXPECT_EQ(cloned->getTag(), 9);
@@ -101,7 +102,7 @@ TEST(ComponentDescriptorTest, appendChild) {
       /* .surfaceId = */ 1,
       /* .instanceHandle = */ nullptr,
   });
-  ShadowNode::Shared node1 = descriptor->createShadowNode(
+  std::shared_ptr<const ShadowNode> node1 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -111,7 +112,7 @@ TEST(ComponentDescriptorTest, appendChild) {
       /* .surfaceId = */ 1,
       /* .instanceHandle = */ nullptr,
   });
-  ShadowNode::Shared node2 = descriptor->createShadowNode(
+  std::shared_ptr<const ShadowNode> node2 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },
@@ -121,7 +122,7 @@ TEST(ComponentDescriptorTest, appendChild) {
       /* .surfaceId = */ 1,
       /* .instanceHandle = */ nullptr,
   });
-  ShadowNode::Shared node3 = descriptor->createShadowNode(
+  std::shared_ptr<const ShadowNode> node3 = descriptor->createShadowNode(
       ShadowNodeFragment{
           /* .props = */ props,
       },

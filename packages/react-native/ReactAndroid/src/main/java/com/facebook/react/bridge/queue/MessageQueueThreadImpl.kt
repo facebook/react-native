@@ -9,8 +9,6 @@ package com.facebook.react.bridge.queue
 
 import android.os.Looper
 import android.os.Process
-import android.os.SystemClock
-import android.util.Pair
 import com.facebook.common.logging.FLog
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.AssertionException
@@ -29,7 +27,6 @@ private constructor(
     public val name: String,
     public val looper: Looper,
     exceptionHandler: QueueThreadExceptionHandler,
-    private val stats: MessageQueueThreadPerfStats? = null
 ) : MessageQueueThread {
   private val handler = MessageQueueThreadHandler(looper, exceptionHandler)
   private val assertionErrorMessage = "Expected to be called from the '$name' thread!"
@@ -105,27 +102,9 @@ private constructor(
     }
   }
 
-  override fun getPerfStats(): MessageQueueThreadPerfStats? = stats
-
-  override fun resetPerfStats() {
-    assignToPerfStats(stats, -1, -1)
-    runOnQueue {
-      val wallTime = SystemClock.uptimeMillis()
-      val cpuTime = SystemClock.currentThreadTimeMillis()
-      assignToPerfStats(stats, wallTime, cpuTime)
-    }
-  }
-
   public override fun isIdle(): Boolean = looper.queue.isIdle
 
   public companion object {
-    private fun assignToPerfStats(stats: MessageQueueThreadPerfStats?, wall: Long, cpu: Long) {
-      stats?.let { s ->
-        s.wallTime = wall
-        s.cpuTime = cpu
-      }
-    }
-
     @JvmStatic
     @Throws(RuntimeException::class)
     public fun create(
@@ -160,27 +139,23 @@ private constructor(
         stackSize: Long,
         exceptionHandler: QueueThreadExceptionHandler
     ): MessageQueueThreadImpl {
-      val dataFuture = SimpleSettableFuture<Pair<Looper?, MessageQueueThreadPerfStats>>()
+      val looperFuture = SimpleSettableFuture<Looper?>()
       val bgThread =
           Thread(
               null,
               {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY)
                 Looper.prepare()
-                val stats = MessageQueueThreadPerfStats()
-                val wallTime = SystemClock.uptimeMillis()
-                val cpuTime = SystemClock.currentThreadTimeMillis()
-                assignToPerfStats(stats, wallTime, cpuTime)
-                dataFuture.set(Pair(Looper.myLooper(), stats))
+                looperFuture.set(Looper.myLooper())
                 Looper.loop()
               },
               "mqt_$name",
               stackSize)
       bgThread.start()
 
-      val pair = dataFuture.getOrThrow()
-      val looper = pair?.first ?: throw RuntimeException("Looper not found for thread")
-      return MessageQueueThreadImpl(name, looper, exceptionHandler, pair.second)
+      val looper =
+          looperFuture.getOrThrow() ?: throw RuntimeException("Looper not found for thread")
+      return MessageQueueThreadImpl(name, looper, exceptionHandler)
     }
   }
 }

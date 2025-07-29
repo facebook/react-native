@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const React = require('react');
 const {
   StyleSheet,
@@ -95,4 +97,4 @@ exports.examples = [
       return <RootViewSizeFlexibilityExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

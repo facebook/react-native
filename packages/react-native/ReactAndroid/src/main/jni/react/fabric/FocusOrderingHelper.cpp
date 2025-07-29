@@ -192,14 +192,14 @@ bool isBetterCandidate(
 }
 
 void FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
-    const ShadowNode::Shared& parentShadowNode,
-    const ShadowNode::Shared& focusedShadowNode,
-    const ShadowNode::Shared& currNode,
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
+    const std::shared_ptr<const ShadowNode>& focusedShadowNode,
+    const std::shared_ptr<const ShadowNode>& currNode,
     FocusDirection focusDirection,
     const UIManager& uimanager,
     Rect sourceRect,
     std::optional<Rect>& nextRect,
-    ShadowNode::Shared& nextNode) {
+    std::shared_ptr<const ShadowNode>& nextNode) {
   const auto* props =
       dynamic_cast<const ViewProps*>(currNode->getProps().get());
 
@@ -244,8 +244,9 @@ void FocusOrderingHelper::traverseAndUpdateNextFocusableElement(
   };
 };
 
-ShadowNode::Shared FocusOrderingHelper::findShadowNodeByTagRecursively(
-    const ShadowNode::Shared& parentShadowNode,
+std::shared_ptr<const ShadowNode>
+FocusOrderingHelper::findShadowNodeByTagRecursively(
+    const std::shared_ptr<const ShadowNode>& parentShadowNode,
     Tag tag) {
   if (parentShadowNode->getTag() == tag) {
     return parentShadowNode;

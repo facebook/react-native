@@ -82,6 +82,47 @@ const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
 
 const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
+const VALID_FANTOM_PRAGMAS = [
+  'fantom_mode',
+  'fantom_flags',
+  'fantom_hermes_variant',
+  'fantom_react_fb_flags',
+];
+
+export function getOverrides(
+  config: FantomTestConfig,
+): PartialFantomTestConfig {
+  const overrides: PartialFantomTestConfig = {};
+
+  if (config.mode !== DEFAULT_MODE) {
+    overrides.mode = config.mode;
+  }
+
+  if (config.hermesVariant !== DEFAULT_HERMES_VARIANT) {
+    overrides.hermesVariant = config.hermesVariant;
+  }
+
+  const flags: FantomTestConfigFeatureFlags = {
+    common: {},
+    jsOnly: {},
+    reactInternal: {},
+  };
+
+  for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
+    for (const [flagName, flagValue] of Object.entries(
+      config.flags[flagType],
+    )) {
+      if (flagValue !== DEFAULT_FEATURE_FLAGS[flagType][flagName]) {
+        flags[flagType][flagName] = flagValue;
+      }
+    }
+  }
+
+  overrides.flags = {...flags};
+
+  return overrides;
+}
+
 /**
  * Extracts the Fantom configurations from the test file, specified as part of
  * the docblock comment. E.g.:
@@ -101,8 +142,8 @@ const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
  * - `fantom_mode`: specifies the level of optimization to compile the test
  *  with. Valid values are `dev`, `dev-bytecode` and `opt`.
  * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
- *  test. Valid values are `hermes`, `static_hermes_stable`,
- *  `static_hermes_staging` and `static_hermes_experimental`.
+ *  test. Valid values are `hermes`, `static_hermes_stable` and
+ * `static_hermes_experimental`.
  * - `fantom_flags`: specifies the configuration for common and JS-only feature
  *  flags. They can be specified in the same pragma or in different ones, and
  *  the format is `<flag_name>:<value>`.
@@ -117,6 +158,8 @@ export default function getFantomTestConfigs(
 ): Array<FantomTestConfig> {
   const docblock = extract(testContents);
   const pragmas = parse(docblock) as DocblockPragmas;
+
+  verifyFantomPragmas(pragmas);
 
   const config: FantomTestConfig = {
     mode: DEFAULT_MODE,
@@ -190,9 +233,6 @@ export default function getFantomTestConfigs(
       case 'static_hermes_stable':
         config.hermesVariant = HermesVariant.StaticHermesStable;
         break;
-      case 'static_hermes_staging':
-        config.hermesVariant = HermesVariant.StaticHermesStaging;
-        break;
       case 'static_hermes_experimental':
         config.hermesVariant = HermesVariant.StaticHermesExperimental;
         break;
@@ -200,7 +240,6 @@ export default function getFantomTestConfigs(
         configVariations.push([
           {hermesVariant: HermesVariant.Hermes},
           {hermesVariant: HermesVariant.StaticHermesStable},
-          {hermesVariant: HermesVariant.StaticHermesStaging},
           {hermesVariant: HermesVariant.StaticHermesExperimental},
         ]);
         break;
@@ -399,5 +438,21 @@ function parseFeatureFlagValue<T: boolean | number | string>(
       return value;
     default:
       throw new Error(`Unsupported feature flag type: ${typeof defaultValue}`);
+  }
+}
+
+function verifyFantomPragmas(pragmas: DocblockPragmas): void {
+  for (const pragma of Object.keys(pragmas)) {
+    if (
+      pragma.startsWith('fantom_') &&
+      !VALID_FANTOM_PRAGMAS.includes(pragma)
+    ) {
+      const validFantomPragmas = VALID_FANTOM_PRAGMAS.map(p => `@${p}`).join(
+        ', ',
+      );
+      throw new Error(
+        `Unrecognized Fantom pragma @${pragma}. Valid pragmas are ${validFantomPragmas}.`,
+      );
+    }
   }
 }

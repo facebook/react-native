@@ -43,7 +43,6 @@ project.xcworkspace
 /private/helloworld/android/app/build/
 /private/helloworld/android/build/
 /packages/react-native-popup-menu-android/android/build/
-/packages/react-native-test-library/android/build/
 
 # Buck
 .buckd

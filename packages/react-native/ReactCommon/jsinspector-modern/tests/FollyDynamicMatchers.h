@@ -17,7 +17,7 @@ namespace facebook {
 namespace folly_dynamic_matchers_utils {
 
 std::string as_string(std::string value);
-std::string as_string(folly::dynamic value);
+std::string as_string(const folly::dynamic& value);
 std::string explain_error(
     folly::dynamic::json_pointer_resolution_error<const folly::dynamic> error);
 

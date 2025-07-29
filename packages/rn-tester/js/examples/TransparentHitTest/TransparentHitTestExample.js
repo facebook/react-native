@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const React = require('react');
 const {Alert, Text, TouchableOpacity, View} = require('react-native');
 
@@ -48,4 +50,4 @@ exports.examples = [
       return <TransparentHitTestExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

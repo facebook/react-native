@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Platform, Switch, View} from 'react-native';
@@ -318,11 +320,9 @@ exports.examples = [
       return <ContainerBackgroundColorStyleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;
 
 if (Platform.OS === 'ios') {
-  /* $FlowFixMe[incompatible-call] error found during natural inference roll-
-   * out. See https://fburl.com/workplace/tc9m3tcf */
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
     render(): React.MixedElement {

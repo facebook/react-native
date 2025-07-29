@@ -203,7 +203,7 @@ internal class ReactInstance(
     // initialized.
     // This happens inside getTurboModuleManagerDelegate getter.
     if (ReactNativeFeatureFlags.useNativeViewConfigsInBridgelessMode()) {
-      val customDirectEvents: Map<String, Any> = HashMap()
+      val customDirectEvents: MutableMap<String, Any> = HashMap()
 
       UIConstantsProviderBinding.install(
           // Use unbuffered RuntimeExecutor to install binding
@@ -214,9 +214,7 @@ internal class ReactInstance(
           // 2. genericBubblingEventTypes.
           // 3. genericDirectEventTypes.
           // We want to match this beahavior.
-          {
-            Arguments.makeNativeMap(UIManagerModuleConstantsHelper.getDefaultExportableEventTypes())
-          },
+          { Arguments.makeNativeMap(UIManagerModuleConstantsHelper.defaultExportableEventTypes) },
           ConstantsForViewManagerProvider { viewManagerName: String ->
             val viewManager =
                 viewManagerResolver.getViewManager(viewManagerName)
@@ -573,8 +571,8 @@ internal class ReactInstance(
     }
 
     private fun createConstants(
-        viewManagers: List<ViewManager<*, *>>,
-        customDirectEvents: Map<String, Any>?
+        viewManagers: List<ViewManager<in Nothing, in Nothing>>,
+        customDirectEvents: MutableMap<String, Any>?
     ): MutableMap<String, Any> {
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START)
       SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "CreateUIManagerConstants")
@@ -591,7 +589,7 @@ internal class ReactInstance(
 
     private fun getConstantsForViewManager(
         viewManager: ViewManager<*, *>,
-        customDirectEvents: Map<String, Any>
+        customDirectEvents: MutableMap<String, Any>
     ): NativeMap {
       SystraceMessage.beginSection(
               Systrace.TRACE_TAG_REACT, "ReactInstance.getConstantsForViewManager")

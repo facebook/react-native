@@ -76,7 +76,7 @@ class RN_EXPORT StartupLogger {
  public:
   static StartupLogger& getInstance();
 
-  void logStartupEvent(const ReactMarkerId markerName, double markerTime);
+  void logStartupEvent(const ReactMarkerId markerId, double markerTime);
   void reset();
   double getAppStartupStartTime();
   double getInitReactRuntimeStartTime();

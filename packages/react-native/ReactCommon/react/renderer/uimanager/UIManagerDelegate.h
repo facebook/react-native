@@ -38,7 +38,7 @@ class UIManagerDelegate {
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& commandName,
       const folly::dynamic& args) = 0;
 
@@ -48,14 +48,14 @@ class UIManagerDelegate {
    * platforms will necessarily implement the same set of events.
    */
   virtual void uiManagerDidSendAccessibilityEvent(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       const std::string& eventType) = 0;
 
   /*
    * Set JS responder for a view.
    */
   virtual void uiManagerDidSetIsJSResponder(
-      const ShadowNode::Shared& shadowNode,
+      const std::shared_ptr<const ShadowNode>& shadowNode,
       bool isJSResponder,
       bool blockNativeResponder) = 0;
 

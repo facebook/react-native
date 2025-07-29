@@ -268,8 +268,8 @@ Float LayoutableShadowNode::baseline(
   return 0;
 }
 
-ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
-    const ShadowNode::Shared& node,
+std::shared_ptr<const ShadowNode> LayoutableShadowNode::findNodeAtPoint(
+    const std::shared_ptr<const ShadowNode>& node,
     Point point) {
   auto layoutableShadowNode =
       dynamic_cast<const LayoutableShadowNode*>(node.get());

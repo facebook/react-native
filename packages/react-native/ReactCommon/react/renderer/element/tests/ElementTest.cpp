@@ -85,9 +85,11 @@ TEST(ElementTest, testNormalCases) {
   EXPECT_EQ(shadowNodeABA->getChildren().size(), 0);
   EXPECT_EQ(
       shadowNodeA->getChildren(),
-      (ShadowNode::ListOfShared{shadowNodeAA, shadowNodeAB}));
+      (std::vector<std::shared_ptr<const ShadowNode>>{
+          shadowNodeAA, shadowNodeAB}));
   EXPECT_EQ(
-      shadowNodeAB->getChildren(), (ShadowNode::ListOfShared{shadowNodeABA}));
+      shadowNodeAB->getChildren(),
+      (std::vector<std::shared_ptr<const ShadowNode>>{shadowNodeABA}));
 
   // Props
   EXPECT_EQ(shadowNodeA->getProps()->nativeId, "node A");

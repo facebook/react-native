@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/utils"
   s.exclude_files          = "tests"
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_utils"
     s.header_mappings_dir  = "../.."
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   add_dependency(s, "React-debug")
 end

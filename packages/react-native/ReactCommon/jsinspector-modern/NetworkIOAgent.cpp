@@ -14,6 +14,7 @@
 #include <jsinspector-modern/network/NetworkReporter.h>
 
 #include <sstream>
+#include <tuple>
 #include <utility>
 #include <variant>
 
@@ -58,7 +59,7 @@ class Stream : public NetworkRequestListener,
   Stream(const Stream& other) = delete;
   Stream& operator=(const Stream& other) = delete;
   Stream(Stream&& other) = default;
-  Stream& operator=(Stream&& other) = default;
+  Stream& operator=(Stream&& other) noexcept = default;
 
   /**
    * Factory method to create a Stream with a callback for the initial result
@@ -71,9 +72,9 @@ class Stream : public NetworkRequestListener,
    */
   static std::shared_ptr<Stream> create(
       VoidExecutor executor,
-      StreamInitCallback initCb) {
+      const StreamInitCallback& initCb) {
     std::shared_ptr<Stream> stream{new Stream(initCb)};
-    stream->setExecutor(executor);
+    stream->setExecutor(std::move(executor));
     return stream;
   }
 
@@ -86,8 +87,7 @@ class Stream : public NetworkRequestListener,
    * with the result of the read, or an error string.
    */
   void read(long maxBytesToRead, const IOReadCallback& callback) {
-    pendingReadRequests_.emplace_back(
-        std::make_tuple(maxBytesToRead, callback));
+    pendingReadRequests_.emplace_back(maxBytesToRead, callback);
     processPending();
   }
 
@@ -290,8 +290,8 @@ bool NetworkIOAgent::handleRequest(
 
     // @cdp Network.getResponseBody support is experimental.
     if (req.method == "Network.getResponseBody") {
-      // TODO(T218468200)
-      return false;
+      handleGetResponseBody(req);
+      return true;
     }
   }
 
@@ -468,6 +468,57 @@ void NetworkIOAgent::handleIoClose(const cdp::PreparsedRequest& req) {
     streams_->erase(it->first);
     frontendChannel_(cdp::jsonResult(requestId));
   }
+}
+
+void NetworkIOAgent::handleGetResponseBody(const cdp::PreparsedRequest& req) {
+  long long requestId = req.id;
+  if (!req.params.isObject()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: not an object."));
+    return;
+  }
+  if ((req.params.count("requestId") == 0u) ||
+      !req.params.at("requestId").isString()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidParams,
+        "Invalid params: requestId is missing or not a string."));
+    return;
+  }
+
+  auto& networkReporter = NetworkReporter::getInstance();
+
+  if (!networkReporter.isDebuggingEnabled()) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InvalidRequest,
+        "Invalid request: The \"Network\" domain is not enabled."));
+    return;
+  }
+
+  auto storedResponse =
+      networkReporter.getResponseBody(req.params.at("requestId").asString());
+
+  if (!storedResponse) {
+    frontendChannel_(cdp::jsonError(
+        requestId,
+        cdp::ErrorCode::InternalError,
+        "Internal error: Could not retrieve response body for the given requestId."));
+    return;
+  }
+
+  std::string responseBody;
+  bool base64Encoded = false;
+  std::tie(responseBody, base64Encoded) = *storedResponse;
+
+  auto result = GetResponseBodyResult{
+      .body = responseBody,
+      .base64Encoded = base64Encoded,
+  };
+
+  frontendChannel_(cdp::jsonResult(requestId, result.toDynamic()));
 }
 
 } // namespace facebook::react::jsinspector_modern

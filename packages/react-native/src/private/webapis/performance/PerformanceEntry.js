@@ -29,10 +29,14 @@ export type PerformanceEntryJSON = {
 };
 
 export class PerformanceEntry {
-  #name: string;
-  #entryType: PerformanceEntryType;
-  #startTime: DOMHighResTimeStamp;
-  #duration: DOMHighResTimeStamp;
+  // We don't use private fields because they're significantly slower to
+  // initialize on construction and to access.
+  // We also need these to be protected so they can be initialized in subclasses
+  // where we avoid calling `super()` for performance reasons.
+  __name: string;
+  __entryType: PerformanceEntryType;
+  __startTime: DOMHighResTimeStamp;
+  __duration: DOMHighResTimeStamp;
 
   constructor(init: {
     name: string,
@@ -40,34 +44,34 @@ export class PerformanceEntry {
     startTime: DOMHighResTimeStamp,
     duration: DOMHighResTimeStamp,
   }) {
-    this.#name = init.name;
-    this.#entryType = init.entryType;
-    this.#startTime = init.startTime;
-    this.#duration = init.duration;
+    this.__name = init.name;
+    this.__entryType = init.entryType;
+    this.__startTime = init.startTime;
+    this.__duration = init.duration;
   }
 
   get name(): string {
-    return this.#name;
+    return this.__name;
   }
 
   get entryType(): PerformanceEntryType {
-    return this.#entryType;
+    return this.__entryType;
   }
 
   get startTime(): DOMHighResTimeStamp {
-    return this.#startTime;
+    return this.__startTime;
   }
 
   get duration(): DOMHighResTimeStamp {
-    return this.#duration;
+    return this.__duration;
   }
 
   toJSON(): PerformanceEntryJSON {
     return {
-      name: this.#name,
-      entryType: this.#entryType,
-      startTime: this.#startTime,
-      duration: this.#duration,
+      name: this.__name,
+      entryType: this.__entryType,
+      startTime: this.__startTime,
+      duration: this.__duration,
     };
   }
 }

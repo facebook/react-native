@@ -13,12 +13,10 @@ import type {FantomTestConfig} from '../runner/getFantomTestConfigs';
 import type {HermesVariant} from '../runner/utils';
 
 import {
-  DEFAULT_FEATURE_FLAGS,
-  DEFAULT_HERMES_VARIANT,
-  DEFAULT_MODE,
   FantomTestConfigHermesVariant,
   FantomTestConfigMode,
 } from '../runner/getFantomTestConfigs';
+import {getOverrides} from './getFantomTestConfigs';
 
 function formatFantomMode(mode: FantomTestConfigMode): string {
   switch (mode) {
@@ -37,8 +35,6 @@ function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
       return 'hermes';
     case FantomTestConfigHermesVariant.StaticHermesStable:
       return 'shermes 🆕';
-    case FantomTestConfigHermesVariant.StaticHermesStaging:
-      return 'shermes ⏭️';
     case FantomTestConfigHermesVariant.StaticHermesExperimental:
       return 'shermes 🧪';
   }
@@ -56,22 +52,25 @@ function formatFantomFeatureFlag(
 }
 
 export default function formatFantomConfig(config: FantomTestConfig): string {
+  const overrides = getOverrides(config);
   const parts = [];
 
-  if (config.mode !== DEFAULT_MODE) {
-    parts.push(formatFantomMode(config.mode));
+  if (overrides.mode) {
+    parts.push(formatFantomMode(overrides.mode));
   }
 
-  if (config.hermesVariant !== DEFAULT_HERMES_VARIANT) {
-    parts.push(formatFantomHermesVariant(config.hermesVariant));
+  if (overrides.hermesVariant) {
+    parts.push(formatFantomHermesVariant(overrides.hermesVariant));
   }
 
-  for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
-    for (const [flagName, flagValue] of Object.entries(
-      config.flags[flagType],
-    )) {
-      if (flagValue !== DEFAULT_FEATURE_FLAGS[flagType][flagName]) {
-        parts.push(formatFantomFeatureFlag(flagName, flagValue));
+  if (overrides.flags) {
+    for (const flagType of ['common', 'jsOnly', 'reactInternal'] as const) {
+      if (overrides.flags[flagType]) {
+        for (const [flagName, flagValue] of Object.entries(
+          overrides.flags[flagType],
+        )) {
+          parts.push(formatFantomFeatureFlag(flagName, flagValue));
+        }
       }
     }
   }

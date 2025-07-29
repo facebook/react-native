@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 
-typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
+using RCTSurfaceEnumeratorBlock = void (^)(NSEnumerator<RCTFabricSurface *> *_Nonnull __strong);
 
 /**
  * Registry of Surfaces.

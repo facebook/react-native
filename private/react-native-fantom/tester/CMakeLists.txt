@@ -5,6 +5,11 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
+if(UNIX AND NOT APPLE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -latomic")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -latomic")
+endif()
 
 project(fantom_tester)
 
@@ -124,7 +129,12 @@ add_react_cxx_platform_subdir(react/runtime)
 add_react_cxx_platform_subdir(react/threading)
 add_react_cxx_platform_subdir(react/utils)
 
-file(GLOB SOURCES src/*.cpp src/**/*.cpp)
+file(GLOB SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/render/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/stubs/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/platform/oss/*.cpp
+)
 add_executable(fantom_tester ${SOURCES})
 
 target_include_directories(fantom_tester PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

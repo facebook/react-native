@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <memory>
+#include <utility>
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <cxxreact/CxxNativeModule.h>
@@ -83,7 +84,7 @@ class InstanceCallbackImpl : public InstanceCallback {
 } // namespace
 
 jni::local_ref<CatalystInstanceImpl::jhybriddata>
-CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass>) {
+CatalystInstanceImpl::initHybrid(jni::alias_ref<jclass> /*unused*/) {
   return makeCxxInstance();
 }
 
@@ -358,14 +359,14 @@ CatalystInstanceImpl::getNativeMethodCallInvokerHolder() {
      public:
       NativeMethodCallInvokerImpl(
           std::shared_ptr<JMessageQueueThread> messageQueueThread)
-          : messageQueueThread_(messageQueueThread) {}
+          : messageQueueThread_(std::move(messageQueueThread)) {}
       void invokeAsync(
-          const std::string& methodName,
+          const std::string& /*methodName*/,
           std::function<void()>&& work) noexcept override {
         messageQueueThread_->runOnQueue(std::move(work));
       }
       void invokeSync(
-          const std::string& methodName,
+          const std::string& /*methodName*/,
           std::function<void()>&& work) override {
         messageQueueThread_->runOnQueueSync(std::move(work));
       }

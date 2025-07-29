@@ -127,6 +127,7 @@ export {default as Switch} from './Libraries/Components/Switch/Switch';
 
 export type {TextProps} from './Libraries/Text/Text';
 export {default as Text} from './Libraries/Text/Text';
+export {default as unstable_TextAncestorContext} from './Libraries/Text/TextAncestorContext';
 
 export type {
   AutoCapitalize,
@@ -356,6 +357,8 @@ export {default as processColor} from './Libraries/StyleSheet/processColor';
 
 export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
 export {default as requireNativeComponent} from './Libraries/ReactNative/requireNativeComponent';
+
+export {default as ReactNativeVersion} from './Libraries/Core/ReactNativeVersion';
 
 export type {RootTag} from './Libraries/ReactNative/RootTag';
 export {RootTagContext} from './Libraries/ReactNative/RootTag';

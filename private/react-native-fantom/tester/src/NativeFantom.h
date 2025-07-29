@@ -105,11 +105,11 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void reportTestSuiteResultsJSON(
       jsi::Runtime& runtime,
-      std::string testSuiteResultsJSON);
+      const std::string& testSuiteResultsJSON);
 
   void enqueueNativeEvent(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       std::string type,
       const std::optional<folly::dynamic>& payload,
       std::optional<RawEvent::Category> category,
@@ -117,32 +117,34 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void enqueueScrollEvent(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       ScrollOptions options);
 
   jsi::Object getDirectManipulationProps(
       jsi::Runtime& runtime,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
 
   jsi::Object getFabricUpdateProps(
       jsi::Runtime& runtime,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
 
   void enqueueModalSizeUpdate(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       double width,
       double height);
 
   jsi::Function createShadowNodeReferenceCounter(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
 
   jsi::Function createShadowNodeRevisionGetter(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
 
-  void saveJSMemoryHeapSnapshot(jsi::Runtime& runtime, std::string filePath);
+  void saveJSMemoryHeapSnapshot(
+      jsi::Runtime& runtime,
+      const std::string& filePath);
 
  private:
   TesterAppDelegate& appDelegate_;

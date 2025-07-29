@@ -12,16 +12,43 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * << GENERATED >>
  */
 
-export const version: $ReadOnly<{
-  major: number,
-  minor: number,
-  patch: number,
-  prerelease: string | null,
-}> = {
-  major: 0,
-  minor: 81,
-  patch: 0,
-  prerelease: 'nightly-29282302-abcd1234',
+/**
+ * Object containing the current React Native version.
+ *
+ * Specifically, this is the source of truth for the resolved \`react-native\`
+ * package in the JavaScript bundle. Apps and libraries can use this to
+ * determine compatibility or enable version-specific features.
+ *
+ * @example
+ * \`\`\`js
+ * // Get the full version string
+ * const version = ReactNativeVersion.getVersionString();
+ *
+ * // Access individual version components
+ * const major = ReactNativeVersion.major;
+ * \`\`\`
+ */
+export default class ReactNativeVersion {
+  static major: number = 0;
+  static minor: number = 81;
+  static patch: number = 0;
+  static prerelease: string | null = 'nightly-29282302-abcd1234';
+
+  static getVersionString(): string {
+    return \`\${this.major}.\${this.minor}.\${this.patch}\${this.prerelease != null ? \`-\${this.prerelease}\` : ''}\`;
+  }
+}
+
+/**
+ * @deprecated Compatibility export — please import \`ReactNativeVersion\` from
+ *   \`react-native\`.
+ * See https://github.com/react-native-community/discussions-and-proposals/pull/894.
+ */
+export const version = {
+  major: ReactNativeVersion.major,
+  minor: ReactNativeVersion.minor,
+  patch: ReactNativeVersion.patch,
+  prerelease: ReactNativeVersion.prerelease,
 };
 "
 `;
@@ -140,16 +167,43 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * << GENERATED >>
  */
 
-export const version: $ReadOnly<{
-  major: number,
-  minor: number,
-  patch: number,
-  prerelease: string | null,
-}> = {
-  major: 0,
-  minor: 81,
-  patch: 0,
-  prerelease: null,
+/**
+ * Object containing the current React Native version.
+ *
+ * Specifically, this is the source of truth for the resolved \`react-native\`
+ * package in the JavaScript bundle. Apps and libraries can use this to
+ * determine compatibility or enable version-specific features.
+ *
+ * @example
+ * \`\`\`js
+ * // Get the full version string
+ * const version = ReactNativeVersion.getVersionString();
+ *
+ * // Access individual version components
+ * const major = ReactNativeVersion.major;
+ * \`\`\`
+ */
+export default class ReactNativeVersion {
+  static major: number = 0;
+  static minor: number = 81;
+  static patch: number = 0;
+  static prerelease: string | null = null;
+
+  static getVersionString(): string {
+    return \`\${this.major}.\${this.minor}.\${this.patch}\${this.prerelease != null ? \`-\${this.prerelease}\` : ''}\`;
+  }
+}
+
+/**
+ * @deprecated Compatibility export — please import \`ReactNativeVersion\` from
+ *   \`react-native\`.
+ * See https://github.com/react-native-community/discussions-and-proposals/pull/894.
+ */
+export const version = {
+  major: ReactNativeVersion.major,
+  minor: ReactNativeVersion.minor,
+  patch: ReactNativeVersion.patch,
+  prerelease: ReactNativeVersion.prerelease,
 };
 "
 `;

@@ -27,10 +27,9 @@ namespace facebook::react {
 Scheduler::Scheduler(
     const SchedulerToolbox& schedulerToolbox,
     UIManagerAnimationDelegate* animationDelegate,
-    SchedulerDelegate* delegate) {
-  runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
-  contextContainer_ = schedulerToolbox.contextContainer;
-
+    SchedulerDelegate* delegate)
+    : runtimeExecutor_(schedulerToolbox.runtimeExecutor),
+      contextContainer_(schedulerToolbox.contextContainer) {
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
 
@@ -270,7 +269,7 @@ void Scheduler::uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) {
 }
 
 void Scheduler::uiManagerDidDispatchCommand(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
   TraceSection s("Scheduler::uiManagerDispatchCommand");
@@ -289,7 +288,7 @@ void Scheduler::uiManagerDidDispatchCommand(
 }
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     const std::string& eventType) {
   TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
@@ -303,7 +302,7 @@ void Scheduler::uiManagerDidSendAccessibilityEvent(
  * Set JS responder for a view.
  */
 void Scheduler::uiManagerDidSetIsJSResponder(
-    const ShadowNode::Shared& shadowNode,
+    const std::shared_ptr<const ShadowNode>& shadowNode,
     bool isJSResponder,
     bool blockNativeResponder) {
   if (delegate_ != nullptr) {
@@ -348,7 +347,7 @@ void Scheduler::reportMount(SurfaceId surfaceId) const {
   uiManager_->reportMount(surfaceId);
 }
 
-ContextContainer::Shared Scheduler::getContextContainer() const {
+std::shared_ptr<const ContextContainer> Scheduler::getContextContainer() const {
   return contextContainer_;
 }
 
