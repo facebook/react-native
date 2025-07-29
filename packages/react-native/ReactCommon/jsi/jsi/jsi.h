@@ -490,6 +490,10 @@ class JSI_EXPORT Runtime : public ICast {
   virtual void
   setPropertyValue(const Object&, const Value& name, const Value& value);
 
+  virtual bool deleteProperty(const Object&, const PropNameID& name);
+  virtual bool deleteProperty(const Object&, const String& name);
+  virtual bool deleteProperty(const Object&, const Value& name);
+
   virtual bool isArray(const Object&) const = 0;
   virtual bool isArrayBuffer(const Object&) const = 0;
   virtual bool isFunction(const Object&) const = 0;
@@ -1001,6 +1005,22 @@ class JSI_EXPORT Object : public Pointer {
   /// String, or Object.
   template <typename T>
   void setProperty(Runtime& runtime, const Value& name, T&& value) const;
+
+  /// Delete the property with the given ascii name
+  /// \return true if the property was deleted or not present, false otherwise
+  bool deleteProperty(Runtime& runtime, const char* name) const;
+
+  /// Delete the property with the given String name
+  /// \return true if the property was deleted or not present, false otherwise
+  bool deleteProperty(Runtime& runtime, const String& name) const;
+
+  /// Delete the property with the given PropNameID name
+  /// \return true if the property was deleted or not present, false otherwise
+  bool deleteProperty(Runtime& runtime, const PropNameID& name) const;
+
+  /// Delete the property with the given Value name
+  /// \return true if the property was deleted or not present, false otherwise
+  bool deleteProperty(Runtime& runtime, const Value& name) const;
 
   /// \return true iff JS \c Array.isArray() would return \c true.  If
   /// so, then \c getArray() will succeed.

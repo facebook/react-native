@@ -338,6 +338,18 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain_.setPropertyValue(o, name, value);
   }
 
+  bool deleteProperty(const Object& object, const PropNameID& name) override {
+    return plain_.deleteProperty(object, name);
+  };
+
+  bool deleteProperty(const Object& object, const String& name) override {
+    return plain_.deleteProperty(object, name);
+  };
+
+  bool deleteProperty(const Object& object, const Value& name) override {
+    return plain_.deleteProperty(object, name);
+  };
+
   bool isArray(const Object& o) const override {
     return plain_.isArray(o);
   };
@@ -873,6 +885,21 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
       override {
     Around around{with_};
     RD::setPropertyValue(o, name, value);
+  };
+
+  bool deleteProperty(const Object& object, const PropNameID& name) override {
+    Around around{with_};
+    return RD::deleteProperty(object, name);
+  };
+
+  bool deleteProperty(const Object& object, const String& name) override {
+    Around around{with_};
+    return RD::deleteProperty(object, name);
+  };
+
+  bool deleteProperty(const Object& object, const Value& name) override {
+    Around around{with_};
+    return RD::deleteProperty(object, name);
   };
 
   bool isArray(const Object& o) const override {
