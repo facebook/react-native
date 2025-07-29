@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/uimanager/UIManagerNativeAnimatedDelegate.h>
 #include "NativeAnimatedNodesManager.h"
 
@@ -35,7 +36,8 @@ class NativeAnimatedNodesManagerProvider {
           nullptr);
 
   std::shared_ptr<NativeAnimatedNodesManager> getOrCreate(
-      jsi::Runtime& runtime);
+      jsi::Runtime& runtime,
+      std::shared_ptr<CallInvoker> jsInvoker);
 
   // Native Event Listeners
   void addEventEmitterListener(
@@ -55,6 +57,8 @@ class NativeAnimatedNodesManagerProvider {
 
   NativeAnimatedNodesManager::StartOnRenderCallback startOnRenderCallback_;
   NativeAnimatedNodesManager::StopOnRenderCallback stopOnRenderCallback_;
+
+  std::unique_ptr<MergedValueDispatcher> mergedValueDispatcher_;
 };
 
 } // namespace facebook::react
