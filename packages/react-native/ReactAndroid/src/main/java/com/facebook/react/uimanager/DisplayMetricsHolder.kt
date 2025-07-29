@@ -26,7 +26,7 @@ public object DisplayMetricsHolder {
   private const val SCREEN_INITIALIZATION_MISSING_MESSAGE =
       "DisplayMetricsHolder must be initialized with initScreenDisplayMetricsIfNotInitialized or initScreenDisplayMetrics"
   private const val WINDOW_INITIALIZATION_MISSING_MESSAGE =
-    "DisplayMetricsHolder must be initialized with initWindowDisplayMetricsIfNotInitialized or initWindowDisplayMetrics"
+      "DisplayMetricsHolder must be initialized with initWindowDisplayMetricsIfNotInitialized or initWindowDisplayMetrics"
 
   @JvmStatic private var windowDisplayMetrics: DisplayMetrics? = null
   @JvmStatic private var screenDisplayMetrics: DisplayMetrics? = null
