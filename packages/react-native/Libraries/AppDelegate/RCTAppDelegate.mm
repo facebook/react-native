@@ -16,6 +16,7 @@
 #import <objc/runtime.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
+#import <React/RCTBridgeDelegate.h>
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
