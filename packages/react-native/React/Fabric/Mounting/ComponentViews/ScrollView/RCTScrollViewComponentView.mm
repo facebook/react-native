@@ -947,6 +947,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_remountChildrenIfNeeded
 {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    return;
+  }
+
   CGPoint contentOffset = _scrollView.contentOffset;
 
   if (std::abs(_contentOffsetWhenClipped.x - contentOffset.x) < kClippingLeeway &&
@@ -961,6 +965,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_remountChildren
 {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    return;
+  }
+
   [_scrollView updateClippedSubviewsWithClipRect:CGRectInset(_scrollView.bounds, -kClippingLeeway, -kClippingLeeway)
                                   relativeToView:_scrollView];
 }
