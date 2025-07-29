@@ -106,7 +106,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   private @Nullable JSTouchDispatcher mJSTouchDispatcher;
   private @Nullable JSPointerDispatcher mJSPointerDispatcher;
   private final ReactAndroidHWInputDeviceHelper mAndroidHWInputDeviceHelper =
-      new ReactAndroidHWInputDeviceHelper(this);
+      new ReactAndroidHWInputDeviceHelper();
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -328,7 +328,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
       return super.dispatchKeyEvent(ev);
     }
-    mAndroidHWInputDeviceHelper.handleKeyEvent(ev);
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      mAndroidHWInputDeviceHelper.handleKeyEvent(ev, context);
+    }
     return super.dispatchKeyEvent(ev);
   }
 
@@ -341,7 +344,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
       return;
     }
-    mAndroidHWInputDeviceHelper.clearFocus();
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      mAndroidHWInputDeviceHelper.clearFocus(context);
+    }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
   }
 
@@ -355,7 +361,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       super.requestChildFocus(child, focused);
       return;
     }
-    mAndroidHWInputDeviceHelper.onFocusChanged(focused);
+    ReactContext context = getCurrentReactContext();
+    if (context != null) {
+      mAndroidHWInputDeviceHelper.onFocusChanged(focused, context);
+    }
     super.requestChildFocus(child, focused);
   }
 
