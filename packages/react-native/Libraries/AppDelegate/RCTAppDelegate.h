@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTBridgeDelegate.h>
-#import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 #import "RCTDefaultReactNativeFactoryDelegate.h"
 #import "RCTReactNativeFactory.h"
