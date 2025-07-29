@@ -152,8 +152,8 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@types/react": "^19.1.0",
-    "react": "^19.1.0"
+    "@types/react": "^19.1.1",
+    "react": "^19.1.1"
   },
   "peerDependenciesMeta": {
     "@types/react": {

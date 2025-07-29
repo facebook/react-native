@@ -103,8 +103,8 @@
     "nullthrows": "^1.1.1",
     "prettier": "3.6.2",
     "prettier-plugin-hermes-parser": "0.30.0",
-    "react": "19.1.0",
-    "react-test-renderer": "19.1.0",
+    "react": "19.1.1",
+    "react-test-renderer": "19.1.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
@@ -116,7 +116,7 @@
   },
   "resolutions": {
     "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",
-    "react-is": "19.1.0",
+    "react-is": "19.1.1",
     "on-headers": "1.1.0",
     "compression": "1.8.1"
   }
