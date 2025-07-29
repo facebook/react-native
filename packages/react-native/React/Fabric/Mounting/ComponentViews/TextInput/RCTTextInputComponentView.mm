@@ -451,7 +451,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  if (props.maxLength != std::numeric_limits<int>::max()) {
+  if (props.maxLength < std::numeric_limits<int>::max()) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
     if (allowedLength > 0 && text.length > allowedLength) {
