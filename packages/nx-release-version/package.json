@@ -1,6 +1,7 @@
 {
   "name": "@react-native-macos/nx-release-version",
   "version": "0.0.1-dev",
+  "private": true,
   "description": "Nx Release Version Actions for React Native macOS",
   "homepage": "https://github.com/microsoft/react-native-macos/tree/HEAD/packages/nx-release-version#readme",
   "license": "MIT",

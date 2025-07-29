@@ -63,3 +63,19 @@ jobs:
         run: |
           echo "Target branch: ${{ github.base_ref }}"
           yarn nx release --dry-run --verbose
+  yarn-constraints:
+    name: "Check Yarn Constraints"
+    permissions: {}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: yarn
+      - name: Check constraints
+        run: yarn constraints

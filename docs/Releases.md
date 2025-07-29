@@ -215,3 +215,13 @@ We do this so that our first release will have a proper patch version of 0, as s
 ```
 
 </details>
+
+## Hermes Compatibility (0.74 and above)
+
+*Note: This is only applicable if Hermes is enabled (I.E: `USE_HERMES=1 pod install`.*
+
+React Native macOS updates the patch version automatically for every change that comes through, so our patch number can differ wildly from that of vanilla React Native.
+
+To ensure the best possible Hermes compatibility, we specify a peer dependency in React Native macOS's `package.json` indicating which version of upstream React Native best corresponds with our own version. For example, our 0.74.34 corresponds to upstream's 0.74.7, and we reflect this connection in [this particular version of `package.json`](https://github.com/microsoft/react-native-macos/blob/2db3abeb5d4318fee3abdff4a4d1a68967223135/packages/react-native/package.json#L103).
+
+For stable branches, the existence of this peer dependency is enforced as part of our CIs via [Yarn Constraints](https://yarnpkg.com/features/constraints).

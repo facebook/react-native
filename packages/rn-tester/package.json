@@ -23,8 +23,8 @@
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock"
   },
   "dependencies": {
-    "@react-native/oss-library-example": "0.76.10",
-    "@react-native/popup-menu-android": "workspace:*",
+    "@react-native/oss-library-example": "workspace:*",
+    "@react-native/popup-menu-android": "0.76.9",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1"
