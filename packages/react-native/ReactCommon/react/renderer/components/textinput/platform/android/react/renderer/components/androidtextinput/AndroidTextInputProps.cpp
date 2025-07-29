@@ -304,7 +304,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
   props["maxFontSizeMultiplier"] = maxFontSizeMultiplier;
   props["keyboardType"] = keyboardType;
   props["returnKeyType"] = returnKeyType;
-  props["maxLength"] = maxLength.has_value() ? maxLength.value() : folly::dynamic();
+  props["maxLength"] = maxLength;
   props["multiline"] = multiline;
   props["placeholder"] = placeholder;
   props["placeholderTextColor"] = toAndroidRepr(placeholderTextColor);
@@ -456,7 +456,7 @@ folly::dynamic AndroidTextInputProps::getDiffProps(
   }
 
   if (maxLength != oldProps->maxLength) {
-    result["maxLength"] = maxLength.has_value() ? maxLength.value() : folly::dynamic();
+    result["maxLength"] = maxLength;
   }
 
   if (text != oldProps->text) {

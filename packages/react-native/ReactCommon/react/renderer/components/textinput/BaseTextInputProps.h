@@ -14,7 +14,6 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/graphics/Color.h>
 #include <string>
-#include <optional>
 
 namespace facebook::react {
 
@@ -61,7 +60,7 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   // TODO: Rename to `tintColor` and make universal.
   SharedColor underlineColorAndroid{};
 
-  std::optional<int> maxLength{};
+  int maxLength{};
 
   /*
    * "Private" (only used by TextInput.js) props
