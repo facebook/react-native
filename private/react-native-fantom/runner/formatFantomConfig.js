@@ -12,22 +12,8 @@ import type {FeatureFlagValue} from '../../../packages/react-native/scripts/feat
 import type {FantomTestConfig} from '../runner/getFantomTestConfigs';
 import type {HermesVariant} from '../runner/utils';
 
-import {
-  FantomTestConfigHermesVariant,
-  FantomTestConfigMode,
-} from '../runner/getFantomTestConfigs';
+import {FantomTestConfigHermesVariant} from '../runner/getFantomTestConfigs';
 import {getOverrides} from './getFantomTestConfigs';
-
-function formatFantomMode(mode: FantomTestConfigMode): string {
-  switch (mode) {
-    case FantomTestConfigMode.DevelopmentWithSource:
-      return 'mode 🐛';
-    case FantomTestConfigMode.DevelopmentWithBytecode:
-      return 'mode 🐛🔢';
-    case FantomTestConfigMode.Optimized:
-      return 'mode 🚀';
-  }
-}
 
 function formatFantomHermesVariant(hermesVariant: HermesVariant): string {
   switch (hermesVariant) {
@@ -55,8 +41,16 @@ export default function formatFantomConfig(config: FantomTestConfig): string {
   const overrides = getOverrides(config);
   const parts = [];
 
-  if (overrides.mode) {
-    parts.push(formatFantomMode(overrides.mode));
+  if (overrides.isNativeOptimized != null) {
+    parts.push(overrides.isNativeOptimized ? 'native 🚀' : 'native 🐛');
+  }
+
+  if (overrides.isJsOptimized != null) {
+    parts.push(overrides.isJsOptimized ? 'js 🚀' : 'js 🐛');
+  }
+
+  if (overrides.isJsBytecode != null && overrides.isJsBytecode) {
+    parts.push('bytecode');
   }
 
   if (overrides.hermesVariant) {

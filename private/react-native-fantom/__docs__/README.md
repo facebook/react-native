@@ -132,8 +132,6 @@ Available pragmas:
   - Possible values:
     - `dev`: development, default for tests.
     - `opt`: optimized and using Hermes bytecode, default for benchmarks.
-    - `dev-bytecode`: development but using Hermes bytecode instead of plain
-      text JavaScript code.
 - `@fantom_react_fb_flags`: used to set overrides for internal React flags set
   in ReactNativeInternalFeatureFlags (Meta use only)
 
@@ -150,14 +148,12 @@ this test:
 
 Would be executed with these combinations of options:
 
-| `jsOnlyTestFlag` | `mode`         |
-| ---------------- | -------------- |
-| `false`          | `dev`          |
-| `true`           | `dev`          |
-| `false`          | `dev-bytecode` |
-| `true`           | `dev-bytecode` |
-| `false`          | `opt`          |
-| `true`           | `opt`          |
+| `jsOnlyTestFlag` | `mode` |
+| ---------------- | ------ |
+| `false`          | `dev`  |
+| `true`           | `dev`  |
+| `false`          | `opt`  |
+| `true`           | `opt`  |
 
 With an output such as:
 

@@ -24,7 +24,6 @@ import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {FantomTestConfigMode} from './getFantomTestConfigs';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -249,10 +248,7 @@ module.exports = async function runTest(
   ];
 
   for (const testConfig of testConfigs) {
-    if (
-      EnvironmentOptions.isOSS &&
-      testConfig.mode === FantomTestConfigMode.Optimized
-    ) {
+    if (EnvironmentOptions.isOSS && testConfig.isNativeOptimized) {
       testResultsByConfig.push(
         skippedTestResults({
           ancestorTitles: ['"@fantom_mode opt" in docblock'],
@@ -277,13 +273,10 @@ module.exports = async function runTest(
       continue;
     }
 
-    if (
-      EnvironmentOptions.isOSS &&
-      testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource
-    ) {
+    if (EnvironmentOptions.isOSS && testConfig.isJsBytecode) {
       testResultsByConfig.push(
         skippedTestResults({
-          ancestorTitles: ['"@fantom_mode dev-bytecode" in docblock'],
+          ancestorTitles: ['"@fantom_mode dev" in docblock'],
           title: 'Hermes bytecode is not yet supported in OSS',
         }),
       );
@@ -320,26 +313,24 @@ module.exports = async function runTest(
       entry: entrypointPath,
       out: testJSBundlePath,
       platform: 'android',
-      minify: testConfig.mode === FantomTestConfigMode.Optimized,
-      dev: testConfig.mode !== FantomTestConfigMode.Optimized,
+      minify: testConfig.isJsOptimized,
+      dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
     });
 
-    if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
+    if (testConfig.isJsBytecode) {
       generateBytecodeBundle({
         sourcePath: testJSBundlePath,
         bytecodePath: testBytecodeBundlePath,
-        isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
+        isOptimizedMode: testConfig.isJsOptimized,
         hermesVariant: testConfig.hermesVariant,
       });
     }
 
     const rnTesterCommandArgs = [
       '--bundlePath',
-      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-        ? testJSBundlePath
-        : testBytecodeBundlePath,
+      !testConfig.isJsBytecode ? testJSBundlePath : testBytecodeBundlePath,
       '--featureFlags',
       JSON.stringify(testConfig.flags.common),
       '--minLogLevel',
@@ -354,9 +345,7 @@ module.exports = async function runTest(
       : runBuck2(
           [
             'run',
-            ...getBuckModesForPlatform(
-              testConfig.mode === FantomTestConfigMode.Optimized,
-            ),
+            ...getBuckModesForPlatform(testConfig.isNativeOptimized),
             ...getBuckOptionsForHermes(testConfig.hermesVariant),
             '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
             '--',
