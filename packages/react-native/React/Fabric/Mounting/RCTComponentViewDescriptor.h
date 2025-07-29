@@ -21,15 +21,15 @@ class RCTComponentViewDescriptor final {
   /*
    * Associated (and owned) native view instance.
    */
-  __strong UIView<RCTComponentViewProtocol> *view = nil;
+  __strong UIView<RCTComponentViewProtocol> *const view = nil;
 
   /*
    * Indicates a requirement to call on the view methods from
    * `RCTMountingTransactionObserving` protocol.
    */
-  bool observesMountingTransactionWillMount{false};
-  bool observesMountingTransactionDidMount{false};
-  bool shouldBeRecycled{true};
+  const bool observesMountingTransactionWillMount{false};
+  const bool observesMountingTransactionDidMount{false};
+  const bool shouldBeRecycled{true};
 };
 
 inline bool operator==(const RCTComponentViewDescriptor &lhs, const RCTComponentViewDescriptor &rhs)
