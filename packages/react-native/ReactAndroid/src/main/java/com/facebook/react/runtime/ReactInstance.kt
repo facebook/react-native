@@ -63,6 +63,7 @@ import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.uimanager.UIConstantsProviderBinding
 import com.facebook.react.uimanager.UIConstantsProviderBinding.ConstantsForViewManagerProvider
+import com.facebook.react.uimanager.UIManagerConstantsCache
 import com.facebook.react.uimanager.UIManagerModuleConstantsHelper
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerRegistry
@@ -222,16 +223,19 @@ internal class ReactInstance(
             getConstantsForViewManager(viewManager, customDirectEvents)
           },
           {
-            val viewManagers: List<ViewManager<*, *>> =
-                ArrayList(viewManagerResolver.eagerViewManagerMap.values)
-            val constants = createConstants(viewManagers, customDirectEvents)
+            UIManagerConstantsCache.getInstance().getUIManagerConstantsAsWritableMap()
+                ?: run {
+                  val viewManagers: List<ViewManager<*, *>> =
+                      ArrayList(viewManagerResolver.eagerViewManagerMap.values)
+                  val constants = createConstants(viewManagers, customDirectEvents)
 
-            val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
-            if (!lazyViewManagers.isEmpty()) {
-              constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
-              constants["LazyViewManagersEnabled"] = true
-            }
-            Arguments.makeNativeMap(constants)
+                  val lazyViewManagers = viewManagerResolver.lazyViewManagerNames
+                  if (!lazyViewManagers.isEmpty()) {
+                    constants["ViewManagerNames"] = ArrayList(lazyViewManagers)
+                    constants["LazyViewManagersEnabled"] = true
+                  }
+                  Arguments.makeNativeMap(constants)
+                }
           })
     }
 
