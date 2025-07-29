@@ -10,6 +10,7 @@
 #include <glog/logging.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
+#include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
@@ -34,16 +35,28 @@ NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
       stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
 
 std::shared_ptr<NativeAnimatedNodesManager>
-NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
+NativeAnimatedNodesManagerProvider::getOrCreate(
+    jsi::Runtime& runtime,
+    std::shared_ptr<CallInvoker> jsInvoker) {
   if (nativeAnimatedNodesManager_ == nullptr) {
     auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
 
     NativeAnimatedNodesManager::FabricCommitCallback fabricCommitCallback =
         nullptr;
+
     if (!ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated()) {
-      fabricCommitCallback =
-          [uiManager](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+      mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
+          [jsInvoker](std::function<void()>&& func) {
+            jsInvoker->invokeAsync(std::move(func));
+          },
+          [uiManager](
+              const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
             uiManager->updateShadowTree(tagToProps);
+          });
+
+      fabricCommitCallback =
+          [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+            mergedValueDispatcher_->dispatch(tagToProps);
           };
     }
 

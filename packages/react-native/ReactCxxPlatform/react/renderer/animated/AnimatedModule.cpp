@@ -284,7 +284,7 @@ void AnimatedModule::executeOperation(const Operation& operation) {
 
 void AnimatedModule::installJSIBindingsWithRuntime(jsi::Runtime& runtime) {
   if (nodesManagerProvider_) {
-    nodesManager_ = nodesManagerProvider_->getOrCreate(runtime);
+    nodesManager_ = nodesManagerProvider_->getOrCreate(runtime, jsInvoker_);
   }
 }
 
