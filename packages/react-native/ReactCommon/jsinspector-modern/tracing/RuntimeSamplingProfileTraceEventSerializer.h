@@ -37,7 +37,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
   struct ProfileChunk {
     ProfileChunk(
         uint16_t chunkSize,
-        uint64_t chunkThreadId,
+        ThreadId chunkThreadId,
         HighResTimeStamp chunkTimestamp)
         : size(chunkSize), threadId(chunkThreadId), timestamp(chunkTimestamp) {
       samples.reserve(size);
@@ -56,7 +56,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
     std::vector<uint32_t> samples;
     std::vector<HighResDuration> timeDeltas;
     uint16_t size;
-    uint64_t threadId;
+    ThreadId threadId;
     HighResTimeStamp timestamp;
   };
 
@@ -102,8 +102,8 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * profile.
    */
   void sendProfileTraceEvent(
-      uint64_t threadId,
-      uint16_t profileId,
+      ThreadId threadId,
+      RuntimeProfileId profileId,
       HighResTimeStamp profileStartTimestamp) const;
 
   /**
@@ -123,7 +123,9 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * \param chunk The chunk that will be buffered.
    * \param profileId The id of the Profile.
    */
-  void bufferProfileChunkTraceEvent(ProfileChunk&& chunk, uint16_t profileId);
+  void bufferProfileChunkTraceEvent(
+      ProfileChunk&& chunk,
+      RuntimeProfileId profileId);
 
   /**
    * Encapsulates logic for processing the call stack of the sample.
