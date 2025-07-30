@@ -130,7 +130,7 @@ public constructor(
           (childNode as ReactShadowNode<ReactShadowNodeImpl>).setLayoutParent(textShadowNode)
         }
 
-        if (java.lang.Float.isNaN(heightOfTallestInlineViewOrImage) ||
+        if (heightOfTallestInlineViewOrImage.isNaN() ||
             height > heightOfTallestInlineViewOrImage) {
           heightOfTallestInlineViewOrImage = height.toFloat()
         }
@@ -389,7 +389,7 @@ public constructor(
     if (textDecorationLineString != null) {
       for (textDecorationLineSubString in
           textDecorationLineString
-              .split(" ".toRegex())
+              .split(" ")
               .dropLastWhile { it.isEmpty() }
               .toTypedArray()) {
         if ("underline" == textDecorationLineSubString) {
