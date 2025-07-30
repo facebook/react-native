@@ -207,8 +207,7 @@ class UIManager final : public ShadowTreeDelegate {
 
   void reportMount(SurfaceId surfaceId) const;
 
-  void updateShadowTree(
-      const std::unordered_map<Tag, folly::dynamic>& tagToProps);
+  void updateShadowTree(std::unordered_map<Tag, folly::dynamic>&& tagToProps);
 
 #pragma mark - Add & Remove event listener
 
