@@ -79,6 +79,9 @@ const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
 const VALID_FANTOM_PRAGMAS = [
   'fantom_mode',
+  'fantom_native_opt',
+  'fantom_js_opt',
+  'fantom_js_bytecode',
   'fantom_flags',
   'fantom_hermes_variant',
   'fantom_react_fb_flags',
@@ -229,6 +232,56 @@ export default function getFantomTestConfigs(
       config.isNativeOptimized = true;
       config.isJsOptimized = true;
       config.isJsBytecode = true;
+    }
+
+    // Allow the benchmark regex to override these to true, but if the mode isn't set
+    // allow granular control with pragmas. Checking for both of them being set is handled by
+    // verifyFantomPragmas().
+    if (pragmas.fantom_native_opt !== undefined) {
+      if (pragmas.fantom_native_opt === '*') {
+        configVariations.push([
+          {
+            isNativeOptimized: false,
+          },
+          {
+            isNativeOptimized: true,
+          },
+        ]);
+      } else {
+        config.isNativeOptimized = parseFantomBoolean(
+          pragmas.fantom_native_opt,
+        );
+      }
+    }
+
+    if (pragmas.fantom_js_opt !== undefined) {
+      if (pragmas.fantom_js_opt === '*') {
+        configVariations.push([
+          {
+            isJsOptimized: false,
+          },
+          {
+            isJsOptimized: true,
+          },
+        ]);
+      } else {
+        config.isJsOptimized = parseFantomBoolean(pragmas.fantom_js_opt);
+      }
+    }
+
+    if (pragmas.fantom_js_bytecode !== undefined) {
+      if (pragmas.fantom_js_bytecode === '*') {
+        configVariations.push([
+          {
+            isJsBytecode: false,
+          },
+          {
+            isJsBytecode: true,
+          },
+        ]);
+      } else {
+        config.isJsBytecode = parseFantomBoolean(pragmas.fantom_js_bytecode);
+      }
     }
   }
 
@@ -460,7 +513,30 @@ function parseFeatureFlagValue<T: boolean | number | string>(
   }
 }
 
+function parseFantomBoolean(pragmaValue: string | Array<string>): boolean {
+  if (Array.isArray(pragmaValue)) {
+    throw new Error(`Expected a single value, got ${pragmaValue.join(', ')}`);
+  }
+
+  if (pragmaValue !== 'true' && pragmaValue !== 'false') {
+    throw new Error(`Expected a boolean, got ${pragmaValue}`);
+  }
+
+  return pragmaValue === 'true';
+}
+
 function verifyFantomPragmas(pragmas: DocblockPragmas): void {
+  if (
+    'fantom_mode' in pragmas &&
+    ('fantom_native_opt' in pragmas ||
+      'fantom_js_opt' in pragmas ||
+      'fantom_js_bytecode' in pragmas)
+  ) {
+    throw new Error(
+      'Cannot set @fantom_mode with @fantom_native_opt, @fantom_js_opt, or @fantom_js_bytecode',
+    );
+  }
+
   for (const pragma of Object.keys(pragmas)) {
     if (
       pragma.startsWith('fantom_') &&
