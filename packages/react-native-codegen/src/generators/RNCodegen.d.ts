@@ -62,6 +62,7 @@ export type LibraryGenerators =
     | 'modulesAndroid'
     | 'modulesCxx'
     | 'modulesIOS'
+    | 'modulesMacOS'
     ;
 
 export type SchemaGenerators =
