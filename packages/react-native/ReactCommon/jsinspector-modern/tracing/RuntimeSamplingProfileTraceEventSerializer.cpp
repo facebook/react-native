@@ -5,10 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <string_view>
-
-#include "ProfileTreeNode.h"
 #include "RuntimeSamplingProfileTraceEventSerializer.h"
+#include "PerformanceTracer.h"
+#include "ProfileTreeNode.h"
+#include "TraceEventSerializer.h"
+
+#include <string_view>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -96,14 +98,16 @@ class ProfileTreeRootNode : public ProfileTreeNode {
 } // namespace
 
 void RuntimeSamplingProfileTraceEventSerializer::sendProfileTraceEvent(
+    ProcessId processId,
     ThreadId threadId,
     RuntimeProfileId profileId,
     HighResTimeStamp profileStartTimestamp) const {
+  auto traceEvent = PerformanceTracer::constructRuntimeProfileTraceEvent(
+      profileId, processId, threadId, profileStartTimestamp);
   folly::dynamic serializedTraceEvent =
-      performanceTracer_.getSerializedRuntimeProfileTraceEvent(
-          threadId, profileId, profileStartTimestamp);
+      TraceEventSerializer::serialize(std::move(traceEvent));
 
-  notificationCallback_(folly::dynamic::array(serializedTraceEvent));
+  notificationCallback_(folly::dynamic::array(std::move(serializedTraceEvent)));
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::chunkEmptySample(
@@ -127,18 +131,22 @@ void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
     traceEventNodes.push_back(convertToTraceEventProfileNode(node));
   }
 
-  traceEventBuffer_.push_back(
-      performanceTracer_.getSerializedRuntimeProfileChunkTraceEvent(
-          profileId,
-          chunk.threadId,
-          chunk.timestamp,
-          TraceEventProfileChunk{
-              .cpuProfile =
-                  TraceEventProfileChunk::CPUProfile{
-                      .nodes = std::move(traceEventNodes),
-                      .samples = std::move(chunk.samples)},
-              .timeDeltas = std::move(chunk.timeDeltas),
-          }));
+  auto traceEvent = PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
+      profileId,
+      chunk.processId,
+      chunk.threadId,
+      chunk.timestamp,
+      TraceEventProfileChunk{
+          .cpuProfile =
+              TraceEventProfileChunk::CPUProfile{
+                  .nodes = std::move(traceEventNodes),
+                  .samples = std::move(chunk.samples)},
+          .timeDeltas = std::move(chunk.timeDeltas),
+      });
+  auto serializedTraceEvent =
+      TraceEventSerializer::serialize(std::move(traceEvent));
+
+  traceEventBuffer_.push_back(std::move(serializedTraceEvent));
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
@@ -202,12 +210,16 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   HighResTimeStamp previousSampleTimestamp = tracingStartTime;
   HighResTimeStamp currentChunkTimestamp = tracingStartTime;
 
-  sendProfileTraceEvent(firstChunkThreadId, PROFILE_ID, tracingStartTime);
+  sendProfileTraceEvent(
+      profile.processId, firstChunkThreadId, PROFILE_ID, tracingStartTime);
 
   // There could be any number of new nodes in this chunk. Empty if all nodes
   // are already emitted in previous chunks.
   ProfileChunk chunk{
-      profileChunkSize_, firstChunkThreadId, currentChunkTimestamp};
+      profileChunkSize_,
+      profile.processId,
+      firstChunkThreadId,
+      currentChunkTimestamp};
 
   NodeIdGenerator nodeIdGenerator{};
 
@@ -238,7 +250,10 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     if (currentSampleThreadId != chunk.threadId || chunk.isFull()) {
       bufferProfileChunkTraceEvent(std::move(chunk), PROFILE_ID);
       chunk = ProfileChunk{
-          profileChunkSize_, currentSampleThreadId, currentChunkTimestamp};
+          profileChunkSize_,
+          profile.processId,
+          currentSampleThreadId,
+          currentChunkTimestamp};
     }
 
     if (traceEventBuffer_.size() == traceEventChunkSize_) {

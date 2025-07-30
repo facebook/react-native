@@ -111,9 +111,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
         dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
 
     tracing::RuntimeSamplingProfileTraceEventSerializer serializer(
-        performanceTracer,
-        dataCollectedCallback,
-        PROFILE_TRACE_EVENT_CHUNK_SIZE);
+        dataCollectedCallback, PROFILE_TRACE_EVENT_CHUNK_SIZE);
     auto tracingProfile = instanceAgent_->collectTracingProfile();
     serializer.serializeAndNotify(
         std::move(tracingProfile.runtimeSamplingProfile),
