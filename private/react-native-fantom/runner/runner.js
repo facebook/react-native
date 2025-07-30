@@ -20,6 +20,7 @@ import type {
   HermesVariant,
 } from './utils';
 
+import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import formatFantomConfig from './formatFantomConfig';
@@ -244,6 +245,7 @@ module.exports = async function runTest(
       snapshotResults: {} as TestSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
+      testArtifact: {} as mixed,
       title,
     },
   ];
@@ -432,6 +434,8 @@ module.exports = async function runTest(
     snapshotState,
     snapshotResults,
   );
+
+  printBenchmarkResultsRanking(testResults);
 
   return {
     testFilePath: testPath,
