@@ -62,7 +62,7 @@ function replaceHermesConfiguration(configuration, version, podsRoot) {
   fs.mkdirSync(finalLocation, {recursive: true});
 
   console.log('Extracting the tarball');
-  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
+  execSync(`tar -xzf ${tarballURLPath} -C ${finalLocation}`);
 }
 
 function updateLastBuildConfiguration(configuration) {
