@@ -135,4 +135,7 @@ Fantom.unstable_benchmark
       },
       afterEach: clearMarksAndMeasures,
     },
-  );
+  )
+  .test('console.timeStamp', () => {
+    console.timeStamp('label');
+  });

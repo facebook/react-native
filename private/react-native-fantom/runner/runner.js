@@ -24,7 +24,10 @@ import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {FantomTestConfigMode} from './getFantomTestConfigs';
+import {
+  FantomTestConfigJsMode,
+  FantomTestConfigMode,
+} from './getFantomTestConfigs';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -316,12 +319,14 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
+    const devMode = testConfig.jsMode !== FantomTestConfigJsMode.Optimized;
+
     await Metro.runBuild(metroConfig, {
       entry: entrypointPath,
       out: testJSBundlePath,
       platform: 'android',
-      minify: testConfig.mode === FantomTestConfigMode.Optimized,
-      dev: testConfig.mode !== FantomTestConfigMode.Optimized,
+      minify: !devMode,
+      dev: devMode,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
     });

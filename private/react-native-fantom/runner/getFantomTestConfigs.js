@@ -26,6 +26,11 @@ export enum FantomTestConfigMode {
   Optimized,
 }
 
+export enum FantomTestConfigJsMode {
+  Development,
+  Optimized,
+}
+
 export type FantomTestConfigCommonFeatureFlags = Partial<{
   [key in keyof CommonFeatureFlags]: CommonFeatureFlags[key]['defaultValue'],
 }>;
@@ -46,12 +51,14 @@ export type FantomTestConfigFeatureFlags = {
 
 export type FantomTestConfig = {
   mode: FantomTestConfigMode,
+  jsMode: FantomTestConfigJsMode,
   hermesVariant: HermesVariant,
   flags: FantomTestConfigFeatureFlags,
 };
 
 export type PartialFantomTestConfig = {
   mode?: FantomTestConfigMode,
+  jsMode?: FantomTestConfigJsMode,
   hermesVariant?: HermesVariant,
   flags?: Partial<FantomTestConfigFeatureFlags>,
 };
@@ -60,6 +67,9 @@ export const FantomTestConfigHermesVariant = HermesVariant;
 
 export const DEFAULT_MODE: FantomTestConfigMode =
   FantomTestConfigMode.DevelopmentWithSource;
+
+export const DEFAULT_JS_MODE: FantomTestConfigJsMode =
+  FantomTestConfigJsMode.Development;
 
 export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
 
@@ -84,6 +94,7 @@ const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
 const VALID_FANTOM_PRAGMAS = [
   'fantom_mode',
+  'fantom_js_mode',
   'fantom_flags',
   'fantom_hermes_variant',
   'fantom_react_fb_flags',
@@ -131,6 +142,7 @@ export function getOverrides(
  * /**
  *  * @flow strict-local
  *  * @fantom_mode opt
+ *  * @fantom_js_mode dev
  *  * @fantom_hermes_variant static_hermes_stable
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
@@ -163,6 +175,7 @@ export default function getFantomTestConfigs(
 
   const config: FantomTestConfig = {
     mode: DEFAULT_MODE,
+    jsMode: DEFAULT_JS_MODE,
     hermesVariant: DEFAULT_HERMES_VARIANT,
     flags: {
       common: {
@@ -215,6 +228,39 @@ export default function getFantomTestConfigs(
     ) {
       config.mode = FANTOM_BENCHMARK_DEFAULT_MODE;
     }
+  }
+
+  const maybeJsMode = pragmas.fantom_js_mode;
+
+  if (maybeJsMode != null) {
+    if (Array.isArray(maybeJsMode)) {
+      throw new Error('Expected a single value for @fantom_js_mode');
+    }
+
+    const jsMode = maybeJsMode;
+
+    switch (jsMode) {
+      case 'dev':
+        config.jsMode = FantomTestConfigJsMode.Development;
+        break;
+      case 'opt':
+        config.jsMode = FantomTestConfigJsMode.Optimized;
+        break;
+      case '*':
+        configVariations.push([
+          {jsMode: FantomTestConfigJsMode.Development},
+          {jsMode: FantomTestConfigJsMode.Optimized},
+        ]);
+        break;
+      default:
+        throw new Error(`Invalid Fantom jsMode: ${jsMode}`);
+    }
+  } else {
+    // If not set, match the native mode
+    config.jsMode =
+      config.mode === FantomTestConfigMode.Optimized
+        ? FantomTestConfigJsMode.Optimized
+        : FantomTestConfigJsMode.Development;
   }
 
   const maybeHermesVariant = pragmas.fantom_hermes_variant;
@@ -374,6 +420,7 @@ function getConfigurationVariations(
   for (const currentConfigVariation of currentConfigVariations) {
     const currentConfigWithVariation = {
       mode: currentConfigVariation.mode ?? config.mode,
+      jsMode: currentConfigVariation.jsMode ?? config.jsMode,
       hermesVariant:
         currentConfigVariation.hermesVariant ?? config.hermesVariant,
       flags: {
