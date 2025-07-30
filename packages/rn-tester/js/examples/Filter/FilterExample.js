@@ -15,7 +15,7 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
 import {useState} from 'react';
-import {Animated, Image, StyleSheet, Text, View, Button} from 'react-native';
+import {Animated, Button, Image, StyleSheet, Text, View} from 'react-native';
 
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
