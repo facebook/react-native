@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateContentView:(UIView *)view;
 - (UIView *)hostingView;
 - (void)resetStyles;
+- (void)updateLayoutWithBounds:(CGRect)bounds;
 
 @end
 

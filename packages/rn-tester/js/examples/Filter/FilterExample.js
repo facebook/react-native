@@ -15,7 +15,7 @@ import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
 import {useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Animated, Image, StyleSheet, Text, View, Button} from 'react-native';
 
 const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
@@ -67,6 +67,14 @@ function StaticViewAndImageWithState(props: Props): React.Node {
 }
 
 const styles = StyleSheet.create({
+  blurWithShadow: {
+    filter: [{blur: 10}],
+    boxShadow: '0 0 10px 10px black',
+    overflow: 'hidden',
+    backgroundColor: 'pink',
+    height: 100,
+    width: 100,
+  },
   commonView: {
     width: 150,
     height: 150,
@@ -199,6 +207,27 @@ exports.examples = [
     },
   },
   {
+    title: 'Blur with boxShadow + overflow hidden + outline',
+    description: 'This tests container view with blur and outline on iOS',
+    name: 'blur',
+    render(): React.Node {
+      return (
+        <View
+          style={styles.blurWithShadow}
+          testID="filter-test-blur-overflow-hidden"
+        />
+      );
+    },
+  },
+  {
+    title: 'Animated Blur',
+    description: 'Animated blur',
+    name: 'animated-blur',
+    render(): React.Node {
+      return <AnimatedBlurExample />;
+    },
+  },
+  {
     title: 'Drop Shadow',
     description: 'drop-shadow(30px 10px 4px #4444dd)',
     name: 'drop-shadow',
@@ -252,3 +281,37 @@ exports.examples = [
     },
   },
 ] as Array<RNTesterModuleExample>;
+
+const AnimatedBlurExample = () => {
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+  const [isBlurred, setIsBlurred] = React.useState(false);
+
+  const onPress = () => {
+    Animated.timing(animatedValue, {
+      toValue: isBlurred ? 0 : 20,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start(() => setIsBlurred(!isBlurred));
+  };
+
+  return (
+    <View style={styles.horizontal}>
+      <View>
+        <Button
+          onPress={onPress}
+          title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
+        />
+        <Animated.View
+          style={[
+            {
+              filter: [{blur: animatedValue}],
+              backgroundColor: 'pink',
+              height: 100,
+              width: 100,
+            },
+          ]}
+        />
+      </View>
+    </View>
+  );
+};

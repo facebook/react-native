@@ -38,6 +38,11 @@ import UIKit
     containerViewModel.blurRadius = blurRadius
   }
   
+  @objc public func updateLayout(withBounds bounds: CGRect) {
+    hostingController?.view.frame = bounds
+    containerViewModel.contentView?.frame = bounds
+  }
+  
   @objc public func resetStyles() {
     containerViewModel.blurRadius = 0
   }

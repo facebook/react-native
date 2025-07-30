@@ -41,4 +41,8 @@
     [self.swiftContainerView updateBlurRadius:radius];
 }
 
+- (void)updateLayoutWithBounds:(CGRect)bounds {
+    [self.swiftContainerView updateLayoutWithBounds:bounds];
+}
+
 @end 

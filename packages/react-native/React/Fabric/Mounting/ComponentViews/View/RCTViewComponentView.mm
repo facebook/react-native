@@ -580,10 +580,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   }
 
   if (_swiftUIWrapper) {
-    _swiftUIWrapper.hostingView.frame = self.bounds;
-    if (_swiftUIWrapper.contentView) {
-      _swiftUIWrapper.contentView.frame = self.bounds;
-    }
+    [_swiftUIWrapper updateLayoutWithBounds:self.bounds];
   }
 }
 
@@ -809,9 +806,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   if (self.styleNeedsSwiftUIContainer) {
     if (!_swiftUIWrapper) {
       _swiftUIWrapper = [RCTSwiftUIContainerViewWrapper new];
-      _swiftUIWrapper.hostingView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-      UIView *swiftUIContentView =
-          [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+      UIView *swiftUIContentView = [[UIView alloc] init];
       for (UIView *subview in self.subviews) {
         [swiftUIContentView addSubview:subview];
       }
@@ -820,6 +815,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       swiftUIContentView.layer.mask = self.layer.mask;
       self.layer.mask = nil;
       [_swiftUIWrapper updateContentView:swiftUIContentView];
+      [_swiftUIWrapper updateLayoutWithBounds:self.bounds];
       [self addSubview:_swiftUIWrapper.hostingView];
 
       [self transferVisualPropertiesFromView:self toView:swiftUIContentView];
