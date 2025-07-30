@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIView *)contentView;
 - (void)updateBlurRadius:(NSNumber *)radius;
-- (void)updateGrayScale:(NSNumber *)amount;
 - (void)updateContentView:(UIView *)view;
 - (UIView *)hostingView;
 - (void)resetStyles;

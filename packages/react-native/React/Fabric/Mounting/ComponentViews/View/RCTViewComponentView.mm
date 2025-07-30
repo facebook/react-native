@@ -51,8 +51,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   UIView *_containerView;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
-  NSMutableArray<NSObject *> *_accessibilityElements;
-  RCTViewAccessibilityElement *_axElementDescribingSelf;
   RCTSwiftUIContainerViewWrapper* _swiftUIWrapper;
 }
 

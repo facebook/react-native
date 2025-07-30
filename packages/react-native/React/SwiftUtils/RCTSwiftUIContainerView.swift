@@ -38,20 +38,13 @@ import UIKit
     containerViewModel.blurRadius = blurRadius
   }
   
-  @objc public func updateGrayScale(_ amount: NSNumber) {
-    let amount = CGFloat(amount.floatValue)
-    containerViewModel.grayScale = amount;
-  }
-
   @objc public func resetStyles() {
     containerViewModel.blurRadius = 0
-    containerViewModel.grayScale = 0
   }
 }
 
 class ContainerViewModel: ObservableObject {
   @Published var blurRadius: CGFloat = 0
-  @Published var grayScale: CGFloat = 0
   @Published var contentView: UIView?
 }
 
@@ -62,8 +55,6 @@ struct SwiftUIContainerView: View {
     if let contentView = viewModel.contentView {
       UIViewWrapper(view: contentView)
         .blur(radius: viewModel.blurRadius)
-        .grayscale(viewModel.grayScale)
-
     }
   }
 }

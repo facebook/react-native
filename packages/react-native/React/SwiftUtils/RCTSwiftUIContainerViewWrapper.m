@@ -41,8 +41,4 @@
     [self.swiftContainerView updateBlurRadius:radius];
 }
 
-- (void)updateGrayScale:(NSNumber *)amount {
-    [self.swiftContainerView updateGrayScale:amount];
-}
-
 @end 
