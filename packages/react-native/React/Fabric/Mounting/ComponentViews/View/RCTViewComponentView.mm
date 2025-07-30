@@ -801,6 +801,10 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
 - (UIView *)childContainerView
 {
+  if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
+    return self;
+  }
+  
   UIView *childContainerView = self;
 
   if (self.styleNeedsSwiftUIContainer) {

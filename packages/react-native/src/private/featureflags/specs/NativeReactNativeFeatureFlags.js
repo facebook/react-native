@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<670180f14f059433824a3a24de280d79>>
+ * @generated SignedSource<<b522d06dc2ed107ade6d370f9f57d272>>
  * @flow strict
  * @noformat
  */
@@ -62,6 +62,7 @@ export interface Spec extends TurboModule {
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
+  +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de705ded06ca10697411e99c91903724>>
+ * @generated SignedSource<<2ccc29501fb525074eda0a1a574cc5a6>>
  */
 
 /**
@@ -57,6 +57,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResourceTimingAPICache: Boolean? = null
+  private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
@@ -417,6 +418,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableResourceTimingAPI()
       enableResourceTimingAPICache = cached
+    }
+    return cached
+  }
+
+  override fun enableSwiftUIBasedFilters(): Boolean {
+    var cached = enableSwiftUIBasedFiltersCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableSwiftUIBasedFilters()
+      enableSwiftUIBasedFiltersCache = cached
     }
     return cached
   }
