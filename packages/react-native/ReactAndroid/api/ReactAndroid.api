@@ -140,7 +140,7 @@ public class com/facebook/react/ReactActivityDelegate {
 
 public abstract interface class com/facebook/react/ReactApplication {
 	public fun getReactHost ()Lcom/facebook/react/ReactHost;
-	public abstract fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
+	public fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 }
 
 public class com/facebook/react/ReactDelegate {
