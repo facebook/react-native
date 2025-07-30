@@ -29,22 +29,6 @@ enum class FilterType {
   DropShadow
 };
 
-struct DropShadowParams {
-  bool operator==(const DropShadowParams& other) const = default;
-
-  Float offsetX{};
-  Float offsetY{};
-  Float standardDeviation{};
-  SharedColor color{};
-};
-
-struct FilterFunction {
-  bool operator==(const FilterFunction& other) const = default;
-
-  FilterType type{};
-  std::variant<Float, DropShadowParams> parameters{};
-};
-
 inline FilterType filterTypeFromString(std::string_view filterName) {
   if (filterName == "blur") {
     return FilterType::Blur;
@@ -95,5 +79,52 @@ inline std::string toString(const FilterType& filterType) {
       return "dropShadow";
   }
 }
+
+struct DropShadowParams {
+  bool operator==(const DropShadowParams& other) const = default;
+
+  Float offsetX{};
+  Float offsetY{};
+  Float standardDeviation{};
+  SharedColor color{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    result["offsetX"] = offsetX;
+    result["offsetY"] = offsetY;
+    result["standardDeviation"] = standardDeviation;
+    result["color"] = *color;
+    return result;
+  }
+#endif
+};
+
+struct FilterFunction {
+  bool operator==(const FilterFunction& other) const = default;
+
+  FilterType type{};
+  std::variant<Float, DropShadowParams> parameters{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    std::string typeKey = toString(type);
+    if (std::holds_alternative<Float>(parameters)) {
+      result[typeKey] = std::get<Float>(parameters);
+    } else if (std::holds_alternative<DropShadowParams>(parameters)) {
+      const auto& dropShadowParams = std::get<DropShadowParams>(parameters);
+      result[typeKey] = dropShadowParams.toDynamic();
+    }
+    return result;
+  }
+#endif
+};
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const FilterFunction& filterFunction) {
+  return filterFunction.toDynamic();
+}
+#endif
 
 } // namespace facebook::react

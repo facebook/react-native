@@ -48,6 +48,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.dependency "ReactCommon/turbomodule/core"
   add_dependency(s, "React-RCTFBReactNativeSpec")

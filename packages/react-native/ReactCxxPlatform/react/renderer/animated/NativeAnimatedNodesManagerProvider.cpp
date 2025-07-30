@@ -8,7 +8,9 @@
 #include "NativeAnimatedNodesManagerProvider.h"
 
 #include <glog/logging.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
+#include <react/renderer/animated/MergedValueDispatcher.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
@@ -33,14 +35,29 @@ NativeAnimatedNodesManagerProvider::NativeAnimatedNodesManagerProvider(
       stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
 
 std::shared_ptr<NativeAnimatedNodesManager>
-NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
+NativeAnimatedNodesManagerProvider::getOrCreate(
+    jsi::Runtime& runtime,
+    std::shared_ptr<CallInvoker> jsInvoker) {
   if (nativeAnimatedNodesManager_ == nullptr) {
     auto* uiManager = &UIManagerBinding::getBinding(runtime)->getUIManager();
 
-    auto fabricCommitCallback =
-        [uiManager](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-          uiManager->updateShadowTree(tagToProps);
-        };
+    NativeAnimatedNodesManager::FabricCommitCallback fabricCommitCallback =
+        nullptr;
+
+    if (!ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated()) {
+      mergedValueDispatcher_ = std::make_unique<MergedValueDispatcher>(
+          [jsInvoker](std::function<void()>&& func) {
+            jsInvoker->invokeAsync(std::move(func));
+          },
+          [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
+            uiManager->updateShadowTree(std::move(tagToProps));
+          });
+
+      fabricCommitCallback =
+          [this](std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+            mergedValueDispatcher_->dispatch(tagToProps);
+          };
+    }
 
     auto directManipulationCallback =
         [uiManager](Tag viewTag, const folly::dynamic& props) {
@@ -83,16 +100,7 @@ NativeAnimatedNodesManagerProvider::getOrCreate(jsi::Runtime& runtime) {
     auto* scheduler = (Scheduler*)uiManager->getDelegate();
     animatedMountingOverrideDelegate_ =
         std::make_shared<AnimatedMountingOverrideDelegate>(
-            [nativeAnimatedNodesManager =
-                 std::weak_ptr<NativeAnimatedNodesManager>(
-                     nativeAnimatedNodesManager_)](Tag tag) -> folly::dynamic {
-              if (auto nativeAnimatedNodesManagerStrong =
-                      nativeAnimatedNodesManager.lock()) {
-                return nativeAnimatedNodesManagerStrong->managedProps(tag);
-              }
-              return nullptr;
-            },
-            *scheduler);
+            *nativeAnimatedNodesManager_, *scheduler);
 
     // Register on existing surfaces
     uiManager->getShadowTreeRegistry().enumerate(

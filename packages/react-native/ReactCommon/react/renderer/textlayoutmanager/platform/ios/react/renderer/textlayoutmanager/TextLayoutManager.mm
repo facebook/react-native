@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-TextLayoutManager::TextLayoutManager(const ContextContainer::Shared &contextContainer)
+TextLayoutManager::TextLayoutManager(const std::shared_ptr<const ContextContainer> & /*contextContainer*/)
 {
   nativeTextLayoutManager_ = wrapManagedObject([RCTTextLayoutManager new]);
 }

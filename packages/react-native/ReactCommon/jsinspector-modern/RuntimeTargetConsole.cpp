@@ -8,6 +8,7 @@
 #include <jsinspector-modern/RuntimeTarget.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 
+#include <reactperflogger/ReactPerfettoLogger.h>
 #include <concepts>
 #include <deque>
 #include <string>
@@ -18,6 +19,20 @@ using namespace std::string_literals;
 namespace facebook::react::jsinspector_modern {
 
 namespace {
+
+inline std::optional<HighResTimeStamp> getTimeStampForPerfetto(
+    const std::optional<tracing::ConsoleTimeStampEntry>& consoleTimeStampEntry,
+    const HighResTimeStamp now) {
+  if (consoleTimeStampEntry) {
+    if (std::holds_alternative<HighResTimeStamp>(*consoleTimeStampEntry)) {
+      return std::get<HighResTimeStamp>(*consoleTimeStampEntry);
+    } else {
+      return std::nullopt;
+    }
+  } else {
+    return now;
+  }
+}
 
 struct ConsoleState {
   /**
@@ -376,7 +391,8 @@ void consoleTimeStamp(
     const jsi::Value* arguments,
     size_t argumentsCount) {
   auto& performanceTracer = tracing::PerformanceTracer::getInstance();
-  if (!performanceTracer.isTracing() || argumentsCount == 0) {
+  if ((!performanceTracer.isTracing() && !ReactPerfettoLogger::isTracing()) ||
+      argumentsCount == 0) {
     // If not tracing, just early return to avoid the cost of parsing.
     return;
   }
@@ -444,8 +460,22 @@ void consoleTimeStamp(
     }
   }
 
-  performanceTracer.reportTimeStamp(
-      label, start, end, trackName, trackGroup, color);
+  if (performanceTracer.isTracing()) {
+    performanceTracer.reportTimeStamp(
+        label, start, end, trackName, trackGroup, color);
+  }
+
+  if (ReactPerfettoLogger::isTracing()) {
+    std::optional<HighResTimeStamp> perfettoStart =
+        getTimeStampForPerfetto(start, now);
+    std::optional<HighResTimeStamp> perfettoEnd =
+        getTimeStampForPerfetto(end, now);
+
+    if (perfettoStart && perfettoEnd) {
+      ReactPerfettoLogger::measure(
+          label, *perfettoStart, *perfettoEnd, trackName, trackGroup);
+    }
+  }
 }
 
 /*

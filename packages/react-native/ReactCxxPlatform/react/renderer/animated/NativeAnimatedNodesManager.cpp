@@ -201,6 +201,8 @@ void NativeAnimatedNodesManager::disconnectAnimatedNodeFromView(
       connectedAnimatedNodes_.erase(viewTag);
     }
     updatedNodeTags_.insert(node->tag());
+
+    onManagedPropsRemoved(viewTag);
   } else {
     LOG(WARNING)
         << "Cannot DisconnectAnimatedNodeToView, animated node has to be props type";
@@ -406,47 +408,51 @@ void NativeAnimatedNodesManager::handleAnimatedEvent(
   if (!isOnRenderThread_) {
     return;
   }
+  if (eventDrivers_.empty()) {
+    return;
+  }
 
-  if (!eventDrivers_.empty()) {
-    bool foundAtLeastOneDriver = false;
+  bool foundAtLeastOneDriver = false;
 
-    const auto key = EventAnimationDriverKey{
-        .viewTag = viewTag,
-        .eventName = EventEmitter::normalizeEventType(eventName)};
-    if (auto driversIter = eventDrivers_.find(key);
-        driversIter != eventDrivers_.end()) {
-      auto& drivers = driversIter->second;
-      if (!drivers.empty()) {
-        foundAtLeastOneDriver = true;
-      }
-      for (const auto& driver : drivers) {
-        if (auto value = driver->getValueFromPayload(eventPayload)) {
-          auto node =
-              getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedNodeTag());
-          stopAnimationsForNode(node->tag());
-          if (node->setRawValue(value.value())) {
-            updatedNodeTags_.insert(node->tag());
-          }
+  const auto key = EventAnimationDriverKey{
+      .viewTag = viewTag,
+      .eventName = EventEmitter::normalizeEventType(eventName)};
+  if (auto driversIter = eventDrivers_.find(key);
+      driversIter != eventDrivers_.end()) {
+    auto& drivers = driversIter->second;
+    if (!drivers.empty()) {
+      foundAtLeastOneDriver = true;
+    }
+    for (const auto& driver : drivers) {
+      if (auto value = driver->getValueFromPayload(eventPayload)) {
+        auto node =
+            getAnimatedNode<ValueAnimatedNode>(driver->getAnimatedNodeTag());
+        if (node == nullptr) {
+          continue;
+        }
+        stopAnimationsForNode(node->tag());
+        if (node->setRawValue(value.value())) {
+          updatedNodeTags_.insert(node->tag());
         }
       }
     }
+  }
 
-    if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
-      // There is an animation driver handling this event and
-      // event driven animation has not been started yet.
-      isEventAnimationInProgress_ = true;
-      // Some platforms (e.g. iOS) have UI tick listener disable
-      // when there are no active animations. Calling
-      // `startRenderCallbackIfNeeded` will call platform specific code to
-      // register UI tick listener.
-      startRenderCallbackIfNeeded();
-      // Calling startOnRenderCallback_ will register a UI tick listener.
-      // The UI ticker listener will not be called until the next frame.
-      // That's why, in case this is called from the UI thread, we need to
-      // proactivelly trigger the animation loop to avoid showing stale
-      // frames.
-      onRender();
-    }
+  if (foundAtLeastOneDriver && !isEventAnimationInProgress_) {
+    // There is an animation driver handling this event and
+    // event driven animation has not been started yet.
+    isEventAnimationInProgress_ = true;
+    // Some platforms (e.g. iOS) have UI tick listener disable
+    // when there are no active animations. Calling
+    // `startRenderCallbackIfNeeded` will call platform specific code to
+    // register UI tick listener.
+    startRenderCallbackIfNeeded();
+    // Calling startOnRenderCallback_ will register a UI tick listener.
+    // The UI ticker listener will not be called until the next frame.
+    // That's why, in case this is called from the UI thread, we need to
+    // proactivelly trigger the animation loop to avoid showing stale
+    // frames.
+    onRender();
   }
 }
 
@@ -466,14 +472,33 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
+  // This method can be called from either the UI thread or JavaScript thread.
+  // It ensures `startOnRenderCallback_` is called exactly once using atomic
+  // operations. We use std::atomic_bool rather than std::mutex to avoid
+  // potential deadlocks that could occur if we called external code while
+  // holding a mutex.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(true);
+  if (isRenderCallbackStarted) {
+    // onRender callback is already started.
+    return;
+  }
+
   if (startOnRenderCallback_) {
     startOnRenderCallback_([this]() { onRender(); });
   }
 }
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
-  if (stopOnRenderCallback_) {
-    stopOnRenderCallback_();
+  // When multiple threads reach this point, only one thread should call
+  // stopOnRenderCallback_. This synchronization is primarily needed during
+  // destruction of NativeAnimatedNodesManager. In normal operation,
+  // stopRenderCallbackIfNeeded is always called from the UI thread.
+  auto isRenderCallbackStarted = isRenderCallbackStarted_.exchange(false);
+
+  if (isRenderCallbackStarted) {
+    if (stopOnRenderCallback_) {
+      stopOnRenderCallback_();
+    }
   }
 }
 
@@ -688,16 +713,48 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
   return commitProps();
 }
 
-folly::dynamic NativeAnimatedNodesManager::managedProps(Tag tag) noexcept {
+folly::dynamic NativeAnimatedNodesManager::managedProps(
+    Tag tag) const noexcept {
   std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
-  const auto iter = connectedAnimatedNodes_.find(tag);
-  if (iter != connectedAnimatedNodes_.end()) {
+  if (const auto iter = connectedAnimatedNodes_.find(tag);
+      iter != connectedAnimatedNodes_.end()) {
     if (const auto node = getAnimatedNode<PropsAnimatedNode>(iter->second)) {
       return node->props();
+    }
+  } else {
+    std::lock_guard<std::mutex> lockUnsyncedDirectViewProps(
+        unsyncedDirectViewPropsMutex_);
+    if (auto it = unsyncedDirectViewProps_.find(tag);
+        it != unsyncedDirectViewProps_.end()) {
+      return it->second;
     }
   }
 
   return nullptr;
+}
+
+bool NativeAnimatedNodesManager::hasManagedProps() const noexcept {
+  {
+    std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
+    if (!connectedAnimatedNodes_.empty()) {
+      return true;
+    }
+  }
+  {
+    std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+    if (!unsyncedDirectViewProps_.empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
+  std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+  if (auto iter = unsyncedDirectViewProps_.find(tag);
+      iter != unsyncedDirectViewProps_.end()) {
+    unsyncedDirectViewProps_.erase(iter);
+  }
 }
 
 bool NativeAnimatedNodesManager::isOnRenderThread() const noexcept {
@@ -748,6 +805,10 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     mergeObjects(updateViewPropsDirect_[viewTag], props);
   } else if (directManipulationCallback_ != nullptr) {
     mergeObjects(updateViewPropsDirect_[viewTag], props);
+    {
+      std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+      mergeObjects(unsyncedDirectViewProps_[viewTag], props);
+    }
   }
 }
 

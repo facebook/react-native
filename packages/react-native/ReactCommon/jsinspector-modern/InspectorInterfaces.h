@@ -39,7 +39,7 @@ struct InspectorTargetCapabilities {
   bool prefersFuseboxFrontend = false;
 };
 
-const folly::dynamic targetCapabilitiesToDynamic(
+folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities);
 
 struct InspectorPageDescription {

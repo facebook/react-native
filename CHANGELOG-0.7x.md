@@ -319,6 +319,31 @@ ChuiHW))
 - **JSC:** Clean up RCTBridgeDelegate to remove shouldBridgeUseCustomJSC method ([c8f1506f13](https://github.com/facebook/react-native/commit/c8f1506f13310ffafe370273805684e696d72d50) by [@zhongwuzw](https://github.com/zhongwuzw))
 - **Layout:** Remove no longer needed UISceneDelegate ([a033cf9d5e](https://github.com/facebook/react-native/commit/a033cf9d5e8ffbda8b6f86cf3ce152b4ccb73187) by [@okwasniewski](https://github.com/okwasniewski))
 
+## v0.78.3
+
+### Added
+
+#### Android specific
+
+- **Gradle:** RNGP - Add support for `exclusiveEnterpriseRepository` to specify an internal Maven mirror. ([6cb8dc37c7](https://github.com/facebook/react-native/commit/6cb8dc37c74995cba3f9f0a845919f305de53c3d) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- **DevTools**: Temporarily disable eager evaluation and live expressions in the console tab ([07717b5275](https://github.com/facebook/react-native/commit/07717b5275d80cde7b2b4edbe032ab629127fbf0) by [@huntie](https://github.com/huntie))
+- **InteropLayer:** Fixed adding child views to a native view using the interop layer ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **Runtime:** Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+
+#### Android specific
+
+- **StyleSheet:** Wrong `borderBottomEndRadius` on RTL ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Codegen:** Skip codegen for selectively disabled libraries in react-native.config.js ([be8595b18a](https://github.com/facebook/react-native/commit/be8595b18a46635bf679d8e7473f2960c33530fa) by [@ismarbesic](https://github.com/ismarbesic))
+- **Layout:** Layout direction changes are now honored on bundle reload ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
+- **Runtime:** Re-enable enableFixForViewCommandRace feature flag ([ae59702f8e](https://github.com/facebook/react-native/commit/ae59702f8ee89e7bddec971e0a041744cb91e65c) by [@okwasniewski](https://github.com/okwasniewski))
+- **Switch:** Fixed switches correctly reverting to controlled state ([aa8c072870](https://github.com/facebook/react-native/commit/aa8c072870f6f9740e567a0f455c0e500ff1400c) by [@javache](https://github.com/javache))
+
 ## v0.78.2
 
 ### Changed
@@ -496,6 +521,37 @@ ChuiHW))
 - **Style:** Dashed & dotted borders now work with overflow: hidden ([1b88c5b429](https://github.com/facebook/react-native/commit/1b88c5b429888e109b7acae4808b4b6f8b3f920f) by [@joevilches](https://github.com/joevilches))
 - **Style:** Fixed `centerContent` losing taps and causing jitter ([fe7e97a2fd](https://github.com/facebook/react-native/commit/fe7e97a2fd272db0d9d9aa7d0561337a7c8e2c30) by [@gaearon](https://github.com/gaearon))
 - **Xcode:** Properly escape paths in Xcode build script used when bundling an app. ([2fee13094b](https://github.com/facebook/react-native/commit/2fee13094b3d384c071978776fd8b7cff0b6530f) by [@kraenhansen](https://github.com/kraenhansen))
+
+# Changelog
+## v0.77.3
+
+### Added
+
+#### Android specific
+
+- **Gradle**: RNGP - Add support for `exclusiveEnterpriseRepository` to specify an internal Maven mirror. ([6cb8dc37c7](https://github.com/facebook/react-native/commit/6cb8dc37c74995cba3f9f0a845919f305de53c3d) by [@cortinico](https://github.com/cortinico))
+
+### Changed
+
+- **Metro**: Bump Metro minimum version from `^0.81.3` to `^0.81.5`. ([dfa81638dd](https://github.com/facebook/react-native/commit/dfa81638dd17e46f70f10b25c4f4fd9f370a4b0e) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+- **Timers**: Align timer IDs and timer function argument error handling with web standards. ([480a4642e5](https://github.com/facebook/react-native/commit/480a4642e5a644becf1c477d3d239f9b57efff3a) by [@kitten](https://github.com/kitten))
+
+#### Android specific
+
+- **Modal**: Fix Modal first frame being rendered on top-left corner. ([b950fa2afb](https://github.com/facebook/react-native/commit/b950fa2afb20e2213ff6c733cb1c2465b90406ef) by [@cortinico](https://github.com/cortinico))
+- **layout**: Fix wrong `borderBottomEndRadius` on RTL. ([68d6ada448](https://github.com/facebook/react-native/commit/68d6ada44893701b6006a6b1753131c7e880a30a) by [@riteshshukla04](https://github.com/riteshshukla04))
+- **Modal**: Fix `FLAG_SECURE` not respected in Modal dialog. ([7e029b0dcf](https://github.com/facebook/react-native/commit/7e029b0dcf6d1a6455a8a6343457b70e353d0ff6) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **lifecylcle**: Legacy arch: fix #50274, Fast Refresh sometimes breaks after full refresh. ([c43952ac22](https://github.com/facebook/react-native/commit/c43952ac22b2356be3130c906329f61e246082cb) by [@robhogan](https://github.com/robhogan))
+
+#### iOS specific
+
+- **Interop Layer**: Fixed adding child views to a native view using the interop layer. ([d53a60dd23](https://github.com/facebook/react-native/commit/d53a60dd23c5df8afca058a867c50df8b61f62e2) by [@chrfalch](https://github.com/chrfalch))
+- **Debugger**: Restore "Paused in debugger" overlay icon. ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
+- **layout**: Layout direction changes are now honored on bundle reload. ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
+- **file reads**: Fix crash caused by `[RCTFileRequestHanlder invalidate]`. ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
 
 ## v0.77.2
 

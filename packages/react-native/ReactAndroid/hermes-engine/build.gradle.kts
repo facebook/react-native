@@ -306,6 +306,12 @@ android {
         }
       }
     }
+    buildTypes {
+      create("debugOptimized") {
+        initWith(getByName("debug"))
+        externalNativeBuild { cmake { arguments("-DCMAKE_BUILD_TYPE=Release") } }
+      }
+    }
   }
 
   sourceSets.getByName("main") {

@@ -317,7 +317,9 @@ function buildViewConfig(
       return directEvents;
     }, []);
 
-  const properties = [
+  const properties: Array<
+    BabelNodeObjectMethod | BabelNodeObjectProperty | BabelNodeSpreadElement,
+  > = [
     t.objectProperty(
       t.identifier('uiViewClassName'),
       t.stringLiteral(componentName),

@@ -94,6 +94,8 @@ const _combineCallbacks = function (
   if (callback && config.onComplete) {
     return (...args: Array<EndResult>) => {
       config.onComplete && config.onComplete(...args);
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       callback && callback(...args);
     };
   } else {

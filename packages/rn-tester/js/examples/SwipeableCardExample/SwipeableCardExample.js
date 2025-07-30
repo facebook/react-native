@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ListRenderItemInfo} from 'react-native';
 
 import * as React from 'react';
@@ -39,7 +40,7 @@ module.exports = {
         return <SwipeableCardExample />;
       },
     },
-  ],
+  ] as Array<RNTesterModuleExample>,
 };
 
 function SwipeableCardExample() {

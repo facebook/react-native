@@ -44,7 +44,7 @@ ShadowNodeListWrapper::~ShadowNodeListWrapper() = default;
 
 UIManager::UIManager(
     const RuntimeExecutor& runtimeExecutor,
-    ContextContainer::Shared contextContainer)
+    std::shared_ptr<const ContextContainer> contextContainer)
     : runtimeExecutor_(runtimeExecutor),
       shadowTreeRegistry_(),
       contextContainer_(std::move(contextContainer)),
@@ -516,7 +516,7 @@ std::shared_ptr<const ShadowNode> UIManager::findShadowNodeByTag_DEPRECATED(
   auto shadowNode = std::shared_ptr<const ShadowNode>{};
 
   shadowTreeRegistry_.enumerate([&](const ShadowTree& shadowTree, bool& stop) {
-    const RootShadowNode* rootShadowNode;
+    const RootShadowNode* rootShadowNode = nullptr;
     // The public interface of `ShadowTree` discourages accessing a stored
     // pointer to a root node because of the possible data race.
     // To work around this, we ask for a commit and immediately cancel it

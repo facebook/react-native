@@ -50,7 +50,7 @@ class RawProps final {
    */
   RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
-  explicit RawProps(const RawProps& rawProps) noexcept;
+  explicit RawProps(const RawProps& other) noexcept;
   RawProps(RawProps&& other) noexcept = default;
 
   RawProps& operator=(const RawProps& other) noexcept = delete;

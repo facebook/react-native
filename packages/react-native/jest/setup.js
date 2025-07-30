@@ -70,6 +70,17 @@ Object.defineProperties(global, {
   },
 });
 
+/**
+ * Prettier v3 uses import (cjs/mjs) file formats that jest-runtime does not
+ * support. To work around this we need to bypass the jest module system by
+ * using the orginal node `require` function.
+ */
+jest.mock('prettier', () => {
+  // $FlowExpectedError[underconstrained-implicit-instantiation]
+  const module = jest.requireActual('module');
+  return module.prototype.require(require.resolve('prettier'));
+});
+
 // $FlowFixMe[incompatible-call] - `./mocks/AppState` is incomplete.
 mock('m#../Libraries/AppState/AppState', 'm#./mocks/AppState');
 mock('m#../Libraries/BatchedBridge/NativeModules', 'm#./mocks/NativeModules');

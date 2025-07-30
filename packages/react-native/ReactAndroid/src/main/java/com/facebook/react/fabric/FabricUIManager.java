@@ -196,8 +196,6 @@ public class FabricUIManager
 
   private boolean mDriveCxxAnimations = false;
 
-  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
-
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
@@ -673,6 +671,18 @@ public class FabricUIManager
         textViewManager instanceof ReactTextViewManagerCallback
             ? (ReactTextViewManagerCallback) textViewManager
             : null);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public PreparedLayout reusePreparedLayoutWithNewReactTags(
+      PreparedLayout preparedLayout, int[] reactTags) {
+    return new PreparedLayout(
+        preparedLayout.getLayout(),
+        preparedLayout.getMaximumNumberOfLines(),
+        preparedLayout.getVerticalOffset(),
+        reactTags);
   }
 
   @AnyThread
@@ -1466,7 +1476,8 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
+      if ((mDriveCxxAnimations || ReactNativeFeatureFlags.cxxNativeAnimatedEnabled())
+          && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 

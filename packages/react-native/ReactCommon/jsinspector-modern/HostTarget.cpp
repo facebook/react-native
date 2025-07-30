@@ -19,6 +19,7 @@
 #include <folly/json.h>
 
 #include <memory>
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -45,13 +46,13 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            executor) {}
+            std::move(executor)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
    * Agent.
    */
-  void operator()(std::string message) {
+  void operator()(const std::string& message) {
     cdp::PreparsedRequest request;
     // Messages may be invalid JSON, or have unexpected types.
     try {
@@ -91,7 +92,7 @@ class HostTargetSession {
    * there's no current instance.
    */
   void setCurrentInstance(InstanceTarget* instance) {
-    if (instance) {
+    if (instance != nullptr) {
       hostAgent_.setCurrentInstanceAgent(
           instance->createAgent(frontendChannel_, state_));
     } else {
@@ -148,7 +149,7 @@ std::shared_ptr<HostTarget> HostTarget::create(
     HostTargetDelegate& delegate,
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
-  hostTarget->setExecutor(executor);
+  hostTarget->setExecutor(std::move(executor));
   return hostTarget;
 }
 
@@ -166,7 +167,7 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
-      [session](std::string message) { (*session)(message); });
+      [session](const std::string& message) { (*session)(message); });
 }
 
 HostTarget::~HostTarget() {
@@ -180,7 +181,7 @@ HostTarget::~HostTarget() {
       "HostTargetSession objects must be destroyed before their HostTarget. Did you call getInspectorInstance().removePage()?");
 }
 
-HostTargetDelegate::~HostTargetDelegate() {}
+HostTargetDelegate::~HostTargetDelegate() = default;
 
 InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
   assert(!currentInstance_ && "Only one instance allowed");
@@ -228,10 +229,7 @@ void HostTargetController::incrementPauseOverlayCounter() {
 
 bool HostTargetController::decrementPauseOverlayCounter() {
   assert(pauseOverlayCounter_ > 0 && "Pause overlay counter underflow");
-  if (--pauseOverlayCounter_ == 0) {
-    return false;
-  }
-  return true;
+  return --pauseOverlayCounter_ != 0;
 }
 
 namespace {

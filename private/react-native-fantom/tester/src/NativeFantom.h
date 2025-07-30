@@ -105,7 +105,7 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void reportTestSuiteResultsJSON(
       jsi::Runtime& runtime,
-      std::string testSuiteResultsJSON);
+      const std::string& testSuiteResultsJSON);
 
   void enqueueNativeEvent(
       jsi::Runtime& runtime,
@@ -142,7 +142,9 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
       jsi::Runtime& runtime,
       std::shared_ptr<const ShadowNode> shadowNode);
 
-  void saveJSMemoryHeapSnapshot(jsi::Runtime& runtime, std::string filePath);
+  void saveJSMemoryHeapSnapshot(
+      jsi::Runtime& runtime,
+      const std::string& filePath);
 
  private:
   TesterAppDelegate& appDelegate_;

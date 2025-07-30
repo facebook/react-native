@@ -10,6 +10,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import * as PressableExampleFbInternal from './PressableExampleFbInternal';
 import * as React from 'react';
 import {
   Alert,
@@ -21,7 +22,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
 const {useEffect, useRef, useState} = React;
 
@@ -271,25 +271,6 @@ function PressableDisabled() {
         <Text style={styles.button}>Enabled Pressable</Text>
       </Pressable>
     </>
-  );
-}
-
-function PressableHoverStyle() {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <View style={styles.row}>
-      <Pressable
-        style={[
-          {
-            backgroundColor: hovered ? 'rgb(210, 230, 255)' : 'white',
-          },
-          styles.wrapperCustom,
-        ]}
-        onHoverIn={() => setHovered(true)}
-        onHoverOut={() => setHovered(false)}>
-        <Text style={styles.text}>Hover Me</Text>
-      </Pressable>
-    </View>
   );
 }
 
@@ -587,16 +568,8 @@ const examples = [
       return <PressableAriaLabel />;
     },
   },
+  ...PressableExampleFbInternal.examples,
 ];
-
-if (ReactNativeFeatureFlags.shouldPressibilityUseW3CPointerEventsForHover()) {
-  examples.push({
-    title: 'Change style based on Hover',
-    render(): React.Node {
-      return <PressableHoverStyle />;
-    },
-  });
-}
 
 module.exports = ({
   title: 'Pressable',

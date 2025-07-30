@@ -14,6 +14,8 @@
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 
+#include <utility>
+
 #include "JCallback.h"
 #include "ReadableNativeArray.h"
 #include "ReadableNativeMap.h"
@@ -76,7 +78,7 @@ local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
     std::weak_ptr<Instance>& instance,
     const folly::dynamic& value) {
   if (value.isNull()) {
-    return local_ref<JCxxCallbackImpl::jhybridobject>(nullptr);
+    return {nullptr};
   } else {
     return JCxxCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
   }
@@ -195,7 +197,7 @@ MethodInvoker::MethodInvoker(
     std::string traceName,
     bool isSync)
     : method_(method->getMethodID()),
-      methodName_(methodName),
+      methodName_(std::move(methodName)),
       signature_(signature),
       jsArgCount_(countJsArgs(signature) - 2),
       traceName_(std::move(traceName)),

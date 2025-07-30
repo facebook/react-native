@@ -13,10 +13,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 /** Listener used to hook into the UIManager update process. */
 @Deprecated("Use UIManagerListener instead. This will be deleted in some future release.")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-public interface UIManagerModuleListener {
+internal interface UIManagerModuleListener {
   /**
    * Called right before view updates are dispatched at the end of a batch. This is useful if a
    * module needs to add UIBlocks to the queue before it is flushed.
    */
-  public fun willDispatchViewUpdates(uiManager: UIManagerModule)
+  fun willDispatchViewUpdates(uiManager: UIManagerModule)
 }

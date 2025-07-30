@@ -12,8 +12,8 @@
 import type {BuildType, Version} from './utils/version-utils';
 */
 
-const {REPO_ROOT} = require('../consts');
-const {getNpmInfo} = require('../npm-utils');
+const {getNpmInfo} = require('../releases/utils/npm-utils');
+const {REPO_ROOT} = require('../shared/consts');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {promises: fs} = require('fs');
 const path = require('path');

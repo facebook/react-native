@@ -19,11 +19,8 @@ import com.facebook.drawee.drawable.ScalingUtils
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BridgeReactContext
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactTestHelper.createMockCatalystInstance
-import com.facebook.react.bridge.WritableArray
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.DisplayMetricsHolder
@@ -32,6 +29,7 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.util.RNLog
 import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.soloader.SoLoader
+import com.facebook.testutils.shadows.ShadowArguments
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -47,26 +45,24 @@ import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
+import org.robolectric.annotation.Config
 
 /**
  * Verify that [com.facebook.drawee.drawable.ScalingUtils] properties are being applied correctly by
  * [ReactImageManager].
  */
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class ReactImagePropertyTest {
 
   private lateinit var context: BridgeReactContext
   private lateinit var catalystInstanceMock: CatalystInstance
   private lateinit var themeContext: ThemedReactContext
-  private lateinit var arguments: MockedStatic<Arguments>
   private lateinit var rnLog: MockedStatic<RNLog>
   private lateinit var flogMock: MockedStatic<FLog>
 
   @Before
   fun setup() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
 
     rnLog = mockStatic(RNLog::class.java)
     rnLog.`when`<Boolean> { RNLog.w(any(), anyString()) }.thenAnswer {}
@@ -87,7 +83,6 @@ class ReactImagePropertyTest {
   @After
   fun teardown() {
     DisplayMetricsHolder.setWindowDisplayMetrics(null)
-    arguments.close()
     rnLog.close()
     flogMock.close()
   }

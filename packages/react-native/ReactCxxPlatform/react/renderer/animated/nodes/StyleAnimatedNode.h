@@ -29,6 +29,6 @@ class StyleAnimatedNode final : public AnimatedNode {
   }
 
  private:
-  bool layoutStyleUpdated_;
+  bool layoutStyleUpdated_{};
 };
 } // namespace facebook::react

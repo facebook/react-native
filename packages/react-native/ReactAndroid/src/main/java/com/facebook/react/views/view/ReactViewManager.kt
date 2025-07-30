@@ -100,7 +100,9 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
       return
     }
 
-    ReactAxOrderHelper.cleanUpAxOrder(view)
+    for (i in 0 until view.childCount) {
+      ReactAxOrderHelper.cleanUpAxOrder(view.getChildAt(i))
+    }
 
     if (nativeIds == null) {
       view.axOrderList = null

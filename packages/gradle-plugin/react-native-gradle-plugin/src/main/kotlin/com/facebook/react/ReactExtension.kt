@@ -100,10 +100,10 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
    * Allows to specify the debuggable variants (by default just 'debug'). Variants in this list will
    * not be bundled (the bundle file will not be created and won't be copied over).
    *
-   * Default: ['debug']
+   * Default: ['debug', 'debugOptimized']
    */
   val debuggableVariants: ListProperty<String> =
-      objects.listProperty(String::class.java).convention(listOf("debug"))
+      objects.listProperty(String::class.java).convention(listOf("debug", "debugOptimized"))
 
   /** Hermes Config */
 

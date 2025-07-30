@@ -6,13 +6,14 @@
  */
 
 #include "ImageManager.h"
+#include "ImageFetcher.h"
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include "ImageFetcher.h"
 
 namespace facebook::react {
 
-ImageManager::ImageManager(const ContextContainer::Shared& contextContainer)
+ImageManager::ImageManager(
+    const std::shared_ptr<const ContextContainer>& contextContainer)
     : self_(new ImageFetcher(contextContainer)) {}
 
 ImageManager::~ImageManager() {
@@ -21,15 +22,13 @@ ImageManager::~ImageManager() {
 
 ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
-    SurfaceId surfaceId) const {
-  return requestImage(imageSource, surfaceId, ImageRequestParams{}, {});
-}
-
-ImageRequest ImageManager::requestImage(
-    const ImageSource& imageSource,
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) const {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    return static_cast<ImageFetcher*>(self_)->requestImage(
+        imageSource, imageRequestParams, surfaceId, tag);
+  }
   return {imageSource, nullptr, {}};
 }
 

@@ -5,10 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/Format.h>
+#include <fmt/format.h>
 #include <folly/executors/ManualExecutor.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
-#include <format>
 
 #include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
@@ -386,6 +385,55 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
                                })");
 }
 
+#pragma region JsiIntegrationPortableTestWithEarlyAddedBinding
+// A test with some special setup to cover an edge case in the CDP backend:
+// bindings can be added before there's even a Runtime in the session, and
+// they should still work seamlessly once there is one.
+
+TYPED_TEST_SUITE(JsiIntegrationPortableTestWithEarlyAddedBinding, AllEngines);
+
+template <typename EngineAdapter>
+class JsiIntegrationPortableTestWithEarlyAddedBinding
+    : public JsiIntegrationPortableTest<EngineAdapter> {
+  void setupRuntimeBeforeRegistration(jsi::Runtime& /*unused*/) override {
+    // Connect early, before the RuntimeTarget is created. This session will not
+    // have a RuntimeAgent yet.
+    this->connect();
+
+    // Add a binding.
+    this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+    this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.addBinding",
+                                 "params": {"name": "foo"}
+                               })");
+
+    // The binding is not installed yet, because the runtime is not registered
+    // with the CDP backend yet.
+    EXPECT_TRUE(this->eval("typeof globalThis.foo === 'undefined'").getBool());
+  }
+};
+
+TYPED_TEST(
+    JsiIntegrationPortableTestWithEarlyAddedBinding,
+    AddBindingBeforeRuntimeRegistered) {
+  // Now there is a RuntimeTarget / RuntimeAgent in the session, as per the
+  // normal test setup. Note that we're already connect()ed - not repeating that
+  // here.
+
+  // The binding is now installed, callable and working.
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.bindingCalled"),
+      AtJsonPtr("/params/name", "foo"),
+      AtJsonPtr("/params/payload", "bar"))));
+  this->eval("globalThis.foo('bar');");
+}
+
+#pragma endregion // JsiIntegrationPortableTestWithEarlyAddedBinding
+
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
 
@@ -486,7 +534,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
                                            }
                                          }
                                        })"));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
         "id": 1,
         "method": "Runtime.evaluate",
@@ -508,7 +556,7 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
   // Now the old execution context is stale.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 3), AtJsonPtr("/error/code", -32600))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
         "id": 3,
         "method": "Runtime.evaluate",
@@ -731,7 +779,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
   // Ensure we can get the properties of the object.
   this->expectMessageFromPage(JsonParsed(
       AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 2,
           "method": "Runtime.getProperties",
@@ -744,7 +792,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
                                          "id": 3,
                                          "result": {}
                                        })"));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 3,
           "method": "Runtime.releaseObject",
@@ -755,7 +803,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
   // Getting properties for a released object results in an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 4,
           "method": "Runtime.getProperties",
@@ -766,7 +814,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
   // Releasing an already released object is an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 5), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 5,
           "method": "Runtime.releaseObject",
@@ -797,7 +845,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
   // Ensure we can get the properties of the object.
   this->expectMessageFromPage(JsonParsed(
       AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 2,
           "method": "Runtime.getProperties",
@@ -819,7 +867,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
   // Getting properties for a released object results in an error.
   this->expectMessageFromPage(
       JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
-  this->toPage_->sendMessage(std::format(
+  this->toPage_->sendMessage(fmt::format(
       R"({{
           "id": 4,
           "method": "Runtime.getProperties",

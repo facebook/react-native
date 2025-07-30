@@ -21,7 +21,7 @@ namespace facebook::react {
 
 inline ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Weak& eventDispatcher,
-            const ContextContainer::Shared& contextContainer) {
+            const std::shared_ptr<const ContextContainer>& contextContainer) {
     static auto providerRegistry = []() {
       auto providerRegistry =
           std::make_shared<ComponentDescriptorProviderRegistry>();

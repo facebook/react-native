@@ -8,7 +8,11 @@
  * @format
  */
 
-import type {FailureDetail, TestSuiteResult} from '../runtime/setup';
+import type {
+  FailureDetail,
+  TestCaseResult,
+  TestSuiteResult,
+} from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
 import type {
   AsyncCommandResult,
@@ -31,8 +35,6 @@ import {
   getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
   getHermesCompilerTarget,
-  getShortHash,
-  isRunningFromCI,
   printConsoleLog,
   runBuck2,
   runBuck2Sync,
@@ -48,18 +50,26 @@ import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
+const fantomRunID = process.env.__FANTOM_RUN_ID__;
+if (fantomRunID == null) {
+  throw new Error(
+    'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
+  );
+}
+
 const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
-fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
-const BUILD_OUTPUT_PATH = fs.mkdtempSync(
-  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
-);
+const BUILD_OUTPUT_PATH = path.join(BUILD_OUTPUT_ROOT, fantomRunID);
+
+fs.mkdirSync(BUILD_OUTPUT_PATH, {recursive: true});
 
 function buildError(
   failureDetail: FailureDetail,
   sourceMapPath: string,
 ): Error {
   const error = new Error(failureDetail.message);
-  error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  if (failureDetail.stack != null) {
+    error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  }
   if (failureDetail.cause != null) {
     error.cause = buildError(failureDetail.cause, sourceMapPath);
   }
@@ -217,25 +227,38 @@ module.exports = async function runTest(
 
   const testResultsByConfig = [];
 
+  const skippedTestResults = ({
+    ancestorTitles,
+    title,
+  }: {
+    ancestorTitles: string[],
+    title: string,
+  }) => [
+    {
+      ancestorTitles,
+      duration: 0,
+      failureDetails: [] as Array<Error>,
+      failureMessages: [] as Array<string>,
+      fullName: title,
+      numPassingAsserts: 0,
+      snapshotResults: {} as TestSnapshotResults,
+      status: 'pending' as TestCaseResult['status'],
+      testFilePath: testPath,
+      title,
+    },
+  ];
+
   for (const testConfig of testConfigs) {
     if (
       EnvironmentOptions.isOSS &&
       testConfig.mode === FantomTestConfigMode.Optimized
     ) {
-      testResultsByConfig.push([
-        {
+      testResultsByConfig.push(
+        skippedTestResults({
           ancestorTitles: ['"@fantom_mode opt" in docblock'],
-          duration: 0,
-          failureDetails: [] as Array<Error>,
-          failureMessages: [] as Array<string>,
-          fullName: 'Optimized mode is not yet supoprted in OSS',
-          numPassingAsserts: 0,
-          snapshotResults: {} as TestSnapshotResults,
-          status: 'pending' as 'passed' | 'failed' | 'pending',
-          testFilePath: testPath,
-          title: 'Optimized mode is not yet supoprted in OSS',
-        },
-      ]);
+          title: 'Optimized mode is not yet supported in OSS',
+        }),
+      );
       continue;
     }
 
@@ -243,22 +266,27 @@ module.exports = async function runTest(
       EnvironmentOptions.isOSS &&
       testConfig.hermesVariant !== HermesVariantEnum.Hermes
     ) {
-      testResultsByConfig.push([
-        {
+      testResultsByConfig.push(
+        skippedTestResults({
           ancestorTitles: [
             '"@fantom_hermes_variant static_hermes" in docblock (shermes 🧪)',
           ],
-          duration: 0,
-          failureDetails: [] as Array<Error>,
-          failureMessages: [] as Array<string>,
-          fullName: 'Static Hermes is not yet supoprted in OSS',
-          numPassingAsserts: 0,
-          snapshotResults: {} as TestSnapshotResults,
-          status: 'pending' as 'passed' | 'failed' | 'pending',
-          testFilePath: testPath,
-          title: 'Static Hermes is not yet supoprted in OSS',
-        },
-      ]);
+          title: 'Static Hermes is not yet supported in OSS',
+        }),
+      );
+      continue;
+    }
+
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource
+    ) {
+      testResultsByConfig.push(
+        skippedTestResults({
+          ancestorTitles: ['"@fantom_mode dev-bytecode" in docblock'],
+          title: 'Hermes bytecode is not yet supported in OSS',
+        }),
+      );
       continue;
     }
 
@@ -271,12 +299,11 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
-      isRunningFromCI: isRunningFromCI(),
     });
 
     const entrypointPath = path.join(
       BUILD_OUTPUT_PATH,
-      `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
+      `${Date.now()}-${path.basename(testPath)}`,
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';
@@ -336,7 +363,7 @@ module.exports = async function runTest(
             ...rnTesterCommandArgs,
           ],
           {
-            withFDB: EnvironmentOptions.enableCppDebugging,
+            withFDB: EnvironmentOptions.debugCpp,
           },
         );
 

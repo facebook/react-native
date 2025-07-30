@@ -242,6 +242,8 @@ function reactConsoleErrorHandler(...args) {
     if (__DEV__) {
       // If we're not reporting to the console in reportException,
       // we need to report it as a console.error here.
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (!reportToConsole) {
         require('../LogBox/LogBox').default.addConsoleLog('error', ...args);
       }

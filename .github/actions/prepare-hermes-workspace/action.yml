@@ -17,9 +17,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Setup node.js
-      uses: ./.github/actions/setup-node
-
     - name: Setup hermes version
       shell: bash
       id: hermes-version
@@ -67,6 +64,8 @@ runs:
           echo "HERMES_CACHED=true" >> "$GITHUB_OUTPUT"
         fi
 
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
     - name: Yarn- Install Dependencies
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
       uses: ./.github/actions/yarn-install

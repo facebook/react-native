@@ -51,7 +51,7 @@ static std::shared_ptr<const ShadowNode> getShadowNodeInTree(
 }
 
 static std::shared_ptr<const ShadowNode> findNodeOfSameFamily(
-    const ShadowNode::ListOfShared& list,
+    const std::vector<std::shared_ptr<const ShadowNode>>& list,
     const ShadowNode& node) {
   for (auto& current : list) {
     if (ShadowNode::sameFamily(node, *current)) {
