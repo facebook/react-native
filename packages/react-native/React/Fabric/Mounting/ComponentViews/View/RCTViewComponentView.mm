@@ -799,13 +799,18 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       ((!_props->boxShadow.empty() || (clipToPaddingBox && nonZeroBorderWidth)) || _props->outlineWidth != 0);
 }
 
-- (UIView *)childContainerView
+// The view that is used as the receiver for all styling (borders, background,
+// etc.). Most of the time, this is just `self`. When a view has a filter like
+// `blur` applied, we need to wrap it in a SwiftUI view to render the effect.
+// In this case, `effectiveContentView` will be the content view inside the
+// SwiftUI wrapper.
+- (UIView *)effectiveContentView
 {
   if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
     return self;
   }
   
-  UIView *childContainerView = self;
+  UIView *effectiveContentView = self;
 
   if (self.styleNeedsSwiftUIContainer) {
     if (!_swiftUIWrapper) {
@@ -825,7 +830,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       [self transferVisualPropertiesFromView:self toView:swiftUIContentView];
     }
 
-    childContainerView = _swiftUIWrapper.contentView;
+    effectiveContentView = _swiftUIWrapper.contentView;
   } else {
     if (_swiftUIWrapper) {
       UIView *swiftUIContentView = _swiftUIWrapper.contentView;
@@ -842,7 +847,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     }
   }
 
-  return childContainerView;
+  return effectiveContentView;
 }
 
 // This UIView is the UIView that holds all subviews. It is sometimes not self
@@ -850,39 +855,39 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 // the view and is not affected by clipping.
 - (UIView *)currentContainerView
 {
-  UIView* childContainerView = self.childContainerView;
+  UIView* effectiveContentView = self.effectiveContentView;
 
   if (_useCustomContainerView) {
     if (!_containerView) {
       _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-      for (UIView *subview in childContainerView.subviews) {
+      for (UIView *subview in effectiveContentView.subviews) {
         [_containerView addSubview:subview];
       }
-      _containerView.clipsToBounds = childContainerView.clipsToBounds;
-      childContainerView.clipsToBounds = NO;
-      _containerView.layer.mask = childContainerView.layer.mask;
-      childContainerView.layer.mask = nil;
-      [childContainerView addSubview:_containerView];
+      _containerView.clipsToBounds = effectiveContentView.clipsToBounds;
+      effectiveContentView.clipsToBounds = NO;
+      _containerView.layer.mask = effectiveContentView.layer.mask;
+      effectiveContentView.layer.mask = nil;
+      [effectiveContentView addSubview:_containerView];
     }
 
-    childContainerView = _containerView;
+    effectiveContentView = _containerView;
   } else {
     if (_containerView) {
       for (UIView *subview in _containerView.subviews) {
-        [childContainerView addSubview:subview];
+        [effectiveContentView addSubview:subview];
       }
-      childContainerView.clipsToBounds = _containerView.clipsToBounds;
-      childContainerView.layer.mask = _containerView.layer.mask;
+      effectiveContentView.clipsToBounds = _containerView.clipsToBounds;
+      effectiveContentView.layer.mask = _containerView.layer.mask;
       [_containerView removeFromSuperview];
       _containerView = nil;
     }
   }
-  return childContainerView;
+  return effectiveContentView;
 }
 
 - (void)invalidateLayer
 {
-  CALayer *layer = self.childContainerView.layer;
+  CALayer *layer = self.effectiveContentView.layer;
  
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
     return;
