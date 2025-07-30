@@ -23,7 +23,7 @@ class MergedValueDispatcher {
  public:
   using DispatchFunction = std::function<void(std::function<void()>&&)>;
   using MergedValueFunction =
-      std::function<void(std::unordered_map<Tag, folly::dynamic> tagToProps)>;
+      std::function<void(std::unordered_map<Tag, folly::dynamic>&& tagToProps)>;
 
   /**
    * Creates a MergedValueDispatcher with the given dispatch function.

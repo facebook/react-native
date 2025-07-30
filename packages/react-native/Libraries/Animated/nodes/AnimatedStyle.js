@@ -82,10 +82,10 @@ function createAnimatedStyle(
 }
 
 export default class AnimatedStyle extends AnimatedWithChildren {
-  #originalStyleForWeb: ?mixed;
-  #nodeKeys: $ReadOnlyArray<string>;
-  #nodes: $ReadOnlyArray<AnimatedNode>;
-  #style: {[string]: mixed};
+  _originalStyleForWeb: ?mixed;
+  _nodeKeys: $ReadOnlyArray<string>;
+  _nodes: $ReadOnlyArray<AnimatedNode>;
+  _style: {[string]: mixed};
 
   /**
    * Creates an `AnimatedStyle` if `value` contains `AnimatedNode` instances.
@@ -118,9 +118,9 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     config?: ?AnimatedNodeConfig,
   ) {
     super(config);
-    this.#nodeKeys = nodeKeys;
-    this.#nodes = nodes;
-    this.#style = style;
+    this._nodeKeys = nodeKeys;
+    this._nodes = nodes;
+    this._style = style;
 
     if ((Platform.OS as string) === 'web') {
       // $FlowIgnore[cannot-write] - Intentional shadowing.
@@ -134,10 +134,10 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   __getValue(): FlatStyleForWeb<FlatStyle> | FlatStyle {
     const style: {[string]: mixed} = {};
 
-    const keys = Object.keys(this.#style);
+    const keys = Object.keys(this._style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const value = this.#style[key];
+      const value = this._style[key];
 
       if (value instanceof AnimatedNode) {
         style[key] = value.__getValue();
@@ -166,7 +166,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     const keys = Object.keys(style);
     for (let ii = 0, length = keys.length; ii < length; ii++) {
       const key = keys[ii];
-      const maybeNode = this.#style[key];
+      const maybeNode = this._style[key];
 
       if (key === 'transform' && maybeNode instanceof AnimatedTransform) {
         style[key] = maybeNode.__getValueWithStaticTransforms(
@@ -185,8 +185,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   __getAnimatedValue(): Object {
     const style: {[string]: mixed} = {};
 
-    const nodeKeys = this.#nodeKeys;
-    const nodes = this.#nodes;
+    const nodeKeys = this._nodeKeys;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const key = nodeKeys[ii];
       const node = nodes[ii];
@@ -197,7 +197,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __attach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__addChild(this);
@@ -206,7 +206,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __detach(): void {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__removeChild(this);
@@ -215,7 +215,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
   }
 
   __makeNative(platformConfig: ?PlatformConfig) {
-    const nodes = this.#nodes;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const node = nodes[ii];
       node.__makeNative(platformConfig);
@@ -227,8 +227,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     const platformConfig = this.__getPlatformConfig();
     const styleConfig: {[string]: ?number} = {};
 
-    const nodeKeys = this.#nodeKeys;
-    const nodes = this.#nodes;
+    const nodeKeys = this._nodeKeys;
+    const nodes = this._nodes;
     for (let ii = 0, length = nodes.length; ii < length; ii++) {
       const key = nodeKeys[ii];
       const node = nodes[ii];

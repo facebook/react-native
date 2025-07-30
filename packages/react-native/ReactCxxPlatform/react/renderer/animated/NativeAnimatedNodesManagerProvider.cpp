@@ -49,9 +49,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
           [jsInvoker](std::function<void()>&& func) {
             jsInvoker->invokeAsync(std::move(func));
           },
-          [uiManager](
-              const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
-            uiManager->updateShadowTree(tagToProps);
+          [uiManager](std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
+            uiManager->updateShadowTree(std::move(tagToProps));
           });
 
       fabricCommitCallback =
