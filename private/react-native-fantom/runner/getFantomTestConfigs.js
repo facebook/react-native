@@ -20,12 +20,6 @@ type JsOnlyFeatureFlags = (typeof ReactNativeFeatureFlags)['jsOnly'];
 
 type DocblockPragmas = {[key: string]: string | string[]};
 
-export enum FantomTestConfigMode {
-  DevelopmentWithBytecode,
-  DevelopmentWithSource,
-  Optimized,
-}
-
 export type FantomTestConfigCommonFeatureFlags = Partial<{
   [key in keyof CommonFeatureFlags]: CommonFeatureFlags[key]['defaultValue'],
 }>;
@@ -45,22 +39,27 @@ export type FantomTestConfigFeatureFlags = {
 };
 
 export type FantomTestConfig = {
-  mode: FantomTestConfigMode,
+  isNativeOptimized: boolean,
+  isJsOptimized: boolean,
+  isJsBytecode: boolean,
   hermesVariant: HermesVariant,
   flags: FantomTestConfigFeatureFlags,
 };
 
 export type PartialFantomTestConfig = {
-  mode?: FantomTestConfigMode,
+  isNativeOptimized?: boolean,
+  isJsOptimized?: boolean,
+  isJsBytecode?: boolean,
   hermesVariant?: HermesVariant,
   flags?: Partial<FantomTestConfigFeatureFlags>,
 };
 
 export const FantomTestConfigHermesVariant = HermesVariant;
 
-export const DEFAULT_MODE: FantomTestConfigMode =
-  FantomTestConfigMode.DevelopmentWithSource;
-
+export const DEFAULT_IS_OPTIMIZED: boolean = false;
+export const DEFAULT_IS_NATIVE_OPTIMIZED: boolean = false;
+export const DEFAULT_IS_JS_OPTIMIZED: boolean = false;
+export const DEFAULT_IS_JS_BYTECODE: boolean = false;
 export const DEFAULT_HERMES_VARIANT: HermesVariant = HermesVariant.Hermes;
 
 export const DEFAULT_FEATURE_FLAGS: FantomTestConfigFeatureFlags = {
@@ -77,9 +76,6 @@ const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
 const FANTOM_BENCHMARK_SUITE_RE =
   /\n(Fantom\.)?unstable_benchmark(\s*)\.suite\(/g;
 
-const FANTOM_BENCHMARK_DEFAULT_MODE: FantomTestConfigMode =
-  FantomTestConfigMode.Optimized;
-
 const MAX_FANTOM_CONFIGURATION_VARIATIONS = 12;
 
 const VALID_FANTOM_PRAGMAS = [
@@ -94,8 +90,16 @@ export function getOverrides(
 ): PartialFantomTestConfig {
   const overrides: PartialFantomTestConfig = {};
 
-  if (config.mode !== DEFAULT_MODE) {
-    overrides.mode = config.mode;
+  if (config.isNativeOptimized !== DEFAULT_IS_NATIVE_OPTIMIZED) {
+    overrides.isNativeOptimized = config.isNativeOptimized;
+  }
+
+  if (config.isJsOptimized !== DEFAULT_IS_JS_OPTIMIZED) {
+    overrides.isJsOptimized = config.isJsOptimized;
+  }
+
+  if (config.isJsBytecode !== DEFAULT_IS_JS_BYTECODE) {
+    overrides.isJsBytecode = config.isJsBytecode;
   }
 
   if (config.hermesVariant !== DEFAULT_HERMES_VARIANT) {
@@ -140,7 +144,7 @@ export function getOverrides(
  *
  * The supported options are:
  * - `fantom_mode`: specifies the level of optimization to compile the test
- *  with. Valid values are `dev`, `dev-bytecode` and `opt`.
+ *  with. Valid values are `dev` and `opt`.
  * - `fantom_hermes_variant`: specifies the Hermes variant to use to run the
  *  test. Valid values are `hermes`, `static_hermes_stable` and
  * `static_hermes_experimental`.
@@ -162,7 +166,9 @@ export default function getFantomTestConfigs(
   verifyFantomPragmas(pragmas);
 
   const config: FantomTestConfig = {
-    mode: DEFAULT_MODE,
+    isNativeOptimized: DEFAULT_IS_NATIVE_OPTIMIZED,
+    isJsOptimized: DEFAULT_IS_JS_OPTIMIZED,
+    isJsBytecode: DEFAULT_IS_JS_BYTECODE,
     hermesVariant: DEFAULT_HERMES_VARIANT,
     flags: {
       common: {
@@ -190,19 +196,27 @@ export default function getFantomTestConfigs(
 
     switch (mode) {
       case 'dev':
-        config.mode = FantomTestConfigMode.DevelopmentWithSource;
-        break;
-      case 'dev-bytecode':
-        config.mode = FantomTestConfigMode.DevelopmentWithBytecode;
+        config.isNativeOptimized = false;
+        config.isJsOptimized = false;
+        config.isJsBytecode = false;
         break;
       case 'opt':
-        config.mode = FantomTestConfigMode.Optimized;
+        config.isNativeOptimized = true;
+        config.isJsOptimized = true;
+        config.isJsBytecode = true;
         break;
       case '*':
         configVariations.push([
-          {mode: FantomTestConfigMode.DevelopmentWithSource},
-          {mode: FantomTestConfigMode.DevelopmentWithBytecode},
-          {mode: FantomTestConfigMode.Optimized},
+          {
+            isNativeOptimized: false,
+            isJsOptimized: false,
+            isJsBytecode: false,
+          },
+          {
+            isNativeOptimized: true,
+            isJsOptimized: true,
+            isJsBytecode: true,
+          },
         ]);
         break;
       default:
@@ -213,7 +227,9 @@ export default function getFantomTestConfigs(
       FANTOM_BENCHMARK_FILENAME_RE.test(testPath) ||
       FANTOM_BENCHMARK_SUITE_RE.test(testContents)
     ) {
-      config.mode = FANTOM_BENCHMARK_DEFAULT_MODE;
+      config.isNativeOptimized = true;
+      config.isJsOptimized = true;
+      config.isJsBytecode = true;
     }
   }
 
@@ -373,7 +389,11 @@ function getConfigurationVariations(
 
   for (const currentConfigVariation of currentConfigVariations) {
     const currentConfigWithVariation = {
-      mode: currentConfigVariation.mode ?? config.mode,
+      isNativeOptimized:
+        currentConfigVariation.isNativeOptimized ?? config.isNativeOptimized,
+      isJsOptimized:
+        currentConfigVariation.isJsOptimized ?? config.isJsOptimized,
+      isJsBytecode: currentConfigVariation.isJsBytecode ?? config.isJsBytecode,
       hermesVariant:
         currentConfigVariation.hermesVariant ?? config.hermesVariant,
       flags: {
