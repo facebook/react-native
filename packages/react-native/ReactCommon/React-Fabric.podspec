@@ -149,6 +149,7 @@ Pod::Spec.new do |s|
     ss.source_files         = podspec_sources("react/renderer/scheduler/**/*.{m,mm,cpp,h}", "react/renderer/scheduler/**/*.h")
     ss.header_dir           = "react/renderer/scheduler"
 
+    ss.dependency             "React-performancecdpmetrics"
     ss.dependency             "React-performancetimeline"
     ss.dependency             "React-Fabric/observers/events"
   end

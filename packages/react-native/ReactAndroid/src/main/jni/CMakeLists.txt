@@ -81,6 +81,7 @@ add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
 add_react_common_subdir(react/featureflags)
+add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
 add_react_common_subdir(react/renderer/attributedstring)
@@ -191,6 +192,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_newarchdefaults>
+          $<TARGET_OBJECTS:react_performance_cdpmetrics>
           $<TARGET_OBJECTS:react_performance_timeline>
           $<TARGET_OBJECTS:react_renderer_animations>
           $<TARGET_OBJECTS:react_renderer_attributedstring>
@@ -279,6 +281,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_performance_cdpmetrics,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_animations,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>

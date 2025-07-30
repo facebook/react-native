@@ -38,6 +38,12 @@ Scheduler::Scheduler(
   auto performanceEntryReporter = PerformanceEntryReporter::getInstance();
   performanceEntryReporter_ = performanceEntryReporter;
 
+  if (ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+      ReactNativeFeatureFlags::cdpInteractionMetricsEnabled()) {
+    cdpMetricsReporter_.emplace(CdpMetricsReporter{runtimeExecutor_});
+    performanceEntryReporter_->addEventTimingListener(&*cdpMetricsReporter_);
+  }
+
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
@@ -163,6 +169,10 @@ Scheduler::~Scheduler() {
   // The thread-safety of this operation is guaranteed by this requirement.
   uiManager_->setDelegate(nullptr);
   uiManager_->setAnimationDelegate(nullptr);
+
+  if (cdpMetricsReporter_) {
+    performanceEntryReporter_->removeEventTimingListener(&*cdpMetricsReporter_);
+  }
 
   // Then, let's verify that the requirement was satisfied.
   auto surfaceIds = std::vector<SurfaceId>{};

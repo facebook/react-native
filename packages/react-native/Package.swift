@@ -13,7 +13,7 @@ import PackageDescription
  To build React Native, you need to follow these steps:
  1. inside the `react-native` root folder, run `yarn install`
  2. `cd packages/react-native`
- 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/prebuild-ios`
+ 3. `RN_DEP_VERSION=nightly HERMES_VERSION=nightly node scripts/ios-prebuild`
  4. `open Package.swift`
  5. Build in Xcode.
 
@@ -206,6 +206,14 @@ let reactHermes = RNTarget(
   defines: [
     CXXSetting.define("HERMES_ENABLE_DEBUGGER", to: "1", .when(configuration: BuildConfiguration.debug))
   ]
+)
+
+/// React-performancecdpmetrics.podspec
+let reactPerformanceCdpMetrics = RNTarget(
+  name: .reactPerformanceCdpMetrics,
+  path: "ReactCommon/react/performance/cdpmetrics",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .jsi, .reactPerformanceTimeline, .reactRuntimeExecutor]
 )
 
 /// React-performancetimeline.podspec
@@ -554,6 +562,7 @@ let targets = [
   reactNativeDependencies,
   hermesPrebuilt,
   reactJsiTooling,
+  reactPerformanceCdpMetrics,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
   rctTypesafety,
@@ -724,6 +733,7 @@ extension String {
   static let hermesPrebuilt = "hermes-prebuilt"
 
   static let reactJsiTooling = "React-jsitooling"
+  static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
   static let reactPerformanceTimeline = "React-performancetimeline"
   static let reactRuntimeScheduler = "React-runtimescheduler"
   static let rctTypesafety = "RCTTypesafety"
