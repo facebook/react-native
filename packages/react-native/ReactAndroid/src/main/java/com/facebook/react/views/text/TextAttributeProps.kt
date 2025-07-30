@@ -145,8 +145,8 @@ public class TextAttributeProps private constructor() {
     // Returns a line height which takes into account the requested line height
     get() {
       val useInlineViewHeight =
-          !java.lang.Float.isNaN(lineHeight) &&
-              !java.lang.Float.isNaN(heightOfTallestInlineImage) &&
+          !lineHeight.isNaN() &&
+              !heightOfTallestInlineImage.isNaN() &&
               heightOfTallestInlineImage > lineHeight
       return if (useInlineViewHeight) heightOfTallestInlineImage else lineHeight
     }
