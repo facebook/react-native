@@ -157,7 +157,6 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
 
 void InstanceAgent::startTracing() {
   if (runtimeAgent_) {
-    runtimeAgent_->registerForTracing();
     runtimeAgent_->enableSamplingProfiler();
   }
 }

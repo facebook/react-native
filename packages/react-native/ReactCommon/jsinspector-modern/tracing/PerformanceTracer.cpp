@@ -27,31 +27,21 @@ PerformanceTracer::PerformanceTracer()
     : processId_(oscompat::getCurrentProcessId()) {}
 
 bool PerformanceTracer::startTracing() {
-  {
-    std::lock_guard lock(mutex_);
-    if (tracingAtomic_) {
-      return false;
-    }
-    tracingAtomic_ = true;
+  std::lock_guard lock(mutex_);
+  if (tracingAtomic_) {
+    return false;
   }
+  tracingAtomic_ = true;
 
-  reportProcess(processId_, "React Native");
-
-  {
-    std::lock_guard lock(mutex_);
-    if (!tracingAtomic_) {
-      return false;
-    }
-    buffer_.emplace_back(TraceEvent{
-        .name = "TracingStartedInPage",
-        .cat = "disabled-by-default-devtools.timeline",
-        .ph = 'I',
-        .ts = HighResTimeStamp::now(),
-        .pid = processId_,
-        .tid = oscompat::getCurrentThreadId(),
-        .args = folly::dynamic::object("data", folly::dynamic::object()),
-    });
-  }
+  buffer_.emplace_back(TraceEvent{
+      .name = "TracingStartedInPage",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = HighResTimeStamp::now(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", folly::dynamic::object()),
+  });
 
   return true;
 }
@@ -266,66 +256,6 @@ void PerformanceTracer::reportTimeStamp(
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
       .args = folly::dynamic::object("data", std::move(data)),
-  });
-}
-
-void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  buffer_.emplace_back(TraceEvent{
-      .name = "process_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = TRACING_TIME_ORIGIN,
-      .pid = id,
-      .tid = 0,
-      .args = folly::dynamic::object("name", name),
-  });
-}
-
-void PerformanceTracer::reportJavaScriptThread() {
-  reportThread(oscompat::getCurrentThreadId(), "JavaScript");
-}
-
-void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  buffer_.emplace_back(TraceEvent{
-      .name = "thread_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = TRACING_TIME_ORIGIN,
-      .pid = processId_,
-      .tid = id,
-      .args = folly::dynamic::object("name", name),
-  });
-
-  // This is synthetic Trace Event, which should not be represented on a
-  // timeline. CDT will filter out threads that only have JavaScript samples and
-  // no timeline events or user timings. We use this event to avoid that.
-  // This could happen for non-bridgeless apps, where Performance interface is
-  // not supported and no spec-compliant Event Loop implementation.
-  buffer_.emplace_back(TraceEvent{
-      .name = "ReactNative-ThreadRegistered",
-      .cat = "disabled-by-default-devtools.timeline",
-      .ph = 'I',
-      .ts = TRACING_TIME_ORIGIN,
-      .pid = processId_,
-      .tid = id,
   });
 }
 
