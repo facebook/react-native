@@ -305,46 +305,49 @@ void PerformanceTracer::reportEventLoopMicrotasks(
   });
 }
 
-folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
-    ThreadId threadId,
+/* static */ TraceEvent PerformanceTracer::constructRuntimeProfileTraceEvent(
     RuntimeProfileId profileId,
+    ProcessId processId,
+    ThreadId threadId,
     HighResTimeStamp profileTimestamp) {
   // CDT prioritizes event timestamp over startTime metadata field.
   // https://fburl.com/lo764pf4
-  return TraceEventSerializer::serialize(TraceEvent{
+  return TraceEvent{
       .id = profileId,
       .name = "Profile",
       .cat = "disabled-by-default-v8.cpu_profiler",
       .ph = 'P',
       .ts = profileTimestamp,
-      .pid = processId_,
+      .pid = processId,
       .tid = threadId,
       .args = folly::dynamic::object(
           "data",
           folly::dynamic::object(
               "startTime",
               highResTimeStampToTracingClockTimeStamp(profileTimestamp))),
-  });
+  };
 }
 
-folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
-    ThreadId threadId,
+/* static */ TraceEvent
+PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
     RuntimeProfileId profileId,
+    ProcessId processId,
+    ProcessId threadId,
     HighResTimeStamp chunkTimestamp,
-    tracing::TraceEventProfileChunk&& traceEventProfileChunk) {
-  return TraceEventSerializer::serialize(TraceEvent{
+    TraceEventProfileChunk&& traceEventProfileChunk) {
+  return TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
       .cat = "disabled-by-default-v8.cpu_profiler",
       .ph = 'P',
       .ts = chunkTimestamp,
-      .pid = processId_,
+      .pid = processId,
       .tid = threadId,
       .args = folly::dynamic::object(
           "data",
           TraceEventSerializer::serializeProfileChunk(
               std::move(traceEventProfileChunk))),
-  });
+  };
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing
