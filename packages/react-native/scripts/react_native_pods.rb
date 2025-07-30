@@ -161,6 +161,7 @@ def use_react_native! (
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancecdpmetrics', :path => "#{prefix}/ReactCommon/react/performance/cdpmetrics"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
