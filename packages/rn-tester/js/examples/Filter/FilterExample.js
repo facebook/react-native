@@ -295,23 +295,21 @@ const AnimatedBlurExample = () => {
   };
 
   return (
-    <View style={styles.horizontal}>
-      <View>
-        <Button
-          onPress={onPress}
-          title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
-        />
-        <Animated.View
-          style={[
-            {
-              filter: [{blur: animatedValue}],
-              backgroundColor: 'pink',
-              height: 100,
-              width: 100,
-            },
-          ]}
-        />
-      </View>
+    <View style={{flexDirection: 'column', alignItems: 'center'}}>
+      <Button
+        onPress={onPress}
+        title={isBlurred ? 'Remove Blur' : 'Animate Blur'}
+      />
+      <Animated.View
+        style={[
+          {
+            filter: [{blur: animatedValue}],
+            backgroundColor: 'pink',
+            height: 100,
+            width: 100,
+          },
+        ]}
+      />
     </View>
   );
 };
