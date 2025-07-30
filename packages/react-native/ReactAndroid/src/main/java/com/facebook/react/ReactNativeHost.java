@@ -8,6 +8,8 @@
 package com.facebook.react;
 
 import android.app.Application;
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -27,7 +29,12 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
+
+import com.facebook.react.runtime.ReactSurfaceView;
+import com.facebook.react.runtime.ReactSurfaceImpl;
+
 import java.util.List;
+
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -246,5 +253,9 @@ public abstract class ReactNativeHost {
    */
   protected @Nullable ChoreographerProvider getChoreographerProvider() {
     return null;
+  }
+
+  public ReactSurfaceView createReactSurfaceView(Context context, ReactSurfaceImpl surfaceImpl) {
+    return new ReactSurfaceView(context, surfaceImpl);
   }
 }

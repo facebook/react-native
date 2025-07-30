@@ -21,6 +21,8 @@ import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostImpl
+import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
 import java.lang.Exception
@@ -59,6 +61,7 @@ public object DefaultReactHost {
   public fun getDefaultReactHost(
       context: Context,
       packageList: List<ReactPackage>,
+      createReactSurfaceView: (Context, ReactSurfaceImpl) -> ReactSurfaceView,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
@@ -69,6 +72,7 @@ public object DefaultReactHost {
       getDefaultReactHost(
           context,
           packageList,
+          createReactSurfaceView,
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
@@ -105,6 +109,7 @@ public object DefaultReactHost {
   public fun getDefaultReactHost(
       context: Context,
       packageList: List<ReactPackage>,
+      createReactSurfaceView: (Context, ReactSurfaceImpl) -> ReactSurfaceView,
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
@@ -136,7 +141,8 @@ public object DefaultReactHost {
               jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance(),
               bindingsInstaller = bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
-              exceptionHandler = exceptionHandler)
+              exceptionHandler = exceptionHandler,
+              createReactSurfaceViewCallback = createReactSurfaceView)
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost

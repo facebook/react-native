@@ -7,11 +7,14 @@
 
 package com.facebook.react.runtime
 
+import android.content.Context
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.runtime.ReactSurfaceView
 
 /**
  * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
@@ -53,4 +56,6 @@ public interface ReactHostDelegate {
    * the internals of React Native.
    */
   public fun handleInstanceException(error: Exception)
+
+  public fun createReactSurfaceView(context: Context, surfaceImpl: ReactSurfaceImpl): ReactSurfaceView
 }

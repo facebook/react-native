@@ -21,6 +21,8 @@ import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.runtime.ReactSurfaceView
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 
@@ -106,9 +108,12 @@ protected constructor(
       jsRuntimeFactory: JSRuntimeFactory? = null
   ): ReactHost {
     val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
+    val createReactSurfaceViewCallback: (Context, ReactSurfaceImpl) -> ReactSurfaceView =
+          { ctx, surfaceImpl -> createReactSurfaceView(ctx, surfaceImpl) }
     return DefaultReactHost.getDefaultReactHost(
         context,
         packages,
+        createReactSurfaceViewCallback,
         jsMainModuleName,
         bundleAssetName ?: "index",
         jsBundleFile,

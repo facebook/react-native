@@ -319,7 +319,7 @@ public class ReactHostImpl(
       initialProps: Bundle?
   ): ReactSurface {
     val surface = ReactSurfaceImpl(context, moduleName, initialProps)
-    val surfaceView = ReactSurfaceView(context, surface)
+    val surfaceView = reactHostDelegate.createReactSurfaceView(context, surface);
     surfaceView.setShouldLogContentAppeared(true)
     surface.attachView(surfaceView)
     surface.attach(this)

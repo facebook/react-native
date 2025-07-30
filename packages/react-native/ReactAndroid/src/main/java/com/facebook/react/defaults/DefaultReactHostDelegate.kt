@@ -7,6 +7,7 @@
 
 package com.facebook.react.defaults
 
+import android.content.Context
 import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
@@ -16,6 +17,8 @@ import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.runtime.ReactSurfaceView
 
 /**
  * A utility class that allows you to simplify the initialization of React Native by setting up a
@@ -42,7 +45,9 @@ public class DefaultReactHostDelegate(
     override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller? = null,
     private val exceptionHandler: (Exception) -> Unit = { throw it },
-    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
+    override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder,
+    private val createReactSurfaceViewCallback: (Context, ReactSurfaceImpl) -> ReactSurfaceView
 ) : ReactHostDelegate {
   override fun handleInstanceException(error: Exception): Unit = exceptionHandler(error)
+  override fun createReactSurfaceView(context: Context, surfaceImpl: ReactSurfaceImpl): ReactSurfaceView = createReactSurfaceViewCallback(context, surfaceImpl)
 }
