@@ -140,7 +140,7 @@ public class com/facebook/react/ReactActivityDelegate {
 
 public abstract interface class com/facebook/react/ReactApplication {
 	public fun getReactHost ()Lcom/facebook/react/ReactHost;
-	public abstract fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
+	public fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 }
 
 public class com/facebook/react/ReactDelegate {
@@ -814,14 +814,6 @@ public abstract interface class com/facebook/react/bridge/JSExceptionHandler {
 
 public abstract interface class com/facebook/react/bridge/JSInstance {
 	public abstract fun invokeCallback (ILcom/facebook/react/bridge/NativeArrayInterface;)V
-}
-
-public final class com/facebook/react/bridge/JSONArguments {
-	public static final field INSTANCE Lcom/facebook/react/bridge/JSONArguments;
-	public static final fun fromJSONArray (Lorg/json/JSONArray;)Lcom/facebook/react/bridge/ReadableArray;
-	public static final fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
-	public static final fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
-	public static final fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
 }
 
 public final class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge/ReadableArray, com/facebook/react/bridge/WritableArray {

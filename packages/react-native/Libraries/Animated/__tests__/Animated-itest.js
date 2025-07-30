@@ -77,15 +77,14 @@ test('moving box by 100 points', () => {
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    expect(viewElement.getBoundingClientRect().x).toBe(100);
-    // TODO(T223344928): this shouldn't be neccessary
+    // TODO(T223344928,T232605345): this shouldn't be neccessary once we disable JS sync and Android's race condition.
     Fantom.runWorkLoop();
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
   } else {
     expect(viewElement.getBoundingClientRect().x).toBe(0);
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
   }
-
-  expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
 
 test('animation driven by onScroll event', () => {
@@ -147,6 +146,10 @@ test('animation driven by onScroll event', () => {
     Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
 
   expect(transform.translateY).toBeCloseTo(100, 0.001);
+
+  // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+  expect(viewElement.getBoundingClientRect().y).toBe(0);
+  Fantom.runWorkLoop();
 
   expect(viewElement.getBoundingClientRect().y).toBe(100);
 });
@@ -333,6 +336,8 @@ test('moving box by 50 points with offset 10', () => {
   ).toBeCloseTo(60, 0.001);
 
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    // TODO(T232605345): The following line won't be necessary once race condition on Android is fixed.
+    Fantom.runWorkLoop();
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform='[{"translateX": 60.000000}]' />,
     );
@@ -730,27 +735,20 @@ test('Animated.sequence', () => {
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(-16, 0.001);
 
-  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
-  }
-  expect(_isSequenceFinished).toBe(false);
-  expect(element.getBoundingClientRect().y).toBe(-16);
+  Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
 
-  Fantom.runWorkLoop(); // React render
+  expect(_isSequenceFinished).toBe(false);
+
+  expect(element.getBoundingClientRect().y).toBe(-16);
 
   expect(
     // $FlowFixMe[incompatible-use]
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(0, 0.001);
 
-  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
-  }
+  Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+
   expect(element.getBoundingClientRect().y).toBe(0);
 
-  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    expect(_isSequenceFinished).toBe(false);
-    Fantom.runWorkLoop();
-  }
   expect(_isSequenceFinished).toBe(true);
 });
