@@ -72,6 +72,11 @@ namespace facebook::react {
     jsi::Runtime& runtime,
     SurfaceId surfaceId) {
   auto global = runtime.global();
+  if (!global.hasProperty(runtime, "RN$stopSurface")) {
+      // ReactFabric module has not been loaded yet; there's no surface to stop.
+      return;
+  }
+  
   auto stopFunction = global.getProperty(runtime, "RN$stopSurface");
   if (!stopFunction.isObject() ||
       !stopFunction.asObject(runtime).isFunction(runtime)) {
