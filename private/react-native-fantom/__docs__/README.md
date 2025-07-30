@@ -132,8 +132,26 @@ Available pragmas:
   - Possible values:
     - `dev`: development, default for tests.
     - `opt`: optimized and using Hermes bytecode, default for benchmarks.
+- `@fantom_native_opt`: used to define the compilation mode for native code.
+  - Example: `@fantom_native_opt true`
+  - Possible values:
+    - `true`: optimized native code
+    - `false`: development native code
+- `@fantom_js_opt`: used to define the compilation mode for the JS bundle.
+  - Example: `@fantom_js_opt true`
+  - Possible values:
+    - `true`: optimized JS bundle
+    - `false`: development JS bundle
+- `@fantom_js_bytecode`: used to define if the JS bundle should use bytecode.
+  - Example: `@fantom_js_bytecode true`
+  - Possible values:
+    - `true`: using Hermes bytecode
+    - `false`: not using Hermes bytecode
 - `@fantom_react_fb_flags`: used to set overrides for internal React flags set
   in ReactNativeInternalFeatureFlags (Meta use only)
+
+Setting `@fantom_mode` is mutually exclusive with setting any of
+`@fantom_native_opt`, `@fantom_js_opt`, and `@fantom_js_bytecode`.
 
 For all pragmas, except non-boolean feature flags, you can use a wildcard (`*`)
 as value to run the test with all possible values for that pragma. For example,
