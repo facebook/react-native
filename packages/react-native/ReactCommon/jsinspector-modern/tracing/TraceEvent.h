@@ -13,6 +13,14 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
+using ProcessId = uint64_t;
+using ThreadId = uint64_t;
+/**
+ * The ID for the JavaScript Sampling Profile. There can be multiple Profiles
+ * during a single session, in case RuntimeTarget is re-initialized.
+ */
+using RuntimeProfileId = uint16_t;
+
 /**
  * A trace event to send to the debugger frontend, as defined by the Trace Event
  * Format.
@@ -44,11 +52,11 @@ struct TraceEvent {
   /** The tracing clock timestamp of the event, in microseconds (µs). */
   HighResTimeStamp ts;
 
-  /** The process ID for the process that output this event. */
-  uint64_t pid;
+  /** The ID for the process that output this event. */
+  ProcessId pid;
 
-  /** The thread ID for the process that output this event. */
-  uint64_t tid;
+  /** The ID for the thread that output this event. */
+  ThreadId tid;
 
   /** Any arguments provided for the event. */
   folly::dynamic args = folly::dynamic::object();

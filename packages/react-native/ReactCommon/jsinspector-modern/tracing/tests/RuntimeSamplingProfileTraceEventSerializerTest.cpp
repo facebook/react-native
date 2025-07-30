@@ -49,7 +49,7 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
 
   RuntimeSamplingProfile::Sample createSample(
       uint64_t timestamp,
-      uint64_t threadId,
+      ThreadId threadId,
       std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack) {
     return {timestamp, threadId, std::move(callStack)};
   }
@@ -108,7 +108,7 @@ TEST_F(
       createJSCallFrame("foo", 1, "test.js", 10, 5),
   };
 
-  uint64_t threadId = 1;
+  ThreadId threadId = 1;
   uint64_t timestamp1 = 1000000;
   uint64_t timestamp2 = 2000000;
   uint64_t timestamp3 = 3000000;
@@ -141,7 +141,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
   // Create an empty sample (no call stack)
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> emptyCallStack;
 
-  uint64_t threadId = 1;
+  ThreadId threadId = 1;
   uint64_t timestamp = 1000000;
 
   auto samples = std::vector<RuntimeSamplingProfile::Sample>{};
@@ -179,8 +179,8 @@ TEST_F(
       createJSCallFrame("foo", 1, "test.js", 10, 5)};
 
   uint64_t timestamp = 1000000;
-  uint64_t threadId1 = 1;
-  uint64_t threadId2 = 2;
+  ThreadId threadId1 = 1;
+  ThreadId threadId2 = 2;
 
   auto samples = std::vector<RuntimeSamplingProfile::Sample>{};
   samples.emplace_back(createSample(timestamp, threadId1, callStack));
@@ -219,7 +219,7 @@ TEST_F(
       createJSCallFrame("foo", 1, "test.js", 10, 5)};
 
   uint64_t timestamp = 1000000;
-  uint64_t threadId = 1;
+  ThreadId threadId = 1;
 
   std::vector<RuntimeSamplingProfile::Sample> samples;
   samples.reserve(5);
@@ -260,7 +260,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
       createJSCallFrame("foo", 1, "test.js", 10, 5)};
 
   uint64_t timestamp = 1000000;
-  uint64_t threadId = 1;
+  ThreadId threadId = 1;
 
   std::vector<RuntimeSamplingProfile::Sample> samples;
   samples.reserve(samplesCount);
