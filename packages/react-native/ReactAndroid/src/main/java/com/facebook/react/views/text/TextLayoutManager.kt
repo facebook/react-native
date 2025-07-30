@@ -259,22 +259,16 @@ internal object TextLayoutManager {
           }
         }
         if (textAttributes.isColorSet) {
-          textAttributes.color?.let { ReactForegroundColorSpan(it) }?.let {
-            SetSpanOperation(start, end,
-              it
-            )
-          }?.let { ops.add(it) }
+          textAttributes.color
+              ?.let { ReactForegroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
         if (textAttributes.isBackgroundColorSet) {
-          textAttributes.backgroundColor?.let { ReactBackgroundColorSpan(it) }?.let {
-            SetSpanOperation(
-              start, end, it
-            )
-          }?.let {
-            ops.add(
-              it
-            )
-          }
+          textAttributes.backgroundColor
+              ?.let { ReactBackgroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
         if (!textAttributes.opacity.isNaN()) {
           ops.add(SetSpanOperation(start, end, ReactOpacitySpan(textAttributes.opacity)))
@@ -419,12 +413,16 @@ internal object TextLayoutManager {
         }
 
         if (fragment.props.isColorSet) {
-          spannable.setSpan(fragment.props.color?.let { ReactForegroundColorSpan(it) }, start, end, spanFlags)
+          spannable.setSpan(
+              fragment.props.color?.let { ReactForegroundColorSpan(it) }, start, end, spanFlags)
         }
 
         if (fragment.props.isBackgroundColorSet) {
           spannable.setSpan(
-            fragment.props.backgroundColor?.let { ReactBackgroundColorSpan(it) }, start, end, spanFlags)
+              fragment.props.backgroundColor?.let { ReactBackgroundColorSpan(it) },
+              start,
+              end,
+              spanFlags)
         }
 
         if (!fragment.props.opacity.isNaN()) {
