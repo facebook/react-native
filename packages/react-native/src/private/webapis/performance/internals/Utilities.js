@@ -9,6 +9,7 @@
  */
 
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
+import NativePerformance from '../specs/NativePerformance';
 
 export function warnNoNativePerformance() {
   warnOnce(
@@ -16,3 +17,11 @@ export function warnNoNativePerformance() {
     'Missing native implementation of Performance',
   );
 }
+
+declare var global: {
+  // This value is defined directly via JSI, if available.
+  +nativePerformanceNow?: ?() => number,
+};
+
+export const getCurrentTimeStamp: () => DOMHighResTimeStamp =
+  NativePerformance?.now ?? global.nativePerformanceNow ?? (() => Date.now());

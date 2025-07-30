@@ -8,13 +8,23 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_utils_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/utils/*.cpp)
+react_native_android_selector(platform_SRC
+        platform/android/react/utils/*.cpp
+        cxx/android/react/utils/*.cpp)
+
+file(GLOB react_utils_SRC CONFIGURE_DEPENDS
+        *.cpp
+        ${platform_SRC})
 add_library(react_utils OBJECT ${react_utils_SRC})
 
+react_native_android_selector(platform_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/
+)
 target_include_directories(react_utils
         PUBLIC
           ${REACT_COMMON_DIR}
-          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+          ${platform_DIR}
 )
 
 target_link_libraries(react_utils

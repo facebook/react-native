@@ -8,7 +8,12 @@
  * @format
  */
 
-import type {FailureDetail, TestSuiteResult} from '../runtime/setup';
+import type {
+  FailureDetail,
+  TestCaseResult,
+  TestSuiteResult,
+} from '../runtime/setup';
+import type {TestSnapshotResults} from '../runtime/snapshotContext';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -25,15 +30,15 @@ import {
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
+  HermesVariant as HermesVariantEnum,
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
   getHermesCompilerTarget,
-  getShortHash,
-  isRunningFromCI,
   printConsoleLog,
   runBuck2,
   runBuck2Sync,
+  runCommand,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -45,18 +50,26 @@ import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
-const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
-fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
-const BUILD_OUTPUT_PATH = fs.mkdtempSync(
-  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
-);
+const fantomRunID = process.env.__FANTOM_RUN_ID__;
+if (fantomRunID == null) {
+  throw new Error(
+    'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
+  );
+}
+
+const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
+const BUILD_OUTPUT_PATH = path.join(BUILD_OUTPUT_ROOT, fantomRunID);
+
+fs.mkdirSync(BUILD_OUTPUT_PATH, {recursive: true});
 
 function buildError(
   failureDetail: FailureDetail,
   sourceMapPath: string,
 ): Error {
   const error = new Error(failureDetail.message);
-  error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  if (failureDetail.stack != null) {
+    error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  }
   if (failureDetail.cause != null) {
     error.cause = buildError(failureDetail.cause, sourceMapPath);
   }
@@ -116,7 +129,7 @@ async function processRNTesterCommandResult(
 
   await result.done;
 
-  const getResultWithOutput = () => ({
+  const getResultWithOutput = (): AsyncCommandResult => ({
     ...result,
     stdout: stdoutChunks.join(''),
     stderr: stderrChunks.join(''),
@@ -214,7 +227,69 @@ module.exports = async function runTest(
 
   const testResultsByConfig = [];
 
+  const skippedTestResults = ({
+    ancestorTitles,
+    title,
+  }: {
+    ancestorTitles: string[],
+    title: string,
+  }) => [
+    {
+      ancestorTitles,
+      duration: 0,
+      failureDetails: [] as Array<Error>,
+      failureMessages: [] as Array<string>,
+      fullName: title,
+      numPassingAsserts: 0,
+      snapshotResults: {} as TestSnapshotResults,
+      status: 'pending' as TestCaseResult['status'],
+      testFilePath: testPath,
+      title,
+    },
+  ];
+
   for (const testConfig of testConfigs) {
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.mode === FantomTestConfigMode.Optimized
+    ) {
+      testResultsByConfig.push(
+        skippedTestResults({
+          ancestorTitles: ['"@fantom_mode opt" in docblock'],
+          title: 'Optimized mode is not yet supported in OSS',
+        }),
+      );
+      continue;
+    }
+
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.hermesVariant !== HermesVariantEnum.Hermes
+    ) {
+      testResultsByConfig.push(
+        skippedTestResults({
+          ancestorTitles: [
+            '"@fantom_hermes_variant static_hermes" in docblock (shermes 🧪)',
+          ],
+          title: 'Static Hermes is not yet supported in OSS',
+        }),
+      );
+      continue;
+    }
+
+    if (
+      EnvironmentOptions.isOSS &&
+      testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource
+    ) {
+      testResultsByConfig.push(
+        skippedTestResults({
+          ancestorTitles: ['"@fantom_mode dev-bytecode" in docblock'],
+          title: 'Hermes bytecode is not yet supported in OSS',
+        }),
+      );
+      continue;
+    }
+
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
       setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
@@ -224,12 +299,11 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
-      isRunningFromCI: isRunningFromCI(),
     });
 
     const entrypointPath = path.join(
       BUILD_OUTPUT_PATH,
-      `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
+      `${Date.now()}-${path.basename(testPath)}`,
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';
@@ -261,28 +335,37 @@ module.exports = async function runTest(
       });
     }
 
-    const rnTesterCommandResult = runBuck2(
-      [
-        'run',
-        ...getBuckModesForPlatform(
-          testConfig.mode === FantomTestConfigMode.Optimized,
-        ),
-        ...getBuckOptionsForHermes(testConfig.hermesVariant),
-        '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
-        '--',
-        '--bundlePath',
-        testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-          ? testJSBundlePath
-          : testBytecodeBundlePath,
-        '--featureFlags',
-        JSON.stringify(testConfig.flags.common),
-        '--minLogLevel',
-        EnvironmentOptions.printCLIOutput ? 'info' : 'error',
-      ],
-      {
-        withFDB: EnvironmentOptions.enableCppDebugging,
-      },
-    );
+    const rnTesterCommandArgs = [
+      '--bundlePath',
+      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+        ? testJSBundlePath
+        : testBytecodeBundlePath,
+      '--featureFlags',
+      JSON.stringify(testConfig.flags.common),
+      '--minLogLevel',
+      EnvironmentOptions.printCLIOutput ? 'info' : 'error',
+    ];
+
+    const rnTesterCommandResult = EnvironmentOptions.isOSS
+      ? runCommand(
+          path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
+          rnTesterCommandArgs,
+        )
+      : runBuck2(
+          [
+            'run',
+            ...getBuckModesForPlatform(
+              testConfig.mode === FantomTestConfigMode.Optimized,
+            ),
+            ...getBuckOptionsForHermes(testConfig.hermesVariant),
+            '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
+            '--',
+            ...rnTesterCommandArgs,
+          ],
+          {
+            withFDB: EnvironmentOptions.debugCpp,
+          },
+        );
 
     const processedResult = await processRNTesterCommandResult(
       rnTesterCommandResult,

@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -177,7 +178,7 @@ exports.examples = [
   },
   {
     title: 'Elliptical Radial Gradient',
-    name: 'radial-gradient-8',
+    name: 'elliptical',
     render(): React.Node {
       return (
         <GradientBox
@@ -192,7 +193,7 @@ exports.examples = [
   },
   {
     title: 'Radial Gradient with Platform colors',
-    name: 'radial-gradient-9',
+    name: 'platform-colors',
     render(): React.Node {
       return (
         <GradientBox
@@ -223,7 +224,7 @@ exports.examples = [
   },
   {
     title: 'Transition hint with percentages',
-    name: 'radial-gradient-10',
+    name: 'transition-hint',
     render(): React.Node {
       return (
         <GradientBox
@@ -237,7 +238,7 @@ exports.examples = [
   },
   {
     title: 'Multiple radial gradients',
-    name: 'radial-gradient-11',
+    name: 'multiple',
     render(): React.Node {
       return (
         <GradientBox
@@ -254,4 +255,36 @@ exports.examples = [
       );
     },
   },
-];
+  {
+    title: 'Radial gradient with non-square bounds',
+    name: 'non-square-bounds',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 200,
+            height: 100,
+          }}
+        />
+      );
+    },
+  },
+  {
+    title: 'Radial gradient with non-square bounds. height > width',
+    name: 'non-square-bounds-height-gt-width',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="radial-gradient-non-square-bounds-height-gt-width"
+          style={{
+            experimental_backgroundImage: 'radial-gradient(red, blue)',
+            width: 100,
+            height: 300,
+          }}
+        />
+      );
+    },
+  },
+] as Array<RNTesterModuleExample>;

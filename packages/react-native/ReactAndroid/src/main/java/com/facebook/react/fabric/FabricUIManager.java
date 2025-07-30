@@ -196,8 +196,6 @@ public class FabricUIManager
 
   private boolean mDriveCxxAnimations = false;
 
-  private boolean mDriveCxxNativeAnimated = ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
-
   private long mDispatchViewUpdatesTime = 0l;
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
@@ -530,13 +528,18 @@ public class FabricUIManager
       ReadableMapBuffer paragraphAttributes,
       float width,
       float height) {
+    ViewManager textViewManager = mViewManagerRegistry.get(ReactTextViewManager.REACT_CLASS);
+
     return (NativeArray)
         TextLayoutManager.measureLines(
             mReactApplicationContext,
             attributedString,
             paragraphAttributes,
             PixelUtil.toPixelFromDIP(width),
-            PixelUtil.toPixelFromDIP(height));
+            PixelUtil.toPixelFromDIP(height),
+            textViewManager instanceof ReactTextViewManagerCallback
+                ? (ReactTextViewManagerCallback) textViewManager
+                : null);
   }
 
   public int getColor(int surfaceId, String[] resourcePaths) {
@@ -668,6 +671,18 @@ public class FabricUIManager
         textViewManager instanceof ReactTextViewManagerCallback
             ? (ReactTextViewManagerCallback) textViewManager
             : null);
+  }
+
+  @AnyThread
+  @ThreadConfined(ANY)
+  @UnstableReactNativeAPI
+  public PreparedLayout reusePreparedLayoutWithNewReactTags(
+      PreparedLayout preparedLayout, int[] reactTags) {
+    return new PreparedLayout(
+        preparedLayout.getLayout(),
+        preparedLayout.getMaximumNumberOfLines(),
+        preparedLayout.getVerticalOffset(),
+        reactTags);
   }
 
   @AnyThread
@@ -1461,7 +1476,8 @@ public class FabricUIManager
       // There is a race condition here between getting/setting
       // `mDriveCxxAnimations` which shouldn't matter; it's safe to call
       // the mBinding method, unless mBinding has gone away.
-      if ((mDriveCxxAnimations || mDriveCxxNativeAnimated) && mBinding != null) {
+      if ((mDriveCxxAnimations || ReactNativeFeatureFlags.cxxNativeAnimatedEnabled())
+          && mBinding != null) {
         mBinding.driveCxxAnimations();
       }
 

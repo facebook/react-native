@@ -24,7 +24,8 @@ jint SurfaceHandlerBinding::getSurfaceId() {
 }
 
 jboolean SurfaceHandlerBinding::isRunning() {
-  return surfaceHandler_.getStatus() == SurfaceHandler::Status::Running;
+  return static_cast<jboolean>(
+      surfaceHandler_.getStatus() == SurfaceHandler::Status::Running);
 }
 
 jni::local_ref<jstring> SurfaceHandlerBinding::getModuleName() {
@@ -50,15 +51,15 @@ void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat pixelDensity,
     jfloat fontScale) {
   LayoutConstraints constraints = {};
-  constraints.minimumSize = {minWidth, minHeight};
-  constraints.maximumSize = {maxWidth, maxHeight};
-  constraints.layoutDirection =
-      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+  constraints.minimumSize = {.width = minWidth, .height = minHeight};
+  constraints.maximumSize = {.width = maxWidth, .height = maxHeight};
+  constraints.layoutDirection = (isRTL != 0u) ? LayoutDirection::RightToLeft
+                                              : LayoutDirection::LeftToRight;
 
   LayoutContext context = {};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
+  context.swapLeftAndRightInRTL = (doLeftAndRightSwapInRTL != 0u);
   context.pointScaleFactor = pixelDensity;
-  context.viewportOffset = {offsetX, offsetY};
+  context.viewportOffset = {.x = offsetX, .y = offsetY};
   context.fontSizeMultiplier = fontScale;
 
   surfaceHandler_.constraintLayout(constraints, context);

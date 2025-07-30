@@ -47,7 +47,7 @@ const relevantEvents = [
   'pointerLeave',
 ];
 
-const expected = [
+const expected: Array<{optional?: boolean, target: string, type: string}> = [
   {type: 'pointerOver', target: 'a'},
   {type: 'pointerEnter', target: 'a'},
   {type: 'pointerMove', target: 'a', optional: true},

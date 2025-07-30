@@ -166,7 +166,7 @@ let reactJsInspector = RNTarget(
   name: .reactJsInspector,
   path: "ReactCommon/jsinspector-modern",
   excludedPaths: ["tracing", "network", "tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork, .reactRuntimeExecutor],
+  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactJsInspectorTracing, .reactJsInspectorNetwork, .reactRuntimeExecutor, .reactPerfLogger],
   defines: [
     CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
     CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
@@ -178,7 +178,7 @@ let reactCxxReact = RNTarget(
   name: .reactCxxReact,
   path: "ReactCommon/cxxreact",
   searchPaths: [CallInvokerPath],
-  excludedPaths: ["tests", "SampleCXXModule.cpp"],
+  excludedPaths: ["tests"],
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .logger, .reactDebug, .reactJsInspector]
 
 )
@@ -398,6 +398,7 @@ let reactFabric = RNTarget(
     "components/textinput/platform/ios/",
     "components/unimplementedview",
     "components/virtualview",
+    "components/virtualviewexperimental",
     "components/root/tests",
   ],
   dependencies: [.reactNativeDependencies, .reactJsiExecutor, .rctTypesafety, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .reactRendererDebug, .reactGraphics, .yoga],
@@ -433,7 +434,7 @@ let reactFabricComponents = RNTarget(
     "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "textlayoutmanager", "textlayoutmanager/platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "components/virtualviewexperimental", "textlayoutmanager", "textlayoutmanager/platform/ios"]
 )
 
 /// React-FabricImage.podspec
@@ -492,6 +493,14 @@ let reactRCTBlob = RNTarget(
 let reactRCTNetwork = RNTarget(
   name: .reactRCTNetwork,
   path: "Libraries/Network",
+  dependencies: [.yoga, .jsi, .reactTurboModuleCore]
+)
+
+/// React-RCTVibration.podspec
+let reactRCTVibration = RNTarget(
+  name: .reactRCTVibration,
+  path: "Libraries/Vibration",
+  linkedFrameworks: ["AudioToolbox"],
   dependencies: [.yoga, .jsi, .reactTurboModuleCore]
 )
 
@@ -560,6 +569,7 @@ let targets = [
   reactRCTText,
   reactRCTBlob,
   reactRCTNetwork,
+  reactRCTVibration,
   reactRCTLinking,
   reactCoreModules,
   reactTurboModuleBridging,
@@ -731,6 +741,7 @@ extension String {
   static let reactRCTText = "React-RCTText"
   static let reactRCTBlob = "React-RCTBlob"
   static let reactRCTNetwork = "React-RCTNetwork"
+  static let reactRCTVibration = "React-RCTVibration"
   static let reactRCTActionSheet = "React-RCTActionSheet" // Empty target
   static let reactRCTLinking = "React-RCTLinking"
   static let reactCoreModules = "React-CoreModules"

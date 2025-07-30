@@ -21,7 +21,7 @@
   ],
   "bugs": "https://github.com/facebook/react-native/issues",
   "engines": {
-    "node": ">= 22.14.0"
+    "node": ">= 20.19.4"
   },
   "bin": {
     "react-native": "cli.js"
@@ -78,6 +78,7 @@
   "files": [
     "build.gradle.kts",
     "cli.js",
+    "flow",
     "gradle.properties",
     "gradle/libs.versions.toml",
     "index.js",
@@ -88,6 +89,7 @@
     "Libraries",
     "LICENSE",
     "React-Core.podspec",
+    "React-Core-prebuilt.podspec",
     "react-native.config.js",
     "React.podspec",
     "React",
@@ -105,6 +107,7 @@
     "ReactCommon",
     "README.md",
     "rn-get-polyfills.js",
+    "scripts/replace-rncore-version.js",
     "scripts/bundle.js",
     "scripts/cocoapods",
     "scripts/codegen",
@@ -149,8 +152,8 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
-    "@types/react": "^19.1.0",
-    "react": "^19.1.0"
+    "@types/react": "^19.1.1",
+    "react": "^19.1.1"
   },
   "peerDependenciesMeta": {
     "@types/react": {
@@ -159,18 +162,18 @@
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^29.7.0",
-    "@react-native/assets-registry": "0.80.0-main",
-    "@react-native/codegen": "0.80.0-main",
-    "@react-native/community-cli-plugin": "0.80.0-main",
-    "@react-native/gradle-plugin": "0.80.0-main",
-    "@react-native/js-polyfills": "0.80.0-main",
-    "@react-native/normalize-colors": "0.80.0-main",
-    "@react-native/virtualized-lists": "0.80.0-main",
+    "@react-native/assets-registry": "0.82.0-main",
+    "@react-native/codegen": "0.82.0-main",
+    "@react-native/community-cli-plugin": "0.82.0-main",
+    "@react-native/gradle-plugin": "0.82.0-main",
+    "@react-native/js-polyfills": "0.82.0-main",
+    "@react-native/normalize-colors": "0.82.0-main",
+    "@react-native/virtualized-lists": "0.82.0-main",
     "abort-controller": "^3.0.0",
     "anser": "^1.4.9",
     "ansi-regex": "^5.0.0",
     "babel-jest": "^29.7.0",
-    "babel-plugin-syntax-hermes-parser": "0.29.0",
+    "babel-plugin-syntax-hermes-parser": "0.30.0",
     "base64-js": "^1.5.1",
     "commander": "^12.0.0",
     "flow-enums-runtime": "^0.0.6",
@@ -178,12 +181,12 @@
     "invariant": "^2.2.4",
     "jest-environment-node": "^29.7.0",
     "memoize-one": "^5.0.0",
-    "metro-runtime": "^0.82.4",
-    "metro-source-map": "^0.82.4",
+    "metro-runtime": "^0.83.1",
+    "metro-source-map": "^0.83.1",
     "nullthrows": "^1.1.1",
     "pretty-format": "^29.7.0",
     "promise": "^8.3.0",
-    "react-devtools-core": "^6.1.1",
+    "react-devtools-core": "^6.1.5",
     "react-refresh": "^0.14.0",
     "regenerator-runtime": "^0.13.2",
     "scheduler": "0.26.0",

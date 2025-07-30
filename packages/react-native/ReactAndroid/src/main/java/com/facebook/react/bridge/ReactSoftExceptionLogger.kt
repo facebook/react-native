@@ -62,7 +62,7 @@ internal object ReactSoftExceptionLogger {
 
   @JvmStatic
   fun logSoftException(@CategoryMode category: String, cause: Throwable): Unit {
-    if (!listeners.isEmpty()) {
+    if (listeners.isNotEmpty()) {
       for (listener in listeners) {
         listener.logSoftException(category, cause)
       }

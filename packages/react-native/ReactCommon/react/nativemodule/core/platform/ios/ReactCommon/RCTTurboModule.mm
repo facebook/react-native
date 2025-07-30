@@ -39,8 +39,7 @@ static int32_t getUniqueId()
   return counter++;
 }
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace TurboModuleConvertUtils {
 /**
@@ -856,8 +855,7 @@ void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterC
   }
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react
 
 @implementation EventEmitterCallbackWrapper
 @end

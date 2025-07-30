@@ -9,6 +9,7 @@ package com.facebook.react.modules.clipboard
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.Context
 import com.facebook.fbreact.specs.NativeClipboardSpec
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -20,8 +21,7 @@ internal class ClipboardModule(context: ReactApplicationContext) : NativeClipboa
 
   private val clipboardService: ClipboardManager
     get() =
-        getReactApplicationContext().getSystemService(ReactApplicationContext.CLIPBOARD_SERVICE)
-            as ClipboardManager
+        getReactApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
   override fun getString(promise: Promise) {
     try {

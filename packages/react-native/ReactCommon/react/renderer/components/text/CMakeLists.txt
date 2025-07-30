@@ -6,20 +6,29 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/internal/react-native-platform-selector.cmake)
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB rrc_text_SRC CONFIGURE_DEPENDS
-        *.cpp
-        platform/android/react/renderer/components/text/*.cpp)
+react_native_android_selector(platform_SRC
+        platform/android/react/renderer/components/text/*.cpp
+        platform/cxx/react/renderer/components/text/*.cpp
+)
+file(GLOB rrc_text_SRC CONFIGURE_DEPENDS *.cpp ${platform_SRC})
 
 add_library(rrc_text OBJECT ${rrc_text_SRC})
 
+react_native_android_selector(platform_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/)
 target_include_directories(rrc_text PUBLIC
         ${REACT_COMMON_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/)
+        ${platform_DIR})
 
+react_native_android_selector(platform_DIR_PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/react/renderer/components/text/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/react/renderer/components/text/)
 target_include_directories(rrc_text PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/react/renderer/components/text/)
+        ${platform_DIR_PRIVATE})
 
 target_link_libraries(rrc_text
         glog

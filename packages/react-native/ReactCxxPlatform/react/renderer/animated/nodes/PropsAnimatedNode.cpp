@@ -123,11 +123,7 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
         case AnimatedNodeType::Style: {
           if (const auto& styleNode =
                   manager_->getAnimatedNode<StyleAnimatedNode>(nodeTag)) {
-            styleNode->update();
-            auto& styleNodeProps = styleNode->getProps();
-            for (const auto& styleNodeProp : styleNodeProps.items()) {
-              props_.insert(styleNodeProp.first.c_str(), styleNodeProp.second);
-            }
+            styleNode->collectViewUpdates(props_);
           }
         } break;
         case AnimatedNodeType::Props:

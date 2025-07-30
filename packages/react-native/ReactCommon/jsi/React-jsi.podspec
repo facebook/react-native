@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES"
   }
 
-  s.source_files  = "**/*.{cpp,h}"
+  s.source_files  = podspec_sources("**/*.{cpp,h}", "**/*.h")
   files_to_exclude = [
                       "jsi/jsilib-posix.cpp",
                       "jsi/jsilib-windows.cpp",
@@ -46,4 +46,5 @@ Pod::Spec.new do |s|
   s.exclude_files = files_to_exclude
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

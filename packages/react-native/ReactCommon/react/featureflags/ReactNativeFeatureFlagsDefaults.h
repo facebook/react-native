@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a0e33adba95ded29585b718e8d3f4165>>
+ * @generated SignedSource<<6d26b29fc7a711c56e17cf9410068eb9>>
  */
 
 /**
@@ -31,7 +31,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool animatedShouldSignalBatch() override {
+  bool cdpInteractionMetricsEnabled() override {
     return false;
   }
 
@@ -43,12 +43,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool disableMainQueueSyncDispatchIOS() override {
+  bool disableFabricCommitInCXXAnimated() override {
     return false;
   }
 
   bool disableMountItemReorderingAndroid() override {
     return false;
+  }
+
+  bool disableOldAndroidAttachmentMetricsWorkarounds() override {
+    return true;
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {
@@ -60,6 +64,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidTextMeasurementOptimizations() override {
     return false;
   }
 
@@ -80,6 +88,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableDoubleMeasurementFixAndroid() override {
+    return false;
+  }
+
+  bool enableEagerMainQueueModulesOnIOS() override {
     return false;
   }
 
@@ -111,6 +123,18 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableImmediateUpdateModeForContentOffsetChanges() override {
+    return false;
+  }
+
+  bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
+    return false;
+  }
+
   bool enableLayoutAnimationsOnAndroid() override {
     return false;
   }
@@ -124,10 +148,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableMainQueueCoordinatorOnIOS() override {
-    return false;
-  }
-
-  bool enableMainQueueModulesOnIOS() override {
     return false;
   }
 
@@ -159,10 +179,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableSynchronousStateUpdates() override {
-    return false;
-  }
-
   bool enableViewCulling() override {
     return false;
   }
@@ -183,6 +199,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableVirtualViewRenderState() override {
+    return true;
+  }
+
+  bool enableVirtualViewWindowFocusDetection() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -192,6 +216,34 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fuseboxNetworkInspectionEnabled() override {
+    return false;
+  }
+
+  bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
+  bool perfMonitorV2Enabled() override {
+    return false;
+  }
+
+  double preparedTextCacheSize() override {
+    return 200.0;
+  }
+
+  bool preventShadowTreeCommitExhaustion() override {
+    return false;
+  }
+
+  bool releaseImageDataWhenConsumed() override {
+    return false;
+  }
+
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    return false;
+  }
+
+  bool skipActivityIdentityAssertionOnHostPause() override {
     return false;
   }
 
@@ -209,6 +261,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useFabricInterop() override {
     return true;
+  }
+
+  bool useNativeEqualsInNativeReadableArrayAndroid() override {
+    return false;
+  }
+
+  bool useNativeTransformHelperAndroid() override {
+    return false;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

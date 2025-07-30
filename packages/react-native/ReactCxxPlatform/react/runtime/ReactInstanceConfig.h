@@ -20,6 +20,8 @@ struct ReactInstanceConfig {
 #endif
   std::string appId;
   std::string deviceName;
+  std::string devServerHost{"localhost"};
+  uint32_t devServerPort{8081};
 };
 
 } // namespace facebook::react

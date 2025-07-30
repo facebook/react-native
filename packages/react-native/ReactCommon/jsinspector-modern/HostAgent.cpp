@@ -36,8 +36,8 @@ namespace facebook::react::jsinspector_modern {
 class HostAgent::Impl final {
  public:
   explicit Impl(
-      HostAgent& hostAgent,
-      FrontendChannel frontendChannel,
+      HostAgent& /*hostAgent*/,
+      const FrontendChannel& frontendChannel,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
@@ -47,7 +47,7 @@ class HostAgent::Impl final {
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel)) {}
+        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -63,10 +63,13 @@ class HostAgent::Impl final {
     }
   }
 
-  void handleRequest(const cdp::PreparsedRequest& req) {
-    bool shouldSendOKResponse = false;
-    bool isFinishedHandlingRequest = false;
+ private:
+  struct RequestHandlingState {
+    bool isFinishedHandlingRequest{false};
+    bool shouldSendOKResponse{false};
+  };
 
+  RequestHandlingState tryHandleRequest(const cdp::PreparsedRequest& req) {
     // Domain enable/disable requests: write to state (because we're the
     // top-level Agent in the Session), trigger any side effects, and decide
     // whether we are finished handling the request (or need to delegate to the
@@ -85,14 +88,20 @@ class HostAgent::Impl final {
             *hostMetadata_.integrationName);
       }
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
-    } else if (req.method == "Log.disable") {
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Log.disable") {
       sessionState_.isLogDomainEnabled = false;
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
-    } else if (req.method == "Runtime.enable") {
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.enable") {
       sessionState_.isRuntimeDomainEnabled = true;
 
       if (fuseboxClientType_ == FuseboxClientType::Unknown) {
@@ -103,43 +112,61 @@ class HostAgent::Impl final {
         sendNonFuseboxNotice();
       }
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
-    } else if (req.method == "Runtime.disable") {
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.disable") {
       sessionState_.isRuntimeDomainEnabled = false;
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
-    } else if (req.method == "Debugger.enable") {
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Debugger.enable") {
       sessionState_.isDebuggerDomainEnabled = true;
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
-    } else if (req.method == "Debugger.disable") {
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Debugger.disable") {
       sessionState_.isDebuggerDomainEnabled = false;
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = false;
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
     }
+
     // Methods other than domain enables/disables: handle anything we know how
-    // to handle, and delegate to the InstanceAgent otherwise.
-    else if (req.method == "Page.reload") {
+    // to handle, and delegate to the InstanceAgent otherwise. (In some special
+    // cases we may handle the request *and* delegate to the InstanceAgent for
+    // some side effect.)
+    if (req.method == "Page.reload") {
       targetController_.getDelegate().onReload({
           .ignoreCache =
-              req.params.isObject() && req.params.count("ignoreCache")
+              req.params.isObject() && (req.params.count("ignoreCache") != 0u)
               ? std::optional(req.params.at("ignoreCache").asBool())
               : std::nullopt,
           .scriptToEvaluateOnLoad = req.params.isObject() &&
-                  req.params.count("scriptToEvaluateOnLoad")
+                  (req.params.count("scriptToEvaluateOnLoad") != 0u)
               ? std::optional(
                     req.params.at("scriptToEvaluateOnLoad").asString())
               : std::nullopt,
       });
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = true;
-    } else if (req.method == "Overlay.setPausedInDebuggerMessage") {
-      auto message = req.params.isObject() && req.params.count("message")
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Overlay.setPausedInDebuggerMessage") {
+      auto message =
+          req.params.isObject() && (req.params.count("message") != 0u)
           ? std::optional(req.params.at("message").asString())
           : std::nullopt;
       if (!isPausedInDebuggerOverlayVisible_ && message.has_value()) {
@@ -152,9 +179,12 @@ class HostAgent::Impl final {
           .message = message,
       });
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = true;
-    } else if (req.method == "ReactNativeApplication.enable") {
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "ReactNativeApplication.enable") {
       sessionState_.isReactNativeApplicationDomainEnabled = true;
       fuseboxClientType_ = FuseboxClientType::Fusebox;
 
@@ -166,44 +196,112 @@ class HostAgent::Impl final {
           "ReactNativeApplication.metadataUpdated",
           createHostMetadataPayload(hostMetadata_)));
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = true;
-    } else if (req.method == "ReactNativeApplication.disable") {
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "ReactNativeApplication.disable") {
       sessionState_.isReactNativeApplicationDomainEnabled = false;
 
-      shouldSendOKResponse = true;
-      isFinishedHandlingRequest = true;
-    } else if (req.method == "Tracing.start") {
-      if (sessionState_.isDebuggerDomainEnabled) {
-        frontendChannel_(cdp::jsonError(
-            req.id,
-            cdp::ErrorCode::InternalError,
-            "Debugger domain is expected to be disabled before starting Tracing"));
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.addBinding") {
+      // @cdp Runtime.addBinding and @cdp Runtime.removeBinding are explicitly
+      // supported at any time during a session, even while the JS runtime
+      // hasn't been created yet. For this reason they are handled by the
+      // HostAgent.
+      std::string bindingName = req.params["name"].getString();
 
-        return;
+      ExecutionContextSelector contextSelector =
+          ExecutionContextSelector::all();
+
+      if (req.params.count("executionContextId") != 0u) {
+        auto executionContextId = req.params["executionContextId"].getInt();
+        if (executionContextId < (int64_t)std::numeric_limits<int32_t>::min() ||
+            executionContextId > (int64_t)std::numeric_limits<int32_t>::max()) {
+          frontendChannel_(cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidParams,
+              "Invalid execution context id"));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+        contextSelector =
+            ExecutionContextSelector::byId((int32_t)executionContextId);
+
+        if (req.params.count("executionContextName") != 0u) {
+          frontendChannel_(cdp::jsonError(
+              req.id,
+              cdp::ErrorCode::InvalidParams,
+              "executionContextName is mutually exclusive with executionContextId"));
+          return {
+              .isFinishedHandlingRequest = true,
+              .shouldSendOKResponse = false,
+          };
+        }
+      } else if (req.params.count("executionContextName") != 0u) {
+        contextSelector = ExecutionContextSelector::byName(
+            req.params["executionContextName"].getString());
       }
 
-      // We delegate handling of this request to TracingAgent. If not handled,
-      // then something unexpected happened - don't send an OK response.
-      shouldSendOKResponse = false;
-      isFinishedHandlingRequest = false;
+      sessionState_.subscribedBindings[bindingName].insert(contextSelector);
+
+      // We need this request to percolate down to the RuntimeAgent via the
+      // InstanceAgent. If there isn't a RuntimeAgent, it's OK: the next
+      // RuntimeAgent will pick up the binding via session state.
+      return {
+          .isFinishedHandlingRequest = false,
+          .shouldSendOKResponse = true,
+      };
+    }
+    if (req.method == "Runtime.removeBinding") {
+      // @cdp Runtime.removeBinding has no targeting by execution context. We
+      // interpret it to mean "unsubscribe, and stop installing the binding on
+      // all new contexts". This diverges slightly from V8, which continues
+      // to install the binding on new contexts after it's "removed", but *only*
+      // if the subscription is targeted by context name.
+      sessionState_.subscribedBindings.erase(req.params["name"].getString());
+
+      // Because of the above, we don't need to pass this request down to the
+      // RuntimeAgent.
+      return {
+          .isFinishedHandlingRequest = true,
+          .shouldSendOKResponse = true,
+      };
     }
 
-    if (!isFinishedHandlingRequest &&
+    return {
+        .isFinishedHandlingRequest = false,
+        .shouldSendOKResponse = false,
+    };
+  }
+
+ public:
+  void handleRequest(const cdp::PreparsedRequest& req) {
+    const RequestHandlingState requestState = tryHandleRequest(req);
+
+    if (!requestState.isFinishedHandlingRequest &&
         networkIOAgent_.handleRequest(req, targetController_.getDelegate())) {
       return;
     }
 
-    if (!isFinishedHandlingRequest && tracingAgent_.handleRequest(req)) {
+    if (!requestState.isFinishedHandlingRequest &&
+        tracingAgent_.handleRequest(req)) {
       return;
     }
 
-    if (!isFinishedHandlingRequest && instanceAgent_ &&
+    if (!requestState.isFinishedHandlingRequest && instanceAgent_ &&
         instanceAgent_->handleRequest(req)) {
       return;
     }
 
-    if (shouldSendOKResponse) {
+    if (requestState.shouldSendOKResponse) {
       frontendChannel_(cdp::jsonResult(req.id));
       return;
     }

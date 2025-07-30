@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}", "nativeviewconfig/*.{cpp,h}"
+  s.source_files           = podspec_sources(["*.{cpp,h}", "nativeviewconfig/*.{cpp,h}"], ["*.h", "nativeviewconfig/*.h"])
   s.exclude_files          = "iostests/*", "tests/**/*.{cpp,h}"
   s.header_dir             = "react/runtime"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"${PODS_TARGET_SRCROOT}/../..\"",
@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeCore'
   end
@@ -52,6 +52,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.dependency "React-jsinspector"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")

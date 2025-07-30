@@ -9,17 +9,11 @@ package com.facebook.react.views.textinput
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
 /** Event emitted by EditText native view when key pressed. */
 internal class ReactTextInputKeyPressEvent(surfaceId: Int, viewId: Int, private val key: String) :
     Event<ReactTextInputKeyPressEvent>(surfaceId, viewId) {
-  @Deprecated(
-      "Use the constructor with surfaceId instead",
-      ReplaceWith("ReactTextInputKeyPressEvent(surfaceId, viewId, key)"))
-  constructor(viewId: Int, key: String) : this(ViewUtil.NO_SURFACE_ID, viewId, key)
-
   override fun getEventName(): String = EVENT_NAME
 
   override fun getEventData(): WritableMap {

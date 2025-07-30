@@ -92,6 +92,12 @@ class ImageSource {
 #endif
 };
 
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const ImageSource& imageSource) {
+  return imageSource.toDynamic();
+}
+#endif
+
 using ImageSources = std::vector<ImageSource>;
 
 enum class ImageResizeMode {

@@ -34,20 +34,23 @@ inline bool shouldIgnoreHermesFrame(
 RuntimeSamplingProfile::SampleCallStackFrame convertNativeHermesFrame(
     const fhsp::ProfileSampleCallStackNativeFunctionFrame& frame) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::NativeFunction,
-      FALLBACK_SCRIPT_ID, // JavaScript Runtime defines the implementation
-                          // for native function, no script ID to reference.
-      frame.getFunctionName(),
+      .kind =
+          RuntimeSamplingProfile::SampleCallStackFrame::Kind::NativeFunction,
+      .scriptId =
+          FALLBACK_SCRIPT_ID, // JavaScript Runtime defines the implementation
+                              // for native function, no script ID to reference.
+      .functionName = frame.getFunctionName(),
   };
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame convertHostFunctionHermesFrame(
     const fhsp::ProfileSampleCallStackHostFunctionFrame& frame) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::HostFunction,
-      FALLBACK_SCRIPT_ID, // JavaScript Runtime defines the implementation
-                          // for host function, no script ID to reference.
-      frame.getFunctionName(),
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::HostFunction,
+      .scriptId =
+          FALLBACK_SCRIPT_ID, // JavaScript Runtime defines the implementation
+                              // for host function, no script ID to reference.
+      .functionName = frame.getFunctionName(),
   };
 }
 
@@ -56,10 +59,11 @@ RuntimeSamplingProfile::SampleCallStackFrame convertSuspendHermesFrame(
   if (frame.getSuspendFrameKind() ==
       fhsp::ProfileSampleCallStackSuspendFrame::SuspendFrameKind::GC) {
     return RuntimeSamplingProfile::SampleCallStackFrame{
-        RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
-        FALLBACK_SCRIPT_ID, // GC frames are part of the VM, no script ID to
-                            // reference.
-        GARBAGE_COLLECTOR_FRAME_NAME,
+        .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::
+            GarbageCollector,
+        .scriptId = FALLBACK_SCRIPT_ID, // GC frames are part of the VM, no
+                                        // script ID to reference.
+        .functionName = GARBAGE_COLLECTOR_FRAME_NAME,
     };
   }
 
@@ -71,18 +75,18 @@ RuntimeSamplingProfile::SampleCallStackFrame convertSuspendHermesFrame(
 RuntimeSamplingProfile::SampleCallStackFrame convertJSFunctionHermesFrame(
     const fhsp::ProfileSampleCallStackJSFunctionFrame& frame) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
-      frame.getScriptId(),
-      frame.getFunctionName(),
-      frame.hasScriptUrl()
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = frame.getScriptId(),
+      .functionName = frame.getFunctionName(),
+      .scriptURL = frame.hasScriptUrl()
           ? std::optional<std::string_view>{frame.getScriptUrl()}
           : std::nullopt,
-      frame.hasFunctionLineNumber()
+      .lineNumber = frame.hasFunctionLineNumber()
           ? std::optional<uint32_t>{frame.getFunctionLineNumber() - 1}
           // Hermes VM keeps line numbers as 1-based. Convert
           // to 0-based.
           : std::nullopt,
-      frame.hasFunctionColumnNumber()
+      .columnNumber = frame.hasFunctionColumnNumber()
           ? std::optional<uint32_t>{frame.getFunctionColumnNumber() - 1}
           // Hermes VM keeps column numbers as 1-based. Convert to
           // 0-based.

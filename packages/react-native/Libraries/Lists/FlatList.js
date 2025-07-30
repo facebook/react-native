@@ -15,14 +15,13 @@ import type {
   ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
+  VirtualizedListProps,
 } from '@react-native/virtualized-lists';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
-import VirtualizedLists, {
-  type VirtualizedListProps,
-} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import * as React from 'react';
 
@@ -34,14 +33,14 @@ const invariant = require('invariant');
 const VirtualizedList = VirtualizedLists.VirtualizedList;
 const defaultKeyExtractor = VirtualizedLists.keyExtractor;
 
-type RequiredProps<ItemT> = {
+type RequiredFlatListProps<ItemT> = {
   /**
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
-type OptionalProps<ItemT> = {
+type OptionalFlatListProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -179,8 +178,8 @@ function isArrayLike(data: mixed): boolean {
 }
 
 type FlatListBaseProps<ItemT> = {
-  ...RequiredProps<ItemT>,
-  ...OptionalProps<ItemT>,
+  ...RequiredFlatListProps<ItemT>,
+  ...OptionalFlatListProps<ItemT>,
 };
 
 export type FlatListProps<ItemT> = {

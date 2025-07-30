@@ -55,6 +55,7 @@ class GenerateEntryPointTaskTest {
         
         import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
         import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+        import com.facebook.react.views.view.WindowUtilKt;
         import com.facebook.react.soloader.OpenSourceMergedSoMapping;
         import com.facebook.soloader.SoLoader;
         
@@ -77,6 +78,10 @@ class GenerateEntryPointTaskTest {
             
             if (com.facebook.react.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
               DefaultNewArchitectureEntryPoint.load();
+            }
+            
+            if (com.facebook.react.BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+              WindowUtilKt.setEdgeToEdgeFeatureFlagOn();
             }
           }
         }

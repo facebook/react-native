@@ -9,6 +9,7 @@
  */
 
 import type {JsonPagesListResponse} from '../inspector-proxy/types';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 
 import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
@@ -22,7 +23,7 @@ const PAGES_POLLING_DELAY = 2100;
 jest.useFakeTimers();
 
 describe('enableStandaloneFuseboxShell experiment', () => {
-  const BrowserLauncherWithFuseboxShell = {
+  const BrowserLauncherWithFuseboxShell: BrowserLauncher = {
     ...DefaultBrowserLauncher,
     unstable_showFuseboxShell: () => {
       throw new Error('Not implemented');

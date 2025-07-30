@@ -29,11 +29,6 @@ class TransformAnimatedNode final : public AnimatedNode {
       const folly::dynamic& config,
       NativeAnimatedNodesManager& manager);
 
-  void update() override;
-
-  const folly::dynamic& getProps();
-
- private:
-  folly::dynamic props_;
+  void collectViewUpdates(folly::dynamic& props);
 };
 } // namespace facebook::react

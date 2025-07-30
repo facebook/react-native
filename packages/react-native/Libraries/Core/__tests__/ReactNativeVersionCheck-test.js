@@ -49,6 +49,7 @@ function _defineCheckVersionTests() {
     // $FlowFixMe[cannot-write]
     console.error = jest.fn();
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[unsafe-addition]
     global.console = {error: jest.fn(error => (consoleOutput += error))};
     spyOnConsoleError = jest.spyOn(global.console, 'error');
   });

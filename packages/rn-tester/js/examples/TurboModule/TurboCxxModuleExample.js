@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const NativeCxxModuleExampleExample = require('./NativeCxxModuleExampleExample');
 const React = require('react');
 
@@ -24,4 +26,4 @@ exports.examples = [
       return <NativeCxxModuleExampleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

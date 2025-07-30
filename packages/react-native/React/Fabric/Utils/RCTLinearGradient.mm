@@ -58,10 +58,7 @@ using namespace facebook::react;
   gradientLayer.startPoint = fixedStartPoint;
   gradientLayer.endPoint = fixedEndPoint;
 
-  for (const auto &colorStop : colorStops) {
-    [colors addObject:(id)RCTUIColorFromSharedColor(colorStop.color).CGColor];
-    [locations addObject:@(std::max(std::min(colorStop.position.value(), 1.0), 0.0))];
-  }
+  [RCTGradientUtils getColors:colors andLocations:locations fromColorStops:colorStops];
 
   gradientLayer.colors = colors;
   gradientLayer.locations = locations;

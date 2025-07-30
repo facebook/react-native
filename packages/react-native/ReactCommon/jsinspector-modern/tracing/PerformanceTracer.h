@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include "CdpTracing.h"
+#include "ConsoleTimeStamp.h"
 #include "TraceEvent.h"
 #include "TraceEventProfile.h"
 
 #include <react/timing/primitives.h>
 
 #include <folly/dynamic.h>
+#include <atomic>
 #include <functional>
 #include <mutex>
 #include <optional>
@@ -47,26 +48,33 @@ class PerformanceTracer {
    * avoid doing expensive work (like formatting strings) if tracing is not
    * enabled.
    */
-  bool isTracing() const {
-    // This is not thread safe but it's only a performance optimization. The
-    // call to report marks and measures is already thread safe.
-    return tracing_;
+  inline bool isTracing() const {
+    return tracingAtomic_;
   }
 
   /**
    * Flush out buffered CDP Trace Events using the given callback.
    */
   void collectEvents(
-      const std::function<void(const folly::dynamic& eventsChunk)>&
-          resultCallback,
+      const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
       uint16_t chunkSize);
+
+  /**
+   * Flush out buffered CDP Trace Events into a folly::dynamic collection of
+   * chunks, which can be sent over CDP later.
+   */
+  folly::dynamic collectEvents(uint16_t chunkSize);
+
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
    * currently tracing, this is a no-op.
    *
    * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void reportMark(const std::string_view& name, HighResTimeStamp start);
+  void reportMark(
+      const std::string_view& name,
+      HighResTimeStamp start,
+      folly::dynamic&& detail = nullptr);
 
   /**
    * Record a `Performance.measure()` event - a labelled duration. If not
@@ -78,7 +86,22 @@ class PerformanceTracer {
       const std::string_view& name,
       HighResTimeStamp start,
       HighResDuration duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      folly::dynamic&& detail = nullptr);
+
+  /**
+   * Record a "TimeStamp" Trace Event - a labelled entry on Performance
+   * timeline. The only required argument is `name`. Optional arguments, if not
+   * provided, won't be recorded in the serialized Trace Event.
+   * @see
+   https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
+   */
+  void reportTimeStamp(
+      std::string name,
+      std::optional<ConsoleTimeStampEntry> start = std::nullopt,
+      std::optional<ConsoleTimeStampEntry> end = std::nullopt,
+      std::optional<std::string> trackName = std::nullopt,
+      std::optional<std::string> trackGroup = std::nullopt,
+      std::optional<ConsoleTimeStampColor> color = std::nullopt);
 
   /**
    * Record a corresponding Trace Event for OS-level process.
@@ -125,7 +148,7 @@ class PerformanceTracer {
       uint16_t profileId,
       uint64_t threadId,
       HighResTimeStamp chunkTimestamp,
-      const TraceEventProfileChunk& traceEventProfileChunk);
+      TraceEventProfileChunk&& traceEventProfileChunk);
 
  private:
   PerformanceTracer();
@@ -133,13 +156,29 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  folly::dynamic serializeTraceEvent(const TraceEvent& event) const;
+  const uint64_t processId_;
 
-  bool tracing_{false};
-
-  uint64_t processId_;
+  /**
+   * The flag is atomic in order to enable any thread to read it (via
+   * isTracing()) without holding the mutex.
+   * Within this class, both reads and writes MUST be protected by the mutex to
+   * avoid false positives and data races.
+   */
+  std::atomic<bool> tracingAtomic_{false};
+  /**
+   * The counter for recorded User Timing "measure" events.
+   * Used for generating unique IDs for each measure event inside a specific
+   * Trace.
+   * Does not need to be atomic, because it is always accessed within the mutex
+   * lock.
+   */
   uint32_t performanceMeasureCount_{0};
+
   std::vector<TraceEvent> buffer_;
+  /**
+   * Protects data members of this class for concurrent access, including
+   * the tracingAtomic_, in order to eliminate potential "logic" races.
+   */
   std::mutex mutex_;
 };
 

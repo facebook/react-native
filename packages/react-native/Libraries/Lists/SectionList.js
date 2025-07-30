@@ -39,7 +39,7 @@ export type {
   ScrollToLocationParamsType as SectionListScrollParams,
 };
 
-type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+type RequiredSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
@@ -64,7 +64,7 @@ export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
   info: SectionListRenderItemInfo<ItemT, SectionT>,
 ) => React.Node | null;
 
-type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
+type OptionalSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
@@ -110,8 +110,8 @@ export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
     VirtualizedSectionListProps<ItemT, SectionT>,
     'getItem' | 'getItemCount' | 'renderItem' | 'keyExtractor',
   >,
-  ...RequiredProps<ItemT, SectionT>,
-  ...OptionalProps<ItemT, SectionT>,
+  ...RequiredSectionListProps<ItemT, SectionT>,
+  ...OptionalSectionListProps<ItemT, SectionT>,
 };
 
 /**

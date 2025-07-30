@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.compiler_flags         = '-Wno-nullability-completeness'
   s.source                 = source
-  s.source_files           = "*.{m,mm}"
+  s.source_files           = podspec_sources("*.{m,mm}", "")
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTNetwork"
   s.pod_target_xcconfig    = {
@@ -52,4 +52,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

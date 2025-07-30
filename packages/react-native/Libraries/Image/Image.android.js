@@ -16,7 +16,7 @@ import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';
 
 import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
-import TextAncestor from '../Text/TextAncestor';
+import TextAncestorContext from '../Text/TextAncestorContext';
 import ImageAnalyticsTagContext from './ImageAnalyticsTagContext';
 import {
   unstable_getImageComponentDecorator,
@@ -222,7 +222,7 @@ let BaseImage: AbstractImageAndroid = ({
               }
             : nativeProps;
         return (
-          <TextAncestor.Consumer>
+          <TextAncestorContext.Consumer>
             {hasTextAncestor => {
               if (hasTextAncestor) {
                 return (
@@ -245,7 +245,7 @@ let BaseImage: AbstractImageAndroid = ({
                 />
               );
             }}
-          </TextAncestor.Consumer>
+          </TextAncestorContext.Consumer>
         );
       }}
     </ImageAnalyticsTagContext.Consumer>

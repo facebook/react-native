@@ -14,6 +14,7 @@ import type ReadOnlyElement from '../../webapis/dom/nodes/ReadOnlyElement';
 import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
+import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
 import VirtualViewNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -24,6 +25,13 @@ export enum VirtualViewMode {
   Visible = 0,
   Prerender = 1,
   Hidden = 2,
+}
+
+// @see VirtualViewNativeComponent
+export enum VirtualViewRenderState {
+  Unknown = 0,
+  Rendered = 1,
+  None = 2,
 }
 
 export type Rect = $ReadOnly<{
@@ -52,8 +60,15 @@ const NotHidden = null;
 
 type State = HiddenHeight | typeof NotHidden;
 
-function createVirtualView(initialState: State): VirtualViewComponent {
+function createVirtualView(
+  initialState: State,
+  experimental: boolean,
+): VirtualViewComponent {
   const initialHidden = initialState !== NotHidden;
+
+  const NativeComponent = experimental
+    ? VirtualViewExperimentalNativeComponent
+    : VirtualViewNativeComponent;
 
   component VirtualView(
     children?: React.Node,
@@ -83,35 +98,37 @@ function createVirtualView(initialState: State): VirtualViewComponent {
               thresholdRect: event.nativeEvent.thresholdRect,
             });
 
-      switch (mode) {
-        case VirtualViewMode.Visible: {
+      match (mode) {
+        VirtualViewMode.Visible => {
           setState(NotHidden);
           emitModeChange?.();
-          break;
         }
-        case VirtualViewMode.Prerender: {
+        VirtualViewMode.Prerender => {
           startTransition(() => {
             setState(NotHidden);
             emitModeChange?.();
           });
-          break;
         }
-        case VirtualViewMode.Hidden: {
+        VirtualViewMode.Hidden => {
           const {height} = event.nativeEvent.targetRect;
           startTransition(() => {
             setState(height as HiddenHeight);
             emitModeChange?.();
           });
-          break;
         }
       }
     };
 
     return (
-      <VirtualViewNativeComponent
+      <NativeComponent
         initialHidden={initialHidden}
         nativeID={nativeID}
         ref={ref}
+        renderState={
+          (isHidden
+            ? VirtualViewRenderState.None
+            : VirtualViewRenderState.Rendered) as number
+        }
         style={
           isHidden
             ? StyleSheet.compose(style, {
@@ -121,16 +138,24 @@ function createVirtualView(initialState: State): VirtualViewComponent {
         }
         onModeChange={handleModeChange}>
         {isHidden ? null : children}
-      </VirtualViewNativeComponent>
+      </NativeComponent>
     );
   }
   return VirtualView;
 }
 
-export default createVirtualView(NotHidden) as VirtualViewComponent;
+export default createVirtualView(NotHidden, false) as VirtualViewComponent;
 
-export function createHiddenVirtualView(height: number): VirtualViewComponent {
-  return createVirtualView(height as HiddenHeight);
+export const VirtualViewExperimental = createVirtualView(
+  NotHidden,
+  true,
+) as VirtualViewComponent;
+
+export function createHiddenVirtualView(
+  height: number,
+  experimental: boolean,
+): VirtualViewComponent {
+  return createVirtualView(height as HiddenHeight, experimental);
 }
 
 export const _logs: {states?: Array<State>} = {};

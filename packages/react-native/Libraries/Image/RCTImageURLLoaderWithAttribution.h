@@ -8,9 +8,10 @@
 #import <React/RCTImageLoaderLoggable.h>
 #import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTImageURLLoader.h>
-
 // TODO (T61325135): Remove C++ checks
 #ifdef __cplusplus
+#import <string>
+
 namespace facebook::react {
 
 struct ImageURLLoaderAttribution {

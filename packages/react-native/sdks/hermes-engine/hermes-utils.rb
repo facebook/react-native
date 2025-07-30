@@ -204,7 +204,12 @@ def hermestag_file(react_native_path)
 end
 
 def release_tarball_url(version, build_type)
-    maven_repo_url = "https://repo1.maven.org/maven2"
+    ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
+    ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
+    maven_repo_url =
+        ENV['ENTERPRISE_REPOSITORY'] != nil && ENV['ENTERPRISE_REPOSITORY'] != "" ?
+        ENV['ENTERPRISE_REPOSITORY'] :
+        "https://repo1.maven.org/maven2"
     namespace = "com/facebook/react"
     # Sample url from Maven:
     # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
@@ -234,9 +239,9 @@ def nightly_tarball_url(version)
   artifact_name = "hermes-ios-debug.tar.gz"
   xml_url = "https://central.sonatype.com/repository/maven-snapshots/com/facebook/react/#{artifact_coordinate}/#{version}-SNAPSHOT/maven-metadata.xml"
 
-  response = Net::HTTP.get(URI(xml_url))
-  if response.kind_of? Net::HTTPSuccess
-    xml = REXML::Document.new(response)
+  response = Net::HTTP.get_response(URI(xml_url))
+  if response.is_a?(Net::HTTPSuccess)
+    xml = REXML::Document.new(response.body)
     timestamp = xml.elements['metadata/versioning/snapshot/timestamp'].text
     build_number = xml.elements['metadata/versioning/snapshot/buildNumber'].text
     full_version = "#{version}-#{timestamp}-#{build_number}"

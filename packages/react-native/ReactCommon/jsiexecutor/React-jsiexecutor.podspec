@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files         = "jsireact/*.{cpp,h}"
+  s.source_files           = podspec_sources("jsireact/*.{cpp,h}", "jsireact/*.h")
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
@@ -41,4 +41,5 @@ Pod::Spec.new do |s|
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

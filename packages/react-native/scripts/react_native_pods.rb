@@ -112,86 +112,87 @@ def use_react_native! (
 
   Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
-  if ReactNativeCoreUtils.build_rncore_from_source()
-    # The Pods which should be included in all projects
-    pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
-    pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
-    pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
-    pod 'React', :path => "#{prefix}/"
-    pod 'React-Core', :path => "#{prefix}/"
-    pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
-    pod 'React-RCTRuntime', :path => "#{prefix}/React/Runtime"
-    pod 'React-RCTAppDelegate', :path => "#{prefix}/Libraries/AppDelegate"
-    pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
-    pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
-    pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
-    pod 'React-RCTImage', :path => "#{prefix}/Libraries/Image"
-    pod 'React-RCTLinking', :path => "#{prefix}/Libraries/LinkingIOS"
-    pod 'React-RCTNetwork', :path => "#{prefix}/Libraries/Network"
-    pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
-    pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
-    pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
-    pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
-    pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
-    pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
-    pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
-    pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
-    pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
-    pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
-    pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
-    pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
-    pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
-    pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
-    pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
-    pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
-    pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
-    pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  # The Pods which should be included in all projects
+  pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
+  pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
+  pod 'RCTTypeSafety', :path => "#{prefix}/Libraries/TypeSafety", :modular_headers => true
+  pod 'React', :path => "#{prefix}/"
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+  end
+  pod 'React-Core', :path => "#{prefix}/"
+  pod 'React-CoreModules', :path => "#{prefix}/React/CoreModules"
+  pod 'React-RCTRuntime', :path => "#{prefix}/React/Runtime"
+  pod 'React-RCTAppDelegate', :path => "#{prefix}/Libraries/AppDelegate"
+  pod 'React-RCTActionSheet', :path => "#{prefix}/Libraries/ActionSheetIOS"
+  pod 'React-RCTAnimation', :path => "#{prefix}/Libraries/NativeAnimation"
+  pod 'React-RCTBlob', :path => "#{prefix}/Libraries/Blob"
+  pod 'React-RCTImage', :path => "#{prefix}/Libraries/Image"
+  pod 'React-RCTLinking', :path => "#{prefix}/Libraries/LinkingIOS"
+  pod 'React-RCTNetwork', :path => "#{prefix}/Libraries/Network"
+  pod 'React-RCTSettings', :path => "#{prefix}/Libraries/Settings"
+  pod 'React-RCTText', :path => "#{prefix}/Libraries/Text"
+  pod 'React-RCTVibration', :path => "#{prefix}/Libraries/Vibration"
+  pod 'React-Core/RCTWebSocket', :path => "#{prefix}/"
+  pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
+  pod 'React-debug', :path => "#{prefix}/ReactCommon/react/debug"
+  pod 'React-utils', :path => "#{prefix}/ReactCommon/react/utils"
+  pod 'React-featureflags', :path => "#{prefix}/ReactCommon/react/featureflags"
+  pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
+  pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
+  pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
+  pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
+  pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
+  pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
+  pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
+  pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
+  pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
+  pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
 
-    if hermes_enabled
-      setup_hermes!(:react_native_path => prefix)
-    end
+  if hermes_enabled
+    setup_hermes!(:react_native_path => prefix)
+  end
 
-    pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
-    pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
-    pod 'React-jsitooling', :path => "#{prefix}/ReactCommon/jsitooling"
-    pod 'React-jsinspectorcdp', :path => "#{prefix}/ReactCommon/jsinspector-modern/cdp"
-    pod 'React-jsinspectornetwork', :path => "#{prefix}/ReactCommon/jsinspector-modern/network"
-    pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
+  pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
+  pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
+  pod 'React-jsitooling', :path => "#{prefix}/ReactCommon/jsitooling"
+  pod 'React-jsinspectorcdp', :path => "#{prefix}/ReactCommon/jsinspector-modern/cdp"
+  pod 'React-jsinspectornetwork', :path => "#{prefix}/ReactCommon/jsinspector-modern/network"
+  pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
-    pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
-    pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
-    pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
-    pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
-    pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
-    pod 'React-renderercss', :path => "#{prefix}/ReactCommon/react/renderer/css"
-    pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
-    pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
-    pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
-    pod 'React-oscompat', :path => "#{prefix}/ReactCommon/oscompat"
-    pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
-    pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
-    pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
-    pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
-    setup_fabric!(:react_native_path => prefix)
-    setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
+  pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
+  pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
+  pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
+  pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
+  pod 'React-renderercss', :path => "#{prefix}/ReactCommon/react/renderer/css"
+  pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
+  pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
+  pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"
+  pod 'React-oscompat', :path => "#{prefix}/ReactCommon/oscompat"
+  pod 'React-logger', :path => "#{prefix}/ReactCommon/logger"
+  pod 'ReactCommon/turbomodule/core', :path => "#{prefix}/ReactCommon", :modular_headers => true
+  pod 'React-NativeModulesApple', :path => "#{prefix}/ReactCommon/react/nativemodule/core/platform/ios", :modular_headers => true
+  pod 'Yoga', :path => "#{prefix}/ReactCommon/yoga", :modular_headers => true
+  setup_fabric!(:react_native_path => prefix)
+  setup_bridgeless!(:react_native_path => prefix, :use_hermes => hermes_enabled)
 
-    if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
-      pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
-      pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
-      pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
-      pod 'fast_float', :podspec => "#{prefix}/third-party-podspecs/fast_float.podspec"
-      pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec", :modular_headers => true
-      pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
-      pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
-    else
-      pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
-    end
+  if ReactNativeDependenciesUtils.build_react_native_deps_from_source()
+    pod 'DoubleConversion', :podspec => "#{prefix}/third-party-podspecs/DoubleConversion.podspec"
+    pod 'glog', :podspec => "#{prefix}/third-party-podspecs/glog.podspec"
+    pod 'boost', :podspec => "#{prefix}/third-party-podspecs/boost.podspec"
+    pod 'fast_float', :podspec => "#{prefix}/third-party-podspecs/fast_float.podspec"
+    pod 'fmt', :podspec => "#{prefix}/third-party-podspecs/fmt.podspec", :modular_headers => true
+    pod 'RCT-Folly', :podspec => "#{prefix}/third-party-podspecs/RCT-Folly.podspec", :modular_headers => true
+    pod 'SocketRocket', "~> #{Helpers::Constants::socket_rocket_config[:version]}", :modular_headers => true
   else
     # Install prebuilt React Native Core and React Native Dependencies
     ReactNativeCoreUtils.rncore_log("Using React Native Core and React Native Dependencies prebuilt versions.")
-    pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
     pod 'ReactNativeDependencies', :podspec => "#{prefix}/third-party-podspecs/ReactNativeDependencies.podspec", :modular_headers => true
-    pod 'hermes-engine', :podspec => "#{prefix}/sdks/hermes-engine/hermes-engine.podspec"
+
+    if !ReactNativeCoreUtils.build_rncore_from_source()
+      pod 'React-Core-prebuilt', :podspec => "#{prefix}/React-Core-prebuilt.podspec", :modular_headers => true
+    end
   end
 
   pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
@@ -272,6 +273,22 @@ end
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   folly_config = get_folly_config()
   NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
+end
+
+# This function is used by podspecs that needs to use the prebuilt sources for React Native.
+# It returns the sources to use for the podspec.
+#
+# Parameters:
+# - original_sources: The original sources of the podspec
+# - sources_for_prebuilds: The sources to use for prebuilt pods
+#
+# Returns: The sources to use for the podspec
+def podspec_sources(original_sources, sources_for_prebuilds)
+  if ReactNativeCoreUtils.build_rncore_from_source()
+    return original_sources
+  else
+    return sources_for_prebuilds
+  end
 end
 
 

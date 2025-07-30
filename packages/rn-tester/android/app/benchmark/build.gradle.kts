@@ -13,6 +13,7 @@ plugins {
 android {
   namespace = "com.example.benchmark"
   compileSdk = libs.versions.compileSdk.get().toInt()
+  buildToolsVersion = libs.versions.buildTools.get()
 
   defaultConfig {
     minSdk = libs.versions.minSdk.get().toInt()

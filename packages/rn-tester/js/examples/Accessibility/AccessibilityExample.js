@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {EventSubscription, GestureResponderEvent} from 'react-native';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
@@ -1741,12 +1742,8 @@ function AccessibilityOrderExample(): React.Node {
         />
         <View
           nativeID="c"
-          accessibilityLabel="c"
-          style={[{backgroundColor: 'yellow'}, styles.boxSize]}>
-          <RNTesterText style={{color: 'black', fontSize: 10}}>
-            Not accessible, in the order
-          </RNTesterText>
-        </View>
+          style={[{backgroundColor: 'yellow'}, styles.boxSize]}
+        />
       </View>
       <RNTesterText style={{marginBottom: 8}}>
         Accessibility order can reference containers: accessibilityOrder=['b',
@@ -1757,7 +1754,6 @@ function AccessibilityOrderExample(): React.Node {
         experimental_accessibilityOrder={['b', 'c', 'a']}>
         <View
           nativeID="a"
-          accessibilityLabel="a"
           style={[
             {backgroundColor: 'red', flexWrap: 'wrap', flexDirection: 'row'},
             styles.boxSize,
@@ -1850,8 +1846,8 @@ function AccessibilityOrderExample(): React.Node {
         />
       </View>
       <RNTesterText style={{marginBottom: 8}}>
-        Accessibility order can reference the root: accessibilityOrder=['b',
-        'c', 'root', 'a'].
+        Accessibility order cannot order the root, but it can still be
+        accessible: accessibilityOrder=['b', 'c', 'root', 'a'].
       </RNTesterText>
       <View
         accessible={true}
@@ -1881,7 +1877,7 @@ function AccessibilityOrderExample(): React.Node {
       <RNTesterText style={{marginBottom: 8}}>
         Accessibility order can reference parents and their decendants in any
         order: accessibilityOrder=[child 2, child 1, child 2.3, child 3.2, child
-        4, child 2.4, parent, child 2.1, child 2.4]
+        4, child 2.4, parent, child 2.1]
       </RNTesterText>
       <View
         style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
@@ -1894,7 +1890,6 @@ function AccessibilityOrderExample(): React.Node {
           'child2.4',
           'parent',
           'child2.1',
-          'child2.4',
         ]}>
         <View
           accessible={true}
@@ -1994,7 +1989,7 @@ function AccessibilityOrderExample(): React.Node {
           <View
             accessible={true}
             accessibilityLabel="I am a view with a label that got co-opted"
-            style={[{backgroundColor: 'red'}, styles.smallBoxSize]}
+            style={[{backgroundColor: 'blue'}, styles.smallBoxSize]}
           />
         </View>
         <View
@@ -2019,7 +2014,7 @@ function AccessibilityOrderExample(): React.Node {
       </View>
       <RNTesterText style={{marginBottom: 8}}>
         Accessibility order let's you focus links, but the text needs to be
-        included: accessibilityOrder=[b, a, c, text]
+        included: accessibilityOrder=[c, a, b, text]
       </RNTesterText>
       <View
         style={{flexDirection: 'row', gap: 10, marginBottom: 8}}
@@ -2033,10 +2028,7 @@ function AccessibilityOrderExample(): React.Node {
           accessible={true}
           nativeID="b"
           style={[{backgroundColor: 'green'}, styles.boxSize]}>
-          <RNTesterText
-            accessible={true}
-            style={{fontSize: 10}}
-            nativeID="text">
+          <RNTesterText style={{fontSize: 10}} nativeID="text">
             I am a{' '}
             <RNTesterText accessibilityRole="link" style={styles.link}>
               link!
@@ -2050,8 +2042,7 @@ function AccessibilityOrderExample(): React.Node {
           style={[{backgroundColor: 'yellow'}, styles.boxSize]}>
           <RNTesterText
             accessible={true}
-            style={{color: 'black', fontSize: 10}}
-            nativeID="text">
+            style={{color: 'black', fontSize: 10}}>
             I am a{' '}
             <RNTesterText accessibilityRole="link" style={styles.link}>
               non-discoverable link!
@@ -2260,4 +2251,4 @@ exports.examples = [
       return <LabelCooptingExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -21,7 +21,7 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-export type TVProps = $ReadOnly<{
+export type TouchableOpacityTVProps = $ReadOnly<{
   /**
    * *(Apple TV only)* TV preferred focus (see documentation for the View component).
    *
@@ -79,7 +79,7 @@ type TouchableOpacityBaseProps = $ReadOnly<{
 
 export type TouchableOpacityProps = $ReadOnly<{
   ...TouchableWithoutFeedbackProps,
-  ...TVProps,
+  ...TouchableOpacityTVProps,
   ...TouchableOpacityBaseProps,
 }>;
 

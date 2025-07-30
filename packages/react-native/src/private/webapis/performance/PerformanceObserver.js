@@ -21,11 +21,12 @@ import {
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
 } from './internals/RawPerformanceEntry';
-import {warnNoNativePerformance} from './internals/Utilities';
-import NativePerformance from './specs/NativePerformance';
+import MaybeNativePerformance from './specs/NativePerformance';
 import nullthrows from 'nullthrows';
 
 export {PerformanceEntry} from './PerformanceEntry';
+
+const NativePerformance = nullthrows(MaybeNativePerformance);
 
 export class PerformanceObserverEntryList {
   #entries: PerformanceEntryList;
@@ -75,13 +76,6 @@ export interface PerformanceObserverInit {
 }
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
-  if (!NativePerformance) {
-    return Object.freeze([]);
-  }
-  if (!NativePerformance.getSupportedPerformanceEntryTypes) {
-    // fallback if getSupportedPerformanceEntryTypes is not defined on native side
-    return Object.freeze(['mark', 'measure', 'event']);
-  }
   return Object.freeze(
     NativePerformance.getSupportedPerformanceEntryTypes().map(
       rawToPerformanceEntryType,
@@ -120,11 +114,6 @@ export class PerformanceObserver {
   }
 
   observe(options: PerformanceObserverInit): void {
-    if (!NativePerformance || NativePerformance.observe == null) {
-      warnNoNativePerformance();
-      return;
-    }
-
     this.#validateObserveOptions(options);
 
     if (this.#nativeObserverHandle == null) {
@@ -135,12 +124,12 @@ export class PerformanceObserver {
 
     if (options.entryTypes) {
       this.#type = 'multiple';
-      NativePerformance.observe?.(observerHandle, {
+      NativePerformance.observe(observerHandle, {
         entryTypes: options.entryTypes.map(performanceEntryTypeToRaw),
       });
     } else if (options.type) {
       this.#type = 'single';
-      NativePerformance.observe?.(observerHandle, {
+      NativePerformance.observe(observerHandle, {
         type: performanceEntryTypeToRaw(options.type),
         buffered: options.buffered,
         durationThreshold: options.durationThreshold,
@@ -149,12 +138,7 @@ export class PerformanceObserver {
   }
 
   disconnect(): void {
-    if (!NativePerformance) {
-      warnNoNativePerformance();
-      return;
-    }
-
-    if (this.#nativeObserverHandle == null || !NativePerformance.disconnect) {
+    if (this.#nativeObserverHandle == null) {
       return;
     }
 
@@ -162,16 +146,11 @@ export class PerformanceObserver {
   }
 
   #createNativeObserver(): OpaqueNativeObserverHandle | null {
-    if (!NativePerformance || !NativePerformance.createObserver) {
-      warnNoNativePerformance();
-      return null;
-    }
-
     this.#calledAtLeastOnce = false;
 
     const observerHandle: OpaqueNativeObserverHandle =
       NativePerformance.createObserver(() => {
-        const rawEntries = NativePerformance.takeRecords?.(
+        const rawEntries = NativePerformance.takeRecords(
           observerHandle,
           true, // sort records
         );
@@ -185,7 +164,7 @@ export class PerformanceObserver {
         let droppedEntriesCount = 0;
         if (!this.#calledAtLeastOnce) {
           droppedEntriesCount =
-            NativePerformance.getDroppedEntriesCount?.(observerHandle) ?? 0;
+            NativePerformance.getDroppedEntriesCount(observerHandle);
           this.#calledAtLeastOnce = true;
         }
 

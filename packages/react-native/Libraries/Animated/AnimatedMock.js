@@ -17,7 +17,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 
-import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import {AnimatedEvent, attachNativeEventImpl} from './AnimatedEvent';
 import AnimatedImplementation from './AnimatedImplementation';
 import createAnimatedComponent from './createAnimatedComponent';
 import AnimatedColor from './nodes/AnimatedColor';
@@ -188,7 +188,7 @@ export default {
   loop,
   event: AnimatedImplementation.event,
   createAnimatedComponent,
-  attachNativeEvent,
+  attachNativeEvent: attachNativeEventImpl,
   forkEvent: AnimatedImplementation.forkEvent,
   unforkEvent: AnimatedImplementation.unforkEvent,
   Event: AnimatedEvent,

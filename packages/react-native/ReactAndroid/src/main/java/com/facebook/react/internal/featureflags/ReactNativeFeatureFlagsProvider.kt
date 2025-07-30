@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1eae1e1307373b7736cd0df332b9435a>>
+ * @generated SignedSource<<120c4770d6c348b8c66d6777c3e037ea>>
  */
 
 /**
@@ -25,21 +25,25 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
+  @DoNotStrip public fun cdpInteractionMetricsEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
-  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+  @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
 
   @DoNotStrip public fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip public fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
@@ -50,6 +54,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableDestroyShadowTreeRevisionAsync(): Boolean
 
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
+
+  @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
@@ -65,6 +71,12 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
+  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
+
+  @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
+
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
@@ -72,8 +84,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLineHeightCenteringOnIOS(): Boolean
 
   @DoNotStrip public fun enableMainQueueCoordinatorOnIOS(): Boolean
-
-  @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
@@ -89,8 +99,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableResourceTimingAPI(): Boolean
 
-  @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
-
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
@@ -101,11 +109,29 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableVirtualViewDebugFeatures(): Boolean
 
+  @DoNotStrip public fun enableVirtualViewRenderState(): Boolean
+
+  @DoNotStrip public fun enableVirtualViewWindowFocusDetection(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
+
+  @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
+
+  @DoNotStrip public fun preparedTextCacheSize(): Double
+
+  @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
+
+  @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -114,6 +140,10 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
+
+  @DoNotStrip public fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean
+
+  @DoNotStrip public fun useNativeTransformHelperAndroid(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 

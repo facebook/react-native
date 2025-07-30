@@ -19,7 +19,7 @@ namespace {
 // update Hermes to return timestamps in chrono type.
 HighResTimeStamp getHighResTimeStampForSample(
     const RuntimeSamplingProfile::Sample& sample) {
-  auto microsecondsSinceSteadyClockEpoch = sample.getTimestamp();
+  auto microsecondsSinceSteadyClockEpoch = sample.timestamp;
   auto chronoTimePoint = std::chrono::steady_clock::time_point(
       std::chrono::microseconds(microsecondsSinceSteadyClockEpoch));
   return HighResTimeStamp::fromChronoSteadyClockTimePoint(chronoTimePoint);
@@ -45,40 +45,43 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
       node.getCallFrame();
   auto traceEventCallFrame =
       TraceEventProfileChunk::CPUProfile::Node::CallFrame{
-          node.getCodeType() == ProfileTreeNode::CodeType::JavaScript ? "JS"
-                                                                      : "other",
-          callFrame.getScriptId(),
-          std::string(callFrame.getFunctionName()),
-          callFrame.hasUrl()
-              ? std::optional<std::string>(std::string(callFrame.getUrl()))
+          .codeType =
+              node.getCodeType() == ProfileTreeNode::CodeType::JavaScript
+              ? "JS"
+              : "other",
+          .scriptId = callFrame.scriptId,
+          .functionName = std::string(callFrame.functionName),
+          .url = callFrame.scriptURL
+              ? std::optional<std::string>(std::string(*callFrame.scriptURL))
               : std::nullopt,
-          callFrame.hasLineNumber()
-              ? std::optional<uint32_t>(callFrame.getLineNumber())
-              : std::nullopt,
-          callFrame.hasColumnNumber()
-              ? std::optional<uint32_t>(callFrame.getColumnNumber())
-              : std::nullopt};
+          .lineNumber = callFrame.lineNumber,
+          .columnNumber = callFrame.columnNumber,
+      };
 
   return TraceEventProfileChunk::CPUProfile::Node{
-      node.getId(),
-      traceEventCallFrame,
-      node.hasParent() ? std::optional<uint32_t>(node.getParentId())
-                       : std::nullopt};
+      .id = node.getId(),
+      .callFrame = traceEventCallFrame,
+      .parentId = node.hasParent() ? std::optional<uint32_t>(node.getParentId())
+                                   : std::nullopt,
+  };
 }
 
 RuntimeSamplingProfile::SampleCallStackFrame createArtificialCallFrame(
     std::string_view callFrameName) {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
-      FALLBACK_SCRIPT_ID,
-      callFrameName};
+      .kind = RuntimeSamplingProfile::SampleCallStackFrame::Kind::JSFunction,
+      .scriptId = FALLBACK_SCRIPT_ID,
+      .functionName = callFrameName,
+  };
 };
 
 RuntimeSamplingProfile::SampleCallStackFrame createGarbageCollectorCallFrame() {
   return RuntimeSamplingProfile::SampleCallStackFrame{
-      RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
-      FALLBACK_SCRIPT_ID,
-      GARBAGE_COLLECTOR_FRAME_NAME};
+      .kind =
+          RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector,
+      .scriptId = FALLBACK_SCRIPT_ID,
+      .functionName = GARBAGE_COLLECTOR_FRAME_NAME,
+  };
 };
 
 class ProfileTreeRootNode : public ProfileTreeNode {
@@ -112,7 +115,7 @@ void RuntimeSamplingProfileTraceEventSerializer::chunkEmptySample(
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
-    ProfileChunk& chunk,
+    ProfileChunk&& chunk,
     uint16_t profileId) {
   if (chunk.isEmpty()) {
     return;
@@ -132,14 +135,14 @@ void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
           TraceEventProfileChunk{
               .cpuProfile =
                   TraceEventProfileChunk::CPUProfile{
-                      traceEventNodes, chunk.samples},
-              .timeDeltas =
-                  TraceEventProfileChunk::TimeDeltas{chunk.timeDeltas},
+                      .nodes = std::move(traceEventNodes),
+                      .samples = std::move(chunk.samples)},
+              .timeDeltas = std::move(chunk.timeDeltas),
           }));
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
-    const std::vector<RuntimeSamplingProfile::SampleCallStackFrame>& callStack,
+    std::vector<RuntimeSamplingProfile::SampleCallStackFrame>&& callStack,
     ProfileChunk& chunk,
     ProfileTreeNode& rootNode,
     uint32_t idleNodeId,
@@ -153,7 +156,7 @@ void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
   ProfileTreeNode* previousNode = &rootNode;
   for (auto it = callStack.rbegin(); it != callStack.rend(); ++it) {
     const RuntimeSamplingProfile::SampleCallStackFrame& callFrame = *it;
-    bool isGarbageCollectorFrame = callFrame.getKind() ==
+    bool isGarbageCollectorFrame = callFrame.kind ==
         RuntimeSamplingProfile::SampleCallStackFrame::Kind::GarbageCollector;
 
     ProfileTreeNode::CodeType childCodeType = isGarbageCollectorFrame
@@ -181,20 +184,21 @@ void RuntimeSamplingProfileTraceEventSerializer::processCallStack(
 
 void RuntimeSamplingProfileTraceEventSerializer::
     sendBufferedTraceEventsAndClear() {
-  notificationCallback_(traceEventBuffer_);
+  notificationCallback_(std::move(traceEventBuffer_));
+
   traceEventBuffer_ = folly::dynamic::array();
+  traceEventBuffer_.reserve(traceEventChunkSize_);
 }
 
 void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
-    const RuntimeSamplingProfile& profile,
+    RuntimeSamplingProfile&& profile,
     HighResTimeStamp tracingStartTime) {
-  const std::vector<RuntimeSamplingProfile::Sample>& samples =
-      profile.getSamples();
+  auto samples = std::move(profile.samples);
   if (samples.empty()) {
     return;
   }
 
-  uint64_t firstChunkThreadId = samples.front().getThreadId();
+  uint64_t firstChunkThreadId = samples.front().threadId;
   HighResTimeStamp previousSampleTimestamp = tracingStartTime;
   HighResTimeStamp currentChunkTimestamp = tracingStartTime;
 
@@ -223,8 +227,8 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   chunk.nodes.push_back(*idleNode);
   uint32_t idleNodeId = idleNode->getId();
 
-  for (const auto& sample : samples) {
-    uint64_t currentSampleThreadId = sample.getThreadId();
+  for (auto& sample : samples) {
+    uint64_t currentSampleThreadId = sample.threadId;
     auto currentSampleTimestamp = getHighResTimeStampForSample(sample);
 
     // We should not attempt to merge samples from different threads.
@@ -232,7 +236,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     // We should group samples by thread id once we support executing JavaScript
     // on different threads.
     if (currentSampleThreadId != chunk.threadId || chunk.isFull()) {
-      bufferProfileChunkTraceEvent(chunk, PROFILE_ID);
+      bufferProfileChunkTraceEvent(std::move(chunk), PROFILE_ID);
       chunk = ProfileChunk{
           profileChunkSize_, currentSampleThreadId, currentChunkTimestamp};
     }
@@ -242,7 +246,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     }
 
     processCallStack(
-        sample.getCallStack(),
+        std::move(sample.callStack),
         chunk,
         rootNode,
         idleNodeId,
@@ -253,7 +257,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   }
 
   if (!chunk.isEmpty()) {
-    bufferProfileChunkTraceEvent(chunk, PROFILE_ID);
+    bufferProfileChunkTraceEvent(std::move(chunk), PROFILE_ID);
   }
 
   if (!traceEventBuffer_.empty()) {

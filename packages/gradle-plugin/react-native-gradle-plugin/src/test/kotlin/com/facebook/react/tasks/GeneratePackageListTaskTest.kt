@@ -233,6 +233,7 @@ class GeneratePackageListTaskTest {
 
 
 
+    @SuppressWarnings("deprecation")
     public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;
@@ -311,7 +312,8 @@ class GeneratePackageListTaskTest {
     import com.facebook.react.aPackage;
     // @react-native/another-package
     import com.facebook.react.anotherPackage;
-
+    
+    @SuppressWarnings("deprecation")
     public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;

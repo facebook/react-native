@@ -7,13 +7,13 @@
 
 #include "PerformanceTracer.h"
 #include "Timing.h"
+#include "TraceEventSerializer.h"
 
 #include <oscompat/OSCompat.h>
 #include <react/timing/primitives.h>
 
 #include <folly/json.h>
 
-#include <array>
 #include <mutex>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -29,18 +29,20 @@ PerformanceTracer::PerformanceTracer()
 bool PerformanceTracer::startTracing() {
   {
     std::lock_guard lock(mutex_);
-    if (tracing_) {
+    if (tracingAtomic_) {
       return false;
     }
-
-    tracing_ = true;
+    tracingAtomic_ = true;
   }
 
   reportProcess(processId_, "React Native");
 
   {
     std::lock_guard lock(mutex_);
-    buffer_.push_back(TraceEvent{
+    if (!tracingAtomic_) {
+      return false;
+    }
+    buffer_.emplace_back(TraceEvent{
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
         .ph = 'I',
@@ -49,16 +51,17 @@ bool PerformanceTracer::startTracing() {
         .tid = oscompat::getCurrentThreadId(),
         .args = folly::dynamic::object("data", folly::dynamic::object()),
     });
-
-    return true;
   }
+
+  return true;
 }
 
 bool PerformanceTracer::stopTracing() {
   std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return false;
   }
+  tracingAtomic_ = false;
 
   // This is synthetic Trace Event, which should not be represented on a
   // timeline. CDT is not using Profile or ProfileChunk events for determining
@@ -66,7 +69,7 @@ bool PerformanceTracer::stopTracing() {
   // samples will be displayed as empty. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -76,56 +79,95 @@ bool PerformanceTracer::stopTracing() {
   });
 
   performanceMeasureCount_ = 0;
-  tracing_ = false;
   return true;
 }
 
 void PerformanceTracer::collectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback,
+    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
     uint16_t chunkSize) {
-  std::lock_guard lock(mutex_);
+  std::vector<TraceEvent> localBuffer;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.swap(localBuffer);
+  }
 
-  if (buffer_.empty()) {
+  if (localBuffer.empty()) {
     return;
   }
 
-  auto traceEvents = folly::dynamic::array();
-  for (auto event : buffer_) {
+  auto serializedTraceEvents = folly::dynamic::array();
+  for (auto&& event : localBuffer) {
     // Emit trace events
-    traceEvents.push_back(serializeTraceEvent(event));
+    serializedTraceEvents.push_back(
+        TraceEventSerializer::serialize(std::move(event)));
 
-    if (traceEvents.size() == chunkSize) {
-      resultCallback(traceEvents);
-      traceEvents = folly::dynamic::array();
+    if (serializedTraceEvents.size() == chunkSize) {
+      resultCallback(std::move(serializedTraceEvents));
+      serializedTraceEvents = folly::dynamic::array();
     }
   }
-  if (!traceEvents.empty()) {
-    resultCallback(traceEvents);
+  if (!serializedTraceEvents.empty()) {
+    resultCallback(std::move(serializedTraceEvents));
+  }
+}
+
+folly::dynamic PerformanceTracer::collectEvents(uint16_t chunkSize) {
+  std::vector<TraceEvent> localBuffer;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.swap(localBuffer);
   }
 
-  buffer_.clear();
+  auto chunks = folly::dynamic::array();
+  if (localBuffer.empty()) {
+    return chunks;
+  }
+
+  auto chunk = folly::dynamic::array();
+  chunk.reserve(chunkSize);
+  for (auto&& event : localBuffer) {
+    chunk.push_back(TraceEventSerializer::serialize(std::move(event)));
+
+    if (chunk.size() == chunkSize) {
+      chunks.push_back(std::move(chunk));
+      chunk = folly::dynamic::array();
+      chunk.reserve(chunkSize);
+    }
+  }
+
+  if (!chunk.empty()) {
+    chunks.push_back(std::move(chunk));
+  }
+  return chunks;
 }
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
-    HighResTimeStamp start) {
-  if (!tracing_) {
+    HighResTimeStamp start,
+    folly::dynamic&& detail) {
+  if (!tracingAtomic_) {
     return;
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  folly::dynamic eventArgs = folly::dynamic::object();
+  if (detail != nullptr) {
+    eventArgs = folly::dynamic::object(
+        "data", folly::dynamic::object("detail", folly::toJson(detail)));
+  }
+
+  buffer_.emplace_back(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'I',
       .ts = start,
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
+      .args = eventArgs,
   });
 }
 
@@ -133,29 +175,26 @@ void PerformanceTracer::reportMeasure(
     const std::string_view& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
-  if (!tracing_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+    folly::dynamic&& detail) {
+  if (!tracingAtomic_) {
     return;
   }
 
   folly::dynamic beginEventArgs = folly::dynamic::object();
-  if (trackMetadata.has_value()) {
-    folly::dynamic devtoolsObject = folly::dynamic::object(
-        "devtools",
-        folly::dynamic::object("track", trackMetadata.value().track));
-    beginEventArgs =
-        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
+  if (detail != nullptr) {
+    beginEventArgs = folly::dynamic::object("detail", folly::toJson(detail));
   }
 
-  ++performanceMeasureCount_;
   auto currentThreadId = oscompat::getCurrentThreadId();
-  buffer_.push_back(TraceEvent{
-      .id = performanceMeasureCount_,
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+  auto eventId = ++performanceMeasureCount_;
+
+  buffer_.emplace_back(TraceEvent{
+      .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'b',
@@ -164,8 +203,8 @@ void PerformanceTracer::reportMeasure(
       .tid = currentThreadId,
       .args = beginEventArgs,
   });
-  buffer_.push_back(TraceEvent{
-      .id = performanceMeasureCount_,
+  buffer_.emplace_back(TraceEvent{
+      .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'e',
@@ -175,17 +214,72 @@ void PerformanceTracer::reportMeasure(
   });
 }
 
+void PerformanceTracer::reportTimeStamp(
+    std::string name,
+    std::optional<ConsoleTimeStampEntry> start,
+    std::optional<ConsoleTimeStampEntry> end,
+    std::optional<std::string> trackName,
+    std::optional<std::string> trackGroup,
+    std::optional<ConsoleTimeStampColor> color) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  // `name` takes precedence over `message` in Chrome DevTools Frontend, no need
+  // to record both.
+  folly::dynamic data = folly::dynamic::object("name", std::move(name));
+  if (start) {
+    if (std::holds_alternative<HighResTimeStamp>(*start)) {
+      data["start"] = highResTimeStampToTracingClockTimeStamp(
+          std::get<HighResTimeStamp>(*start));
+    } else {
+      data["start"] = std::move(std::get<std::string>(*start));
+    }
+  }
+  if (end) {
+    if (std::holds_alternative<HighResTimeStamp>(*end)) {
+      data["end"] = highResTimeStampToTracingClockTimeStamp(
+          std::get<HighResTimeStamp>(*end));
+    } else {
+      data["end"] = std::move(std::get<std::string>(*end));
+    }
+  }
+  if (trackName) {
+    data["track"] = std::move(*trackName);
+  }
+  if (trackGroup) {
+    data["trackGroup"] = std::move(*trackGroup);
+  }
+  if (color) {
+    data["color"] = consoleTimeStampColorToString(*color);
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+  buffer_.emplace_back(TraceEvent{
+      .name = "TimeStamp",
+      .cat = "devtools.timeline",
+      .ph = 'I',
+      .ts = HighResTimeStamp::now(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", std::move(data)),
+  });
+}
+
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "process_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -201,16 +295,16 @@ void PerformanceTracer::reportJavaScriptThread() {
 }
 
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
   std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "thread_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -225,7 +319,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   // no timeline events or user timings. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "ReactNative-ThreadRegistered",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -238,16 +332,16 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
 void PerformanceTracer::reportEventLoopTask(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "RunTask",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'X',
@@ -261,16 +355,16 @@ void PerformanceTracer::reportEventLoopTask(
 void PerformanceTracer::reportEventLoopMicrotasks(
     HighResTimeStamp start,
     HighResTimeStamp end) {
-  if (!tracing_) {
+  if (!tracingAtomic_) {
     return;
   }
 
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.emplace_back(TraceEvent{
       .name = "RunMicrotasks",
       .cat = "v8.execute",
       .ph = 'X',
@@ -287,7 +381,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
     HighResTimeStamp profileTimestamp) {
   // CDT prioritizes event timestamp over startTime metadata field.
   // https://fburl.com/lo764pf4
-  return serializeTraceEvent(TraceEvent{
+  return TraceEventSerializer::serialize(TraceEvent{
       .id = profileId,
       .name = "Profile",
       .cat = "disabled-by-default-v8.cpu_profiler",
@@ -307,8 +401,8 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
     uint16_t profileId,
     uint64_t threadId,
     HighResTimeStamp chunkTimestamp,
-    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
-  return serializeTraceEvent(TraceEvent{
+    tracing::TraceEventProfileChunk&& traceEventProfileChunk) {
+  return TraceEventSerializer::serialize(TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
       .cat = "disabled-by-default-v8.cpu_profiler",
@@ -316,32 +410,11 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
       .ts = chunkTimestamp,
       .pid = processId_,
       .tid = threadId,
-      .args =
-          folly::dynamic::object("data", traceEventProfileChunk.toDynamic()),
+      .args = folly::dynamic::object(
+          "data",
+          TraceEventSerializer::serializeProfileChunk(
+              std::move(traceEventProfileChunk))),
   });
-}
-
-folly::dynamic PerformanceTracer::serializeTraceEvent(
-    const TraceEvent& event) const {
-  folly::dynamic result = folly::dynamic::object;
-
-  if (event.id.has_value()) {
-    std::array<char, 16> buffer{};
-    snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
-    result["id"] = buffer.data();
-  }
-  result["name"] = event.name;
-  result["cat"] = event.cat;
-  result["ph"] = std::string(1, event.ph);
-  result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
-  result["pid"] = event.pid;
-  result["tid"] = event.tid;
-  result["args"] = event.args;
-  if (event.dur.has_value()) {
-    result["dur"] = highResDurationToTracingClockDuration(event.dur.value());
-  }
-
-  return result;
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

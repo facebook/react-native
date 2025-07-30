@@ -83,7 +83,7 @@
 @end
 
 @interface RCTRootViewFactory () <RCTCxxBridgeDelegate> {
-  facebook::react::ContextContainer::Shared _contextContainer;
+  std::shared_ptr<const facebook::react::ContextContainer> _contextContainer;
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 @end

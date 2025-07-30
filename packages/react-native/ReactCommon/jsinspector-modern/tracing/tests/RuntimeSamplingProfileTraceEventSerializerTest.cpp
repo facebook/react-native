@@ -18,9 +18,9 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
  protected:
   std::vector<folly::dynamic> notificationEvents_;
 
-  std::function<void(const folly::dynamic& traceEventsChunk)>
+  std::function<void(folly::dynamic&& traceEventsChunk)>
   createNotificationCallback() {
-    return [this](const folly::dynamic& traceEventsChunk) {
+    return [this](folly::dynamic&& traceEventsChunk) {
       notificationEvents_.push_back(traceEventsChunk);
     };
   }
@@ -74,7 +74,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptyProfile) {
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // Nothing should be reported if the profile is empty.
   EXPECT_TRUE(notificationEvents_.empty());
@@ -122,7 +122,7 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // Verify
   ASSERT_EQ(notificationEvents_.size(), 2);
@@ -155,7 +155,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
   folly::dynamic chunkEvent = folly::dynamic::object;
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // Verify
   // [["Profile"], ["ProfileChunk"]]
@@ -192,7 +192,7 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk]]
   // Samples from different thread should never be grouped together in the same
@@ -231,7 +231,7 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk"], ["ProfileChunk"]]
   ASSERT_EQ(notificationEvents_.size(), 3);
@@ -272,7 +272,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(profile, tracingStartTime);
+  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk"]]
   ASSERT_EQ(notificationEvents_.size(), 2);

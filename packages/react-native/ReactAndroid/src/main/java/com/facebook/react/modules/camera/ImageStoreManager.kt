@@ -36,7 +36,7 @@ internal class ImageStoreManager(reactContext: ReactApplicationContext) :
     val executor = Executors.newSingleThreadExecutor()
     executor.execute {
       try {
-        val contentResolver = getReactApplicationContext().getContentResolver()
+        val contentResolver = reactApplicationContext.contentResolver
         val parsedUri = Uri.parse(uri)
         val inputStream = contentResolver.openInputStream(parsedUri) as InputStream
         try {

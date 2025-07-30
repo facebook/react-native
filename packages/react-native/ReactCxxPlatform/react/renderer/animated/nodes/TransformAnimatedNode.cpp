@@ -30,10 +30,9 @@ TransformAnimatedNode::TransformAnimatedNode(
     Tag tag,
     const folly::dynamic& config,
     NativeAnimatedNodesManager& manager)
-    : AnimatedNode(tag, config, manager, AnimatedNodeType::Transform),
-      props_(folly::dynamic::object()) {}
+    : AnimatedNode(tag, config, manager, AnimatedNodeType::Transform) {}
 
-void TransformAnimatedNode::update() {
+void TransformAnimatedNode::collectViewUpdates(folly::dynamic& props) {
   folly::dynamic transforms = folly::dynamic::array();
   auto transformsArray = getConfig()[sTransformsName];
   react_native_assert(transformsArray.type() == folly::dynamic::ARRAY);
@@ -53,11 +52,7 @@ void TransformAnimatedNode::update() {
       transforms.push_back(folly::dynamic::object(property, value.value()));
     }
   }
-  props_[sTransformPropName] = std::move(transforms);
-}
-
-const folly::dynamic& TransformAnimatedNode::getProps() {
-  return props_;
+  props[sTransformPropName] = std::move(transforms);
 }
 
 } // namespace facebook::react

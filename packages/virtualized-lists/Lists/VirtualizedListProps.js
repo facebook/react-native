@@ -53,7 +53,7 @@ export type ListRenderItem<ItemT> = (
   info: ListRenderItemInfo<ItemT>,
 ) => React.Node;
 
-type RequiredProps = {
+type RequiredVirtualizedListProps = {
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -68,7 +68,7 @@ type RequiredProps = {
    */
   getItemCount: (data: any) => number,
 };
-type OptionalProps = {
+type OptionalVirtualizedListProps = {
   renderItem?: ?ListRenderItem<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
@@ -286,8 +286,8 @@ type OptionalProps = {
 
 export type VirtualizedListProps = {
   ...ScrollViewProps,
-  ...RequiredProps,
-  ...OptionalProps,
+  ...RequiredVirtualizedListProps,
+  ...OptionalVirtualizedListProps,
 };
 
 /**

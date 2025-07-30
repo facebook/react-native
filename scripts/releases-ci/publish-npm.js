@@ -14,17 +14,17 @@
 import type {BuildType} from '../releases/utils/version-utils';
 */
 
-const {REPO_ROOT} = require('../consts');
-const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
+const {getNpmInfo, publishPackage} = require('../releases/utils/npm-utils');
 const {
   publishAndroidArtifactsToMaven,
   publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
-const {getPackages} = require('../utils/monorepo');
+const {REPO_ROOT} = require('../shared/consts');
+const {getPackages} = require('../shared/monorepoUtils');
 const path = require('path');
 const yargs = require('yargs');
 

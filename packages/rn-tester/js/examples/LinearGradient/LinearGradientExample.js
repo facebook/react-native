@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterText from '../../components/RNTesterText';
@@ -290,4 +291,19 @@ exports.examples = [
       );
     },
   },
-];
+  {
+    title: 'Gradient with transparent color transition',
+    name: 'transparent-color-transition',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-transparent-color-transition"
+          style={{
+            experimental_backgroundImage:
+              'linear-gradient(to right, red, transparent)',
+          }}
+        />
+      );
+    },
+  },
+] as Array<RNTesterModuleExample>;

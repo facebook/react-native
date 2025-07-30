@@ -30,10 +30,10 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
+  s.source_files           = podspec_sources(["ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"], ["ReactCommon/*.h", "platform/ios/**/*.h"])
   s.header_dir             = "ReactCommon"
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir      = '.'
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
                                "DEFINES_MODULE" => "YES" }
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.dependency "React-jsi", version
   add_dependency(s, "React-featureflags")

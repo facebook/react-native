@@ -253,11 +253,18 @@ public class ReactHostImpl(
 
     val currentActivity = this.currentActivity
     if (currentActivity != null) {
-      val currentActivityClass = currentActivity.javaClass.simpleName
-      val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
-      Assertions.assertCondition(
-          activity === currentActivity,
-          "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass")
+      val isSameActivity = activity === currentActivity
+      if (!isSameActivity) {
+        val currentActivityClass = currentActivity.javaClass.simpleName
+        val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
+        val isNotSameActivityMessage =
+            "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass"
+        if (ReactNativeFeatureFlags.skipActivityIdentityAssertionOnHostPause()) {
+          log(method, isNotSameActivityMessage)
+        } else {
+          Assertions.assertCondition(isSameActivity, isNotSameActivityMessage)
+        }
+      }
     }
 
     maybeEnableDevSupport(false)
@@ -829,13 +836,6 @@ public class ReactHostImpl(
                 null
               },
               executor)
-          .continueWith({ task: Task<Void> ->
-            // TODO: validate whether errors during startup go through here?
-            if (task.isFaulted()) {
-              handleHostException(checkNotNull(task.getError()))
-            }
-            null
-          })
 
   private fun getOrCreateReactContext(): BridgelessReactContext {
     val method = "getOrCreateReactContext()"
@@ -952,9 +952,14 @@ public class ReactHostImpl(
               },
               bgExecutor)
 
-      val lifecycleUpdateTask = { task: Task<CreationResult> ->
+      val lifecycleUpdateTask = task@{ task: Task<CreationResult> ->
+        if (task.isFaulted()) {
+          // handleHostException may throw, so move it outside of the task scheduler
+          uiExecutor.execute { handleHostException(checkNotNull(task.getError())) }
+          return@task
+        }
+
         val result = checkNotNull(task.getResult())
-        val reactInstance = result.instance
         val reactContext = result.context
         val isReloading = result.isReloading
         val isManagerResumed = reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED
@@ -991,10 +996,9 @@ public class ReactHostImpl(
         for (listener in reactInstanceEventListeners) {
           listener.onReactContextInitialized(reactContext)
         }
-        reactInstance
       }
 
-      creationTask.onSuccess(lifecycleUpdateTask, uiExecutor)
+      creationTask.continueWith(lifecycleUpdateTask, uiExecutor)
       creationTask.onSuccess({ task -> checkNotNull(task.getResult()).instance })
     }
   }

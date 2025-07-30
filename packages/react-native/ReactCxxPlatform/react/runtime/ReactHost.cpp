@@ -79,7 +79,7 @@ ReactHost::ReactHost(
     std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate,
     std::shared_ptr<NativeAnimatedNodesManagerProvider>
         animatedNodesManagerProvider,
-    ReactInstance::BindingsInstallFunc bindingsInstallFunc) noexcept
+    ReactInstance::BindingsInstallFunc bindingsInstallFunc)
     : reactInstanceConfig_(std::move(reactInstanceConfig)) {
   auto componentRegistryFactory =
       mountingManager->getComponentRegistryFactory();
@@ -107,14 +107,12 @@ ReactHost::ReactHost(
   if (!reactInstanceData_->contextContainer
            ->find<HttpClientFactory>(HttpClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        HttpClientFactoryKey, getHttpClientFactory());
+    throw std::runtime_error("No HttpClientFactory provided");
   }
   if (!reactInstanceData_->contextContainer
            ->find<WebSocketClientFactory>(WebSocketClientFactoryKey)
            .has_value()) {
-    reactInstanceData_->contextContainer->insert(
-        WebSocketClientFactoryKey, getWebSocketClientFactory());
+    throw std::runtime_error("No WebSocketClientFactory provided");
   }
   createReactInstance();
 }
@@ -144,6 +142,8 @@ void ReactHost::createReactInstance() {
       devServerHelper_ = std::make_shared<DevServerHelper>(
           reactInstanceConfig_.appId,
           reactInstanceConfig_.deviceName,
+          reactInstanceConfig_.devServerHost,
+          reactInstanceConfig_.devServerPort,
           httpClientFactory,
           [this](
               const std::string& moduleName,
@@ -415,7 +415,7 @@ void ReactHost::reloadReactInstance() {
 
 bool ReactHost::loadScript(
     const std::string& bundlePath,
-    const std::string& sourcePath) {
+    const std::string& sourcePath) noexcept {
   bool isLoaded = false;
   if (devServerHelper_) {
     devServerHelper_->setSourcePath(sourcePath);
@@ -456,7 +456,7 @@ bool ReactHost::loadScriptFromDevServer() {
     }
     devServerHelper_->setupHMRClient();
     return true;
-  } catch (const std::exception& /*e*/) {
+  } catch (...) {
     devServerHelper_->setSourcePath("");
     LOG(WARNING)
         << "Unable to download JS bundle from Metro, falling back to prebuilt JS bundle. "
@@ -473,7 +473,7 @@ bool ReactHost::loadScriptFromBundlePath(const std::string& bundlePath) {
     reactInstance_->loadScript(std::move(script), bundlePath);
     LOG(INFO) << "Loaded JS bundle from bundle path: " << bundlePath;
     return true;
-  } catch (const std::exception& /*e*/) {
+  } catch (...) {
     LOG(WARNING) << "Unable to read bundle from bundle path" << bundlePath;
     return false;
   }
@@ -484,7 +484,7 @@ void ReactHost::startSurface(
     const std::string& moduleName,
     const folly::dynamic& initialProps,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) {
+    const LayoutContext& layoutContext) noexcept {
   surfaceManager_->startSurface(
       surfaceId, moduleName, initialProps, layoutConstraints, layoutContext);
 }
@@ -492,16 +492,16 @@ void ReactHost::startSurface(
 void ReactHost::setSurfaceConstraints(
     SurfaceId surfaceId,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) {
+    const LayoutContext& layoutContext) noexcept {
   surfaceManager_->constraintSurfaceLayout(
       surfaceId, layoutConstraints, layoutContext);
 }
 
-void ReactHost::stopSurface(SurfaceId surfaceId) {
+void ReactHost::stopSurface(SurfaceId surfaceId) noexcept {
   surfaceManager_->stopSurface(surfaceId);
 }
 
-void ReactHost::stopAllSurfaces() {
+void ReactHost::stopAllSurfaces() noexcept {
   surfaceManager_->stopAllSurfaces();
 }
 
@@ -520,7 +520,7 @@ void ReactHost::runOnScheduler(
 
 void ReactHost::runOnRuntimeScheduler(
     std::function<void(jsi::Runtime& runtime)>&& task,
-    SchedulerPriority priority) const {
+    SchedulerPriority priority) const noexcept {
   if (!isReloadingReactInstance_) {
     reactInstance_->getRuntimeScheduler()->scheduleTask(
         priority, std::move(task));

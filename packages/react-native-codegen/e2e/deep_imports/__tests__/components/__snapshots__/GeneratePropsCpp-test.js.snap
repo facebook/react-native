@@ -40,6 +40,10 @@ ArrayPropsNativeComponentViewProps::ArrayPropsNativeComponentViewProps(
     arrayOfMixed(convertRawProp(context, rawProps, \\"arrayOfMixed\\", sourceProps.arrayOfMixed, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ArrayPropsNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"ArrayPropsNativeComponentView\\";
+}
+
 folly::dynamic ArrayPropsNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ArrayPropsNativeComponentViewProps();
@@ -51,18 +55,57 @@ folly::dynamic ArrayPropsNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (names != oldProps->names) {
+    result[\\"names\\"] = toDynamic(names);
+  }
     
+  if (disableds != oldProps->disableds) {
+    result[\\"disableds\\"] = toDynamic(disableds);
+  }
     
+  if (progress != oldProps->progress) {
+    result[\\"progress\\"] = toDynamic(progress);
+  }
     
+  if (radii != oldProps->radii) {
+    result[\\"radii\\"] = toDynamic(radii);
+  }
     
+  if (colors != oldProps->colors) {
+    result[\\"colors\\"] = toDynamic(colors);
+  }
     
+  if (srcs != oldProps->srcs) {
+    result[\\"srcs\\"] = toDynamic(srcs);
+  }
     
+  if (points != oldProps->points) {
+    result[\\"points\\"] = toDynamic(points);
+  }
     
+  if (edgeInsets != oldProps->edgeInsets) {
+    result[\\"edgeInsets\\"] = toDynamic(edgeInsets);
+  }
     
+  if (dimensions != oldProps->dimensions) {
+    result[\\"dimensions\\"] = toDynamic(dimensions);
+  }
     
+  if (sizes != oldProps->sizes) {
+    result[\\"sizes\\"] = toDynamic(sizes);
+  }
     
+  if (object != oldProps->object) {
+    result[\\"object\\"] = toDynamic(object);
+  }
     
+  if (arrayOfObjects != oldProps->arrayOfObjects) {
+    result[\\"arrayOfObjects\\"] = toDynamic(arrayOfObjects);
+  }
     
+  if (arrayOfMixed != oldProps->arrayOfMixed) {
+    result[\\"arrayOfMixed\\"] = toDynamic(arrayOfMixed);
+  }
   return result;
 }
 #endif
@@ -99,6 +142,10 @@ BooleanPropNativeComponentViewProps::BooleanPropNativeComponentViewProps(
     disabledNullable(convertRawProp(context, rawProps, \\"disabledNullable\\", sourceProps.disabledNullable, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName BooleanPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"BooleanPropNativeComponentView\\";
+}
+
 folly::dynamic BooleanPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = BooleanPropNativeComponentViewProps();
@@ -152,6 +199,10 @@ ColorPropNativeComponentViewProps::ColorPropNativeComponentViewProps(
     tintColor(convertRawProp(context, rawProps, \\"tintColor\\", sourceProps.tintColor, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ColorPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"ColorPropNativeComponentView\\";
+}
+
 folly::dynamic ColorPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ColorPropNativeComponentViewProps();
@@ -202,6 +253,10 @@ DimensionPropNativeComponentViewProps::DimensionPropNativeComponentViewProps(
     marginBack(convertRawProp(context, rawProps, \\"marginBack\\", sourceProps.marginBack, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName DimensionPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"DimensionPropNativeComponentView\\";
+}
+
 folly::dynamic DimensionPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = DimensionPropNativeComponentViewProps();
@@ -213,6 +268,9 @@ folly::dynamic DimensionPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (marginBack != oldProps->marginBack) {
+    result[\\"marginBack\\"] = toDynamic(marginBack);
+  }
   return result;
 }
 #endif
@@ -248,6 +306,10 @@ EdgeInsetsPropNativeComponentViewProps::EdgeInsetsPropNativeComponentViewProps(
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EdgeInsetsPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"EdgeInsetsPropNativeComponentView\\";
+}
+
 folly::dynamic EdgeInsetsPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EdgeInsetsPropNativeComponentViewProps();
@@ -295,6 +357,10 @@ EnumPropNativeComponentViewProps::EnumPropNativeComponentViewProps(
     intervals(convertRawProp(context, rawProps, \\"intervals\\", sourceProps.intervals, {EnumPropNativeComponentViewIntervals::Intervals0})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EnumPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"EnumPropNativeComponentView\\";
+}
+
 folly::dynamic EnumPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EnumPropNativeComponentViewProps();
@@ -306,7 +372,13 @@ folly::dynamic EnumPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (alignment != oldProps->alignment) {
+    result[\\"alignment\\"] = toDynamic(alignment);
+  }
     
+  if (intervals != oldProps->intervals) {
+    result[\\"intervals\\"] = toDynamic(intervals);
+  }
   return result;
 }
 #endif
@@ -342,6 +414,10 @@ EventNestedObjectPropsNativeComponentViewProps::EventNestedObjectPropsNativeComp
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EventNestedObjectPropsNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"EventNestedObjectPropsNativeComponentView\\";
+}
+
 folly::dynamic EventNestedObjectPropsNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EventNestedObjectPropsNativeComponentViewProps();
@@ -391,6 +467,10 @@ EventPropsNativeComponentViewProps::EventPropsNativeComponentViewProps(
     disabled(convertRawProp(context, rawProps, \\"disabled\\", sourceProps.disabled, {false})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName EventPropsNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"EventPropsNativeComponentView\\";
+}
+
 folly::dynamic EventPropsNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = EventPropsNativeComponentViewProps();
@@ -446,6 +526,10 @@ FloatPropsNativeComponentViewProps::FloatPropsNativeComponentViewProps(
     blurRadiusNullable(convertRawProp(context, rawProps, \\"blurRadiusNullable\\", sourceProps.blurRadiusNullable, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName FloatPropsNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"FloatPropsNativeComponentView\\";
+}
+
 folly::dynamic FloatPropsNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = FloatPropsNativeComponentViewProps();
@@ -520,6 +604,10 @@ ImagePropNativeComponentViewProps::ImagePropNativeComponentViewProps(
     thumbImage(convertRawProp(context, rawProps, \\"thumbImage\\", sourceProps.thumbImage, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ImagePropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"ImagePropNativeComponentView\\";
+}
+
 folly::dynamic ImagePropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ImagePropNativeComponentViewProps();
@@ -532,7 +620,7 @@ folly::dynamic ImagePropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
   if (thumbImage != oldProps->thumbImage) {
-    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+    result[\\"thumbImage\\"] = toDynamic(thumbImage);
   }
   return result;
 }
@@ -571,6 +659,10 @@ IntegerPropNativeComponentViewProps::IntegerPropNativeComponentViewProps(
     progress3(convertRawProp(context, rawProps, \\"progress3\\", sourceProps.progress3, {10})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName IntegerPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"IntegerPropNativeComponentView\\";
+}
+
 folly::dynamic IntegerPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = IntegerPropNativeComponentViewProps();
@@ -628,6 +720,10 @@ InterfaceOnlyNativeComponentViewProps::InterfaceOnlyNativeComponentViewProps(
     title(convertRawProp(context, rawProps, \\"title\\", sourceProps.title, {\\"\\"})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName InterfaceOnlyNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"InterfaceOnlyNativeComponentView\\";
+}
+
 folly::dynamic InterfaceOnlyNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = InterfaceOnlyNativeComponentViewProps();
@@ -678,6 +774,10 @@ MixedPropNativeComponentViewProps::MixedPropNativeComponentViewProps(
     mixedProp(convertRawProp(context, rawProps, \\"mixedProp\\", sourceProps.mixedProp, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MixedPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"MixedPropNativeComponentView\\";
+}
+
 folly::dynamic MixedPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MixedPropNativeComponentViewProps();
@@ -689,6 +789,9 @@ folly::dynamic MixedPropNativeComponentViewProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (mixedProp != oldProps->mixedProp) {
+    result[\\"mixedProp\\"] = mixedProp;
+  }
   return result;
 }
 #endif
@@ -728,6 +831,10 @@ MultiNativePropNativeComponentViewProps::MultiNativePropNativeComponentViewProps
     point(convertRawProp(context, rawProps, \\"point\\", sourceProps.point, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName MultiNativePropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"MultiNativePropNativeComponentView\\";
+}
+
 folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = MultiNativePropNativeComponentViewProps();
@@ -740,7 +847,7 @@ folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
   if (thumbImage != oldProps->thumbImage) {
-    result[\\"thumbImage\\"] = thumbImage.toDynamic();
+    result[\\"thumbImage\\"] = toDynamic(thumbImage);
   }
     
   if (color != oldProps->color) {
@@ -752,10 +859,7 @@ folly::dynamic MultiNativePropNativeComponentViewProps::getDiffProps(
   }
     
   if (point != oldProps->point) {
-    folly::dynamic pointResult = folly::dynamic::object();
-    pointResult[\\"x\\"] = point.x;
-    pointResult[\\"y\\"] = point.y;
-    result[\\"point\\"] = pointResult;
+    result[\\"point\\"] = toDynamic(point);
   }
   return result;
 }
@@ -792,6 +896,10 @@ NoPropsNoEventsNativeComponentViewProps::NoPropsNoEventsNativeComponentViewProps
      {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName NoPropsNoEventsNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"NoPropsNoEventsNativeComponentView\\";
+}
+
 folly::dynamic NoPropsNoEventsNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = NoPropsNoEventsNativeComponentViewProps();
@@ -841,6 +949,10 @@ ObjectPropsNativeComponentProps::ObjectPropsNativeComponentProps(
     objectPrimitiveRequiredProp(convertRawProp(context, rawProps, \\"objectPrimitiveRequiredProp\\", sourceProps.objectPrimitiveRequiredProp, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ObjectPropsNativeComponentProps::getDiffPropsImplementationTarget() const {
+  return \\"ObjectPropsNativeComponent\\";
+}
+
 folly::dynamic ObjectPropsNativeComponentProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ObjectPropsNativeComponentProps();
@@ -852,8 +964,17 @@ folly::dynamic ObjectPropsNativeComponentProps::getDiffProps(
   }
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
+  if (objectProp != oldProps->objectProp) {
+    result[\\"objectProp\\"] = toDynamic(objectProp);
+  }
     
+  if (objectArrayProp != oldProps->objectArrayProp) {
+    result[\\"objectArrayProp\\"] = toDynamic(objectArrayProp);
+  }
     
+  if (objectPrimitiveRequiredProp != oldProps->objectPrimitiveRequiredProp) {
+    result[\\"objectPrimitiveRequiredProp\\"] = toDynamic(objectPrimitiveRequiredProp);
+  }
   return result;
 }
 #endif
@@ -889,6 +1010,10 @@ PointPropNativeComponentViewProps::PointPropNativeComponentViewProps(
     startPoint(convertRawProp(context, rawProps, \\"startPoint\\", sourceProps.startPoint, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName PointPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"PointPropNativeComponentView\\";
+}
+
 folly::dynamic PointPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = PointPropNativeComponentViewProps();
@@ -901,10 +1026,7 @@ folly::dynamic PointPropNativeComponentViewProps::getDiffProps(
   folly::dynamic result = HostPlatformViewProps::getDiffProps(prevProps);
   
   if (startPoint != oldProps->startPoint) {
-    folly::dynamic pointResult = folly::dynamic::object();
-    pointResult[\\"x\\"] = startPoint.x;
-    pointResult[\\"y\\"] = startPoint.y;
-    result[\\"startPoint\\"] = pointResult;
+    result[\\"startPoint\\"] = toDynamic(startPoint);
   }
   return result;
 }
@@ -942,6 +1064,10 @@ StringPropNativeComponentViewProps::StringPropNativeComponentViewProps(
     defaultValue(convertRawProp(context, rawProps, \\"defaultValue\\", sourceProps.defaultValue, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName StringPropNativeComponentViewProps::getDiffPropsImplementationTarget() const {
+  return \\"StringPropNativeComponentView\\";
+}
+
 folly::dynamic StringPropNativeComponentViewProps::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = StringPropNativeComponentViewProps();

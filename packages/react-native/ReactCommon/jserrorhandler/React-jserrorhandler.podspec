@@ -28,12 +28,12 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "jserrorhandler"
-  s.source_files           = "JsErrorHandler.{cpp,h}", "StackTraceParser.{cpp,h}"
+  s.source_files           = podspec_sources(["JsErrorHandler.{cpp,h}", "StackTraceParser.{cpp,h}"], ["JsErrorHandler.h", "StackTraceParser.h"])
   s.pod_target_xcconfig = {
     "USE_HEADERMAP" => "YES",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = '../'
     s.module_name             = 'React_jserrorhandler'
   end
@@ -49,5 +49,6 @@ Pod::Spec.new do |s|
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
 end

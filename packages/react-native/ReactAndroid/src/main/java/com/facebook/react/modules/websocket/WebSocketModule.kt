@@ -131,7 +131,7 @@ public class WebSocketModule(context: ReactApplicationContext) :
           protocolsValue.append(",")
         }
       }
-      if (protocolsValue.length > 0) {
+      if (protocolsValue.isNotEmpty()) {
         protocolsValue.replace(protocolsValue.length - 1, protocolsValue.length, "")
         builder.addHeader("Sec-WebSocket-Protocol", protocolsValue.toString())
       }

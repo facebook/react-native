@@ -31,14 +31,14 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = podspec_sources("**/*.{cpp,h}", "**/*.h")
   s.header_dir             = "react/renderer/runtimescheduler"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')}
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_runtimescheduler"
     s.header_mappings_dir  = "../../.."
   end
@@ -58,4 +58,5 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

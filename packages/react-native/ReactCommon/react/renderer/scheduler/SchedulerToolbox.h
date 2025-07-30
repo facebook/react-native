@@ -29,7 +29,7 @@ struct SchedulerToolbox final {
    * Represents general purpose DI container for product components/needs.
    * Must not be `nullptr`.
    */
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
 
   /*
    * Represents externally managed, lazily available collection of components.

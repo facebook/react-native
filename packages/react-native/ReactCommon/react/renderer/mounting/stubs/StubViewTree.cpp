@@ -26,10 +26,11 @@ std::string getComponentName(const ShadowView& shadowView) {
 }
 } // namespace
 
-StubViewTree::StubViewTree(const ShadowView& shadowView) {
+StubViewTree::StubViewTree(const ShadowView& shadowView)
+    : rootTag_(shadowView.tag) {
   auto view = std::make_shared<StubView>();
   view->update(shadowView);
-  rootTag_ = shadowView.tag;
+
   registry_[shadowView.tag] = view;
 }
 

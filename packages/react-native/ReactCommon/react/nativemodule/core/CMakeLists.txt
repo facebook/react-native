@@ -8,21 +8,25 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
+react_native_android_selector(platform_SRC platform/android/ReactCommon/*.cpp "")
 file(GLOB react_nativemodule_core_SRC CONFIGURE_DEPENDS
         ReactCommon/*.cpp
-        platform/android/ReactCommon/*.cpp)
+        ${platform_SRC})
 add_library(react_nativemodule_core
         OBJECT
         ${react_nativemodule_core_SRC})
 
+react_native_android_selector(platform_DIR ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/ "")
 target_include_directories(react_nativemodule_core
         PUBLIC
           ${CMAKE_CURRENT_SOURCE_DIR}
-          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+          ${platform_DIR}
         )
 
+react_native_android_selector(fbjni fbjni "")
+react_native_android_selector(reactnativejni reactnativejni "")
 target_link_libraries(react_nativemodule_core
-        fbjni
+        ${fbjni}
         folly_runtime
         glog
         jsi
@@ -31,6 +35,6 @@ target_link_libraries(react_nativemodule_core
         react_utils
         react_featureflags
         reactperflogger
-        reactnativejni)
+        ${reactnativejni})
 target_compile_reactnative_options(react_nativemodule_core PRIVATE)
 target_compile_options(react_nativemodule_core PRIVATE -Wpedantic)

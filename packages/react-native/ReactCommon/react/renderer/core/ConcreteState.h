@@ -74,10 +74,15 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data&& newData) const {
-    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
-      return std::make_shared<const Data>(data);
-    });
+  void updateState(
+      Data&& newData,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
+    updateState(
+        [data{std::move(newData)}](const Data& /*oldData*/) -> SharedData {
+          return std::make_shared<const Data>(data);
+        },
+        updateMode);
   }
 
   /*
@@ -89,7 +94,9 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback) const {
+      std::function<StateData::Shared(const Data& oldData)> callback,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -104,7 +111,7 @@ class ConcreteState : public State {
           return callback(*static_cast<const Data*>(oldData.get()));
         }};
 
-    family->dispatchRawState(std::move(stateUpdate));
+    family->dispatchRawState(std::move(stateUpdate), updateMode);
   }
 
 #if defined(RN_SERIALIZABLE_STATE)

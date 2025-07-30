@@ -11,9 +11,11 @@ import com.facebook.react.ReactExtension
 import com.facebook.react.model.ModelPackageJson
 import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
+import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
 import com.facebook.react.utils.PropertyUtils.NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
+import com.facebook.react.utils.PropertyUtils.SCOPED_EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
@@ -58,6 +60,13 @@ internal object ProjectUtils {
         } else {
           HERMES_FALLBACK
         }
+
+  internal val Project.isEdgeToEdgeEnabled: Boolean
+    get() =
+        (project.hasProperty(EDGE_TO_EDGE_ENABLED) &&
+            project.property(EDGE_TO_EDGE_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_EDGE_TO_EDGE_ENABLED) &&
+                project.property(SCOPED_EDGE_TO_EDGE_ENABLED).toString().toBoolean())
 
   internal val Project.useThirdPartyJSC: Boolean
     get() =

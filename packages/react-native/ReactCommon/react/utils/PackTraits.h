@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstdint>
 #include <type_traits>
 
 namespace facebook::react::traits {

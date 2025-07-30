@@ -35,18 +35,12 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
       }
     }
     style={
-      Array [
-        Object {
-          "height": 14,
-          "marginEnd": 4,
-          "tintColor": "rgba(255, 255, 255, 0.4)",
-          "width": 16,
-        },
-        Object {
-          "tintColor": "rgba(243, 83, 105, 1)",
-        },
-        null,
-      ]
+      Object {
+        "height": 14,
+        "marginEnd": 4,
+        "tintColor": "rgba(243, 83, 105, 1)",
+        "width": 16,
+      }
     }
   />
   <Text

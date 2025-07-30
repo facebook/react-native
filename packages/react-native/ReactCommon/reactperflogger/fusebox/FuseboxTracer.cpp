@@ -70,7 +70,7 @@ bool FuseboxTracer::stopTracing(
 
   for (auto& event : savedBuffer) {
     // For events with a custom track name, register track
-    if (event.track.length() && !trackIdMap.contains(event.track)) {
+    if (!event.track.empty() && !trackIdMap.contains(event.track)) {
       auto trackId = nextTrack++;
       trackIdMap[event.track] = trackId;
       traceEvents.push_back(folly::dynamic::object(
@@ -94,7 +94,7 @@ bool FuseboxTracer::stopTracing(
     }
   }
 
-  if (traceEvents.size() >= 1) {
+  if (!traceEvents.empty()) {
     resultCallback(traceEvents);
   }
   return true;

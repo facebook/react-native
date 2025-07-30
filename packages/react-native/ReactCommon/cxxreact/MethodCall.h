@@ -31,7 +31,7 @@ struct MethodCall {
 };
 
 /// \throws std::invalid_argument
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
+std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData);
 
 } // namespace facebook::react
 

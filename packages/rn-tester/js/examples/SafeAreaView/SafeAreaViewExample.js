@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useState} from 'react';
@@ -104,4 +106,4 @@ exports.examples = [
         'Use <SafeAreaView> instead.': string),
     render: (): React.Node => <IsIPhoneXExample />,
   },
-];
+] as Array<RNTesterModuleExample>;

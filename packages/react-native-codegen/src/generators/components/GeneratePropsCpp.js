@@ -85,6 +85,7 @@ function generatePropsDiffString(
         case 'StringTypeAnnotation':
         case 'Int32TypeAnnotation':
         case 'BooleanTypeAnnotation':
+        case 'MixedTypeAnnotation':
           return `
   if (${prop.name} != oldProps->${prop.name}) {
     result["${prop.name}"] = ${prop.name};
@@ -95,6 +96,14 @@ function generatePropsDiffString(
   if ((${prop.name} != oldProps->${prop.name}) && !(std::isnan(${prop.name}) && std::isnan(oldProps->${prop.name}))) {
     result["${prop.name}"] = ${prop.name};
   }`;
+        case 'ArrayTypeAnnotation':
+        case 'ObjectTypeAnnotation':
+        case 'StringEnumTypeAnnotation':
+        case 'Int32EnumTypeAnnotation':
+          return `
+  if (${prop.name} != oldProps->${prop.name}) {
+    result["${prop.name}"] = toDynamic(${prop.name});
+  }`;
         case 'ReservedPropTypeAnnotation':
           switch (typeAnnotation.name) {
             case 'ColorPrimitive':
@@ -103,38 +112,23 @@ function generatePropsDiffString(
     result["${prop.name}"] = *${prop.name};
   }`;
             case 'ImageSourcePrimitive':
+            case 'PointPrimitive':
+            case 'EdgeInsetsPrimitive':
+            case 'DimensionPrimitive':
               return `
   if (${prop.name} != oldProps->${prop.name}) {
-    result["${prop.name}"] = ${prop.name}.toDynamic();
+    result["${prop.name}"] = toDynamic(${prop.name});
   }`;
             case 'ImageRequestPrimitive':
               // Shouldn't be used in props
               throw new Error(
                 'ImageRequestPrimitive should not be used in Props',
               );
-            case 'PointPrimitive':
-              return `
-  if (${prop.name} != oldProps->${prop.name}) {
-    folly::dynamic pointResult = folly::dynamic::object();
-    pointResult["x"] = ${prop.name}.x;
-    pointResult["y"] = ${prop.name}.y;
-    result["${prop.name}"] = pointResult;
-  }`;
-            case 'EdgeInsetsPrimitive':
-            case 'DimensionPrimitive':
-              // TODO: Implement diffProps for complex types
-              return '';
             default:
               (typeAnnotation.name: empty);
               throw new Error('Received unknown ReservedPropTypeAnnotation');
           }
-        case 'ArrayTypeAnnotation':
-        case 'ObjectTypeAnnotation':
-        case 'StringEnumTypeAnnotation':
-        case 'Int32EnumTypeAnnotation':
-        case 'MixedTypeAnnotation':
         default:
-          // TODO: Implement diffProps for complex types
           return '';
       }
     })
@@ -142,6 +136,10 @@ function generatePropsDiffString(
 
   return `
 #ifdef RN_SERIALIZABLE_STATE
+ComponentName ${className}::getDiffPropsImplementationTarget() const {
+  return "${componentName}";
+}
+
 folly::dynamic ${className}::getDiffProps(
     const Props* prevProps) const {
   static const auto defaultProps = ${className}();

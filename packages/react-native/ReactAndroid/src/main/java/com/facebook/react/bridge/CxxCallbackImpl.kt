@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 public class CxxCallbackImpl @DoNotStrip private constructor() : HybridClassBase(), Callback {
 
   override fun invoke(vararg args: Any?) {
-    nativeInvoke(Arguments.fromJavaArgs(args))
+    @Suppress("UNCHECKED_CAST") nativeInvoke(Arguments.fromJavaArgs(args as Array<Any?>))
   }
 
   private external fun nativeInvoke(arguments: NativeArray)

@@ -40,7 +40,7 @@ class JReactMarker : public facebook::jni::JavaClass<JReactMarker> {
       const int instanceKey);
   static void nativeLogMarker(
       jni::alias_ref<jclass> /* unused */,
-      std::string markerNameStr,
+      const std::string& markerNameStr,
       jlong markerTime);
 };
 

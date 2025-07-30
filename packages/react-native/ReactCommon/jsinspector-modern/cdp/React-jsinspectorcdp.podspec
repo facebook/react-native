@@ -34,17 +34,18 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.header_dir             = header_dir
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "DEFINES_MODULE" => "YES"}
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name = module_name
     s.header_mappings_dir = "../.."
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

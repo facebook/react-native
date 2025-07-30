@@ -7,32 +7,19 @@
 
 package com.facebook.react.uimanager
 
-import com.facebook.react.common.SystemClock
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class OnLayoutEventTest {
-  private lateinit var systemClock: MockedStatic<SystemClock>
 
   @Before
   fun setup() {
     ReactNativeFeatureFlagsForTests.setUp()
-    val ts = SystemClock.uptimeMillis()
-    systemClock = mockStatic(SystemClock::class.java)
-    systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
-  }
-
-  @After
-  fun tearDown() {
-    systemClock.close()
   }
 
   @Test

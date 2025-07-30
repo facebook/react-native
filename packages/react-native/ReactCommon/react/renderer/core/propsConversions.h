@@ -16,6 +16,43 @@
 
 namespace facebook::react {
 
+#ifdef RN_SERIALIZABLE_STATE
+
+inline folly::dynamic toDynamic(const std::vector<bool>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<std::string>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto& value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<folly::dynamic>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto& value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+template <typename T>
+folly::dynamic toDynamic(const std::vector<T>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (const auto& value : arrayValue) {
+    resultArray.push_back(toDynamic(value));
+  }
+  return resultArray;
+}
+
+#endif
+
 /**
  * Use this only when a prop update has definitely been sent from JS;
  * essentially, cases where rawValue is virtually guaranteed to not be a

@@ -10,8 +10,6 @@
 
 #include "JsiIntegrationTestGenericEngineAdapter.h"
 
-using facebook::hermes::makeHermesRuntime;
-
 namespace facebook::react::jsinspector_modern {
 
 JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(

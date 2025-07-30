@@ -86,7 +86,8 @@ public class ReactScrollView extends ScrollView
         HasStateWrapper,
         HasFlingAnimator,
         HasScrollEventThrottle,
-        HasSmoothScroll {
+        HasSmoothScroll,
+        VirtualViewContainer {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -99,6 +100,7 @@ public class ReactScrollView extends ScrollView
   private final Rect mTempRect = new Rect();
   private final Rect mOverflowInset = new Rect();
 
+  private @Nullable VirtualViewContainerState mVirtualViewContainerState;
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
   private Overflow mOverflow = Overflow.SCROLL;
@@ -151,6 +153,15 @@ public class ReactScrollView extends ScrollView
   }
 
   @Override
+  public VirtualViewContainerState getVirtualViewContainerState() {
+    if (mVirtualViewContainerState == null) {
+      mVirtualViewContainerState = new VirtualViewContainerState(this);
+    }
+
+    return mVirtualViewContainerState;
+  }
+
+  @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
     super.onInitializeAccessibilityNodeInfo(info);
 
@@ -165,7 +176,7 @@ public class ReactScrollView extends ScrollView
   }
 
   @Nullable
-  private OverScroller getOverScrollerFromParent() {
+  protected OverScroller getOverScrollerFromParent() {
     OverScroller scroller;
 
     if (!sTriedToGetScrollerField) {
@@ -366,6 +377,9 @@ public class ReactScrollView extends ScrollView
     }
 
     ReactScrollViewHelper.emitLayoutEvent(this);
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.updateState();
+    }
   }
 
   @Override
@@ -392,6 +406,9 @@ public class ReactScrollView extends ScrollView
     super.onDetachedFromWindow();
     if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.stop();
+    }
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.cleanup();
     }
   }
 
@@ -475,6 +492,9 @@ public class ReactScrollView extends ScrollView
             this,
             mOnScrollDispatchHelper.getXFlingVelocity(),
             mOnScrollDispatchHelper.getYFlingVelocity());
+        if (mVirtualViewContainerState != null) {
+          mVirtualViewContainerState.updateState();
+        }
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT);

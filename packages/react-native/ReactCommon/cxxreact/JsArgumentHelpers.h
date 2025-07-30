@@ -68,8 +68,8 @@ namespace detail {
 // only for types compatible with folly::dynamic.
 template <typename T>
 struct is_dynamic {
-  typedef typename std::
-      enable_if<std::is_assignable<folly::dynamic, T>::value, T>::type type;
+  using type = typename std::
+      enable_if<std::is_assignable<folly::dynamic, T>::value, T>::type;
 };
 
 } // end namespace detail

@@ -7,7 +7,7 @@
  * @noflow
  * @nolint
  * @preventMunge
- * @generated SignedSource<<7430b56dac3186eca669ae53bbf1f23d>>
+ * @generated SignedSource<<dd09ec6a46065f136c43441038691b5e>>
  *
  * This file was sync'd from the facebook/react repository.
  */
@@ -7013,12 +7013,10 @@ function appendAllChildrenToContainer(
 function updateHostContainer(current, workInProgress) {
   if (doesRequireClone(current, workInProgress)) {
     current = workInProgress.stateNode;
-    var container = current.containerInfo,
-      newChildSet = createChildNodeSet();
+    var newChildSet = createChildNodeSet();
     appendAllChildrenToContainer(newChildSet, workInProgress, !1, !1);
     current.pendingChildren = newChildSet;
     workInProgress.flags |= 4;
-    completeRoot(container.containerTag, newChildSet);
   }
 }
 function scheduleRetryEffect(workInProgress, retryQueue) {
@@ -7679,6 +7677,18 @@ function commitHostMount(finishedWork) {
     captureCommitPhaseError(finishedWork, finishedWork.return, error);
   }
 }
+function commitHostPortalContainerChildren(
+  portal,
+  finishedWork,
+  pendingChildren
+) {
+  portal = portal.containerInfo;
+  try {
+    completeRoot(portal.containerTag, pendingChildren);
+  } catch (error) {
+    captureCommitPhaseError(finishedWork, finishedWork.return, error);
+  }
+}
 var offscreenSubtreeIsHidden = !1,
   offscreenSubtreeWasHidden = !1,
   PossiblyWeakSet = "function" === typeof WeakSet ? WeakSet : Set,
@@ -7917,7 +7927,11 @@ function commitDeletionEffectsOnFiber(
     case 18:
       break;
     case 4:
-      createChildNodeSet();
+      commitHostPortalContainerChildren(
+        deletedFiber.stateNode,
+        deletedFiber,
+        createChildNodeSet()
+      );
       recursivelyTraverseDeletionEffects(
         finishedRoot,
         nearestMountedAncestor,
@@ -8062,9 +8076,9 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
         null !== finishedWork &&
           ((flags = finishedWork.callbacks),
           null !== flags &&
-            ((current = finishedWork.shared.hiddenCallbacks),
+            ((root = finishedWork.shared.hiddenCallbacks),
             (finishedWork.shared.hiddenCallbacks =
-              null === current ? flags : current.concat(flags)))));
+              null === root ? flags : root.concat(flags)))));
       break;
     case 26:
     case 27:
@@ -8085,10 +8099,25 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
     case 3:
       recursivelyTraverseMutationEffects(root, finishedWork);
       commitReconciliationEffects(finishedWork);
+      if (flags & 4) {
+        flags = root.containerInfo;
+        root = root.pendingChildren;
+        try {
+          completeRoot(flags.containerTag, root);
+        } catch (error) {
+          captureCommitPhaseError(finishedWork, finishedWork.return, error);
+        }
+      }
       break;
     case 4:
       recursivelyTraverseMutationEffects(root, finishedWork);
       commitReconciliationEffects(finishedWork);
+      flags & 4 &&
+        commitHostPortalContainerChildren(
+          finishedWork.stateNode,
+          finishedWork,
+          finishedWork.stateNode.pendingChildren
+        );
       break;
     case 12:
       recursivelyTraverseMutationEffects(root, finishedWork);
@@ -8098,9 +8127,9 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
       recursivelyTraverseMutationEffects(root, finishedWork);
       commitReconciliationEffects(finishedWork);
       finishedWork.child.flags & 8192 &&
-        ((current = null !== current && null !== current.memoizedState),
+        ((root = null !== current && null !== current.memoizedState),
         null === finishedWork.memoizedState ||
-          current ||
+          root ||
           (globalMostRecentFallbackTime = now()));
       flags & 4 &&
         ((flags = finishedWork.updateQueue),
@@ -8136,10 +8165,10 @@ function commitMutationEffectsOnFiber(finishedWork, root) {
       flags & 4 &&
         ((flags = finishedWork.updateQueue),
         null !== flags &&
-          ((current = flags.retryQueue),
-          null !== current &&
+          ((root = flags.retryQueue),
+          null !== root &&
             ((flags.retryQueue = null),
-            attachSuspenseRetryListeners(finishedWork, current))));
+            attachSuspenseRetryListeners(finishedWork, root))));
       break;
     case 19:
       recursivelyTraverseMutationEffects(root, finishedWork);
@@ -10415,26 +10444,26 @@ batchedUpdatesImpl = function (fn, a) {
   }
 };
 var roots = new Map(),
-  internals$jscomp$inline_1206 = {
+  internals$jscomp$inline_1203 = {
     bundleType: 0,
-    version: "19.1.0",
+    version: "19.1.1",
     rendererPackageName: "react-native-renderer",
     currentDispatcherRef: ReactSharedInternals,
-    reconcilerVersion: "19.1.0"
+    reconcilerVersion: "19.1.1"
   };
 null !== extraDevToolsConfig &&
-  (internals$jscomp$inline_1206.rendererConfig = extraDevToolsConfig);
+  (internals$jscomp$inline_1203.rendererConfig = extraDevToolsConfig);
 if ("undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__) {
-  var hook$jscomp$inline_1519 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
+  var hook$jscomp$inline_1515 = __REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (
-    !hook$jscomp$inline_1519.isDisabled &&
-    hook$jscomp$inline_1519.supportsFiber
+    !hook$jscomp$inline_1515.isDisabled &&
+    hook$jscomp$inline_1515.supportsFiber
   )
     try {
-      (rendererID = hook$jscomp$inline_1519.inject(
-        internals$jscomp$inline_1206
+      (rendererID = hook$jscomp$inline_1515.inject(
+        internals$jscomp$inline_1203
       )),
-        (injectedHook = hook$jscomp$inline_1519);
+        (injectedHook = hook$jscomp$inline_1515);
     } catch (err) {}
 }
 exports.createPortal = function (children, containerTag) {

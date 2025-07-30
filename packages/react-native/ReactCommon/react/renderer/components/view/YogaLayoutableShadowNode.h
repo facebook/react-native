@@ -49,10 +49,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
    */
   void enableMeasurement();
 
-  void appendChild(const ShadowNode::Shared& child) override;
+  void appendChild(const std::shared_ptr<const ShadowNode>& child) override;
   void replaceChild(
       const ShadowNode& oldChild,
-      const ShadowNode::Shared& newChild,
+      const std::shared_ptr<const ShadowNode>& newChild,
       size_t suggestedIndex = SIZE_MAX) override;
 
   void updateYogaChildren();
