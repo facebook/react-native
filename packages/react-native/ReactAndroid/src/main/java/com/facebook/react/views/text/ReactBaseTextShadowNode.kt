@@ -130,8 +130,7 @@ public constructor(
           (childNode as ReactShadowNode<ReactShadowNodeImpl>).setLayoutParent(textShadowNode)
         }
 
-        if (heightOfTallestInlineViewOrImage.isNaN() ||
-            height > heightOfTallestInlineViewOrImage) {
+        if (heightOfTallestInlineViewOrImage.isNaN() || height > heightOfTallestInlineViewOrImage) {
           heightOfTallestInlineViewOrImage = height.toFloat()
         }
       }
@@ -388,10 +387,7 @@ public constructor(
     isLineThroughTextDecorationSet = false
     if (textDecorationLineString != null) {
       for (textDecorationLineSubString in
-          textDecorationLineString
-              .split(" ")
-              .dropLastWhile { it.isEmpty() }
-              .toTypedArray()) {
+          textDecorationLineString.split(" ").dropLastWhile { it.isEmpty() }.toTypedArray()) {
         if ("underline" == textDecorationLineSubString) {
           isUnderlineTextDecorationSet = true
         } else if ("line-through" == textDecorationLineSubString) {
