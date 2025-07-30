@@ -9,6 +9,7 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceEntryReporterListeners.h"
 #include "PerformanceObserverRegistry.h"
 
 #include <folly/dynamic.h>
@@ -73,6 +74,11 @@ class PerformanceEntryReporter {
     timeStampProvider_ = std::move(provider);
   }
 
+  void addEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+  void removeEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
@@ -100,7 +106,7 @@ class PerformanceEntryReporter {
       UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportEvent(
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
       HighResDuration duration,
       HighResTimeStamp processingStart,
@@ -133,6 +139,9 @@ class PerformanceEntryReporter {
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
   std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
+  mutable std::shared_mutex listenersMutex_;
+  std::vector<PerformanceEntryReporterEventTimingListener*>
+      eventTimingListeners_{};
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {

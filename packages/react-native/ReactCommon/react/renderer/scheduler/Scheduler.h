@@ -8,9 +8,9 @@
 #pragma once
 
 #include <memory>
-#include <mutex>
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/cdpmetrics/CdpMetricsReporter.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/core/ComponentDescriptor.h>
@@ -142,6 +142,7 @@ class Scheduler final : public UIManagerDelegate {
   std::shared_ptr<std::optional<const EventDispatcher>> eventDispatcher_;
 
   std::shared_ptr<PerformanceEntryReporter> performanceEntryReporter_;
+  std::optional<CdpMetricsReporter> cdpMetricsReporter_;
   std::shared_ptr<EventPerformanceLogger> eventPerformanceLogger_;
 
   /**
