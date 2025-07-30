@@ -13,15 +13,7 @@ namespace facebook::react::jsinspector_modern::tracing {
 
 struct InstanceTracingProfile {
  public:
-  explicit InstanceTracingProfile(RuntimeSamplingProfile runtimeSamplingProfile)
-      : runtimeSamplingProfile_(std::move(runtimeSamplingProfile)) {}
-
-  const RuntimeSamplingProfile& getRuntimeSamplingProfile() const {
-    return runtimeSamplingProfile_;
-  }
-
- private:
-  RuntimeSamplingProfile runtimeSamplingProfile_;
+  RuntimeSamplingProfile runtimeSamplingProfile;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

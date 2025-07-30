@@ -567,6 +567,11 @@ export function enqueueModalSizeUpdate(
 
 export const unstable_benchmark = Benchmark;
 
+export type {
+  SuiteOptions as BenchmarkSuiteOptions,
+  TestOptions as BenchmarkTestOptions,
+} from './Benchmark';
+
 /**
  * Quick and dirty polyfills required by tinybench.
  */

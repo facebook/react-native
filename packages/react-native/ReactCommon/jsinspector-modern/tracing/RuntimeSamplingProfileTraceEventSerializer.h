@@ -72,7 +72,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    */
   RuntimeSamplingProfileTraceEventSerializer(
       PerformanceTracer& performanceTracer,
-      std::function<void(const folly::dynamic& traceEventsChunk)>
+      std::function<void(folly::dynamic&& traceEventsChunk)>
           notificationCallback,
       uint16_t traceEventChunkSize,
       uint16_t profileChunkSize = 10)
@@ -90,7 +90,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * will be used as a starting reference point of JavaScript samples recording.
    */
   void serializeAndNotify(
-      const RuntimeSamplingProfile& profile,
+      RuntimeSamplingProfile&& profile,
       HighResTimeStamp tracingStartTime);
 
  private:
@@ -123,7 +123,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * \param chunk The chunk that will be buffered.
    * \param profileId The id of the Profile.
    */
-  void bufferProfileChunkTraceEvent(ProfileChunk& chunk, uint16_t profileId);
+  void bufferProfileChunkTraceEvent(ProfileChunk&& chunk, uint16_t profileId);
 
   /**
    * Encapsulates logic for processing the call stack of the sample.
@@ -140,8 +140,7 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * generating unique node ids.
    */
   void processCallStack(
-      const std::vector<RuntimeSamplingProfile::SampleCallStackFrame>&
-          callStack,
+      std::vector<RuntimeSamplingProfile::SampleCallStackFrame>&& callStack,
       ProfileChunk& chunk,
       ProfileTreeNode& rootNode,
       uint32_t idleNodeId,
@@ -154,10 +153,10 @@ class RuntimeSamplingProfileTraceEventSerializer {
   void sendBufferedTraceEventsAndClear();
 
   PerformanceTracer& performanceTracer_;
-  const std::function<void(const folly::dynamic& traceEventsChunk)>
+  const std::function<void(folly::dynamic&& traceEventsChunk)>
       notificationCallback_;
-  uint16_t traceEventChunkSize_;
-  uint16_t profileChunkSize_;
+  const uint16_t traceEventChunkSize_;
+  const uint16_t profileChunkSize_;
 
   folly::dynamic traceEventBuffer_;
 };

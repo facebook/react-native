@@ -29,7 +29,7 @@ class JSI_EXPORT JavaInteropTurboModule : public JavaTurboModule {
 
   JavaInteropTurboModule(
       const JavaTurboModule::InitParams& params,
-      std::vector<MethodDescriptor> methodDescriptors);
+      const std::vector<MethodDescriptor>& methodDescriptors);
 
   std::vector<facebook::jsi::PropNameID> getPropertyNames(
       facebook::jsi::Runtime& runtime) override;

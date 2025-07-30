@@ -27,7 +27,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.ReactCompoundView
 import com.facebook.react.uimanager.style.Overflow
-import com.facebook.react.views.text.internal.span.ReactTagSpan
+import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
@@ -310,8 +310,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   override fun hasOverlappingRendering(): Boolean = false
 
   override fun reactTagForTouch(touchX: Float, touchY: Float): Int =
-      getSpanInCoords(touchX.roundToInt(), touchY.roundToInt(), ReactTagSpan::class.java)?.reactTag
-          ?: id
+      getSpanInCoords(touchX.roundToInt(), touchY.roundToInt(), ReactFragmentIndexSpan::class.java)
+          ?.fragmentIndex
+          ?.let { preparedLayout?.reactTags[it] } ?: id
 
   @RequiresApi(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
   private object Api34Utils {

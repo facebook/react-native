@@ -15,7 +15,7 @@ namespace facebook::react {
 class BlobCollector : public jni::HybridClass<BlobCollector>,
                       public jsi::HostObject {
  public:
-  BlobCollector(jni::global_ref<jobject> blobModule, const std::string& blobId);
+  BlobCollector(jni::global_ref<jobject> blobModule, std::string blobId);
   ~BlobCollector();
 
   size_t getBlobLength();

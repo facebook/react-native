@@ -940,8 +940,12 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   override fun addChildrenForAccessibility(outChildren: ArrayList<View>) {
-    val axOrderParentOrderList =
-        (getTag(R.id.accessibility_order_parent) as ReactViewGroup?)?.axOrderList
+    val axOrderParent = getTag(R.id.accessibility_order_parent)
+    var axOrderParentOrderList: MutableList<String>? = null
+    if (axOrderParent is ReactViewGroup) {
+      axOrderParentOrderList = (axOrderParent as ReactViewGroup?)?.axOrderList
+    }
+
     val axOrder: MutableList<*>? = axOrderList
     if (axOrder != null) {
 
@@ -951,7 +955,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
         val newAccessibilityStateChangeListener =
             AccessibilityManager.AccessibilityStateChangeListener { enabled ->
               if (!enabled) {
-                ReactAxOrderHelper.restoreFocusability(this)
+                for (i in 0..<childCount) {
+                  ReactAxOrderHelper.restoreFocusability(getChildAt(i))
+                }
               }
             }
 
@@ -962,7 +968,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
       val result = arrayOfNulls<View?>(axOrder.size)
 
       for (i in 0..<childCount) {
-        ReactAxOrderHelper.buildAxOrderList(getChildAt(i), axOrder, result)
+        ReactAxOrderHelper.buildAxOrderList(getChildAt(i), this, axOrder, result)
       }
 
       for (i in result.indices) {
@@ -984,7 +990,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
         // If this view can coopt, turn the focusability off its children but add them to the tree
       } else if (isFocusable && (contentDescription == null || contentDescription == "")) {
         super.addChildrenForAccessibility(outChildren)
-        ReactAxOrderHelper.disableFocusForSubtree(this, axOrderParentOrderList)
+        for (i in 0..<childCount) {
+          ReactAxOrderHelper.disableFocusForSubtree(getChildAt(i), axOrderParentOrderList)
+        }
         // if this view is focusable and has a contentDescription then we don't care about its
         // descendants for accessibility
       } else if (isFocusable && !(contentDescription == null || contentDescription == "")) {

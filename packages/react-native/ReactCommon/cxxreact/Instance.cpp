@@ -41,7 +41,7 @@ Instance::~Instance() {
 }
 
 void Instance::unregisterFromInspector() {
-  if (inspectorTarget_) {
+  if (inspectorTarget_ != nullptr) {
     assert(runtimeInspectorTarget_);
     inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
     assert(parentInspectorTarget_);
@@ -132,24 +132,28 @@ void Instance::initializeBridge(
 
 void Instance::loadBundle(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> string,
+    std::unique_ptr<const JSBigString> startupScript,
     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   TraceSection s("Instance::loadBundle", "sourceURL", sourceURL);
   nativeToJsBridge_->loadBundle(
-      std::move(bundleRegistry), std::move(string), std::move(sourceURL));
+      std::move(bundleRegistry),
+      std::move(startupScript),
+      std::move(sourceURL));
 }
 
 void Instance::loadBundleSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> string,
+    std::unique_ptr<const JSBigString> startupScript,
     std::string sourceURL) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
   TraceSection s("Instance::loadBundleSync", "sourceURL", sourceURL);
   nativeToJsBridge_->loadBundleSync(
-      std::move(bundleRegistry), std::move(string), std::move(sourceURL));
+      std::move(bundleRegistry),
+      std::move(startupScript),
+      std::move(sourceURL));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
@@ -277,7 +281,7 @@ std::shared_ptr<CallInvoker> Instance::getJSCallInvoker() {
 RuntimeExecutor Instance::getRuntimeExecutor() {
   // HACK: RuntimeExecutor is not compatible with non-JSIExecutor, we return
   // a null callback, which the caller should handle.
-  if (!getJavaScriptContext()) {
+  if (getJavaScriptContext() == nullptr) {
     return nullptr;
   }
 
@@ -288,8 +292,8 @@ RuntimeExecutor Instance::getRuntimeExecutor() {
       strongNativeToJsBridge->runOnExecutorQueue(
           [callback = std::move(callback)](JSExecutor* executor) {
             // Assumes the underlying executor is a JSIExecutor
-            jsi::Runtime* runtime =
-                (jsi::Runtime*)executor->getJavaScriptContext();
+            auto* runtime =
+                static_cast<jsi::Runtime*>(executor->getJavaScriptContext());
             try {
               react_native_assert(runtime != nullptr);
               callback(*runtime);
@@ -315,7 +319,7 @@ void Instance::JSCallInvoker::setNativeToJsBridgeAndFlushCalls(
 
   m_shouldBuffer = false;
   m_nativeToJsBridge = nativeToJsBridge;
-  while (m_workBuffer.size() > 0) {
+  while (!m_workBuffer.empty()) {
     scheduleAsync(std::move(m_workBuffer.front()));
     m_workBuffer.pop_front();
   }

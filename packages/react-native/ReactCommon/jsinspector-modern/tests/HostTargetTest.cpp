@@ -642,7 +642,7 @@ TEST_F(HostTargetTest, HostCommands) {
                     std::unique_ptr<RuntimeAgentDelegate::ExportedState>
                         exportedState,
                     const ExecutionContextDescription& context,
-                    RuntimeExecutor runtimeExecutor) {
+                    const RuntimeExecutor& runtimeExecutor) {
         auto delegate = runtimeAgentDelegates_.make_unique(
             std::move(frontendChannel),
             sessionState,
@@ -1417,7 +1417,7 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResourceNotImplementedByDelegate) {
           Field(&LoadNetworkResourceRequest::url, "http://example.com"), _))
       .Times(1)
       .WillOnce([](const LoadNetworkResourceRequest& /*params*/,
-                   ScopedExecutor<NetworkRequestListener> /*executor*/) {
+                   const ScopedExecutor<NetworkRequestListener>& /*executor*/) {
         throw NotImplementedException(
             "This delegate does not implement loadNetworkResource.");
       })

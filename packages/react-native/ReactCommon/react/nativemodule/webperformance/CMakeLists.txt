@@ -18,4 +18,4 @@ target_link_libraries(react_nativemodule_webperformance
         react_cxxreact
 )
 target_compile_reactnative_options(react_nativemodule_webperformance PRIVATE)
-target_compile_options(react_nativemodule_webperformance PRIVATE -Wpedantic)
+target_compile_options(react_nativemodule_webperformance PRIVATE -Wpedantic -Wno-deprecated-declarations)

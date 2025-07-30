@@ -58,6 +58,10 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
    * method if your application class does not implement `ReactApplication` or you simply have a
    * different mechanism for storing a `ReactNativeHost`, e.g. as a static field somewhere.
    */
+  @Suppress("DEPRECATION")
+  @Deprecated(
+      "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
+      ReplaceWith("reactHost"))
   protected open val reactNativeHost: ReactNativeHost?
     get() = (activity?.application as ReactApplication?)?.reactNativeHost
 

@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
@@ -107,4 +109,4 @@ exports.examples = [
     description: 'Views with a cursor do not get flattened',
     render: CursorExampleViewFlattening,
   },
-];
+] as Array<RNTesterModuleExample>;

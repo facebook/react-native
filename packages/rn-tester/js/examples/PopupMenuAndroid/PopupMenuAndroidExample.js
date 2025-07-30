@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {PopupMenuAndroidInstance} from '@react-native/popup-menu-android';
 import type {Node} from 'react';
 
@@ -69,4 +70,4 @@ exports.examples = [
       return <PopupMenu />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

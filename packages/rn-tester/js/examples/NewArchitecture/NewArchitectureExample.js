@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import MyNativeView from '../../../NativeComponentExample/js/MyNativeView';
 import * as React from 'react';
 
@@ -28,4 +30,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -27,4 +27,6 @@ target_link_libraries(hermesinstancejni
 )
 
 target_compile_reactnative_options(hermesinstancejni PRIVATE)
-target_compile_options(hermesinstancejni PRIVATE $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(hermesinstancejni PRIVATE -DHERMES_ENABLE_DEBUGGER=1)
+endif ()

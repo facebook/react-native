@@ -559,7 +559,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('parses an error log with `error.componentStack`', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       id: 0,
       isFatal: false,
       isComponentError: false,
@@ -614,7 +614,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('parses an error log with a component stack in the message', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       id: 0,
       isFatal: false,
       isComponentError: false,
@@ -669,7 +669,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('parses a fatal exception', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       id: 0,
       isFatal: true,
       isComponentError: false,
@@ -712,7 +712,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('parses a render error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       id: 0,
       isComponentError: true,
       isFatal: true,
@@ -754,7 +754,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
   });
 
   it('a malformed syntax error falls back to a syntax error', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       id: 0,
       isFatal: true,
       isComponentError: false,
@@ -954,7 +954,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
 
     it('detects a single component in a component stack', () => {
-      const error = {
+      const error: ExtendedExceptionData = {
         id: 0,
         isFatal: true,
         isComponentError: true,
@@ -1004,7 +1004,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
 
     it('parses an error log with `error.componentStack`', () => {
-      const error = {
+      const error: ExtendedExceptionData = {
         id: 0,
         isFatal: false,
         isComponentError: false,
@@ -1225,7 +1225,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
 
     it('parses an error log with `error.componentStack`', () => {
-      const error = {
+      const error: ExtendedExceptionData = {
         id: 0,
         isFatal: false,
         isComponentError: false,
@@ -1534,7 +1534,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
 
     it('parses an error log with `error.componentStack`', () => {
-      const error = {
+      const error: ExtendedExceptionData = {
         id: 0,
         isFatal: false,
         isComponentError: false,
@@ -1596,7 +1596,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     });
 
     it('parses an error log with a component stack in the message', () => {
-      const error = {
+      const error: ExtendedExceptionData = {
         id: 0,
         isFatal: false,
         isComponentError: false,

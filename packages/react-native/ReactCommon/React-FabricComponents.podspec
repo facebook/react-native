@@ -79,6 +79,7 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.subspec "components" do |ss|
 
@@ -141,6 +142,12 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/renderer/components/virtualview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/virtualview/tests"
       sss.header_dir           = "react/renderer/components/virtualview"
+    end
+
+     ss.subspec "virtualviewexperimental" do |sss|
+      sss.source_files         = "react/renderer/components/virtualviewexperimental/**/*.{m,mm,cpp,h}"
+      sss.exclude_files        = "react/renderer/components/virtualviewexperimental/tests"
+      sss.header_dir           = "react/renderer/components/virtualviewexperimental"
     end
 
     # Legacy header paths for backwards compat

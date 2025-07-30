@@ -91,7 +91,7 @@ std::string NativeFantom::getRenderedOutput(
 
 void NativeFantom::reportTestSuiteResultsJSON(
     jsi::Runtime& /*runtime*/,
-    std::string testSuiteResultsJSON) {
+    const std::string& testSuiteResultsJSON) {
   std::cout << testSuiteResultsJSON << std::endl;
 }
 
@@ -242,7 +242,7 @@ jsi::Function NativeFantom::createShadowNodeRevisionGetter(
 
 void NativeFantom::saveJSMemoryHeapSnapshot(
     jsi::Runtime& runtime,
-    std::string filePath) {
+    const std::string& filePath) {
   runtime.instrumentation().collectGarbage("heapsnapshot");
   runtime.instrumentation().createSnapshotToFile(filePath);
 }

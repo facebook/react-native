@@ -32,11 +32,12 @@ Pod::Spec.new do |s|
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "GCC_WARN_PEDANTIC" => "YES" }
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = './'
   end
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.

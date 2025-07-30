@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
-    if ENV['USE_FRAMEWORKS']
+    if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
         s.header_mappings_dir     = './'
     end
 
@@ -51,4 +51,5 @@ Pod::Spec.new do |s|
 
     depend_on_js_engine(s)
     add_rn_third_party_dependencies(s)
+    add_rncore_dependency(s)
 end

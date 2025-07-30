@@ -23,11 +23,12 @@ std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
         registerCodegenComponentDescriptorsFromEntryPoint{};
 
 void DefaultComponentsRegistry::setRegistryRunction(
-    jni::alias_ref<jclass>,
+    jni::alias_ref<jclass> /*unused*/,
     ComponentFactory* delegate) {
   delegate
       ->buildRegistryFunction = [](const EventDispatcher::Weak& eventDispatcher,
-                                   const ContextContainer::Shared&
+                                   const std::shared_ptr<
+                                       const ContextContainer>&
                                        contextContainer) {
     ComponentDescriptorParameters params{
         .eventDispatcher = eventDispatcher,

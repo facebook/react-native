@@ -209,10 +209,6 @@ async function artifactURLForRNTesterAPK(
   return getArtifactURL('rntester-debug');
 }
 
-async function artifactURLForJSCRNTesterApp() /*: Promise<string> */ {
-  return getArtifactURL('RNTesterApp-NewArch-JSC-Debug');
-}
-
 async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
   return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
 }
@@ -249,7 +245,6 @@ module.exports = {
   initialize,
   downloadArtifact,
   artifactURLForRNTesterAPK,
-  artifactURLForJSCRNTesterApp,
   artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,
   artifactURLHermesDebug,

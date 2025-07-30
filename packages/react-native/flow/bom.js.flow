@@ -12,6 +12,71 @@
 
 declare var window: typeof globalThis;
 
+type DevToolsColor =
+  | 'primary'
+  | 'primary-light'
+  | 'primary-dark'
+  | 'secondary'
+  | 'secondary-light'
+  | 'secondary-dark'
+  | 'tertiary'
+  | 'tertiary-light'
+  | 'tertiary-dark'
+  | 'warning'
+  | 'error';
+
+// $FlowExpectedError[libdef-override] Flow core definitions are incomplete.
+declare var console: {
+  // Logging
+  log(...data: $ReadOnlyArray<mixed>): void,
+  trace(...data: $ReadOnlyArray<mixed>): void,
+  debug(...data: $ReadOnlyArray<mixed>): void,
+  info(...data: $ReadOnlyArray<mixed>): void,
+  warn(...data: $ReadOnlyArray<mixed>): void,
+  error(...data: $ReadOnlyArray<mixed>): void,
+
+  // Grouping
+  group(...data: $ReadOnlyArray<mixed>): void,
+  groupCollapsed(...data: $ReadOnlyArray<mixed>): void,
+  groupEnd(): void,
+
+  // Printing
+  table(
+    tabularData:
+      | $ReadOnly<{[key: string]: mixed, ...}>
+      | $ReadOnlyArray<$ReadOnly<{[key: string]: mixed, ...}>>
+      | $ReadOnlyArray<$ReadOnlyArray<mixed>>,
+  ): void,
+  dir(...data: $ReadOnlyArray<mixed>): void,
+  dirxml(...data: $ReadOnlyArray<mixed>): void,
+  clear(): void,
+
+  // Utilities
+  assert(condition: mixed, ...data: $ReadOnlyArray<mixed>): void,
+
+  // Profiling
+  profile(name?: string): void,
+  profileEnd(name?: string): void,
+
+  // Counts
+  count(label?: string): void,
+  countReset(label?: string): void,
+
+  // Timing / tracing
+  time(label?: string): void,
+  timeEnd(label?: string): void,
+  timeStamp(
+    label?: string,
+    start?: string | number,
+    end?: string | number,
+    trackName?: string,
+    trackGroup?: string,
+    color?: DevToolsColor,
+  ): void,
+
+  ...
+};
+
 declare class Navigator {
   product: 'ReactNative';
   appName?: ?string;

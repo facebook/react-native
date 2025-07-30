@@ -7,23 +7,19 @@
 
 #pragma once
 
+#include <jsi/jsi.h>
+#include <react/bridging/LongLivedObject.h>
 #include <cassert>
+#include <functional>
 #include <string>
 
-#include <jsi/jsi.h>
-#include <react/bridging/CallbackWrapper.h>
-#include <react/bridging/LongLivedObject.h>
-
 namespace facebook::react {
-
-jsi::Object deepCopyJSIObject(jsi::Runtime& rt, const jsi::Object& obj);
-jsi::Array deepCopyJSIArray(jsi::Runtime& rt, const jsi::Array& arr);
 
 struct Promise : public LongLivedObject {
   Promise(jsi::Runtime& rt, jsi::Function resolve, jsi::Function reject);
 
   void resolve(const jsi::Value& result);
-  void reject(const std::string& error);
+  void reject(const std::string& message);
 
   jsi::Function resolve_;
   jsi::Function reject_;

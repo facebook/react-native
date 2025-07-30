@@ -7,13 +7,13 @@
 
 #include "PerformanceTracer.h"
 #include "Timing.h"
+#include "TraceEventSerializer.h"
 
 #include <oscompat/OSCompat.h>
 #include <react/timing/primitives.h>
 
 #include <folly/json.h>
 
-#include <array>
 #include <mutex>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -83,8 +83,7 @@ bool PerformanceTracer::stopTracing() {
 }
 
 void PerformanceTracer::collectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback,
+    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
     uint16_t chunkSize) {
   std::vector<TraceEvent> localBuffer;
   {
@@ -99,21 +98,53 @@ void PerformanceTracer::collectEvents(
   auto serializedTraceEvents = folly::dynamic::array();
   for (auto&& event : localBuffer) {
     // Emit trace events
-    serializedTraceEvents.push_back(serializeTraceEvent(std::move(event)));
+    serializedTraceEvents.push_back(
+        TraceEventSerializer::serialize(std::move(event)));
 
     if (serializedTraceEvents.size() == chunkSize) {
-      resultCallback(serializedTraceEvents);
+      resultCallback(std::move(serializedTraceEvents));
       serializedTraceEvents = folly::dynamic::array();
     }
   }
   if (!serializedTraceEvents.empty()) {
-    resultCallback(serializedTraceEvents);
+    resultCallback(std::move(serializedTraceEvents));
   }
+}
+
+folly::dynamic PerformanceTracer::collectEvents(uint16_t chunkSize) {
+  std::vector<TraceEvent> localBuffer;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.swap(localBuffer);
+  }
+
+  auto chunks = folly::dynamic::array();
+  if (localBuffer.empty()) {
+    return chunks;
+  }
+
+  auto chunk = folly::dynamic::array();
+  chunk.reserve(chunkSize);
+  for (auto&& event : localBuffer) {
+    chunk.push_back(TraceEventSerializer::serialize(std::move(event)));
+
+    if (chunk.size() == chunkSize) {
+      chunks.push_back(std::move(chunk));
+      chunk = folly::dynamic::array();
+      chunk.reserve(chunkSize);
+    }
+  }
+
+  if (!chunk.empty()) {
+    chunks.push_back(std::move(chunk));
+  }
+  return chunks;
 }
 
 void PerformanceTracer::reportMark(
     const std::string_view& name,
-    HighResTimeStamp start) {
+    HighResTimeStamp start,
+    folly::dynamic&& detail) {
   if (!tracingAtomic_) {
     return;
   }
@@ -123,6 +154,12 @@ void PerformanceTracer::reportMark(
     return;
   }
 
+  folly::dynamic eventArgs = folly::dynamic::object();
+  if (detail != nullptr) {
+    eventArgs = folly::dynamic::object(
+        "data", folly::dynamic::object("detail", folly::toJson(detail)));
+  }
+
   buffer_.emplace_back(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -130,6 +167,7 @@ void PerformanceTracer::reportMark(
       .ts = start,
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
+      .args = eventArgs,
   });
 }
 
@@ -137,18 +175,14 @@ void PerformanceTracer::reportMeasure(
     const std::string_view& name,
     HighResTimeStamp start,
     HighResDuration duration,
-    const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+    folly::dynamic&& detail) {
   if (!tracingAtomic_) {
     return;
   }
 
   folly::dynamic beginEventArgs = folly::dynamic::object();
-  if (trackMetadata.has_value()) {
-    folly::dynamic devtoolsObject = folly::dynamic::object(
-        "devtools",
-        folly::dynamic::object("track", trackMetadata.value().track));
-    beginEventArgs =
-        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
+  if (detail != nullptr) {
+    beginEventArgs = folly::dynamic::object("detail", folly::toJson(detail));
   }
 
   auto currentThreadId = oscompat::getCurrentThreadId();
@@ -347,7 +381,7 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
     HighResTimeStamp profileTimestamp) {
   // CDT prioritizes event timestamp over startTime metadata field.
   // https://fburl.com/lo764pf4
-  return serializeTraceEvent(TraceEvent{
+  return TraceEventSerializer::serialize(TraceEvent{
       .id = profileId,
       .name = "Profile",
       .cat = "disabled-by-default-v8.cpu_profiler",
@@ -367,8 +401,8 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
     uint16_t profileId,
     uint64_t threadId,
     HighResTimeStamp chunkTimestamp,
-    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
-  return serializeTraceEvent(TraceEvent{
+    tracing::TraceEventProfileChunk&& traceEventProfileChunk) {
+  return TraceEventSerializer::serialize(TraceEvent{
       .id = profileId,
       .name = "ProfileChunk",
       .cat = "disabled-by-default-v8.cpu_profiler",
@@ -376,32 +410,11 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
       .ts = chunkTimestamp,
       .pid = processId_,
       .tid = threadId,
-      .args =
-          folly::dynamic::object("data", traceEventProfileChunk.toDynamic()),
+      .args = folly::dynamic::object(
+          "data",
+          TraceEventSerializer::serializeProfileChunk(
+              std::move(traceEventProfileChunk))),
   });
-}
-
-folly::dynamic PerformanceTracer::serializeTraceEvent(
-    TraceEvent&& event) const {
-  folly::dynamic result = folly::dynamic::object;
-
-  if (event.id.has_value()) {
-    std::array<char, 16> buffer{};
-    snprintf(buffer.data(), buffer.size(), "0x%x", event.id.value());
-    result["id"] = buffer.data();
-  }
-  result["name"] = std::move(event.name);
-  result["cat"] = std::move(event.cat);
-  result["ph"] = std::string(1, event.ph);
-  result["ts"] = highResTimeStampToTracingClockTimeStamp(event.ts);
-  result["pid"] = event.pid;
-  result["tid"] = event.tid;
-  result["args"] = std::move(event.args);
-  if (event.dur.has_value()) {
-    result["dur"] = highResDurationToTracingClockDuration(event.dur.value());
-  }
-
-  return result;
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

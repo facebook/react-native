@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources("react/runtime/*.{cpp,h}", "react/runtime/*.h")
   s.header_dir             = "react/runtime"
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "JSITooling"
     s.header_mappings_dir  = "./"
   end
@@ -46,4 +46,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

@@ -11,6 +11,7 @@
 
 #include "../PerformanceEntryReporter.h"
 
+#include <array>
 #include <variant>
 
 using namespace facebook::react;
@@ -46,13 +47,13 @@ namespace facebook::react {
 [[maybe_unused]] static std::ostream& operator<<(
     std::ostream& os,
     const PerformanceEntry& entry) {
-  static constexpr const char* entryTypeNames[] = {
+  static constexpr auto entryTypeNames = std::to_array<const char*>({
       "PerformanceEntryType::UNDEFINED",
       "PerformanceEntryType::MARK",
       "PerformanceEntryType::MEASURE",
       "PerformanceEntryType::EVENT",
       "PerformanceEntryType::RESOURCE",
-  };
+  });
 
   return std::visit(
       [&](const auto& entryDetails) -> std::ostream& {
@@ -129,20 +130,16 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
       "mark2", timeOrigin + HighResDuration::fromMilliseconds(2));
 
   reporter->reportMeasure(
-      "measure0",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      "measure0", timeOrigin, HighResDuration::fromMilliseconds(2));
   reporter->reportMeasure(
-      "measure1",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(3));
+      "measure1", timeOrigin, HighResDuration::fromMilliseconds(3));
 
   reporter->reportMark(
       "mark3", timeOrigin + HighResDuration::fromNanoseconds(2.5 * 1e6));
   reporter->reportMeasure(
       "measure2",
       timeOrigin + HighResDuration::fromMilliseconds(2),
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      HighResDuration::fromMilliseconds(2));
   reporter->reportMark(
       "mark4", timeOrigin + HighResDuration::fromMilliseconds(3));
 
@@ -172,7 +169,7 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestReportMeasures) {
       PerformanceMeasure{
           {.name = "measure2",
            .startTime = timeOrigin + HighResDuration::fromMilliseconds(2),
-           .duration = HighResDuration::zero()}},
+           .duration = HighResDuration::fromMilliseconds(2)}},
       PerformanceMark{
           {.name = "mark3",
            .startTime =
@@ -203,21 +200,17 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
       "mark2", timeOrigin + HighResDuration::fromMilliseconds(2));
 
   reporter->reportMeasure(
-      "common_name",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      "common_name", timeOrigin, HighResDuration::fromMilliseconds(2));
   reporter->reportMeasure(
-      "measure1",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(3));
+      "measure1", timeOrigin, HighResDuration::fromMilliseconds(3));
   reporter->reportMeasure(
       "measure2",
       timeOrigin + HighResDuration::fromMilliseconds(1),
-      timeOrigin + HighResDuration::fromMilliseconds(6));
+      HighResDuration::fromMilliseconds(6));
   reporter->reportMeasure(
       "measure3",
       timeOrigin + HighResDuration::fromNanoseconds(1.5 * 1e6),
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      HighResDuration::fromMilliseconds(2));
 
   {
     const auto allEntries = toSorted(reporter->getEntries());
@@ -241,12 +234,12 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
         PerformanceMeasure{
             {.name = "measure2",
              .startTime = timeOrigin + HighResDuration::fromMilliseconds(1),
-             .duration = HighResDuration::fromMilliseconds(5)}},
+             .duration = HighResDuration::fromMilliseconds(6)}},
         PerformanceMeasure{
             {.name = "measure3",
              .startTime =
                  timeOrigin + HighResDuration::fromNanoseconds(1.5 * 1e6),
-             .duration = HighResDuration::fromNanoseconds(0.5 * 1e6)}},
+             .duration = HighResDuration::fromMilliseconds(2)}},
         PerformanceMark{
             {.name = "mark2",
              .startTime = timeOrigin + HighResDuration::fromMilliseconds(2),
@@ -288,12 +281,12 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestGetEntries) {
         PerformanceMeasure{
             {.name = "measure2",
              .startTime = timeOrigin + HighResDuration::fromMilliseconds(1),
-             .duration = HighResDuration::fromMilliseconds(5)}},
+             .duration = HighResDuration::fromMilliseconds(6)}},
         PerformanceMeasure{
             {.name = "measure3",
              .startTime =
                  timeOrigin + HighResDuration::fromNanoseconds(1.5 * 1e6),
-             .duration = HighResDuration::fromNanoseconds(0.5 * 1e6)}}};
+             .duration = HighResDuration::fromMilliseconds(2)}}};
     ASSERT_EQ(expected, measures);
   }
 
@@ -330,21 +323,17 @@ TEST(PerformanceEntryReporter, PerformanceEntryReporterTestClearMarks) {
       "mark2", timeOrigin + HighResDuration::fromMilliseconds(2));
 
   reporter->reportMeasure(
-      "common_name",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      "common_name", timeOrigin, HighResDuration::fromMilliseconds(2));
   reporter->reportMeasure(
-      "measure1",
-      timeOrigin,
-      timeOrigin + HighResDuration::fromMilliseconds(3));
+      "measure1", timeOrigin, HighResDuration::fromMilliseconds(3));
   reporter->reportMeasure(
       "measure2",
       timeOrigin + HighResDuration::fromMilliseconds(1),
-      timeOrigin + HighResDuration::fromMilliseconds(6));
+      HighResDuration::fromMilliseconds(6));
   reporter->reportMeasure(
       "measure3",
       timeOrigin + HighResDuration::fromNanoseconds(1.5 * 1e6),
-      timeOrigin + HighResDuration::fromMilliseconds(2));
+      HighResDuration::fromMilliseconds(2));
 
   reporter->clearEntries(PerformanceEntryType::MARK, "common_name");
 

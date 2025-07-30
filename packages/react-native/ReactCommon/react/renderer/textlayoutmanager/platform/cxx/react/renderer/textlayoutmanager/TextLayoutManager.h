@@ -25,7 +25,8 @@ class TextLayoutManager;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  explicit TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~TextLayoutManager() = default;
 
   /*

@@ -59,7 +59,7 @@ class Stream : public NetworkRequestListener,
   Stream(const Stream& other) = delete;
   Stream& operator=(const Stream& other) = delete;
   Stream(Stream&& other) = default;
-  Stream& operator=(Stream&& other) = default;
+  Stream& operator=(Stream&& other) noexcept = default;
 
   /**
    * Factory method to create a Stream with a callback for the initial result
@@ -72,9 +72,9 @@ class Stream : public NetworkRequestListener,
    */
   static std::shared_ptr<Stream> create(
       VoidExecutor executor,
-      StreamInitCallback initCb) {
+      const StreamInitCallback& initCb) {
     std::shared_ptr<Stream> stream{new Stream(initCb)};
-    stream->setExecutor(executor);
+    stream->setExecutor(std::move(executor));
     return stream;
   }
 
@@ -87,8 +87,7 @@ class Stream : public NetworkRequestListener,
    * with the result of the read, or an error string.
    */
   void read(long maxBytesToRead, const IOReadCallback& callback) {
-    pendingReadRequests_.emplace_back(
-        std::make_tuple(maxBytesToRead, callback));
+    pendingReadRequests_.emplace_back(maxBytesToRead, callback);
     processPending();
   }
 

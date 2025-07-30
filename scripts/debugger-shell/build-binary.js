@@ -44,6 +44,21 @@ async function main() {
   if (!pkg.main.startsWith('./dist/')) {
     throw new Error('Package not built yet. Run scripts/build/build.js first.');
   }
+
+  const IGNORE_PREFIXES = [
+    'src',
+    'dist/node',
+    'metainternal/build-mac',
+    '__tests__',
+    'README.md',
+  ].map(
+    dirRelativeToPackageRoot =>
+      path.join(PACKAGE_ROOT, dirRelativeToPackageRoot) + path.sep,
+  );
+  const IGNORE_FILES = ['BUCK'].map(fileRelativeToPackageRoot =>
+    path.join(PACKAGE_ROOT, fileRelativeToPackageRoot),
+  );
+
   await packager({
     dir: PACKAGE_ROOT,
     icon: path.join(PACKAGE_ROOT, 'src/electron/resources/icon'),
@@ -64,6 +79,10 @@ async function main() {
       OriginalFilename: `${APP_NAME}.exe`,
     },
     overwrite: true,
+    ignore: [
+      ...IGNORE_PREFIXES.map(prefix => new RegExp('^' + escapeRegex(prefix))),
+      ...IGNORE_FILES.map(file => new RegExp('^' + escapeRegex(file) + '$')),
+    ],
   });
 }
 
@@ -72,4 +91,8 @@ if (require.main === module) {
     console.error(err);
     process.exitCode = 1;
   });
+}
+
+function escapeRegex(str /*: string */) /*: string */ {
+  return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
 }

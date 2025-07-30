@@ -46,4 +46,5 @@ Pod::Spec.new do |s|
   s.exclude_files = files_to_exclude
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

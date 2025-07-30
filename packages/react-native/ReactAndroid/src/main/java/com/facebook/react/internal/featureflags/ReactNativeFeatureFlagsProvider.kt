@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8abf9bfb81265ae0c840457eb6c199bd>>
+ * @generated SignedSource<<afd38d105b3b7ab92f98f39dbce40925>>
  */
 
 /**
@@ -25,15 +25,17 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
+  @DoNotStrip public fun cdpInteractionMetricsEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedEnabled(): Boolean
 
   @DoNotStrip public fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
-  @DoNotStrip public fun disableMainQueueSyncDispatchIOS(): Boolean
+  @DoNotStrip public fun disableFabricCommitInCXXAnimated(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean
 
   @DoNotStrip public fun disableTextLayoutManagerCacheAndroid(): Boolean
 
@@ -53,6 +55,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableDoubleMeasurementFixAndroid(): Boolean
 
+  @DoNotStrip public fun enableEagerMainQueueModulesOnIOS(): Boolean
+
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
   @DoNotStrip public fun enableFabricLogs(): Boolean
@@ -67,6 +71,10 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
+  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip public fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
+
   @DoNotStrip public fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
@@ -74,8 +82,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip public fun enableMainQueueCoordinatorOnIOS(): Boolean
-
-  @DoNotStrip public fun enableMainQueueModulesOnIOS(): Boolean
 
   @DoNotStrip public fun enableModuleArgumentNSNullConversionIOS(): Boolean
 
@@ -90,8 +96,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
   @DoNotStrip public fun enableResourceTimingAPI(): Boolean
-
-  @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
   @DoNotStrip public fun enableViewCulling(): Boolean
 
@@ -115,7 +119,17 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun hideOffscreenVirtualViewsOnIOS(): Boolean
 
+  @DoNotStrip public fun perfMonitorV2Enabled(): Boolean
+
   @DoNotStrip public fun preparedTextCacheSize(): Double
+
+  @DoNotStrip public fun preventShadowTreeCommitExhaustion(): Boolean
+
+  @DoNotStrip public fun releaseImageDataWhenConsumed(): Boolean
+
+  @DoNotStrip public fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
+
+  @DoNotStrip public fun skipActivityIdentityAssertionOnHostPause(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -124,6 +138,10 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
+
+  @DoNotStrip public fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean
+
+  @DoNotStrip public fun useNativeTransformHelperAndroid(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 

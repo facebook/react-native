@@ -9,9 +9,10 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceEntryReporterListeners.h"
 #include "PerformanceObserverRegistry.h"
 
-#include <jsinspector-modern/tracing/CdpTracing.h>
+#include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
 #include <memory>
@@ -73,6 +74,11 @@ class PerformanceEntryReporter {
     timeStampProvider_ = std::move(provider);
   }
 
+  void addEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+  void removeEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
@@ -81,22 +87,26 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
+  void clearEventCounts();
+
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
 
-  PerformanceMark reportMark(
-      const std::string& name,
-      const std::optional<HighResTimeStamp>& startTime = std::nullopt);
+  using UserTimingDetailProvider = std::function<folly::dynamic()>;
 
-  PerformanceMeasure reportMeasure(
+  void reportMark(
       const std::string& name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-          trackMetadata = std::nullopt);
+      UserTimingDetailProvider&& detailProvider = nullptr);
+
+  void reportMeasure(
+      const std::string& name,
+      HighResTimeStamp startTime,
+      HighResDuration duration,
+      UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportEvent(
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
       HighResDuration duration,
       HighResTimeStamp processingStart,
@@ -105,7 +115,7 @@ class PerformanceEntryReporter {
 
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
 
-  PerformanceResourceTiming reportResourceTiming(
+  void reportResourceTiming(
       const std::string& url,
       HighResTimeStamp fetchStart,
       HighResTimeStamp requestStart,
@@ -129,6 +139,9 @@ class PerformanceEntryReporter {
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
   std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
+  mutable std::shared_mutex listenersMutex_;
+  std::vector<PerformanceEntryReporterEventTimingListener*>
+      eventTimingListeners_{};
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
@@ -167,8 +180,12 @@ class PerformanceEntryReporter {
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
-  void traceMark(const PerformanceMark& entry) const;
-  void traceMeasure(const PerformanceMeasure& entry) const;
+  void traceMark(
+      const PerformanceMark& entry,
+      UserTimingDetailProvider&& detailProvider) const;
+  void traceMeasure(
+      const PerformanceMeasure& entry,
+      UserTimingDetailProvider&& detailProvider) const;
 };
 
 } // namespace facebook::react

@@ -11,6 +11,7 @@
 import type {SnapshotConfig} from '../runtime/snapshotContext';
 import type {FantomTestConfig} from './getFantomTestConfigs';
 
+import * as EnvironmentOptions from './EnvironmentOptions';
 import formatFantomConfig from './formatFantomConfig';
 
 module.exports = function entrypointTemplate({
@@ -19,14 +20,12 @@ module.exports = function entrypointTemplate({
   featureFlagsModulePath,
   testConfig,
   snapshotConfig,
-  isRunningFromCI,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
   testConfig: FantomTestConfig,
   snapshotConfig: SnapshotConfig,
-  isRunningFromCI: boolean,
 }): string {
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -66,7 +65,8 @@ ${
 }
 
 setConstants({
-  isRunningFromCI: ${String(isRunningFromCI)},
+  isRunningFromCI: ${String(EnvironmentOptions.isCI)},
+  forceTestModeForBenchmarks: ${String(EnvironmentOptions.forceTestModeForBenchmarks)},
   fantomConfigSummary: '${formatFantomConfig(testConfig)}',
 });
 

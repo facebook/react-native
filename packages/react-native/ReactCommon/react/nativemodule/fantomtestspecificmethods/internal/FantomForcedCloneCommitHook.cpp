@@ -27,7 +27,8 @@ std::shared_ptr<const ShadowNode> findAndClone(
       children[i] = maybeClone;
       return node->clone(
           {ShadowNodeFragment::propsPlaceholder(),
-           std::make_shared<ShadowNode::ListOfShared>(children)});
+           std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+               children)});
     }
   }
 

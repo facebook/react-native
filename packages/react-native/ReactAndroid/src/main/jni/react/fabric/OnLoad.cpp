@@ -14,7 +14,7 @@
 #include "StateWrapperImpl.h"
 #include "SurfaceHandlerBinding.h"
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*unused*/) {
   return facebook::jni::initialize(vm, [] {
     facebook::react::EventBeatManager::registerNatives();
     facebook::react::EventEmitterWrapper::registerNatives();

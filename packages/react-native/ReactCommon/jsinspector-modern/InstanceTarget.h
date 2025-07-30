@@ -16,9 +16,7 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 
-#include <list>
 #include <memory>
-#include <optional>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -67,7 +65,7 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   ~InstanceTarget();
 
   std::shared_ptr<InstanceAgent> createAgent(
-      FrontendChannel channel,
+      const FrontendChannel& channel,
       SessionState& sessionState);
 
   /**

@@ -94,6 +94,14 @@ runs:
     - name: Print third-party folder
       shell: bash
       run: ls -lR /tmp/third-party
+    - name: Download React Native Prebuilds
+      uses: actions/download-artifact@v4
+      with:
+        name: ReactCore${{ inputs.flavor }}.xcframework.tar.gz
+        path: /tmp/ReactCore
+    - name: Print ReactCore folder
+      shell: bash
+      run: ls -lR /tmp/ReactCore
     - name: Setup xcode build cache
       uses: ./.github/actions/setup-xcode-build-cache
       with:
@@ -105,12 +113,13 @@ runs:
       shell: bash
       run: |
         export HERMES_ENGINE_TARBALL_PATH=$HERMES_ENGINE_TARBALL_PATH
+        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
+        export RCT_TESTONLY_RNCORE_TARBALL_PATH="/tmp/ReactCore/ReactCore${{ inputs.flavor }}.xcframework.tar.gz"
 
         if [[ ${{ inputs.use-frameworks }} == "DynamicFrameworks" ]]; then
           export USE_FRAMEWORKS=dynamic
         fi
 
-        export RCT_USE_LOCAL_RN_DEP="/tmp/third-party/ReactNativeDependencies${{ inputs.flavor }}.xcframework.tar.gz"
         cd packages/rn-tester
 
         bundle install

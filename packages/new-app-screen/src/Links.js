@@ -65,7 +65,7 @@ const Links: Array<{
   },
   {
     title: 'Community',
-    description: 'Expore & get help',
+    description: 'Explore & get help',
     url: 'https://reactnative.dev/community/overview',
   },
   {

@@ -37,7 +37,7 @@ class EventAnimationDriver {
  protected:
   std::vector<std::string> eventPath_;
 
-  Tag animatedValueTag_;
+  const Tag animatedValueTag_;
 };
 
 struct EventAnimationDriverKey {
