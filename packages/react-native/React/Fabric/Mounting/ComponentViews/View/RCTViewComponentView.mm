@@ -19,7 +19,7 @@
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
 #import <React/RCTRadialGradient.h>
-#import <ReactSwiftUtils/RCTSwiftUIContainerViewWrapper.h>
+#import <RCTSwiftUIWrapper/RCTSwiftUIContainerViewWrapper.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>

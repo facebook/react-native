@@ -5,7 +5,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -17,7 +17,7 @@ else
 end
 
 Pod::Spec.new do |s|
-  s.name                   = "React-SwiftUtils"
+  s.name                   = "RCTSwiftUIWrapper"
   s.version                = version
   s.summary                = "Swift utilities for React Native."
   s.homepage               = "https://reactnative.dev/"
@@ -25,14 +25,14 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "SwiftUtils/**/*.{h,m,swift}"
-  s.public_header_files    = "SwiftUtils/**/*.h"
-  s.module_name            = "ReactSwiftUtils"
-  s.header_dir             = "ReactSwiftUtils"
+  s.source_files           = "*.{h,m}"
+  s.public_header_files    = "*.h"
+  s.module_name            = "RCTSwiftUIWrapper"
+  s.header_dir             = "RCTSwiftUIWrapper"
+  s.dependency "RCTSwiftUI"
   
-  # Swift-specific configuration
   s.pod_target_xcconfig    = {
-    "SWIFT_VERSION" => "5.0"
+    "SWIFT_VERSION" => "5.0",
   }
 
 end

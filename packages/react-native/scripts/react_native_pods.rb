@@ -147,8 +147,9 @@ def use_react_native! (
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
-  pod 'React-SwiftUtils', :path => "#{prefix}/React"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  pod 'RCTSwiftUI', :path => "#{prefix}/ReactApple/RCTSwiftUI"
+  pod 'RCTSwiftUIWrapper', :path => "#{prefix}/ReactApple/RCTSwiftUIWrapper"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)

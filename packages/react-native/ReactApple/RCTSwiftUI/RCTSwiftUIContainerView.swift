@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-@objc public class RCTSwiftUIContainerView: NSObject {
+@MainActor @objc public class RCTSwiftUIContainerView: NSObject {
   private var containerViewModel = ContainerViewModel()
   private var hostingController: UIHostingController<SwiftUIContainerView>?
 

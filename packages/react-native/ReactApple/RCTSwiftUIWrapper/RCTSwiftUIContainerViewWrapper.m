@@ -6,7 +6,8 @@
  */
 
 #import "RCTSwiftUIContainerViewWrapper.h"
-#import "ReactSwiftUtils-Swift.h"
+
+@import RCTSwiftUI;
 
 @interface RCTSwiftUIContainerViewWrapper ()
 @property (nonatomic, strong) RCTSwiftUIContainerView *swiftContainerView;
