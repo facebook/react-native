@@ -306,8 +306,8 @@ void PerformanceTracer::reportEventLoopMicrotasks(
 }
 
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
-    uint64_t threadId,
-    uint16_t profileId,
+    ThreadId threadId,
+    RuntimeProfileId profileId,
     HighResTimeStamp profileTimestamp) {
   // CDT prioritizes event timestamp over startTime metadata field.
   // https://fburl.com/lo764pf4
@@ -328,8 +328,8 @@ folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
 }
 
 folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
-    uint16_t profileId,
-    uint64_t threadId,
+    ThreadId threadId,
+    RuntimeProfileId profileId,
     HighResTimeStamp chunkTimestamp,
     tracing::TraceEventProfileChunk&& traceEventProfileChunk) {
   return TraceEventSerializer::serialize(TraceEvent{

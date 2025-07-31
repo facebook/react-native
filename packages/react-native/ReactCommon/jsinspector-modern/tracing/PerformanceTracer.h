@@ -120,8 +120,8 @@ class PerformanceTracer {
    * \return serialized Trace Event that represents a Profile for CDT.
    */
   folly::dynamic getSerializedRuntimeProfileTraceEvent(
-      uint64_t threadId,
-      uint16_t profileId,
+      ThreadId threadId,
+      RuntimeProfileId profileId,
       HighResTimeStamp profileTimestamp);
 
   /**
@@ -129,8 +129,8 @@ class PerformanceTracer {
    * \return serialized Trace Event that represents a Profile Chunk for CDT.
    */
   folly::dynamic getSerializedRuntimeProfileChunkTraceEvent(
-      uint16_t profileId,
-      uint64_t threadId,
+      ProcessId threadId,
+      RuntimeProfileId profileId,
       HighResTimeStamp chunkTimestamp,
       TraceEventProfileChunk&& traceEventProfileChunk);
 
@@ -140,7 +140,7 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  const uint64_t processId_;
+  const ProcessId processId_;
 
   /**
    * The flag is atomic in order to enable any thread to read it (via
