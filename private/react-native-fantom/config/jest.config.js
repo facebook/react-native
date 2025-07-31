@@ -35,4 +35,6 @@ module.exports = {
   watchPathIgnorePatterns: ['<rootDir>/private/react-native-fantom/build/'],
   globalSetup:
     '<rootDir>/private/react-native-fantom/runner/global-setup/setup.js',
+  globalTeardown:
+    '<rootDir>/private/react-native-fantom/runner/global-setup/teardown.js',
 };
