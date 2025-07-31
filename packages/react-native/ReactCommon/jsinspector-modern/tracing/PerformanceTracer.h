@@ -60,12 +60,6 @@ class PerformanceTracer {
       uint16_t chunkSize);
 
   /**
-   * Flush out buffered CDP Trace Events into a folly::dynamic collection of
-   * chunks, which can be sent over CDP later.
-   */
-  folly::dynamic collectEvents(uint16_t chunkSize);
-
-  /**
    * Transfers an ownership of all buffered TraceEvents, the local buffer state
    * is invalidated after this call.
    */
