@@ -104,22 +104,6 @@ class PerformanceTracer {
       std::optional<ConsoleTimeStampColor> color = std::nullopt);
 
   /**
-   * Record a corresponding Trace Event for OS-level process.
-   */
-  void reportProcess(uint64_t id, const std::string& name);
-
-  /**
-   * Record a corresponding Trace Event for OS-level thread.
-   */
-  void reportThread(uint64_t id, const std::string& name);
-
-  /**
-   * Should only be called from the JavaScript thread, will buffer metadata
-   * Trace Event.
-   */
-  void reportJavaScriptThread();
-
-  /**
    * Record an Event Loop tick, which will be represented as an Event Loop task
    * on a timeline view and grouped with JavaScript samples.
    */
