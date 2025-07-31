@@ -15,7 +15,6 @@
 
 #include <folly/dynamic.h>
 #include <atomic>
-#include <functional>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -34,14 +33,15 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
 
   /**
-   * Mark trace session as started. Returns `false` if already tracing.
+   * Starts a tracing session. Returns `false` if already tracing.
    */
   bool startTracing();
 
   /**
-   * Mark trace session as stopped. Returns `false` if wasn't tracing.
+   * If there is a current tracing session, it stops tracing and returns all
+   * collected events. Otherwise, it returns empty.
    */
-  bool stopTracing();
+  std::optional<std::vector<TraceEvent>> stopTracing();
 
   /**
    * Returns whether the tracer is currently tracing. This can be useful to
@@ -51,19 +51,6 @@ class PerformanceTracer {
   inline bool isTracing() const {
     return tracingAtomic_;
   }
-
-  /**
-   * Flush out buffered CDP Trace Events using the given callback.
-   */
-  void collectEvents(
-      const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
-      uint16_t chunkSize);
-
-  /**
-   * Transfers an ownership of all buffered TraceEvents, the local buffer state
-   * is invalidated after this call.
-   */
-  std::vector<TraceEvent> collectTraceEvents();
 
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
