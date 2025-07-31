@@ -28,38 +28,39 @@ PerformanceTracer::PerformanceTracer()
 
 bool PerformanceTracer::startTracing() {
   std::lock_guard lock(mutex_);
+
   if (tracingAtomic_) {
     return false;
   }
-  tracingAtomic_ = true;
 
-  buffer_.emplace_back(TraceEvent{
-      .name = "TracingStartedInPage",
-      .cat = "disabled-by-default-devtools.timeline",
-      .ph = 'I',
-      .ts = HighResTimeStamp::now(),
-      .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
-      .args = folly::dynamic::object("data", folly::dynamic::object()),
-  });
+  tracingAtomic_ = true;
 
   return true;
 }
 
-bool PerformanceTracer::stopTracing() {
-  std::lock_guard lock(mutex_);
-  if (!tracingAtomic_) {
-    return false;
+std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
+  std::vector<TraceEvent> events;
+
+  {
+    std::lock_guard lock(mutex_);
+
+    if (!tracingAtomic_) {
+      return std::nullopt;
+    }
+
+    tracingAtomic_ = false;
+    performanceMeasureCount_ = 0;
+
+    buffer_.swap(events);
   }
-  tracingAtomic_ = false;
 
   // This is synthetic Trace Event, which should not be represented on a
   // timeline. CDT is not using Profile or ProfileChunk events for determining
   // trace timeline window, this is why trace that only contains JavaScript
-  // samples will be displayed as empty. We use this event to avoid that.
+  // samples will be displayed as empty. We use these events to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.emplace_back(TraceEvent{
+  events.emplace_back(TraceEvent{
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -68,45 +69,6 @@ bool PerformanceTracer::stopTracing() {
       .tid = oscompat::getCurrentThreadId(),
   });
 
-  performanceMeasureCount_ = 0;
-  return true;
-}
-
-void PerformanceTracer::collectEvents(
-    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
-    uint16_t chunkSize) {
-  std::vector<TraceEvent> localBuffer;
-  {
-    std::lock_guard lock(mutex_);
-    buffer_.swap(localBuffer);
-  }
-
-  if (localBuffer.empty()) {
-    return;
-  }
-
-  auto serializedTraceEvents = folly::dynamic::array();
-  for (auto&& event : localBuffer) {
-    // Emit trace events
-    serializedTraceEvents.push_back(
-        TraceEventSerializer::serialize(std::move(event)));
-
-    if (serializedTraceEvents.size() == chunkSize) {
-      resultCallback(std::move(serializedTraceEvents));
-      serializedTraceEvents = folly::dynamic::array();
-    }
-  }
-  if (!serializedTraceEvents.empty()) {
-    resultCallback(std::move(serializedTraceEvents));
-  }
-}
-
-std::vector<TraceEvent> PerformanceTracer::collectTraceEvents() {
-  std::vector<TraceEvent> events;
-  {
-    std::lock_guard lock(mutex_);
-    buffer_.swap(events);
-  }
   return events;
 }
 
