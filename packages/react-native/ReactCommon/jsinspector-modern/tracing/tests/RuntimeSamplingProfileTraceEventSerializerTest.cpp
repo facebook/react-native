@@ -55,12 +55,12 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
   }
 
   RuntimeSamplingProfile createEmptyProfile() {
-    return {"TestRuntime", {}, {}};
+    return {"TestRuntime", 1, {}, {}};
   }
 
   RuntimeSamplingProfile createProfileWithSamples(
       std::vector<RuntimeSamplingProfile::Sample> samples) {
-    return {"TestRuntime", std::move(samples), {}};
+    return {"TestRuntime", 1, std::move(samples), {}};
   }
 };
 
@@ -68,7 +68,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptyProfile) {
   // Setup
   auto notificationCallback = createNotificationCallback();
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(), notificationCallback, 10);
+      notificationCallback, 10);
 
   auto profile = createEmptyProfile();
   auto tracingStartTime = HighResTimeStamp::now();
@@ -86,7 +86,7 @@ TEST_F(
   // Setup
   auto notificationCallback = createNotificationCallback();
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(), notificationCallback, 10);
+      notificationCallback, 10);
 
   // [     foo     ]
   // [     bar     ]
@@ -136,7 +136,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
   // Setup
   auto notificationCallback = createNotificationCallback();
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(), notificationCallback, 10);
+      notificationCallback, 10);
 
   // Create an empty sample (no call stack)
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> emptyCallStack;
@@ -172,7 +172,7 @@ TEST_F(
   // Setup
   auto notificationCallback = createNotificationCallback();
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(), notificationCallback, 10);
+      notificationCallback, 10);
 
   // Create samples with different thread IDs
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
@@ -209,10 +209,7 @@ TEST_F(
   uint16_t traceEventChunkSize = 2;
   uint16_t profileChunkSize = 2;
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(),
-      notificationCallback,
-      traceEventChunkSize,
-      profileChunkSize);
+      notificationCallback, traceEventChunkSize, profileChunkSize);
 
   // Create multiple samples
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
@@ -250,10 +247,7 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   uint16_t profileChunkSize = 2;
   double samplesCount = 5;
   RuntimeSamplingProfileTraceEventSerializer serializer(
-      PerformanceTracer::getInstance(),
-      notificationCallback,
-      traceEventChunkSize,
-      profileChunkSize);
+      notificationCallback, traceEventChunkSize, profileChunkSize);
 
   // Create multiple samples
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {

@@ -116,21 +116,25 @@ class PerformanceTracer {
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
 
   /**
-   * Create and serialize Profile Trace Event.
-   * \return serialized Trace Event that represents a Profile for CDT.
+   * Creates "Profile" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
    */
-  folly::dynamic getSerializedRuntimeProfileTraceEvent(
-      ThreadId threadId,
+  static TraceEvent constructRuntimeProfileTraceEvent(
       RuntimeProfileId profileId,
+      ProcessId processId,
+      ThreadId threadId,
       HighResTimeStamp profileTimestamp);
 
   /**
-   * Create and serialize ProfileChunk Trace Event.
-   * \return serialized Trace Event that represents a Profile Chunk for CDT.
+   * Creates "ProfileChunk" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
    */
-  folly::dynamic getSerializedRuntimeProfileChunkTraceEvent(
-      ProcessId threadId,
+  static TraceEvent constructRuntimeProfileChunkTraceEvent(
       RuntimeProfileId profileId,
+      ProcessId processId,
+      ProcessId threadId,
       HighResTimeStamp chunkTimestamp,
       TraceEventProfileChunk&& traceEventProfileChunk);
 
