@@ -101,36 +101,6 @@ void PerformanceTracer::collectEvents(
   }
 }
 
-folly::dynamic PerformanceTracer::collectEvents(uint16_t chunkSize) {
-  std::vector<TraceEvent> localBuffer;
-  {
-    std::lock_guard lock(mutex_);
-    buffer_.swap(localBuffer);
-  }
-
-  auto chunks = folly::dynamic::array();
-  if (localBuffer.empty()) {
-    return chunks;
-  }
-
-  auto chunk = folly::dynamic::array();
-  chunk.reserve(chunkSize);
-  for (auto&& event : localBuffer) {
-    chunk.push_back(TraceEventSerializer::serialize(std::move(event)));
-
-    if (chunk.size() == chunkSize) {
-      chunks.push_back(std::move(chunk));
-      chunk = folly::dynamic::array();
-      chunk.reserve(chunkSize);
-    }
-  }
-
-  if (!chunk.empty()) {
-    chunks.push_back(std::move(chunk));
-  }
-  return chunks;
-}
-
 std::vector<TraceEvent> PerformanceTracer::collectTraceEvents() {
   std::vector<TraceEvent> events;
   {
