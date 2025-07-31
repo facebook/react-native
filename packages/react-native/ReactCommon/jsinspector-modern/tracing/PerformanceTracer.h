@@ -149,7 +149,10 @@ class PerformanceTracer {
    */
   uint32_t performanceMeasureCount_{0};
 
+  HighResTimeStamp currentTraceStartTime_;
+
   std::vector<TraceEvent> buffer_;
+
   /**
    * Protects data members of this class for concurrent access, including
    * the tracingAtomic_, in order to eliminate potential "logic" races.

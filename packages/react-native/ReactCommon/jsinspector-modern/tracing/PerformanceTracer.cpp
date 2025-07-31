@@ -34,7 +34,7 @@ bool PerformanceTracer::startTracing() {
   }
 
   tracingAtomic_ = true;
-
+  currentTraceStartTime_ = HighResTimeStamp::now();
   return true;
 }
 
@@ -60,6 +60,17 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   // samples will be displayed as empty. We use these events to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
+
+  events.emplace_back(TraceEvent{
+      .name = "TracingStartedInPage",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = currentTraceStartTime_,
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+      .args = folly::dynamic::object("data", folly::dynamic::object()),
+  });
+
   events.emplace_back(TraceEvent{
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
