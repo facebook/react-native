@@ -221,7 +221,7 @@ internal class RedBoxContentView(
   }
 
   fun setExceptionDetails(title: String, stack: Array<StackFrame>) {
-    stackView.setAdapter(StackAdapter(title, stack))
+    stackView.adapter = StackAdapter(title, stack)
   }
 
   /** Show the report button, hide the report textview and the loading indicator. */

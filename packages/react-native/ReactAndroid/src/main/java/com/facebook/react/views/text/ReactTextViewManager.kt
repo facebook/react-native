@@ -62,7 +62,7 @@ public constructor(
 
   override fun updateViewAccessibility(view: ReactTextView) {
     ReactTextViewAccessibilityDelegate.setDelegate(
-        view, view.isFocusable(), view.getImportantForAccessibility())
+        view, view.isFocusable, view.importantForAccessibility)
   }
 
   public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
@@ -85,7 +85,7 @@ public constructor(
       view.setTag(
           R.id.accessibility_links, if (accessibilityLinks.size() > 0) accessibilityLinks else null)
       ReactTextViewAccessibilityDelegate.resetDelegate(
-          view, view.isFocusable(), view.getImportantForAccessibility())
+          view, view.isFocusable, view.importantForAccessibility)
     }
   }
 
@@ -130,7 +130,7 @@ public constructor(
         state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES.toInt())
     val spanned: Spannable =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.getContext(), attributedString, reactTextViewManagerCallback)
+            view.context, attributedString, reactTextViewManagerCallback)
     view.setSpanned(spanned)
 
     val minimumFontSize: Float =
@@ -141,7 +141,7 @@ public constructor(
         TextAttributeProps.getTextBreakStrategy(
             paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY))
     val currentJustificationMode =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.getJustificationMode()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.justificationMode
 
     return ReactTextUpdate(
         spanned,

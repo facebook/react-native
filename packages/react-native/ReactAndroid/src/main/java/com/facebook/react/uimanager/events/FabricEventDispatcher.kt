@@ -218,7 +218,7 @@ internal class FabricEventDispatcher(
       }
 
       // We should only hit this slow path when we receive events while the host activity is paused.
-      if (reactContext.isOnUiQueueThread()) {
+      if (reactContext.isOnUiQueueThread) {
         maybeDispatchBatchedEvents()
       } else {
         reactContext.runOnUiQueueThread { maybeDispatchBatchedEvents() }

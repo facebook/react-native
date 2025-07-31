@@ -950,7 +950,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
     if (axOrder != null) {
 
       val am: AccessibilityManager? =
-          this.getContext().getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager?
+          this.context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager?
       if (accessibilityStateChangeListener == null && am != null) {
         val newAccessibilityStateChangeListener =
             AccessibilityManager.AccessibilityStateChangeListener { enabled ->
