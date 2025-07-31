@@ -55,8 +55,12 @@ describe('LongTasks API', () => {
   it('does NOT report short tasks (under 50ms)', () => {
     const callback = jest.fn();
 
-    observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['longtask']});
+    Fantom.runTask(() => {
+      observer = new PerformanceObserver(callback);
+      observer.observe({entryTypes: ['longtask']});
+    });
+
+    expect(callback).not.toHaveBeenCalled();
 
     Fantom.runTask(() => {
       // Short task.
@@ -75,8 +79,12 @@ describe('LongTasks API', () => {
   it('reports long tasks (over 50ms)', () => {
     const callback = jest.fn();
 
-    observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['longtask']});
+    Fantom.runTask(() => {
+      observer = new PerformanceObserver(callback);
+      observer.observe({entryTypes: ['longtask']});
+    });
+
+    expect(callback).not.toHaveBeenCalled();
 
     const beforeTaskStartTime = performance.now();
     let afterTaskStartTime;
@@ -122,8 +130,12 @@ describe('LongTasks API', () => {
     it('should NOT be reported if they are longer than 50ms but had yielding opportunities in intervals shorter than 50ms', () => {
       const callback = jest.fn();
 
-      observer = new PerformanceObserver(callback);
-      observer.observe({entryTypes: ['longtask']});
+      Fantom.runTask(() => {
+        observer = new PerformanceObserver(callback);
+        observer.observe({entryTypes: ['longtask']});
+      });
+
+      expect(callback).not.toHaveBeenCalled();
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
@@ -141,8 +153,12 @@ describe('LongTasks API', () => {
     it('should be reported if running for longer than 50ms between yielding opportunities', () => {
       const callback = jest.fn();
 
-      observer = new PerformanceObserver(callback);
-      observer.observe({entryTypes: ['longtask']});
+      Fantom.runTask(() => {
+        observer = new PerformanceObserver(callback);
+        observer.observe({entryTypes: ['longtask']});
+      });
+
+      expect(callback).not.toHaveBeenCalled();
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
