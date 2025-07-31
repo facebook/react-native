@@ -16,6 +16,10 @@ export const NATIVE_BUILD_OUTPUT_PATH: string = path.join(
   OUTPUT_PATH,
   'native-builds',
 );
+export const JS_TRACES_OUTPUT_PATH: string = path.join(
+  OUTPUT_PATH,
+  'js-traces',
+);
 
 export function getTestBuildOutputPath(): string {
   const fantomRunID = process.env.__FANTOM_RUN_ID__;

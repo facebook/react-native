@@ -279,6 +279,68 @@ export function symbolicateStackTrace(
     .join('\n');
 }
 
+type ChromeDevToolsTraceNode = {
+  id: number,
+  callFrame: {
+    functionName: string,
+    scriptId: string,
+    url: string,
+    lineNumber: number,
+    columnNumber: number,
+    ...
+  },
+  children: Array<number>,
+  ...
+};
+
+type ChromeDevToolsTrace = {
+  samples: Array<number>,
+  timeDeltas: Array<number>,
+  nodes: Array<ChromeDevToolsTraceNode>,
+};
+
+export function symbolicateJSTrace(
+  jsTraceOutputPath: string,
+  sourceMapPath: string,
+) {
+  const traceContents: ChromeDevToolsTrace = JSON.parse(
+    fs.readFileSync(jsTraceOutputPath, 'utf8'),
+  );
+  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
+  const consumer = new SourceMapConsumer(sourceMapData);
+
+  for (const node of traceContents.nodes) {
+    const {lineNumber, columnNumber} = node.callFrame;
+
+    if (lineNumber === 0 || columnNumber === 0) {
+      continue;
+    }
+
+    const originalPosition = consumer.originalPositionFor({
+      line: lineNumber,
+      column: columnNumber,
+    });
+
+    if (originalPosition.name) {
+      node.callFrame.functionName = originalPosition.name;
+    }
+
+    if (originalPosition.source) {
+      node.callFrame.url = `file://${originalPosition.source}`;
+    }
+
+    if (originalPosition.line && originalPosition.line > 0) {
+      node.callFrame.lineNumber = originalPosition.line - 1;
+    }
+
+    if (originalPosition.column && originalPosition.column > 0) {
+      node.callFrame.columnNumber = originalPosition.column;
+    }
+  }
+
+  fs.writeFileSync(jsTraceOutputPath, JSON.stringify(traceContents), 'utf8');
+}
+
 export type ConsoleLogMessage = {
   type: 'console-log',
   level: 'info' | 'warn' | 'error',
