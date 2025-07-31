@@ -102,7 +102,7 @@ void PerformanceTracer::reportMark(
         "data", folly::dynamic::object("detail", folly::toJson(detail)));
   }
 
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'I',
@@ -135,7 +135,7 @@ void PerformanceTracer::reportMeasure(
   }
   auto eventId = ++performanceMeasureCount_;
 
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -145,7 +145,7 @@ void PerformanceTracer::reportMeasure(
       .tid = currentThreadId,
       .args = beginEventArgs,
   });
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .id = eventId,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -200,7 +200,7 @@ void PerformanceTracer::reportTimeStamp(
   if (!tracingAtomic_) {
     return;
   }
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .name = "TimeStamp",
       .cat = "devtools.timeline",
       .ph = 'I',
@@ -223,7 +223,7 @@ void PerformanceTracer::reportEventLoopTask(
     return;
   }
 
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .name = "RunTask",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'X',
@@ -246,7 +246,7 @@ void PerformanceTracer::reportEventLoopMicrotasks(
     return;
   }
 
-  buffer_.emplace_back(TraceEvent{
+  enqueueEvent(TraceEvent{
       .name = "RunMicrotasks",
       .cat = "v8.execute",
       .ph = 'X',
@@ -300,6 +300,10 @@ PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
           TraceEventSerializer::serializeProfileChunk(
               std::move(traceEventProfileChunk))),
   };
+}
+
+void PerformanceTracer::enqueueEvent(TraceEvent&& traceEvent) {
+  buffer_.emplace_back(std::move(traceEvent));
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing
