@@ -393,7 +393,6 @@ inline void fromRawValue(
         LOG(ERROR) << "Unsupported FontVariant value: " << item;
         react_native_expect(false);
       }
-      continue;
     }
   } else {
     LOG(ERROR) << "Unsupported FontVariant type";
