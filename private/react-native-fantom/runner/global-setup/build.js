@@ -8,6 +8,7 @@
  * @format
  */
 
+import createBundle from '../createBundle';
 import {isCI} from '../EnvironmentOptions';
 import {build as buildHermesCompiler} from '../executables/hermesc';
 import {build as buildFantomTester} from '../executables/tester';
@@ -15,7 +16,6 @@ import {getNativeBuildOutputPath} from '../executables/utils';
 import {HermesVariant} from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
-import Metro from 'metro';
 import os from 'os';
 import path from 'path';
 
@@ -58,10 +58,6 @@ export default async function build(): Promise<void> {
 }
 
 async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
-  const metroConfig = await Metro.loadConfig({
-    config: path.resolve(__dirname, '..', '..', 'config', 'metro.config.js'),
-  });
-
   const entrypointPath = path.resolve(
     __dirname,
     '..',
@@ -75,7 +71,8 @@ async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
     `fantom-warmup-bundle-${Date.now()}.js`,
   );
 
-  await Metro.runBuild(metroConfig, {
+  await createBundle({
+    testPath: '(warmup bundle - no test path)',
     entry: entrypointPath,
     out: bundlePath,
     platform: 'android',
