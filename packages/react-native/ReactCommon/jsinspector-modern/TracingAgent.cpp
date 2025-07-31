@@ -9,6 +9,7 @@
 
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
+#include <jsinspector-modern/tracing/TraceEventSerializer.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -28,6 +29,26 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
  * than 16MB.
  */
 const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
+
+void serializeTraceEventsInChunks(
+    std::vector<tracing::TraceEvent>&& traceEvents,
+    uint16_t chunkSize,
+    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback) {
+  auto serializedTraceEvents = folly::dynamic::array();
+  for (auto&& traceEvent : traceEvents) {
+    // Emit trace events
+    serializedTraceEvents.push_back(
+        tracing::TraceEventSerializer::serialize(std::move(traceEvent)));
+
+    if (serializedTraceEvents.size() == chunkSize) {
+      resultCallback(std::move(serializedTraceEvents));
+      serializedTraceEvents = folly::dynamic::array();
+    }
+  }
+  if (!serializedTraceEvents.empty()) {
+    resultCallback(std::move(serializedTraceEvents));
+  }
+}
 
 } // namespace
 
@@ -89,8 +110,8 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     tracing::PerformanceTracer& performanceTracer =
         tracing::PerformanceTracer::getInstance();
-    bool correctlyStopped = performanceTracer.stopTracing();
-    if (!correctlyStopped) {
+    auto collectedEvents = performanceTracer.stopTracing();
+    if (!collectedEvents) {
       frontendChannel_(cdp::jsonError(
           req.id,
           cdp::ErrorCode::InternalError,
@@ -107,8 +128,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
           "Tracing.dataCollected",
           folly::dynamic::object("value", std::move(eventsChunk))));
     };
-    performanceTracer.collectEvents(
-        dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
+
+    serializeTraceEventsInChunks(
+        std::move(*collectedEvents),
+        TRACE_EVENT_CHUNK_SIZE,
+        dataCollectedCallback);
 
     auto tracingProfile = instanceAgent_->collectTracingProfile();
     tracing::IdGenerator profileIdGenerator;
