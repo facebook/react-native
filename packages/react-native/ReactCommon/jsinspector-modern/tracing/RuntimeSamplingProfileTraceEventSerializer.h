@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include "PerformanceTracer.h"
 #include "ProfileTreeNode.h"
 #include "RuntimeSamplingProfile.h"
 
@@ -37,9 +36,13 @@ class RuntimeSamplingProfileTraceEventSerializer {
   struct ProfileChunk {
     ProfileChunk(
         uint16_t chunkSize,
+        ProcessId chunkProcessId,
         ThreadId chunkThreadId,
         HighResTimeStamp chunkTimestamp)
-        : size(chunkSize), threadId(chunkThreadId), timestamp(chunkTimestamp) {
+        : size(chunkSize),
+          processId(chunkProcessId),
+          threadId(chunkThreadId),
+          timestamp(chunkTimestamp) {
       samples.reserve(size);
       timeDeltas.reserve(size);
     }
@@ -56,13 +59,13 @@ class RuntimeSamplingProfileTraceEventSerializer {
     std::vector<uint32_t> samples;
     std::vector<HighResDuration> timeDeltas;
     uint16_t size;
+    ProcessId processId;
     ThreadId threadId;
     HighResTimeStamp timestamp;
   };
 
  public:
   /**
-   * \param performanceTracer A reference to PerformanceTracer instance.
    * \param notificationCallback A reference to a callback, which is called
    * when a chunk of trace events is ready to be sent.
    * \param traceEventChunkSize The maximum number of ProfileChunk trace
@@ -71,13 +74,11 @@ class RuntimeSamplingProfileTraceEventSerializer {
    * that can be sent in a single ProfileChunk trace event.
    */
   RuntimeSamplingProfileTraceEventSerializer(
-      PerformanceTracer& performanceTracer,
       std::function<void(folly::dynamic&& traceEventsChunk)>
           notificationCallback,
       uint16_t traceEventChunkSize,
       uint16_t profileChunkSize = 10)
-      : performanceTracer_(performanceTracer),
-        notificationCallback_(std::move(notificationCallback)),
+      : notificationCallback_(std::move(notificationCallback)),
         traceEventChunkSize_(traceEventChunkSize),
         profileChunkSize_(profileChunkSize) {
     traceEventBuffer_ = folly::dynamic::array();
@@ -96,12 +97,15 @@ class RuntimeSamplingProfileTraceEventSerializer {
  private:
   /**
    * Sends a single "Profile" Trace Event via notificationCallback_.
+
+   * \param processId The id of the process, where the Profile was collected.
    * \param threadId The id of the thread, where the Profile was collected.
    * \param profileId The id of the Profile.
    * \param profileStartUnixTimestamp The Unix timestamp of the start of the
    * profile.
    */
   void sendProfileTraceEvent(
+      ProcessId processId,
       ThreadId threadId,
       RuntimeProfileId profileId,
       HighResTimeStamp profileStartTimestamp) const;
@@ -154,7 +158,6 @@ class RuntimeSamplingProfileTraceEventSerializer {
    */
   void sendBufferedTraceEventsAndClear();
 
-  PerformanceTracer& performanceTracer_;
   const std::function<void(folly::dynamic&& traceEventsChunk)>
       notificationCallback_;
   const uint16_t traceEventChunkSize_;
