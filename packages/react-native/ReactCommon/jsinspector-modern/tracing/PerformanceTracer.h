@@ -158,6 +158,8 @@ class PerformanceTracer {
    * the tracingAtomic_, in order to eliminate potential "logic" races.
    */
   std::mutex mutex_;
+
+  void enqueueEvent(TraceEvent&& event);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
