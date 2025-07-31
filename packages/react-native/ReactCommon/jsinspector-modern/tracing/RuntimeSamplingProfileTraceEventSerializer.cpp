@@ -27,7 +27,7 @@ HighResTimeStamp getHighResTimeStampForSample(
 
 // Right now we only emit single Profile. We might revisit this decision in the
 // future, once we support multiple VMs being sampled at the same time.
-constexpr uint16_t PROFILE_ID = 1;
+constexpr RuntimeProfileId PROFILE_ID = 1;
 
 /// Fallback script ID for artificial call frames, such as (root), (idle) or
 /// (program). Required for emulating the payload in a format that is expected
@@ -96,8 +96,8 @@ class ProfileTreeRootNode : public ProfileTreeNode {
 } // namespace
 
 void RuntimeSamplingProfileTraceEventSerializer::sendProfileTraceEvent(
-    uint64_t threadId,
-    uint16_t profileId,
+    ThreadId threadId,
+    RuntimeProfileId profileId,
     HighResTimeStamp profileStartTimestamp) const {
   folly::dynamic serializedTraceEvent =
       performanceTracer_.getSerializedRuntimeProfileTraceEvent(
@@ -116,7 +116,7 @@ void RuntimeSamplingProfileTraceEventSerializer::chunkEmptySample(
 
 void RuntimeSamplingProfileTraceEventSerializer::bufferProfileChunkTraceEvent(
     ProfileChunk&& chunk,
-    uint16_t profileId) {
+    RuntimeProfileId profileId) {
   if (chunk.isEmpty()) {
     return;
   }
@@ -198,7 +198,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     return;
   }
 
-  uint64_t firstChunkThreadId = samples.front().threadId;
+  ThreadId firstChunkThreadId = samples.front().threadId;
   HighResTimeStamp previousSampleTimestamp = tracingStartTime;
   HighResTimeStamp currentChunkTimestamp = tracingStartTime;
 
@@ -228,7 +228,7 @@ void RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
   uint32_t idleNodeId = idleNode->getId();
 
   for (auto& sample : samples) {
-    uint64_t currentSampleThreadId = sample.threadId;
+    ThreadId currentSampleThreadId = sample.threadId;
     auto currentSampleTimestamp = getHighResTimeStampForSample(sample);
 
     // We should not attempt to merge samples from different threads.
