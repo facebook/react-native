@@ -11,6 +11,7 @@
 import type {AsyncCommandResult, HermesVariant} from '../utils';
 
 import {debugCpp, isCI} from '../EnvironmentOptions';
+import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
 import {
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
@@ -19,7 +20,6 @@ import {
   runBuck2Sync,
   runCommand,
 } from '../utils';
-import {getNativeBuildOutputPath} from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -36,7 +36,7 @@ function getFantomTesterPath({
   hermesVariant,
 }: TesterOptions): string {
   return path.join(
-    getNativeBuildOutputPath(),
+    NATIVE_BUILD_OUTPUT_PATH,
     `fantom-tester-${(hermesVariant as string).toLowerCase()}-${isOptimizedMode ? 'opt' : 'dev'}`,
   );
 }

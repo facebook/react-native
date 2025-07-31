@@ -11,6 +11,7 @@
 import type {HermesVariant, SyncCommandResult} from '../utils';
 
 import {isCI} from '../EnvironmentOptions';
+import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
 import {
   getBuckModesForPlatform,
   getBuckOptionsForHermes,
@@ -19,7 +20,6 @@ import {
   runBuck2Sync,
   runCommandSync,
 } from '../utils';
-import {getNativeBuildOutputPath} from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -33,7 +33,7 @@ function getHermesCompilerPath({
   hermesVariant,
 }: TesterOptions): string {
   return path.join(
-    getNativeBuildOutputPath(),
+    NATIVE_BUILD_OUTPUT_PATH,
     `hermesc-${(hermesVariant as string).toLowerCase()}-${isOptimizedMode ? 'opt' : 'dev'}`,
   );
 }

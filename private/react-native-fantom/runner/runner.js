@@ -27,6 +27,7 @@ import {run as runHermesCompiler} from './executables/hermesc';
 import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
+import {getTestBuildOutputPath} from './paths';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -46,17 +47,8 @@ import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
-const fantomRunID = process.env.__FANTOM_RUN_ID__;
-if (fantomRunID == null) {
-  throw new Error(
-    'Expected Fantom run ID to be set by global setup, but it was not (process.env.__FANTOM_RUN_ID__ is null)',
-  );
-}
-
-const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
-const BUILD_OUTPUT_PATH = path.join(BUILD_OUTPUT_ROOT, fantomRunID);
-
-fs.mkdirSync(BUILD_OUTPUT_PATH, {recursive: true});
+const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
+fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
 
 function buildError(
   failureDetail: FailureDetail,
@@ -276,9 +268,9 @@ module.exports = async function runTest(
     }
 
     const entrypointContents = entrypointTemplate({
-      testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
-      setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
-      featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
+      testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
+      setupModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, setupModulePath)}`,
+      featureFlagsModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
       testConfig,
       snapshotConfig: {
         updateSnapshot: snapshotState._updateSnapshot,
@@ -287,7 +279,7 @@ module.exports = async function runTest(
     });
 
     const entrypointPath = path.join(
-      BUILD_OUTPUT_PATH,
+      TEST_BUILD_OUTPUT_PATH,
       `${Date.now()}-${path.basename(testPath)}`,
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
