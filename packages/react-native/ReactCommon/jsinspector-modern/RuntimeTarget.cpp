@@ -162,10 +162,6 @@ void RuntimeTargetController::notifyDebuggerSessionDestroyed() {
   target_.emitDebuggerSessionDestroyed();
 }
 
-void RuntimeTargetController::registerForTracing() {
-  target_.registerForTracing();
-}
-
 void RuntimeTargetController::enableSamplingProfiler() {
   target_.enableSamplingProfiler();
 }
@@ -177,12 +173,6 @@ void RuntimeTargetController::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
-}
-
-void RuntimeTarget::registerForTracing() {
-  jsExecutor_([](auto& /*runtime*/) {
-    tracing::PerformanceTracer::getInstance().reportJavaScriptThread();
-  });
 }
 
 void RuntimeTarget::enableSamplingProfiler() {

@@ -116,10 +116,6 @@ RuntimeAgent::~RuntimeAgent() {
   sessionState_.lastRuntimeAgentExportedState = getExportedState();
 }
 
-void RuntimeAgent::registerForTracing() {
-  targetController_.registerForTracing();
-}
-
 void RuntimeAgent::enableSamplingProfiler() {
   targetController_.enableSamplingProfiler();
 }
