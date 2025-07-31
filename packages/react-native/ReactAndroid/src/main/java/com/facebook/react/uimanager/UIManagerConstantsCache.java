@@ -221,32 +221,29 @@ public class UIManagerConstantsCache {
             return;
         }
 
-        // Spawn a background thread to write both JSON blobs
-        new Thread(() -> {
-            try {
-                // Serialize full constants
-                JSONObject jsonConsts = mapToJson(constants);
-                long t0 = System.currentTimeMillis();
-                MMKV.defaultMMKV().encode(MMKV_KEY_CONSTANTS, jsonConsts.toString());
-                long t1 = System.currentTimeMillis();
-                Log.v(TAG, "Saved UIManager constants to MMKV in " + (t1 - t0) + "ms");
-            } catch (JSONException e) {
-                Log.e(TAG, "Failed to JSON-serialize UIManager constants; not caching.", e);
-            }
+        try {
+            // Serialize full constants
+            JSONObject jsonConsts = mapToJson(constants);
+            long t0 = System.currentTimeMillis();
+            MMKV.defaultMMKV().encode(MMKV_KEY_CONSTANTS, jsonConsts.toString());
+            long t1 = System.currentTimeMillis();
+            Log.v(TAG, "Saved UIManager constants to MMKV in " + (t1 - t0) + "ms");
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to JSON-serialize UIManager constants; not caching.", e);
+        }
 
-            if (bubblingEventsTypes != null) {
-                try {
-                    // Serialize bubblingEventTypes
-                    JSONObject jsonBub = mapToJson(bubblingEventsTypes);
-                    long t2 = System.currentTimeMillis();
-                    MMKV.defaultMMKV().encode(MMKV_KEY_BUBBLING, jsonBub.toString());
-                    long t3 = System.currentTimeMillis();
-                    Log.v(TAG, "Saved bubblingEventTypes to MMKV in " + (t3 - t2) + "ms");
-                } catch (JSONException e) {
-                    Log.e(TAG, "Failed to JSON-serialize bubblingEventTypes; not caching.", e);
-                }
+        if (bubblingEventsTypes != null) {
+            try {
+                // Serialize bubblingEventTypes
+                JSONObject jsonBub = mapToJson(bubblingEventsTypes);
+                long t2 = System.currentTimeMillis();
+                MMKV.defaultMMKV().encode(MMKV_KEY_BUBBLING, jsonBub.toString());
+                long t3 = System.currentTimeMillis();
+                Log.v(TAG, "Saved bubblingEventTypes to MMKV in " + (t3 - t2) + "ms");
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to JSON-serialize bubblingEventTypes; not caching.", e);
             }
-        }, "UIManagerConstantsCache-Saver").start();
+        }
     }
 
     // ────────────────────────────────────────────────────────────────────────────────
