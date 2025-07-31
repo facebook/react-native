@@ -131,6 +131,15 @@ folly::dynamic PerformanceTracer::collectEvents(uint16_t chunkSize) {
   return chunks;
 }
 
+std::vector<TraceEvent> PerformanceTracer::collectTraceEvents() {
+  std::vector<TraceEvent> events;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.swap(events);
+  }
+  return events;
+}
+
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     HighResTimeStamp start,
