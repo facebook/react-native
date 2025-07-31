@@ -16,19 +16,17 @@
 @end
 
 @interface RCTPausedInDebuggerOverlayController ()
-#if !TARGET_OS_OSX // [macOS]
 
-@property (nonatomic, strong) UIWindow *alertWindow;
+@property (nonatomic, strong) RCTPlatformWindow *alertWindow; // [macOS]
 
-#endif // [macOS];
 @end
 
 @implementation RCTPausedInDebuggerViewController
-#if !TARGET_OS_OSX // [macOS]
 - (void)viewDidLoad
 {
   [super viewDidLoad];
 
+#if !TARGET_OS_OSX // [macOS]
   UIView *dimmingView = [[UIView alloc] init];
   dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
   dimmingView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
@@ -39,15 +37,18 @@
     [dimmingView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [dimmingView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
   ]];
-
-  UILabel *messageLabel = [[UILabel alloc] init];
+#endif // [macOS]
+  
+  RCTUILabel *messageLabel = [[RCTUILabel alloc] init]; // [macOS]
   messageLabel.text = self.message;
   messageLabel.textAlignment = NSTextAlignmentCenter;
+#if !TARGET_OS_OSX // [macOS]
   messageLabel.numberOfLines = 0;
+#endif // [macOS]
   messageLabel.font = [UIFont boldSystemFontOfSize:16];
-  messageLabel.textColor = [UIColor blackColor];
+  messageLabel.textColor = [RCTUIColor blackColor]; // [macOS]
   messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  UIView *messageContainer = [[UIView alloc] init];
+  RCTUIView *messageContainer = [[RCTUIView alloc] init]; // [macOS]
   [messageContainer addSubview:messageLabel];
   [NSLayoutConstraint activateConstraints:@[
     [messageLabel.topAnchor constraintEqualToAnchor:messageContainer.topAnchor constant:-1],
@@ -56,16 +57,27 @@
     [messageLabel.trailingAnchor constraintEqualToAnchor:messageContainer.trailingAnchor],
   ]];
 
+#if !TARGET_OS_OSX // [macOS]
   UIButton *resumeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   [resumeButton setImage:[UIImage systemImageNamed:@"forward.frame.fill"] forState:UIControlStateNormal];
   resumeButton.tintColor = [UIColor colorWithRed:0.37 green:0.37 blue:0.37 alpha:1];
   resumeButton.adjustsImageWhenDisabled = NO;
   resumeButton.enabled = NO;
+#else // [macOS
+  NSButton *resumeButton = [[NSButton alloc] init];
+  [resumeButton setImage:[NSImage imageWithSystemSymbolName:@"forward.frame.fill" accessibilityDescription:@"Resume"]];
+  resumeButton.bordered = NO;
+  resumeButton.target = self;
+  resumeButton.action = @selector(handleResume:);
+  resumeButton.contentTintColor = [NSColor colorWithRed:0.37 green:0.37 blue:0.37 alpha:1];
+#endif // macOS]
+  
   [NSLayoutConstraint activateConstraints:@[
     [resumeButton.widthAnchor constraintEqualToConstant:48],
     [resumeButton.heightAnchor constraintEqualToConstant:46],
   ]];
 
+#if !TARGET_OS_OSX // [macOS]
   UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ messageContainer, resumeButton ]];
   stackView.backgroundColor = [UIColor colorWithRed:1 green:1 blue:0.757 alpha:1];
   stackView.layer.cornerRadius = 12;
@@ -80,41 +92,75 @@
                                                                                       action:@selector(handleResume:)];
   [stackView addGestureRecognizer:gestureRecognizer];
   stackView.userInteractionEnabled = YES;
+#else // [macOS
+  NSStackView *stackView = [NSStackView stackViewWithViews:@[ messageContainer, resumeButton ]];
+  stackView.wantsLayer = YES;
+  stackView.layer.backgroundColor = [NSColor colorWithRed:1 green:1 blue:0.757 alpha:1].CGColor;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+  stackView.distribution = NSStackViewDistributionFill;
+  stackView.alignment = NSLayoutAttributeCenterY;
 
+  NSClickGestureRecognizer *gestureRecognizer = [[NSClickGestureRecognizer alloc] initWithTarget:self
+                                                                                         action:@selector(handleResume:)];
+  [stackView addGestureRecognizer:gestureRecognizer];
+#endif // macOS]
+
+#if !TARGET_OS_OSX
   [self.view addSubview:stackView];
 
   [NSLayoutConstraint activateConstraints:@[
     [stackView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor constant:12],
     [stackView.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
   ]];
+#else
+  [self setView:stackView];
+#endif 
 
+#if !TARGET_OS_OSX // [macOS]
   stackView.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
+#else // [macOS
+  stackView.userInterfaceLayoutDirection = NSUserInterfaceLayoutDirectionLeftToRight;
+#endif // macOS]
 }
 
+#if !TARGET_OS_OSX // [macOS]
 - (void)handleResume:(UITapGestureRecognizer *)recognizer
 {
   self.onResume();
 }
-#endif // [macOS]
+#else // [macOS
+- (void)handleResume:(id)sender
+{
+  self.onResume();
+}
+#endif // macOS]
 @end
 
 @implementation RCTPausedInDebuggerOverlayController
 
-#if !TARGET_OS_OSX // [macOS]
-- (UIWindow *)alertWindow
+- (RCTPlatformWindow *)alertWindow // [macOS]
 {
   if (_alertWindow == nil) {
+#if !TARGET_OS_OSX // [macOS]
     _alertWindow = [[UIWindow alloc] initWithWindowScene:RCTKeyWindow().windowScene];
 
     if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
       _alertWindow.windowLevel = UIWindowLevelAlert + 1;
     }
+#else // [macOS]
+    _alertWindow = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
+                                               styleMask:NSWindowStyleMaskBorderless | NSWindowStyleMaskFullSizeContentView
+                                                 backing:NSBackingStoreBuffered
+                                                   defer:YES];
+    _alertWindow.backgroundColor = [NSColor clearColor];
+    _alertWindow.opaque = NO;
+#endif // macOS]
   }
 
   return _alertWindow;
 }
-#endif // [macOS]
 
 - (void)showWithMessage:(NSString *)message onResume:(void (^)(void))onResume
 {
@@ -125,9 +171,21 @@
   view.modalPresentationStyle = UIModalPresentationOverFullScreen;
   view.message = message;
   view.onResume = onResume;
+  
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:view animated:NO completion:nil];
-#endif // [macOS]
+#else // [macOS]
+  self.alertWindow.contentViewController = view;
+  view.message = message;
+  view.onResume = onResume;
+  
+  NSWindow *parentWindow = RCTKeyWindow();
+  if (![[parentWindow sheets] doesContain:self->_alertWindow]) {
+    [parentWindow beginSheet:self.alertWindow completionHandler:^(NSModalResponse returnCode) {
+      [self->_alertWindow orderOut:self];
+    }];
+  }
+#endif // macOS]
 }
 
 - (void)hide
@@ -136,9 +194,19 @@
   [_alertWindow setHidden:YES];
 
   _alertWindow.windowScene = nil;
+#else // [macOS]
+  NSWindow *parentWindow = RCTKeyWindow();
+  if (parentWindow) {
+    for (NSWindow *sheet in [parentWindow sheets]) {
+      if (sheet == _alertWindow) {
+        [parentWindow endSheet:sheet];
+        break;
+      }
+    }
+  }
+#endif // macOS]
 
   _alertWindow = nil;
-#endif // macOS]
 }
 
 @end

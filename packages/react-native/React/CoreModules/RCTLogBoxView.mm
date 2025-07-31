@@ -79,7 +79,10 @@
 #if !TARGET_OS_OSX // [macOS]
   self = [super initWithWindowScene:window.windowScene];
 #else // [macOS
-  self = [super initWithContentRect:NSMakeRect(0, 0, 600, 800) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
+  self = [super initWithContentRect:NSMakeRect(0, 0, 600, 800)  
+                          styleMask:NSWindowStyleMaskBorderless | NSWindowStyleMaskFullSizeContentView  
+                            backing:NSBackingStoreBuffered  
+                              defer:YES];  
   _window = window;
 #endif // macOS]
 
