@@ -18,6 +18,15 @@
 
 namespace facebook::react::jsinspector_modern::tracing {
 
+namespace {
+/**
+ * Instead of validating that the indicated duration is positive, we can ensure
+ * the value is sensible (less than 1 seccond doesn't make much sense).
+ */
+const HighResDuration MIN_VALUE_FOR_MAX_TRACE_DURATION_OPTION =
+    HighResDuration::fromMilliseconds(1000); // 1 second
+} // namespace
+
 PerformanceTracer& PerformanceTracer::getInstance() {
   static PerformanceTracer tracer;
   return tracer;
@@ -27,6 +36,15 @@ PerformanceTracer::PerformanceTracer()
     : processId_(oscompat::getCurrentProcessId()) {}
 
 bool PerformanceTracer::startTracing() {
+  return startTracingImpl();
+}
+
+bool PerformanceTracer::startTracing(HighResDuration maxDuration) {
+  return startTracingImpl(maxDuration);
+}
+
+bool PerformanceTracer::startTracingImpl(
+    std::optional<HighResDuration> maxDuration) {
   std::lock_guard lock(mutex_);
 
   if (tracingAtomic_) {
@@ -34,12 +52,21 @@ bool PerformanceTracer::startTracing() {
   }
 
   tracingAtomic_ = true;
+
+  if (maxDuration && *maxDuration < MIN_VALUE_FOR_MAX_TRACE_DURATION_OPTION) {
+    throw std::invalid_argument("maxDuration should be at least 1 second");
+  }
+
   currentTraceStartTime_ = HighResTimeStamp::now();
+  currentTraceMaxDuration_ = maxDuration;
+
   return true;
 }
 
 std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
   std::vector<TraceEvent> events;
+
+  auto currentTraceEndTime = HighResTimeStamp::now();
 
   {
     std::lock_guard lock(mutex_);
@@ -50,8 +77,15 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
 
     tracingAtomic_ = false;
     performanceMeasureCount_ = 0;
+    currentTraceMaxDuration_ = std::nullopt;
 
-    buffer_.swap(events);
+    events = collectEventsAndClearBuffers(currentTraceEndTime);
+  }
+
+  auto currentTraceStartTime = currentTraceStartTime_;
+  if (currentTraceMaxDuration_ &&
+      currentTraceEndTime - *currentTraceMaxDuration_ > currentTraceStartTime) {
+    currentTraceStartTime = currentTraceEndTime - *currentTraceMaxDuration_;
   }
 
   // This is synthetic Trace Event, which should not be represented on a
@@ -65,7 +99,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       .name = "TracingStartedInPage",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
-      .ts = currentTraceStartTime_,
+      .ts = currentTraceStartTime,
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
       .args = folly::dynamic::object("data", folly::dynamic::object()),
@@ -75,7 +109,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
-      .ts = HighResTimeStamp::now(),
+      .ts = currentTraceEndTime,
       .pid = processId_,
       .tid = oscompat::getCurrentThreadId(),
   });
@@ -302,8 +336,96 @@ PerformanceTracer::constructRuntimeProfileChunkTraceEvent(
   };
 }
 
+#pragma mark - Tracing window methods
+
+/**
+ * If a `maxDuration` value is set when starting a trace, we use 2 buffers
+ * for events. Each buffer can contain entries for a range up to `maxDuration`.
+ * When the current buffer is full, we clear the previous one and we start
+ * collecting events in a new buffer, which becomes current.
+ *
+ * Example:
+ *   - Start:
+ *     previousBuffer: null, currentBuffer: []
+ *   - As entries are added:
+ *     previousBuffer: null, currentBuffer: [a, b, c...]
+ *   - When now - currentBuffer start time > maxDuration:
+ *     previousBuffer: [a, b, c...], currentBuffer: []
+ *   - As entries are added:
+ *     previousbuffer: [a, b, c...], currentBuffer: [x, y, z...]
+ *   - When now - currentBuffer start time > maxDuration:
+ *     previousBuffer: [x, y, z...], currentBuffer: []
+ *   - When the trace finishes:
+ *     We collect all events in both buffers that are still within
+ *     `maxDuration`.
+ *
+ * This way, we ensure we keep all events in the `maxDuration` window, and
+ * clearing expired events is trivial (just clearing a vector).
+ */
+
+std::vector<TraceEvent> PerformanceTracer::collectEventsAndClearBuffers(
+    HighResTimeStamp currentTraceEndTime) {
+  std::vector<TraceEvent> events;
+
+  if (currentTraceMaxDuration_) {
+    // Collect non-expired entries from the previous buffer
+    if (previousBuffer_ != nullptr) {
+      collectEventsAndClearBuffer(
+          events, *previousBuffer_, currentTraceEndTime);
+    }
+
+    collectEventsAndClearBuffer(events, *currentBuffer_, currentTraceEndTime);
+
+    // Reset state.
+    currentBuffer_ = &buffer_;
+    previousBuffer_ = nullptr;
+  } else {
+    // Trivial case.
+    currentBuffer_->swap(events);
+  }
+
+  return events;
+}
+
+void PerformanceTracer::collectEventsAndClearBuffer(
+    std::vector<TraceEvent>& events,
+    std::vector<TraceEvent>& buffer,
+    HighResTimeStamp currentTraceEndTime) {
+  for (auto&& event : buffer) {
+    if (isInTracingWindow(currentTraceEndTime, event.createdAt_)) {
+      events.emplace_back(std::move(event));
+    }
+  }
+
+  buffer.clear();
+  buffer.shrink_to_fit();
+}
+
+bool PerformanceTracer::isInTracingWindow(
+    HighResTimeStamp now,
+    HighResTimeStamp timeStampToCheck) const {
+  if (!currentTraceMaxDuration_) {
+    return true;
+  }
+
+  return timeStampToCheck > now - *currentTraceMaxDuration_;
+}
+
 void PerformanceTracer::enqueueEvent(TraceEvent&& traceEvent) {
-  buffer_.emplace_back(std::move(traceEvent));
+  if (currentTraceMaxDuration_) {
+    // Check if the current buffer is "full"
+    if (traceEvent.createdAt_ >
+        currentBufferStartTime_ + *currentTraceMaxDuration_) {
+      // We moved past the current buffer. We need to switch the other buffer as
+      // current.
+      previousBuffer_ = currentBuffer_;
+      currentBuffer_ = currentBuffer_ == &buffer_ ? &altBuffer_ : &buffer_;
+      currentBuffer_->clear();
+      currentBufferStartTime_ = traceEvent.createdAt_;
+    }
+  }
+
+  currentBuffer_->emplace_back(std::move(traceEvent));
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing
