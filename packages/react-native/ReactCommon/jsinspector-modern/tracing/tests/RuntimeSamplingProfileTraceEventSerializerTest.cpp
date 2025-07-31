@@ -67,14 +67,18 @@ class RuntimeSamplingProfileTraceEventSerializerTest : public ::testing::Test {
 TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptyProfile) {
   // Setup
   auto notificationCallback = createNotificationCallback();
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, 10);
+  IdGenerator profileIdGenerator;
 
   auto profile = createEmptyProfile();
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      10);
 
   // Nothing should be reported if the profile is empty.
   EXPECT_TRUE(notificationEvents_.empty());
@@ -85,8 +89,7 @@ TEST_F(
     SameCallFramesAreMerged) {
   // Setup
   auto notificationCallback = createNotificationCallback();
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, 10);
+  IdGenerator profileIdGenerator;
 
   // [     foo     ]
   // [     bar     ]
@@ -122,7 +125,12 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      10);
 
   // Verify
   ASSERT_EQ(notificationEvents_.size(), 2);
@@ -135,8 +143,7 @@ TEST_F(
 TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
   // Setup
   auto notificationCallback = createNotificationCallback();
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, 10);
+  IdGenerator profileIdGenerator;
 
   // Create an empty sample (no call stack)
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> emptyCallStack;
@@ -150,12 +157,13 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, EmptySample) {
 
   auto tracingStartTime = HighResTimeStamp::now();
 
-  // Mock the performance tracer methods
-  folly::dynamic profileEvent = folly::dynamic::object;
-  folly::dynamic chunkEvent = folly::dynamic::object;
-
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      10);
 
   // Verify
   // [["Profile"], ["ProfileChunk"]]
@@ -171,8 +179,7 @@ TEST_F(
     SamplesFromDifferentThreads) {
   // Setup
   auto notificationCallback = createNotificationCallback();
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, 10);
+  IdGenerator profileIdGenerator;
 
   // Create samples with different thread IDs
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
@@ -192,7 +199,12 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      10);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk]]
   // Samples from different thread should never be grouped together in the same
@@ -206,10 +218,9 @@ TEST_F(
     TraceEventChunkSizeLimit) {
   // Setup
   auto notificationCallback = createNotificationCallback();
+  IdGenerator profileIdGenerator;
   uint16_t traceEventChunkSize = 2;
   uint16_t profileChunkSize = 2;
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, traceEventChunkSize, profileChunkSize);
 
   // Create multiple samples
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
@@ -228,7 +239,13 @@ TEST_F(
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      traceEventChunkSize,
+      profileChunkSize);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk"], ["ProfileChunk"]]
   ASSERT_EQ(notificationEvents_.size(), 3);
@@ -242,12 +259,11 @@ TEST_F(
 TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   // Setup
   auto notificationCallback = createNotificationCallback();
+  IdGenerator profileIdGenerator;
   // Set a small profile chunk size to test profile chunking
   uint16_t traceEventChunkSize = 10;
   uint16_t profileChunkSize = 2;
   double samplesCount = 5;
-  RuntimeSamplingProfileTraceEventSerializer serializer(
-      notificationCallback, traceEventChunkSize, profileChunkSize);
 
   // Create multiple samples
   std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
@@ -266,7 +282,13 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   auto tracingStartTime = HighResTimeStamp::now();
 
   // Execute
-  serializer.serializeAndNotify(std::move(profile), tracingStartTime);
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      traceEventChunkSize,
+      profileChunkSize);
 
   // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk"]]
   ASSERT_EQ(notificationEvents_.size(), 2);

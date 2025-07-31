@@ -110,12 +110,14 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     performanceTracer.collectEvents(
         dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
 
-    tracing::RuntimeSamplingProfileTraceEventSerializer serializer(
-        dataCollectedCallback, PROFILE_TRACE_EVENT_CHUNK_SIZE);
     auto tracingProfile = instanceAgent_->collectTracingProfile();
-    serializer.serializeAndNotify(
+    tracing::IdGenerator profileIdGenerator;
+    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
         std::move(tracingProfile.runtimeSamplingProfile),
-        instanceTracingStartTimestamp_);
+        profileIdGenerator,
+        instanceTracingStartTimestamp_,
+        dataCollectedCallback,
+        PROFILE_TRACE_EVENT_CHUNK_SIZE);
 
     frontendChannel_(cdp::jsonNotification(
         "Tracing.tracingComplete",
