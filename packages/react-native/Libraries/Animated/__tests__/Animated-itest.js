@@ -77,11 +77,10 @@ test('moving box by 100 points', () => {
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    // TODO(T223344928,T232605345): this shouldn't be neccessary once we disable JS sync and Android's race condition.
+    // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
     Fantom.runWorkLoop();
     expect(viewElement.getBoundingClientRect().x).toBe(100);
   } else {
-    expect(viewElement.getBoundingClientRect().x).toBe(0);
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
     expect(viewElement.getBoundingClientRect().x).toBe(100);
   }
@@ -341,18 +340,15 @@ test('moving box by 50 points with offset 10', () => {
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform='[{"translateX": 60.000000}]' />,
     );
-    // TODO(T223344928): this shouldn't be neccessary
-    Fantom.runWorkLoop();
   } else {
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform="[]" />,
     );
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
+    );
   }
-
-  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-    <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
-  );
 
   expect(finishValue?.finished).toBe(true);
   expect(finishValue?.value).toBe(50); // must not include offset.
@@ -440,9 +436,6 @@ describe('Value.flattenOffset', () => {
       Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
 
     expect(transform.translateY).toBeCloseTo(40, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -539,9 +532,6 @@ describe('Value.extractOffset', () => {
     // `extractOffset` resets value back to 0.
     // Previously we set offset to 35. The final value is 35.
     expect(transform.translateY).toBeCloseTo(35, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -739,16 +729,21 @@ test('Animated.sequence', () => {
 
   expect(_isSequenceFinished).toBe(false);
 
-  expect(element.getBoundingClientRect().y).toBe(-16);
-
   expect(
     // $FlowFixMe[incompatible-use]
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(0, 0.001);
 
-  Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
-
-  expect(element.getBoundingClientRect().y).toBe(0);
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+    expect(element.getBoundingClientRect().y).toBe(-16);
+    Fantom.runWorkLoop();
+    expect(element.getBoundingClientRect().y).toBe(0);
+  } else {
+    expect(element.getBoundingClientRect().y).toBe(-16);
+    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+    expect(element.getBoundingClientRect().y).toBe(0);
+  }
 
   expect(_isSequenceFinished).toBe(true);
 });
