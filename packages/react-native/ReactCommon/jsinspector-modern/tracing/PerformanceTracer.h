@@ -38,6 +38,12 @@ class PerformanceTracer {
   bool startTracing();
 
   /**
+   * Starts a tracing session with a maximum duration (events older than this
+   * duration are dropped). Returns `false` if already tracing.
+   */
+  bool startTracing(HighResDuration maxDuration);
+
+  /**
    * If there is a current tracing session, it stops tracing and returns all
    * collected events. Otherwise, it returns empty.
    */
@@ -151,7 +157,15 @@ class PerformanceTracer {
 
   HighResTimeStamp currentTraceStartTime_;
 
+  std::optional<HighResDuration> currentTraceMaxDuration_;
+
   std::vector<TraceEvent> buffer_;
+
+  // These fields are only used when setting a max duration on the trace.
+  std::vector<TraceEvent> altBuffer_;
+  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
+  std::vector<TraceEvent>* previousBuffer_{};
+  HighResTimeStamp currentBufferStartTime_;
 
   /**
    * Protects data members of this class for concurrent access, including
@@ -159,6 +173,18 @@ class PerformanceTracer {
    */
   std::mutex mutex_;
 
+  bool startTracingImpl(
+      std::optional<HighResDuration> maxDuration = std::nullopt);
+
+  std::vector<TraceEvent> collectEventsAndClearBuffers(
+      HighResTimeStamp currentTraceEndTime);
+  void collectEventsAndClearBuffer(
+      std::vector<TraceEvent>& events,
+      std::vector<TraceEvent>& buffer,
+      HighResTimeStamp currentTraceEndTime);
+  bool isInTracingWindow(
+      HighResTimeStamp now,
+      HighResTimeStamp timeStampToCheck) const;
   void enqueueEvent(TraceEvent&& event);
 };
 
