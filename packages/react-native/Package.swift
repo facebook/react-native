@@ -7,6 +7,9 @@
  */
 
 import PackageDescription
+import Foundation
+
+let BUILD_FROM_SOURCE = false
 
 /**
  This is the `Package.swift` file that allows to build React Native core using Swift PM.
@@ -363,6 +366,8 @@ let reactRuntimeApple = RNTarget(
   dependencies: [.reactNativeDependencies, .jsi, .reactPerfLogger, .reactCxxReact, .rctDeprecation, .yoga, .reactRuntime, .reactRCTFabric, .reactCoreModules, .reactTurboModuleCore, .hermesPrebuilt, .reactUtils]
 )
 
+let publicHeadersPathForReactCore: String = BUILD_FROM_SOURCE ? "includes" : "."
+
 /// React-Core.podspec
 let reactCore = RNTarget(
   name: .reactCore,
@@ -375,7 +380,8 @@ let reactCore = RNTarget(
   linkedFrameworks: ["CoreServices"],
   excludedPaths: ["Fabric", "Tests", "Resources", "Runtime/RCTJscInstanceFactory.mm", "I18n/strings", "CxxBridge/JSCExecutorFactory.mm", "CoreModules"],
   dependencies: [.reactNativeDependencies, .reactCxxReact, .reactPerfLogger, .jsi, .reactJsiExecutor, .reactUtils, .reactFeatureFlags, .reactRuntimeScheduler, .yoga, .reactJsInspector, .reactJsiTooling, .rctDeprecation, .reactCoreRCTWebsocket, .reactRCTImage, .reactTurboModuleCore, .reactRCTText, .reactRCTBlob, .reactRCTAnimation, .reactRCTNetwork, .reactFabric, .hermesPrebuilt],
-  sources: [".", "Runtime/RCTHermesInstanceFactory.mm"]
+  sources: [".", "Runtime/RCTHermesInstanceFactory.mm"],
+  publicHeadersPath: publicHeadersPathForReactCore
 )
 
 /// React-Fabric.podspec
@@ -770,8 +776,8 @@ extension String {
   static let reactJsInspector = "React-jsinspector"
   static let reactJsInspectorTracing = "React-jsinspectortracing"
   static let reactCxxReact = "React-cxxreact"
-  static let reactCore = "React-Core"
-  static let reactCoreRCTWebsocket = "React-Core/RCTWebSocket"
+  static let reactCore = "React"
+  static let reactCoreRCTWebsocket = "React/RCTWebSocket"
   static let reactFabric = "React-Fabric"
   static let reactRCTFabric = "React-RCTFabric"
 
