@@ -13,26 +13,56 @@ import {
   type DisplayMetrics,
   type DisplayMetricsAndroid,
 } from './NativeDeviceInfo';
-import {useEffect, useState} from 'react';
+import {startTransition, useEffect, useSyncExternalStore} from 'react';
 
-export default function useWindowDimensions():
-  | DisplayMetrics
-  | DisplayMetricsAndroid {
-  const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
-  useEffect(() => {
-    function handleChange({
-      window,
-    }: {
-      window: DisplayMetrics | DisplayMetricsAndroid,
-    }) {
-      if (
-        dimensions.width !== window.width ||
-        dimensions.height !== window.height ||
-        dimensions.scale !== window.scale ||
-        dimensions.fontScale !== window.fontScale
-      ) {
-        setDimensions(window);
+type WindowDimensions = DisplayMetrics | DisplayMetricsAndroid;
+
+type WindowDimensionsStore = {|
+  state: WindowDimensions,
+  listeners: Set<() => void>,
+  getWindowDimensions: () => WindowDimensions,
+  setWindowDimensions: (newSize: WindowDimensions) => void,
+  subscribe: (callback: () => void) => () => void,
+|};
+
+const windowDimensionsStore: WindowDimensionsStore = {
+  state: Dimensions.get('window'),
+  listeners: new Set(),
+  getWindowDimensions: (): WindowDimensions => {
+    return windowDimensionsStore.state;
+  },
+  setWindowDimensions: (newSize: WindowDimensions): void => {
+    if (
+      windowDimensionsStore.state.width !== newSize.width ||
+      windowDimensionsStore.state.height !== newSize.height ||
+      windowDimensionsStore.state.fontScale !== newSize.fontScale ||
+      windowDimensionsStore.state.scale !== newSize.scale
+    ) {
+      windowDimensionsStore.state = newSize;
+      for (const listener of windowDimensionsStore.listeners) {
+        listener();
       }
+    }
+  },
+  subscribe: (callback: () => void): (() => void) => {
+    windowDimensionsStore.listeners.add(callback);
+    return () => {
+      windowDimensionsStore.listeners.delete(callback);
+    };
+  },
+};
+
+export default function useWindowDimensions(): WindowDimensions {
+  const dimensions = useSyncExternalStore(
+    windowDimensionsStore.subscribe,
+    windowDimensionsStore.getWindowDimensions,
+  );
+  useEffect(() => {
+    function handleChange({window}: {window: WindowDimensions}) {
+      // adds smoothness for frequent window resizing
+      startTransition(() => {
+        windowDimensionsStore.setWindowDimensions(window);
+      });
     }
     const subscription = Dimensions.addEventListener('change', handleChange);
     // We might have missed an update between calling `get` in render and
@@ -42,6 +72,6 @@ export default function useWindowDimensions():
     return () => {
       subscription.remove();
     };
-  }, [dimensions]);
+  }, []);
   return dimensions;
 }
