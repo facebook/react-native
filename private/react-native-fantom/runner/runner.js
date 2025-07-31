@@ -20,7 +20,7 @@ import type {
   HermesVariant,
 } from './utils';
 
-import createBundle from './createBundle';
+import {createBundle, createSourceMap} from './bundling';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
@@ -301,15 +301,19 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
-    await createBundle({
+    const bundleOptions = {
       testPath,
       entry: entrypointPath,
-      out: testJSBundlePath,
       platform: 'android',
       minify: testConfig.isJsOptimized,
       dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+    };
+
+    await createBundle({
+      ...bundleOptions,
+      out: testJSBundlePath,
     });
 
     if (testConfig.isJsBytecode) {
@@ -343,6 +347,15 @@ module.exports = async function runTest(
     const processedResult = await processRNTesterCommandResult(
       rnTesterCommandResult,
     );
+
+    if (containsError(processedResult)) {
+      await createSourceMap({
+        ...bundleOptions,
+        out: sourceMapPath,
+      }).catch(error => {
+        console.error('Failed to generate source map', error);
+      });
+    }
 
     const testResultError = processedResult.error;
     if (testResultError) {
@@ -436,3 +449,13 @@ module.exports = async function runTest(
     testResults,
   };
 };
+
+function containsError(testResult: TestSuiteResult): boolean {
+  return (
+    testResult.error != null ||
+    testResult.testResults.some(
+      result =>
+        result.failureDetails.length > 0 || result.failureMessages.length > 0,
+    )
+  );
+}
