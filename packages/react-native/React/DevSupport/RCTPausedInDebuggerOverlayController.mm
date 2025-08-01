@@ -175,10 +175,10 @@
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:view animated:NO completion:nil];
 #else // [macOS]
-  self.alertWindow.contentViewController = view;
   view.message = message;
   view.onResume = onResume;
-  
+
+  self.alertWindow.contentViewController = view;
   NSWindow *parentWindow = RCTKeyWindow();
   if (![[parentWindow sheets] doesContain:self->_alertWindow]) {
     [parentWindow beginSheet:self.alertWindow completionHandler:^(NSModalResponse returnCode) {
