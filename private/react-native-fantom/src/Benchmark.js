@@ -209,7 +209,7 @@ export function suite(
     return {name: taskName, fn: taskFn, options: {...taskOptions, only}};
   };
 
-  // $FlowIssue[incompatible-type]
+  // $FlowFixMe[incompatible-type]
   const testEach: ParameterizedTestFunction = <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,

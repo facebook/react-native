@@ -75,7 +75,7 @@ module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
 
-suppress_type=$FlowIssue
+suppress_type=$FlowFixMe
 suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
