@@ -130,11 +130,20 @@ tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
 
 #pragma mark - Tracing
 
-RuntimeTracingAgent::RuntimeTracingAgent(tracing::TraceRecordingState& state)
-    : tracing::TargetTracingAgent(state) {}
+RuntimeTracingAgent::RuntimeTracingAgent(
+    tracing::TraceRecordingState& state,
+    RuntimeTargetController& targetController)
+    : tracing::TargetTracingAgent(state), targetController_(targetController) {}
 
-void RuntimeTracingAgent::enable() {}
+void RuntimeTracingAgent::enable() {
+  targetController_.enableSamplingProfiler();
+}
 
-void RuntimeTracingAgent::disable() {}
+void RuntimeTracingAgent::disable() {
+  targetController_.disableSamplingProfiler();
+  auto profile = targetController_.collectSamplingProfile();
+
+  state_.runtimeSamplingProfiles.emplace_back(std::move(profile));
+}
 
 } // namespace facebook::react::jsinspector_modern
