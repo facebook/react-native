@@ -297,7 +297,7 @@ internal class ReactInstance(
               sourceURL: String,
               loadSynchronously: Boolean
           ) {
-            context.setSourceURL(sourceURL)
+            context.sourceURL = sourceURL
             loadJSBundleFromFile(fileName, sourceURL)
           }
 
@@ -310,12 +310,12 @@ internal class ReactInstance(
               assetURL: String,
               loadSynchronously: Boolean
           ) {
-            context.setSourceURL(assetURL)
+            context.sourceURL = assetURL
             loadJSBundleFromAssets(assetManager, assetURL)
           }
 
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
-            context.setSourceURL(deviceURL)
+            context.sourceURL = deviceURL
           }
         })
     Systrace.endSection(Systrace.TRACE_TAG_REACT)

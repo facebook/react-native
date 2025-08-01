@@ -15,7 +15,6 @@
 
 #include <folly/dynamic.h>
 #include <atomic>
-#include <functional>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -34,14 +33,21 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
 
   /**
-   * Mark trace session as started. Returns `false` if already tracing.
+   * Starts a tracing session. Returns `false` if already tracing.
    */
   bool startTracing();
 
   /**
-   * Mark trace session as stopped. Returns `false` if wasn't tracing.
+   * Starts a tracing session with a maximum duration (events older than this
+   * duration are dropped). Returns `false` if already tracing.
    */
-  bool stopTracing();
+  bool startTracing(HighResDuration maxDuration);
+
+  /**
+   * If there is a current tracing session, it stops tracing and returns all
+   * collected events. Otherwise, it returns empty.
+   */
+  std::optional<std::vector<TraceEvent>> stopTracing();
 
   /**
    * Returns whether the tracer is currently tracing. This can be useful to
@@ -51,25 +57,6 @@ class PerformanceTracer {
   inline bool isTracing() const {
     return tracingAtomic_;
   }
-
-  /**
-   * Flush out buffered CDP Trace Events using the given callback.
-   */
-  void collectEvents(
-      const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
-      uint16_t chunkSize);
-
-  /**
-   * Flush out buffered CDP Trace Events into a folly::dynamic collection of
-   * chunks, which can be sent over CDP later.
-   */
-  folly::dynamic collectEvents(uint16_t chunkSize);
-
-  /**
-   * Transfers an ownership of all buffered TraceEvents, the local buffer state
-   * is invalidated after this call.
-   */
-  std::vector<TraceEvent> collectTraceEvents();
 
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
@@ -168,12 +155,37 @@ class PerformanceTracer {
    */
   uint32_t performanceMeasureCount_{0};
 
+  HighResTimeStamp currentTraceStartTime_;
+
+  std::optional<HighResDuration> currentTraceMaxDuration_;
+
   std::vector<TraceEvent> buffer_;
+
+  // These fields are only used when setting a max duration on the trace.
+  std::vector<TraceEvent> altBuffer_;
+  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
+  std::vector<TraceEvent>* previousBuffer_{};
+  HighResTimeStamp currentBufferStartTime_;
+
   /**
    * Protects data members of this class for concurrent access, including
    * the tracingAtomic_, in order to eliminate potential "logic" races.
    */
   std::mutex mutex_;
+
+  bool startTracingImpl(
+      std::optional<HighResDuration> maxDuration = std::nullopt);
+
+  std::vector<TraceEvent> collectEventsAndClearBuffers(
+      HighResTimeStamp currentTraceEndTime);
+  void collectEventsAndClearBuffer(
+      std::vector<TraceEvent>& events,
+      std::vector<TraceEvent>& buffer,
+      HighResTimeStamp currentTraceEndTime);
+  bool isInTracingWindow(
+      HighResTimeStamp now,
+      HighResTimeStamp timeStampToCheck) const;
+  void enqueueEvent(TraceEvent&& event);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

@@ -458,7 +458,7 @@ function validateTypeScriptDefs(packageName /*: string */) {
           '\n',
         );
         console.log(
-          // $FlowIssue[incompatible-use] Type refined above
+          // $FlowFixMe[incompatible-use] Type refined above
           `${diagnostic.file.fileName} (${line + 1},${
             character + 1
           }): ${message}`,

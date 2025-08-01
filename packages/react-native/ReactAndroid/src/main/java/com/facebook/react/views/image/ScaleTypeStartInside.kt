@@ -31,9 +31,7 @@ internal class ScaleTypeStartInside : AbstractScaleType() {
     outTransform.postTranslate(Math.round(dx).toFloat(), Math.round(dy).toFloat())
   }
 
-  override fun toString(): String {
-    return "start_inside"
-  }
+  override fun toString(): String = "start_inside"
 
   companion object {
     val INSTANCE: ScalingUtils.ScaleType = ScaleTypeStartInside()

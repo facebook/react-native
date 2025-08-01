@@ -452,7 +452,7 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
+    val width = scrollView.width - scrollView.paddingStart - scrollView.paddingEnd
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(

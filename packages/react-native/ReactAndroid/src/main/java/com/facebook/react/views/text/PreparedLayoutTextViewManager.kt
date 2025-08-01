@@ -180,7 +180,7 @@ internal class PreparedLayoutTextViewManager :
 
   @ReactProp(name = "disabled", defaultBoolean = false)
   fun setDisabled(view: PreparedLayoutTextView, disabled: Boolean): Unit {
-    view.setEnabled(!disabled)
+    view.isEnabled = !disabled
   }
 
   override fun setPadding(

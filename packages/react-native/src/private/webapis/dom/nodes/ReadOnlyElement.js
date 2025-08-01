@@ -220,7 +220,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 }
 
 function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
-  // $FlowIssue[incompatible-call]
+  // $FlowFixMe[incompatible-call]
   return getChildNodes(node).filter(
     childNode => childNode instanceof ReadOnlyElement,
   );
