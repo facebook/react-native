@@ -31,7 +31,6 @@ target_link_libraries(react_cxx_platform_react_runtime
       react_cxx_platform_react_io
       react_cxx_platform_react_logging
       react_cxx_platform_react_nativemodule
-      react_cxx_platform_react_renderer_animated
       react_cxx_platform_react_renderer_uimanager
       react_cxx_platform_react_threading
       react_cxx_platform_react_utils
@@ -42,6 +41,7 @@ target_link_libraries(react_cxx_platform_react_runtime
       react_nativemodule_intersectionobserver
       react_nativemodule_mutationobserver
       react_nativemodule_webperformance
+      react_renderer_animated
       react_renderer_graphics
       react_renderer_runtimescheduler
       react_renderer_scheduler
