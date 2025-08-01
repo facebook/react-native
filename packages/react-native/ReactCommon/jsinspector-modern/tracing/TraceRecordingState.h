@@ -11,6 +11,7 @@
 #include "RuntimeSamplingProfile.h"
 
 #include <oscompat/OSCompat.h>
+#include <react/timing/primitives.h>
 
 #include <vector>
 
@@ -20,6 +21,8 @@ struct TraceRecordingState {
   bool isRecording = false;
 
   ProcessId processId = oscompat::getCurrentProcessId();
+
+  HighResTimeStamp startTime = HighResTimeStamp::now();
 
   std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles;
 
