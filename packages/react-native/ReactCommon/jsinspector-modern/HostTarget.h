@@ -168,6 +168,18 @@ class HostTargetController final {
    */
   bool decrementPauseOverlayCounter();
 
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing();
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
+
  private:
   HostTarget& target_;
   size_t pauseOverlayCounter_{0};
