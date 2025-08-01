@@ -176,4 +176,37 @@ tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
   };
 }
 
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  auto previousRuntimeTracingAgent = std::move(runtimeTracingAgent_);
+  if (previousRuntimeTracingAgent != nullptr && state_.isRecording) {
+    previousRuntimeTracingAgent->disable();
+  }
+
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+    if (state_.isRecording) {
+      runtimeTracingAgent_->enable();
+    }
+  } else {
+    runtimeTracingAgent_ = nullptr;
+  }
+}
+
+void InstanceTracingAgent::enable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->enable();
+  }
+}
+
+void InstanceTracingAgent::disable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->disable();
+  }
+}
+
 } // namespace facebook::react::jsinspector_modern
