@@ -96,6 +96,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 
 @interface RCTModalHostViewComponentView () <RCTFabricModalHostViewControllerDelegate>
 
+@property (nonatomic, weak) UIView *accessibilityFocusedView;
+
 @end
 
 @implementation RCTModalHostViewComponentView {
@@ -124,7 +126,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _viewController = [RCTFabricModalHostViewController new];
     _viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     _viewController.delegate = self;
-    _viewController.modalInPresentation = YES;
   }
   return _viewController;
 }
@@ -148,6 +149,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    [self saveAccessibilityFocusedView];
     self.viewController.presentationController.delegate = self;
 
     _isPresented = YES;
@@ -179,6 +181,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                        if (eventEmitter) {
                          eventEmitter->onDismiss(ModalHostViewEventEmitter::OnDismiss{});
                        }
+
+                       [self restoreAccessibilityFocusedView];
                      }];
   }
 }
@@ -205,6 +209,23 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   [super didMoveToSuperview];
   [self ensurePresentedOnlyIfNeeded];
+}
+
+- (void)saveAccessibilityFocusedView
+{
+  id focusedElement = UIAccessibilityFocusedElement(nil);
+  if (focusedElement && [focusedElement isKindOfClass:[UIView class]]) {
+    self.accessibilityFocusedView = (UIView *)focusedElement;
+  }
+}
+
+- (void)restoreAccessibilityFocusedView
+{
+  id viewToFocus = self.accessibilityFocusedView;
+  if (viewToFocus) {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, viewToFocus);
+    self.accessibilityFocusedView = nil;
+  }
 }
 
 #pragma mark - RCTFabricModalHostViewControllerDelegate
