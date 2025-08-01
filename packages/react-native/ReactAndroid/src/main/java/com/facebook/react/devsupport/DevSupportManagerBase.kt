@@ -72,6 +72,10 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
 
+public enum class ChromeDevToolsViewKeys(public val value: String) {
+  Performance("timeline")
+}
+
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
@@ -870,7 +874,9 @@ public abstract class DevSupportManagerBase(
 
   override fun openDebugger() {
     devServerHelper.openDebugger(
-        currentReactContext, applicationContext.getString(R.string.catalyst_open_debugger_error))
+        currentReactContext,
+        applicationContext.getString(R.string.catalyst_open_debugger_error),
+        ChromeDevToolsViewKeys.Performance.value)
   }
 
   override fun showPausedInDebuggerOverlay(
