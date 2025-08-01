@@ -1,7 +1,7 @@
 // @ts-check
 
 const {REPO_ROOT} = require('../../scripts/consts');
-const JsVersionActions = require('@nx/js/src/release/version-actions').default;
+const {default: JsVersionActions, afterAllProjectsVersioned: baseAfterAllProjectsVersioned} = require('@nx/js/src/release/version-actions');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -66,12 +66,15 @@ async function runSetVersion() {
 /**
  * Custom afterAllProjectsVersioned hook for React Native macOS
  * Updates React Native artifacts after all projects have been versioned
- * @param {string} _cwd - Current working directory (unused)
- * @param {object} _opts - Options object containing versioning information (unused)
+ * @param {string} cwd - Current working directory
+ * @param {object} opts - Options object containing versioning information
  * @returns {Promise<{changedFiles: string[], deletedFiles: string[]}>}
  */
-const afterAllProjectsVersioned = async (_cwd, _opts) => {
-  const changedFiles = [];
+const afterAllProjectsVersioned = async (cwd, opts) => {
+  const baseResult = await baseAfterAllProjectsVersioned(cwd, opts);
+
+  const changedFiles = [...baseResult.changedFiles];
+  const deletedFiles = [...baseResult.deletedFiles];
 
   try {
     // Create the .rnm-publish file to indicate versioning has occurred
@@ -80,7 +83,7 @@ const afterAllProjectsVersioned = async (_cwd, _opts) => {
     // Update React Native artifacts
     const versionedFiles = await runSetVersion();
 
-    // Return the versioned files so Nx can track them
+    // Add the versioned files to changed files
     changedFiles.push(...versionedFiles);
 
     console.log('✅ Updated React Native artifacts');
@@ -93,7 +96,7 @@ const afterAllProjectsVersioned = async (_cwd, _opts) => {
 
   return {
     changedFiles,
-    deletedFiles: [],
+    deletedFiles,
   };
 };
 
