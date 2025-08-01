@@ -103,7 +103,7 @@ const InteractionManagerStub = {
     cancel: () => void,
     ...
   } {
-    let immediateID: ?$FlowIssue;
+    let immediateID: ?$FlowFixMe;
     const promise = new Promise(resolve => {
       immediateID = setImmediate(() => {
         if (typeof task === 'object' && task !== null) {

@@ -34,7 +34,7 @@ describe('JSTimers', () => {
   });
 
   afterEach(() => {
-    // $FlowIssue[prop-missing]
+    // $FlowFixMe[prop-missing]
     console.warn.mockRestore();
   });
 

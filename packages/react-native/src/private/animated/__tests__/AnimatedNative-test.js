@@ -105,7 +105,7 @@ describe('Native Animated', () => {
         expect.any(Number),
         0.5,
       );
-      // $FlowIssue[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       expect(ref.current?.setNativeProps).not.toHaveBeenCalled();
     });
 

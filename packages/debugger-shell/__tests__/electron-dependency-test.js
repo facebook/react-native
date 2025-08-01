@@ -19,13 +19,13 @@ const semver = require('semver');
 // safety to ensure the target of the resolution is in sync with the declared dependency.
 describe('Electron dependency', () => {
   test('should be semver-satisfied by the actual electron version', () => {
-    // $FlowIssue[untyped-import] - package.json is not typed
+    // $FlowFixMe[untyped-import] - package.json is not typed
     const ourPackageJson = require('../package.json');
 
     const declaredElectronVersion = ourPackageJson.dependencies.electron;
     expect(declaredElectronVersion).toBeTruthy();
 
-    // $FlowIssue[untyped-import] - package.json is not typed
+    // $FlowFixMe[untyped-import] - package.json is not typed
     const electronPackageJson = require('electron/package.json');
 
     const actualElectronVersion = electronPackageJson.version;
