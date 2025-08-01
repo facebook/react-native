@@ -127,6 +127,9 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
+void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
+    const PerfMonitorUpdateRequest& /* unused */) {}
+
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<
