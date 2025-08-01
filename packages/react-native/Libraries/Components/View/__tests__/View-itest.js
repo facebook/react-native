@@ -491,4 +491,31 @@ describe('<View>', () => {
       });
     });
   });
+
+  describe('ref', () => {
+    it('is an element node', () => {
+      const elementRef = createRef<HostInstance>();
+
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={elementRef} />);
+      });
+
+      expect(elementRef.current).toBeInstanceOf(ReactNativeElement);
+    });
+
+    it('uses the "RN:View" tag name', () => {
+      const elementRef = createRef<HostInstance>();
+
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<View ref={elementRef} />);
+      });
+
+      const element = ensureInstance(elementRef.current, ReactNativeElement);
+      expect(element.tagName).toBe('RN:View');
+    });
+  });
 });
