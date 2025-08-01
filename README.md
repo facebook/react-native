@@ -1,3 +1,4 @@
+> Edited by nguyenbacong-dev for learning purposes
 <h1 align="center">
   <a href="https://reactnative.dev/">
     React Native
