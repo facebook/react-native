@@ -29,6 +29,17 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
   override fun addView(parent: T, child: View, index: Int) {
     UiThreadUtil.assertOnUiThread()
 
+    if (child.parent != null) {
+      (child.parent as? ViewGroup)?.removeView(child)
+      child.post {
+        addViewInternal(parent, child, index)
+      }
+    } else {
+      addViewInternal(parent, child, index)
+    }
+  }
+
+  fun addViewInternal(parent: T, child: View, index: Int) {
     val removeClippedSubviews = parent.removeClippedSubviews
     if (removeClippedSubviews) {
       parent.addViewWithSubviewClippingEnabled(child, index)
