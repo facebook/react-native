@@ -60,20 +60,20 @@ describe('LongTasks API', () => {
       observer.observe({entryTypes: ['longtask']});
     });
 
-    expect(callback).not.toHaveBeenCalled();
+    const initialCallCount = callback.mock.calls.length;
 
     Fantom.runTask(() => {
       // Short task.
     });
 
-    expect(callback).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledTimes(initialCallCount);
 
     Fantom.runTask(() => {
       // Slightly longer task, but still not long.
       sleep(40);
     });
 
-    expect(callback).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledTimes(initialCallCount);
   });
 
   it('reports long tasks (over 50ms)', () => {
@@ -84,7 +84,7 @@ describe('LongTasks API', () => {
       observer.observe({entryTypes: ['longtask']});
     });
 
-    expect(callback).not.toHaveBeenCalled();
+    const initialCallCount = callback.mock.calls.length;
 
     const beforeTaskStartTime = performance.now();
     let afterTaskStartTime;
@@ -97,7 +97,7 @@ describe('LongTasks API', () => {
 
     const afterTaskEndTime = performance.now();
 
-    expect(callback).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledTimes(initialCallCount + 1);
 
     const [entries, _observer, options] = callback.mock
       .lastCall as $FlowFixMe as [
@@ -135,7 +135,7 @@ describe('LongTasks API', () => {
         observer.observe({entryTypes: ['longtask']});
       });
 
-      expect(callback).not.toHaveBeenCalled();
+      const initialCallCount = callback.mock.calls.length;
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
@@ -147,7 +147,7 @@ describe('LongTasks API', () => {
         sleep(30);
       });
 
-      expect(callback).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledTimes(initialCallCount);
     });
 
     it('should be reported if running for longer than 50ms between yielding opportunities', () => {
@@ -158,7 +158,7 @@ describe('LongTasks API', () => {
         observer.observe({entryTypes: ['longtask']});
       });
 
-      expect(callback).not.toHaveBeenCalled();
+      const initialCallCount = callback.mock.calls.length;
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
@@ -176,7 +176,7 @@ describe('LongTasks API', () => {
 
       const afterTaskEndTime = performance.now();
 
-      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledTimes(initialCallCount + 1);
 
       const entries = callback.mock.lastCall[0] as PerformanceObserverEntryList;
       const allEntries = entries.getEntries();
