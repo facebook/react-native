@@ -132,7 +132,7 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    * Monitor overlay. This is called on the inspector thread.
    */
   virtual void unstable_onPerfMonitorUpdate(
-      const PerfMonitorUpdateRequest& /*request*/) {};
+      const PerfMonitorUpdateRequest& /*request*/) {}
 
   /**
    * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
