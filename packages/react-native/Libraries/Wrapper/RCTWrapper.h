@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <RCTWrapper/RCTWrapperView.h>
 #import <RCTWrapper/RCTWrapperViewControllerHostingView.h>
 #import <RCTWrapper/RCTWrapperViewManager.h>
@@ -66,3 +68,5 @@
   }                                                                                                                    \
                                                                                                                        \
   @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

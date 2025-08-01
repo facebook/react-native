@@ -7,6 +7,8 @@
 
 #import "RCTModalHostViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
 #import "RCTModalHostViewController.h"
@@ -125,3 +127,5 @@ RCT_EXPORT_VIEW_PROPERTY(allowSwipeDismissal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

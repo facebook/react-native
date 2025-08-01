@@ -7,6 +7,8 @@
 
 #import <React/RCTBaseTextShadowView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTShadowView+Layout.h>
 
 #import <React/RCTRawTextShadowView.h>
@@ -156,3 +158,5 @@ static void RCTInlineViewYogaNodeDirtied(YGNodeConstRef node)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
