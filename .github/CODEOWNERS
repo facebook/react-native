@@ -2,4 +2,4 @@
 # the repo. Unless a later match takes precedence,
 # the global will be requested for
 # review when someone opens a pull request.
-* @microsoft/apple-rn-team
+* @microsoft/react-native-macos-write

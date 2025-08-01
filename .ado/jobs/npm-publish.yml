@@ -68,9 +68,9 @@ jobs:
             # https://github.com/microsoft/react-native-macos/issues/2580
             # `nx release publish` gets confused by the output of RNM's prepack script.
             # Let's call `yarn npm publish` directly instead on the packages we want to publish.
-            # yarn nx release publish --tag ${{ parameters['publishTag'] }} --excludeTaskDependencies
-            yarn ./packages/virtualized-lists npm publish --tag ${{ parameters['publishTag'] }}
-            yarn ./packages/react-native npm publish --tag ${{ parameters['publishTag'] }}
+            # yarn nx release publish --tag $(publishTag) --excludeTaskDependencies
+            yarn ./packages/virtualized-lists npm publish --tag $(publishTag)
+            yarn ./packages/react-native npm publish --tag $(publishTag)
           fi
         displayName: Publish packages
         condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
