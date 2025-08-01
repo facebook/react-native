@@ -38,13 +38,6 @@ class TracingAgent {
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
 
-  /**
-   * Replace the current InstanceAgent with the given one.
-   * \param agent The new InstanceAgent. May be null to signify that there is
-   * currently no active instance.
-   */
-  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
-
  private:
   /**
    * A channel used to send responses and events to the frontend.
