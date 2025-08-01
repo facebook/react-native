@@ -68,7 +68,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
    * [Activity.checkSelfPermission].
    */
   public override fun requestPermission(permission: String, promise: Promise): Unit {
-    val context = getReactApplicationContext().getBaseContext()
+    val context = reactApplicationContext.baseContext
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
       promise.resolve(GRANTED)
       return
@@ -106,7 +106,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     val grantedPermissions = WritableNativeMap()
     val permissionsToCheck = ArrayList<String>()
     var checkedPermissionsCount = 0
-    val context = getReactApplicationContext().getBaseContext()
+    val context = reactApplicationContext.baseContext
     for (i in 0 until permissions.size()) {
       val perm = permissions.getString(i) ?: continue
       if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {

@@ -264,7 +264,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun initialize() {
-    getReactApplicationContext().addLifecycleEventListener(this)
+    reactApplicationContext.addLifecycleEventListener(this)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
@@ -273,7 +273,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun invalidate() {
-    getReactApplicationContext().removeLifecycleEventListener(this)
+    reactApplicationContext.removeLifecycleEventListener(this)
     super.invalidate()
   }
 
@@ -287,7 +287,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT)
     event.text.add(message)
     event.className = AccessibilityInfoModule::class.java.name
-    event.packageName = getReactApplicationContext().getPackageName()
+    event.packageName = reactApplicationContext.packageName
     accessibilityManager.sendAccessibilityEvent(event)
   }
 

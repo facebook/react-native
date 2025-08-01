@@ -912,7 +912,7 @@ public class ReactHostImpl(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
                 val reactContext = getOrCreateReactContext()
-                reactContext.setJSExceptionHandler(devSupportManager)
+                reactContext.jsExceptionHandler = devSupportManager
 
                 log(method, "Creating ReactInstance")
                 val instance =
