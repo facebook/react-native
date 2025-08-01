@@ -311,8 +311,6 @@ class HostAgent::Impl final {
   }
 
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> instanceAgent) {
-    tracingAgent_.setCurrentInstanceAgent(instanceAgent);
-
     auto previousInstanceAgent = std::move(instanceAgent_);
     instanceAgent_ = std::move(instanceAgent);
 
