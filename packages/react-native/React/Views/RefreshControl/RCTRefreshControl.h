@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTComponent.h>
 #import <React/RCTScrollableProtocol.h>
 
@@ -17,3 +19,5 @@
 @property (nonatomic, weak) UIScrollView *scrollView;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

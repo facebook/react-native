@@ -17,6 +17,8 @@
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 /**
  * Determines whether an image of `currentSize` should be reloaded for display
  * at `idealSize`.
@@ -502,3 +504,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

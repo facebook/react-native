@@ -7,6 +7,8 @@
 
 #import <React/RCTRawTextShadowView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTShadowView+Layout.h>
 
 @implementation RCTRawTextShadowView
@@ -32,3 +34,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -8,6 +8,8 @@
 #import "RCTDebuggingOverlayManager.h"
 #import "RCTDebuggingOverlay.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
@@ -62,3 +64,5 @@ RCT_EXPORT_METHOD(clearElementsHighlights : (nonnull NSNumber *)viewTag)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
