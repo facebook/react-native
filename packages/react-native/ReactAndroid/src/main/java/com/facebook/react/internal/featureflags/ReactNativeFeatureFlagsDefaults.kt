@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<275f6f2c36b2a0f7d83765d98ab60daf>>
+ * @generated SignedSource<<9583365cd9d7786ee9be03ff34b0766f>>
  */
 
 /**
@@ -130,6 +130,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 
   override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
+
+  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
