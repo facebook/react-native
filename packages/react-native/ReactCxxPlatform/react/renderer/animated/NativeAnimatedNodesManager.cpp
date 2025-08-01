@@ -71,7 +71,22 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     : directManipulationCallback_(std::move(directManipulationCallback)),
       fabricCommitCallback_(std::move(fabricCommitCallback)),
       startOnRenderCallback_(std::move(startOnRenderCallback)),
-      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {}
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)) {
+  if (!fabricCommitCallback_) {
+    LOG(WARNING)
+        << "C++ Animated was setup without commit callback. This may lead to issue where buttons are not tappable when animation is driven by onScroll event.";
+  }
+
+  if (!directManipulationCallback_) {
+    LOG(WARNING)
+        << "C++ Animated was setup without direct manipulation callback. This may lead to suboptimal performance.";
+  }
+
+  if (!directManipulationCallback_ && fabricCommitCallback_) {
+    LOG(ERROR)
+        << "C++ Animated was setup without a way to update UI. Animations will not work.";
+  }
+}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
   stopRenderCallbackIfNeeded();
@@ -876,22 +891,18 @@ bool NativeAnimatedNodesManager::commitProps() {
   if (fabricCommitCallback_ != nullptr) {
     if (!updateViewProps_.empty()) {
       fabricCommitCallback_(updateViewProps_);
-      updateViewProps_.clear();
     }
-  } else {
-    LOG(ERROR)
-        << "Failed to commit native animation, since Fabric commit callback is not set";
   }
+
+  updateViewProps_.clear();
 
   if (directManipulationCallback_ != nullptr) {
     for (const auto& [viewTag, props] : updateViewPropsDirect_) {
       directManipulationCallback_(viewTag, folly::dynamic(props));
     }
-    updateViewPropsDirect_.clear();
-  } else {
-    LOG(ERROR)
-        << "Failed to commit native animation, since direct manipulation callback is not set";
   }
+
+  updateViewPropsDirect_.clear();
 
   return containsChange;
 }
