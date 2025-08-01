@@ -312,10 +312,8 @@ internal object TextLayoutManager {
                       textAttributes.textShadowRadius,
                       textAttributes.textShadowColor)))
         }
-        if (!textAttributes.effectiveLineHeight.isNaN()) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, CustomLineHeightSpan(textAttributes.effectiveLineHeight)))
+        if (!textAttributes.lineHeight.isNaN()) {
+          ops.add(SetSpanOperation(start, end, CustomLineHeightSpan(textAttributes.lineHeight)))
         }
 
         if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
@@ -474,9 +472,8 @@ internal object TextLayoutManager {
               spanFlags)
         }
 
-        if (!fragment.props.effectiveLineHeight.isNaN()) {
-          spannable.setSpan(
-              CustomLineHeightSpan(fragment.props.effectiveLineHeight), start, end, spanFlags)
+        if (!fragment.props.lineHeight.isNaN()) {
+          spannable.setSpan(CustomLineHeightSpan(fragment.props.lineHeight), start, end, spanFlags)
         }
 
         if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
