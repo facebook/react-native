@@ -190,6 +190,7 @@ target_link_libraries(fantom_tester
     react_nativemodule_webperformance
     react_performance_cdpmetrics
     react_performance_timeline
+    react_renderer_animated
     react_renderer_attributedstring
     react_renderer_componentregistry
     react_renderer_consistency
@@ -231,7 +232,6 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_io
     react_cxx_platform_react_logging
     react_cxx_platform_react_profiling
-    react_cxx_platform_react_renderer_animated
     react_cxx_platform_react_renderer_scheduler
     react_cxx_platform_react_runtime
     react_cxx_platform_react_threading
