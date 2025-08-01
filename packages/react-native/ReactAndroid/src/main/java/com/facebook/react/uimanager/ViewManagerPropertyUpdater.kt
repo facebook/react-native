@@ -34,7 +34,7 @@ public object ViewManagerPropertyUpdater {
   private val SHADOW_NODE_SETTER_MAP: MutableMap<Class<*>, ShadowNodeSetter<*>> = HashMap()
 
   @JvmStatic
-  public fun clear(): Unit {
+  public fun clear() {
     ViewManagersPropertyCache.clear()
     VIEW_MANAGER_SETTER_MAP.clear()
     SHADOW_NODE_SETTER_MAP.clear()
@@ -180,7 +180,7 @@ public object ViewManagerPropertyUpdater {
     private val setter = findManagerSetter(manager.javaClass)
 
     @Suppress("ACCIDENTAL_OVERRIDE")
-    override fun setProperty(view: T, propName: String, value: Any?): Unit {
+    override fun setProperty(view: T, propName: String, value: Any?) {
       setter.setProperty(manager, view, propName, value)
     }
 

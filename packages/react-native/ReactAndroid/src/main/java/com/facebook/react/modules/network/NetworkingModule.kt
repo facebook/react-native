@@ -181,27 +181,27 @@ public class NetworkingModule(
     uriHandlers.clear()
   }
 
-  internal fun addUriHandler(handler: UriHandler): Unit {
+  internal fun addUriHandler(handler: UriHandler) {
     uriHandlers.add(handler)
   }
 
-  internal fun addRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun addRequestBodyHandler(handler: RequestBodyHandler) {
     requestBodyHandlers.add(handler)
   }
 
-  internal fun addResponseHandler(handler: ResponseHandler): Unit {
+  internal fun addResponseHandler(handler: ResponseHandler) {
     responseHandlers.add(handler)
   }
 
-  internal fun removeUriHandler(handler: UriHandler): Unit {
+  internal fun removeUriHandler(handler: UriHandler) {
     uriHandlers.remove(handler)
   }
 
-  internal fun removeRequestBodyHandler(handler: RequestBodyHandler): Unit {
+  internal fun removeRequestBodyHandler(handler: RequestBodyHandler) {
     requestBodyHandlers.remove(handler)
   }
 
-  internal fun removeResponseHandler(handler: ResponseHandler): Unit {
+  internal fun removeResponseHandler(handler: ResponseHandler) {
     responseHandlers.remove(handler)
   }
 
@@ -248,7 +248,7 @@ public class NetworkingModule(
       useIncrementalUpdates: Boolean,
       timeout: Int,
       withCredentials: Boolean
-  ): Unit {
+  ) {
     val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
     try {
       val uri = Uri.parse(url)
@@ -688,7 +688,7 @@ public class NetworkingModule(
   }
 
   @ReactMethod
-  public override fun clearCookies(callback: com.facebook.react.bridge.Callback): Unit {
+  public override fun clearCookies(callback: com.facebook.react.bridge.Callback) {
     cookieHandler.clearCookies(callback)
   }
 
@@ -833,7 +833,7 @@ public class NetworkingModule(
     @JvmStatic
     public fun setCustomClientBuilder(
         ccb: com.facebook.react.modules.network.CustomClientBuilder?
-    ): Unit {
+    ) {
       customClientBuilder = ccb
     }
 

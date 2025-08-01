@@ -44,24 +44,24 @@ internal object ReactSoftExceptionLogger {
   private val listeners: MutableList<ReactSoftExceptionListener> = CopyOnWriteArrayList()
 
   @JvmStatic
-  fun addListener(listener: ReactSoftExceptionListener): Unit {
+  fun addListener(listener: ReactSoftExceptionListener) {
     if (!listeners.contains(listener)) {
       listeners.add(listener)
     }
   }
 
   @JvmStatic
-  fun removeListener(listener: ReactSoftExceptionListener): Unit {
+  fun removeListener(listener: ReactSoftExceptionListener) {
     listeners.remove(listener)
   }
 
   @JvmStatic
-  fun logSoftExceptionVerbose(@CategoryMode category: String, cause: Throwable): Unit {
+  fun logSoftExceptionVerbose(@CategoryMode category: String, cause: Throwable) {
     logSoftException("${category}|${cause.javaClass.simpleName}:${cause.message}", cause)
   }
 
   @JvmStatic
-  fun logSoftException(@CategoryMode category: String, cause: Throwable): Unit {
+  fun logSoftException(@CategoryMode category: String, cause: Throwable) {
     if (listeners.isNotEmpty()) {
       for (listener in listeners) {
         listener.logSoftException(category, cause)
