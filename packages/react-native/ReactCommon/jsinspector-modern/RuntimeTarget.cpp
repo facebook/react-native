@@ -79,7 +79,7 @@ std::shared_ptr<RuntimeAgent> RuntimeTarget::createAgent(
 
 std::shared_ptr<RuntimeTracingAgent> RuntimeTarget::createTracingAgent(
     tracing::TraceRecordingState& state) {
-  auto agent = std::make_shared<RuntimeTracingAgent>(state);
+  auto agent = std::make_shared<RuntimeTracingAgent>(state, controller_);
   tracingAgent_ = agent;
   return agent;
 }

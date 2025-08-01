@@ -7,10 +7,16 @@
 
 #pragma once
 
+#include "RuntimeSamplingProfile.h"
+
+#include <vector>
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 struct TraceRecordingState {
   bool isRecording = false;
+
+  std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
