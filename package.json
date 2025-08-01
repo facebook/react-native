@@ -82,7 +82,7 @@
     "eslint-plugin-redundant-undefined": "^0.4.0",
     "eslint-plugin-relay": "^1.8.3",
     "flow-api-translator": "0.30.0",
-    "flow-bin": "^0.277.1",
+    "flow-bin": "^0.278.0",
     "glob": "^7.1.1",
     "hermes-eslint": "0.30.0",
     "hermes-transform": "0.30.0",
