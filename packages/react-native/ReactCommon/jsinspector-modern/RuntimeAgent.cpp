@@ -128,4 +128,13 @@ tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
   return targetController_.collectSamplingProfile();
 }
 
+#pragma mark - Tracing
+
+RuntimeTracingAgent::RuntimeTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void RuntimeTracingAgent::enable() {}
+
+void RuntimeTracingAgent::disable() {}
+
 } // namespace facebook::react::jsinspector_modern
