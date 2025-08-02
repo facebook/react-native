@@ -32,7 +32,7 @@ public object ReactClippingViewGroupHelper {
    * @param outputRect where the calculated rectangle will be written
    */
   @JvmStatic
-  public fun calculateClippingRect(view: View, outputRect: Rect): Unit {
+  public fun calculateClippingRect(view: View, outputRect: Rect) {
     when (val parent = view.parent) {
       null -> {
         outputRect.setEmpty()

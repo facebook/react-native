@@ -28,5 +28,5 @@ public interface Dynamic {
 
   public fun asString(): String?
 
-  public fun recycle(): Unit
+  public fun recycle()
 }

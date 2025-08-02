@@ -20,5 +20,5 @@ internal interface SynchronousEventReceiver {
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
       experimentalIsSynchronous: Boolean
-  ): Unit
+  )
 }

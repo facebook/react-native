@@ -161,7 +161,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
       permissions: Array<String>,
       requestCode: Int,
       listener: PermissionListener?
-  ): Unit {
+  ) {
     permissionListener = listener
     requestPermissions(permissions, requestCode)
   }

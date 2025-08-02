@@ -296,7 +296,7 @@ public class BlobModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun createFromParts(parts: ReadableArray, blobId: String): Unit {
+  public override fun createFromParts(parts: ReadableArray, blobId: String) {
     var totalBlobSize = 0
     val partList = ArrayList<ByteArray>(parts.size())
 

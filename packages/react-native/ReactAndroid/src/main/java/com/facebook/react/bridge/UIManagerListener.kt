@@ -18,21 +18,21 @@ public interface UIManagerListener {
    *
    * <p>This is called by Paper only.
    */
-  public fun willDispatchViewUpdates(uiManager: UIManager): Unit
+  public fun willDispatchViewUpdates(uiManager: UIManager)
 
   /**
    * Called on UIThread right before view updates are executed.
    *
    * <p>This is called by Fabric only.
    */
-  public fun willMountItems(uiManager: UIManager): Unit
+  public fun willMountItems(uiManager: UIManager)
 
   /**
    * Called on UIThread right after view updates are executed.
    *
    * <p>This is called by Fabric only.
    */
-  public fun didMountItems(uiManager: UIManager): Unit
+  public fun didMountItems(uiManager: UIManager)
 
   /**
    * Called on UIThread right after view updates are dispatched for a frame. Note that this will be
@@ -40,12 +40,12 @@ public interface UIManagerListener {
    *
    * <p>This is called by Fabric only.
    */
-  public fun didDispatchMountItems(uiManager: UIManager): Unit
+  public fun didDispatchMountItems(uiManager: UIManager)
 
   /**
    * Called right after scheduleMountItems is called in Fabric, after a new tree is committed.
    *
    * <p>This is called by Fabric only.
    */
-  public fun didScheduleMountItems(uiManager: UIManager): Unit
+  public fun didScheduleMountItems(uiManager: UIManager)
 }

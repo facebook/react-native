@@ -664,7 +664,7 @@ public class ReactHostImpl(
     }
   }
 
-  internal fun handleHostException(e: Exception): Unit {
+  internal fun handleHostException(e: Exception) {
     val method = "handleHostException(message = \"${e.message}\")"
     log(method)
 
@@ -1450,7 +1450,7 @@ public class ReactHostImpl(
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  internal fun unregisterInstanceFromInspector(reactInstance: ReactInstance?): Unit {
+  internal fun unregisterInstanceFromInspector(reactInstance: ReactInstance?) {
     if (reactInstance != null) {
       if (InspectorFlags.getFuseboxEnabled()) {
         Assertions.assertCondition(

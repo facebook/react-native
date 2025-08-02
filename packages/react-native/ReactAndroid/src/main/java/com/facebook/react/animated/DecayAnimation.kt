@@ -28,7 +28,7 @@ internal class DecayAnimation(config: ReadableMap) : AnimationDriver() {
     resetConfig(config)
   }
 
-  override fun resetConfig(config: ReadableMap): Unit {
+  override fun resetConfig(config: ReadableMap) {
     velocity = config.getDouble("velocity")
     deceleration = config.getDouble("deceleration")
     startFrameTimeMillis = -1
