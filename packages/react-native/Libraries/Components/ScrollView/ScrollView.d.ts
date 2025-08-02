@@ -530,6 +530,14 @@ export interface ScrollViewPropsIOS {
    * The current scale of the scroll view content. The default value is 1.0.
    */
   zoomScale?: number | undefined;
+
+  /**
+   * A Boolean value that determines whether the scroll view allows scrolling its content with hardware keyboard input.
+   * See: https://developer.apple.com/documentation/uikit/uiscrollview/allowskeyboardscrolling
+   * The default value is true. Available on iOS 17 and later.
+   * @platform ios
+   */
+  allowsKeyboardScrolling?: boolean | undefined;
 }
 
 export interface ScrollViewPropsAndroid {

@@ -80,5 +80,6 @@ export type ScrollViewNativeProps = $ReadOnly<{
   zoomScale?: ?number,
   // Overrides
   onResponderGrant?: ?(e: GestureResponderEvent) => void | boolean,
+  allowsKeyboardScrolling?: ?boolean,
   ...
 }>;

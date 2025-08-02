@@ -144,6 +144,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           pinchGestureEnabled: true,
           scrollEnabled: true,
           scrollEventThrottle: true,
+          allowsKeyboardScrolling: true,
           scrollIndicatorInsets: {
             diff: require('../../Utilities/differ/insetsDiffer').default,
           },

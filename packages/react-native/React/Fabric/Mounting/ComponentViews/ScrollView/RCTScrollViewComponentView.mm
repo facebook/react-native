@@ -135,6 +135,13 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
     _scrollView.clipsToBounds = _props->getClipsContentToBounds();
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
+
+    #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+      if (@available(iOS 17.0, *)) {
+        _scrollView.allowsKeyboardScrolling = YES;
+      }
+    #endif
+
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     _shouldUpdateContentInsetAdjustmentBehavior = YES;
@@ -436,6 +443,15 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (oldScrollViewProps.keyboardDismissMode != newScrollViewProps.keyboardDismissMode) {
     scrollView.keyboardDismissMode = RCTUIKeyboardDismissModeFromProps(newScrollViewProps);
   }
+
+  #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
+    if (@available(iOS 17.0, *)) {
+      if (oldScrollViewProps.allowsKeyboardScrolling != newScrollViewProps.allowsKeyboardScrolling) {
+        scrollView.allowsKeyboardScrolling = newScrollViewProps.allowsKeyboardScrolling;
+      }
+    }
+  #endif
+
 
   [super updateProps:props oldProps:oldProps];
 }

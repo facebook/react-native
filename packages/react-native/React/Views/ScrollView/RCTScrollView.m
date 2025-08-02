@@ -1115,6 +1115,11 @@ RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
   }
 }
 
+- (void)setAllowsKeyboardScrolling:(BOOL)allowsKeyboardScrolling API_AVAILABLE(ios(17.0))
+{
+  _scrollView.allowsKeyboardScrolling = allowsKeyboardScrolling;
+}
+
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
 {
   CGPoint contentOffset = _scrollView.contentOffset;
