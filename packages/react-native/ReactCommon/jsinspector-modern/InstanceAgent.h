@@ -15,6 +15,7 @@
 #include <jsinspector-modern/RuntimeAgent.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
 #include <jsinspector-modern/tracing/InstanceTracingProfile.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
 
 #include <functional>
 
@@ -74,7 +75,7 @@ class InstanceAgent final {
   /**
    * Return recorded profile for the previous tracing session.
    */
-  tracing::InstanceTracingProfile collectTracingProfile();
+  tracing::InstanceTracingProfileLegacy collectTracingProfile();
 
  private:
   void maybeSendExecutionContextCreatedNotification();
@@ -85,6 +86,31 @@ class InstanceAgent final {
   InstanceTarget& target_;
   std::shared_ptr<RuntimeAgent> runtimeAgent_;
   SessionState& sessionState_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular InstanceTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording and to the lifetime of the InstanceTarget.
+ */
+class InstanceTracingAgent : tracing::TargetTracingAgent {
+ public:
+  explicit InstanceTracingAgent(tracing::TraceRecordingState& state);
+
+  /**
+   * Registers the RuntimeTarget with this tracing agent.
+   */
+  void setTracedRuntime(RuntimeTarget* runtimeTarget);
+
+  void enable() override;
+
+  void disable() override;
+
+ private:
+  std::shared_ptr<RuntimeTracingAgent> runtimeTracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

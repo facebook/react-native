@@ -9,6 +9,7 @@
 #include "RuntimeTarget.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <utility>
 
@@ -167,13 +168,56 @@ void InstanceAgent::stopTracing() {
   }
 }
 
-tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
+tracing::InstanceTracingProfileLegacy InstanceAgent::collectTracingProfile() {
   tracing::RuntimeSamplingProfile runtimeSamplingProfile =
       runtimeAgent_->collectSamplingProfile();
 
-  return tracing::InstanceTracingProfile{
+  return tracing::InstanceTracingProfileLegacy{
       .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
   };
+}
+
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  auto previousRuntimeTracingAgent = std::move(runtimeTracingAgent_);
+  if (previousRuntimeTracingAgent != nullptr && state_.isRecording) {
+    previousRuntimeTracingAgent->disable();
+  }
+
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+    if (state_.isRecording) {
+      runtimeTracingAgent_->enable();
+    }
+  } else {
+    runtimeTracingAgent_ = nullptr;
+  }
+}
+
+void InstanceTracingAgent::enable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->enable();
+  }
+
+  tracing::PerformanceTracer::getInstance().startTracing();
+}
+
+void InstanceTracingAgent::disable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->disable();
+  }
+
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  auto performanceTraceEvents = performanceTracer.stopTracing();
+  if (performanceTraceEvents) {
+    state_.instanceTracingProfiles.emplace_back(tracing::InstanceTracingProfile{
+        .performanceTraceEvents = std::move(*performanceTraceEvents),
+    });
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern
