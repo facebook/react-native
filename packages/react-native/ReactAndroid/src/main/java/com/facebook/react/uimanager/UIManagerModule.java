@@ -12,6 +12,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks2;
 import android.content.res.Configuration;
 import android.view.View;
@@ -126,7 +127,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       ViewManagerResolver viewManagerResolver,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(reactContext);
+    Activity currentActivity = reactContext.getCurrentActivity();
+    if (currentActivity != null) {
+      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(currentActivity);
+    }
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.directEventTypeConstants;
@@ -146,7 +151,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       List<ViewManager> viewManagersList,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(reactContext);
+    Activity currentActivity = reactContext.getCurrentActivity();
+    if (currentActivity != null) {
+      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(currentActivity);
+    }
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
