@@ -9,6 +9,7 @@
 #include "RuntimeTarget.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <utility>
 
@@ -155,25 +156,47 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
   }
 }
 
-void InstanceAgent::startTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->enableSamplingProfiler();
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  auto previousRuntimeTracingAgent = std::move(runtimeTracingAgent_);
+  if (previousRuntimeTracingAgent != nullptr && state_.isRecording) {
+    previousRuntimeTracingAgent->disable();
+  }
+
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+    if (state_.isRecording) {
+      runtimeTracingAgent_->enable();
+    }
+  } else {
+    runtimeTracingAgent_ = nullptr;
   }
 }
 
-void InstanceAgent::stopTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->disableSamplingProfiler();
+void InstanceTracingAgent::enable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->enable();
   }
+
+  tracing::PerformanceTracer::getInstance().startTracing();
 }
 
-tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
-  tracing::RuntimeSamplingProfile runtimeSamplingProfile =
-      runtimeAgent_->collectSamplingProfile();
+void InstanceTracingAgent::disable() {
+  if (runtimeTracingAgent_ != nullptr) {
+    runtimeTracingAgent_->disable();
+  }
 
-  return tracing::InstanceTracingProfile{
-      .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
-  };
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  auto performanceTraceEvents = performanceTracer.stopTracing();
+  if (performanceTraceEvents) {
+    state_.instanceTracingProfiles.emplace_back(tracing::InstanceTracingProfile{
+        .performanceTraceEvents = std::move(*performanceTraceEvents),
+    });
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern
