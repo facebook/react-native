@@ -1309,12 +1309,6 @@ public abstract interface annotation class com/facebook/react/bridge/ReactMethod
 public abstract interface class com/facebook/react/bridge/ReactModuleWithSpec {
 }
 
-public final class com/facebook/react/bridge/ReactNoCrashBridgeNotAllowedSoftException : com/facebook/react/bridge/ReactNoCrashSoftException {
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun <init> (Ljava/lang/Throwable;)V
-}
-
 public class com/facebook/react/bridge/ReactNoCrashSoftException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;)V
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
