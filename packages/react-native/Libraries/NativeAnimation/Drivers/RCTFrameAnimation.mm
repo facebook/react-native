@@ -95,10 +95,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
   _animationCurrentTime = currentTime;
   NSTimeInterval currentDuration = (_animationCurrentTime - _animationStartTime) / RCTAnimationDragCoefficient();
+  
+  CGFloat singleFrameInterval = RCTSingleFrameInterval();
 
   // Determine how many frames have passed since last update.
   // Get index of frames that surround the current interval
-  NSUInteger startIndex = floor(currentDuration / RCTSingleFrameInterval);
+  NSUInteger startIndex = floor(currentDuration / singleFrameInterval);
   NSUInteger nextIndex = startIndex + 1;
 
   if (nextIndex >= _frames.count) {
@@ -121,8 +123,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   // Do a linear remap of the two frames to safeguard against variable framerates
   NSNumber *fromFrameValue = _frames[startIndex];
   NSNumber *toFrameValue = _frames[nextIndex];
-  NSTimeInterval fromInterval = (double)startIndex * RCTSingleFrameInterval;
-  NSTimeInterval toInterval = (double)nextIndex * RCTSingleFrameInterval;
+  NSTimeInterval fromInterval = (double)startIndex * singleFrameInterval;
+  NSTimeInterval toInterval = (double)nextIndex * singleFrameInterval;
 
   // Interpolate between the individual frames to ensure the animations are
   // smooth and of the proper duration regardless of the framerate.
