@@ -243,7 +243,7 @@ function Pressable({
   };
 
   const accessibilityLiveRegion =
-    ariaLive === 'off' ? 'none' : ariaLive ?? props.accessibilityLiveRegion;
+    ariaLive === 'off' ? 'none' : (ariaLive ?? props.accessibilityLiveRegion);
 
   const accessibilityLabel = ariaLabel ?? props.accessibilityLabel;
   const restPropsWithDefaults: React.ElementConfig<typeof View> = {

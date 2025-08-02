@@ -43,7 +43,7 @@ function generateRCTModuleProviders(
   codegenLog(`Generated artifact: ${finalPathH}`);
 
   codegenLog('Generating RCTModuleProviders.mm');
-  let modulesInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>}  */;
+  let modulesInLibraries /*: {[string]: Array<$FlowFixMe>} */ = {};
 
   let app = pkgJson.codegenConfig
     ? {config: pkgJson.codegenConfig, libraryPath: projectRoot}
