@@ -88,44 +88,94 @@ function loadNxConfig(configFile) {
   return JSON.parse(nx);
 }
 
+/**
+ * Detects whether to use npm or yarn to publish based on .npmrc existence
+ * @returns {boolean} true if npm should be used, false if yarn should be used
+ * @throws {Error} if neither .npmrc nor .yarnrc.yml exists
+ */
+function shouldUseNpm() {
+  const hasNpmrc = fs.existsSync('.npmrc');
+  const hasYarnrc = fs.existsSync('.yarnrc.yml');
+  
+  if (!hasNpmrc && !hasYarnrc) {
+    error('No package manager configuration found. Expected either .npmrc or .yarnrc.yml file.');
+    throw new Error('No package manager configuration found');
+  }
+  
+  if (hasNpmrc && hasYarnrc) {
+    // If both exist, prefer npm (could be changed based on project preference)
+    info('Both .npmrc and .yarnrc.yml found, using npm configuration');
+    return true;
+  }
+  
+  return hasNpmrc;
+}
+
 function verifyNpmAuth(registry = NPM_DEFEAULT_REGISTRY) {
-  const npmErrorRegex = /npm error code (\w+)/;
+  const useNpm = shouldUseNpm();
   const spawnOptions = {
     stdio: /** @type {const} */ ("pipe"),
     shell: true,
     windowsVerbatimArguments: true,
   };
 
-  const whoamiArgs = ["whoami", "--registry", registry];
-  const whoami = spawnSync("npm", whoamiArgs, spawnOptions);
-  if (whoami.status !== 0) {
-    const error = whoami.stderr.toString();
-    const m = error.match(npmErrorRegex);
-    const errorCode = m && m[1];
-    switch (errorCode) {
-      case "EINVALIDNPMTOKEN":
-        throw new Error(`Invalid auth token for npm registry: ${registry}`);
-      case "ENEEDAUTH":
-        throw new Error(`Missing auth token for npm registry: ${registry}`);
-      default:
-        throw new Error(error);
-    }
-  }
-
-  const tokenArgs = ["token", "list", "--registry", registry];
-  const token = spawnSync("npm", tokenArgs, spawnOptions);
-  if (token.status !== 0) {
-    const error = token.stderr.toString();
-    const m = error.match(npmErrorRegex);
-    const errorCode = m && m[1];
+  if (useNpm) {
+    info("Using npm for authentication (found .npmrc)");
+    const npmErrorRegex = /npm error code (\w+)/;
     
-    // E403 means the token doesn't have permission to list tokens, but that's
-    // not required for publishing. Only fail for other error codes.
-    if (errorCode === "E403") {
-      info(`Token verification skipped: token doesn't have permission to list tokens (${errorCode})`);
-    } else {
-      throw new Error(m ? `Auth token for '${registry}' returned error code ${errorCode}` : error);
+    const whoamiArgs = ["whoami", "--registry", registry];
+    const whoami = spawnSync("npm", whoamiArgs, spawnOptions);
+    if (whoami.status !== 0) {
+      const error = whoami.stderr.toString();
+      const m = error.match(npmErrorRegex);
+      const errorCode = m && m[1];
+      switch (errorCode) {
+        case "EINVALIDNPMTOKEN":
+          throw new Error(`Invalid auth token for npm registry: ${registry}`);
+        case "ENEEDAUTH":
+          throw new Error(`Missing auth token for npm registry: ${registry}`);
+        default:
+          throw new Error(error);
+      }
     }
+
+    const tokenArgs = ["token", "list", "--registry", registry];
+    const token = spawnSync("npm", tokenArgs, spawnOptions);
+    if (token.status !== 0) {
+      const error = token.stderr.toString();
+      const m = error.match(npmErrorRegex);
+      const errorCode = m && m[1];
+      
+      // E403 means the token doesn't have permission to list tokens, but that's
+      // not required for publishing. Only fail for other error codes.
+      if (errorCode === "E403") {
+        info(`Token verification skipped: token doesn't have permission to list tokens (${errorCode})`);
+      } else {
+        throw new Error(m ? `Auth token for '${registry}' returned error code ${errorCode}` : error);
+      }
+    }
+  } else {
+    info("Using yarn for authentication (no .npmrc found)");
+    
+    const whoamiArgs = ["npm", "whoami", "--publish"];
+    const whoami = spawnSync("yarn", whoamiArgs, spawnOptions);
+    if (whoami.status !== 0) {
+      const stderr = whoami.stderr.toString().trim();
+      const stdout = whoami.stdout.toString().trim();
+      const errorOutput = stderr || stdout || 'No error message available';
+      
+      // Yarn uses different error format
+      if (errorOutput.includes("Invalid authentication") || errorOutput.includes("Failed with errors")) {
+        throw new Error(`Invalid or missing auth token for registry: ${registry}`);
+      }
+      
+      // Provide more context about the yarn authentication failure
+      throw new Error(`Yarn authentication failed (exit code ${whoami.status}): ${errorOutput}`);
+    }
+
+    // Skip token listing for yarn since it doesn't support npm token commands
+    // The whoami check above is sufficient to verify authentication
+    info("Skipping token list check when using yarn (not required for publishing)");
   }
 }
 
