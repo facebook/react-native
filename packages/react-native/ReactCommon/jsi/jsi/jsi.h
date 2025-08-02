@@ -252,6 +252,43 @@ class JSI_EXPORT NativeState {
   virtual ~NativeState();
 };
 
+/// Opaque class that is used to store serialized object from a runtime. The
+/// lifetime of this object is orthogonal to the original runtime object, and
+/// may outlive the original object.
+class JSI_EXPORT Serialized {
+ public:
+  virtual ~Serialized();
+};
+
+/// Provides a set of APIs that allows copying objects between different
+/// runtime instances. The runtimes instances must be of the same type. As an
+/// example, a serialized object from Hermes runtime may only be deserialized by
+/// another Hermes runtime.
+class JSI_EXPORT ISerialization : public ICast {
+ public:
+  static constexpr jsi::UUID uuid{
+      0xd40fe0ec,
+      0xa47c,
+      0x42c9,
+      0x8c09,
+      0x661aeab832d8};
+
+  /// Serializes the given jsi::Value using the structured clone algorithm. It
+  /// returns an opaque Serialized object that can be deserialized multiple
+  /// times. The lifetime of the Serialized object is not tied to the lifetime
+  /// of the original object.
+  virtual std::shared_ptr<Serialized> serialize(jsi::Value& value) = 0;
+
+  /// Given a Serialized object, deserialize it using the structured clone
+  /// algorithm into a JS value in the current runtime. Returns the resulting JS
+  /// value.
+  virtual jsi::Value deserialize(
+      const std::shared_ptr<Serialized>& serialized) = 0;
+
+ protected:
+  ~ISerialization() = default;
+};
+
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
 /// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
