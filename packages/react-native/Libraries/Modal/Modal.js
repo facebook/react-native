@@ -292,7 +292,7 @@ class Modal extends React.Component<ModalProps, ModalState> {
       backgroundColor:
         this.props.transparent === true
           ? 'transparent'
-          : this.props.backdropColor ?? 'white',
+          : (this.props.backdropColor ?? 'white'),
     };
 
     let animationType = this.props.animationType || 'none';

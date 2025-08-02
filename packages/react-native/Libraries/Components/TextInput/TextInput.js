@@ -915,8 +915,8 @@ const TextInput: component(
         Platform.OS === 'android'
           ? // $FlowFixMe[invalid-computed-prop]
             // $FlowFixMe[prop-missing]
-            autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
-            autoComplete
+            (autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
+            autoComplete)
           : undefined
       }
       textContentType={

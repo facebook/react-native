@@ -62,11 +62,11 @@ export function withServerForEachTest(options: CreateServerOptions): $ReadOnly<{
     ({server, app} = await createServer(options));
     const serverBaseUrl = baseUrlForServer(
       server,
-      options.secure ?? false ? 'https' : 'http',
+      (options.secure ?? false) ? 'https' : 'http',
     );
     const serverBaseWsUrl = baseUrlForServer(
       server,
-      options.secure ?? false ? 'wss' : 'ws',
+      (options.secure ?? false) ? 'wss' : 'ws',
     );
     Object.defineProperty(ref, 'serverBaseUrl', {value: serverBaseUrl});
     Object.defineProperty(ref, 'serverBaseWsUrl', {value: serverBaseWsUrl});

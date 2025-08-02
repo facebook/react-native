@@ -123,10 +123,13 @@ type ReactNativeDependenciesEngineSourceType =
   | 'download_prebuilt_nightly_tarball'
 */
 
-const ReactNativeDependenciesEngineSourceTypes = {
-    DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
-    DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
-  } /*:: as const */;
+const ReactNativeDependenciesEngineSourceTypes /*: {
+  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
+  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball"
+} */ = {
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
+  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
+};
 
 /**
  * Checks if the ReactNativeDependencies artifacts are already downloaded and up to date with the specified version.
