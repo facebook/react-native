@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de705ded06ca10697411e99c91903724>>
+ * @generated SignedSource<<9f50b2fc5f4aad27e6cd8ecbde3d791a>>
  */
 
 /**
@@ -74,6 +74,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var releaseImageDataWhenConsumedCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
+  private var sweepActiveTouchOnChildNativeGesturesAndroidCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var updateRuntimeShadowNodeReferencesOnCommitCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
@@ -570,6 +571,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.skipActivityIdentityAssertionOnHostPause()
       skipActivityIdentityAssertionOnHostPauseCache = cached
+    }
+    return cached
+  }
+
+  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean {
+    var cached = sweepActiveTouchOnChildNativeGesturesAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.sweepActiveTouchOnChildNativeGesturesAndroid()
+      sweepActiveTouchOnChildNativeGesturesAndroidCache = cached
     }
     return cached
   }
