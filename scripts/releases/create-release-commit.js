@@ -49,6 +49,9 @@ async function main() {
   console.info('Setting version for monorepo packages and react-native');
   await setVersion(version, false); // version, skip-react-native
 
+  console.info('Writing release asset URLs to DotSlash files');
+  await writeReleaseAssetUrlsToDotSlashFiles(version);
+
   if (dryRun) {
     console.info('Running in dry-run mode, skipping git commit');
     console.info(
