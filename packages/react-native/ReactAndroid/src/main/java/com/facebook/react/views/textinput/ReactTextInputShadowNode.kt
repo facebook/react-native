@@ -61,7 +61,7 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     }
 
   init {
-    mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
+    textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
     setMeasureFunction(this)
   }
 
@@ -108,15 +108,15 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
     if (localData != null) {
       localData?.apply(editText)
     } else {
-      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.effectiveFontSize.toFloat())
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textAttributes.effectiveFontSize.toFloat())
 
-      if (mNumberOfLines != ReactConstants.UNSET) {
-        editText.setLines(mNumberOfLines)
+      if (numberOfLines != ReactConstants.UNSET) {
+        editText.setLines(numberOfLines)
       }
 
       @SuppressLint("WrongConstant")
-      if (editText.breakStrategy != mTextBreakStrategy) {
-        editText.breakStrategy = mTextBreakStrategy
+      if (editText.breakStrategy != textBreakStrategy) {
+        editText.breakStrategy = textBreakStrategy
       }
     }
 
@@ -150,12 +150,12 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
   override fun setTextBreakStrategy(textBreakStrategy: String?) {
     when (textBreakStrategy) {
       null,
-      "simple" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
-      "highQuality" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
-      "balanced" -> mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED
+      "simple" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
+      "highQuality" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY
+      "balanced" -> this.textBreakStrategy = Layout.BREAK_STRATEGY_BALANCED
       else -> {
         FLog.w(ReactConstants.TAG, "Invalid textBreakStrategy: $textBreakStrategy")
-        mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
+        this.textBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE
       }
     }
   }
@@ -173,14 +173,14 @@ constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) 
                   null // only needed to support inline views
                   ),
               mostRecentEventCount,
-              mContainsImages,
+              containsImages,
               getPadding(Spacing.LEFT),
               getPadding(Spacing.TOP),
               getPadding(Spacing.RIGHT),
               getPadding(Spacing.BOTTOM),
-              mTextAlign,
-              mTextBreakStrategy,
-              mJustificationMode)
+              textAlign,
+              textBreakStrategy,
+              justificationMode)
       uiViewOperationQueue.enqueueUpdateExtraData(reactTag, reactTextUpdate)
     }
   }
