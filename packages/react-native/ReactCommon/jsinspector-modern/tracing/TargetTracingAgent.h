@@ -7,12 +7,24 @@
 
 #pragma once
 
-#include "TraceEvent.h"
+#include "TraceRecordingState.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct InstanceTracingProfile {
-  std::vector<TraceEvent> performanceTraceEvents;
+class TargetTracingAgent {
+ public:
+  explicit TargetTracingAgent(TraceRecordingState& state) : state_(state) {
+    (void)state_;
+  }
+
+  virtual ~TargetTracingAgent() = default;
+
+  virtual void enable() = 0;
+
+  virtual void disable() = 0;
+
+ protected:
+  TraceRecordingState& state_;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

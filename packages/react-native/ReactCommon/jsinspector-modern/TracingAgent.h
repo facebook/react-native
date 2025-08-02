@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "HostTarget.h"
 #include "InspectorInterfaces.h"
 #include "InstanceAgent.h"
 
@@ -27,7 +28,8 @@ class TracingAgent {
    */
   TracingAgent(
       FrontendChannel frontendChannel,
-      const SessionState& sessionState);
+      const SessionState& sessionState,
+      HostTargetController& hostTargetController);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -35,13 +37,6 @@ class TracingAgent {
    * \param req The parsed request.
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
-
-  /**
-   * Replace the current InstanceAgent with the given one.
-   * \param agent The new InstanceAgent. May be null to signify that there is
-   * currently no active instance.
-   */
-  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
  private:
   /**
@@ -63,6 +58,8 @@ class TracingAgent {
   HighResTimeStamp instanceTracingStartTimestamp_;
 
   const SessionState& sessionState_;
+
+  HostTargetController& hostTargetController_;
 };
 
 } // namespace facebook::react::jsinspector_modern
