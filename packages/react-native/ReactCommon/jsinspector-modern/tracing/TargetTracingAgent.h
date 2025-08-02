@@ -7,18 +7,24 @@
 
 #pragma once
 
-#include "RuntimeSamplingProfile.h"
-#include "TraceEvent.h"
+#include "TraceRecordingState.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct InstanceTracingProfileLegacy {
+class TargetTracingAgent {
  public:
-  RuntimeSamplingProfile runtimeSamplingProfile;
-};
+  explicit TargetTracingAgent(TraceRecordingState& state) : state_(state) {
+    (void)state_;
+  }
 
-struct InstanceTracingProfile {
-  std::vector<TraceEvent> performanceTraceEvents;
+  virtual ~TargetTracingAgent() = default;
+
+  virtual void enable() = 0;
+
+  virtual void disable() = 0;
+
+ protected:
+  TraceRecordingState& state_;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
