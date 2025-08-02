@@ -170,6 +170,7 @@ fix_*.patch
 
 # Jest Integration
 /private/react-native-fantom/build/
+/private/react-native-fantom/.out/
 /private/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions

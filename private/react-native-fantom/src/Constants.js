@@ -8,22 +8,24 @@
  * @format
  */
 
-type FantomConstants = $ReadOnly<{
+export type FantomRuntimeConstants = $ReadOnly<{
   isRunningFromCI: boolean,
   forceTestModeForBenchmarks: boolean,
   fantomConfigSummary: string,
+  jsTraceOutputPath: ?string,
 }>;
 
-let constants: FantomConstants = {
+let constants: FantomRuntimeConstants = {
   isRunningFromCI: false,
   forceTestModeForBenchmarks: false,
   fantomConfigSummary: '',
+  jsTraceOutputPath: null,
 };
 
-export function getConstants(): FantomConstants {
+export function getConstants(): FantomRuntimeConstants {
   return constants;
 }
 
-export function setConstants(newConstants: FantomConstants): void {
+export function setConstants(newConstants: FantomRuntimeConstants): void {
   constants = newConstants;
 }
