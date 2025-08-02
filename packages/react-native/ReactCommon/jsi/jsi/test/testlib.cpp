@@ -132,6 +132,12 @@ TEST_P(JSITest, ObjectTest) {
   EXPECT_EQ(x.getPropertyNames(rt).size(rt), 8);
   EXPECT_TRUE(eval("x['\\uD83C\\uDD97'] == 'emoji'").getBool());
 
+  auto propVal = Value(123);
+  x.setProperty(rt, propVal, 456);
+  EXPECT_TRUE(x.hasProperty(rt, propVal));
+  auto getRes = x.getProperty(rt, propVal);
+  EXPECT_EQ(getRes.getNumber(), 456);
+
   Object seven = x.getPropertyAsObject(rt, "seven");
   EXPECT_TRUE(seven.isArray(rt));
   Object evalf = rt.global().getPropertyAsObject(rt, "eval");
@@ -139,7 +145,7 @@ TEST_P(JSITest, ObjectTest) {
 
   Object movedX = Object(rt);
   movedX = std::move(x);
-  EXPECT_EQ(movedX.getPropertyNames(rt).size(rt), 8);
+  EXPECT_EQ(movedX.getPropertyNames(rt).size(rt), 9);
   EXPECT_EQ(movedX.getProperty(rt, "1").getNumber(), 2);
 
   Object obj = Object(rt);
@@ -1880,6 +1886,45 @@ TEST_P(JSITest, CastInterface) {
   // Use == instead of EXPECT_EQ to avoid ambiguous operator usage due to the
   // type of 'ptr'.
   EXPECT_TRUE(ptr == nullptr);
+}
+
+TEST_P(JSITest, DeleteProperty) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::deleteProperty
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    bool deleteProperty(const Object& object, const PropNameID& name) override {
+      return Runtime::deleteProperty(object, name);
+    }
+    bool deleteProperty(const Object& object, const String& name) override {
+      return Runtime::deleteProperty(object, name);
+    }
+    bool deleteProperty(const Object& object, const Value& name) override {
+      return Runtime::deleteProperty(object, name);
+    }
+  };
+
+  auto obj = eval("obj = {1:2, foo: 'bar', 3: 4}").getObject(rt);
+
+  auto prop = PropNameID::forAscii(rt, "1");
+  auto deleteRes = obj.deleteProperty(rt, prop);
+  EXPECT_TRUE(deleteRes);
+  auto hasRes = obj.hasProperty(rt, prop);
+  EXPECT_FALSE(hasRes);
+
+  auto str = String::createFromAscii(rt, "foo");
+  deleteRes = obj.deleteProperty(rt, str);
+  EXPECT_TRUE(deleteRes);
+  hasRes = obj.hasProperty(rt, str);
+  EXPECT_FALSE(hasRes);
+
+  auto valProp = Value(3);
+  deleteRes = obj.deleteProperty(rt, valProp);
+  EXPECT_TRUE(deleteRes);
+  auto getRes = obj.getProperty(rt, "3");
+  EXPECT_TRUE(getRes.isUndefined());
 }
 
 INSTANTIATE_TEST_CASE_P(
