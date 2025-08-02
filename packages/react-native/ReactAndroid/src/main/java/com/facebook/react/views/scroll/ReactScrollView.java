@@ -37,8 +37,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
-import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -805,14 +803,7 @@ public class ReactScrollView extends ScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactScrollView.this);
                 }
-                ReactContext context = (ReactContext) getContext();
-                if (context != null) {
-                  NativeAnimatedModule nativeAnimated =
-                      context.getNativeModule(NativeAnimatedModule.class);
-                  if (nativeAnimated != null) {
-                    nativeAnimated.userDrivenScrollEnded(ReactScrollView.this.getId());
-                  }
-                }
+                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(ReactScrollView.this);
                 disableFpsListener();
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
