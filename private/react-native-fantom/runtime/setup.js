@@ -25,6 +25,7 @@ export type TestCaseResult = {
   failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
+  testArtifact?: mixed,
   // location: string,
 };
 
@@ -313,6 +314,7 @@ function runSpec(spec: Spec): TestCaseResult {
     failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
+    testArtifact: null,
   };
 
   if (!shouldRunSuite(spec)) {
@@ -327,7 +329,7 @@ function runSpec(spec: Spec): TestCaseResult {
 
   try {
     invokeHooks(spec.parentContext, 'beforeEachHooks');
-    spec.implementation();
+    result.testArtifact = spec.implementation();
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
