@@ -132,6 +132,12 @@ TEST_P(JSITest, ObjectTest) {
   EXPECT_EQ(x.getPropertyNames(rt).size(rt), 8);
   EXPECT_TRUE(eval("x['\\uD83C\\uDD97'] == 'emoji'").getBool());
 
+  auto propVal = Value(123);
+  x.setProperty(rt, propVal, 456);
+  EXPECT_TRUE(x.hasProperty(rt, propVal));
+  auto getRes = x.getProperty(rt, propVal);
+  EXPECT_EQ(getRes.getNumber(), 456);
+
   Object seven = x.getPropertyAsObject(rt, "seven");
   EXPECT_TRUE(seven.isArray(rt));
   Object evalf = rt.global().getPropertyAsObject(rt, "eval");
@@ -139,7 +145,7 @@ TEST_P(JSITest, ObjectTest) {
 
   Object movedX = Object(rt);
   movedX = std::move(x);
-  EXPECT_EQ(movedX.getPropertyNames(rt).size(rt), 8);
+  EXPECT_EQ(movedX.getPropertyNames(rt).size(rt), 9);
   EXPECT_EQ(movedX.getProperty(rt, "1").getNumber(), 2);
 
   Object obj = Object(rt);
