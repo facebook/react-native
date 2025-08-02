@@ -7,18 +7,23 @@
 
 #pragma once
 
+#include "InstanceTracingProfile.h"
 #include "RuntimeSamplingProfile.h"
-#include "TraceEvent.h"
+
+#include <oscompat/OSCompat.h>
+
+#include <vector>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct InstanceTracingProfileLegacy {
- public:
-  RuntimeSamplingProfile runtimeSamplingProfile;
-};
+struct TraceRecordingState {
+  bool isRecording = false;
 
-struct InstanceTracingProfile {
-  std::vector<TraceEvent> performanceTraceEvents;
+  ProcessId processId = oscompat::getCurrentProcessId();
+
+  std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles;
+
+  std::vector<InstanceTracingProfile> instanceTracingProfiles;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

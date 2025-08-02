@@ -44,12 +44,25 @@ std::shared_ptr<InstanceAgent> InstanceTarget::createAgent(
   return instanceAgent;
 }
 
+std::shared_ptr<InstanceTracingAgent> InstanceTarget::createTracingAgent(
+    tracing::TraceRecordingState& state) {
+  auto agent = std::make_shared<InstanceTracingAgent>(state);
+  agent->setTracedRuntime(currentRuntime_.get());
+  tracingAgent_ = agent;
+  return agent;
+}
+
 InstanceTarget::~InstanceTarget() {
   // Agents are owned by the session, not by InstanceTarget, but
   // they hold an InstanceTarget& that we must guarantee is valid.
   assert(
       agents_.empty() &&
       "InstanceAgent objects must be destroyed before their InstanceTarget. Did you call HostTarget::unregisterInstance()?");
+
+  // Tracing Agents are owned by the HostTargetTraceRecording.
+  assert(
+      tracingAgent_.expired() &&
+      "InstanceTracingAgent must be destroyed before their InstanceTarget. Did you call HostTarget::unregisterInstance()?");
 }
 
 RuntimeTarget& InstanceTarget::registerRuntime(
@@ -69,6 +82,13 @@ RuntimeTarget& InstanceTarget::registerRuntime(
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
   });
+
+  if (auto tracingAgent = tracingAgent_.lock()) {
+    // Registers the Runtime for tracing, if a Trace is currently being
+    // recorded.
+    tracingAgent->setTracedRuntime(currentRuntime_.get());
+  }
+
   return *currentRuntime_;
 }
 
@@ -78,6 +98,13 @@ void InstanceTarget::unregisterRuntime(RuntimeTarget& Runtime) {
       "Invalid unregistration");
   agents_.forEach(
       [](InstanceAgent& agent) { agent.setCurrentRuntime(nullptr); });
+
+  if (auto tracingAgent = tracingAgent_.lock()) {
+    // Unregisters the Runtime for tracing, if a Trace is currently being
+    // recorded.
+    tracingAgent->setTracedRuntime(nullptr);
+  }
+
   currentRuntime_.reset();
 }
 
