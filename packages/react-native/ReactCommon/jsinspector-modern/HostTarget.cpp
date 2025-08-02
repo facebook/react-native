@@ -7,6 +7,7 @@
 
 #include "HostTarget.h"
 #include "HostAgent.h"
+#include "HostTargetTraceRecording.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -191,6 +192,13 @@ InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
       });
+
+  if (traceRecording_) {
+    // Registers the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(currentInstance_.get());
+  }
+
   return *currentInstance_;
 }
 
@@ -200,6 +208,13 @@ void HostTarget::unregisterInstance(InstanceTarget& instance) {
       "Invalid unregistration");
   sessions_.forEach(
       [](HostTargetSession& session) { session.setCurrentInstance(nullptr); });
+
+  if (traceRecording_) {
+    // Unregisters the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(nullptr);
+  }
+
   currentInstance_.reset();
 }
 

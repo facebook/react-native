@@ -47,7 +47,8 @@ class HostAgent::Impl final {
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
+        tracingAgent_(
+            TracingAgent(frontendChannel, sessionState, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -460,6 +461,39 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
+}
+
+#pragma mark - Tracing
+
+HostTracingAgent::HostTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void HostTracingAgent::setTracedInstance(InstanceTarget* instanceTarget) {
+  auto previousInstanceTracingAgent = std::move(instanceTracingAgent_);
+  if (previousInstanceTracingAgent != nullptr && state_.isRecording) {
+    previousInstanceTracingAgent->disable();
+  }
+
+  if (instanceTarget != nullptr) {
+    instanceTracingAgent_ = instanceTarget->createTracingAgent(state_);
+    if (state_.isRecording) {
+      instanceTracingAgent_->enable();
+    }
+  } else {
+    instanceTracingAgent_ = nullptr;
+  }
+}
+
+void HostTracingAgent::enable() {
+  if (instanceTracingAgent_ != nullptr) {
+    instanceTracingAgent_->enable();
+  }
+}
+
+void HostTracingAgent::disable() {
+  if (instanceTracingAgent_ != nullptr) {
+    instanceTracingAgent_->disable();
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern
