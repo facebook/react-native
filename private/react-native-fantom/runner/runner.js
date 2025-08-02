@@ -20,8 +20,11 @@ import type {
   HermesVariant,
 } from './utils';
 
+import createBundle from './createBundle';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
+import {run as runHermesCompiler} from './executables/hermesc';
+import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
 import {
@@ -30,13 +33,8 @@ import {
 } from './snapshotUtils';
 import {
   HermesVariant as HermesVariantEnum,
-  getBuckModesForPlatform,
-  getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
-  getHermesCompilerTarget,
   printConsoleLog,
-  runBuck2,
-  runBuck2Sync,
   runCommand,
   symbolicateStackTrace,
 } from './utils';
@@ -44,7 +42,6 @@ import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
 import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
-import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
@@ -163,13 +160,8 @@ function generateBytecodeBundle({
   isOptimizedMode: boolean,
   hermesVariant: HermesVariant,
 }): void {
-  const hermesCompilerCommandResult = runBuck2Sync(
+  const hermesCompilerCommandResult = runHermesCompiler(
     [
-      'run',
-      ...getBuckModesForPlatform(isOptimizedMode),
-      ...getBuckOptionsForHermes(hermesVariant),
-      getHermesCompilerTarget(hermesVariant),
-      '--',
       '-emit-binary',
       isOptimizedMode ? '-O' : null,
       '-max-diagnostic-width',
@@ -178,6 +170,10 @@ function generateBytecodeBundle({
       bytecodePath,
       sourcePath,
     ].filter(Boolean),
+    {
+      isOptimizedMode,
+      hermesVariant,
+    },
   );
 
   if (hermesCompilerCommandResult.status !== 0) {
@@ -213,10 +209,6 @@ module.exports = async function runTest(
 
   const testContents = fs.readFileSync(testPath, 'utf8');
   const testConfigs = getFantomTestConfigs(testPath, testContents);
-
-  const metroConfig = await Metro.loadConfig({
-    config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
-  });
 
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
   const featureFlagsModulePath = path.resolve(
@@ -309,7 +301,8 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
-    await Metro.runBuild(metroConfig, {
+    await createBundle({
+      testPath,
       entry: entrypointPath,
       out: testJSBundlePath,
       platform: 'android',
@@ -342,19 +335,10 @@ module.exports = async function runTest(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
           rnTesterCommandArgs,
         )
-      : runBuck2(
-          [
-            'run',
-            ...getBuckModesForPlatform(testConfig.isNativeOptimized),
-            ...getBuckOptionsForHermes(testConfig.hermesVariant),
-            '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
-            '--',
-            ...rnTesterCommandArgs,
-          ],
-          {
-            withFDB: EnvironmentOptions.debugCpp,
-          },
-        );
+      : runFantomTester(rnTesterCommandArgs, {
+          isOptimizedMode: testConfig.isNativeOptimized,
+          hermesVariant: testConfig.hermesVariant,
+        });
 
     const processedResult = await processRNTesterCommandResult(
       rnTesterCommandResult,
