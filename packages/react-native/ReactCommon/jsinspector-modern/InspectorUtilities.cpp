@@ -24,6 +24,14 @@ void CallbackLocalConnection::disconnect() {
   handler_ = nullptr;
 }
 
+CallbackRemoteConnection::CallbackRemoteConnection(
+    std::function<void(std::string)> handler)
+    : handler_(std::move(handler)) {}
+
+void CallbackRemoteConnection::onMessage(std::string message) {
+  handler_(std::move(message));
+}
+
 RAIIRemoteConnection::RAIIRemoteConnection(
     std::unique_ptr<IRemoteConnection> remote)
     : remote_(std::move(remote)) {}
