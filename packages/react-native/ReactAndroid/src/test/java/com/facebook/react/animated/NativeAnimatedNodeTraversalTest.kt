@@ -213,7 +213,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNodeValueListenerIfNotListening() {
-    val nodeId: Int = 1
+    val nodeId = 1
 
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
@@ -240,7 +240,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNodeValueListenerIfListening() {
-    val nodeId: Int = 1
+    val nodeId = 1
 
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
@@ -402,10 +402,10 @@ class NativeAnimatedNodeTraversalTest {
     verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
     assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(0.0)
 
-    var previousValue: Double = 0.0
-    var wasGreaterThanOne: Boolean = false
-    var didComeToRest: Boolean = false
-    var numberOfResets: Int = 0
+    var previousValue = 0.0
+    var wasGreaterThanOne = false
+    var didComeToRest = false
+    var numberOfResets = 0
     /* run 3 secs of animation, five times */
     for (i in 0 until 3 * 60 * 5) {
       reset(uiManagerMock)
@@ -512,8 +512,8 @@ class NativeAnimatedNodeTraversalTest {
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
     var previousValue: Double = stylesCaptor.value.getDouble("opacity")
     val initialValue: Double = stylesCaptor.value.getDouble("opacity")
-    var didComeToRest: Boolean = false
-    var numberOfResets: Int = 0
+    var didComeToRest = false
+    var numberOfResets = 0
     /* run 3 secs of animation, five times */
     for (i in 0 until 3 * 60 * 5) {
       reset(uiManagerMock)
@@ -825,7 +825,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testGetValue() {
-    val tag: Int = 1
+    val tag = 1
     nativeAnimatedNodesManager.createAnimatedNode(
         tag, JavaOnlyMap.of("type", "value", "value", 1.0, "offset", 0.0))
 
@@ -986,7 +986,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testRestoreDefaultProps() {
     val viewTag: Int = 1001
     // restoreDefaultProps not called in Fabric, make sure it's a non-Fabric tag
-    val propsNodeTag: Int = 3
+    val propsNodeTag = 3
     nativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 1.0, "offset", 0.0))
     nativeAnimatedNodesManager.createAnimatedNode(
@@ -1211,7 +1211,7 @@ class NativeAnimatedNodeTraversalTest {
 
     // we run several steps of animation until the value starts bouncing, has negative speed and
     // passes the final point (that is 1) while going backwards
-    var isBoucingBack: Boolean = false
+    var isBoucingBack = false
     var previousValue: Double =
         (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue()
     for (i in 500 downTo 0) {
@@ -1231,8 +1231,8 @@ class NativeAnimatedNodeTraversalTest {
     // low friction we expect it to keep going in the opposite direction for a few more frames
     nativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.5)
     nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-    var bounceBackInitialFrames: Int = 0
-    var hasTurnedForward: Boolean = false
+    var bounceBackInitialFrames = 0
+    var hasTurnedForward = false
 
     // we run 8 seconds of animation
     for (i in 0 until 8 * 60) {

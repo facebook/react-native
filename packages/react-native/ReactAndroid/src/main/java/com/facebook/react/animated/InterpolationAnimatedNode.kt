@@ -261,7 +261,7 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
     }
 
     private fun findRangeIndex(value: Double, ranges: DoubleArray): Int {
-      var index: Int = 1
+      var index = 1
       while (index < ranges.size - 1) {
         if (ranges[index] >= value) {
           break

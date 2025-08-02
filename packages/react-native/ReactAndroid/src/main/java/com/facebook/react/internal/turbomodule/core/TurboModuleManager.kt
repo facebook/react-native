@@ -64,7 +64,7 @@ public class TurboModuleManager(
 
     eagerInitModuleNames = delegate?.getEagerInitModuleNames() ?: emptyList()
 
-    val nullProvider: ModuleProvider = ModuleProvider { _: String -> null }
+    val nullProvider = ModuleProvider { _: String -> null }
 
     turboModuleProvider =
         if (delegate == null) nullProvider

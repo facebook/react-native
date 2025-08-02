@@ -13,8 +13,7 @@ import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.uimanager.events.Event
 
 /** Event emitted by EditText native view when content size changes. */
-internal class ReactContentSizeChangedEvent
-constructor(
+internal class ReactContentSizeChangedEvent(
     surfaceId: Int,
     viewId: Int,
     private val contentWidth: Float,

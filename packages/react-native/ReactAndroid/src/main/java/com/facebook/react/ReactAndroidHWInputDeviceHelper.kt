@@ -14,7 +14,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 
 /** Responsible for dispatching events specific for hardware inputs. */
-internal class ReactAndroidHWInputDeviceHelper() {
+internal class ReactAndroidHWInputDeviceHelper {
   /**
    * We keep a reference to the last focused view id so that we can send it as a target for key
    * events and be able to send a blur event when focus changes.
