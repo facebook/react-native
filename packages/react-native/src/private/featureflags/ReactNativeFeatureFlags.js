@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1f567a382688ca9876d17e9ce8d428ff>>
+ * @generated SignedSource<<264cb37ea298ea5c0b15330a00e11c98>>
  * @flow strict
  * @noformat
  */
@@ -82,6 +82,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResourceTimingAPI: Getter<boolean>,
+  enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
@@ -316,6 +317,10 @@ export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNat
  * Enables the reporting of network resource timings through `PerformanceObserver`.
  */
 export const enableResourceTimingAPI: Getter<boolean> = createNativeFlagGetter('enableResourceTimingAPI', false);
+/**
+ * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+ */
+export const enableSwiftUIBasedFilters: Getter<boolean> = createNativeFlagGetter('enableSwiftUIBasedFilters', false);
 /**
  * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
  */

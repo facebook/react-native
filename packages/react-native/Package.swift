@@ -68,6 +68,17 @@ let reactOSCompat = RNTarget(
   path: "ReactCommon/oscompat"
 )
 
+let rctSwiftUI = RNTarget(
+  name: .rctSwiftUI,
+  path: "ReactApple/RCTSwiftUI"
+)
+
+let rctSwiftUIWrapper = RNTarget(
+  name: .rctSwiftUIWrapper,
+  path: "ReactApple/RCTSwiftUIWrapper",
+  dependencies: [.rctSwiftUI]
+)
+
 // React-rendererconsistency.podspec
 let reactRendererConsistency = RNTarget(
   name: .reactRendererConsistency,
@@ -417,7 +428,7 @@ let reactFabric = RNTarget(
 let reactRCTFabric = RNTarget(
   name: .reactRCTFabric,
   path: "React/Fabric",
-  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricComponents, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage]
+  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricComponents, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage, .rctSwiftUIWrapper]
 )
 
 /// React-FabricComponents.podspec
@@ -556,6 +567,8 @@ let targets = [
   reactCore,
   reactCoreRCTWebsocket,
   reactFabric,
+  rctSwiftUI,
+  rctSwiftUIWrapper,
   reactRCTFabric,
   reactFabricComponents,
   reactFabricImage,
@@ -702,6 +715,9 @@ extension String {
   static let jsi = "React-jsi"
   static let logger = "React-logger"
   static let mapbuffer = "React-Mapbuffer"
+
+  static let rctSwiftUI = "RCTSwiftUI"
+  static let rctSwiftUIWrapper = "RCTSwiftUIWrapper"
 
   static let rctDeprecation = "RCT-Deprecation"
   static let yoga = "Yoga"
