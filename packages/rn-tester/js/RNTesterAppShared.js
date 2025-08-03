@@ -39,8 +39,8 @@ import {
   View,
   useColorScheme,
   useWindowDimensions,
+  NativeComponentRegistry,
 } from 'react-native';
-import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 // In Bridgeless mode, in dev, enable static view config validator
 if (global.RN$Bridgeless === true && __DEV__) {
