@@ -33,13 +33,13 @@ import {
   BackHandler,
   Button,
   Linking,
+  NativeComponentRegistry,
   Platform,
   StatusBar,
   StyleSheet,
   View,
   useColorScheme,
   useWindowDimensions,
-  NativeComponentRegistry,
 } from 'react-native';
 
 // In Bridgeless mode, in dev, enable static view config validator
