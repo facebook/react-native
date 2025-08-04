@@ -25,6 +25,31 @@ function extractUsersFromScheduleAndDate(schedule, userMap, date) {
   return [user1, user2];
 }
 
+/**
+ * You can invoke this script by doing:
+ * ```
+ * node .github/workflow-scripts/extractIssueOncalls.js $DATA
+ * ```
+ *
+ * the $DATA is stored in the github secrets as ONCALL_SCHEDULE variable.
+ * The format of the data is:
+ * ```
+ * {
+ *   \"userMap\": {
+ *     \"discord_handle1\": \"discord_id1\",
+ *     \"discord_handle2\": \"discord_id2\",
+ *    ...
+ *  },
+ *  \"schedule\": {
+ *    \"2025-07-29\": [\"discord_handle1\", \"discord_handle2\"],
+ *    \"2025-08-05\": [\"discord_handle3\", \"discord_handle4\"],
+ *   ...
+ * }
+ * ```
+ *
+ * When uploading the secret, make sure that the JSON strings are escaped!
+ * The script will fail otherwise, because GitHub will remove the `"` characters.
+ */
 function main() {
   const configuration = process.argv[2];
   const {userMap, schedule} = JSON.parse(configuration);
