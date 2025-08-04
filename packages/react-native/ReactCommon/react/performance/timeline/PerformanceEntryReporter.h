@@ -68,8 +68,6 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
 
-  HighResTimeStamp getCurrentTimeStamp() const;
-
   void addEventTimingListener(
       PerformanceEntryReporterEventTimingListener* listener);
   void removeEventTimingListener(
