@@ -24,16 +24,13 @@ class ConsoleTimeStampTest : public JsiIntegrationPortableTestBase<
                                  folly::QueuedImmediateExecutor> {
  protected:
   size_t countNumberOfTimeStampEvents(
-      tracing::PerformanceTracer& performanceTracer) {
+      const std::vector<tracing::TraceEvent>& events) {
     size_t count = 0;
-    performanceTracer.collectEvents(
-        [&count](const folly::dynamic& chunk) {
-          auto event = chunk[0];
-          if (event["name"] == "TimeStamp") {
-            count++;
-          }
-        },
-        1);
+    for (const auto& event : events) {
+      if (event.name == "TimeStamp") {
+        count++;
+      }
+    }
     return count;
   }
 };
@@ -50,8 +47,8 @@ TEST_F(ConsoleTimeStampTest, RecordsEntriesWithJustLabel) {
 
   eval("console.timeStamp('test-label')");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, RecordsEntriesWithSpecifiedTimestamps) {
@@ -60,8 +57,8 @@ TEST_F(ConsoleTimeStampTest, RecordsEntriesWithSpecifiedTimestamps) {
 
   eval("console.timeStamp('test-range', 100, 200)");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, RecordsEntriesWithMarkNames) {
@@ -71,8 +68,8 @@ TEST_F(ConsoleTimeStampTest, RecordsEntriesWithMarkNames) {
   eval(
       "console.timeStamp('test-string-timestamps', 'start-marker', 'end-marker')");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, KeepsEntriesWithUnknownMarkNames) {
@@ -82,8 +79,8 @@ TEST_F(ConsoleTimeStampTest, KeepsEntriesWithUnknownMarkNames) {
   eval(
       "console.timeStamp('test-string-timestamps', 'start-marker', 'end-marker')");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, DoesNotThrowIfNotTracing) {
@@ -109,8 +106,8 @@ TEST_F(ConsoleTimeStampTest, SurvivesInvalidArguments) {
   // Will be logged - start will default to an empty string.
   eval("console.timeStamp('label', {})");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 4);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 4);
 }
 
 TEST_F(ConsoleTimeStampTest, InvalidTrackNameIsIgnored) {
@@ -119,8 +116,8 @@ TEST_F(ConsoleTimeStampTest, InvalidTrackNameIsIgnored) {
 
   eval("console.timeStamp('label', 0, 1, {})");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, InvalidTrackGroupIsIgnored) {
@@ -129,8 +126,8 @@ TEST_F(ConsoleTimeStampTest, InvalidTrackGroupIsIgnored) {
 
   eval("console.timeStamp('label', 0, 1, 'trackName', {})");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 TEST_F(ConsoleTimeStampTest, InvalidColorIsIgnored) {
@@ -139,8 +136,8 @@ TEST_F(ConsoleTimeStampTest, InvalidColorIsIgnored) {
 
   eval("console.timeStamp('test', 100, 200, 'FooTrack', 'BarGroup', 'red')");
 
-  EXPECT_TRUE(tracer.stopTracing());
-  EXPECT_EQ(countNumberOfTimeStampEvents(tracer), 1);
+  auto events = tracer.stopTracing();
+  EXPECT_EQ(countNumberOfTimeStampEvents(*events), 1);
 }
 
 } // namespace facebook::react::jsinspector_modern
