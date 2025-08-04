@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a31953c44fa5eac616d97cd1b206c2f7>>
+ * @generated SignedSource<<57b7676134d7d0782f576b852c71aa1f>>
  */
 
 /**
@@ -143,6 +143,8 @@ class NativeReactNativeFeatureFlags
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
   bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
+
+  bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

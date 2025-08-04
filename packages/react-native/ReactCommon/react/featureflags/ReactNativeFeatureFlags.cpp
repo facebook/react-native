@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<029a1d8d265538d6d48a2531ca4ca9df>>
+ * @generated SignedSource<<6ff8aafa0de2f6c5cf8b42e0d43302e9>>
  */
 
 /**
@@ -240,6 +240,10 @@ bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
 
 bool ReactNativeFeatureFlags::skipActivityIdentityAssertionOnHostPause() {
   return getAccessor().skipActivityIdentityAssertionOnHostPause();
+}
+
+bool ReactNativeFeatureFlags::sweepActiveTouchOnChildNativeGesturesAndroid() {
+  return getAccessor().sweepActiveTouchOnChildNativeGesturesAndroid();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
