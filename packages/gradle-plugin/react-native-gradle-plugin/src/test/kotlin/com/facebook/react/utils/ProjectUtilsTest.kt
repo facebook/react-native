@@ -27,70 +27,8 @@ class ProjectUtilsTest {
   @get:Rule val tempFolder = TemporaryFolder()
 
   @Test
-  fun isNewArchEnabled_returnsFalseByDefault() {
-    val project = createProject()
-    val extension = TestReactExtension(project)
-    assertThat(createProject().isNewArchEnabled(extension)).isFalse()
-  }
-
-  @Test
-  fun isNewArchEnabled_withDisabled_returnsFalse() {
-    val project = createProject()
-    project.extensions.extraProperties.set("newArchEnabled", "false")
-    val extension = TestReactExtension(project)
-    assertThat(project.isNewArchEnabled(extension)).isFalse()
-  }
-
-  @Test
-  fun isNewArchEnabled_withEnabled_returnsTrue() {
-    val project = createProject()
-    project.extensions.extraProperties.set("newArchEnabled", "true")
-    val extension = TestReactExtension(project)
-    assertThat(project.isNewArchEnabled(extension)).isTrue()
-  }
-
-  @Test
-  fun isNewArchEnabled_withInvalid_returnsFalse() {
-    val project = createProject()
-    project.extensions.extraProperties.set("newArchEnabled", "¯\\_(ツ)_/¯")
-    val extension = TestReactExtension(project)
-    assertThat(project.isNewArchEnabled(extension)).isFalse()
-  }
-
-  @Test
-  fun isNewArchEnabled_withRNVersion0_returnFalse() {
-    val project = createProject()
-    val extension = TestReactExtension(project)
-    File(tempFolder.root, "package.json").apply {
-      writeText(
-          // language=json
-          """
-      {
-        "version": "0.73.0"
-      }
-      """
-              .trimIndent())
-    }
-    extension.reactNativeDir.set(tempFolder.root)
-    assertThat(project.isNewArchEnabled(extension)).isFalse()
-  }
-
-  @Test
-  fun isNewArchEnabled_withRNVersion1000_returnFalse() {
-    val project = createProject()
-    val extension = TestReactExtension(project)
-    File(tempFolder.root, "package.json").apply {
-      writeText(
-          // language=json
-          """
-      {
-        "version": "1000.0.0"
-      }
-      """
-              .trimIndent())
-    }
-    extension.reactNativeDir.set(tempFolder.root)
-    assertThat(project.isNewArchEnabled(extension)).isFalse()
+  fun isNewArchEnabled_alwaysReturnsTrue() {
+    assertThat(createProject().isNewArchEnabled()).isTrue()
   }
 
   @Test
