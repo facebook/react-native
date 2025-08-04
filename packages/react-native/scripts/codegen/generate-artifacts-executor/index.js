@@ -22,6 +22,7 @@ const {
 } = require('./generateAppDependencyProvider');
 const {generateCustomURLHandlers} = require('./generateCustomURLHandlers');
 const {generateNativeCode} = require('./generateNativeCode');
+const {generatePackageSwift} = require('./generatePackageSwift');
 const {generateRCTModuleProviders} = require('./generateRCTModuleProviders');
 const {
   generateRCTThirdPartyComponents,
@@ -37,6 +38,7 @@ const {
   codegenLog,
   findCodegenEnabledLibraries,
   findDisabledLibrariesByPlatform,
+  findReactNativeRootPath,
   pkgJsonIncludesGeneratedCode,
   readPkgJsonInDirectory,
   readReactNativeConfig,
@@ -121,10 +123,12 @@ function execute(
         platform,
       );
 
+      const reactCodegenOutputPath = platform === 'android' ? outputPath : path.join(outputPath, 'ReactCodegen');
+
       if (runReactNativeCodegen) {
         const schemaInfos = generateSchemaInfos(libraries);
         generateNativeCode(
-          outputPath,
+          reactCodegenOutputPath,
           schemaInfos.filter(schemaInfo =>
             mustGenerateNativeCode(projectRoot, schemaInfo),
           ),
@@ -135,20 +139,21 @@ function execute(
 
       if (source === 'app' && platform !== 'android') {
         // These components are only required by apps, not by libraries and are Apple specific.
-        generateRCTThirdPartyComponents(libraries, outputPath);
-        generateRCTModuleProviders(projectRoot, pkgJson, libraries, outputPath);
-        generateCustomURLHandlers(libraries, outputPath);
+        generateRCTThirdPartyComponents(libraries, reactCodegenOutputPath);
+        generateRCTModuleProviders(projectRoot, pkgJson, libraries, reactCodegenOutputPath);
+        generateCustomURLHandlers(libraries, reactCodegenOutputPath);
         generateUnstableModulesRequiringMainQueueSetupProvider(
           libraries,
-          outputPath,
+          reactCodegenOutputPath,
         );
-        generateAppDependencyProvider(outputPath);
+        generateAppDependencyProvider(path.join(outputPath, 'ReactAppDependencyProvider'));
         generateReactCodegenPodspec(
           projectRoot,
           pkgJson,
-          outputPath,
+          reactCodegenOutputPath,
           baseOutputPath,
         );
+        generatePackageSwift(projectRoot, outputPath, findReactNativeRootPath(projectRoot));
       }
 
       cleanupEmptyFilesAndFolders(outputPath);
