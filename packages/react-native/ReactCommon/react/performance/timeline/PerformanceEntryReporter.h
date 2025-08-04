@@ -70,10 +70,6 @@ class PerformanceEntryReporter {
 
   HighResTimeStamp getCurrentTimeStamp() const;
 
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
-
   void addEventTimingListener(
       PerformanceEntryReporterEventTimingListener* listener);
   void removeEventTimingListener(
@@ -138,7 +134,6 @@ class PerformanceEntryReporter {
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  std::function<HighResTimeStamp()> timeStampProvider_ = nullptr;
   mutable std::shared_mutex listenersMutex_;
   std::vector<PerformanceEntryReporterEventTimingListener*>
       eventTimingListeners_{};
