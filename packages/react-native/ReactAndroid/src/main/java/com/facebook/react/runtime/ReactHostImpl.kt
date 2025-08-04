@@ -29,7 +29,6 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
-import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.RuntimeExecutor
@@ -529,7 +528,7 @@ public class ReactHostImpl(
         nativeModuleInterface == UIManagerModule::class.java) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
-          ReactNoCrashBridgeNotAllowedSoftException(
+          ReactNoCrashSoftException(
               "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"))
     }
 
