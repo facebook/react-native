@@ -8,6 +8,7 @@
 package com.facebook.react.views.view
 
 import android.view.View
+import android.view.ViewGroup
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper
 import com.facebook.react.uimanager.ViewGroupManager
@@ -39,7 +40,7 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
     }
   }
 
-  fun addViewInternal(parent: T, child: View, index: Int) {
+  private fun addViewInternal(parent: T, child: View, index: Int) {
     val removeClippedSubviews = parent.removeClippedSubviews
     if (removeClippedSubviews) {
       parent.addViewWithSubviewClippingEnabled(child, index)
