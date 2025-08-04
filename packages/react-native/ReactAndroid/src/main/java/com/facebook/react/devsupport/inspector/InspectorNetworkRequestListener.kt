@@ -10,6 +10,7 @@ package com.facebook.react.devsupport.inspector
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.soloader.SoLoader
 
 /**
  * JNI wrapper for `jsinspectormodern::NetworkRequestListener`. Handles the `ScopedExecutor`
@@ -19,6 +20,10 @@ import com.facebook.proguard.annotations.DoNotStripAny
 internal class InspectorNetworkRequestListener(
     @field:DoNotStrip private val mHybridData: HybridData
 ) {
+  init {
+    SoLoader.loadLibrary("reactnativejni")
+  }
+
   external fun onHeaders(httpStatusCode: Int, headers: Map<String?, String?>?)
 
   external fun onData(data: String?)

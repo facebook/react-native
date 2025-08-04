@@ -13,11 +13,15 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
+import com.facebook.soloader.SoLoader
 import java.util.concurrent.Executor
 
 @DoNotStripAny
 @LegacyArchitecture
 internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : AutoCloseable {
+  init {
+    SoLoader.loadLibrary("reactnativejni")
+  }
 
   @DoNotStripAny
   public interface TargetDelegate {
