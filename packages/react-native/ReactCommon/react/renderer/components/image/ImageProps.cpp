@@ -285,12 +285,25 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
-  const auto& defaultImageProps = ImageProps();
+  const auto& imageProps = ImageProps();
+
+  auto sourcesList = SharedDebugStringConvertibleList{};
+  if (sources.size() == 1) {
+    sourcesList = sources[0].getDebugProps("source");
+  } else if (sources.size() > 1) {
+    for (const auto& source : sources) {
+      std::string sourceName = "source@" + react::toString(source.scale) + "x";
+      auto debugProps = source.getDebugProps(sourceName);
+      sourcesList.insert(
+          sourcesList.end(), debugProps.begin(), debugProps.end());
+    }
+  }
 
   return ViewProps::getDebugProps() +
+      defaultSource.getDebugProps("defaultSource") + sourcesList +
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
-              "blurRadius", blurRadius, defaultImageProps.blurRadius),
+              "blurRadius", blurRadius, imageProps.blurRadius),
       };
 }
 #endif
