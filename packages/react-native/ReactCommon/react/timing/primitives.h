@@ -193,11 +193,10 @@ class HighResTimeStamp {
       const HighResDuration& rhs);
 
  public:
-  HighResTimeStamp() noexcept
-      : chronoTimePoint_(std::chrono::steady_clock::now()) {}
+  HighResTimeStamp() noexcept : chronoTimePoint_(chronoNow()) {}
 
   static HighResTimeStamp now() noexcept {
-    return HighResTimeStamp(std::chrono::steady_clock::now());
+    return HighResTimeStamp(chronoNow());
   }
 
   static constexpr HighResTimeStamp min() noexcept {
@@ -275,6 +274,10 @@ class HighResTimeStamp {
       : chronoTimePoint_(chronoTimePoint) {}
 
   std::chrono::steady_clock::time_point chronoTimePoint_;
+
+  inline static std::chrono::steady_clock::time_point chronoNow() {
+    return std::chrono::steady_clock::now();
+  }
 };
 
 inline constexpr HighResDuration operator-(
