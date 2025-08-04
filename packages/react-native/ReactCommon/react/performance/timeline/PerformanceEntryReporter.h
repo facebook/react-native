@@ -158,8 +158,9 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
@@ -176,8 +177,9 @@ class PerformanceEntryReporter {
         return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   void traceMark(
