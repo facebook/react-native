@@ -32,7 +32,7 @@ import {
   View,
 } from 'react-native';
 
-class WithLabel extends React.Component<$FlowFixMeProps> {
+class WithLabel extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View style={styles.labelContainer}>
@@ -147,7 +147,7 @@ class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   }
 }
 
-class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
+class RewriteExampleKana extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {text: ''};
@@ -167,7 +167,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
+class SecureEntryExample extends React.Component<$FlowFixMe, any> {
   constructor(props: any | void) {
     super(props);
     this.state = {
