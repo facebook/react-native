@@ -37,7 +37,6 @@
 #include <react/nativemodule/mutationobserver/NativeMutationObserver.h>
 #include <react/nativemodule/webperformance/NativePerformance.h>
 #include <react/renderer/animated/AnimatedModule.h>
-#include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/componentregistry/native/NativeComponentRegistryBinding.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #include <react/renderer/scheduler/SchedulerDelegate.h>

@@ -9,8 +9,8 @@
 
 #include <glog/logging.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/animated/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/animated/MergedValueDispatcher.h>
+#include <react/renderer/animated/internal/AnimatedMountingOverrideDelegate.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
