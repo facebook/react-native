@@ -20,6 +20,7 @@ import type {
   HermesVariant,
 } from './utils';
 
+import createBundle from './createBundle';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
 import {run as runHermesCompiler} from './executables/hermesc';
@@ -41,7 +42,6 @@ import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
 import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
-import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
@@ -210,10 +210,6 @@ module.exports = async function runTest(
   const testContents = fs.readFileSync(testPath, 'utf8');
   const testConfigs = getFantomTestConfigs(testPath, testContents);
 
-  const metroConfig = await Metro.loadConfig({
-    config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
-  });
-
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
   const featureFlagsModulePath = path.resolve(
     __dirname,
@@ -305,7 +301,8 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
-    await Metro.runBuild(metroConfig, {
+    await createBundle({
+      testPath,
       entry: entrypointPath,
       out: testJSBundlePath,
       platform: 'android',
