@@ -9,11 +9,10 @@
  */
 
 import {isCI} from '../EnvironmentOptions';
-import {
-  getBuckModesForPlatform,
-  getDebugInfoFromCommandResult,
-  runBuck2Sync,
-} from '../utils';
+import {build as buildHermesCompiler} from '../executables/hermesc';
+import {build as buildFantomTester} from '../executables/tester';
+import {getNativeBuildOutputPath} from '../executables/utils';
+import {HermesVariant} from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
 import Metro from 'metro';
@@ -39,23 +38,20 @@ async function tryOrLog(
 }
 
 export default async function build(): Promise<void> {
+  try {
+    fs.rmSync(getNativeBuildOutputPath(), {recursive: true});
+  } catch {}
+
+  fs.mkdirSync(getNativeBuildOutputPath(), {recursive: true});
+
   if (isCI) {
-    await tryOrLog(
-      () => warmUpHermesCompiler(false),
-      'Error warming up Hermes compiler (dev)',
-    );
-    await tryOrLog(
-      () => warmUpHermesCompiler(true),
-      'Error warming up Hermes compiler (opt)',
-    );
-    await tryOrLog(
-      () => warmUpRNTesterCLI(false),
-      'Error warming up RN Tester CLI (dev)',
-    );
-    await tryOrLog(
-      () => warmUpRNTesterCLI(true),
-      'Error warming up RN Tester CLI (opt)',
-    );
+    for (const isOptimizedMode of [false, true]) {
+      for (const hermesVariant of HermesVariant.members()) {
+        buildFantomTester({isOptimizedMode, hermesVariant});
+        buildHermesCompiler({isOptimizedMode, hermesVariant});
+      }
+    }
+
     await tryOrLog(() => warmUpMetro(false), 'Error warming up Metro (dev)');
     await tryOrLog(() => warmUpMetro(true), 'Error warming up Metro (opt)');
   }
@@ -90,30 +86,4 @@ async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
   try {
     fs.unlinkSync(bundlePath);
   } catch {}
-}
-
-function warmUpHermesCompiler(isOptimizedMode: boolean): void {
-  const buildHermesCompilerCommandResult = runBuck2Sync([
-    'build',
-    ...getBuckModesForPlatform(isOptimizedMode),
-    '//xplat/hermes/tools/hermesc:hermesc',
-  ]);
-
-  if (buildHermesCompilerCommandResult.status !== 0) {
-    throw new Error(
-      getDebugInfoFromCommandResult(buildHermesCompilerCommandResult),
-    );
-  }
-}
-
-function warmUpRNTesterCLI(isOptimizedMode: boolean): void {
-  const buildRNTesterCommandResult = runBuck2Sync([
-    'build',
-    ...getBuckModesForPlatform(isOptimizedMode),
-    '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
-  ]);
-
-  if (buildRNTesterCommandResult.status !== 0) {
-    throw new Error(getDebugInfoFromCommandResult(buildRNTesterCommandResult));
-  }
 }

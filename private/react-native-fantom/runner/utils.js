@@ -96,7 +96,7 @@ export type SyncCommandResult = {
   stderr: string,
 };
 
-function maybeLogCommand(command: string, args: Array<string>): void {
+function maybeLogCommand(command: string, args: $ReadOnlyArray<string>): void {
   if (EnvironmentOptions.logCommands) {
     console.log(`RUNNING \`${command} ${args.join(' ')}\``);
   }
@@ -104,17 +104,22 @@ function maybeLogCommand(command: string, args: Array<string>): void {
 
 export function runCommand(
   command: string,
-  args: Array<string>,
+  args: $ReadOnlyArray<string>,
 ): AsyncCommandResult {
   maybeLogCommand(command, args);
 
-  const childProcess = spawn(command, args, {
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+  const childProcess = spawn(
+    command,
+    // spawn is typed with Array instead of with $ReadOnlyArray
+    [...args],
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+      },
     },
-  });
+  );
 
   const result: AsyncCommandResult = {
     childProcess,
@@ -143,11 +148,11 @@ export function runCommand(
 
 export function runCommandSync(
   command: string,
-  args: Array<string>,
+  args: $ReadOnlyArray<string>,
 ): SyncCommandResult {
   maybeLogCommand(command, args);
 
-  const result = spawnSync(command, args, {
+  const result = spawnSync(command, [...args], {
     encoding: 'utf8',
     env: {
       ...process.env,
