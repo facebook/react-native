@@ -51,6 +51,11 @@ class InspectorNetworkReporter
       jint requestId,
       jlong encodedDataLength);
 
+  static void reportRequestFailed(
+      jni::alias_ref<jclass> /*unused*/,
+      jint requestId,
+      jboolean cancelled);
+
   static void maybeStoreResponseBodyImpl(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,

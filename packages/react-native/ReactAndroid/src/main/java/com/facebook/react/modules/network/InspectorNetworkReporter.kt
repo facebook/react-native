@@ -83,6 +83,13 @@ internal object InspectorNetworkReporter {
   @JvmStatic external fun reportResponseEnd(requestId: Int, encodedDataLength: Long)
 
   /**
+   * Report when a network request has failed.
+   *
+   * Corresponds to `Network.loadingFailed` in CDP.
+   */
+  @JvmStatic external fun reportRequestFailed(requestId: Int, cancelled: Boolean)
+
+  /**
    * Store response body preview. This is an optional reporting method, and is a no-op if CDP
    * debugging is disabled.
    */
