@@ -127,10 +127,12 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
 
   auto gcConfig = ::hermes::vm::GCConfig::Builder()
                       // Default to 3GB
+                      .withInitHeapSize(150ll * 1024 * 1024)
+                      .withShouldReleaseUnused(::hermes::vm::kReleaseUnusedNone)
                       .withMaxHeapSize(3072 << 20)
                       .withName("RNBridgeless");
 
-  if (allocInOldGenBeforeTTI) {
+  if (true || allocInOldGenBeforeTTI) {
     // For the next two arguments: avoid GC before TTI
     // by initializing the runtime to allocate directly
     // in the old generation, but revert to normal
