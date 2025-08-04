@@ -39,7 +39,7 @@ internal class PackagerStatusCheck {
     this.client = client
   }
 
-  fun run(host: String, callback: PackagerStatusCallback): Unit {
+  fun run(host: String, callback: PackagerStatusCallback) {
     val statusURL = createPackagerStatusURL(host)
     val request = Request.Builder().url(statusURL).build()
 

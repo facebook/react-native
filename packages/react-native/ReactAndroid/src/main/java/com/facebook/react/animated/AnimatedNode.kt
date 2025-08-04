@@ -27,7 +27,7 @@ public abstract class AnimatedNode {
   @JvmField internal var BFSColor: Int = INITIAL_BFS_COLOR
   @JvmField internal var tag: Int = -1
 
-  internal fun addChild(child: AnimatedNode): Unit {
+  internal fun addChild(child: AnimatedNode) {
     val currentChildren =
         children
             ?: ArrayList<AnimatedNode>(DEFAULT_ANIMATED_NODE_CHILD_COUNT).also { children = it }

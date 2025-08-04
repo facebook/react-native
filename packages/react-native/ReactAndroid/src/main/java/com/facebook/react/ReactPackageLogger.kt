@@ -14,7 +14,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 @Deprecated("This class is deprecated and will be removed in the next major release.")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal interface ReactPackageLogger {
-  fun startProcessPackage(): Unit
+  fun startProcessPackage()
 
-  fun endProcessPackage(): Unit
+  fun endProcessPackage()
 }
