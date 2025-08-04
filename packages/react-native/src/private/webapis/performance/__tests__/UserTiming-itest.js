@@ -18,11 +18,8 @@ import type {
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import DOMException from '../../errors/DOMException';
-import MaybeNativePerformance from '../specs/NativePerformance';
 import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
-import nullthrows from 'nullthrows';
-
-const NativePerformance = nullthrows(MaybeNativePerformance);
+import * as Fantom from '@react-native/fantom';
 
 declare var performance: Performance;
 
@@ -39,15 +36,23 @@ function toJSON(entries: PerformanceEntryList): Array<PerformanceEntryJSON> {
   return entries.map(entry => entry.toJSON());
 }
 
+let mockClock: Fantom.HighResTimeStampMock;
+
 describe('User Timing', () => {
   beforeEach(() => {
     performance.clearMarks();
     performance.clearMeasures();
+
+    mockClock = Fantom.installHighResTimeStampMock();
+  });
+
+  afterEach(() => {
+    mockClock.uninstall();
   });
 
   describe('mark', () => {
     it('works with default timestamp', () => {
-      NativePerformance.setCurrentTimeStampForTesting?.(25);
+      mockClock.setTime(25);
 
       const mark = performance.mark('mark-now');
 
@@ -147,7 +152,7 @@ describe('User Timing', () => {
   describe('measure', () => {
     describe('with measureOptions', () => {
       it('uses 0 as default start and now as default end', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         const measure = performance.measure('measure-with-defaults', {});
 
@@ -160,7 +165,7 @@ describe('User Timing', () => {
       });
 
       it('works with a start timestamp', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         const measure = performance.measure('measure-with-start-timestamp', {
           start: 10,
@@ -175,7 +180,7 @@ describe('User Timing', () => {
       });
 
       it('works with start mark', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         performance.mark('start-mark', {
           startTime: 10,
@@ -194,7 +199,7 @@ describe('User Timing', () => {
       });
 
       it('works with end mark', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         performance.mark('end-mark', {
           startTime: 50,
@@ -213,7 +218,7 @@ describe('User Timing', () => {
       });
 
       it('works with start mark and end mark', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         performance.mark('start-mark', {
           startTime: 10,
@@ -378,7 +383,7 @@ describe('User Timing', () => {
 
     describe('with startMark / endMark', () => {
       it('uses 0 as default start and now as default end', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         const measure = performance.measure('measure-with-defaults');
 
@@ -391,7 +396,7 @@ describe('User Timing', () => {
       });
 
       it('works with startMark', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         performance.mark('start-mark', {
           startTime: 10,
@@ -411,7 +416,7 @@ describe('User Timing', () => {
       });
 
       it('works with startMark and endMark', () => {
-        NativePerformance.setCurrentTimeStampForTesting?.(25);
+        mockClock.setTime(25);
 
         performance.mark('start-mark', {
           startTime: 10,

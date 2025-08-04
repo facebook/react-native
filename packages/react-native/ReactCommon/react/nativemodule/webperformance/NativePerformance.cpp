@@ -131,7 +131,7 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
-  return forcedCurrentTimeStamp_.value_or(HighResTimeStamp::now());
+  return HighResTimeStamp::now();
 }
 
 void NativePerformance::reportMark(
@@ -394,12 +394,6 @@ NativePerformance::getSupportedPerformanceEntryTypes(jsi::Runtime& /*rt*/) {
 }
 
 #pragma mark - Testing
-
-void NativePerformance::setCurrentTimeStampForTesting(
-    jsi::Runtime& /*rt*/,
-    HighResTimeStamp ts) {
-  forcedCurrentTimeStamp_ = ts;
-}
 
 void NativePerformance::clearEventCountsForTesting(jsi::Runtime& /*rt*/) {
   PerformanceEntryReporter::getInstance()->clearEventCounts();
