@@ -19,40 +19,17 @@ import {Image} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
+const LOGO_SOURCE = {uri: 'https://reactnative.dev/img/tiny_logo.png'};
+
 describe('<Image>', () => {
   describe('props', () => {
-    it('renders an empty element when there are no props', () => {
-      const root = Fantom.createRoot();
-
-      Fantom.runTask(() => {
-        root.render(<Image />);
-      });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-image
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-frame="{x:0,y:0,width:390,height:0}"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          overflow="hidden"
-          source-scale="1"
-          source-type="remote"
-        />,
-      );
-    });
-
     describe('accessibility', () => {
       describe('accessible', () => {
         it('indicates that image is an accessibility element', () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<Image accessible={true} />);
+            root.render(<Image accessible={true} source={LOGO_SOURCE} />);
           });
 
           expect(
@@ -66,7 +43,12 @@ describe('<Image>', () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<Image accessibilityLabel="React Native Logo" />);
+            root.render(
+              <Image
+                accessibilityLabel="React Native Logo"
+                source={LOGO_SOURCE}
+              />,
+            );
           });
 
           expect(
@@ -80,7 +62,7 @@ describe('<Image>', () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<Image alt="React Native Logo" />);
+            root.render(<Image alt="React Native Logo" source={LOGO_SOURCE} />);
           });
 
           expect(root.getRenderedOutput({props: ['^access']}).toJSX()).toEqual(
@@ -99,6 +81,7 @@ describe('<Image>', () => {
               <Image
                 alt="React Native Logo"
                 accessibilityLabel="React Native"
+                source={LOGO_SOURCE}
               />,
             );
           });
@@ -115,12 +98,48 @@ describe('<Image>', () => {
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(<Image blurRadius={10} />);
+          root.render(<Image blurRadius={10} source={LOGO_SOURCE} />);
         });
 
         expect(root.getRenderedOutput({props: ['blurRadius']}).toJSX()).toEqual(
           <rn-image blurRadius="10" />,
         );
+      });
+    });
+
+    describe('src', () => {
+      let originalConsoleWarn;
+      beforeEach(() => {
+        originalConsoleWarn = console.warn;
+        // $FlowExpectedError[cannot-write]
+        console.warn = jest.fn();
+      });
+
+      afterEach(() => {
+        // $FlowExpectedError[cannot-write]
+        console.warn = originalConsoleWarn;
+      });
+
+      it('should warn if no source is provided', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image />);
+        });
+
+        expect(console.warn).toHaveBeenCalledTimes(1);
+        expect(console.warn).toHaveBeenCalledWith('source should not be empty');
+      });
+
+      it('should warn if src is empty', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image src="" />);
+        });
+
+        expect(console.warn).toHaveBeenCalledTimes(1);
+        expect(console.warn).toHaveBeenCalledWith('source should not be empty');
       });
     });
   });
@@ -133,7 +152,7 @@ describe('<Image>', () => {
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(<Image ref={elementRef} />);
+          root.render(<Image ref={elementRef} source={LOGO_SOURCE} />);
         });
 
         expect(elementRef.current).toBeInstanceOf(ReactNativeElement);
@@ -145,7 +164,7 @@ describe('<Image>', () => {
         const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
-          root.render(<Image ref={elementRef} />);
+          root.render(<Image ref={elementRef} source={LOGO_SOURCE} />);
         });
 
         const element = ensureInstance(elementRef.current, ReactNativeElement);
