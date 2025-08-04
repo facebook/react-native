@@ -12,7 +12,7 @@ import {createBundle} from '../bundling';
 import {isCI} from '../EnvironmentOptions';
 import {build as buildHermesCompiler} from '../executables/hermesc';
 import {build as buildFantomTester} from '../executables/tester';
-import {getNativeBuildOutputPath} from '../executables/utils';
+import {NATIVE_BUILD_OUTPUT_PATH} from '../paths';
 import {HermesVariant} from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
@@ -39,10 +39,10 @@ async function tryOrLog(
 
 export default async function build(): Promise<void> {
   try {
-    fs.rmSync(getNativeBuildOutputPath(), {recursive: true});
+    fs.rmSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
   } catch {}
 
-  fs.mkdirSync(getNativeBuildOutputPath(), {recursive: true});
+  fs.mkdirSync(NATIVE_BUILD_OUTPUT_PATH, {recursive: true});
 
   if (isCI) {
     for (const isOptimizedMode of [false, true]) {
