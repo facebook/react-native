@@ -135,11 +135,7 @@ let BaseImage: AbstractImageAndroid = ({
   ref?: React.RefSetter<HostInstance>,
   ...ImageProps,
 }) => {
-  let source = getImageSourcesFromImageProps(props) || {
-    uri: undefined,
-    width: undefined,
-    height: undefined,
-  };
+  let source = getImageSourcesFromImageProps(props) || undefined;
   const defaultSource = resolveAssetSource(props.defaultSource);
   const loadingIndicatorSource = resolveAssetSource(
     props.loadingIndicatorSource,
@@ -161,6 +157,9 @@ let BaseImage: AbstractImageAndroid = ({
   let sources;
   if (Array.isArray(source)) {
     style = [styles.base, props.style];
+    sources = source;
+  } else if (source == null) {
+    console.warn('source should not be empty');
     sources = source;
   } else {
     const {uri} = source;
