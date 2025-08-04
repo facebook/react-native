@@ -19,6 +19,8 @@ import com.facebook.proguard.annotations.DoNotStripAny
  */
 @DoNotStripAny
 internal object InspectorNetworkReporter {
+  @JvmStatic external fun isDebuggingEnabled(): Boolean
+
   /**
    * Report a network request that is about to be sent.
    * - Corresponds to `Network.requestWillBeSent` in CDP.
@@ -63,7 +65,15 @@ internal object InspectorNetworkReporter {
    *
    * Corresponds to `Network.dataReceived` in CDP.
    */
-  @JvmStatic external fun reportDataReceived(requestId: Int, dataLength: Int)
+  @JvmStatic
+  fun reportDataReceived(requestId: Int, data: String) {
+    // Guard call to CDP-only reporting method (avoid encodeToByteArray calculation)
+    if (isDebuggingEnabled()) {
+      reportDataReceivedImpl(requestId, data.encodeToByteArray().size)
+    }
+  }
+
+  @JvmStatic external fun reportDataReceivedImpl(requestId: Int, dataLength: Int)
 
   /**
    * Report when a network request is complete and we are no longer receiving response data.
@@ -77,7 +87,15 @@ internal object InspectorNetworkReporter {
    * debugging is disabled.
    */
   @JvmStatic
-  external fun maybeStoreResponseBody(requestId: Int, body: String, base64Encoded: Boolean)
+  fun maybeStoreResponseBody(requestId: Int, body: String, base64Encoded: Boolean) {
+    // Guard call to CDP-only reporting method (avoid sending string over JNI)
+    if (isDebuggingEnabled()) {
+      maybeStoreResponseBodyImpl(requestId, body, base64Encoded)
+    }
+  }
+
+  @JvmStatic
+  external fun maybeStoreResponseBodyImpl(requestId: Int, body: String, base64Encoded: Boolean)
 
   /**
    * Incrementally store a response body preview, when a string response is received in chunks.
@@ -86,5 +104,13 @@ internal object InspectorNetworkReporter {
    * As with `maybeStoreResponseBody`, calling this method is optional and a no-op if CDP debugging
    * is disabled.
    */
-  @JvmStatic external fun maybeStoreResponseBodyIncremental(requestId: Int, data: String)
+  @JvmStatic
+  fun maybeStoreResponseBodyIncremental(requestId: Int, data: String) {
+    // Guard call to CDP-only reporting method (avoid sending string over JNI)
+    if (isDebuggingEnabled()) {
+      maybeStoreResponseBodyIncrementalImpl(requestId, data)
+    }
+  }
+
+  @JvmStatic external fun maybeStoreResponseBodyIncrementalImpl(requestId: Int, data: String)
 }
