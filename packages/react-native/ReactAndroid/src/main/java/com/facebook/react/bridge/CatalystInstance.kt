@@ -78,13 +78,17 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
    * defined as there being some non-zero number of calls to JS that haven't resolved via a
    * onBatchCompleted call. The listener should be purely passive and not affect application logic.
    */
-  public fun addBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener)
+  public fun addBridgeIdleDebugListener(
+      @Suppress("DEPRECATION") listener: NotThreadSafeBridgeIdleDebugListener
+  )
 
   /**
    * Removes a NotThreadSafeBridgeIdleDebugListener previously added with
    * [addBridgeIdleDebugListener]
    */
-  public fun removeBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener)
+  public fun removeBridgeIdleDebugListener(
+      @Suppress("DEPRECATION") listener: NotThreadSafeBridgeIdleDebugListener
+  )
 
   /** This method registers the file path of an additional JS segment by its ID. */
   public fun registerSegment(segmentId: Int, path: String)
