@@ -59,8 +59,13 @@ static std::unordered_map<int, std::string> responseBuffers;
 
 #endif
 
+/* static */ jboolean InspectorNetworkReporter::isDebuggingEnabled(
+    jni::alias_ref<jclass> /*unused*/) {
+  return NetworkReporter::getInstance().isDebuggingEnabled();
+}
+
 /* static */ void InspectorNetworkReporter::reportRequestStart(
-    const jni::alias_ref<jclass> /*unused*/,
+    jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> requestUrl,
     jni::alias_ref<jstring> requestMethod,
@@ -103,7 +108,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       static_cast<std::int64_t>(encodedDataLength));
 }
 
-/* static */ void InspectorNetworkReporter::reportDataReceived(
+/* static */ void InspectorNetworkReporter::reportDataReceivedImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jint dataLength) {
@@ -129,7 +134,7 @@ static std::unordered_map<int, std::string> responseBuffers;
 #endif
 }
 
-/* static */ void InspectorNetworkReporter::maybeStoreResponseBody(
+/* static */ void InspectorNetworkReporter::maybeStoreResponseBodyImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> body,
@@ -146,7 +151,8 @@ static std::unordered_map<int, std::string> responseBuffers;
 #endif
 }
 
-/* static */ void InspectorNetworkReporter::maybeStoreResponseBodyIncremental(
+/* static */ void
+InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> data) {
@@ -165,6 +171,8 @@ static std::unordered_map<int, std::string> responseBuffers;
 /* static */ void InspectorNetworkReporter::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
+          "isDebuggingEnabled", InspectorNetworkReporter::isDebuggingEnabled),
+      makeNativeMethod(
           "reportRequestStart", InspectorNetworkReporter::reportRequestStart),
       makeNativeMethod(
           "reportResponseStart", InspectorNetworkReporter::reportResponseStart),
@@ -172,15 +180,16 @@ static std::unordered_map<int, std::string> responseBuffers;
           "reportConnectionTiming",
           InspectorNetworkReporter::reportConnectionTiming),
       makeNativeMethod(
-          "reportDataReceived", InspectorNetworkReporter::reportDataReceived),
+          "reportDataReceivedImpl",
+          InspectorNetworkReporter::reportDataReceivedImpl),
       makeNativeMethod(
           "reportResponseEnd", InspectorNetworkReporter::reportResponseEnd),
       makeNativeMethod(
-          "maybeStoreResponseBody",
-          InspectorNetworkReporter::maybeStoreResponseBody),
+          "maybeStoreResponseBodyImpl",
+          InspectorNetworkReporter::maybeStoreResponseBodyImpl),
       makeNativeMethod(
-          "maybeStoreResponseBodyIncremental",
-          InspectorNetworkReporter::maybeStoreResponseBodyIncremental),
+          "maybeStoreResponseBodyIncrementalImpl",
+          InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl),
   });
 }
 
