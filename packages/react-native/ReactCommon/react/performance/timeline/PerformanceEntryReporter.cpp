@@ -89,9 +89,9 @@ PerformanceEntryReporter::PerformanceEntryReporter()
 }
 
 HighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
-  return timeStampProvider_ != nullptr ? timeStampProvider_()
-                                       : HighResTimeStamp::now();
+  return HighResTimeStamp::now();
 }
+
 void PerformanceEntryReporter::addEventTimingListener(
     PerformanceEntryReporterEventTimingListener* listener) {
   std::unique_lock lock(listenersMutex_);

@@ -17307,7 +17307,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   std::unordered_map<std::string, double> getSimpleMemoryInfo(jsi::Runtime& rt);
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
-  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
   void clearEventCountsForTesting(jsi::Runtime& rt);
 };
 } // namespace facebook::react
@@ -17639,9 +17638,6 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
   HighResTimeStamp getCurrentTimeStamp() const;
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
