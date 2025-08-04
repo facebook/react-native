@@ -514,7 +514,8 @@ public class ReactHostImpl(
   internal fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactInstance?.hasNativeModule<T>(nativeModuleInterface) ?: false
 
-  internal val nativeModules: Collection<NativeModule> = reactInstance?.nativeModules ?: listOf()
+  internal val nativeModules: Collection<NativeModule>
+    get() = reactInstance?.nativeModules ?: listOf()
 
   internal fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
