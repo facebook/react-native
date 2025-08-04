@@ -79,7 +79,7 @@ void NetworkReporter::reportRequestStart(
     int encodedDataLength,
     const std::optional<ResponseInfo>& redirectResponse) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = HighResTimeStamp::now();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -130,7 +130,7 @@ void NetworkReporter::reportConnectionTiming(
     const std::string& requestId,
     const std::optional<Headers>& headers) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = HighResTimeStamp::now();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -164,7 +164,7 @@ void NetworkReporter::reportResponseStart(
     const ResponseInfo& responseInfo,
     int encodedDataLength) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = HighResTimeStamp::now();
 
     // All builds: Annotate PerformanceResourceTiming metadata
     {
@@ -229,7 +229,7 @@ void NetworkReporter::reportResponseEnd(
     const std::string& requestId,
     int encodedDataLength) {
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = PerformanceEntryReporter::getInstance()->getCurrentTimeStamp();
+    auto now = HighResTimeStamp::now();
 
     // All builds: Report PerformanceResourceTiming event
     {
