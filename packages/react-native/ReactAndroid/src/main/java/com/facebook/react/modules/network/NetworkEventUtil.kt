@@ -141,6 +141,9 @@ internal object NetworkEventUtil {
       error: String?,
       e: Throwable?
   ) {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting()) {
+      InspectorNetworkReporter.reportRequestFailed(requestId, false)
+    }
     reactContext?.emitDeviceEvent(
         "didCompleteNetworkResponse",
         buildReadableArray {

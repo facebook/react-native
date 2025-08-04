@@ -134,6 +134,14 @@ static std::unordered_map<int, std::string> responseBuffers;
 #endif
 }
 
+/* static */ void InspectorNetworkReporter::reportRequestFailed(
+    jni::alias_ref<jclass> /*unused*/,
+    jint requestId,
+    jboolean cancelled) {
+  NetworkReporter::getInstance().reportRequestFailed(
+      std::to_string(requestId), cancelled);
+}
+
 /* static */ void InspectorNetworkReporter::maybeStoreResponseBodyImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
@@ -184,6 +192,8 @@ InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl(
           InspectorNetworkReporter::reportDataReceivedImpl),
       makeNativeMethod(
           "reportResponseEnd", InspectorNetworkReporter::reportResponseEnd),
+      makeNativeMethod(
+          "reportRequestFailed", InspectorNetworkReporter::reportRequestFailed),
       makeNativeMethod(
           "maybeStoreResponseBodyImpl",
           InspectorNetworkReporter::maybeStoreResponseBodyImpl),
