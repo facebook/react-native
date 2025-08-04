@@ -80,6 +80,13 @@ __attribute__((deprecated(
 
 - (RCTRootViewFactory *)rootViewFactory;
 
+/**
+ * It creates the RCTRootViewFactory.
+ *
+ * @return: an instance of `RCTRootViewFactory`.
+ */
+- (RCTRootViewFactory *)createRCTRootViewFactory;
+
 @end
 
 NS_ASSUME_NONNULL_END
