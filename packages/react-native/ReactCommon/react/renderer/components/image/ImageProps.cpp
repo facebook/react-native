@@ -9,6 +9,7 @@
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/debugStringConvertibleUtils.h>
 
 namespace facebook::react {
 
@@ -280,6 +281,18 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   return result;
 }
 
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
+  const auto& defaultImageProps = ImageProps();
+
+  return ViewProps::getDebugProps() +
+      SharedDebugStringConvertibleList{
+          debugStringConvertibleItem(
+              "blurRadius", blurRadius, defaultImageProps.blurRadius),
+      };
+}
 #endif
 
 } // namespace facebook::react
