@@ -114,7 +114,8 @@ export type LibraryGenerators =
   | 'shadow-nodes'
   | 'modulesAndroid'
   | 'modulesCxx'
-  | 'modulesIOS';
+  | 'modulesIOS'
+  | 'modulesMacOS';
 
 export type SchemasGenerators = 'providerIOS';
 
@@ -179,6 +180,7 @@ const LIBRARY_GENERATORS: LibraryGeneratorsFunctions = {
   ],
   modulesCxx: [generateModuleCpp.generate, generateModuleH.generate],
   modulesIOS: [generateModuleObjCpp.generate],
+  modulesMacOS: [generateModuleObjCpp.generate],
   tests: [generateTests.generate],
   'shadow-nodes': [
     generateShadowNodeCpp.generate,
@@ -278,6 +280,7 @@ module.exports = {
     const outputFoldersForGenerators = {
       componentsIOS: componentIOSOutput,
       modulesIOS: modulesIOSOutput,
+      modulesMacOS: modulesIOSOutput,
       descriptors: outputDirectory,
       events: outputDirectory,
       props: outputDirectory,
