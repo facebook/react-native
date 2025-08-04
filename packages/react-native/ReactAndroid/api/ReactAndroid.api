@@ -1140,11 +1140,6 @@ public abstract class com/facebook/react/bridge/ReactContextBaseJavaModule : com
 	protected final fun getCurrentActivity ()Landroid/app/Activity;
 }
 
-public final class com/facebook/react/bridge/ReactCxxErrorHandler {
-	public static final field INSTANCE Lcom/facebook/react/bridge/ReactCxxErrorHandler;
-	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
-}
-
 public final class com/facebook/react/bridge/ReactMarker {
 	public static final field INSTANCE Lcom/facebook/react/bridge/ReactMarker;
 	public static final fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V

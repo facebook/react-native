@@ -16,7 +16,7 @@ import java.lang.reflect.Method
 
 @DoNotStrip
 @LegacyArchitecture
-public object ReactCxxErrorHandler {
+internal object ReactCxxErrorHandler {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture(
         "ReactCxxErrorHandler", LegacyArchitectureLogLevel.WARNING)
@@ -27,7 +27,7 @@ public object ReactCxxErrorHandler {
 
   @DoNotStrip
   @JvmStatic
-  public fun setHandleErrorFunc(handlerObject: Any?, handleErrorFunc: Method?) {
+  fun setHandleErrorFunc(handlerObject: Any?, handleErrorFunc: Method?) {
     this.handlerObject = handlerObject
     this.handleErrorFunc = handleErrorFunc
   }
