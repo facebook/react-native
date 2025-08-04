@@ -107,6 +107,20 @@ describe('<Image>', () => {
         });
       });
     });
+
+    describe('blurRadius', () => {
+      it('provides blur radius for image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image blurRadius={10} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['blurRadius']}).toJSX()).toEqual(
+          <rn-image blurRadius="10" />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
