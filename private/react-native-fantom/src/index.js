@@ -682,6 +682,8 @@ export function saveJSMemoryHeapSnapshot(filePath: string): void {
   NativeFantom.saveJSMemoryHeapSnapshot(filePath);
 }
 
+export * from './HighResTimeStampMock';
+
 function runLogBoxCheck() {
   if (isLogBoxCheckEnabled && LogBox.isInstalled()) {
     const message =

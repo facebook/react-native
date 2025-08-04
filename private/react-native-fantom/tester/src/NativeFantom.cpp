@@ -9,6 +9,7 @@
 
 #include <jsi/JSIDynamic.h>
 #include <react/bridging/Bridging.h>
+#include <react/debug/flags.h>
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -246,5 +247,29 @@ void NativeFantom::saveJSMemoryHeapSnapshot(
   runtime.instrumentation().collectGarbage("heapsnapshot");
   runtime.instrumentation().createSnapshotToFile(filePath);
 }
+
+#ifdef REACT_NATIVE_DEBUG
+
+void NativeFantom::forceHighResTimeStamp(
+    jsi::Runtime& /*runtime*/,
+    std::optional<HighResTimeStamp> now) {
+  if (now) {
+    HighResTimeStamp::setTimeStampProviderForTesting(
+        [now] { return now->toChronoSteadyClockTimePoint(); });
+  } else {
+    HighResTimeStamp::setTimeStampProviderForTesting(nullptr);
+  }
+}
+
+#else
+
+void NativeFantom::forceHighResTimeStamp(
+    jsi::Runtime& runtime,
+    std::optional<HighResTimeStamp> /*now*/) {
+  throw jsi::JSError(
+      runtime, "Mocking timers is not supported in optimized builds");
+}
+
+#endif
 
 } // namespace facebook::react

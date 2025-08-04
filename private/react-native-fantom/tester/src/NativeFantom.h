@@ -146,6 +146,10 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
       jsi::Runtime& runtime,
       const std::string& filePath);
 
+  void forceHighResTimeStamp(
+      jsi::Runtime& runtime,
+      std::optional<HighResTimeStamp> now);
+
  private:
   TesterAppDelegate& appDelegate_;
   SurfaceId nextSurfaceId_ = 1;
