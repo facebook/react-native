@@ -42,6 +42,16 @@ function ensurePerformanceLongTaskTiming(
 
 let observer: ?PerformanceObserver;
 
+const constants = Fantom.getConstants();
+const isGithubCI = constants.isOSS && constants.isRunningFromCI;
+
+// Skip the test on Github CI.
+// In that environment, execution speed is unreliable so some of the tasks
+// we schedule as part of the test run (even the task to report long tasks) are
+// also being reported as long, and we don't have a way to distinguish those
+// from the intentionally long tasks we're scheduling for testing.
+const describe = isGithubCI ? global.describe.skip : global.describe;
+
 describe('LongTasks API', () => {
   afterEach(() => {
     if (observer) {
