@@ -65,6 +65,7 @@ ${
 }
 
 setConstants({
+  isOSS: ${String(EnvironmentOptions.isOSS)},
   isRunningFromCI: ${String(EnvironmentOptions.isCI)},
   forceTestModeForBenchmarks: ${String(EnvironmentOptions.forceTestModeForBenchmarks)},
   fantomConfigSummary: '${formatFantomConfig(testConfig)}',
