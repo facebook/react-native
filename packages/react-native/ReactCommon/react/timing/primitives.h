@@ -196,7 +196,7 @@ class HighResTimeStamp {
   HighResTimeStamp() noexcept
       : chronoTimePoint_(std::chrono::steady_clock::now()) {}
 
-  static constexpr HighResTimeStamp now() noexcept {
+  static HighResTimeStamp now() noexcept {
     return HighResTimeStamp(std::chrono::steady_clock::now());
   }
 
