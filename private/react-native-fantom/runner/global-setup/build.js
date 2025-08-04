@@ -8,7 +8,7 @@
  * @format
  */
 
-import createBundle from '../createBundle';
+import {createBundle} from '../bundling';
 import {isCI} from '../EnvironmentOptions';
 import {build as buildHermesCompiler} from '../executables/hermesc';
 import {build as buildFantomTester} from '../executables/tester';
