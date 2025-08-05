@@ -8,12 +8,17 @@
 #pragma once
 
 #include "RuntimeSamplingProfile.h"
+#include "TraceEvent.h"
 
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct InstanceTracingProfile {
+struct InstanceTracingProfileLegacy {
  public:
   RuntimeSamplingProfile runtimeSamplingProfile;
+};
+
+struct InstanceTracingProfile {
+  std::vector<TraceEvent> performanceTraceEvents;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
