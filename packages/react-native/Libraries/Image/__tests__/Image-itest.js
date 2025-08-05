@@ -40,6 +40,8 @@ describe('<Image>', () => {
           layoutMetrics-overflowInset="{top:0,right:0,bottom:0,left:0}"
           layoutMetrics-pointScaleFactor="3"
           overflow="hidden"
+          source-scale="1"
+          source-type="remote"
         />,
       );
     });
