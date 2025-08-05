@@ -176,4 +176,17 @@ tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
   };
 }
 
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+  } else {
+    runtimeTracingAgent_ = nullptr;
+  }
+}
+
 } // namespace facebook::react::jsinspector_modern
