@@ -10,8 +10,8 @@
 
 namespace facebook::react::jsinspector_modern {
 
-bool HostTargetController::startTracing() {
-  return target_.startTracing();
+bool HostTargetController::startTracing(tracing::Mode tracingMode) {
+  return target_.startTracing(tracingMode);
 }
 
 tracing::TraceRecordingState HostTargetController::stopTracing() {
@@ -25,12 +25,13 @@ std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
   return agent;
 }
 
-bool HostTarget::startTracing() {
+bool HostTarget::startTracing(tracing::Mode tracingMode) {
   if (traceRecording_ != nullptr) {
     return false;
   }
 
-  traceRecording_ = std::make_unique<HostTargetTraceRecording>(*this);
+  traceRecording_ =
+      std::make_unique<HostTargetTraceRecording>(tracingMode, *this);
   traceRecording_->setTracedInstance(currentInstance_.get());
   traceRecording_->start();
 
