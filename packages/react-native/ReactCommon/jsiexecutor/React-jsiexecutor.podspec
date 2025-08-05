@@ -29,9 +29,10 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
-  s.dependency "React-cxxreact", version
-  s.dependency "React-jsi", version
-  s.dependency "React-perflogger", version
+  s.dependency "React-cxxreact"
+  s.dependency "React-jsi"
+  s.dependency "React-perflogger"
+  add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')

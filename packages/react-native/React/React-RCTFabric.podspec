@@ -92,6 +92,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
+  add_dependency(s, "React-performancecdpmetrics", :framework_name => 'React_performancecdpmetrics')
   add_dependency(s, "React-renderercss")
   add_dependency(s, "React-RCTFBReactNativeSpec")
 

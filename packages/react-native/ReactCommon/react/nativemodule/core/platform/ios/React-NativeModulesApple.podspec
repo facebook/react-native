@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
     s.dependency "React-cxxreact"
     s.dependency "React-jsi"
     s.dependency "React-featureflags"
+    add_dependency(s, "React-debug")
     add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
     add_dependency(s, "React-featureflags")
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
