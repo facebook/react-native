@@ -1501,4 +1501,26 @@ TEST_F(HostTargetTest, NetworkLoadNetworkResource3xx) {
   });
 }
 
+TEST_F(HostTargetTest, IOReadSizeValidation) {
+  connect();
+
+  InSequence s;
+
+  EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
+                                            "id": 1,
+                                            "error": {
+                                              "message": "Invalid params: size cannot be greater than 10MB.",
+                                              "code": -32602
+                                            }
+                                          })")));
+  toPage_->sendMessage(R"({
+        "id": 1,
+        "method": "IO.read",
+        "params": {
+          "handle": "0",
+          "size": 134217728
+        }
+      })");
+}
+
 } // namespace facebook::react::jsinspector_modern
