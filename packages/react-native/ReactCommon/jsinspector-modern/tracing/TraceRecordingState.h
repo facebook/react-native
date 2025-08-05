@@ -11,6 +11,7 @@
 #include "RuntimeSamplingProfile.h"
 
 #include <oscompat/OSCompat.h>
+#include <react/timing/primitives.h>
 
 #include <vector>
 
@@ -20,6 +21,9 @@ struct TraceRecordingState {
   // The ID of the OS-level process that this Trace Recording is associated
   // with.
   ProcessId processId = oscompat::getCurrentProcessId();
+
+  // The timestamp at which this Trace Recording started.
+  HighResTimeStamp startTime;
 
   // All captured Runtime Sampling Profiles during this Trace Recording.
   std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles{};
