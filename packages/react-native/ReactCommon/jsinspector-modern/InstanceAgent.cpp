@@ -15,6 +15,15 @@
 
 namespace facebook::react::jsinspector_modern {
 
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTracePerformanceTracerWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
+
 InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
     InstanceTarget& target,
@@ -160,7 +169,12 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
 
 InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
     : tracing::TargetTracingAgent(state) {
-  tracing::PerformanceTracer::getInstance().startTracing();
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  if (state.mode == tracing::Mode::Background) {
+    performanceTracer.startTracing(kBackgroundTracePerformanceTracerWindowSize);
+  } else {
+    performanceTracer.startTracing();
+  }
 }
 
 InstanceTracingAgent::~InstanceTracingAgent() {

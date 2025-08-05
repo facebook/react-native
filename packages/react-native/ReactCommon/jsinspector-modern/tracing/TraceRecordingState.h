@@ -9,6 +9,7 @@
 
 #include "InstanceTracingProfile.h"
 #include "RuntimeSamplingProfile.h"
+#include "TracingMode.h"
 
 #include <oscompat/OSCompat.h>
 #include <react/timing/primitives.h>
@@ -18,6 +19,9 @@
 namespace facebook::react::jsinspector_modern::tracing {
 
 struct TraceRecordingState {
+  // The mode of this Trace Recording.
+  tracing::Mode mode;
+
   // The ID of the OS-level process that this Trace Recording is associated
   // with.
   ProcessId processId = oscompat::getCurrentProcessId();
