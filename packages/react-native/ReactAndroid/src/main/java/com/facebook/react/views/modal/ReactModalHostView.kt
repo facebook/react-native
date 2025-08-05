@@ -37,6 +37,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
@@ -619,9 +620,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       return super.onHoverEvent(event)
     }
 
+    @OptIn(UnstableReactNativeAPI::class)
     override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
+        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext)
         jSPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)
       }
     }

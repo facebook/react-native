@@ -205,10 +205,15 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       return;
     }
 
+    @Nullable ReactContext reactContext = getCurrentReactContext();
+    if (reactContext == null) {
+      return;
+    }
+
     EventDispatcher eventDispatcher =
-        UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
+        UIManagerHelper.getEventDispatcher(reactContext, getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher);
+      mJSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext);
       if (childView != null && mJSPointerDispatcher != null) {
         mJSPointerDispatcher.onChildStartedNativeGesture(childView, ev, eventDispatcher);
       }
