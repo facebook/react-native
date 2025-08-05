@@ -9,6 +9,7 @@
 #include "RuntimeTarget.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <utility>
 
@@ -167,11 +168,11 @@ void InstanceAgent::stopTracing() {
   }
 }
 
-tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
+tracing::InstanceTracingProfileLegacy InstanceAgent::collectTracingProfile() {
   tracing::RuntimeSamplingProfile runtimeSamplingProfile =
       runtimeAgent_->collectSamplingProfile();
 
-  return tracing::InstanceTracingProfile{
+  return tracing::InstanceTracingProfileLegacy{
       .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
   };
 }
@@ -179,7 +180,19 @@ tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
 #pragma mark - Tracing
 
 InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
-    : tracing::TargetTracingAgent(state) {}
+    : tracing::TargetTracingAgent(state) {
+  tracing::PerformanceTracer::getInstance().startTracing();
+}
+
+InstanceTracingAgent::~InstanceTracingAgent() {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  auto performanceTraceEvents = performanceTracer.stopTracing();
+  if (performanceTraceEvents) {
+    state_.instanceTracingProfiles.emplace_back(tracing::InstanceTracingProfile{
+        .performanceTraceEvents = std::move(*performanceTraceEvents),
+    });
+  }
+}
 
 void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
   if (runtimeTarget != nullptr) {
