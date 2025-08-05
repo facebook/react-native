@@ -19,31 +19,31 @@ import {Image} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
+const LOGO_SOURCE = {uri: 'https://reactnative.dev/img/tiny_logo.png'};
+
 describe('<Image>', () => {
   describe('props', () => {
-    it('renders an empty element when there are no props', () => {
-      const root = Fantom.createRoot();
+    describe('empty props', () => {
+      // TODO T233552213: do not send empty source
+      it('renders an empty element when there are no props', () => {
+        const root = Fantom.createRoot();
 
-      Fantom.runTask(() => {
-        root.render(<Image />);
+        Fantom.runTask(() => {
+          root.render(<Image />);
+        });
+
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image overflow="hidden" source-scale="1" source-type="remote" />,
+        );
+
+        Fantom.runTask(() => {
+          root.render(<Image src="" />);
+        });
+
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image overflow="hidden" source-scale="1" source-type="remote" />,
+        );
       });
-
-      expect(
-        root.getRenderedOutput({includeLayoutMetrics: true}).toJSX(),
-      ).toEqual(
-        <rn-image
-          layoutMetrics-borderWidth="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-contentInsets="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-displayType="Flex"
-          layoutMetrics-frame="{x:0,y:0,width:390,height:0}"
-          layoutMetrics-layoutDirection="LeftToRight"
-          layoutMetrics-overflowInset="{top:0,right:0,bottom:0,left:0}"
-          layoutMetrics-pointScaleFactor="3"
-          overflow="hidden"
-          source-scale="1"
-          source-type="remote"
-        />,
-      );
     });
 
     describe('accessibility', () => {
@@ -120,6 +120,52 @@ describe('<Image>', () => {
 
         expect(root.getRenderedOutput({props: ['blurRadius']}).toJSX()).toEqual(
           <rn-image blurRadius="10" />,
+        );
+      });
+    });
+
+    describe('crossOrigin', () => {
+      it('does not set any headers in anonymous mode', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-scale="1"
+            source-type="remote"
+            source-uri={LOGO_SOURCE.uri}
+          />,
+        );
+
+        Fantom.runTask(() => {
+          root.render(<Image crossOrigin="anonymous" source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-scale="1"
+            source-type="remote"
+            source-uri={LOGO_SOURCE.uri}
+          />,
+        );
+      });
+
+      it('sets the "Access-Control-Allow-Credentials" header in "use-credentials" mode', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image crossOrigin="use-credentials" source={LOGO_SOURCE} />,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['source-header']}).toJSX(),
+        ).toEqual(
+          <rn-image source-header-Access-Control-Allow-Credentials="true" />,
         );
       });
     });
