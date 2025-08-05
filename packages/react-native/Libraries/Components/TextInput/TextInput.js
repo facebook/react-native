@@ -618,7 +618,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config);
 
-  const _accessibilityLabel = props?.['aria-label'] ?? props?.accessibilityLabel;
+  const _accessibilityLabel =
+    props?.['aria-label'] ?? props?.accessibilityLabel;
 
   let _accessibilityState;
   if (
