@@ -32,3 +32,7 @@ jobs:
     needs: check-nightly
     secrets:
       discord_webhook_url: ${{ secrets.NIGHTLY_DISCORD_WEBHOOK }}
+      firebase_app_email: ${{ secrets.FIREBASE_APP_EMAIL }}
+      firebase_app_pass: ${{ secrets.FIREBASE_APP_PASS }}
+      firebase_app_projectname: ${{ secrets.FIREBASE_APP_PROJECTNAME }}
+      firebase_app_apikey: ${{ secrets.FIREBASE_APP_APIKEY }}

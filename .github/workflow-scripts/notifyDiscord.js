@@ -41,20 +41,12 @@ async function sendMessageToDiscord(webHook, message) {
 }
 
 /**
- * Prepares a formatted Discord message payload from a list of failures.
- * @param {Array<Object>} failures - List of failures to format
- * @returns {Object} - The formatted Discord message payload
+ * Sorts jobs by platform first, then by library name.
+ * @param {Array<Object>} jobs - Array of jobs with platform and library properties
+ * @returns {Array<Object>} - Sorted array of jobs
  */
-function prepareFailurePayload(failures) {
-  if (!failures || failures.length === 0) {
-    return {
-      content:
-        '⚠️ **React Native Nightly Integration Failures** ⚠️\n\nNo failures to report.',
-    };
-  }
-
-  // Sort failures by platform and then by library name
-  const sortedFailures = [...failures].sort((a, b) => {
+function sortResultsByPlatformAndLibrary(jobs) {
+  return [...jobs].sort((a, b) => {
     // First sort by platform
     const platformA = a.platform || 'Unknown';
     const platformB = b.platform || 'Unknown';
@@ -68,6 +60,23 @@ function prepareFailurePayload(failures) {
     const libraryB = b.library || 'Unknown';
     return libraryA.localeCompare(libraryB);
   });
+}
+
+/**
+ * Prepares a formatted Discord message payload from a list of failures.
+ * @param {Array<Object>} failures - List of failures to format
+ * @returns {Object} - The formatted Discord message payload
+ */
+function prepareFailurePayload(failures) {
+  if (!failures || failures.length === 0) {
+    return {
+      content:
+        '⚠️ **React Native Nightly Integration Failures** ⚠️\n\nNo failures to report.',
+    };
+  }
+
+  // Sort failures by platform and then by library name
+  const sortedFailures = sortResultsByPlatformAndLibrary(failures);
 
   // Format the failures into a message
   const formattedFailures = sortedFailures
@@ -83,8 +92,45 @@ function prepareFailurePayload(failures) {
   };
 }
 
+/**
+ * Prepares a formatted Discord message payload for broken and recovered nightly jobs.
+ * @param {Array<Object>} broken - List of newly broken jobs
+ * @param {Array<Object>} recovered - List of recovered jobs
+ * @returns {Object} - The formatted Discord message payload
+ */
+function prepareComparisonPayload(broken, recovered) {
+  let content = '📊 **React Native Nightly Integration Status Update** 📊\n\n';
+
+  if (broken.length === 0 && recovered.length === 0) {
+    content +=
+      'No changes from yesterday - all nightly jobs maintained their previous status.';
+  } else {
+    if (broken.length > 0) {
+      content += '🔴 **Newly Broken Jobs:**\n';
+      const sortedBroken = sortResultsByPlatformAndLibrary(broken);
+
+      sortedBroken.forEach(job => {
+        content += `❌ [${job.platform}] ${job.library} (was ${job.previousStatus}, now ${job.currentStatus})\n`;
+      });
+      content += '\n';
+    }
+
+    if (recovered.length > 0) {
+      content += '🟢 **Recovered Jobs:**\n';
+      const sortedRecovered = sortResultsByPlatformAndLibrary(recovered);
+
+      sortedRecovered.forEach(job => {
+        content += `✅ [${job.platform}] ${job.library} (was ${job.previousStatus}, now ${job.currentStatus})\n`;
+      });
+    }
+  }
+
+  return {content};
+}
+
 // Export the functions using CommonJS syntax
 module.exports = {
   prepareFailurePayload,
+  prepareComparisonPayload,
   sendMessageToDiscord,
 };
