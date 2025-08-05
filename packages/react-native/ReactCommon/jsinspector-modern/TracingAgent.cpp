@@ -11,6 +11,7 @@
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceRecordingStateSerializer.h>
+#include <jsinspector-modern/tracing/TracingMode.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -63,7 +64,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     }
 
     bool didNotHaveAlreadyRunningRecording =
-        hostTargetController_.startTracing();
+        hostTargetController_.startTracing(tracing::Mode::CDP);
     if (!didNotHaveAlreadyRunningRecording) {
       frontendChannel_(cdp::jsonError(
           req.id,

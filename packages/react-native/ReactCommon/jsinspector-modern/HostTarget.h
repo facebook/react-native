@@ -18,6 +18,8 @@
 #include <optional>
 #include <string>
 
+#include <jsinspector-modern/tracing/TracingMode.h>
+
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
 #ifdef CREATE_SHARED_LIBRARY
@@ -171,9 +173,10 @@ class HostTargetController final {
   /**
    * Starts trace recording for this HostTarget.
    *
+   * \param mode In which mode to start the trace recording.
    * \return false if already tracing, true otherwise.
    */
-  bool startTracing();
+  bool startTracing(tracing::Mode mode);
 
   /**
    * Stops previously started trace recording.
@@ -264,9 +267,10 @@ class JSINSPECTOR_EXPORT HostTarget
   /**
    * Starts trace recording for this HostTarget.
    *
+   * \param mode In which mode to start the trace recording.
    * \return false if already tracing, true otherwise.
    */
-  bool startTracing();
+  bool startTracing(tracing::Mode mode);
 
   /**
    * Stops previously started trace recording.
