@@ -79,7 +79,7 @@ const visitor: PluginObj<mixed> = {
       if (exportedIdentifiers.size > 0) {
         const sortedIdentifiers = Array.from(exportedIdentifiers).sort();
         const exportStatement = t.exportNamedDeclaration(
-          // $FlowIgnore[incompatible-call]
+          // $FlowFixMe[incompatible-call]
           null,
           sortedIdentifiers.map(name =>
             t.exportSpecifier(t.identifier(name), t.identifier(name)),

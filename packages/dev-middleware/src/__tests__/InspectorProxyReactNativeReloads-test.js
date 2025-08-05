@@ -55,7 +55,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -113,7 +113,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({
@@ -169,7 +169,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -222,7 +222,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({
@@ -273,7 +273,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -423,7 +423,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });
@@ -459,7 +459,7 @@ describe('inspector proxy React Native reloads', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toContainEqual(
           expect.objectContaining({

@@ -149,7 +149,7 @@ export default function createAnimatedPropsHook(
 
           if (!isFabricNode) {
             // Check 4: this is a paper instance, call setNativeProps.
-            // $FlowIgnore[not-a-function] - Assume it's still a function.
+            // $FlowFixMe[not-a-function] - Assume it's still a function.
             // $FlowFixMe[incompatible-use]
             return instance.setNativeProps(node.__getAnimatedValue());
           }
@@ -161,7 +161,7 @@ export default function createAnimatedPropsHook(
 
           // This is a Fabric instance and setNativeProps is supported.
 
-          // $FlowIgnore[not-a-function] - Assume it's still a function.
+          // $FlowFixMe[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
 

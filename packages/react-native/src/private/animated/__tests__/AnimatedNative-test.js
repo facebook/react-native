@@ -20,11 +20,11 @@ describe('Native Animated', () => {
 
   function importModules() {
     return {
-      // $FlowIgnore[unsafe-getters-setters]
+      // $FlowFixMe[unsafe-getters-setters]
       get Animated() {
         return require('../../../../Libraries/Animated/Animated').default;
       },
-      // $FlowIgnore[unsafe-getters-setters]
+      // $FlowFixMe[unsafe-getters-setters]
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;
       },
@@ -1132,8 +1132,8 @@ describe('Native Animated', () => {
 
       // Necessary to simulate the native animation.
       expect(ref.current).not.toBeNull();
-      // $FlowIgnore[cannot-write]
-      // $FlowIgnore[incompatible-use]
+      // $FlowFixMe[cannot-write]
+      // $FlowFixMe[incompatible-use]
       ref.current.setNativeProps = jest.fn();
 
       Animated.timing(opacity, {

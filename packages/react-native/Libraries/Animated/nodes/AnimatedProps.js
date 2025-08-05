@@ -325,8 +325,8 @@ export default class AnimatedProps extends AnimatedNode {
 
 // Supported versions of JSC do not implement the newer Object.hasOwn. Remove
 // this shim when they do.
-// $FlowIgnore[method-unbinding]
+// $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
 const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
-  // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

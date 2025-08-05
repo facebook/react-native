@@ -104,7 +104,7 @@ function readReactNativeConfig(projectRoot /*: string */) /*: $FlowFixMe */ {
     return {};
   }
 
-  // $FlowIgnore[unsupported-syntax]
+  // $FlowFixMe[unsupported-syntax]
   return require(rnConfigFilePath);
 }
 
