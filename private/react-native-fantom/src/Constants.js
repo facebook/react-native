@@ -13,6 +13,7 @@ export type FantomRuntimeConstants = $ReadOnly<{
   isRunningFromCI: boolean,
   forceTestModeForBenchmarks: boolean,
   fantomConfigSummary: string,
+  jsTraceOutputPath: ?string,
 }>;
 
 let constants: FantomRuntimeConstants = {
@@ -20,6 +21,7 @@ let constants: FantomRuntimeConstants = {
   isRunningFromCI: false,
   forceTestModeForBenchmarks: false,
   fantomConfigSummary: '',
+  jsTraceOutputPath: null,
 };
 
 export function getConstants(): FantomRuntimeConstants {

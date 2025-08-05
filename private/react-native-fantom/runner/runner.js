@@ -14,6 +14,7 @@ import type {
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
+import type {FantomTestConfig} from './getFantomTestConfigs';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -27,7 +28,7 @@ import {run as runHermesCompiler} from './executables/hermesc';
 import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {getTestBuildOutputPath} from './paths';
+import {JS_TRACES_OUTPUT_PATH, getTestBuildOutputPath} from './paths';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -37,6 +38,7 @@ import {
   getDebugInfoFromCommandResult,
   printConsoleLog,
   runCommand,
+  symbolicateJSTrace,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -49,6 +51,10 @@ import readline from 'readline';
 
 const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
 fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
+
+if (EnvironmentOptions.profileJS) {
+  fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
+}
 
 function buildError(
   failureDetail: FailureDetail,
@@ -267,6 +273,10 @@ module.exports = async function runTest(
       continue;
     }
 
+    const jsTraceOutputPath = EnvironmentOptions.profileJS
+      ? buildJSTracesOutputPath(testPath, testConfig, testConfigs.length > 1)
+      : null;
+
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
       setupModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, setupModulePath)}`,
@@ -276,6 +286,7 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
+      jsTraceOutputPath,
     });
 
     const entrypointPath = path.join(
@@ -340,13 +351,22 @@ module.exports = async function runTest(
       rnTesterCommandResult,
     );
 
-    if (containsError(processedResult)) {
+    if (containsError(processedResult) || EnvironmentOptions.profileJS) {
       await createSourceMap({
         ...bundleOptions,
         out: sourceMapPath,
       }).catch(error => {
         console.error('Failed to generate source map', error);
       });
+    }
+
+    if (EnvironmentOptions.profileJS && jsTraceOutputPath != null) {
+      symbolicateJSTrace(jsTraceOutputPath, sourceMapPath);
+      console.info(
+        '🔥 JS sampling profiler trace saved to',
+        jsTraceOutputPath,
+        '\n',
+      );
     }
 
     const testResultError = processedResult.error;
@@ -450,4 +470,21 @@ function containsError(testResult: TestSuiteResult): boolean {
         result.failureDetails.length > 0 || result.failureMessages.length > 0,
     )
   );
+}
+
+function buildJSTracesOutputPath(
+  testPath: string,
+  testConfig: FantomTestConfig,
+  isMultiConfig: boolean,
+): string {
+  let fileName;
+
+  if (isMultiConfig) {
+    const configSummary = formatFantomConfig(testConfig, {style: 'short'});
+    fileName = `${path.basename(testPath)}-${configSummary}-${Date.now()}.cpuprofile`;
+  } else {
+    fileName = `${path.basename(testPath)}-${Date.now()}.cpuprofile`;
+  }
+
+  return path.join(JS_TRACES_OUTPUT_PATH, fileName);
 }
