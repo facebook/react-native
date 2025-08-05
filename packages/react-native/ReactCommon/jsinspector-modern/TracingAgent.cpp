@@ -95,9 +95,4 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   return false;
 }
 
-void TracingAgent::setCurrentInstanceAgent(
-    std::shared_ptr<InstanceAgent> instanceAgent) {
-  instanceAgent_ = std::move(instanceAgent);
-}
-
 } // namespace facebook::react::jsinspector_modern
