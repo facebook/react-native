@@ -9,10 +9,10 @@
 
 #include <fbjni/fbjni.h>
 
-namespace facebook::react {
+namespace facebook::react::jsinspector_modern {
 
-class InspectorNetworkReporter
-    : public jni::HybridClass<InspectorNetworkReporter> {
+class JInspectorNetworkReporter
+    : public jni::HybridClass<JInspectorNetworkReporter> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/modules/network/InspectorNetworkReporter;";
@@ -70,7 +70,7 @@ class InspectorNetworkReporter
   static void registerNatives();
 
  private:
-  InspectorNetworkReporter() = delete;
+  JInspectorNetworkReporter() = delete;
 };
 
-} // namespace facebook::react
+} // namespace facebook::react::jsinspector_modern

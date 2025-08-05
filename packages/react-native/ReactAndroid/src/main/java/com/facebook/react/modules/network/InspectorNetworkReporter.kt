@@ -8,6 +8,7 @@
 package com.facebook.react.modules.network
 
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.soloader.SoLoader
 
 /**
  * [Experimental] An interface for reporting network events to the modern debugger server and Web
@@ -19,6 +20,10 @@ import com.facebook.proguard.annotations.DoNotStripAny
  */
 @DoNotStripAny
 internal object InspectorNetworkReporter {
+  init {
+    SoLoader.loadLibrary("react_devsupportjni")
+  }
+
   @JvmStatic external fun isDebuggingEnabled(): Boolean
 
   /**

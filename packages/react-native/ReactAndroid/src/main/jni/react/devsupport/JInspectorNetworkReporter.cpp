@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "InspectorNetworkReporter.h"
+#include "JInspectorNetworkReporter.h"
 
 #include <jsinspector-modern/network/NetworkReporter.h>
 
@@ -16,9 +16,8 @@
 #endif
 
 using namespace facebook::jni;
-using namespace facebook::react::jsinspector_modern;
 
-namespace facebook::react {
+namespace facebook::react::jsinspector_modern {
 
 namespace {
 
@@ -59,12 +58,12 @@ static std::unordered_map<int, std::string> responseBuffers;
 
 #endif
 
-/* static */ jboolean InspectorNetworkReporter::isDebuggingEnabled(
+/* static */ jboolean JInspectorNetworkReporter::isDebuggingEnabled(
     jni::alias_ref<jclass> /*unused*/) {
   return NetworkReporter::getInstance().isDebuggingEnabled();
 }
 
-/* static */ void InspectorNetworkReporter::reportRequestStart(
+/* static */ void JInspectorNetworkReporter::reportRequestStart(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> requestUrl,
@@ -82,7 +81,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       std::to_string(requestId), requestInfo, encodedDataLength, std::nullopt);
 }
 
-/* static */ void InspectorNetworkReporter::reportConnectionTiming(
+/* static */ void JInspectorNetworkReporter::reportConnectionTiming(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jni::JMap<jstring, jstring>> headers) {
@@ -90,7 +89,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       std::to_string(requestId), convertJavaMapToHeaders(headers));
 }
 
-/* static */ void InspectorNetworkReporter::reportResponseStart(
+/* static */ void JInspectorNetworkReporter::reportResponseStart(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> requestUrl,
@@ -108,7 +107,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       static_cast<std::int64_t>(encodedDataLength));
 }
 
-/* static */ void InspectorNetworkReporter::reportDataReceivedImpl(
+/* static */ void JInspectorNetworkReporter::reportDataReceivedImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jint dataLength) {
@@ -116,7 +115,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       std::to_string(requestId), dataLength, std::nullopt);
 }
 
-/* static */ void InspectorNetworkReporter::reportResponseEnd(
+/* static */ void JInspectorNetworkReporter::reportResponseEnd(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jlong encodedDataLength) {
@@ -134,7 +133,7 @@ static std::unordered_map<int, std::string> responseBuffers;
 #endif
 }
 
-/* static */ void InspectorNetworkReporter::reportRequestFailed(
+/* static */ void JInspectorNetworkReporter::reportRequestFailed(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jboolean cancelled) {
@@ -142,7 +141,7 @@ static std::unordered_map<int, std::string> responseBuffers;
       std::to_string(requestId), cancelled);
 }
 
-/* static */ void InspectorNetworkReporter::maybeStoreResponseBodyImpl(
+/* static */ void JInspectorNetworkReporter::maybeStoreResponseBodyImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> body,
@@ -160,7 +159,7 @@ static std::unordered_map<int, std::string> responseBuffers;
 }
 
 /* static */ void
-InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl(
+JInspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl(
     jni::alias_ref<jclass> /*unused*/,
     jint requestId,
     jni::alias_ref<jstring> data) {
@@ -176,31 +175,33 @@ InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl(
 #endif
 }
 
-/* static */ void InspectorNetworkReporter::registerNatives() {
+/* static */ void JInspectorNetworkReporter::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod(
-          "isDebuggingEnabled", InspectorNetworkReporter::isDebuggingEnabled),
+          "isDebuggingEnabled", JInspectorNetworkReporter::isDebuggingEnabled),
       makeNativeMethod(
-          "reportRequestStart", InspectorNetworkReporter::reportRequestStart),
+          "reportRequestStart", JInspectorNetworkReporter::reportRequestStart),
       makeNativeMethod(
-          "reportResponseStart", InspectorNetworkReporter::reportResponseStart),
+          "reportResponseStart",
+          JInspectorNetworkReporter::reportResponseStart),
       makeNativeMethod(
           "reportConnectionTiming",
-          InspectorNetworkReporter::reportConnectionTiming),
+          JInspectorNetworkReporter::reportConnectionTiming),
       makeNativeMethod(
           "reportDataReceivedImpl",
-          InspectorNetworkReporter::reportDataReceivedImpl),
+          JInspectorNetworkReporter::reportDataReceivedImpl),
       makeNativeMethod(
-          "reportResponseEnd", InspectorNetworkReporter::reportResponseEnd),
+          "reportResponseEnd", JInspectorNetworkReporter::reportResponseEnd),
       makeNativeMethod(
-          "reportRequestFailed", InspectorNetworkReporter::reportRequestFailed),
+          "reportRequestFailed",
+          JInspectorNetworkReporter::reportRequestFailed),
       makeNativeMethod(
           "maybeStoreResponseBodyImpl",
-          InspectorNetworkReporter::maybeStoreResponseBodyImpl),
+          JInspectorNetworkReporter::maybeStoreResponseBodyImpl),
       makeNativeMethod(
           "maybeStoreResponseBodyIncrementalImpl",
-          InspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl),
+          JInspectorNetworkReporter::maybeStoreResponseBodyIncrementalImpl),
   });
 }
 
-} // namespace facebook::react
+} // namespace facebook::react::jsinspector_modern
