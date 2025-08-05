@@ -124,23 +124,35 @@ async function collectResults(discordWebHook) {
   // Initialize Firebase client
   const firebaseClient = new FirebaseClient();
   const today = getTodayDate();
-  const yesterday = getYesterdayDate();
 
   try {
     // Store today's results in Firebase
     console.log(`Storing results for ${today} in Firebase...`);
     await firebaseClient.storeResults(today, outcomes);
 
-    // Get yesterday's results for comparison
-    console.log(`Retrieving results for ${yesterday} from Firebase...`);
-    const yesterdayResults = await firebaseClient.getResults(yesterday);
+    // Get the most recent previous results for comparison
+    console.log(`Looking for most recent previous results before ${today}...`);
+    const {results: previousResults, date: previousDate} =
+      await firebaseClient.getLatestResults(today);
 
-    // Compare results and identify broken/recovered tests
-    const {broken, recovered} = compareResults(outcomes, yesterdayResults);
+    let broken = [];
+    let recovered = [];
 
-    console.log(
-      `Found ${broken.length} newly broken tests and ${recovered.length} recovered tests`,
-    );
+    if (previousResults) {
+      console.log(`Comparing with results from ${previousDate}`);
+      // Compare results and identify broken/recovered jobs
+      const comparison = compareResults(outcomes, previousResults);
+      broken = comparison.broken;
+      recovered = comparison.recovered;
+
+      console.log(
+        `Found ${broken.length} newly broken jobs and ${recovered.length} recovered jobs compared to ${previousDate}`,
+      );
+    } else {
+      console.log(
+        'No previous results found for comparison - this might be the first run or no recent data available',
+      );
+    }
 
     // Send comparison message to Discord if there are changes
     if (discordWebHook && (broken.length > 0 || recovered.length > 0)) {

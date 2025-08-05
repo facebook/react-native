@@ -362,6 +362,286 @@ describe('FirebaseClient', () => {
       );
     });
   });
+
+  describe('getLatestResults', () => {
+    it('should authenticate before making requests if no token exists', async () => {
+      const authResponse = {idToken: 'new-token'};
+      const mockResults = [{library: 'test', status: 'success'}];
+
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(authResponse)),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+        });
+
+      const client = new FirebaseClient();
+      const result = await client.getLatestResults('2023-12-15', 1);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-14',
+      });
+      expect(client.idToken).toBe('new-token');
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-14 (1 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Found results from 2023-12-14 (1 days back)',
+      );
+    });
+
+    it('should find results from the previous day', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+      });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 7);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-14',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-14 (1 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Found results from 2023-12-14 (1 days back)',
+      );
+    });
+
+    it('should find results from several days back', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+
+      // Mock 404 responses for first 2 days, then success on 3rd day
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          text: jest.fn().mockResolvedValueOnce('Not Found'),
+        })
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+          text: jest.fn().mockResolvedValueOnce('Not Found'),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+        });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 7);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-12',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-14 (1 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-13 (2 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-12 (3 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Found results from 2023-12-12 (3 days back)',
+      );
+    });
+
+    it('should skip empty results and continue searching', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+
+      // Mock empty array for first day, then valid results on second day
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify([])),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+        });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 7);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-13',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-14 (1 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-13 (2 days back)...',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Found results from 2023-12-13 (2 days back)',
+      );
+    });
+
+    it('should return null when no results found within maxDaysBack', async () => {
+      // Mock 404 responses for all days
+      global.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        text: jest.fn().mockResolvedValue('Not Found'),
+      });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 3);
+
+      expect(result).toEqual({
+        results: null,
+        date: null,
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'No previous results found within the last 3 days',
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(3);
+    });
+
+    it('should use default maxDaysBack of 7 when not specified', async () => {
+      // Mock 404 responses for all days
+      global.fetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        text: jest.fn().mockResolvedValue('Not Found'),
+      });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15');
+
+      expect(result).toEqual({
+        results: null,
+        date: null,
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'No previous results found within the last 7 days',
+      );
+      expect(global.fetch).toHaveBeenCalledTimes(7);
+    });
+
+    it('should handle non-404 errors and continue searching', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+
+      // Mock 500 error for first day, then success on second day
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          text: jest.fn().mockResolvedValueOnce('Internal Server Error'),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+        });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 7);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-13',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'No results found for 2023-12-14: HTTP 500: Internal Server Error',
+      );
+      expect(console.log).toHaveBeenCalledWith(
+        'Found results from 2023-12-13 (2 days back)',
+      );
+    });
+
+    it('should handle date boundaries correctly', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+      });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      // Test month boundary
+      const result = await client.getLatestResults('2023-12-01', 1);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-11-30',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-11-30 (1 days back)...',
+      );
+    });
+
+    it('should handle year boundary correctly', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+      });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      // Test year boundary
+      const result = await client.getLatestResults('2024-01-01', 1);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-31',
+      });
+      expect(console.log).toHaveBeenCalledWith(
+        'Checking for results on 2023-12-31 (1 days back)...',
+      );
+    });
+
+    it('should handle null results and continue searching', async () => {
+      const mockResults = [{library: 'test', status: 'success'}];
+
+      // Mock null for first day, then valid results on second day
+      global.fetch
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce('null'),
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          text: jest.fn().mockResolvedValueOnce(JSON.stringify(mockResults)),
+        });
+
+      const client = new FirebaseClient();
+      client.idToken = 'existing-token';
+
+      const result = await client.getLatestResults('2023-12-15', 7);
+
+      expect(result).toEqual({
+        results: mockResults,
+        date: '2023-12-13',
+      });
+    });
+  });
 });
 
 describe('compareResults', () => {
