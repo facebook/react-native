@@ -14,6 +14,7 @@ import type {
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
+import type {BenchmarkTestArtifact} from './benchmarkUtils';
 import type {FantomTestConfig} from './getFantomTestConfigs';
 import type {
   AsyncCommandResult,
@@ -21,6 +22,7 @@ import type {
   HermesVariant,
 } from './utils';
 
+import {printBenchmarkResultsRanking} from './benchmarkUtils';
 import {createBundle, createSourceMap} from './bundling';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -233,6 +235,7 @@ module.exports = async function runTest(
       snapshotResults: {} as TestSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
+      testArtifact: {} as mixed,
       title,
     },
   ];
@@ -429,6 +432,18 @@ module.exports = async function runTest(
   const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
     snapshotState,
     snapshotResults,
+  );
+
+  printBenchmarkResultsRanking(
+    testResults.map(testResult => {
+      // $FlowExpectedError[incompatible-cast]
+      const testArtifact = testResult.testArtifact as ?BenchmarkTestArtifact;
+      const title = testResult.ancestorTitles[0];
+      return {
+        title,
+        testArtifact,
+      };
+    }),
   );
 
   return {
