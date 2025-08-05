@@ -7,6 +7,8 @@
 
 package com.facebook.react.uimanager;
 
+import static com.facebook.infer.annotation.Assertions.assertNotNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Accessibilit
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Dynamic;
@@ -49,6 +52,7 @@ import java.util.Map;
  * Utility class that handles the addition of a "role" for accessibility to either a View or
  * AccessibilityNodeInfo.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
   public static final String TOP_ACCESSIBILITY_ACTION_EVENT = "topAccessibilityAction";
@@ -73,12 +77,15 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
   @Nullable View mAccessibilityLabelledBy;
 
   static {
-    sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
-    sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
-    sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
-    sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
-    sActionIdMap.put("expand", AccessibilityActionCompat.ACTION_EXPAND.getId());
-    sActionIdMap.put("collapse", AccessibilityActionCompat.ACTION_COLLAPSE.getId());
+    sActionIdMap.put("activate", assertNotNull(AccessibilityActionCompat.ACTION_CLICK).getId());
+    sActionIdMap.put(
+        "longpress", assertNotNull(AccessibilityActionCompat.ACTION_LONG_CLICK).getId());
+    sActionIdMap.put(
+        "increment", assertNotNull(AccessibilityActionCompat.ACTION_SCROLL_FORWARD).getId());
+    sActionIdMap.put(
+        "decrement", assertNotNull(AccessibilityActionCompat.ACTION_SCROLL_BACKWARD).getId());
+    sActionIdMap.put("expand", assertNotNull(AccessibilityActionCompat.ACTION_EXPAND).getId());
+    sActionIdMap.put("collapse", assertNotNull(AccessibilityActionCompat.ACTION_COLLAPSE).getId());
   }
 
   public ReactAccessibilityDelegate(
@@ -91,7 +98,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           @Override
           public void handleMessage(Message msg) {
             View host = (View) msg.obj;
-            host.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
+            if (host != null) {
+              host.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
+            }
           }
         };
 
@@ -190,13 +199,14 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     if (accessibilityActions != null) {
       for (int i = 0; i < accessibilityActions.size(); i++) {
-        final ReadableMap action = accessibilityActions.getMap(i);
-        if (!action.hasKey("name")) {
+        @Nullable final ReadableMap action = accessibilityActions.getMap(i);
+        if (action == null || !action.hasKey("name")) {
           throw new IllegalArgumentException("Unknown accessibility action.");
         }
 
         String actionName = action.getString("name");
-        String actionLabel = action.hasKey("label") ? action.getString("label") : null;
+        // AccessibilityActionCompat actionLabel must be non-null
+        String actionLabel = action.hasKey("label") ? assertNotNull(action.getString("label")) : "";
         int actionId;
 
         if (sActionIdMap.containsKey(actionName)) {
@@ -336,8 +346,9 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
           (AccessibilityRole) host.getTag(R.id.accessibility_role);
       final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
       if (accessibilityRole == AccessibilityRole.ADJUSTABLE
-          && (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId()
-              || action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())) {
+          && (action == assertNotNull(AccessibilityActionCompat.ACTION_SCROLL_FORWARD).getId()
+              || action
+                  == assertNotNull(AccessibilityActionCompat.ACTION_SCROLL_BACKWARD).getId())) {
         if (accessibilityValue != null && !accessibilityValue.hasKey("text")) {
           scheduleAccessibilityEventSender(host);
         }
@@ -631,7 +642,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       return true;
     }
 
-    final List actionList = node.getActionList();
+    final List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList =
+        assertNotNull(node.getActionList());
     return actionList.contains(AccessibilityNodeInfoCompat.ACTION_CLICK)
         || actionList.contains(AccessibilityNodeInfoCompat.ACTION_LONG_CLICK)
         || actionList.contains(AccessibilityNodeInfoCompat.ACTION_FOCUS);
