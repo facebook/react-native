@@ -52,17 +52,12 @@ using namespace facebook::react;
     self.delegate = delegate;
     [self _setUpFeatureFlags:releaseLevel];
 
-    auto newArchEnabled = [self newArchEnabled];
-    auto fabricEnabled = [self fabricEnabled];
-
     [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
-    RCTEnableTurboModule([self turboModuleEnabled]);
+    RCTEnableTurboModule(YES);
 
     self.rootViewFactory = [self createRCTRootViewFactory];
 
-    if (newArchEnabled || fabricEnabled) {
-      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
-    }
+    [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
 
   return self;
@@ -126,37 +121,22 @@ using namespace facebook::react;
 
 - (BOOL)newArchEnabled
 {
-  if ([_delegate respondsToSelector:@selector(newArchEnabled)]) {
-    return _delegate.newArchEnabled;
-  }
-  return RCTIsNewArchEnabled();
+  return YES;
 }
 
 - (BOOL)fabricEnabled
 {
-  if ([_delegate respondsToSelector:@selector(fabricEnabled)]) {
-    return _delegate.fabricEnabled;
-  }
-
-  return [self newArchEnabled];
+  return YES;
 }
 
 - (BOOL)turboModuleEnabled
 {
-  if ([_delegate respondsToSelector:@selector(turboModuleEnabled)]) {
-    return _delegate.turboModuleEnabled;
-  }
-
-  return [self newArchEnabled];
+  return YES;
 }
 
 - (BOOL)bridgelessEnabled
 {
-  if ([_delegate respondsToSelector:@selector(bridgelessEnabled)]) {
-    return _delegate.bridgelessEnabled;
-  }
-
-  return [self newArchEnabled];
+  return YES;
 }
 
 #pragma mark - RCTTurboModuleManagerDelegate
@@ -250,9 +230,9 @@ using namespace facebook::react;
 
   RCTRootViewFactoryConfiguration *configuration =
       [[RCTRootViewFactoryConfiguration alloc] initWithBundleURLBlock:bundleUrlBlock
-                                                       newArchEnabled:self.fabricEnabled
-                                                   turboModuleEnabled:self.turboModuleEnabled
-                                                    bridgelessEnabled:self.bridgelessEnabled];
+                                                       newArchEnabled:YES
+                                                   turboModuleEnabled:YES
+                                                    bridgelessEnabled:YES];
 
   configuration.createRootViewWithBridge = ^UIView *(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps) {
     return [weakSelf.delegate createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
@@ -334,9 +314,7 @@ using namespace facebook::react;
   dispatch_once(&setupFeatureFlagsToken, ^{
     switch (releaseLevel) {
       case Stable:
-        if ([self bridgelessEnabled]) {
-          ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSStable>());
-        }
+        ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSStable>());
         break;
       case Canary:
         ReactNativeFeatureFlags::override(std::make_unique<ReactNativeFeatureFlagsOverridesOSSCanary>());

@@ -57,8 +57,7 @@
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = self.fabricEnabled;
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
 
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
@@ -107,22 +106,22 @@
 
 - (BOOL)newArchEnabled
 {
-  return RCTIsNewArchEnabled();
+  return YES;
 }
 
 - (BOOL)bridgelessEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (BOOL)fabricEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (BOOL)turboModuleEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (Class)getModuleClassFromName:(const char *)name

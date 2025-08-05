@@ -137,7 +137,7 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)bridgelessEnabled
 {
-  return [super bridgelessEnabled];
+  return YES;
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider

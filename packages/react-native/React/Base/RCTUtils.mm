@@ -43,8 +43,7 @@ UIDeviceOrientation RCTDeviceOrientation(void);
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
 {
-  NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
-  return rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  return YES;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
