@@ -15,7 +15,7 @@ import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
-import {createRef} from 'react';
+import {createRef, useMemo} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
@@ -746,4 +746,99 @@ test('Animated.sequence', () => {
   }
 
   expect(_isSequenceFinished).toBe(true);
+});
+
+test('Props default value is restored when disconnected from animated', () => {
+  let _animatedOpacity;
+  const elementRef = createRef<HostInstance>();
+
+  function MyApp({
+    shouldAnimate,
+  }: $ReadOnly<{
+    shouldAnimate?: boolean,
+  }>) {
+    const animatedOpacity = useAnimatedValue(1, {useNativeDriver: true});
+
+    const opacity = useMemo(
+      () => (shouldAnimate === true ? animatedOpacity : undefined),
+      [shouldAnimate, animatedOpacity],
+    );
+    const scale = useMemo(
+      () =>
+        opacity?.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.95, 1],
+        }) ?? new Animated.Value(1),
+      [opacity],
+    );
+    _animatedOpacity = animatedOpacity;
+
+    return (
+      <Animated.View
+        ref={elementRef}
+        style={[
+          {
+            opacity,
+            transform: [{scale}],
+            height: 100,
+            width: 100,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp shouldAnimate={true} />);
+  });
+
+  const element = ensureInstance(elementRef.current, ReactNativeElement);
+
+  expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+    <rn-view />, // default opacity is 1
+  );
+
+  Fantom.runTask(() => {
+    Animated.timing(_animatedOpacity, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  Fantom.runWorkLoop();
+
+  expect(Fantom.unstable_getDirectManipulationProps(element)).toEqual({
+    opacity: 0,
+    transform: [{scale: 0.95}],
+  });
+
+  expect(
+    root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+  ).toEqual(<rn-view opacity="0" transform='[{"scale": 0.950000}]' />);
+
+  Fantom.runTask(() => {
+    root.render(<MyApp shouldAnimate={false} />);
+  });
+
+  expect(Fantom.unstable_getDirectManipulationProps(element)).toEqual({
+    opacity: null,
+    transform: null,
+  });
+
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(
+      root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+    ).toEqual(<rn-view transform='[{"scale": 0.950000}]' />); // TODO: T223344928 scale should be 1
+  } else {
+    expect(
+      root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+    ).toEqual(<rn-view transform='[{"scale": 1.000000}]' />);
+  }
+
+  Fantom.runWorkLoop();
 });
