@@ -156,27 +156,6 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
   }
 }
 
-void InstanceAgent::startTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->enableSamplingProfiler();
-  }
-}
-
-void InstanceAgent::stopTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->disableSamplingProfiler();
-  }
-}
-
-tracing::InstanceTracingProfileLegacy InstanceAgent::collectTracingProfile() {
-  tracing::RuntimeSamplingProfile runtimeSamplingProfile =
-      runtimeAgent_->collectSamplingProfile();
-
-  return tracing::InstanceTracingProfileLegacy{
-      .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
-  };
-}
-
 #pragma mark - Tracing
 
 InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)

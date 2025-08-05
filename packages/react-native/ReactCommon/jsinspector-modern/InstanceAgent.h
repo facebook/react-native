@@ -60,23 +60,6 @@ class InstanceAgent final {
    */
   void sendConsoleMessage(SimpleConsoleMessage message);
 
-  /**
-   * Notify Instance about started Tracing session. Should be initiated by
-   * TracingAgent on Tracing.start CDP method.
-   */
-  void startTracing();
-
-  /**
-   * Notify Instance about stopped Tracing session. Should be initiated by
-   * TracingAgent on Tracing.end CDP method.
-   */
-  void stopTracing();
-
-  /**
-   * Return recorded profile for the previous tracing session.
-   */
-  tracing::InstanceTracingProfileLegacy collectTracingProfile();
-
  private:
   void maybeSendExecutionContextCreatedNotification();
   void sendConsoleMessageImmediately(SimpleConsoleMessage message);
