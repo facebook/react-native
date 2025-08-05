@@ -618,6 +618,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config);
 
+  const _accessibilityLabel = props?.['aria-label'] ?? props?.accessibilityLabel;
+
   let _accessibilityState;
   if (
     accessibilityState != null ||
@@ -681,6 +683,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         {...otherProps}
         {...eventHandlers}
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -744,8 +747,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
         {...otherProps}
         {...colorProps}
         {...eventHandlers}
-        accessibilityState={_accessibilityState}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessibilityState={_accessibilityState}
         accessible={accessible}
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         autoCapitalize={autoCapitalize}
