@@ -160,14 +160,10 @@ function verifyNpmAuth(registry = NPM_DEFEAULT_REGISTRY) {
     const whoamiArgs = ["npm", "whoami", "--publish"];
     const whoami = spawnSync("yarn", whoamiArgs, spawnOptions);
     if (whoami.status !== 0) {
-      const stderr = whoami.stderr.toString().trim();
-      const stdout = whoami.stdout.toString().trim();
-      const errorOutput = stderr || stdout || 'No error message available';
-      
-      // Yarn uses different error format
-      if (errorOutput.includes("Invalid authentication") || errorOutput.includes("Failed with errors")) {
-        throw new Error(`Invalid or missing auth token for registry: ${registry}`);
-      }
+      const errorOutput =
+        whoami.stderr.toString().trim() ||
+        whoami.stdout.toString().trim() ||
+        'No error message available';
       
       // Provide more context about the yarn authentication failure
       throw new Error(`Yarn authentication failed (exit code ${whoami.status}): ${errorOutput}`);

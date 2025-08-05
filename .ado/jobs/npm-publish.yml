@@ -8,6 +8,9 @@ jobs:
   variables:
     - name: BUILDSECMON_OPT_IN
       value: true
+    - name: USE_YARN_FOR_PUBLISH
+      value: false
+    
   timeoutInMinutes: 90
   cancelTimeoutInMinutes: 5
   templateContext:
@@ -50,8 +53,14 @@ jobs:
     # Disable Nightly publishing on the main branch
     - ${{ if endsWith(variables['Build.SourceBranchName'], '-stable') }}:
       - script: |
-          yarn config set npmPublishRegistry "https://registry.npmjs.org"
-          yarn config set npmAuthToken $(npmAuthToken)
+          if [ "$(USE_YARN_FOR_PUBLISH)" = "true" ]; then
+            echo "Configuring yarn for npm publishing"
+            yarn config set npmPublishRegistry "https://registry.npmjs.org"
+            yarn config set npmAuthToken $(npmAuthToken)
+          else
+            echo "Configuring npm for publishing"
+            echo "//registry.npmjs.org/:_authToken=$(npmAuthToken)" > ~/.npmrc
+          fi
           node .ado/scripts/prepublish-check.mjs --verbose --tag $(publishTag)
         displayName: Set and validate npm auth
         condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
@@ -65,19 +74,33 @@ jobs:
         condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
 
       - script: |
+          set -eox pipefail
           if [[ -f .rnm-publish ]]; then
             # https://github.com/microsoft/react-native-macos/issues/2580
             # `nx release publish` gets confused by the output of RNM's prepack script.
-            # Let's call `yarn npm publish` directly instead on the packages we want to publish.
+            # Let's call publish directly instead on the packages we want to publish.
             # yarn nx release publish --tag $(publishTag) --excludeTaskDependencies
-            yarn ./packages/virtualized-lists npm publish --tag $(publishTag)
-            yarn ./packages/react-native npm publish --tag $(publishTag)
+            if [ "$(USE_YARN_FOR_PUBLISH)" = "true" ]; then
+              echo "Publishing with yarn npm publish"
+              yarn ./packages/virtualized-lists npm publish --tag $(publishTag)
+              yarn ./packages/react-native npm publish --tag $(publishTag)
+            else
+              echo "Publishing with npm publish"
+              (cd ./packages/virtualized-lists && npm publish --tag $(publishTag))
+              (cd ./packages/react-native && npm publish --tag $(publishTag))
+            fi
           fi
         displayName: Publish packages
         condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
 
     - script: |
-        yarn config unset npmAuthToken
-        yarn config unset npmPublishRegistry
-      displayName: Unset npm configuration
+        if [ "$(USE_YARN_FOR_PUBLISH)" = "true" ]; then
+          echo "Cleaning up yarn npm configuration"
+          yarn config unset npmAuthToken || true
+          yarn config unset npmPublishRegistry || true
+        else
+          echo "Cleaning up npm configuration"
+          rm -f ~/.npmrc
+        fi
+      displayName: Remove NPM auth configuration
       condition: always()
