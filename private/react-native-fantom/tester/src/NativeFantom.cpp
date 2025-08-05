@@ -7,12 +7,14 @@
 
 #include "NativeFantom.h"
 
+#include <hermes/hermes.h>
 #include <jsi/JSIDynamic.h>
 #include <react/bridging/Bridging.h>
 #include <react/debug/flags.h>
 #include <react/renderer/components/modal/ModalHostViewShadowNode.h>
 #include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
+#include <fstream>
 #include <iostream>
 
 #include "TesterAppDelegate.h"
@@ -271,5 +273,24 @@ void NativeFantom::forceHighResTimeStamp(
 }
 
 #endif
+
+const int JS_SAMPLING_PROFILER_HZ = 10000;
+
+void NativeFantom::startJSSamplingProfiler(jsi::Runtime& /*runtime*/) {
+  auto* hermesRootAPI =
+      jsi::castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesRootAPI->enableSamplingProfiler(JS_SAMPLING_PROFILER_HZ);
+}
+
+void NativeFantom::stopJSSamplingProfilerAndSaveToFile(
+    jsi::Runtime& runtime,
+    std::string filePath) {
+  auto* hermesRootAPI =
+      jsi::castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
+  hermesRootAPI->disableSamplingProfiler();
+  std::ofstream fileStream(filePath);
+  auto* hermesRuntime = dynamic_cast<hermes::HermesRuntime*>(&runtime);
+  hermesRuntime->sampledTraceToStreamInDevToolsFormat(fileStream);
+}
 
 } // namespace facebook::react

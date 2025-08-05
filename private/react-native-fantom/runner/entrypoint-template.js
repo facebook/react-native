@@ -21,18 +21,21 @@ module.exports = function entrypointTemplate({
   featureFlagsModulePath,
   testConfig,
   snapshotConfig,
+  jsTraceOutputPath,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
   testConfig: FantomTestConfig,
   snapshotConfig: SnapshotConfig,
+  jsTraceOutputPath: ?string,
 }): string {
   const constants: FantomRuntimeConstants = {
     isOSS: EnvironmentOptions.isOSS,
     isRunningFromCI: EnvironmentOptions.isCI,
     forceTestModeForBenchmarks: EnvironmentOptions.forceTestModeForBenchmarks,
     fantomConfigSummary: formatFantomConfig(testConfig),
+    jsTraceOutputPath,
   };
 
   return `/**
