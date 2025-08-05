@@ -26,6 +26,12 @@ struct SessionState {
   bool isRuntimeDomainEnabled{false};
 
   /**
+   * Whether the Trace Recording was initialized via CDP Tracing.start method
+   * and not finished yet with Tracing.stop.
+   */
+  bool hasPendingTraceRecording{false};
+
+  /**
    * A map from binding names (registered during this session using @cdp
    * Runtime.addBinding) to execution context selectors.
    *

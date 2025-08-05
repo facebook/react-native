@@ -27,8 +27,10 @@ class TracingAgent {
    */
   TracingAgent(
       FrontendChannel frontendChannel,
-      const SessionState& sessionState,
+      SessionState& sessionState,
       HostTargetController& hostTargetController);
+
+  ~TracingAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -43,7 +45,7 @@ class TracingAgent {
    */
   FrontendChannel frontendChannel_;
 
-  const SessionState& sessionState_;
+  SessionState& sessionState_;
 
   HostTargetController& hostTargetController_;
 };
