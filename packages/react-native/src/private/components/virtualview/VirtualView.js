@@ -92,7 +92,7 @@ function createVirtualView(
           ? null
           : onModeChange.bind(null, {
               mode,
-              // $FlowIgnore[incompatible-cast]
+              // $FlowFixMe[incompatible-cast]
               target: event.currentTarget as ReadOnlyElement,
               targetRect: event.nativeEvent.targetRect,
               thresholdRect: event.nativeEvent.thresholdRect,

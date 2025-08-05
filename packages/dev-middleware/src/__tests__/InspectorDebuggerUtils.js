@@ -70,7 +70,7 @@ export class DebuggerAgent {
     this.#ws = null;
   }
 
-  // $FlowIgnore[unsafe-getters-setters]
+  // $FlowFixMe[unsafe-getters-setters]
   get socket(): WebSocket {
     return nullthrows(this.#ws);
   }
@@ -103,11 +103,11 @@ export class DebuggerMock extends DebuggerAgent {
       originalHandleCallsArray === this.handle.mock.calls
         ? this.handle.mock.calls.slice(originalHandleCallCount)
         : this.handle.mock.calls;
-    // $FlowIgnore[incompatible-use]
-    // $FlowIgnore[prop-missing]
+    // $FlowFixMe[incompatible-use]
+    // $FlowFixMe[prop-missing]
     const [response] = newHandleCalls.find(args => args[0].id === message.id);
-    // $FlowIgnore[incompatible-return]
-    // $FlowIgnore[incompatible-indexer]
+    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-indexer]
     return response;
   }
 }

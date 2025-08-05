@@ -27,8 +27,8 @@ export default function mockNativeComponent<TProps: {...}>(
     _nativeTag: number = nativeTag++;
 
     render(): React.Node {
-      // $FlowIgnore[not-a-function]
-      // $FlowIgnore[prop-missing]
+      // $FlowFixMe[not-a-function]
+      // $FlowFixMe[prop-missing]
       return createElement(viewName, this.props, this.props.children);
     }
 

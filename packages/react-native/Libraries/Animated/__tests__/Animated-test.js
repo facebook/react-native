@@ -21,11 +21,11 @@ function mockQueueMicrotask() {
   let queueMicrotask;
   beforeEach(() => {
     queueMicrotask = global.queueMicrotask;
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.queueMicrotask = process.nextTick;
   });
   afterEach(() => {
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.queueMicrotask = queueMicrotask;
   });
 }

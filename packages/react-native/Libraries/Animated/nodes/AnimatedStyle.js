@@ -123,7 +123,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
 
     if ((Platform.OS as string) === 'web') {
-      // $FlowIgnore[cannot-write] - Intentional shadowing.
+      // $FlowFixMe[cannot-write] - Intentional shadowing.
       this.__getValueForStyle = resultStyle => [
         originalStyleForWeb,
         resultStyle,
@@ -249,8 +249,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 
 // Supported versions of JSC do not implement the newer Object.hasOwn. Remove
 // this shim when they do.
-// $FlowIgnore[method-unbinding]
+// $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
 const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
-  // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

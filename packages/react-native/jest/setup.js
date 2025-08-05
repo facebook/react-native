@@ -17,7 +17,7 @@ import '@react-native/js-polyfills/error-guard';
 
 import mock from './mock';
 
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 Object.defineProperties(global, {
   __DEV__: {
     configurable: true,
@@ -43,7 +43,7 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value: {
-      // $FlowIgnore[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       now: jest.fn(Date.now),
     },
     writable: true,

@@ -16,7 +16,7 @@ try {
   isMetaInternal = false;
 }
 if (isMetaInternal) {
-  // $FlowIgnore[cannot-resolve-module] - not resolvable in OSS
+  // $FlowFixMe[cannot-resolve-module] - not resolvable in OSS
   require('./metainternal/build-binary-setup');
 }
 

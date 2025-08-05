@@ -60,7 +60,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -119,7 +119,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -187,7 +187,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -288,7 +288,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -338,7 +338,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });

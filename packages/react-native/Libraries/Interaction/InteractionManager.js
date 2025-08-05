@@ -164,7 +164,7 @@ const InteractionManagerStub = {
    */
   addListener(
     eventType: string,
-    // $FlowIgnore[unclear-type]
+    // $FlowFixMe[unclear-type]
     listener: (...args: any) => mixed,
     context: mixed,
   ): EventSubscription {

@@ -33,7 +33,7 @@ async function applyBabelTransformsSeq(
       if (result == null) {
         throw new Error('Unexpected null result from Babel transform');
       }
-      // $FlowIgnore[incompatible-cast]
+      // $FlowFixMe[incompatible-cast]
       return result.ast as BabelNodeFile;
     });
   }, Promise.resolve(parsed));

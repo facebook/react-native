@@ -264,9 +264,9 @@ export function areCompositeKeysEqual(
       // We know style components are objects with non-mixed values.
       if (
         !areCompositeKeyComponentsEqual(
-          // $FlowIgnore[incompatible-cast]
+          // $FlowFixMe[incompatible-cast]
           prevComponent as $ReadOnlyCompositeKeyComponent,
-          // $FlowIgnore[incompatible-cast]
+          // $FlowFixMe[incompatible-cast]
           nextComponent as $ReadOnlyCompositeKeyComponent,
         )
       ) {
@@ -289,9 +289,9 @@ export function areCompositeKeysEqual(
       } else {
         if (
           !areCompositeKeyComponentsEqual(
-            // $FlowIgnore[incompatible-cast]
+            // $FlowFixMe[incompatible-cast]
             prevComponent as $ReadOnlyCompositeKeyComponent,
-            // $FlowIgnore[incompatible-cast]
+            // $FlowFixMe[incompatible-cast]
             nextComponent as $ReadOnlyCompositeKeyComponent,
           )
         ) {
@@ -353,8 +353,8 @@ function areCompositeKeyComponentsEqual(
 
 // Supported versions of JSC do not implement the newer Object.hasOwn. Remove
 // this shim when they do.
-// $FlowIgnore[method-unbinding]
+// $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
 const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
-  // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));
