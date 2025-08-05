@@ -10,11 +10,17 @@
 #include "InstanceTracingProfile.h"
 #include "RuntimeSamplingProfile.h"
 
+#include <oscompat/OSCompat.h>
+
 #include <vector>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
 struct TraceRecordingState {
+  // The ID of the OS-level process that this Trace Recording is associated
+  // with.
+  ProcessId processId = oscompat::getCurrentProcessId();
+
   // All captured Runtime Sampling Profiles during this Trace Recording.
   std::vector<RuntimeSamplingProfile> runtimeSamplingProfiles{};
 
