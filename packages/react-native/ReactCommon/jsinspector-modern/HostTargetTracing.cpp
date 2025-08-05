@@ -10,6 +10,14 @@
 
 namespace facebook::react::jsinspector_modern {
 
+bool HostTargetController::startTracing() {
+  return target_.startTracing();
+}
+
+tracing::TraceRecordingState HostTargetController::stopTracing() {
+  return target_.stopTracing();
+}
+
 std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
     tracing::TraceRecordingState& state) {
   auto agent = std::make_shared<HostTracingAgent>(state);
