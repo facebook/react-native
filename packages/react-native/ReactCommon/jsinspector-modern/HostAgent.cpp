@@ -47,7 +47,8 @@ class HostAgent::Impl final {
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
+        tracingAgent_(
+            TracingAgent(frontendChannel, sessionState, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
