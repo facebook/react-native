@@ -29,7 +29,10 @@ void HostTargetTraceRecording::start() {
       hostTracingAgent_ == nullptr &&
       "Tracing Agent for the HostTarget was already initialized.");
 
-  state_ = tracing::TraceRecordingState{.startTime = HighResTimeStamp::now()};
+  state_ = tracing::TraceRecordingState{
+      .mode = tracingMode_,
+      .startTime = HighResTimeStamp::now(),
+  };
   hostTracingAgent_ = hostTarget_.createTracingAgent(*state_);
 }
 
