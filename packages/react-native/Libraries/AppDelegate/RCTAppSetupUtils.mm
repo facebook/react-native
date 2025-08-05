@@ -31,7 +31,7 @@
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-  RCTEnableTurboModule(turboModuleEnabled);
+  RCTEnableTurboModule(YES);
 
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
@@ -43,15 +43,12 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-  if (fabricEnabled) {
-    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
-                                                                   moduleName:moduleName
-                                                            initialProperties:initialProperties];
-    UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
-    [surface start];
-    return rootView;
-  }
-  return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                 moduleName:moduleName
+                                                          initialProperties:initialProperties];
+  UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+  [surface start];
+  return rootView;
 }
 
 NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
