@@ -10,6 +10,7 @@
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 #include <jsinspector-modern/tracing/TraceEventSerializer.h>
+#include <jsinspector-modern/tracing/TraceRecordingStateSerializer.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -24,39 +25,22 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 /**
  * The maximum number of ProfileChunk trace events
  * that will be sent in a single CDP Tracing.dataCollected message.
- * TODO(T219394401): Increase the size once we manage the queue on OkHTTP side
+ * TODO(T219394401): Increase the size once we manage the queue on OkHTTP
+ side
  * properly and avoid WebSocket disconnections when sending a message larger
  * than 16MB.
  */
 const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
 
-void serializeTraceEventsInChunks(
-    std::vector<tracing::TraceEvent>&& traceEvents,
-    uint16_t chunkSize,
-    const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback) {
-  auto serializedTraceEvents = folly::dynamic::array();
-  for (auto&& traceEvent : traceEvents) {
-    // Emit trace events
-    serializedTraceEvents.push_back(
-        tracing::TraceEventSerializer::serialize(std::move(traceEvent)));
-
-    if (serializedTraceEvents.size() == chunkSize) {
-      resultCallback(std::move(serializedTraceEvents));
-      serializedTraceEvents = folly::dynamic::array();
-    }
-  }
-  if (!serializedTraceEvents.empty()) {
-    resultCallback(std::move(serializedTraceEvents));
-  }
-}
-
 } // namespace
 
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
-    const SessionState& sessionState)
+    const SessionState& sessionState,
+    HostTargetController& hostTargetController)
     : frontendChannel_(std::move(frontendChannel)),
-      sessionState_(sessionState) {}
+      sessionState_(sessionState),
+      hostTargetController_(hostTargetController) {}
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
@@ -69,56 +53,23 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
       return true;
     }
-    if (!instanceAgent_) {
+
+    bool didNotHaveAlreadyRunningRecording =
+        hostTargetController_.startTracing();
+    if (!didNotHaveAlreadyRunningRecording) {
       frontendChannel_(cdp::jsonError(
           req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
+          cdp::ErrorCode::InvalidRequest,
+          "Tracing has already been started"));
 
       return true;
     }
-
-    bool correctlyStartedPerformanceTracer =
-        tracing::PerformanceTracer::getInstance().startTracing();
-
-    if (!correctlyStartedPerformanceTracer) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session already started"));
-
-      return true;
-    }
-
-    instanceAgent_->startTracing();
-    instanceTracingStartTimestamp_ = HighResTimeStamp::now();
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
   } else if (req.method == "Tracing.end") {
     // @cdp Tracing.end support is experimental.
-    if (!instanceAgent_) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Couldn't find instance available for Tracing"));
-
-      return true;
-    }
-
-    instanceAgent_->stopTracing();
-
-    tracing::PerformanceTracer& performanceTracer =
-        tracing::PerformanceTracer::getInstance();
-    auto collectedEvents = performanceTracer.stopTracing();
-    if (!collectedEvents) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session not started"));
-
-      return true;
-    }
+    auto state = hostTargetController_.stopTracing();
 
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
@@ -128,19 +79,10 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
           "Tracing.dataCollected",
           folly::dynamic::object("value", std::move(eventsChunk))));
     };
-
-    serializeTraceEventsInChunks(
-        std::move(*collectedEvents),
-        TRACE_EVENT_CHUNK_SIZE,
-        dataCollectedCallback);
-
-    auto tracingProfile = instanceAgent_->collectTracingProfile();
-    tracing::IdGenerator profileIdGenerator;
-    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
-        std::move(tracingProfile.runtimeSamplingProfile),
-        profileIdGenerator,
-        instanceTracingStartTimestamp_,
+    tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
+        std::move(state),
         dataCollectedCallback,
+        TRACE_EVENT_CHUNK_SIZE,
         PROFILE_TRACE_EVENT_CHUNK_SIZE);
 
     frontendChannel_(cdp::jsonNotification(

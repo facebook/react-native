@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "HostTarget.h"
 #include "InspectorInterfaces.h"
 #include "InstanceAgent.h"
 
@@ -27,7 +28,8 @@ class TracingAgent {
    */
   TracingAgent(
       FrontendChannel frontendChannel,
-      const SessionState& sessionState);
+      const SessionState& sessionState,
+      HostTargetController& hostTargetController);
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -63,6 +65,8 @@ class TracingAgent {
   HighResTimeStamp instanceTracingStartTimestamp_;
 
   const SessionState& sessionState_;
+
+  HostTargetController& hostTargetController_;
 };
 
 } // namespace facebook::react::jsinspector_modern
