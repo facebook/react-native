@@ -69,8 +69,11 @@ void PropsAnimatedNode::disconnectFromView(Tag viewTag) {
 void PropsAnimatedNode::restoreDefaultValues() {
   // If node is already disconnected from View, we cannot restore default values
   if (connectedViewTag_ != animated::undefinedAnimatedNodeIdentifier) {
-    manager_->schedulePropsCommit(
-        connectedViewTag_, folly::dynamic::object(), false, false);
+    std::lock_guard<std::mutex> lock(propsMutex_);
+    for (auto& iter : props_.items()) {
+      iter.second = folly::dynamic(nullptr);
+    }
+    manager_->schedulePropsCommit(connectedViewTag_, props_, false, false);
   }
 }
 
