@@ -22,6 +22,7 @@ namespace facebook::react::jsinspector_modern {
 
 static constexpr long DEFAULT_BYTES_PER_READ =
     1048576; // 1MB (Chrome v112 default)
+static constexpr unsigned long MAX_BYTES_PER_READ = 10485760; // 10MB
 
 // https://github.com/chromium/chromium/blob/128.0.6593.1/content/browser/devtools/devtools_io_context.cc#L71-L73
 static constexpr std::array kTextMIMETypePrefixes{
@@ -403,9 +404,17 @@ void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
         "Invalid params: handle is missing or not a string."));
     return;
   }
-  std::optional<unsigned long> size = std::nullopt;
+  std::optional<int64_t> size = std::nullopt;
   if ((req.params.count("size") != 0u) && req.params.at("size").isInt()) {
     size = req.params.at("size").asInt();
+
+    if (size > MAX_BYTES_PER_READ) {
+      frontendChannel_(cdp::jsonError(
+          requestId,
+          cdp::ErrorCode::InvalidParams,
+          "Invalid params: size cannot be greater than 10MB."));
+      return;
+    }
   }
 
   auto streamId = req.params.at("handle").asString();
