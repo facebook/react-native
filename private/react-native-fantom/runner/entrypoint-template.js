@@ -9,6 +9,7 @@
  */
 
 import type {SnapshotConfig} from '../runtime/snapshotContext';
+import type {FantomRuntimeConstants} from '../src/Constants';
 import type {FantomTestConfig} from './getFantomTestConfigs';
 
 import * as EnvironmentOptions from './EnvironmentOptions';
@@ -27,6 +28,13 @@ module.exports = function entrypointTemplate({
   testConfig: FantomTestConfig,
   snapshotConfig: SnapshotConfig,
 }): string {
+  const constants: FantomRuntimeConstants = {
+    isOSS: EnvironmentOptions.isOSS,
+    isRunningFromCI: EnvironmentOptions.isCI,
+    forceTestModeForBenchmarks: EnvironmentOptions.forceTestModeForBenchmarks,
+    fantomConfigSummary: formatFantomConfig(testConfig),
+  };
+
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -64,12 +72,7 @@ ${
     : ''
 }
 
-setConstants({
-  isOSS: ${String(EnvironmentOptions.isOSS)},
-  isRunningFromCI: ${String(EnvironmentOptions.isCI)},
-  forceTestModeForBenchmarks: ${String(EnvironmentOptions.forceTestModeForBenchmarks)},
-  fantomConfigSummary: '${formatFantomConfig(testConfig)}',
-});
+setConstants(${JSON.stringify(constants)});
 
 registerTest(() => require('${testPath}'), ${JSON.stringify(snapshotConfig)});
 `;
