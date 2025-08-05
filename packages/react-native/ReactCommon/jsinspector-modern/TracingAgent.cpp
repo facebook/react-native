@@ -36,11 +36,19 @@ const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
 
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
-    const SessionState& sessionState,
+    SessionState& sessionState,
     HostTargetController& hostTargetController)
     : frontendChannel_(std::move(frontendChannel)),
       sessionState_(sessionState),
       hostTargetController_(hostTargetController) {}
+
+TracingAgent::~TracingAgent() {
+  // Agents are owned by the session. If the agent is destroyed, it means that
+  // the session was destroyed. We should stop pending recording.
+  if (sessionState_.hasPendingTraceRecording) {
+    hostTargetController_.stopTracing();
+  }
+}
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
@@ -64,6 +72,8 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
       return true;
     }
+
+    sessionState_.hasPendingTraceRecording = true;
     frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
@@ -71,6 +81,7 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // @cdp Tracing.end support is experimental.
     auto state = hostTargetController_.stopTracing();
 
+    sessionState_.hasPendingTraceRecording = false;
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
