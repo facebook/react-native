@@ -27,7 +27,12 @@ std::shared_ptr<HostTracingAgent> HostTarget::createTracingAgent(
 
 bool HostTarget::startTracing(tracing::Mode tracingMode) {
   if (traceRecording_ != nullptr) {
-    return false;
+    if (traceRecording_->isBackgroundInitiated() &&
+        tracingMode == tracing::Mode::CDP) {
+      traceRecording_.reset();
+    } else {
+      return false;
+    }
   }
 
   traceRecording_ =
