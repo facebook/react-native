@@ -1,10 +1,12 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.tencent.mmkv.MMKV;
 
 import org.json.JSONArray;
@@ -43,6 +45,7 @@ public class UIManagerConstantsCache {
     private static final String TAG = "UIManagerConstantsCache";
 
     // MMKV keys for two separate blobs
+    private static final String MMKV_KEY_VERSION = "UIManagerConstantsCacheVersion";
     private static final String MMKV_KEY_CONSTANTS = "UIManagerModuleConstants_v1";
     private static final String MMKV_KEY_BUBBLING  = "UIManagerModuleBubbling_v1";
 
@@ -62,6 +65,8 @@ public class UIManagerConstantsCache {
 
     /** Ensures init(...) is only done once. */
     private volatile boolean initCalled = false;
+
+    private String cacheVersionName = null;
 
     private UIManagerConstantsCache() {
         // private constructor
@@ -85,13 +90,42 @@ public class UIManagerConstantsCache {
         }
         initCalled = true;
 
+        // Its possible that the constants change between versions, so we have to keep track of the version
+        // and reset the cache if it changes.
+        // TODO: This can be improved by us compiling the UIManager constants at compile time
+        try {
+            cacheVersionName = appContext.getPackageManager()
+                    .getPackageInfo(appContext.getPackageName(), 0)
+                    .versionName;
+            cacheVersionName += "-" + (ReactNativeFeatureFlags.enableFabricRenderer() ?
+                    "Fabric" : "NonFabric");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to get app version name; continuing without caching!", e);
+            return;
+        }
+
         // 1) Initialize MMKV
         MMKV.initialize(appContext.getApplicationContext());
 
         // 2) Background thread to load both blobs
+        String finalCacheVersionName = cacheVersionName;
         new Thread(() -> {
             try {
                 MMKV mmkv = MMKV.defaultMMKV();
+
+                // 2a) Get the version the cache was generated with and see if its matching
+                String cacheVersion = mmkv.decodeString(MMKV_KEY_VERSION, null);
+                if (cacheVersion == null || !cacheVersion.equals(finalCacheVersionName)) {
+                    Log.w(TAG, "UIManagerConstantsCache version mismatch! Expected: "
+                            + finalCacheVersionName + ", found: " + cacheVersion
+                            + ". Will regenerate constants and bubblingEventTypes.");
+
+                    mmkv.removeValueForKey(MMKV_KEY_CONSTANTS);
+                    mmkv.removeValueForKey(MMKV_KEY_BUBBLING);
+                } else {
+                    Log.v(TAG, "UIManagerConstantsCache version matches: " + finalCacheVersionName);
+                }
+
 
                 // 2a) Read full-constants JSON
                 String jsonConstants = mmkv.decodeString(MMKV_KEY_CONSTANTS, null);
@@ -220,6 +254,11 @@ public class UIManagerConstantsCache {
         if (constants == null) {
             return;
         }
+        if (cacheVersionName == null) {
+            throw new IllegalStateException(
+                    "UIManagerConstantsCache not initialized! Call init(...) first."
+            );
+        }
 
         try {
             // Serialize full constants
@@ -244,6 +283,8 @@ public class UIManagerConstantsCache {
                 Log.e(TAG, "Failed to JSON-serialize bubblingEventTypes; not caching.", e);
             }
         }
+
+        MMKV.defaultMMKV().encode(MMKV_KEY_VERSION, cacheVersionName);
     }
 
     // ────────────────────────────────────────────────────────────────────────────────
