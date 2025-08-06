@@ -118,6 +118,10 @@ TesterAppDelegate::TesterAppDelegate(
       nullptr,
       std::move(provider));
 
+  mountingManager_->setSchedulerTaskExecutor([this](SchedulerTask&& task) {
+    reactHost_->runOnScheduler(std::move(task));
+  });
+
   // Ensure that the ReactHost initialisation is completed.
   // This will call `setupJSNativeFantom`.
   flushMessageQueue();

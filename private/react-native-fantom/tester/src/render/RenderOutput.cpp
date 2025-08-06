@@ -48,6 +48,29 @@ std::string RenderOutput::render(
   return folly::toJson(result);
 }
 
+folly::dynamic RenderOutput::renderViewWithNewProps(
+    const Tag& tag,
+    const Props::Shared& newViewProps) {
+  if (auto it = renderedViews_.find(tag); it != renderedViews_.end()) {
+    auto& element = it->second;
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+    folly::dynamic props = mergeDynamicProps(
+        renderedViews_[tag],
+        renderProps(newViewProps->getDebugProps()),
+        NullValueStrategy::Override);
+#else
+    folly::dynamic props = folly::dynamic::object;
+#endif
+    element["props"] = props;
+
+    renderedViews_.insert({tag, element});
+
+    return element;
+  }
+  return nullptr;
+}
+
 folly::dynamic RenderOutput::renderView(
     const StubView& view,
     const RenderFormatOptions& options) {

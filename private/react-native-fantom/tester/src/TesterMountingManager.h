@@ -49,6 +49,11 @@ class TesterMountingManager : public IMountingManager {
     viewTrees_[surfaceId] = viewTree;
   }
 
+  void setSchedulerTaskExecutor(
+      SchedulerTaskExecutor&& schedulerTaskExecutor) noexcept override {
+    schedulerTaskExecutor_ = std::move(schedulerTaskExecutor);
+  }
+
   std::unique_ptr<RenderOutput>& renderer() {
     return renderer_;
   }
@@ -58,6 +63,8 @@ class TesterMountingManager : public IMountingManager {
   std::unordered_map<SurfaceId, StubViewTree> viewTrees_;
   std::unordered_map<Tag, folly::dynamic> viewDirectManipulationProps_;
   std::unordered_map<Tag, folly::dynamic> viewFabricUpdateProps_;
+
+  SchedulerTaskExecutor schedulerTaskExecutor_;
 
   std::unique_ptr<RenderOutput> renderer_;
 };

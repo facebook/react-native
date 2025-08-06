@@ -58,6 +58,28 @@ void TesterMountingManager::dispatchCommand(
 void TesterMountingManager::synchronouslyUpdateViewOnUIThread(
     Tag reactTag,
     const folly::dynamic& changedProps) {
+  if (schedulerTaskExecutor_) {
+    schedulerTaskExecutor_([this, reactTag, changedProps](
+                               Scheduler& scheduler) {
+      for (auto& [surfaceId, viewTree] : viewTrees_) {
+        renderer_->render(
+            viewTree, {.includeRoot = true, .includeLayoutMetrics = true});
+        if (viewTree.hasTag(reactTag)) {
+          auto view = viewTree.getStubView(reactTag);
+          auto componentDescriptor =
+              scheduler
+                  .findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
+                      view.componentHandle);
+          Props::Shared newProps = componentDescriptor->cloneProps(
+              PropsParserContext{surfaceId, *scheduler.getContextContainer()},
+              view.props,
+              RawProps(changedProps));
+          renderer_->renderViewWithNewProps(view.tag, newProps);
+        }
+      }
+    });
+  }
+
   if (viewDirectManipulationProps_.contains(reactTag)) {
     auto& currentProps = viewDirectManipulationProps_[reactTag];
     currentProps = mergeDynamicProps(

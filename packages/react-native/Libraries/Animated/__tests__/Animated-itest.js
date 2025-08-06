@@ -215,11 +215,10 @@ test('animation driven by onScroll event when animated view is unmounted', () =>
 
 test('animated opacity', () => {
   let _opacity;
-  let _opacityAnimation;
   const viewRef = createRef<HostInstance>();
 
   function MyApp() {
-    const opacity = useAnimatedValue(1);
+    const opacity = useAnimatedValue(1, {useNativeDriver: true});
     _opacity = opacity;
     return (
       <Animated.View
@@ -246,22 +245,12 @@ test('animated opacity', () => {
   expect(viewElement.getBoundingClientRect().x).toBe(0);
 
   Fantom.runTask(() => {
-    _opacityAnimation = Animated.timing(_opacity, {
-      toValue: 0,
-      duration: 30,
-      useNativeDriver: true,
-    }).start();
+    _opacity.setValue(0);
   });
 
-  Fantom.unstable_produceFramesForDuration(30);
   expect(Fantom.unstable_getDirectManipulationProps(viewElement).opacity).toBe(
     0,
   );
-
-  // TODO: this shouldn't be neccessary since animation should be stopped after duration
-  Fantom.runTask(() => {
-    _opacityAnimation?.stop();
-  });
 
   expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
     <rn-view opacity="0" />,

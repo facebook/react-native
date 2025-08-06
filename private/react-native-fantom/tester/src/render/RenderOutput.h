@@ -19,6 +19,10 @@ class RenderOutput {
       const StubViewTree& tree,
       const RenderFormatOptions& options);
 
+  folly::dynamic renderViewWithNewProps(
+      const Tag& tag,
+      const Props::Shared& newViewProps);
+
   void markMutated(SurfaceId surfaceId) {
     treesMutated_.insert(surfaceId);
   }
