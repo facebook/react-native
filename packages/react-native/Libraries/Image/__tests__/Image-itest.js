@@ -208,6 +208,20 @@ describe('<Image>', () => {
       });
     });
 
+    describe('width', () => {
+      it('provides width for image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image width={100} source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['width']}).toJSX()).toEqual(
+          <rn-image width="100.000000" />,
+        );
+      });
+    });
+
     describe('loading progress', () => {
       (
         [
@@ -547,6 +561,65 @@ describe('<Image>', () => {
             source-3x-type="remote"
             source-3x-uri="https://reactnative.dev/img/large_logo.svg"
           />,
+        );
+      });
+    });
+
+    describe('style', () => {
+      it('can be set', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              style={{
+                width: 100,
+                height: 100,
+                resizeMode: 'contain',
+              }}
+              source={LOGO_SOURCE}
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-image
+            height="100.000000"
+            overflow="hidden"
+            resizeMode="contain"
+            width="100.000000"
+            source-scale="1"
+            source-type="remote"
+            source-uri="https://reactnative.dev/img/tiny_logo.png"
+          />,
+        );
+      });
+    });
+
+    describe('testID', () => {
+      it('can be set', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image testID="test" source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['testID']}).toJSX()).toEqual(
+          <rn-image testID="test" />,
+        );
+      });
+    });
+
+    describe('tintColor', () => {
+      it('can be set', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image tintColor="red" source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['tintColor']}).toJSX()).toEqual(
+          <rn-image tintColor="rgba(255, 0, 0, 1)" />,
         );
       });
     });
