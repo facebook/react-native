@@ -72,6 +72,7 @@ def use_react_native! (
   privacy_file_aggregation_enabled: true
 )
   error_if_try_to_use_jsc_from_core()
+  warn_if_new_arch_disabled()
 
   hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
@@ -433,6 +434,24 @@ def print_cocoapods_deprecation_message()
   puts '* If you are using the Community CLI, please run:'.yellow
   puts '`yarn ios`'.yellow
   puts '============================================================='.yellow
+  puts ''
+
+end
+
+def warn_if_new_arch_disabled
+  if ENV["RCT_NEW_ARCH_ENABLED"] == "1" || ENV["RCT_NEW_ARCH_ENABLED"] == nil
+    return
+  end
+
+  puts ''
+  puts '====================== NEW ARCH ONLY ======================='.yellow
+  puts 'WARNING: Calling pod install with `RCT_NEW_ARCH_ENABLED=0'.yellow
+  puts 'is not supported anymore since React Native 0.82.'.yellow
+  puts 'You can remove the ENV["RCT_NEW_ARCH_ENABLED"]=0 from your'.yellow
+  puts 'Podfie, if you have it.'.yellow
+  puts 'The application will run with the New Architecture enabled'.yellow
+  puts 'by default.'.yellow
+  puts '============================================================'.yellow
   puts ''
 
 end
