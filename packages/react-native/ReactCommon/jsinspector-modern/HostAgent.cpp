@@ -462,4 +462,17 @@ void HostAgent::setCurrentInstanceAgent(
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
 }
 
+#pragma mark - Tracing
+
+HostTracingAgent::HostTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void HostTracingAgent::setTracedInstance(InstanceTarget* instanceTarget) {
+  if (instanceTarget != nullptr) {
+    instanceTracingAgent_ = instanceTarget->createTracingAgent(state_);
+  } else {
+    instanceTracingAgent_ = nullptr;
+  }
+}
+
 } // namespace facebook::react::jsinspector_modern

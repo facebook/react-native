@@ -34,8 +34,10 @@ namespace facebook::react::jsinspector_modern {
 
 class HostTargetSession;
 class HostAgent;
+class HostTracingAgent;
 class HostCommandSender;
 class HostTarget;
+class HostTargetTraceRecording;
 
 struct HostTargetMetadata {
   std::optional<std::string> appDisplayName;
@@ -237,6 +239,28 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void sendCommand(HostCommand command);
 
+  /**
+   * Creates a new HostTracingAgent.
+   * This Agent is not owned by the HostTarget. The Agent will be destroyed at
+   * the end of the tracing session.
+   *
+   * \param state A reference to the state of the active trace recording.
+   */
+  std::shared_ptr<HostTracingAgent> createTracingAgent(
+      tracing::TraceRecordingState& state);
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing();
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -256,6 +280,14 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+
+  /**
+   * Current pending trace recording, which encapsulates the configuration of
+   * the tracing session and the state.
+   *
+   * Should only be allocated when there is an active tracing session.
+   */
+  std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
 
   inline HostTargetDelegate& getDelegate() {
     return delegate_;
