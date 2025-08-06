@@ -25,7 +25,7 @@ class ColorStopTest {
   fun setUp() {
     val metrics = DisplayMetrics()
     metrics.density = 1f
-    DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
+    DisplayMetricsHolder.setScreenDisplayMetrics(metrics)
   }
 
   @Test
