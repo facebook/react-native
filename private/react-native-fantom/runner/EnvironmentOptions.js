@@ -17,6 +17,7 @@ const VALID_ENVIRONMENT_VARIABLES = [
   'FANTOM_LOG_COMMANDS',
   'FANTOM_PRINT_OUTPUT',
   'FANTOM_PROFILE_JS',
+  'FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION',
 ];
 
 /**
@@ -63,6 +64,10 @@ export const forceTestModeForBenchmarks: boolean = Boolean(
 
 export const profileJS: boolean = Boolean(process.env.FANTOM_PROFILE_JS);
 
+export const enableJSMemoryInstrumentation: boolean = Boolean(
+  process.env.FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION,
+);
+
 /**
  * Throws an error if there is an environment variable defined with the FANTOM_
  * prefix that is not recognized.
@@ -77,5 +82,16 @@ export function validateEnvironmentVariables(): void {
         `Unexpected Fantom environment variable: ${key}=${String(process.env[key])}. Accepted variables are: ${VALID_ENVIRONMENT_VARIABLES.join(', ')}`,
       );
     }
+  }
+
+  // Enabling memory instrumentation is only necessary when taking JS heap
+  // snapshots in optimized builds (where it is disabled by default).
+  // This isn't supported in CI or in OSS because that would require adding
+  // another dimension to the build matrix, duplicating the number of binaries
+  // we need to build before starting test execution.
+  if ((isCI || isOSS) && enableJSMemoryInstrumentation) {
+    throw new Error(
+      'Memory instrumentation is not supported in CI or OSS environments, as it requires a custom Hermes build that is not prebuilt in those environments.',
+    );
   }
 }

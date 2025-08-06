@@ -30,7 +30,9 @@ import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
 import {
+  JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
   JS_TRACES_OUTPUT_PATH,
+  buildJSHeapSnapshotsOutputPathTemplate,
   buildJSTracesOutputPath,
   getTestBuildOutputPath,
 } from './paths';
@@ -56,6 +58,7 @@ import readline from 'readline';
 
 const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
 fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
+fs.mkdirSync(JS_HEAP_SNAPSHOTS_OUTPUT_PATH, {recursive: true});
 
 if (EnvironmentOptions.profileJS) {
   fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
@@ -280,8 +283,21 @@ module.exports = async function runTest(
     }
 
     const jsTraceOutputPath = EnvironmentOptions.profileJS
-      ? buildJSTracesOutputPath(testPath, testConfig, testConfigs.length > 1)
+      ? buildJSTracesOutputPath({
+          testPath,
+          testConfig,
+          isMultiConfigTest: testConfigs.length > 1,
+        })
       : null;
+
+    const [
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+    ] = buildJSHeapSnapshotsOutputPathTemplate({
+      testPath,
+      testConfig,
+      isMultiConfigTest: testConfigs.length > 1,
+    });
 
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
@@ -292,6 +308,8 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
       jsTraceOutputPath,
     });
 
