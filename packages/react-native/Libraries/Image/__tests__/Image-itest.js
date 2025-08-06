@@ -288,6 +288,46 @@ describe('<Image>', () => {
         });
       });
     });
+
+    describe('resizeMode', () => {
+      it('is set to "cover" by default', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['resizeMode']}).toJSX()).toEqual(
+          <rn-image />,
+        );
+
+        Fantom.runTask(() => {
+          root.render(<Image resizeMode="cover" source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['resizeMode']}).toJSX()).toEqual(
+          <rn-image />,
+        );
+      });
+
+      (['stretch', 'contain', 'repeat', 'center'] as const).forEach(
+        resizeMode => {
+          it(`can be set to "${resizeMode}"`, () => {
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(
+                <Image resizeMode={resizeMode} source={LOGO_SOURCE} />,
+              );
+            });
+
+            expect(
+              root.getRenderedOutput({props: ['resizeMode']}).toJSX(),
+            ).toEqual(<rn-image resizeMode={resizeMode} />);
+          });
+        },
+      );
+    });
   });
 
   describe('ref', () => {
