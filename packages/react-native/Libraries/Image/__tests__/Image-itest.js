@@ -328,6 +328,107 @@ describe('<Image>', () => {
         },
       );
     });
+
+    describe('source', () => {
+      it('can be set to a local image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image source={require('./img/img1.png')} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-scale="1"
+            source-size="{1, 1}"
+            source-type="local"
+            source-uri="file://drawable-mdpi/packages_reactnative_libraries_image___tests___img_img1.png"
+          />,
+        );
+      });
+
+      it('can be set to a remote image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              source={{
+                uri: 'https://reactnative.dev/img/tiny_logo.png',
+                width: 100,
+                height: 100,
+                scale: 2,
+                cache: 'only-if-cached',
+                method: 'POST',
+                body: 'name=React+Native',
+                headers: {
+                  Authorization: 'Basic RandomString',
+                },
+              }}
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-body="name=React+Native"
+            source-cache="only-if-cached"
+            source-header-Authorization="Basic RandomString"
+            source-method="POST"
+            source-scale="2"
+            source-size="{100, 100}"
+            source-type="remote"
+            source-uri="https://reactnative.dev/img/tiny_logo.png"
+          />,
+        );
+      });
+
+      it('can be set to a list of remote images', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              source={[
+                {
+                  uri: 'https://reactnative.dev/img/tiny_logo.png',
+                  scale: 1,
+                  headers: {
+                    Authorization: 'Basic RandomString',
+                  },
+                },
+                {
+                  uri: 'https://reactnative.dev/img/medium_logo.png',
+                  scale: 2,
+                  cache: 'only-if-cached',
+                },
+                {
+                  uri: 'https://reactnative.dev/img/large_logo.png',
+                  scale: 3,
+                  method: 'POST',
+                },
+              ]}
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-1x-header-Authorization="Basic RandomString"
+            source-1x-scale="1"
+            source-1x-type="remote"
+            source-1x-uri="https://reactnative.dev/img/tiny_logo.png"
+            source-2x-cache="only-if-cached"
+            source-2x-scale="2"
+            source-2x-type="remote"
+            source-2x-uri="https://reactnative.dev/img/medium_logo.png"
+            source-3x-method="POST"
+            source-3x-type="remote"
+            source-3x-uri="https://reactnative.dev/img/large_logo.png"
+          />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
