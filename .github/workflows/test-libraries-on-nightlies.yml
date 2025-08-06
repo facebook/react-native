@@ -5,6 +5,14 @@ on:
     secrets:
       discord_webhook_url:
         required: true
+      firebase_app_email:
+        required: true
+      firebase_app_pass:
+        required: true
+      firebase_app_apikey:
+        required: true
+      firebase_app_projectname:
+        required: true
 
 
 # We use the matrix.library entry to specify the dependency we want to use
@@ -94,6 +102,11 @@ jobs:
           path: /tmp
       - name: Collect failures
         uses: actions/github-script@v6
+        env:
+          FIREBASE_APP_EMAIL: ${{ secrets.firebase_app_email }}
+          FIREBASE_APP_PASS: ${{ secrets.firebase_app_pass }}
+          FIREBASE_APP_APIKEY: ${{ secrets.firebase_app_apikey }}
+          FIREBASE_APP_PROJECTNAME: ${{ secrets.firebase_app_projectname }}
         with:
           script: |
             const {collectResults} = require('./.github/workflow-scripts/collectNightlyOutcomes.js');
