@@ -1,218 +1,40 @@
 # Changelog
 
-## v0.81.0-rc.3
-
-### Breaking
-
-- Metro to ^0.83.1 ([e247be793c](https://github.com/facebook/react-native/commit/e247be793c70a374955d798d8cbbc6eba58080ec) by [@motiz88](https://github.com/motiz88))
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
+## v0.81.0-rc.5
 
 ### Fixed
 
+#### Android specific
+- **Runtime:** Fixed `ReactHostImpl.nativeModules` always returning an empty list ([2f46a49](https://github.com/facebook/react-native/commit/2f46a49b8d8a11d5cf4342eee83c469b545c6779) by [@lukmccall](https://github.com/lukmccall))
 
+## v0.81.0-rc.4 - Burned
+
+## v0.81.0-rc.3
+
+### Changed
+
+- **Metro:** Metro to ^0.83.1 ([e247be793c](https://github.com/facebook/react-native/commit/e247be793c70a374955d798d8cbbc6eba58080ec) by [@motiz88](https://github.com/motiz88))
+
+### Fixed
 
 #### Android specific
 
 - **rngp:** Fix a race condition with codegen libraries missing sources ([9013a9e666](https://github.com/facebook/react-native/commit/9013a9e66629677c47e1b69703f9fc8f4cbc1c2c) by [@cortinico](https://github.com/cortinico))
-- Make accessors inside HeadlessJsTaskService open again ([7ef57163cb](https://github.com/facebook/react-native/commit/7ef57163cb016317e43e563da7ea181989f6abca) by [@cortinico](https://github.com/cortinico))
-
-#### iOS specific
-
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.81.0-rc.3 ([0e6009eecf](https://github.com/facebook/react-native/commit/0e6009eecfeac71121a045f0f7e6bae94ffc11b0) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Podfile.lock ([3695258eed](https://github.com/facebook/react-native/commit/3695258eed45fed5fbff5dd6128c88275f91083c) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
+- **API:** Make accessors inside HeadlessJsTaskService open again ([7ef57163cb](https://github.com/facebook/react-native/commit/7ef57163cb016317e43e563da7ea181989f6abca) by [@cortinico](https://github.com/cortinico))
 
 ## v0.81.0-rc.2
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Added
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Changed
 
-- Added support to `react-native/babel-preset` for a `hermesParserOptions` option, that expects an object that enables overriding `hermes-parser` options. ([0508eddfe6](https://github.com/facebook/react-native/commit/0508eddfe60df60cb3bfa4074ae199bd0e492d5f) by [@yungsters](https://github.com/yungsters))
-- `NewAppScreen` no longer internally handles device safe area, use optional `safeAreaInsets` prop (aligned in 0.81 template) ([732bd12dc2](https://github.com/facebook/react-native/commit/732bd12dc21460641ef01b23f2eb722f26b060d5) by [@huntie](https://github.com/huntie))
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
+- **API:** `NewAppScreen` no longer internally handles device safe area, use optional `safeAreaInsets` prop (aligned in 0.81 template) ([732bd12dc2](https://github.com/facebook/react-native/commit/732bd12dc21460641ef01b23f2eb722f26b060d5) by [@huntie](https://github.com/huntie))
+- **Babel:** Added support to `react-native/babel-preset` for a `hermesParserOptions` option, that expects an object that enables overriding `hermes-parser` options. ([0508eddfe6](https://github.com/facebook/react-native/commit/0508eddfe60df60cb3bfa4074ae199bd0e492d5f) by [@yungsters](https://github.com/yungsters))
 
 ### Fixed
 
-
-
-#### Android specific
-
-
-
 #### iOS specific
 
-- Fixed issue with RNDeps release/debug switch failing ([4ee2b60a1e](https://github.com/facebook/react-native/commit/4ee2b60a1eacca744d58a7ad336ca9d3714289f6) by [@chrfalch](https://github.com/chrfalch))
-- Fixed missing script for resolving prebuilt xcframework when switching between release/debug ([2e55241a90](https://github.com/facebook/react-native/commit/2e55241a901b4cd95917de68ce9078928820a208) by [@chrfalch](https://github.com/chrfalch))
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.81.0-rc.2 ([68ef746ec5](https://github.com/facebook/react-native/commit/68ef746ec5dd7d2874d190733e75bb8197034c5a) by [@react-native-bot](https://github.com/react-native-bot))
-- Fix E2E test script when the ci flag is not specified ([cdd7f99581](https://github.com/facebook/react-native/commit/cdd7f995813727b630ff38abc8a910a0f8f10b37) by [@cipolleschi](https://github.com/cipolleschi))
-- Fix E2E script when using CI artifacts ([d8bf94489a](https://github.com/facebook/react-native/commit/d8bf94489ab7498eba7e5f45d09dd2819fe739c3) by [@cipolleschi](https://github.com/cipolleschi))
-- Bump Podfile.lock ([10b63c15b6](https://github.com/facebook/react-native/commit/10b63c15b6faaf54d555ede879f82ac565f030a9) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.81.0-rc.1 ([b06bb89ddd](https://github.com/facebook/react-native/commit/b06bb89ddd3cebddea4716036a4368b87a65f492) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
-
+- **Podspec:** Fixed issue with RNDeps release/debug switch failing ([4ee2b60a1e](https://github.com/facebook/react-native/commit/4ee2b60a1eacca744d58a7ad336ca9d3714289f6) by [@chrfalch](https://github.com/chrfalch))
+- **Podspec:** Fixed missing script for resolving prebuilt xcframework when switching between release/debug ([2e55241a90](https://github.com/facebook/react-native/commit/2e55241a901b4cd95917de68ce9078928820a208) by [@chrfalch](https://github.com/chrfalch))
 
 ## v0.81.0-rc.1
 
@@ -220,28 +42,27 @@
 
 #### iOS specific
 
-- Add release/debug switch script for React-Core-prebuilt ([42d1a7934c](https://github.com/facebook/react-native/commit/42d1a7934cad4b2c92653e3fa7781c2af8f44df4) by [@chrfalch](https://github.com/chrfalch))
-- Added support for using USE_FRAMEWORKS with prebuilt React Native Core ([40e45f5366](https://github.com/facebook/react-native/commit/40e45f53661ce80c3a6fbbf07f52dc900afcad52) by [@chrfalch](https://github.com/chrfalch))
-- Add the `ENTERPRISE_REPOSITORY` env variable to cocopaods infra ([23f3bf9239](https://github.com/facebook/react-native/commit/23f3bf9239a849590f1c72b25732d0090780128c) by [@cipolleschi](https://github.com/cipolleschi))
+- **CocoaPods** Add the `ENTERPRISE_REPOSITORY` env variable to cocoapods infra ([23f3bf9239](https://github.com/facebook/react-native/commit/23f3bf9239a849590f1c72b25732d0090780128c) by [@cipolleschi](https://github.com/cipolleschi))
+- **Prebuild:** Add release/debug switch script for React-Core-prebuilt ([42d1a7934c](https://github.com/facebook/react-native/commit/42d1a7934cad4b2c92653e3fa7781c2af8f44df4) by [@chrfalch](https://github.com/chrfalch))
+- **Prebuild:** Added support for using USE_FRAMEWORKS with prebuilt React Native Core ([40e45f5366](https://github.com/facebook/react-native/commit/40e45f53661ce80c3a6fbbf07f52dc900afcad52) by [@chrfalch](https://github.com/chrfalch))
 
 ### Changed
 
-- Bump Metro to 0.83.0 ([6b9f5d622f](https://github.com/facebook/react-native/commit/6b9f5d622ffbe79da8f4e7b7d8094504a480425e) by [@robhogan](https://github.com/robhogan))
+- **Metro:** Bump Metro to 0.83.0 ([6b9f5d622f](https://github.com/facebook/react-native/commit/6b9f5d622ffbe79da8f4e7b7d8094504a480425e) by [@robhogan](https://github.com/robhogan))
 
 #### Android specific
 
-- Gradle to 8.14.3 ([6892dde363](https://github.com/facebook/react-native/commit/6892dde36373bbef2d0afe535ae818b1a7164f08) by [@cortinico](https://github.com/cortinico))
-- Expose `react_renderer_bridging` headers via prefab ([d1730ff960](https://github.com/facebook/react-native/commit/d1730ff960fcb9a01ee94b9e46e5a9fbb7d73f4a) by [@tomekzaw](https://github.com/tomekzaw))
-- Introduce more deprecation warnings for Legacy Arch classes ([625f69f284](https://github.com/facebook/react-native/commit/625f69f284ddfd9c6beecaa4052a871d092053ef) by [@cortinico](https://github.com/cortinico))
-
+- **Gradle:** Gradle to 8.14.3 ([6892dde363](https://github.com/facebook/react-native/commit/6892dde36373bbef2d0afe535ae818b1a7164f08) by [@cortinico](https://github.com/cortinico))
+- **Gradle:** Expose `react_renderer_bridging` headers via prefab ([d1730ff960](https://github.com/facebook/react-native/commit/d1730ff960fcb9a01ee94b9e46e5a9fbb7d73f4a) by [@tomekzaw](https://github.com/tomekzaw))
+- **Legacy Arch:** Introduce more deprecation warnings for Legacy Arch classes ([625f69f284](https://github.com/facebook/react-native/commit/625f69f284ddfd9c6beecaa4052a871d092053ef) by [@cortinico](https://github.com/cortinico))
 
 ### Fixed
 
-- Fixed nodes with `display: contents` set being cloned with the wrong owner ([d4b36b0300](https://github.com/facebook/react-native/commit/d4b36b03003eb2de9eaf5b57bb639bae8cc12f20) by [@j-piasecki](https://github.com/j-piasecki))
+- **Yoga:** Fixed nodes with `display: contents` set being cloned with the wrong owner ([d4b36b0300](https://github.com/facebook/react-native/commit/d4b36b03003eb2de9eaf5b57bb639bae8cc12f20) by [@j-piasecki](https://github.com/j-piasecki))
 
 #### iOS specific
 
-- Fixed premature return in header file generation from podspec globs ([f2b064c2d4](https://github.com/facebook/react-native/commit/f2b064c2d40c39017ac2a31bf3caf8acef23038c) by [@chrfalch](https://github.com/chrfalch))
+- **Podspec:** Fixed premature return in header file generation from podspec globs ([f2b064c2d4](https://github.com/facebook/react-native/commit/f2b064c2d40c39017ac2a31bf3caf8acef23038c) by [@chrfalch](https://github.com/chrfalch))
 
 
 ## v0.81.0-rc.0
@@ -1586,4 +1407,3 @@ See [CHANGELOG-0.5x](./CHANGELOG-0.5x.md#v0530)
 ## v0.52.0
 
 See [CHANGELOG-0.5x](./CHANGELOG-0.5x.md#v0520)
-
