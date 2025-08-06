@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -58,7 +59,7 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
     // If we have a JS wrapper, cache the result of this lookup
     // We don't cache misses, to allow for methodMap_ to dynamically be
     // extended
-    if (jsRepresentation_ && !prop.isUndefined()) {
+    if (jsRepresentation_ && reinterpret_cast<std::uintptr_t>(&runtime) == representationRuntimeAddress_ && !prop.isUndefined()) {
       jsRepresentation_->lock(runtime).asObject(runtime).setProperty(runtime, propName, prop);
     }
     return prop;
@@ -138,6 +139,9 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
  private:
   friend class TurboModuleBinding;
   std::unique_ptr<jsi::WeakObject> jsRepresentation_;
+  /** This address is used only for identifying the runtime associated with the
+   * JS representation. Do not dereference or use for any other purpose. */
+  std::uintptr_t representationRuntimeAddress_;
 };
 
 /**
