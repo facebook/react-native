@@ -8,6 +8,9 @@
  * @format
  */
 
+import type {FantomTestConfig} from './getFantomTestConfigs';
+
+import formatFantomConfig from './formatFantomConfig';
 import path from 'path';
 
 export const OUTPUT_PATH: string = path.resolve(__dirname, '..', '.out');
@@ -30,4 +33,25 @@ export function getTestBuildOutputPath(): string {
   }
 
   return path.join(JS_BUILD_OUTPUT_PATH, fantomRunID);
+}
+
+export function buildJSTracesOutputPath(
+  testPath: string,
+  testConfig: FantomTestConfig,
+  isMultiConfig: boolean,
+): string {
+  const fileNameParts = [path.basename(testPath)];
+
+  if (isMultiConfig) {
+    const configSummary = formatFantomConfig(testConfig, {style: 'short'});
+    if (configSummary !== '') {
+      fileNameParts.push(configSummary);
+    }
+  }
+
+  fileNameParts.push(new Date().toISOString());
+
+  const fileName = fileNameParts.join('-') + '.cpuprofile';
+
+  return path.join(JS_TRACES_OUTPUT_PATH, fileName);
 }

@@ -15,7 +15,6 @@ import type {
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
 import type {BenchmarkTestArtifact} from './benchmarkUtils';
-import type {FantomTestConfig} from './getFantomTestConfigs';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -30,7 +29,11 @@ import {run as runHermesCompiler} from './executables/hermesc';
 import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {JS_TRACES_OUTPUT_PATH, getTestBuildOutputPath} from './paths';
+import {
+  JS_TRACES_OUTPUT_PATH,
+  buildJSTracesOutputPath,
+  getTestBuildOutputPath,
+} from './paths';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -485,21 +488,4 @@ function containsError(testResult: TestSuiteResult): boolean {
         result.failureDetails.length > 0 || result.failureMessages.length > 0,
     )
   );
-}
-
-function buildJSTracesOutputPath(
-  testPath: string,
-  testConfig: FantomTestConfig,
-  isMultiConfig: boolean,
-): string {
-  let fileName;
-
-  if (isMultiConfig) {
-    const configSummary = formatFantomConfig(testConfig, {style: 'short'});
-    fileName = `${path.basename(testPath)}-${configSummary}-${Date.now()}.cpuprofile`;
-  } else {
-    fileName = `${path.basename(testPath)}-${Date.now()}.cpuprofile`;
-  }
-
-  return path.join(JS_TRACES_OUTPUT_PATH, fileName);
 }
