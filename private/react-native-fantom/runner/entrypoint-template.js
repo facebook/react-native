@@ -22,12 +22,16 @@ module.exports = function entrypointTemplate({
   testConfig,
   snapshotConfig,
   jsTraceOutputPath,
+  jsHeapSnapshotOutputPathTemplate,
+  jsHeapSnapshotOutputPathTemplateToken,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
   testConfig: FantomTestConfig,
   snapshotConfig: SnapshotConfig,
+  jsHeapSnapshotOutputPathTemplate: string,
+  jsHeapSnapshotOutputPathTemplateToken: string,
   jsTraceOutputPath: ?string,
 }): string {
   const constants: FantomRuntimeConstants = {
@@ -36,6 +40,8 @@ module.exports = function entrypointTemplate({
     forceTestModeForBenchmarks: EnvironmentOptions.forceTestModeForBenchmarks,
     fantomConfigSummary: formatFantomConfig(testConfig),
     jsTraceOutputPath,
+    jsHeapSnapshotOutputPathTemplate,
+    jsHeapSnapshotOutputPathTemplateToken,
   };
 
   return `/**
