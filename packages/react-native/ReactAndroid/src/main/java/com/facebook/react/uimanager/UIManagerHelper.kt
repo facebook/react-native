@@ -225,8 +225,8 @@ public object UIManagerHelper {
         PixelUtil.toDIPFromPixel(ViewCompat.getPaddingStart(editText).toFloat())
     padding[PADDING_END_INDEX] =
         PixelUtil.toDIPFromPixel(ViewCompat.getPaddingEnd(editText).toFloat())
-    padding[PADDING_TOP_INDEX] = PixelUtil.toDIPFromPixel(editText.getPaddingTop().toFloat())
-    padding[PADDING_BOTTOM_INDEX] = PixelUtil.toDIPFromPixel(editText.getPaddingBottom().toFloat())
+    padding[PADDING_TOP_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingTop.toFloat())
+    padding[PADDING_BOTTOM_INDEX] = PixelUtil.toDIPFromPixel(editText.paddingBottom.toFloat())
     return padding
   }
 }

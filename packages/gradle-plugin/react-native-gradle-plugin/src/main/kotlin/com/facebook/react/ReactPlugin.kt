@@ -28,8 +28,8 @@ import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
+import com.facebook.react.utils.PropertyUtils
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -43,6 +43,7 @@ import org.gradle.internal.jvm.Jvm
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
+    checkLegacyArchProperty(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
 
     // We register a private extension on the rootProject so that project wide configs
@@ -112,6 +113,30 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
+    }
+  }
+
+  private fun checkLegacyArchProperty(project: Project) {
+    if ((project.hasProperty(PropertyUtils.NEW_ARCH_ENABLED) &&
+        !project.property(PropertyUtils.NEW_ARCH_ENABLED).toString().toBoolean()) ||
+        (project.hasProperty(PropertyUtils.SCOPED_NEW_ARCH_ENABLED) &&
+            !project.property(PropertyUtils.SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())) {
+      project.logger.error(
+          """
+
+      ********************************************************************************
+
+      WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
+      supported anymore since React Native 0.82.
+      
+      You can remove the line from your `gradle.properties` file.
+      
+      The application will run with the New Architecture enabled by default.
+
+      ********************************************************************************
+
+      """
+              .trimIndent())
     }
   }
 
@@ -271,19 +296,17 @@ class ReactPlugin : Plugin<Project> {
               task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
             }
 
-    if (project.isNewArchEnabled(extension)) {
-      // For New Arch, we also need to generate code for C++ Autolinking
-      val generateAutolinkingNewArchitectureFilesTask =
-          project.tasks.register(
-              "generateAutolinkingNewArchitectureFiles",
-              GenerateAutolinkingNewArchitecturesFileTask::class.java) { task ->
-                task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
-                task.generatedOutputDirectory.set(generatedAutolinkingJniDir)
-              }
-      project.tasks
-          .named("preBuild", Task::class.java)
-          .dependsOn(generateAutolinkingNewArchitectureFilesTask)
-    }
+    // We also need to generate code for C++ Autolinking
+    val generateAutolinkingNewArchitectureFilesTask =
+        project.tasks.register(
+            "generateAutolinkingNewArchitectureFiles",
+            GenerateAutolinkingNewArchitecturesFileTask::class.java) { task ->
+              task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
+              task.generatedOutputDirectory.set(generatedAutolinkingJniDir)
+            }
+    project.tasks
+        .named("preBuild", Task::class.java)
+        .dependsOn(generateAutolinkingNewArchitectureFilesTask)
 
     // We let generateAutolinkingPackageList and generateEntryPoint depend on the preBuild task so
     // it's executed before

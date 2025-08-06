@@ -10,6 +10,7 @@
 
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
+import {getConstants} from '../src/Constants';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import patchWeakRef from './patchWeakRef';
@@ -25,6 +26,7 @@ export type TestCaseResult = {
   failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
+  testArtifact?: mixed,
   // location: string,
 };
 
@@ -313,6 +315,7 @@ function runSpec(spec: Spec): TestCaseResult {
     failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
+    testArtifact: null,
   };
 
   if (!shouldRunSuite(spec)) {
@@ -327,7 +330,7 @@ function runSpec(spec: Spec): TestCaseResult {
 
   try {
     invokeHooks(spec.parentContext, 'beforeEachHooks');
-    spec.implementation();
+    result.testArtifact = spec.implementation();
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
@@ -418,6 +421,33 @@ function serializeError(error: Error): FailureDetail {
   return result;
 }
 
+function runTest(): Array<TestCaseResult> {
+  const {jsTraceOutputPath} = getConstants();
+  if (jsTraceOutputPath == null) {
+    return runSuite(currentContext);
+  }
+
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+
+  try {
+    NativeFantom.startJSSamplingProfiler();
+  } catch (e) {
+    console.error('Could not start JS sampling profiler', e);
+  }
+
+  try {
+    return runSuite(currentContext);
+  } finally {
+    try {
+      NativeFantom.stopJSSamplingProfilerAndSaveToFile(jsTraceOutputPath);
+    } catch (e) {
+      console.error('Could not stop JS sampling profiler', e);
+    }
+  }
+}
+
 global.$$RunTests$$ = () => {
   if (testSetupError != null) {
     reportTestSuiteResult({
@@ -428,7 +458,7 @@ global.$$RunTests$$ = () => {
     });
   } else {
     reportTestSuiteResult({
-      testResults: runSuite(currentContext),
+      testResults: runTest(),
     });
   }
 };

@@ -7,6 +7,8 @@
 
 #import "RCTSafeAreaView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>
 
@@ -73,3 +75,5 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

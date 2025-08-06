@@ -38,7 +38,7 @@ class Entity extends React.Component<{children: React.Node}> {
     );
   }
 }
-class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
     fontWeight: 'bold',
     fontSize: 15,

@@ -50,7 +50,7 @@ export default function mockComponent<
     (RealComponent.render == null
       ? 'Unknown'
       : // $FlowFixMe[incompatible-use]
-        RealComponent.render.displayName ?? RealComponent.render.name);
+        (RealComponent.render.displayName ?? RealComponent.render.name));
 
   const nameWithoutPrefix = name.replace(/^(RCT|RK)/, '');
 

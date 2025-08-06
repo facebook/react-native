@@ -141,8 +141,7 @@ NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
-  if (RCTAreLegacyLogsEnabled() && RCTIsNewArchEnabled() &&
-      ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+  if (RCTAreLegacyLogsEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
     addModuleLoadedWithOldArch([moduleClass description]);
   }
   static dispatch_once_t onceToken;
@@ -183,7 +182,7 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL turboModuleEnabled = NO;
+static const BOOL turboModuleEnabled = YES;
 BOOL RCTTurboModuleEnabled(void)
 {
 #if RCT_DEBUG
@@ -197,7 +196,7 @@ BOOL RCTTurboModuleEnabled(void)
 
 void RCTEnableTurboModule(BOOL enabled)
 {
-  turboModuleEnabled = enabled;
+  // The new Architecture is enabled by default and we are ignoring changes to the TurboModule system.
 }
 
 static BOOL turboModuleInteropEnabled = NO;

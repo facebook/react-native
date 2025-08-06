@@ -20,13 +20,14 @@
  */
 
 const {execSync} = require('child_process');
-// $FlowFixMe[unclear-type]
-const argv = require('yargs').argv /*:: as any as $ReadOnly<{
+const argv /*:$ReadOnly<{
   maxWorkers?: number,
   jestBinary?: string,
   flowBinary?: string,
   yarnBinary?: string,
-}> */;
+}> */ =
+  // $FlowFixMe
+  require('yargs').argv;
 
 const numberOfMaxWorkers = argv.maxWorkers ?? 1;
 

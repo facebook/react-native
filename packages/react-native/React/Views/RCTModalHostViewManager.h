@@ -9,6 +9,8 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 typedef void (^RCTModalViewInteractionBlock)(
     UIViewController *reactViewController,
     UIViewController *viewController,
@@ -26,3 +28,5 @@ typedef void (^RCTModalViewInteractionBlock)(
 @property (nonatomic, strong) RCTModalViewInteractionBlock dismissalBlock;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

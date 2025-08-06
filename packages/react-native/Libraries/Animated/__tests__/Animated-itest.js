@@ -15,7 +15,7 @@ import type {HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
-import {createRef} from 'react';
+import {createRef, useMemo} from 'react';
 import {Animated, View, useAnimatedValue} from 'react-native';
 import {allowStyleProp} from 'react-native/Libraries/Animated/NativeAnimatedAllowlist';
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
@@ -77,11 +77,10 @@ test('moving box by 100 points', () => {
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    // TODO(T223344928,T232605345): this shouldn't be neccessary once we disable JS sync and Android's race condition.
+    // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
     Fantom.runWorkLoop();
     expect(viewElement.getBoundingClientRect().x).toBe(100);
   } else {
-    expect(viewElement.getBoundingClientRect().x).toBe(0);
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
     expect(viewElement.getBoundingClientRect().x).toBe(100);
   }
@@ -341,18 +340,15 @@ test('moving box by 50 points with offset 10', () => {
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform='[{"translateX": 60.000000}]' />,
     );
-    // TODO(T223344928): this shouldn't be neccessary
-    Fantom.runWorkLoop();
   } else {
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform="[]" />,
     );
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
+    );
   }
-
-  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-    <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
-  );
 
   expect(finishValue?.finished).toBe(true);
   expect(finishValue?.value).toBe(50); // must not include offset.
@@ -440,9 +436,6 @@ describe('Value.flattenOffset', () => {
       Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
 
     expect(transform.translateY).toBeCloseTo(40, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -539,9 +532,6 @@ describe('Value.extractOffset', () => {
     // `extractOffset` resets value back to 0.
     // Previously we set offset to 35. The final value is 35.
     expect(transform.translateY).toBeCloseTo(35, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -739,16 +729,116 @@ test('Animated.sequence', () => {
 
   expect(_isSequenceFinished).toBe(false);
 
-  expect(element.getBoundingClientRect().y).toBe(-16);
-
   expect(
     // $FlowFixMe[incompatible-use]
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(0, 0.001);
 
-  Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
-
-  expect(element.getBoundingClientRect().y).toBe(0);
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+    expect(element.getBoundingClientRect().y).toBe(-16);
+    Fantom.runWorkLoop();
+    expect(element.getBoundingClientRect().y).toBe(0);
+  } else {
+    expect(element.getBoundingClientRect().y).toBe(-16);
+    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+    expect(element.getBoundingClientRect().y).toBe(0);
+  }
 
   expect(_isSequenceFinished).toBe(true);
+});
+
+test('Props default value is restored when disconnected from animated', () => {
+  let _animatedOpacity;
+  const elementRef = createRef<HostInstance>();
+
+  function MyApp({
+    shouldAnimate,
+  }: $ReadOnly<{
+    shouldAnimate?: boolean,
+  }>) {
+    const animatedOpacity = useAnimatedValue(1, {useNativeDriver: true});
+
+    const opacity = useMemo(
+      () => (shouldAnimate === true ? animatedOpacity : undefined),
+      [shouldAnimate, animatedOpacity],
+    );
+    const scale = useMemo(
+      () =>
+        opacity?.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.95, 1],
+        }) ?? new Animated.Value(1),
+      [opacity],
+    );
+    _animatedOpacity = animatedOpacity;
+
+    return (
+      <Animated.View
+        ref={elementRef}
+        style={[
+          {
+            opacity,
+            transform: [{scale}],
+            height: 100,
+            width: 100,
+          },
+        ]}
+      />
+    );
+  }
+
+  const root = Fantom.createRoot();
+
+  Fantom.runTask(() => {
+    root.render(<MyApp shouldAnimate={true} />);
+  });
+
+  const element = ensureInstance(elementRef.current, ReactNativeElement);
+
+  expect(root.getRenderedOutput({props: ['opacity']}).toJSX()).toEqual(
+    <rn-view />, // default opacity is 1
+  );
+
+  Fantom.runTask(() => {
+    Animated.timing(_animatedOpacity, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  });
+
+  Fantom.unstable_produceFramesForDuration(500);
+
+  Fantom.runWorkLoop();
+
+  expect(Fantom.unstable_getDirectManipulationProps(element)).toEqual({
+    opacity: 0,
+    transform: [{scale: 0.95}],
+  });
+
+  expect(
+    root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+  ).toEqual(<rn-view opacity="0" transform='[{"scale": 0.950000}]' />);
+
+  Fantom.runTask(() => {
+    root.render(<MyApp shouldAnimate={false} />);
+  });
+
+  expect(Fantom.unstable_getDirectManipulationProps(element)).toEqual({
+    opacity: null,
+    transform: null,
+  });
+
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    expect(
+      root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+    ).toEqual(<rn-view transform='[{"scale": 0.950000}]' />); // TODO: T223344928 scale should be 1
+  } else {
+    expect(
+      root.getRenderedOutput({props: ['opacity', 'transform']}).toJSX(),
+    ).toEqual(<rn-view transform='[{"scale": 1.000000}]' />);
+  }
+
+  Fantom.runWorkLoop();
 });

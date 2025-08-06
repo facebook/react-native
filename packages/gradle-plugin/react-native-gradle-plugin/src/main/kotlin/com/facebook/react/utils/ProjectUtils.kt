@@ -13,11 +13,9 @@ import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
-import com.facebook.react.utils.PropertyUtils.SCOPED_NEW_ARCH_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
 import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
@@ -28,12 +26,7 @@ internal object ProjectUtils {
 
   const val HERMES_FALLBACK = true
 
-  internal fun Project.isNewArchEnabled(extension: ReactExtension): Boolean {
-    return (project.hasProperty(NEW_ARCH_ENABLED) &&
-        project.property(NEW_ARCH_ENABLED).toString().toBoolean()) ||
-        (project.hasProperty(SCOPED_NEW_ARCH_ENABLED) &&
-            project.property(SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
-  }
+  internal fun Project.isNewArchEnabled(): Boolean = true
 
   internal val Project.isHermesEnabled: Boolean
     get() =

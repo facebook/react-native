@@ -32,9 +32,10 @@ static inline SchedulerPriority fromRawValue(double value) {
       return SchedulerPriority::LowPriority;
     case 5:
       return SchedulerPriority::IdlePriority;
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return SchedulerPriority::NormalPriority;
   }
-  react_native_assert(false && "Unsupported SchedulerPriority value");
-  return SchedulerPriority::NormalPriority;
 }
 
 static inline HighResDuration timeoutForSchedulerPriority(
@@ -50,9 +51,10 @@ static inline HighResDuration timeoutForSchedulerPriority(
       return HighResDuration::fromChrono(std::chrono::seconds(10));
     case SchedulerPriority::IdlePriority:
       return HighResDuration::fromChrono(std::chrono::minutes(5));
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return HighResDuration::fromChrono(std::chrono::seconds(5));
   }
-  react_native_assert(false && "Unsupported SchedulerPriority value");
-  return HighResDuration::fromChrono(std::chrono::seconds(5));
 }
 
 } // namespace facebook::react

@@ -17,6 +17,8 @@ class InspectorNetworkReporter
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/modules/network/InspectorNetworkReporter;";
 
+  static jboolean isDebuggingEnabled(jni::alias_ref<jclass> /*unused*/);
+
   static void reportRequestStart(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,
@@ -39,7 +41,7 @@ class InspectorNetworkReporter
       jni::alias_ref<jni::JMap<jstring, jstring>> responseHeaders,
       jlong encodedDataLength);
 
-  static void reportDataReceived(
+  static void reportDataReceivedImpl(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,
       jint dataLength);
@@ -49,13 +51,18 @@ class InspectorNetworkReporter
       jint requestId,
       jlong encodedDataLength);
 
-  static void maybeStoreResponseBody(
+  static void reportRequestFailed(
+      jni::alias_ref<jclass> /*unused*/,
+      jint requestId,
+      jboolean cancelled);
+
+  static void maybeStoreResponseBodyImpl(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,
       jni::alias_ref<jstring> body,
       jboolean base64Encoded);
 
-  static void maybeStoreResponseBodyIncremental(
+  static void maybeStoreResponseBodyIncrementalImpl(
       jni::alias_ref<jclass> /*unused*/,
       jint requestId,
       jni::alias_ref<jstring> data);

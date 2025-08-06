@@ -123,9 +123,8 @@ EventTag EventPerformanceLogger::onEventStart(
 
   // The event start timestamp may be provided by the caller in order to
   // specify the platform specific event start time.
-  HighResTimeStamp timeStamp = eventStartTimeStamp
-      ? *eventStartTimeStamp
-      : performanceEntryReporter->getCurrentTimeStamp();
+  HighResTimeStamp timeStamp =
+      eventStartTimeStamp ? *eventStartTimeStamp : HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(
@@ -140,7 +139,7 @@ void EventPerformanceLogger::onEventProcessingStart(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -156,7 +155,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -202,7 +201,7 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
       performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
-          performanceEntryReporter->getCurrentTimeStamp() - entry.startTime,
+          HighResTimeStamp::now() - entry.startTime,
           entry.processingStartTime.value(),
           entry.processingEndTime.value(),
           entry.interactionId);

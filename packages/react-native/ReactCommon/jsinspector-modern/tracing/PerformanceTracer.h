@@ -15,7 +15,6 @@
 
 #include <folly/dynamic.h>
 #include <atomic>
-#include <functional>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -34,14 +33,21 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
 
   /**
-   * Mark trace session as started. Returns `false` if already tracing.
+   * Starts a tracing session. Returns `false` if already tracing.
    */
   bool startTracing();
 
   /**
-   * Mark trace session as stopped. Returns `false` if wasn't tracing.
+   * Starts a tracing session with a maximum duration (events older than this
+   * duration are dropped). Returns `false` if already tracing.
    */
-  bool stopTracing();
+  bool startTracing(HighResDuration maxDuration);
+
+  /**
+   * If there is a current tracing session, it stops tracing and returns all
+   * collected events. Otherwise, it returns empty.
+   */
+  std::optional<std::vector<TraceEvent>> stopTracing();
 
   /**
    * Returns whether the tracer is currently tracing. This can be useful to
@@ -51,19 +57,6 @@ class PerformanceTracer {
   inline bool isTracing() const {
     return tracingAtomic_;
   }
-
-  /**
-   * Flush out buffered CDP Trace Events using the given callback.
-   */
-  void collectEvents(
-      const std::function<void(folly::dynamic&& eventsChunk)>& resultCallback,
-      uint16_t chunkSize);
-
-  /**
-   * Flush out buffered CDP Trace Events into a folly::dynamic collection of
-   * chunks, which can be sent over CDP later.
-   */
-  folly::dynamic collectEvents(uint16_t chunkSize);
 
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
@@ -104,22 +97,6 @@ class PerformanceTracer {
       std::optional<ConsoleTimeStampColor> color = std::nullopt);
 
   /**
-   * Record a corresponding Trace Event for OS-level process.
-   */
-  void reportProcess(uint64_t id, const std::string& name);
-
-  /**
-   * Record a corresponding Trace Event for OS-level thread.
-   */
-  void reportThread(uint64_t id, const std::string& name);
-
-  /**
-   * Should only be called from the JavaScript thread, will buffer metadata
-   * Trace Event.
-   */
-  void reportJavaScriptThread();
-
-  /**
    * Record an Event Loop tick, which will be represented as an Event Loop task
    * on a timeline view and grouped with JavaScript samples.
    */
@@ -132,21 +109,25 @@ class PerformanceTracer {
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
 
   /**
-   * Create and serialize Profile Trace Event.
-   * \return serialized Trace Event that represents a Profile for CDT.
+   * Creates "Profile" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
    */
-  folly::dynamic getSerializedRuntimeProfileTraceEvent(
-      uint64_t threadId,
-      uint16_t profileId,
+  static TraceEvent constructRuntimeProfileTraceEvent(
+      RuntimeProfileId profileId,
+      ProcessId processId,
+      ThreadId threadId,
       HighResTimeStamp profileTimestamp);
 
   /**
-   * Create and serialize ProfileChunk Trace Event.
-   * \return serialized Trace Event that represents a Profile Chunk for CDT.
+   * Creates "ProfileChunk" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
    */
-  folly::dynamic getSerializedRuntimeProfileChunkTraceEvent(
-      uint16_t profileId,
-      uint64_t threadId,
+  static TraceEvent constructRuntimeProfileChunkTraceEvent(
+      RuntimeProfileId profileId,
+      ProcessId processId,
+      ProcessId threadId,
       HighResTimeStamp chunkTimestamp,
       TraceEventProfileChunk&& traceEventProfileChunk);
 
@@ -156,7 +137,7 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  const uint64_t processId_;
+  const ProcessId processId_;
 
   /**
    * The flag is atomic in order to enable any thread to read it (via
@@ -174,12 +155,37 @@ class PerformanceTracer {
    */
   uint32_t performanceMeasureCount_{0};
 
+  HighResTimeStamp currentTraceStartTime_;
+
+  std::optional<HighResDuration> currentTraceMaxDuration_;
+
   std::vector<TraceEvent> buffer_;
+
+  // These fields are only used when setting a max duration on the trace.
+  std::vector<TraceEvent> altBuffer_;
+  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
+  std::vector<TraceEvent>* previousBuffer_{};
+  HighResTimeStamp currentBufferStartTime_;
+
   /**
    * Protects data members of this class for concurrent access, including
    * the tracingAtomic_, in order to eliminate potential "logic" races.
    */
   std::mutex mutex_;
+
+  bool startTracingImpl(
+      std::optional<HighResDuration> maxDuration = std::nullopt);
+
+  std::vector<TraceEvent> collectEventsAndClearBuffers(
+      HighResTimeStamp currentTraceEndTime);
+  void collectEventsAndClearBuffer(
+      std::vector<TraceEvent>& events,
+      std::vector<TraceEvent>& buffer,
+      HighResTimeStamp currentTraceEndTime);
+  bool isInTracingWindow(
+      HighResTimeStamp now,
+      HighResTimeStamp timeStampToCheck) const;
+  void enqueueEvent(TraceEvent&& event);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

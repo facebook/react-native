@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "TraceEvent.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -62,7 +64,7 @@ struct RuntimeSamplingProfile {
    public:
     Sample(
         uint64_t timestamp,
-        uint64_t threadId,
+        ThreadId threadId,
         std::vector<SampleCallStackFrame> callStack)
         : timestamp(timestamp),
           threadId(threadId),
@@ -81,7 +83,7 @@ struct RuntimeSamplingProfile {
     /// When the call stack snapshot was taken (μs).
     uint64_t timestamp;
     /// Thread id where sample was recorded.
-    uint64_t threadId;
+    ThreadId threadId;
     /// Snapshot of the call stack. The first element of the vector is
     /// the lowest frame in the stack.
     std::vector<SampleCallStackFrame> callStack;
@@ -89,9 +91,11 @@ struct RuntimeSamplingProfile {
 
   RuntimeSamplingProfile(
       std::string runtimeName,
+      ProcessId processId,
       std::vector<Sample> samples,
       std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile)
       : runtimeName(std::move(runtimeName)),
+        processId(processId),
         samples(std::move(samples)),
         rawRuntimeProfile(std::move(rawRuntimeProfile)) {}
 
@@ -107,6 +111,8 @@ struct RuntimeSamplingProfile {
 
   /// Name of the runtime, where sampling occurred: Hermes, V8, etc.
   std::string runtimeName;
+  /// The ID of the OS-level process where the sampling occurred.
+  ProcessId processId;
   /// List of recorded samples, should be chronologically sorted.
   std::vector<Sample> samples;
   /// A unique pointer to the original raw runtime profile, collected from the

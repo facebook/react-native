@@ -31,7 +31,7 @@ export default function useMergeRefs<Instance>(
           return undefined;
         } else {
           if (typeof ref === 'function') {
-            // $FlowIssue[incompatible-type] - Flow does not understand ref cleanup.
+            // $FlowFixMe[incompatible-type] - Flow does not understand ref cleanup.
             const cleanup: void | (() => void) = ref(current);
             return typeof cleanup === 'function'
               ? cleanup

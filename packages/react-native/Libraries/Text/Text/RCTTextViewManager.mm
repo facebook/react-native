@@ -7,6 +7,8 @@
 
 #import <React/RCTTextViewManager.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTUIManager.h>
@@ -91,3 +93,5 @@ RCT_EXPORT_VIEW_PROPERTY(selectable, BOOL)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

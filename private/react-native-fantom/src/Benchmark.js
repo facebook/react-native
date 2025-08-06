@@ -176,6 +176,7 @@ export function suite(
         'Failing focused test to prevent it from being committed',
       );
     }
+    return createBenchmarkTestArtifact(bench, tasks);
   });
 
   const test = (
@@ -209,7 +210,7 @@ export function suite(
     return {name: taskName, fn: taskFn, options: {...taskOptions, only}};
   };
 
-  // $FlowIssue[incompatible-type]
+  // $FlowFixMe[incompatible-type]
   const testEach: ParameterizedTestFunction = <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
@@ -252,4 +253,18 @@ function printBenchmarkResults(bench: Bench) {
   console.log(`### ${benchmarkName} ###`);
   console.table(nullthrows(bench.table()));
   console.log('');
+}
+
+function createBenchmarkTestArtifact(bench: Bench, tasks: Array<TestTask>) {
+  return {
+    type: 'benchmark',
+    timings: tasks.map((task, i) => {
+      const result = bench.results[i];
+      const {min, max, mean, p50, p75, p99} = result.latency;
+      return {
+        name: task.name,
+        latency: {min, max, mean, p50, p75, p99},
+      };
+    }),
+  };
 }

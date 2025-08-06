@@ -227,15 +227,15 @@ class NativeAnimatedNodesManager {
   bool isEventAnimationInProgress_{false};
 
   // React context required to commit props onto Component View
-  DirectManipulationCallback directManipulationCallback_;
-  FabricCommitCallback fabricCommitCallback_;
+  const DirectManipulationCallback directManipulationCallback_;
+  const FabricCommitCallback fabricCommitCallback_;
 
   /*
    * Tracks whether the render callback loop for animations is currently active.
    */
   std::atomic_bool isRenderCallbackStarted_{false};
-  StartOnRenderCallback startOnRenderCallback_;
-  StopOnRenderCallback stopOnRenderCallback_;
+  const StartOnRenderCallback startOnRenderCallback_;
+  const StopOnRenderCallback stopOnRenderCallback_;
 
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
 

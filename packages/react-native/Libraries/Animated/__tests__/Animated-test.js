@@ -261,7 +261,7 @@ describe('Animated', () => {
       expect(console.warn).toBeCalledWith(
         'Animated: `useNativeDriver` was not specified. This is a required option and must be explicitly set to `true` or `false`',
       );
-      // $FlowIssue[prop-missing]
+      // $FlowFixMe[prop-missing]
       console.warn.mockRestore();
     });
 

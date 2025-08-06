@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Rect;
-import android.view.Choreographer;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,8 +51,6 @@ public class JSPointerDispatcher {
   private int mPrimaryPointerId = UNSET_POINTER_ID;
   private int mCoalescingKey = 0;
   private int mLastButtonState = 0;
-  private volatile long mLastActionDownEventTime = 0;
-  private boolean mRunHoverExitNextFrame = true;
   private final ViewGroup mRootViewGroup;
 
   private static final int[] sRootScreenCoords = {0, 0};
@@ -289,54 +286,25 @@ public class JSPointerDispatcher {
       return;
     }
 
-    /**
-     * Android does not provide a consistent mechanism for determining if a MotionEvent is outside
-     * the bounds of a view. It fires ACTION_HOVER_EXIT in two cases:
-     *
-     * <ol>
-     *   <li>If the cursor leaves the bounds of the view
-     *   <li>If the user presses a button
-     * </ol>
-     *
-     * <p>Some OS will fire ACTION_HOVER_EXIT on the frame before the cursor leaves the bounds of
-     * the view, while others will fire it on the frame after the cursor leaves the bounds of the
-     * view, so using bounds is not sufficient. Some OS will include the button state in the
-     * ACTION_HOVER_EXIT event while others will not, so using button state is not sufficient.
-     * Instead, we must wait for both the ACTION_HOVER_EXIT and ACTION_DOWN events to fire, and then
-     * compare their event times to determine if the ACTION_HOVER_EXIT event was triggered by the
-     * cursor leaving the bounds of the view or by a button press. If no ACTION_DOWN event has fired
-     * by the next frame, we know that the cursor has left the bounds of the root view.
-     *
-     * <p>As ACTION_DOWN fires after ACTION_HOVER_EXIT, we need to wait until the next frame to make
-     * this determination. We do this by posting a frame callback to the choreographer and
-     * re-running this method on the next frame should timestamps between the two events not align.
-     */
-    if (isCapture
-        && mRunHoverExitNextFrame
-        && motionEvent.getActionMasked() == MotionEvent.ACTION_HOVER_EXIT) {
-      mRunHoverExitNextFrame = false;
-      Choreographer.getInstance()
-          .postFrameCallback(
-              new Choreographer.FrameCallback() {
-                @Override
-                public void doFrame(long frameTimeNanos) {
-                  if (mLastActionDownEventTime != motionEvent.getEventTime()) {
-                    handleMotionEventHelper(motionEvent, eventDispatcher, isCapture);
-                  }
-                  mRunHoverExitNextFrame = true;
-                }
-              });
-    } else {
-      handleMotionEventHelper(motionEvent, eventDispatcher, isCapture);
-    }
-  }
-
-  private void handleMotionEventHelper(
-      MotionEvent motionEvent, EventDispatcher eventDispatcher, boolean isCapture) {
     int action = motionEvent.getActionMasked();
+
+    // On stylus or mouse input, Android will systematically dispatch ACTION_HOVER_EXIT
+    // before ACTION_DOWN (button press), even if the pointer has not moved and is still
+    // hovering over the same view.
+    //
+    // This leads to onPointerLeave being triggered incorrectly.
+    //
+    // To mitigate this, we suppress ACTION_HOVER_EXIT events that occur
+    // while a button is pressed (i.e., buttonState != 0).
+    //
+    // This workaround is effective on Quest devices, however, it may not behave consistently on the
+    // Android emulator, something we’ll revisit if it becomes an issue in open source.
+    if (action == MotionEvent.ACTION_HOVER_EXIT && motionEvent.getButtonState() != 0) {
+      return;
+    }
+
     int activePointerId = motionEvent.getPointerId(motionEvent.getActionIndex());
     if (action == MotionEvent.ACTION_DOWN) {
-      mLastActionDownEventTime = motionEvent.getEventTime();
       mPrimaryPointerId = motionEvent.getPointerId(0);
     } else if (action == MotionEvent.ACTION_HOVER_MOVE) {
       mHoveringPointerIds.add(activePointerId);
@@ -348,8 +316,6 @@ public class JSPointerDispatcher {
     // `onInterceptHoverEvent`, this means we've exited the root view. This logic may be wrong but
     // reasoning about the dispatch sequence for HOVER_ENTER/HOVER_EXIT doesn't follow the
     // capture/bubbling sequence like other MotionEvents.
-    //
-    // The choreographer logic above is a hack to try to work around this, but it's not perfect.
     //
     // For more information, see:
     // https://developer.android.com/reference/android/view/MotionEvent#ACTION_HOVER_ENTER

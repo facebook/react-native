@@ -153,7 +153,7 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
+        return true
     end
 
     def self.set_RCTNewArchEnabled_in_info_plist(installer, new_arch_enabled)

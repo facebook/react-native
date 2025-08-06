@@ -1140,11 +1140,6 @@ public abstract class com/facebook/react/bridge/ReactContextBaseJavaModule : com
 	protected final fun getCurrentActivity ()Landroid/app/Activity;
 }
 
-public final class com/facebook/react/bridge/ReactCxxErrorHandler {
-	public static final field INSTANCE Lcom/facebook/react/bridge/ReactCxxErrorHandler;
-	public static final fun setHandleErrorFunc (Ljava/lang/Object;Ljava/lang/reflect/Method;)V
-}
-
 public final class com/facebook/react/bridge/ReactMarker {
 	public static final field INSTANCE Lcom/facebook/react/bridge/ReactMarker;
 	public static final fun addFabricListener (Lcom/facebook/react/bridge/ReactMarker$FabricMarkerListener;)V
@@ -1307,12 +1302,6 @@ public abstract interface annotation class com/facebook/react/bridge/ReactMethod
 }
 
 public abstract interface class com/facebook/react/bridge/ReactModuleWithSpec {
-}
-
-public final class com/facebook/react/bridge/ReactNoCrashBridgeNotAllowedSoftException : com/facebook/react/bridge/ReactNoCrashSoftException {
-	public fun <init> (Ljava/lang/String;)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public fun <init> (Ljava/lang/Throwable;)V
 }
 
 public class com/facebook/react/bridge/ReactNoCrashSoftException : java/lang/RuntimeException {

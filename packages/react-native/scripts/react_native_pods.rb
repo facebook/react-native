@@ -56,7 +56,7 @@ end
 # Parameters
 # - path: path to react_native installation.
 # - fabric_enabled: whether fabric should be enabled or not.
-# - new_arch_enabled: whether the new architecture should be enabled or not.
+# - new_arch_enabled: [DEPRECATED] whether the new architecture should be enabled or not.
 # - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - app_path: path to the React Native app. Required by the New Architecture.
@@ -94,11 +94,11 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
+  fabric_enabled = true
 
-  ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
+  ENV['RCT_FABRIC_ENABLED'] = "1"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
-  ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
+  ENV["RCT_NEW_ARCH_ENABLED"] = "1"
 
   prefix = path
 
@@ -110,7 +110,7 @@ def use_react_native! (
   # Update ReactNativeCoreUtils so that we can easily switch between source and prebuilt
   ReactNativeCoreUtils.setup_rncore(prefix, react_native_version)
 
-  Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
+  Pod::UI.puts "Configuring the target with the New Architecture\n"
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
@@ -272,10 +272,10 @@ end
 #
 # Parameters:
 # - spec: The spec that has to be configured with the New Architecture code
-# - new_arch_enabled: Whether the module should install dependencies for the new architecture
+# - new_arch_enabled: [DEPRECATED] Whether the module should install dependencies for the new architecture
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   folly_config = get_folly_config()
-  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
+  NewArchitectureHelper.install_modules_dependencies(spec, true, folly_config[:version])
 end
 
 # This function is used by podspecs that needs to use the prebuilt sources for React Native.

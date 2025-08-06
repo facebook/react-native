@@ -59,7 +59,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (tempUri == null) {
-        tempUri = getResourceDrawableUri(getThemedContext(), source)
+        tempUri = getResourceDrawableUri(themedContext, source)
       }
     }
     if (tempUri != uri) {
@@ -109,7 +109,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   override fun isVirtual(): Boolean = true
 
   override fun buildInlineImageSpan(): TextInlineImageSpan {
-    val resources = getThemedContext().resources
+    val resources = themedContext.resources
     val finalWidth = Math.ceil(width.toDouble()).toInt()
     val finalHeight = Math.ceil(height.toDouble()).toInt()
     return FrescoBasedReactTextInlineImageSpan(

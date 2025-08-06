@@ -110,8 +110,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     val layout = preparedLayout?.layout
     if (layout != null) {
       if (selection != null) {
-        selectionPaint.setColor(
-            selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context))
+        selectionPaint.color =
+            selectionColor ?: DefaultStyleValuesUtil.getDefaultTextColorHighlight(context)
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

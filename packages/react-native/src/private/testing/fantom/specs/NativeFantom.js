@@ -116,6 +116,9 @@ interface Spec extends TurboModule {
     shadowNode: mixed /* ShadowNode */,
   ): () => ?number;
   saveJSMemoryHeapSnapshot: (filePath: string) => void;
+  forceHighResTimeStamp: (timeStamp: ?number) => void;
+  startJSSamplingProfiler: () => void;
+  stopJSSamplingProfilerAndSaveToFile: (filePath: string) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

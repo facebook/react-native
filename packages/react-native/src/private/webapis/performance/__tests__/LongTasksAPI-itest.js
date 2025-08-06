@@ -16,17 +16,11 @@ import type {
 } from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 import * as Fantom from '@react-native/fantom';
-import nullthrows from 'nullthrows';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
 import {PerformanceLongTaskTiming} from 'react-native/src/private/webapis/performance/LongTasks';
 import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 setUpPerformanceObserver();
-
-function sleep(ms: number) {
-  const end = performance.now() + ms;
-  while (performance.now() < end) {}
-}
 
 function ensurePerformanceLongTaskTiming(
   value: mixed,
@@ -41,6 +35,12 @@ function ensurePerformanceLongTaskTiming(
 }
 
 let observer: ?PerformanceObserver;
+let pendingHighResTimeStampMock: ?Fantom.HighResTimeStampMock;
+
+function installHighResTimeStampMock() {
+  pendingHighResTimeStampMock = Fantom.installHighResTimeStampMock();
+  return pendingHighResTimeStampMock;
+}
 
 describe('LongTasks API', () => {
   afterEach(() => {
@@ -50,23 +50,37 @@ describe('LongTasks API', () => {
         observer = null;
       });
     }
+
+    if (pendingHighResTimeStampMock) {
+      pendingHighResTimeStampMock.uninstall();
+      pendingHighResTimeStampMock = null;
+    }
   });
 
   it('does NOT report short tasks (under 50ms)', () => {
     const callback = jest.fn();
 
-    observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['longtask']});
+    const mockClock = installHighResTimeStampMock();
+
+    mockClock.setTime(0);
+
+    Fantom.runTask(() => {
+      observer = new PerformanceObserver(callback);
+      observer.observe({entryTypes: ['longtask']});
+    });
+
+    expect(callback).not.toHaveBeenCalled();
 
     Fantom.runTask(() => {
       // Short task.
+      mockClock.advanceTimeBy(10);
     });
 
     expect(callback).not.toHaveBeenCalled();
 
     Fantom.runTask(() => {
       // Slightly longer task, but still not long.
-      sleep(40);
+      mockClock.advanceTimeBy(40);
     });
 
     expect(callback).not.toHaveBeenCalled();
@@ -75,19 +89,21 @@ describe('LongTasks API', () => {
   it('reports long tasks (over 50ms)', () => {
     const callback = jest.fn();
 
-    observer = new PerformanceObserver(callback);
-    observer.observe({entryTypes: ['longtask']});
-
-    const beforeTaskStartTime = performance.now();
-    let afterTaskStartTime;
+    const mockClock = installHighResTimeStampMock();
 
     Fantom.runTask(() => {
-      afterTaskStartTime = performance.now();
-      // Long task.
-      sleep(51);
+      observer = new PerformanceObserver(callback);
+      observer.observe({entryTypes: ['longtask']});
     });
 
-    const afterTaskEndTime = performance.now();
+    expect(callback).not.toHaveBeenCalled();
+
+    mockClock.setTime(10);
+
+    Fantom.runTask(() => {
+      // Long task.
+      mockClock.advanceTimeBy(51);
+    });
 
     expect(callback).toHaveBeenCalledTimes(1);
 
@@ -109,12 +125,8 @@ describe('LongTasks API', () => {
 
     expect(entry.name).toBe('self');
     expect(entry.entryType).toBe('longtask');
-    expect(entry.startTime).toBeGreaterThanOrEqual(beforeTaskStartTime);
-    expect(entry.startTime).toBeLessThanOrEqual(nullthrows(afterTaskStartTime));
-    expect(entry.duration).toBeGreaterThanOrEqual(51);
-    expect(entry.duration).toBeLessThanOrEqual(
-      afterTaskEndTime - beforeTaskStartTime,
-    );
+    expect(entry.startTime).toBe(10);
+    expect(entry.duration).toBe(51);
     expect(entry.attribution).toEqual([]);
   });
 
@@ -122,17 +134,25 @@ describe('LongTasks API', () => {
     it('should NOT be reported if they are longer than 50ms but had yielding opportunities in intervals shorter than 50ms', () => {
       const callback = jest.fn();
 
-      observer = new PerformanceObserver(callback);
-      observer.observe({entryTypes: ['longtask']});
+      const mockClock = installHighResTimeStampMock();
+
+      Fantom.runTask(() => {
+        observer = new PerformanceObserver(callback);
+        observer.observe({entryTypes: ['longtask']});
+      });
+
+      expect(callback).not.toHaveBeenCalled();
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
+      mockClock.setTime(10);
+
       Fantom.runTask(() => {
-        sleep(30);
+        mockClock.advanceTimeBy(30);
         shouldYield();
-        sleep(30);
+        mockClock.advanceTimeBy(30);
         shouldYield();
-        sleep(30);
+        mockClock.advanceTimeBy(30);
       });
 
       expect(callback).not.toHaveBeenCalled();
@@ -141,24 +161,26 @@ describe('LongTasks API', () => {
     it('should be reported if running for longer than 50ms between yielding opportunities', () => {
       const callback = jest.fn();
 
-      observer = new PerformanceObserver(callback);
-      observer.observe({entryTypes: ['longtask']});
+      const mockClock = installHighResTimeStampMock();
+
+      Fantom.runTask(() => {
+        observer = new PerformanceObserver(callback);
+        observer.observe({entryTypes: ['longtask']});
+      });
+
+      expect(callback).not.toHaveBeenCalled();
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
-      const beforeTaskStartTime = performance.now();
-      let afterTaskStartTime;
+      mockClock.setTime(10);
 
       Fantom.runTask(() => {
-        afterTaskStartTime = performance.now();
-        sleep(40);
+        mockClock.advanceTimeBy(40);
         shouldYield();
-        sleep(51); // long interval without yielding
+        mockClock.advanceTimeBy(51); // long interval without yielding
         shouldYield();
-        sleep(40);
+        mockClock.advanceTimeBy(40);
       });
-
-      const afterTaskEndTime = performance.now();
 
       expect(callback).toHaveBeenCalledTimes(1);
 
@@ -169,14 +191,8 @@ describe('LongTasks API', () => {
       const entry = ensurePerformanceLongTaskTiming(allEntries[0]);
       expect(entry.name).toBe('self');
       expect(entry.entryType).toBe('longtask');
-      expect(entry.startTime).toBeGreaterThanOrEqual(beforeTaskStartTime);
-      expect(entry.startTime).toBeLessThanOrEqual(
-        nullthrows(afterTaskStartTime),
-      );
-      expect(entry.duration).toBeGreaterThanOrEqual(131); // just the sum of the sleep times in the task
-      expect(entry.duration).toBeLessThanOrEqual(
-        afterTaskEndTime - beforeTaskStartTime,
-      );
+      expect(entry.startTime).toBe(10);
+      expect(entry.duration).toBe(131);
       expect(entry.attribution).toEqual([]);
     });
   });

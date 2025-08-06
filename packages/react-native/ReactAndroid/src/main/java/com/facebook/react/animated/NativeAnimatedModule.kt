@@ -219,7 +219,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
    *
    * @param viewTag The tag of the scroll view that has stopped scrolling
    */
-  public fun userDrivenScrollEnded(viewTag: Int): Unit {
+  public fun userDrivenScrollEnded(viewTag: Int) {
     // ask to the Node Manager for all the native nodes listening to OnScroll event
     val nodeManager = nodesManagerRef.get() ?: return
 

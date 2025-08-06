@@ -17,7 +17,7 @@ const {RNTesterThemeContext} = require('../../components/RNTesterTheme');
 const React = require('react');
 const {Alert, Image, StyleSheet, Text, View} = require('react-native');
 
-class ScreenshotExample extends React.Component<{...}, $FlowFixMeState> {
+class ScreenshotExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {uri: void} = {
     uri: undefined,
   };

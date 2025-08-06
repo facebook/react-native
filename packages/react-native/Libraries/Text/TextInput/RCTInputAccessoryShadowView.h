@@ -7,6 +7,10 @@
 
 #import <React/RCTShadowView.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTInputAccessoryShadowView : RCTShadowView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

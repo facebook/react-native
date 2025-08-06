@@ -7,6 +7,8 @@
 
 #import "RCTScrollView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <UIKit/UIKit.h>
 
 #import "RCTConvert.h"
@@ -1163,3 +1165,5 @@ void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNu
                                                                 coalescingKey:0];
   [eventDispatcher sendEvent:fakeScrollEvent];
 }
+
+#endif // RCT_FIT_RM_OLD_COMPONENT
