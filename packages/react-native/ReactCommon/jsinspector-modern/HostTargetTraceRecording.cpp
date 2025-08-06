@@ -10,8 +10,10 @@
 
 namespace facebook::react::jsinspector_modern {
 
-HostTargetTraceRecording::HostTargetTraceRecording(HostTarget& hostTarget)
-    : hostTarget_(hostTarget) {}
+HostTargetTraceRecording::HostTargetTraceRecording(
+    tracing::Mode tracingMode,
+    HostTarget& hostTarget)
+    : tracingMode_(tracingMode), hostTarget_(hostTarget) {}
 
 void HostTargetTraceRecording::setTracedInstance(
     InstanceTarget* instanceTarget) {
