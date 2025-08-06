@@ -292,7 +292,7 @@ SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
     sourcesList = sources[0].getDebugProps("source");
   } else if (sources.size() > 1) {
     for (const auto& source : sources) {
-      std::string sourceName = "source@" + react::toString(source.scale) + "x";
+      std::string sourceName = "source-" + react::toString(source.scale) + "x";
       auto debugProps = source.getDebugProps(sourceName);
       sourcesList.insert(
           sourcesList.end(), debugProps.begin(), debugProps.end());
