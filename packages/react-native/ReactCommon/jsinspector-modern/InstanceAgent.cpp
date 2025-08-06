@@ -9,10 +9,20 @@
 #include "RuntimeTarget.h"
 
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 #include <utility>
 
 namespace facebook::react::jsinspector_modern {
+
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTracePerformanceTracerWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
 
 InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
@@ -155,25 +165,34 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
   }
 }
 
-void InstanceAgent::startTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->enableSamplingProfiler();
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  if (state.mode == tracing::Mode::Background) {
+    performanceTracer.startTracing(kBackgroundTracePerformanceTracerWindowSize);
+  } else {
+    performanceTracer.startTracing();
   }
 }
 
-void InstanceAgent::stopTracing() {
-  if (runtimeAgent_) {
-    runtimeAgent_->disableSamplingProfiler();
+InstanceTracingAgent::~InstanceTracingAgent() {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  auto performanceTraceEvents = performanceTracer.stopTracing();
+  if (performanceTraceEvents) {
+    state_.instanceTracingProfiles.emplace_back(tracing::InstanceTracingProfile{
+        .performanceTraceEvents = std::move(*performanceTraceEvents),
+    });
   }
 }
 
-tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
-  tracing::RuntimeSamplingProfile runtimeSamplingProfile =
-      runtimeAgent_->collectSamplingProfile();
-
-  return tracing::InstanceTracingProfile{
-      .runtimeSamplingProfile = std::move(runtimeSamplingProfile),
-  };
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+  } else {
+    runtimeTracingAgent_ = nullptr;
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern
