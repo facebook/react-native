@@ -207,6 +207,56 @@ describe('<Image>', () => {
         );
       });
     });
+
+    describe('loading progress', () => {
+      (
+        [
+          ['onError', 'fails to load'],
+          ['onLoadStart', 'start loading'],
+          ['onProgress', 'is loading'],
+          ['onLoad', 'loads successfully'],
+          ['onLoadEnd', 'ends loading'],
+        ] as const
+      ).forEach(([onProp, event]) => {
+        it(`${onProp} is called when image ${event}`, () => {
+          const onPropCallback = jest.fn();
+          const ref = createRef<HostInstance>();
+
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <Image
+                ref={ref}
+                source={LOGO_SOURCE}
+                onError={() => {
+                  onProp === 'onError' && onPropCallback();
+                }}
+                onLoad={() => {
+                  onProp === 'onLoad' && onPropCallback();
+                }}
+                onLoadStart={() => {
+                  onProp === 'onLoadStart' && onPropCallback();
+                }}
+                onLoadEnd={() => {
+                  onProp === 'onLoadEnd' && onPropCallback();
+                }}
+                onProgress={() => {
+                  onProp === 'onProgress' && onPropCallback();
+                }}
+              />,
+            );
+          });
+
+          expect(onPropCallback).toHaveBeenCalledTimes(0);
+
+          const image = ensureInstance(ref.current, ReactNativeElement);
+          Fantom.dispatchNativeEvent(image, onProp, {});
+
+          expect(onPropCallback).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
   });
 
   describe('ref', () => {
