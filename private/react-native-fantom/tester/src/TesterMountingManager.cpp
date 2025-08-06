@@ -18,7 +18,9 @@ using namespace std::string_literals;
 
 TesterMountingManager::TesterMountingManager(
     std::function<void(SurfaceId)>&& onAfterMount)
-    : onAfterMount_(onAfterMount) {}
+    : onAfterMount_(onAfterMount) {
+  imageLoader_ = std::make_shared<FantomImageLoader>();
+}
 
 void TesterMountingManager::executeMount(
     SurfaceId surfaceId,

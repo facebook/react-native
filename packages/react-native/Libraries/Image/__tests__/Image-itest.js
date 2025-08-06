@@ -17,6 +17,7 @@ import * as React from 'react';
 import {createRef} from 'react';
 import {Image} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
+import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 const LOGO_SOURCE = {uri: 'https://reactnative.dev/img/tiny_logo.png'};
@@ -650,6 +651,162 @@ describe('<Image>', () => {
 
         const element = ensureInstance(elementRef.current, ReactNativeElement);
         expect(element.tagName).toBe('RN:Image');
+      });
+    });
+  });
+
+  describe('static methods', () => {
+    afterEach(() => {
+      NativeFantom.clearAllImages();
+    });
+
+    describe('getSize', () => {
+      it('returns the size of the image when image is loaded', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        NativeFantom.setImageResponse(uri, {
+          width: 100,
+          height: 100,
+        });
+
+        let size;
+        Fantom.runTask(() => {
+          Image.getSize(uri, (width, height) => {
+            size = {width, height};
+          });
+        });
+
+        expect(size).toEqual({width: 100, height: 100});
+      });
+
+      it('fails when image is not loaded', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        let size;
+        let err: ?Error;
+        Fantom.runTask(async () => {
+          Image.getSize(
+            uri,
+            (width, height) => {
+              size = {width, height};
+            },
+            (e: mixed) => {
+              if (e instanceof Error) {
+                err = e;
+              }
+            },
+          );
+        });
+
+        expect(size).toBeUndefined();
+        expect(err).toBeInstanceOf(Error);
+        expect(err?.message).toBe('image not loaded');
+      });
+    });
+
+    describe('getSizeWithHeaders', () => {
+      afterEach(() => {
+        NativeFantom.clearAllImages();
+      });
+
+      it('returns the size of the image when image is loaded', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        NativeFantom.setImageResponse(uri, {
+          width: 100,
+          height: 100,
+        });
+
+        let size;
+        Fantom.runTask(() => {
+          Image.getSizeWithHeaders(
+            uri,
+            {
+              Authorization: 'Basic RandomString',
+            },
+            (width: number, height: number) => {
+              size = {width, height};
+            },
+          );
+        });
+
+        expect(size).toEqual({width: 100, height: 100});
+      });
+    });
+
+    describe('prefetch', () => {
+      it('prefetches the image', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        NativeFantom.setImageResponse(uri, {
+          width: 100,
+          height: 100,
+        });
+
+        let result;
+        Fantom.runTask(async () => {
+          result = await Image.prefetch(uri);
+        });
+
+        expect(result).toEqual(true);
+      });
+
+      it('can fail to prefetch image', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        NativeFantom.setImageResponse(uri, {
+          width: 100,
+          height: 100,
+          errorMessage: 'Failed to prefetch image',
+        });
+
+        let result;
+        let error;
+        Fantom.runTask(async () => {
+          try {
+            result = await Image.prefetch(uri);
+          } catch (e) {
+            error = e;
+          }
+        });
+
+        expect(result).toEqual(undefined);
+        expect(error).toBeInstanceOf(Error);
+        expect(error?.message).toBe('Failed to prefetch image');
+      });
+    });
+
+    describe('queryCache', () => {
+      it('returns empty when image is not cached', () => {
+        const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+        let result;
+        Fantom.runTask(async () => {
+          result = await Image.queryCache([uri]);
+        });
+
+        expect(result).toEqual({});
+      });
+
+      (['disk', 'memory', 'disk/memory'] as const).forEach(cacheStatus => {
+        it(`returns the '${cacheStatus}' record when image is cached`, () => {
+          const uri = 'https://reactnative.dev/img/tiny_logo.png';
+
+          NativeFantom.setImageResponse(uri, {
+            width: 100,
+            height: 100,
+            cacheStatus,
+          });
+
+          let result;
+          Fantom.runTask(async () => {
+            result = await Image.queryCache([uri]);
+          });
+
+          expect(result).toEqual({
+            [uri]: cacheStatus,
+          });
+        });
       });
     });
   });
