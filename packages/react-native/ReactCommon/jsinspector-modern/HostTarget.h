@@ -18,6 +18,8 @@
 #include <optional>
 #include <string>
 
+#include <jsinspector-modern/tracing/TracingMode.h>
+
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
 #ifdef CREATE_SHARED_LIBRARY
@@ -34,8 +36,10 @@ namespace facebook::react::jsinspector_modern {
 
 class HostTargetSession;
 class HostAgent;
+class HostTracingAgent;
 class HostCommandSender;
 class HostTarget;
+class HostTargetTraceRecording;
 
 struct HostTargetMetadata {
   std::optional<std::string> appDisplayName;
@@ -133,6 +137,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
   }
+
+  /**
+   * Will be called at the CDP session initialization to get the trace recording
+   * that could have been stashed by the Host from the previous background
+   * session.
+   *
+   * \return the trace recording state if there is one that needs to be
+   * displayed, otherwise std::nullopt.
+   */
+  virtual std::optional<tracing::TraceRecordingState>
+  getStashedTraceRecordingStateForDisplaying() {
+    return std::nullopt;
+  }
 };
 
 /**
@@ -165,6 +182,19 @@ class HostTargetController final {
    * \returns false if the counter has reached 0, otherwise true.
    */
   bool decrementPauseOverlayCounter();
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
 
  private:
   HostTarget& target_;
@@ -237,6 +267,29 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void sendCommand(HostCommand command);
 
+  /**
+   * Creates a new HostTracingAgent.
+   * This Agent is not owned by the HostTarget. The Agent will be destroyed at
+   * the end of the tracing session.
+   *
+   * \param state A reference to the state of the active trace recording.
+   */
+  std::shared_ptr<HostTracingAgent> createTracingAgent(
+      tracing::TraceRecordingState& state);
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -256,6 +309,14 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+
+  /**
+   * Current pending trace recording, which encapsulates the configuration of
+   * the tracing session and the state.
+   *
+   * Should only be allocated when there is an active tracing session.
+   */
+  std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
 
   inline HostTargetDelegate& getDelegate() {
     return delegate_;

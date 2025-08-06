@@ -7,6 +7,7 @@
 
 #include "HostTarget.h"
 #include "HostAgent.h"
+#include "HostTargetTraceRecording.h"
 #include "InspectorInterfaces.h"
 #include "InspectorUtilities.h"
 #include "InstanceTarget.h"
@@ -33,7 +34,8 @@ class HostTargetSession {
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      VoidExecutor executor)
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> maybeTraceToDisplay)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -46,7 +48,8 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            std::move(executor)) {}
+            std::move(executor),
+            std::move(maybeTraceToDisplay)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -163,7 +166,8 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
       std::move(connectionToFrontend),
       controller_,
       delegate_.getMetadata(),
-      makeVoidExecutor(executorFromThis()));
+      makeVoidExecutor(executorFromThis()),
+      delegate_.getStashedTraceRecordingStateForDisplaying());
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
@@ -179,6 +183,8 @@ HostTarget::~HostTarget() {
   assert(
       sessions_.empty() &&
       "HostTargetSession objects must be destroyed before their HostTarget. Did you call getInspectorInstance().removePage()?");
+  // Trace Recording object (traceRecording_) doesn't create an actual session,
+  // so we don't need to reset it explicitly here.
 }
 
 HostTargetDelegate::~HostTargetDelegate() = default;
@@ -191,6 +197,13 @@ InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);
       });
+
+  if (traceRecording_) {
+    // Registers the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(currentInstance_.get());
+  }
+
   return *currentInstance_;
 }
 
@@ -200,6 +213,13 @@ void HostTarget::unregisterInstance(InstanceTarget& instance) {
       "Invalid unregistration");
   sessions_.forEach(
       [](HostTargetSession& session) { session.setCurrentInstance(nullptr); });
+
+  if (traceRecording_) {
+    // Unregisters the Instance for tracing, if a Trace is currently being
+    // recorded.
+    traceRecording_->setTracedInstance(nullptr);
+  }
+
   currentInstance_.reset();
 }
 

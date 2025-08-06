@@ -77,7 +77,6 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
 
     tracingAtomic_ = false;
     performanceMeasureCount_ = 0;
-    currentTraceMaxDuration_ = std::nullopt;
 
     events = collectEventsAndClearBuffers(currentTraceEndTime);
   }
@@ -114,6 +113,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       .tid = oscompat::getCurrentThreadId(),
   });
 
+  currentTraceMaxDuration_ = std::nullopt;
   return events;
 }
 

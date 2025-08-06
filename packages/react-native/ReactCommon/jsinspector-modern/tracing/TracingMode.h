@@ -7,12 +7,11 @@
 
 #pragma once
 
-#include "TraceEvent.h"
-
 namespace facebook::react::jsinspector_modern::tracing {
 
-struct InstanceTracingProfile {
-  std::vector<TraceEvent> performanceTraceEvents;
+enum class Mode {
+  CDP, // Initiated by the user via Chrome DevTools Frontend.
+  Background, // Initiated by the host, doesn't require active CDP session.
 };
 
-} // namespace facebook::react::jsinspector_modern::tracing
+}
