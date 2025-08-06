@@ -34,7 +34,7 @@ class ImageProps final : public ViewProps {
   ImageSources sources{};
   ImageSource defaultSource{};
   ImageSource loadingIndicatorSource{};
-  ImageResizeMode resizeMode{ImageResizeMode::Stretch};
+  ImageResizeMode resizeMode{ImageResizeMode::Cover};
   Float blurRadius{};
   EdgeInsets capInsets{};
   SharedColor tintColor{};
