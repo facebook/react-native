@@ -29,6 +29,8 @@
     "lib"
   ],
   "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/parser": "^7.25.3",
     "glob": "^7.1.1",
     "hermes-parser": "0.30.0",
     "invariant": "^2.2.4",
