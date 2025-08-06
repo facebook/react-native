@@ -169,6 +169,44 @@ describe('<Image>', () => {
         );
       });
     });
+
+    describe('defaultSource', () => {
+      it('can provide a default image to display', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              defaultSource={require('./img/img1.png')}
+              source={LOGO_SOURCE}
+            />,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['defaultSource']}).toJSX(),
+        ).toEqual(
+          <rn-image
+            defaultSource-type="remote"
+            defaultSource-uri="file://drawable-mdpi/packages_reactnative_libraries_image___tests___img_img1.png"
+          />,
+        );
+      });
+    });
+
+    describe('height', () => {
+      it('provides height for image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image height={100} source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
+          <rn-image height="100.000000" />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
