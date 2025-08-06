@@ -27,13 +27,16 @@ export enum HermesVariant {
 export function getBuckOptionsForHermes(
   variant: HermesVariant,
 ): $ReadOnlyArray<string> {
+  const baseOptions = EnvironmentOptions.enableJSMemoryInstrumentation
+    ? ['-c hermes.memory_instrumentation=true']
+    : [];
   switch (variant) {
     case HermesVariant.Hermes:
-      return [];
+      return baseOptions;
     case HermesVariant.StaticHermesStable:
-      return ['-c hermes.static_hermes=stable'];
+      return [...baseOptions, '-c hermes.static_hermes=stable'];
     case HermesVariant.StaticHermesExperimental:
-      return ['-c hermes.static_hermes=trunk'];
+      return [...baseOptions, '-c hermes.static_hermes=trunk'];
   }
 }
 
