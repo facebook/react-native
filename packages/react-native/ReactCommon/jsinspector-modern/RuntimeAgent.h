@@ -118,7 +118,14 @@ class RuntimeAgent final {
  */
 class RuntimeTracingAgent : tracing::TargetTracingAgent {
  public:
-  explicit RuntimeTracingAgent(tracing::TraceRecordingState& state);
+  explicit RuntimeTracingAgent(
+      tracing::TraceRecordingState& state,
+      RuntimeTargetController& targetController);
+
+  ~RuntimeTracingAgent();
+
+ private:
+  RuntimeTargetController& targetController_;
 };
 
 } // namespace facebook::react::jsinspector_modern
