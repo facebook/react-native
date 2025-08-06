@@ -38,6 +38,7 @@ class HostTargetSession;
 class HostAgent;
 class HostTracingAgent;
 class HostCommandSender;
+class HostRuntimeBinding;
 class HostTarget;
 class HostTargetTraceRecording;
 
@@ -97,6 +98,11 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     }
   };
 
+  struct PerfMonitorUpdateRequest {
+    std::string interactionName;
+    uint16_t durationMs;
+  };
+
   virtual ~HostTargetDelegate() override;
 
   /**
@@ -124,6 +130,13 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
    */
   virtual void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
+
+  /**
+   * [Experimental] Called when the runtime has new data for the V2 Perf
+   * Monitor overlay. This is called on the inspector thread.
+   */
+  virtual void unstable_onPerfMonitorUpdate(
+      const PerfMonitorUpdateRequest& /*request*/) {}
 
   /**
    * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
@@ -296,6 +309,7 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+  std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
 
   /**
    * Current pending trace recording, which encapsulates the configuration of
@@ -312,6 +326,13 @@ class JSINSPECTOR_EXPORT HostTarget
   inline bool hasInstance() const {
     return currentInstance_ != nullptr;
   }
+
+  /**
+   * Install a runtime binding subscribing to the Interaction to Next Paint
+   * (INP) live metric, which we broadcast to the V2 Perf Monitor overlay
+   * via \ref HostTargetDelegate::unstable_onPerfMonitorUpdate.
+   */
+  void installPerfMetricsBinding();
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while
