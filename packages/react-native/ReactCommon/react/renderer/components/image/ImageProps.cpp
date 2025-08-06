@@ -304,8 +304,30 @@ SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
               "blurRadius", blurRadius, imageProps.blurRadius),
+          debugStringConvertibleItem(
+              "resizeMode",
+              toString(resizeMode),
+              toString(imageProps.resizeMode)),
       };
 }
+
+inline std::string toString(ImageResizeMode resizeMode) {
+  switch (resizeMode) {
+    case ImageResizeMode::Cover:
+      return "cover";
+    case ImageResizeMode::Contain:
+      return "contain";
+    case ImageResizeMode::Stretch:
+      return "stretch";
+    case ImageResizeMode::Center:
+      return "center";
+    case ImageResizeMode::Repeat:
+      return "repeat";
+    case ImageResizeMode::None:
+      return "none";
+  }
+}
+
 #endif
 
 } // namespace facebook::react
