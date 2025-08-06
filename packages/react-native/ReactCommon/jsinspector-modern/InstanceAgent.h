@@ -75,7 +75,7 @@ class InstanceAgent final {
   /**
    * Return recorded profile for the previous tracing session.
    */
-  tracing::InstanceTracingProfile collectTracingProfile();
+  tracing::InstanceTracingProfileLegacy collectTracingProfile();
 
  private:
   void maybeSendExecutionContextCreatedNotification();
@@ -99,6 +99,8 @@ class InstanceAgent final {
 class InstanceTracingAgent : tracing::TargetTracingAgent {
  public:
   explicit InstanceTracingAgent(tracing::TraceRecordingState& state);
+
+  ~InstanceTracingAgent();
 
   /**
    * Registers the RuntimeTarget with this tracing agent.
