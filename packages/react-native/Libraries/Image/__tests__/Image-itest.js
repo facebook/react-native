@@ -257,6 +257,37 @@ describe('<Image>', () => {
         });
       });
     });
+
+    describe('referrerPolicy', () => {
+      (
+        [
+          'no-referrer',
+          'no-referrer-when-downgrade',
+          'origin',
+          'origin-when-cross-origin',
+          'same-origin',
+          'strict-origin',
+          'strict-origin-when-cross-origin',
+          'unsafe-url',
+        ] as const
+      ).forEach(referrerPolicy => {
+        it(`${referrerPolicy} sets correct "Referrer-Policy" header`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(
+              <Image referrerPolicy={referrerPolicy} src={LOGO_SOURCE.uri} />,
+            );
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['source-header']}).toJSX(),
+          ).toEqual(
+            <rn-image source-header-Referrer-Policy={referrerPolicy} />,
+          );
+        });
+      });
+    });
   });
 
   describe('ref', () => {
