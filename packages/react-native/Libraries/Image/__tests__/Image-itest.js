@@ -429,6 +429,127 @@ describe('<Image>', () => {
         );
       });
     });
+
+    describe('src', () => {
+      it('can be set to a remote image', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image src="https://reactnative.dev/img/tiny_logo.png" />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-scale="1"
+            source-type="remote"
+            source-uri="https://reactnative.dev/img/tiny_logo.png"
+          />,
+        );
+      });
+
+      it('takes precedence over `source` prop', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              src="https://reactnative.dev/img/tiny_logo.png"
+              source={{uri: 'https://reactnative.dev/img/medium_logo.png'}}
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-scale="1"
+            source-type="remote"
+            source-uri="https://reactnative.dev/img/tiny_logo.png"
+          />,
+        );
+      });
+    });
+
+    describe('srcSet', () => {
+      it('can be set to a list of remote images', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              srcSet={
+                'https://reactnative.dev/img/tiny_logo.png 1x, https://reactnative.dev/img/header_logo.svg 2x'
+              }
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-1x-scale="1"
+            source-1x-type="remote"
+            source-1x-uri="https://reactnative.dev/img/tiny_logo.png"
+            source-2x-scale="2"
+            source-2x-type="remote"
+            source-2x-uri="https://reactnative.dev/img/header_logo.svg"
+          />,
+        );
+      });
+
+      it('defaults to `1x` descriptor', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              srcSet={
+                'https://reactnative.dev/img/tiny_logo.png, https://reactnative.dev/img/header_logo.svg 2x'
+              }
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-1x-scale="1"
+            source-1x-type="remote"
+            source-1x-uri="https://reactnative.dev/img/tiny_logo.png"
+            source-2x-scale="2"
+            source-2x-type="remote"
+            source-2x-uri="https://reactnative.dev/img/header_logo.svg"
+          />,
+        );
+      });
+
+      it('uses `src` for `1x` descriptor when provided', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Image
+              srcSet={
+                'https://reactnative.dev/img/header_logo.svg 2x, https://reactnative.dev/img/large_logo.svg 3x'
+              }
+              src="https://reactnative.dev/img/tiny_logo.png"
+            />,
+          );
+        });
+
+        expect(root.getRenderedOutput({props: ['source']}).toJSX()).toEqual(
+          <rn-image
+            source-1x-scale="1"
+            source-1x-type="remote"
+            source-1x-uri="https://reactnative.dev/img/tiny_logo.png"
+            source-2x-scale="2"
+            source-2x-type="remote"
+            source-2x-uri="https://reactnative.dev/img/header_logo.svg"
+            source-3x-type="remote"
+            source-3x-uri="https://reactnative.dev/img/large_logo.svg"
+          />,
+        );
+      });
+    });
   });
 
   describe('ref', () => {
