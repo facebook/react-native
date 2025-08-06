@@ -86,6 +86,48 @@ class FirebaseClient {
     }
   }
 
+  /**
+   * Find the most recent available job results before the given date
+   * @param {string} currentDate - Current date in YYYY-MM-DD format
+   * @param {number} maxDaysBack - Maximum number of days to look back (default: 7)
+   * @returns {Promise<{results: Array<Object>|null, date: string|null}>} - Most recent results and their date
+   */
+  async getLatestResults(currentDate, maxDaysBack = 7) {
+    if (!this.idToken) {
+      await this.authenticate();
+    }
+
+    const currentDateObj = new Date(currentDate);
+
+    for (let daysBack = 1; daysBack <= maxDaysBack; daysBack++) {
+      const checkDate = new Date(currentDateObj);
+      checkDate.setDate(checkDate.getDate() - daysBack);
+      const checkDateStr = checkDate.toISOString().split('T')[0];
+
+      console.log(
+        `Checking for results on ${checkDateStr} (${daysBack} days back)...`,
+      );
+
+      try {
+        const results = await this.getResults(checkDateStr);
+        if (results && results.length > 0) {
+          console.log(
+            `Found results from ${checkDateStr} (${daysBack} days back)`,
+          );
+          return {results, date: checkDateStr};
+        }
+      } catch (error) {
+        console.log(`No results found for ${checkDateStr}: ${error.message}`);
+        continue;
+      }
+    }
+
+    console.log(
+      `No previous results found within the last ${maxDaysBack} days`,
+    );
+    return {results: null, date: null};
+  }
+
   async makeRequest(hostname, path, method, data = null) {
     const url = `https://${hostname}${path}`;
     const options = {
