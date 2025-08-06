@@ -31,40 +31,38 @@ export const printBenchmarkResultsRanking = (
     testArtifact: mixed,
   }>,
 ) => {
-  const numberOfTests = testResults.length;
-  if (numberOfTests <= 1 || testResults[0].testArtifact === undefined) {
-    // No test variations to compare between, or there are no benchmak results present, just don't print anything
-    return;
-  }
-
   const testTaskTimings: {[string]: Array<[string, number]>} = {};
-  for (let i = 0; i < numberOfTests; i++) {
-    if (testResults[i] == null) {
-      continue;
-    }
+  let numTestVariants = 0;
+
+  for (const testResult of testResults) {
     // $FlowExpectedError[incompatible-cast]
-    const testArtifact = testResults[i].testArtifact as ?BenchmarkTestArtifact;
-    const testVariationName = testResults[i].title;
+    const testArtifact = testResult?.testArtifact as ?BenchmarkTestArtifact;
     if (
       testArtifact == null ||
+      testArtifact.timings == null ||
       testArtifact.type !== 'benchmark' ||
-      testVariationName == null
+      testResult.title == null
     ) {
       continue;
     }
+    numTestVariants++;
     for (const taskTiming of testArtifact.timings) {
       const taskName = taskTiming.name;
       if (testTaskTimings[taskName] === undefined) {
         testTaskTimings[taskName] = [];
       }
       testTaskTimings[taskName].push([
-        testVariationName,
+        testResult.title,
         taskTiming.latency.p50,
       ]);
     }
   }
+  if (numTestVariants <= 1 || Object.keys(testTaskTimings).length === 0) {
+    // No benchmark results to print, or there is nothing to compare with
+    return;
+  }
 
-  // Sort each task's executions by latency
+  // Sort by each task's execution times
   for (const taskName in testTaskTimings) {
     testTaskTimings[taskName].sort((a, b) => a[1] - b[1]);
   }
@@ -82,7 +80,6 @@ export const printBenchmarkResultsRanking = (
       );
       lastTiming = latency;
     }
-    console.log('\n');
   }
 };
 
