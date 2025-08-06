@@ -308,6 +308,8 @@ SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
               "resizeMode",
               toString(resizeMode),
               toString(imageProps.resizeMode)),
+          debugStringConvertibleItem(
+              "tintColor", toString(tintColor), toString(imageProps.tintColor)),
       };
 }
 
