@@ -1481,11 +1481,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 }
 
 - (BOOL) styleNeedsSwiftUIContainer {
-  if (!_props->filter.empty()) {
-    for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Blur) {
-        return YES;
-      }
+  for (const auto &primitive : _props->filter) {
+    if (primitive.type == FilterType::Blur) {
+      return YES;
     }
   }
   return NO;
