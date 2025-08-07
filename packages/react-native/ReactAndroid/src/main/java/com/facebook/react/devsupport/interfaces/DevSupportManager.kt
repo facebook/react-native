@@ -106,6 +106,12 @@ public interface DevSupportManager : JSExceptionHandler {
   /** Hides the "paused in debugger" overlay, if currently shown. */
   public fun hidePausedInDebuggerOverlay()
 
+  /** [Experimental] Update the V2 Perf Monitor overlay with the given data. */
+  public fun unstable_updatePerfMonitor(
+      interactionName: String,
+      durationMs: Int,
+  )
+
   /** Add an option to send to packager when requesting JS bundle. */
   public fun setAdditionalOptionForPackager(name: String, value: String)
 

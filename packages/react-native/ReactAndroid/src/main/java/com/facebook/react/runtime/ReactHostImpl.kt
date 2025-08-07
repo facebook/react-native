@@ -413,6 +413,11 @@ public class ReactHostImpl(
     }
   }
 
+  @DoNotStrip
+  private fun unstable_updatePerfMonitor(interactionName: String, durationMs: Int) {
+    devSupportManager.unstable_updatePerfMonitor(interactionName, durationMs)
+  }
+
   @get:DoNotStrip
   private val hostMetadata: Map<String, String?>
     get() = AndroidInfoHelpers.getInspectorHostMetadata(context)
