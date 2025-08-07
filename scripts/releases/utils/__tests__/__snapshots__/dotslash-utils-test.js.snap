@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processDotSlashFileInPlace comments, multiple platforms, providers + replacement: contents after processing 1`] = `
+"#!/usr/bin/env dotslash
+// Top-level comment
+{
+  \\"name\\": \\"test\\",
+  \\"platforms\\": {
+    // Comment on linux-x86_64
+    \\"linux-x86_64\\": {
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://example.com/replaced/test-linux-x86_64.tar.gz\\"
+        }
+    ],
+      \\"format\\": \\"tar.gz\\",
+      \\"path\\": \\"bar\\"
+    },
+    // Comment on macos-aarch64
+    \\"macos-aarch64\\": {
+      \\"size\\": 0,
+      \\"hash\\": \\"sha256\\",
+      \\"digest\\": \\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\",
+      \\"providers\\": [
+        {
+            \\"url\\": \\"https://primary.example.com/foo-mac.zip\\",
+            \\"weight\\": 3
+        },
+        {
+            \\"url\\": \\"https://mirror1.example.com/foo-mac.zip\\",
+            \\"weight\\": 1
+        },
+        {
+            \\"url\\": \\"https://example.com/added/test-macos-aarch64.zip\\"
+        }
+    ],
+      \\"format\\": \\"zip\\",
+      \\"path\\": \\"bar\\",
+    }
+  }
+}"
+`;
+
+exports[`processDotSlashFileInPlace comments, multiple platforms, providers + replacement: transformProviders calls 1`] = `
+Array [
+  Array [
+    Array [
+      Object {
+        "url": "https://primary.example.com/foo-linux.tar.gz",
+        "weight": 3,
+      },
+      Object {
+        "url": "https://mirror1.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+      Object {
+        "url": "https://mirror2.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+      Object {
+        "url": "https://mirror3.example.com/foo-linux.tar.gz",
+        "weight": 1,
+      },
+    ],
+    "test-linux-x86_64.tar.gz",
+  ],
+  Array [
+    Array [
+      Object {
+        "url": "https://primary.example.com/foo-mac.zip",
+        "weight": 3,
+      },
+      Object {
+        "url": "https://mirror1.example.com/foo-mac.zip",
+        "weight": 1,
+      },
+    ],
+    "test-macos-aarch64.zip",
+  ],
+]
+`;
