@@ -118,7 +118,6 @@ async function collectResults(discordWebHook) {
     } else {
       console.log('Discord webhook not set');
     }
-    process.exit(1);
   }
 
   // Initialize Firebase client
