@@ -16,6 +16,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * associated with it.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class NoSuchNativeViewException(detailMessage: String) :
     IllegalViewOperationException(detailMessage) {
 
