@@ -24,12 +24,6 @@ public abstract class ReactContextBaseJavaModule : BaseJavaModule {
    * For example, never store the value returned by this method in a member variable. Instead, call
    * this method whenever you actually need the Activity and make sure to check for `null`.
    */
-  @Deprecated(
-      "Deprecated in 0.80.0. Use getReactApplicationContext().getCurrentActivity() instead.",
-      ReplaceWith("reactApplicationContext.currentActivity"))
-  protected fun getCurrentActivity(): Activity? {
-    return reactApplicationContext.currentActivity
-  }
 
   @Deprecated(
       "Deprecated in 0.80.0. Use getReactApplicationContext().getCurrentActivity() instead.",
