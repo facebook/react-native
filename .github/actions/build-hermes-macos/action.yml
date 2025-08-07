@@ -186,7 +186,7 @@ runs:
 
         cd ./packages/react-native/sdks/hermes || exit 1
 
-        DSYM_FILE_PATH=API/hermes/hermes.framework.dSYM
+        DSYM_FILE_PATH=lib/hermes.framework.dSYM
         cp -r build_macosx/$DSYM_FILE_PATH "$WORKING_DIR/macosx/"
         cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
         cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"

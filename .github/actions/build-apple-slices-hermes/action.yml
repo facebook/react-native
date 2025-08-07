@@ -71,14 +71,14 @@ runs:
         mv build_"$SLICE" "$FINAL_PATH"
 
         # check whether everything is there
-        if [[ -d "$FINAL_PATH/API/hermes/hermes.framework" ]]; then
+        if [[ -d "$FINAL_PATH/lib/hermes.framework" ]]; then
           echo "Successfully built hermes.framework for $SLICE in $FLAVOR"
         else
           echo "Failed to built hermes.framework for $SLICE in $FLAVOR"
           exit 1
         fi
 
-        if [[ -d "$FINAL_PATH/API/hermes/hermes.framework.dSYM" ]]; then
+        if [[ -d "$FINAL_PATH/lib/hermes.framework.dSYM" ]]; then
           echo "Successfully built hermes.framework.dSYM for $SLICE in $FLAVOR"
         else
           echo "Failed to built hermes.framework.dSYM for $SLICE in $FLAVOR"
