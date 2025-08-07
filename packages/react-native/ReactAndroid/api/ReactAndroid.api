@@ -6213,97 +6213,74 @@ public final class com/facebook/react/views/text/ReactTypefaceUtils {
 	public static final fun parseFontWeight (Ljava/lang/String;)I
 }
 
-public class com/facebook/react/views/text/TextAttributeProps {
-	public static final field TA_KEY_ACCESSIBILITY_ROLE S
-	public static final field TA_KEY_ALIGNMENT S
-	public static final field TA_KEY_ALLOW_FONT_SCALING S
-	public static final field TA_KEY_BACKGROUND_COLOR S
-	public static final field TA_KEY_BEST_WRITING_DIRECTION S
-	public static final field TA_KEY_FONT_FAMILY S
-	public static final field TA_KEY_FONT_SIZE S
-	public static final field TA_KEY_FONT_SIZE_MULTIPLIER S
-	public static final field TA_KEY_FONT_STYLE S
-	public static final field TA_KEY_FONT_VARIANT S
-	public static final field TA_KEY_FONT_WEIGHT S
-	public static final field TA_KEY_FOREGROUND_COLOR S
-	public static final field TA_KEY_IS_HIGHLIGHTED S
-	public static final field TA_KEY_LAYOUT_DIRECTION S
-	public static final field TA_KEY_LETTER_SPACING S
-	public static final field TA_KEY_LINE_BREAK_STRATEGY S
-	public static final field TA_KEY_LINE_HEIGHT S
-	public static final field TA_KEY_MAX_FONT_SIZE_MULTIPLIER S
-	public static final field TA_KEY_OPACITY S
-	public static final field TA_KEY_ROLE S
-	public static final field TA_KEY_TEXT_DECORATION_COLOR S
-	public static final field TA_KEY_TEXT_DECORATION_LINE S
-	public static final field TA_KEY_TEXT_DECORATION_STYLE S
-	public static final field TA_KEY_TEXT_SHADOW_COLOR S
-	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DX S
-	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY S
-	public static final field TA_KEY_TEXT_SHADOW_RADIUS S
-	public static final field TA_KEY_TEXT_TRANSFORM S
+public final class com/facebook/react/views/text/TextAttributeProps {
+	public static final field Companion Lcom/facebook/react/views/text/TextAttributeProps$Companion;
+	public static final field TA_KEY_ACCESSIBILITY_ROLE I
+	public static final field TA_KEY_ALIGNMENT I
+	public static final field TA_KEY_ALLOW_FONT_SCALING I
+	public static final field TA_KEY_BACKGROUND_COLOR I
+	public static final field TA_KEY_BEST_WRITING_DIRECTION I
+	public static final field TA_KEY_FONT_FAMILY I
+	public static final field TA_KEY_FONT_SIZE I
+	public static final field TA_KEY_FONT_SIZE_MULTIPLIER I
+	public static final field TA_KEY_FONT_STYLE I
+	public static final field TA_KEY_FONT_VARIANT I
+	public static final field TA_KEY_FONT_WEIGHT I
+	public static final field TA_KEY_FOREGROUND_COLOR I
+	public static final field TA_KEY_IS_HIGHLIGHTED I
+	public static final field TA_KEY_LAYOUT_DIRECTION I
+	public static final field TA_KEY_LETTER_SPACING I
+	public static final field TA_KEY_LINE_BREAK_STRATEGY I
+	public static final field TA_KEY_LINE_HEIGHT I
+	public static final field TA_KEY_MAX_FONT_SIZE_MULTIPLIER I
+	public static final field TA_KEY_OPACITY I
+	public static final field TA_KEY_ROLE I
+	public static final field TA_KEY_TEXT_DECORATION_COLOR I
+	public static final field TA_KEY_TEXT_DECORATION_LINE I
+	public static final field TA_KEY_TEXT_DECORATION_STYLE I
+	public static final field TA_KEY_TEXT_SHADOW_COLOR I
+	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DX I
+	public static final field TA_KEY_TEXT_SHADOW_OFFSET_DY I
+	public static final field TA_KEY_TEXT_SHADOW_RADIUS I
+	public static final field TA_KEY_TEXT_TRANSFORM I
 	public static final field UNSET I
-	protected field mAccessibilityRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	protected field mAllowFontScaling Z
-	protected field mBackgroundColor I
-	protected field mColor I
-	protected field mContainsImages Z
-	protected field mFontFamily Ljava/lang/String;
-	protected field mFontFeatureSettings Ljava/lang/String;
-	protected field mFontSize I
-	protected field mFontSizeInput F
-	protected field mFontStyle I
-	protected field mFontWeight I
-	protected field mHeightOfTallestInlineImage F
-	protected field mIncludeFontPadding Z
-	protected field mIsBackgroundColorSet Z
-	protected field mIsColorSet Z
-	protected field mIsLineThroughTextDecorationSet Z
-	protected field mIsUnderlineTextDecorationSet Z
-	protected field mLayoutDirection I
-	protected field mLetterSpacingInput F
-	protected field mLineHeight F
-	protected field mLineHeightInput F
-	protected field mMaxFontSizeMultiplier F
-	protected field mNumberOfLines I
-	protected field mOpacity F
-	protected field mRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
-	protected field mTextAlign I
-	protected field mTextShadowColor I
-	protected field mTextShadowOffsetDx F
-	protected field mTextShadowOffsetDy F
-	protected field mTextShadowRadius F
-	protected field mTextTransform Lcom/facebook/react/views/text/TextTransform;
-	public static fun fromMapBuffer (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Lcom/facebook/react/views/text/TextAttributeProps;
-	public static fun fromReadableMap (Lcom/facebook/react/uimanager/ReactStylesDiffMap;)Lcom/facebook/react/views/text/TextAttributeProps;
-	public fun getAccessibilityRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	public fun getBackgroundColor ()I
-	public fun getColor ()I
-	public fun getEffectiveFontSize ()I
-	public fun getEffectiveLetterSpacing ()F
-	public fun getEffectiveLineHeight ()F
-	public static fun getEllipsizeMode (Ljava/lang/String;)Landroid/text/TextUtils$TruncateAt;
-	public fun getFontFamily ()Ljava/lang/String;
-	public fun getFontFeatureSettings ()Ljava/lang/String;
-	public fun getFontStyle ()I
-	public fun getFontWeight ()I
-	public static fun getHyphenationFrequency (Ljava/lang/String;)I
-	public static fun getJustificationMode (Lcom/facebook/react/uimanager/ReactStylesDiffMap;I)I
-	public static fun getLayoutDirection (Ljava/lang/String;)I
-	public fun getLetterSpacing ()F
-	public fun getOpacity ()F
-	public fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
-	public static fun getTextAlignment (Lcom/facebook/react/uimanager/ReactStylesDiffMap;ZI)I
-	public static fun getTextBreakStrategy (Ljava/lang/String;)I
-	public fun getTextShadowColor ()I
-	public fun getTextShadowOffsetDx ()F
-	public fun getTextShadowOffsetDy ()F
-	public fun getTextShadowRadius ()F
-	public fun getTextTransform ()Lcom/facebook/react/views/text/TextTransform;
-	public fun isBackgroundColorSet ()Z
-	public fun isColorSet ()Z
-	public fun isLineThroughTextDecorationSet ()Z
-	public fun isUnderlineTextDecorationSet ()Z
+	public final fun getAccessibilityRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public final fun getAllowFontScaling ()Z
+	public final fun getBackgroundColor ()Ljava/lang/Integer;
+	public final fun getColor ()Ljava/lang/Integer;
+	public final fun getEffectiveLetterSpacing ()F
+	public final fun getEffectiveLineHeight ()F
+	public final fun getFontFamily ()Ljava/lang/String;
+	public final fun getFontFeatureSettings ()Ljava/lang/String;
+	public final fun getFontSize ()I
+	public final fun getFontStyle ()I
+	public final fun getFontWeight ()I
+	public final fun getLayoutDirection ()I
+	public final fun getLetterSpacing ()F
+	public final fun getLineHeight ()F
+	public final fun getMaxFontSizeMultiplier ()F
+	public final fun getNumberOfLines ()I
+	public final fun getOpacity ()F
+	public final fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	public final fun getTextShadowColor ()I
+	public final fun getTextShadowOffsetDx ()F
+	public final fun getTextShadowOffsetDy ()F
+	public final fun getTextShadowRadius ()F
+	public final fun isBackgroundColorSet ()Z
+	public final fun isColorSet ()Z
+	public final fun isLineThroughTextDecorationSet ()Z
+	public final fun isUnderlineTextDecorationSet ()Z
+}
+
+public final class com/facebook/react/views/text/TextAttributeProps$Companion {
+	public final fun fromMapBuffer (Lcom/facebook/react/common/mapbuffer/MapBuffer;)Lcom/facebook/react/views/text/TextAttributeProps;
+	public final fun fromReadableMap (Lcom/facebook/react/uimanager/ReactStylesDiffMap;)Lcom/facebook/react/views/text/TextAttributeProps;
+	public final fun getEllipsizeMode (Ljava/lang/String;)Landroid/text/TextUtils$TruncateAt;
+	public final fun getHyphenationFrequency (Ljava/lang/String;)I
+	public final fun getJustificationMode (Lcom/facebook/react/uimanager/ReactStylesDiffMap;I)I
+	public final fun getLayoutDirection (Ljava/lang/String;)I
+	public final fun getTextAlignment (Lcom/facebook/react/uimanager/ReactStylesDiffMap;ZI)I
+	public final fun getTextBreakStrategy (Ljava/lang/String;)I
 }
 
 public final class com/facebook/react/views/text/TextAttributes {
