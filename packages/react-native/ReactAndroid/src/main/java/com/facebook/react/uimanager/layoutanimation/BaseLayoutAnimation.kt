@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -17,6 +19,9 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   abstract fun isReverse(): Boolean
 
