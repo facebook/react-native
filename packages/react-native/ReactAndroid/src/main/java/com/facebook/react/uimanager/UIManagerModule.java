@@ -89,6 +89,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @ReactModule(name = UIManagerModule.NAME)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
