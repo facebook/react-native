@@ -7,15 +7,9 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.react.common.annotations.internal.LegacyArchitecture
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.soloader.SoLoader
 
-@LegacyArchitecture
-internal object BridgeSoLoader {
-  init {
-    LegacyArchitectureLogger.assertLegacyArchitecture("BridgeSoLoader")
-  }
+internal object ReactNativeJNISoLoader {
 
   @JvmStatic
   @Synchronized

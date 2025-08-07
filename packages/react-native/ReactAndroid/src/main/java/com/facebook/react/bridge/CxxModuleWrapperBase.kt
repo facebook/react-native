@@ -50,7 +50,7 @@ protected constructor(
 
   private companion object {
     init {
-      BridgeSoLoader.staticInit()
+      ReactNativeJNISoLoader.staticInit()
       LegacyArchitectureLogger.assertLegacyArchitecture(
           "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING)
     }
