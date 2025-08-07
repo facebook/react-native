@@ -68,6 +68,8 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class NativeViewHierarchyManager {
 
   static {
