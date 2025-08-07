@@ -128,7 +128,6 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
-          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
