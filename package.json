@@ -57,6 +57,7 @@
     "@jest/create-cache-key-function": "^29.7.0",
     "@microsoft/api-extractor": "^7.52.2",
     "@motizilberman/dotslash": "0.5.7-1754587239403",
+    "@octokit/rest": "^22.0.0",
     "@react-native/metro-babel-transformer": "0.82.0-main",
     "@react-native/metro-config": "0.82.0-main",
     "@tsconfig/node22": "22.0.2",
