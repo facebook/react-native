@@ -20,6 +20,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * UIManagerModule instance.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ShadowNodeRegistry {
   private val tagsToCSSNodes = SparseArray<ReactShadowNode<*>>()
   private val rootTags = SparseBooleanArray()
