@@ -8,6 +8,7 @@
  * @format
  */
 
+import {reportBenchmarkResult} from '../runtime/setup';
 import {getConstants} from './index';
 import nullthrows from 'nullthrows';
 import NativeCPUTime from 'react-native/src/private/testing/fantom/specs/NativeCPUTime';
@@ -29,6 +30,23 @@ export type SuiteOptions = $ReadOnly<{
 }>;
 
 export type TestOptions = FnOptions;
+
+export type TestTaskTiming = {
+  name: string,
+  latency: {
+    mean: number,
+    min: number,
+    max: number,
+    p50?: number,
+    p75?: number,
+    p99?: number,
+  },
+};
+
+export type BenchmarkResult = {
+  type: string,
+  timings: $ReadOnlyArray<TestTaskTiming>,
+};
 
 type InternalTestOptions = $ReadOnly<{
   ...FnOptions,
@@ -176,7 +194,7 @@ export function suite(
         'Failing focused test to prevent it from being committed',
       );
     }
-    return createBenchmarkTestArtifact(bench, tasks);
+    reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
   });
 
   const test = (
@@ -255,9 +273,12 @@ function printBenchmarkResults(bench: Bench) {
   console.log('');
 }
 
-function createBenchmarkTestArtifact(bench: Bench, tasks: Array<TestTask>) {
+function createBenchmarkResultsObject(
+  bench: Bench,
+  tasks: Array<TestTask>,
+): BenchmarkResult {
   return {
-    type: 'benchmark',
+    type: 'benchmark-result',
     timings: tasks.map((task, i) => {
       const result = bench.results[i];
       const {min, max, mean, p50, p75, p99} = result.latency;

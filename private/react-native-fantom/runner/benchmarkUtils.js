@@ -8,52 +8,36 @@
  * @format
  */
 
+import type {BenchmarkResult} from '../src/Benchmark';
+
 import {markdownTable} from './utils';
 
-type TestTaskTiming = {
-  name: string,
-  latency: {
-    mean: number,
-    min: number,
-    max: number,
-    p50: number,
-    p75: number,
-    p99: number,
-  },
-};
-
-export type BenchmarkTestArtifact = {
-  type: string,
-  timings: $ReadOnlyArray<TestTaskTiming>,
-};
-
 export const printBenchmarkResultsRanking = (
-  testResults: Array<{
+  benchmarkResults: Array<{
     title: string,
-    testArtifact: mixed,
+    result: BenchmarkResult,
   }>,
 ) => {
   const testTaskTimings: {[string]: {[string]: number}} = {};
   let numTestVariants = 0;
 
-  for (const testResult of testResults) {
-    // $FlowExpectedError[incompatible-cast]
-    const testArtifact = testResult?.testArtifact as ?BenchmarkTestArtifact;
+  for (const benchmarkResult of benchmarkResults) {
+    const result = benchmarkResult.result;
     if (
-      testArtifact == null ||
-      testArtifact.timings == null ||
-      testArtifact.type !== 'benchmark' ||
-      testResult.title == null
+      result == null ||
+      result.timings == null ||
+      benchmarkResult.title == null
     ) {
       continue;
     }
     numTestVariants++;
-    for (const taskTiming of testArtifact.timings) {
+    for (const taskTiming of result.timings) {
       const taskName = taskTiming.name;
       if (testTaskTimings[taskName] === undefined) {
         testTaskTimings[taskName] = {};
       }
-      testTaskTimings[taskName][testResult.title] = taskTiming.latency.p50;
+      testTaskTimings[taskName][benchmarkResult.title] =
+        taskTiming.latency?.p50 ?? taskTiming.latency.mean;
     }
   }
   if (numTestVariants <= 1 || Object.keys(testTaskTimings).length === 0) {

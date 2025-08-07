@@ -14,7 +14,7 @@ import type {
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
-import type {BenchmarkTestArtifact} from './benchmarkUtils';
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -80,7 +80,7 @@ function buildError(
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
-): Promise<TestSuiteResult> {
+): Promise<[TestSuiteResult, ?BenchmarkResult]> {
   const stdoutChunks = [];
   const stderrChunks = [];
 
@@ -92,7 +92,7 @@ async function processRNTesterCommandResult(
     stderrChunks.push(chunk);
   });
 
-  let testResult;
+  let testResult, benchmarkResult;
 
   const rl = readline.createInterface({input: result.childProcess.stdout});
   rl.on('line', (rawLine: string) => {
@@ -115,6 +115,9 @@ async function processRNTesterCommandResult(
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
+        break;
+      case 'benchmark-result':
+        benchmarkResult = parsed;
         break;
       case 'console-log':
         printConsoleLog(parsed);
@@ -152,7 +155,7 @@ async function processRNTesterCommandResult(
     );
   }
 
-  return testResult;
+  return [testResult, benchmarkResult];
 }
 
 function generateBytecodeBundle({
@@ -223,6 +226,7 @@ module.exports = async function runTest(
   );
 
   const testResultsByConfig = [];
+  const benchmarkResults = [];
 
   const skippedTestResults = ({
     ancestorTitles,
@@ -241,7 +245,6 @@ module.exports = async function runTest(
       snapshotResults: {} as TestSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
-      testArtifact: {} as mixed,
       title,
     },
   ];
@@ -371,9 +374,8 @@ module.exports = async function runTest(
           hermesVariant: testConfig.hermesVariant,
         });
 
-    const processedResult = await processRNTesterCommandResult(
-      rnTesterCommandResult,
-    );
+    const [processedResult, benchmarkResult] =
+      await processRNTesterCommandResult(rnTesterCommandResult);
 
     if (containsError(processedResult) || EnvironmentOptions.profileJS) {
       await createSourceMap({
@@ -439,6 +441,13 @@ module.exports = async function runTest(
       });
     }
 
+    if (benchmarkResult != null) {
+      benchmarkResults.push({
+        title: testResults[0]?.ancestorTitles?.[0] ?? maybeCommonAncestor,
+        result: benchmarkResult,
+      });
+    }
+
     testResultsByConfig.push(testResults);
   }
 
@@ -455,17 +464,7 @@ module.exports = async function runTest(
     snapshotResults,
   );
 
-  printBenchmarkResultsRanking(
-    testResults.map(testResult => {
-      // $FlowExpectedError[incompatible-cast]
-      const testArtifact = testResult.testArtifact as ?BenchmarkTestArtifact;
-      const title = testResult.ancestorTitles[0];
-      return {
-        title,
-        testArtifact,
-      };
-    }),
-  );
+  printBenchmarkResultsRanking(benchmarkResults);
 
   return {
     testFilePath: testPath,

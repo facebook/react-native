@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
 import {getConstants} from '../src/Constants';
@@ -26,7 +27,6 @@ export type TestCaseResult = {
   failureDetails: Array<FailureDetail>,
   numPassingAsserts: number,
   snapshotResults: TestSnapshotResults,
-  testArtifact?: mixed,
   // location: string,
 };
 
@@ -315,7 +315,6 @@ function runSpec(spec: Spec): TestCaseResult {
     failureDetails: [],
     numPassingAsserts: 0,
     snapshotResults: {},
-    testArtifact: null,
   };
 
   if (!shouldRunSuite(spec)) {
@@ -330,7 +329,7 @@ function runSpec(spec: Spec): TestCaseResult {
 
   try {
     invokeHooks(spec.parentContext, 'beforeEachHooks');
-    result.testArtifact = spec.implementation();
+    spec.implementation();
     invokeHooks(spec.parentContext, 'afterEachHooks');
 
     status = 'passed';
@@ -400,6 +399,13 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
       ...testSuiteResult,
     }),
   );
+}
+
+export function reportBenchmarkResult(result: BenchmarkResult): void {
+  // Force the import of the native module to be lazy
+  const NativeFantom =
+    require('react-native/src/private/testing/fantom/specs/NativeFantom').default;
+  NativeFantom.reportTestSuiteResultsJSON(JSON.stringify(result));
 }
 
 function validateEmptyMessageQueue(): void {
