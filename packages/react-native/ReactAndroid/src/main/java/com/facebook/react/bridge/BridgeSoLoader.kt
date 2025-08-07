@@ -12,6 +12,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.soloader.SoLoader
 
 @LegacyArchitecture
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal object BridgeSoLoader {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture("BridgeSoLoader")

@@ -17,6 +17,9 @@ import com.facebook.systrace.SystraceMessage
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class JavaMethodWrapper(
     private val moduleWrapper: JavaModuleWrapper,
@@ -321,7 +324,7 @@ internal class JavaMethodWrapper(
                 null
               } else {
                 val id = jsArguments.getDouble(atIndex).toInt()
-                CallbackImpl(jsInstance, id)
+                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
               }
         }
 

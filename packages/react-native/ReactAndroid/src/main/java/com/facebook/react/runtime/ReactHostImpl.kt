@@ -61,7 +61,6 @@ import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
@@ -523,9 +522,10 @@ public class ReactHostImpl(
   internal val nativeModules: Collection<NativeModule>
     get() = reactInstance?.nativeModules ?: listOf()
 
+  @Suppress("DEPRECATION")
   internal fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
-        nativeModuleInterface == UIManagerModule::class.java) {
+        nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           ReactNoCrashSoftException(

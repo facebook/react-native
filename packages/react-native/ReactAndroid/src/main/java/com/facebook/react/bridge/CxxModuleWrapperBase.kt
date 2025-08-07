@@ -50,7 +50,7 @@ protected constructor(
 
   private companion object {
     init {
-      BridgeSoLoader.staticInit()
+      @Suppress("DEPRECATION") BridgeSoLoader.staticInit()
       LegacyArchitectureLogger.assertLegacyArchitecture(
           "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING)
     }

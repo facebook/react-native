@@ -14,6 +14,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaDirection
 
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal object LayoutDirectionUtil {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture(

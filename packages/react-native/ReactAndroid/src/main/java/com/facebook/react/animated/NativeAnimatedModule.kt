@@ -28,7 +28,6 @@ import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.GuardedFrameCallback
 import com.facebook.react.uimanager.UIBlock
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import java.util.ArrayList
@@ -74,9 +73,9 @@ import kotlin.concurrent.Volatile
  * that coordinates all the action: [NativeAnimatedNodesManager]. Since all the methods from
  * [NativeAnimatedNodesManager] need to be called from the UI thread, we we create a queue of
  * animated graph operations that is then enqueued to be executed in the UI Thread at the end of the
- * batch of JS->native calls (similarly to how it's handled in [UIManagerModule]). This isolates us
- * from the problems that may be caused by concurrent updates of animated graph while UI thread is
- * "executing" the animation loop.
+ * batch of JS->native calls (similarly to how it's handled in
+ * [com.facebook.react.uimanager.UIManagerModule]). This isolates us from the problems that may be
+ * caused by concurrent updates of animated graph while UI thread is "executing" the animation loop.
  */
 @OptIn(UnstableReactNativeAPI::class)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
@@ -306,6 +305,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   }
 
   // For non-FabricUIManager only
+  @Suppress("DEPRECATION")
   @UiThread
   override fun willDispatchViewUpdates(uiManager: UIManager) {
     if (operations.isEmpty && preOperations.isEmpty) {
@@ -325,8 +325,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
     val operationsUIBlock = UIBlock { operations.executeBatch(frameNo, nodesManager) }
 
-    assert(uiManager is UIManagerModule)
-    val uiManagerModule = uiManager as UIManagerModule
+    assert(uiManager is com.facebook.react.uimanager.UIManagerModule)
+    val uiManagerModule = uiManager as com.facebook.react.uimanager.UIManagerModule
     uiManagerModule.prependUIBlock(preOperationsUIBlock)
     uiManagerModule.addUIBlock(operationsUIBlock)
   }

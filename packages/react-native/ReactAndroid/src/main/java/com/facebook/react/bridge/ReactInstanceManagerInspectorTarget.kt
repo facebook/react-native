@@ -63,7 +63,7 @@ internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : A
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
           "ReactInstanceManagerInspectorTarget", LegacyArchitectureLogLevel.WARNING)
-      BridgeSoLoader.staticInit()
+      @Suppress("DEPRECATION") BridgeSoLoader.staticInit()
     }
   }
 }

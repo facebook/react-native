@@ -49,7 +49,7 @@ private constructor(@Suppress("NoHungarianNotation") private val mHybridData: Hy
 
   public companion object {
     init {
-      BridgeSoLoader.staticInit()
+      @Suppress("DEPRECATION") BridgeSoLoader.staticInit()
     }
 
     @JvmStatic
