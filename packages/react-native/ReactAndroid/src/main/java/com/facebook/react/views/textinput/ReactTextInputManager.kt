@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.textinput
 
 import android.annotation.SuppressLint
