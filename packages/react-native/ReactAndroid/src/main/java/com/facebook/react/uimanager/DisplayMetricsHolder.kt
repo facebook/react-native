@@ -168,6 +168,6 @@ public object DisplayMetricsHolder {
         (checkNotNull(screenDisplayMetrics).heightPixels - verticalInsets).toFloat().pxToDp())
   }
 
-  internal fun encodeFloatsToLong(width: Float, height: Float): Long =
+  private fun encodeFloatsToLong(width: Float, height: Float): Long =
       (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
 }
