@@ -377,7 +377,7 @@ end
 
 # This method can be used to set the fast_float config
 # that can be used to configure libraries.
-def set_fast_float_config(fmt_config)
+def set_fast_float_config(fast_float_config)
   Helpers::Constants.set_fast_float_config(fast_float_config)
 end
 
