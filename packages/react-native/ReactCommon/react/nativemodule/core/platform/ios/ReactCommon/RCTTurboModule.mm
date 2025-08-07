@@ -338,12 +338,18 @@ ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodN
               }
 
               if (alreadyResolved) {
-                RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+                RCTLogError(
+                    @"%s: Tried to reject a promise after it's already been resolved. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
                 return;
               }
 
               if (alreadyRejected) {
-                RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+                RCTLogError(
+                    @"%s: Tried to reject a promise more than once. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
                 return;
               }
 
