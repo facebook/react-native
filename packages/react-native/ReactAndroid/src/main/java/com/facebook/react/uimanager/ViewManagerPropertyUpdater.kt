@@ -147,16 +147,16 @@ public object ViewManagerPropertyUpdater {
   private class FallbackViewManagerSetter<V : View>(
       viewManagerClass: Class<out ViewManager<V, *>>
   ) : ViewManagerSetter<ViewManager<V, *>, V> {
-    private val mPropSetters: Map<String, PropSetter> =
+    private val propSetters: Map<String, PropSetter> =
         ViewManagersPropertyCache.getNativePropSettersForViewManagerClass(viewManagerClass)
 
     override fun setProperty(manager: ViewManager<V, *>, view: V, name: String, value: Any?) {
-      val setter = mPropSetters[name]
+      val setter = propSetters[name]
       setter?.updateViewProp(manager, view, value)
     }
 
     override fun getProperties(props: MutableMap<String, String>) {
-      for (setter in mPropSetters.values) {
+      for (setter in propSetters.values) {
         props[setter.propName] = setter.propType
       }
     }
