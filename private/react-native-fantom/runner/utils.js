@@ -371,3 +371,64 @@ export function printConsoleLog(log: ConsoleLogMessage): void {
       break;
   }
 }
+
+// Returns a markdown table corresponding to the given data, adopted from the RN console.table polyfill implementation
+export function markdownTable(
+  data: {[string]: {[string]: string}},
+  indexColumnName?: string = '',
+): string {
+  const repeat = (element: string, n: number) =>
+    Array.apply(null, Array(n)).map(() => element);
+
+  const rows = Object.keys(data).map((key: string) => ({
+    [indexColumnName]: key,
+    ...data[key],
+  }));
+
+  if (rows.length === 0) {
+    return '';
+  }
+
+  const columns = Array.from(
+    rows.reduce((columnSet: Set<string>, row) => {
+      Object.keys(row).forEach(key => columnSet.add(key));
+      return columnSet;
+    }, new Set()),
+  );
+  const stringRows: Array<Array<string>> = [];
+  const columnWidths = [];
+
+  // Figure out max cell width for each column
+  columns.forEach((k, i) => {
+    columnWidths[i] = k.length;
+    for (let j = 0; j < rows.length; j++) {
+      const cellStr = rows[j][k];
+      stringRows[j] = stringRows[j] || [];
+      stringRows[j][i] = cellStr;
+      columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
+    }
+  });
+
+  // Join all elements in the row into a single string with | separators
+  // (appends extra spaces to each cell to make separators  | aligned)
+  const joinRow = (row: Array<string>, space?: string = ' ') => {
+    const cells = row.map((cell: string, i) => {
+      const extraSpaces = repeat(' ', columnWidths[i] - cell.length).join('');
+      return cell + extraSpaces;
+    });
+    return '| ' + cells.join(space + '|' + space) + ' |';
+  };
+
+  const separators = columnWidths.map(columnWidth =>
+    repeat('-', columnWidth).join(''),
+  );
+  const separatorRow = joinRow(separators);
+  const header = joinRow(columns);
+  const table = [header, separatorRow];
+
+  for (let i = 0; i < rows.length; i++) {
+    table.push(joinRow(stringRows[i]));
+  }
+
+  return '\n' + table.join('\n');
+}
