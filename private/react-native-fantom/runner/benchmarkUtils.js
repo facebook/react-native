@@ -8,6 +8,8 @@
  * @format
  */
 
+import {markdownTable} from './utils';
+
 type TestTaskTiming = {
   name: string,
   latency: {
@@ -31,7 +33,7 @@ export const printBenchmarkResultsRanking = (
     testArtifact: mixed,
   }>,
 ) => {
-  const testTaskTimings: {[string]: Array<[string, number]>} = {};
+  const testTaskTimings: {[string]: {[string]: number}} = {};
   let numTestVariants = 0;
 
   for (const testResult of testResults) {
@@ -49,12 +51,9 @@ export const printBenchmarkResultsRanking = (
     for (const taskTiming of testArtifact.timings) {
       const taskName = taskTiming.name;
       if (testTaskTimings[taskName] === undefined) {
-        testTaskTimings[taskName] = [];
+        testTaskTimings[taskName] = {};
       }
-      testTaskTimings[taskName].push([
-        testResult.title,
-        taskTiming.latency.p50,
-      ]);
+      testTaskTimings[taskName][testResult.title] = taskTiming.latency.p50;
     }
   }
   if (numTestVariants <= 1 || Object.keys(testTaskTimings).length === 0) {
@@ -62,25 +61,23 @@ export const printBenchmarkResultsRanking = (
     return;
   }
 
-  // Sort by each task's execution times
+  // Find relative execution times for tasks
+  const results: {[string]: {[string]: string}} = {};
   for (const taskName in testTaskTimings) {
-    testTaskTimings[taskName].sort((a, b) => a[1] - b[1]);
+    const kv = Object.entries(testTaskTimings[taskName]);
+    kv.sort((a, b) => a[1] - b[1]);
+    const bestTiming = kv[0][1];
+    results[taskName] = {};
+    kv.forEach(([key, val]) => {
+      results[taskName][key] =
+        `${val.toFixed(3)}ms ${getTimingDelta(bestTiming, val)}`;
+    });
+    results[taskName][kv[0][0]] = `🏆 ${bestTiming.toFixed(3)}ms`;
   }
 
-  // Print the rankings
-  console.log('### Benchmark Results Ranking ###');
-  for (const taskName in testTaskTimings) {
-    console.log(`> ${taskName}:`);
-    let lastTiming;
-    for (const [i, [testVariationName, latency]] of testTaskTimings[
-      taskName
-    ].entries()) {
-      console.log(
-        `  ${i + 1}. ${testVariationName}: ${latency.toFixed(2)}ms ${getTimingDelta(lastTiming, latency)}`,
-      );
-      lastTiming = latency;
-    }
-  }
+  console.log('### Benchmark Times Comparison (p50): ###');
+  console.log(markdownTable(results, 'Task name'));
+  console.log('');
 };
 
 function getTimingDelta(lastTiming: ?number, currentTiming: ?number): string {
