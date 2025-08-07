@@ -40,11 +40,14 @@ public class ReactVirtualView(context: Context) :
   internal var modeChangeEmitter: VirtualViewModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
-  internal val detectWindowFocus = ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()
 
   private val onWindowFocusChangeListener =
-      ViewTreeObserver.OnWindowFocusChangeListener {
-        dispatchOnModeChangeIfNeeded(checkRectChange = false)
+      if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
+        ViewTreeObserver.OnWindowFocusChangeListener {
+          dispatchOnModeChangeIfNeeded(checkRectChange = false)
+        }
+      } else {
+        null
       }
 
   private var parentScrollView: View? = null
@@ -90,7 +93,7 @@ public class ReactVirtualView(context: Context) :
           ReactScrollViewHelper.addLayoutChangeListener(this)
         }
     debugLog("onAttachedToWindow")
-    if (detectWindowFocus) {
+    if (onWindowFocusChangeListener != null) {
       viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
     dispatchOnModeChangeIfNeeded(checkRectChange = false)
@@ -100,7 +103,7 @@ public class ReactVirtualView(context: Context) :
     super.onDetachedFromWindow()
     ReactScrollViewHelper.removeScrollListener(this)
     ReactScrollViewHelper.removeLayoutChangeListener(this)
-    if (detectWindowFocus) {
+    if (onWindowFocusChangeListener != null) {
       viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
     }
     cleanupLayoutListeners()
@@ -202,7 +205,7 @@ public class ReactVirtualView(context: Context) :
 
     val newMode: VirtualViewMode
     if (rectsOverlap(targetRect, thresholdRect)) {
-      if (detectWindowFocus) {
+      if (onWindowFocusChangeListener != null) {
         if (hasWindowFocus()) {
           newMode = VirtualViewMode.Visible
         } else {
