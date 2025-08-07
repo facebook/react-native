@@ -134,17 +134,9 @@ public class TextAttributeProps private constructor() {
   public var fontFeatureSettings: String? = null
     private set
 
-  private var heightOfTallestInlineImage: Float = Float.NaN
-
+  @Deprecated("Use lineHeight instead", ReplaceWith("lineHeight"))
   public val effectiveLineHeight: Float
-    // Returns a line height which takes into account the requested line height
-    get() {
-      val useInlineViewHeight =
-          !lineHeight.isNaN() &&
-              !heightOfTallestInlineImage.isNaN() &&
-              heightOfTallestInlineImage > lineHeight
-      return if (useInlineViewHeight) heightOfTallestInlineImage else lineHeight
-    }
+    get() = lineHeight
 
   private fun setNumberOfLines(numberOfLines: Int) {
     this.numberOfLines = if (numberOfLines == 0) ReactConstants.UNSET else numberOfLines
