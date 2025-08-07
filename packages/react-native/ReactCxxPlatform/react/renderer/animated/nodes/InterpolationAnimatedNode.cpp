@@ -13,7 +13,7 @@
 
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/drivers/AnimationDriverUtils.h>
-#include <react/renderer/animated/primitives.h>
+#include <react/renderer/animated/internal/primitives.h>
 #include <react/renderer/graphics/HostPlatformColor.h>
 
 namespace facebook::react {
