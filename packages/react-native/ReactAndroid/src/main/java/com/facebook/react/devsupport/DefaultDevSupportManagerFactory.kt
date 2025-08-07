@@ -25,6 +25,11 @@ import com.facebook.react.packagerconnection.RequestHandler
  */
 internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
+  @Deprecated(
+      "Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.",
+      replaceWith =
+          ReplaceWith(
+              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
   override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
