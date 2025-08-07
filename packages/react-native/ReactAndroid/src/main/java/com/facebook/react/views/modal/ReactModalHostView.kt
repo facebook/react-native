@@ -41,8 +41,6 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -52,13 +50,11 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
-import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.disableEdgeToEdge
 import com.facebook.react.views.view.enableEdgeToEdge
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.yoga.annotations.DoNotStrip
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -73,7 +69,6 @@ import com.facebook.yoga.annotations.DoNotStrip
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
-@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
@@ -132,7 +127,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
-    initStatusBarHeight(context)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -485,26 +479,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private companion object {
     private const val TAG = "ReactModalHost"
-
-    // We store the status bar height to be able to properly position
-    // the modal on the first render.
-    private var statusBarHeight = 0
-
-    private fun initStatusBarHeight(reactContext: ReactContext) {
-      statusBarHeight = getStatusBarHeightPx(reactContext.currentActivity)
-    }
-
-    @JvmStatic
-    @DoNotStrip
-    private fun getScreenDisplayMetricsWithoutInsets(): Long {
-      val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
-      return encodeFloatsToLong(
-          displayMetrics.widthPixels.toFloat().pxToDp(),
-          (displayMetrics.heightPixels - statusBarHeight).toFloat().pxToDp())
-    }
-
-    private fun encodeFloatsToLong(width: Float, height: Float): Long =
-        (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
   }
 
   /**
