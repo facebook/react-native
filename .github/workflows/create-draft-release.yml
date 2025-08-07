@@ -2,6 +2,7 @@ name: Create Draft Release
 
 on:
   workflow_call:
+  pull_request:
 
 jobs:
   create-draft-release:
