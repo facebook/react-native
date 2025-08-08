@@ -89,7 +89,8 @@ std::string NativeFantom::getRenderedOutput(
       options.includeRoot, options.includeLayoutMetrics};
 
   auto viewTree = appDelegate_.mountingManager_->getViewTree(surfaceId);
-  return RenderOutput::render(viewTree, formatOptions);
+  return appDelegate_.mountingManager_->renderer()->render(
+      viewTree, formatOptions);
 }
 
 void NativeFantom::reportTestSuiteResultsJSON(
