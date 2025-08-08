@@ -160,6 +160,7 @@ internal class JavaMethodWrapper(
         "$startIndex"
       }
 
+  @Suppress("DEPRECATION")
   override fun invoke(jsInstance: JSInstance, parameters: ReadableArray) {
     val traceName = moduleWrapper.name + "." + method.name
     SystraceMessage.beginSection(TRACE_TAG_REACT, "callJavaModuleMethod")
