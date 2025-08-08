@@ -22,8 +22,8 @@ type BundleOptions = {
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
 
 export async function createBundle(options: BundleOptions): Promise<void> {
-  let bundleResult;
-  let bundleError;
+  let lastBundleResult;
+  let lastBundleError;
 
   // Retry in case Metro hasn't seen the changes in the filesystem yet.
   // TODO(T231910841): Remove this when Metro fixes consistency issues when resolving HTTP requests.
@@ -33,22 +33,32 @@ export async function createBundle(options: BundleOptions): Promise<void> {
       await sleep(500);
     }
 
+    lastBundleError = null;
+    lastBundleResult = null;
+
     try {
-      bundleResult = await fetch(getBundleURL(options));
+      lastBundleResult = await fetch(getBundleURL(options));
     } catch (e) {
-      bundleError = e;
+      lastBundleError = e;
     }
 
     attemps++;
-  } while (attemps < 3 && (bundleError || bundleResult?.status === 404));
+  } while (
+    attemps < 3 &&
+    (lastBundleError || lastBundleResult?.status === 404)
+  );
 
-  if (bundleError || bundleResult?.ok !== true) {
+  if (lastBundleError || lastBundleResult?.ok !== true) {
     throw new Error(
-      `Failed to request bundle from Metro: ${bundleError?.message ?? (await bundleResult?.text()) ?? ''}`,
+      `Failed to request bundle from Metro: ${lastBundleError?.message ?? (await lastBundleResult?.text()) ?? ''}`,
     );
   }
 
-  await fs.promises.writeFile(options.out, await bundleResult.text(), 'utf8');
+  await fs.promises.writeFile(
+    options.out,
+    await lastBundleResult.text(),
+    'utf8',
+  );
 }
 
 export async function createSourceMap(options: BundleOptions): Promise<void> {
