@@ -165,6 +165,26 @@ describe('<Text>', () => {
       });
     });
 
+    describe('maxFontSizeMultiplier', () => {
+      it(`propagates valid numbers correctly`, () => {
+        const root = Fantom.createRoot();
+
+        [-1, 0, 1, 3, 1000].forEach(val => {
+          Fantom.runTask(() => {
+            root.render(<Text maxFontSizeMultiplier={val}>{TEST_TEXT}</Text>);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['maxFontSizeMultiplier']}).toJSX(),
+          ).toEqual(
+            <rn-paragraph maxFontSizeMultiplier={val.toString()}>
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+      });
+    });
+
     describe('numberOfLines', () => {
       let originalConsoleError = null;
 
