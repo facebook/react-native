@@ -65,14 +65,20 @@ const ClassTemplate = ({
   className,
   props,
   extendClasses,
+  includeGetDebugPropsImplementation,
 }: {
   enums: string,
   structs: string,
   className: string,
   props: string,
   extendClasses: string,
-}) =>
-  `
+  includeGetDebugPropsImplementation: boolean,
+}) => {
+  const getDebugPropsString = `#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+  #endif`;
+
+  return `
 ${enums}
 ${structs}
 class ${className} final${extendClasses} {
@@ -89,8 +95,11 @@ class ${className} final${extendClasses} {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  ${includeGetDebugPropsImplementation ? getDebugPropsString : ''}
 };
 `.trim();
+};
 
 const EnumTemplate = ({
   enumName,
@@ -177,6 +186,7 @@ const StructTemplate = ({
 }) =>
   `struct ${structName} {
   ${fields}
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ${structName}&) const = default;
@@ -536,6 +546,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <react/renderer/debug/DebugStringConvertible.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -783,6 +794,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -831,6 +843,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              includeGetDebugPropsImplementation,
             });
 
             return replacedTemplate;

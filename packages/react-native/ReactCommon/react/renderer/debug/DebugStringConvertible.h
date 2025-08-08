@@ -101,6 +101,9 @@ inline std::string toString(const std::string& value) {
 inline std::string toString(const int& value) {
   return std::to_string(value);
 }
+inline std::string toString(const unsigned int& value) {
+  return std::to_string(value);
+}
 inline std::string toString(const bool& value) {
   return value ? "true" : "false";
 }
@@ -114,6 +117,19 @@ std::string toString(const std::optional<T>& value) {
     return "null";
   }
   return toString(value.value());
+}
+
+template <typename T>
+std::string toString(const std::vector<T>& value) {
+  std::string result = "[";
+  for (size_t i = 0; i < value.size(); i++) {
+    result += toString(value[i]);
+    if (i < value.size() - 1) {
+      result += ", ";
+    }
+  }
+  result += "]";
+  return result;
 }
 
 /*

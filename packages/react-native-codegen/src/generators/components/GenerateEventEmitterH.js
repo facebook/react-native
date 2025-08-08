@@ -320,6 +320,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {

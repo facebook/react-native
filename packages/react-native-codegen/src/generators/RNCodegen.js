@@ -81,6 +81,7 @@ export type GenerateFunction = (
   packageName?: string,
   assumeNonnull: boolean,
   headerPrefix?: string,
+  includeGetDebugPropsImplementation?: boolean,
 ) => FilesOutput;
 
 export type LibraryGeneratorsFunctions = $ReadOnly<{
@@ -94,6 +95,7 @@ export type LibraryOptions = $ReadOnly<{
   packageName?: string, // Some platforms have a notion of package, which should be configurable.
   assumeNonnull: boolean,
   useLocalIncludePaths?: boolean,
+  includeGetDebugPropsImplementation?: boolean,
   libraryGenerators?: LibraryGeneratorsFunctions,
 }>;
 
@@ -255,6 +257,7 @@ module.exports = {
       packageName,
       assumeNonnull,
       useLocalIncludePaths,
+      includeGetDebugPropsImplementation = false,
       libraryGenerators = LIBRARY_GENERATORS,
     }: LibraryOptions,
     {generators, test}: LibraryConfig,
@@ -299,6 +302,7 @@ module.exports = {
           packageName,
           assumeNonnull,
           headerPrefix,
+          includeGetDebugPropsImplementation,
         ).forEach((contents: string, fileName: string) => {
           generatedFiles.push({
             name: fileName,

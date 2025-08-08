@@ -190,7 +190,7 @@ function convertDefaultTypeToString(
       if (typeAnnotation.default == null) {
         return '';
       }
-      return `"${typeAnnotation.default}"`;
+      return `std::string{"${typeAnnotation.default}"}`;
     case 'Int32TypeAnnotation':
       return String(typeAnnotation.default);
     case 'DoubleTypeAnnotation':
