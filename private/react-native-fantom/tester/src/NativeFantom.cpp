@@ -293,4 +293,26 @@ void NativeFantom::stopJSSamplingProfilerAndSaveToFile(
   hermesRuntime->sampledTraceToStreamInDevToolsFormat(fileStream);
 }
 
+void NativeFantom::setImageResponse(
+    jsi::Runtime& /*rt*/,
+    const std::string& uri,
+    const NativeFantomSetImageResponseImageResponse& imageResponse) {
+  appDelegate_.mountingManager_->imageLoader_->setImageResponse(
+      uri,
+      {
+          .width = imageResponse.width,
+          .height = imageResponse.height,
+          .cacheStatus = imageResponse.cacheStatus,
+          .errorMessage = imageResponse.errorMessage,
+      });
+}
+
+void NativeFantom::clearImage(jsi::Runtime& /*rt*/, const std::string& uri) {
+  appDelegate_.mountingManager_->imageLoader_->clearImage(uri);
+}
+
+void NativeFantom::clearAllImages(jsi::Runtime& /*rt*/) {
+  appDelegate_.mountingManager_->imageLoader_->clearAllImages();
+}
+
 } // namespace facebook::react

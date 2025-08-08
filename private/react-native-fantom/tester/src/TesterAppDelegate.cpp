@@ -17,6 +17,7 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <logger/react_native_log.h>
+#include <react/io/ImageLoaderModule.h>
 #include <react/logging/DefaultOnJsErrorHandler.h>
 #include <react/nativemodule/cputime/NativeCPUTime.h>
 #include <react/nativemodule/fantomtestspecificmethods/NativeFantomTestSpecificMethods.h>
@@ -92,6 +93,9 @@ TesterAppDelegate::TesterAppDelegate(
           return std::make_shared<NativeCPUTime>(jsInvoker);
         } else if (name == NativeFantomTestSpecificMethods::kModuleName) {
           return std::make_shared<NativeFantomTestSpecificMethods>(jsInvoker);
+        } else if (name == ImageLoaderModule::kModuleName) {
+          return std::make_shared<ImageLoaderModule>(
+              jsInvoker, mountingManager_->getImageLoader());
         } else {
           return nullptr;
         }

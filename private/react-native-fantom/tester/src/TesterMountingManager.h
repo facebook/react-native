@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include "FantomImageLoader.h"
+
 #include <react/renderer/mounting/stubs/StubViewTree.h>
 #include <react/renderer/uimanager/IMountingManager.h>
 #include <string>
 #include <unordered_map>
 
 namespace facebook::react {
+class IImageLoader;
 
 class TesterMountingManager : public IMountingManager {
  public:
@@ -45,6 +48,12 @@ class TesterMountingManager : public IMountingManager {
   StubViewTree getViewTree(SurfaceId surfaceId);
   void initViewTree(SurfaceId surfaceId, const StubViewTree& viewTree) {
     viewTrees_[surfaceId] = viewTree;
+  }
+
+  std::shared_ptr<FantomImageLoader> imageLoader_;
+
+  std::shared_ptr<IImageLoader> getImageLoader() noexcept override {
+    return imageLoader_;
   }
 
  private:
