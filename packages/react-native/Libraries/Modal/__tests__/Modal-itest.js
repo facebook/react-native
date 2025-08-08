@@ -186,7 +186,55 @@ describe('<Modal>', () => {
         );
       });
     });
+    describe('navigationBarTranslucent', () => {
+      it('renders a Modal with navigationBarTranslucent="true" and statusBarTranslucent="true"', () => {
+        const root = Fantom.createRoot();
 
+        Fantom.runTask(() => {
+          // navigationBarTranslucent=true with statusBarTranslucent=false is not supported
+          // and it emits a warning.
+          root.render(
+            <Modal
+              navigationBarTranslucent={true}
+              statusBarTranslucent={true}
+            />,
+          );
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['navigationBarTranslucent', 'statusBarTranslucent'],
+            })
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView
+            navigationBarTranslucent="true"
+            statusBarTranslucent="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with navigationBarTranslucent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal navigationBarTranslucent={false} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['navigationBarTranslucent', 'statusBarTranslucent'],
+            })
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
