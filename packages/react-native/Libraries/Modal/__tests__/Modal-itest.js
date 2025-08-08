@@ -326,6 +326,26 @@ describe('<Modal>', () => {
         );
       });
     });
+
+    describe('animated', () => {
+      [true, false].forEach(animated => {
+        // The 'animated' prop is deprecated and ignored when the Modal is rendered
+        // Users should use the 'animationType' prop instead.
+        it(`[DEPRECATED] renders a Modal with animated="${animated ? 'true' : 'false'}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Modal animated={animated} />);
+          });
+
+          expect(root.getRenderedOutput({props: ['animated']}).toJSX()).toEqual(
+            <rn-modalHostView>
+              <rn-view />
+            </rn-modalHostView>,
+          );
+        });
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
