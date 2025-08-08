@@ -46,9 +46,7 @@ describe('FirebaseClient', () => {
       expect(client.password).toBe('testpassword');
       expect(client.apiKey).toBe('test-api-key');
       expect(client.projectId).toBe('test-project');
-      expect(client.databaseUrl).toBe(
-        'test-project-default-rtdb.firebaseio.com',
-      );
+      expect(client.databaseUrl).toBe('test-project.firebaseio.com');
       expect(client.idToken).toBeNull();
     });
   });
@@ -230,7 +228,7 @@ describe('FirebaseClient', () => {
 
       expect(result).toEqual(mockData);
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://test-project-default-rtdb.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
+        'https://test-project.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
         {
           method: 'GET',
           headers: {
@@ -275,7 +273,7 @@ describe('FirebaseClient', () => {
       await client.makeDatabaseRequest('2023-12-01', 'PUT', testData);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://test-project-default-rtdb.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
+        'https://test-project.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
         {
           method: 'PUT',
           headers: {
@@ -301,7 +299,7 @@ describe('FirebaseClient', () => {
       await client.storeResults('2023-12-01', results);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://test-project-default-rtdb.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
+        'https://test-project.firebaseio.com/nightly-results/2023-12-01.json?auth=existing-token',
         {
           method: 'PUT',
           headers: {
