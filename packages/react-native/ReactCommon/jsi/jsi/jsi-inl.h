@@ -162,6 +162,23 @@ void Object::setProperty(Runtime& runtime, const Value& name, T&& value) const {
       runtime, name, detail::toValue(runtime, std::forward<T>(value)));
 }
 
+inline void Object::deleteProperty(Runtime& runtime, const char* name) const {
+  runtime.deleteProperty(runtime, String::createFromAscii(runtime, name));
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const String& name) const {
+  runtime.deleteProperty(*this, name);
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const PropNameID& name)
+    const {
+  runtime.deleteProperty(*this, name);
+}
+
+inline void Object::deleteProperty(Runtime& runtime, const Value& name) const {
+  runtime.deleteProperty(*this, name);
+}
+
 inline Array Object::getArray(Runtime& runtime) const& {
   assert(runtime.isArray(*this));
   (void)runtime; // when assert is disabled we need to mark this as used

@@ -1888,6 +1888,41 @@ TEST_P(JSITest, CastInterface) {
   EXPECT_TRUE(ptr == nullptr);
 }
 
+TEST_P(JSITest, DeleteProperty) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::deleteProperty
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void deleteProperty(const Object& object, const PropNameID& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const String& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const Value& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+  };
+  auto obj = eval("obj = {1:2, foo: 'bar', 3: 4}").getObject(rt);
+
+  auto prop = PropNameID::forAscii(rt, "1");
+  obj.deleteProperty(rt, prop);
+  auto hasRes = obj.hasProperty(rt, prop);
+  EXPECT_FALSE(hasRes);
+
+  auto str = String::createFromAscii(rt, "foo");
+  obj.deleteProperty(rt, str);
+  hasRes = obj.hasProperty(rt, str);
+  EXPECT_FALSE(hasRes);
+
+  auto valProp = Value(3);
+  obj.deleteProperty(rt, valProp);
+  auto getRes = obj.getProperty(rt, "3");
+  EXPECT_TRUE(getRes.isUndefined());
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,
