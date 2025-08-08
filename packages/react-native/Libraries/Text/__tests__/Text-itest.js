@@ -169,6 +169,40 @@ describe('<Text>', () => {
       });
     });
 
+    describe('selectable', () => {
+      it(`can be set to "true"`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text selectable={true}>{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput({props: ['selectable']}).toJSX()).toEqual(
+          <rn-paragraph selectable={'true'}>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+
+      it(`has 'false' as default`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput({props: ['selectable']}).toJSX()).toEqual(
+          <rn-paragraph>{TEST_TEXT}</rn-paragraph>,
+        );
+
+        Fantom.runTask(() => {
+          root.render(<Text selectable={false}>{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput({props: ['selectable']}).toJSX()).toEqual(
+          <rn-paragraph>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+    });
+
     describe('style', () => {
       describe('writingDirection', () => {
         it('propagates to mounting layer', () => {
