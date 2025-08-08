@@ -18,6 +18,7 @@ Map {
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -86,7 +87,8 @@ static inline std::string toString(const ArrayPropsNativeComponentSizesMaskWrapp
     return result;
 }
 struct ArrayPropsNativeComponentObjectStruct {
-  std::string stringProp{\\"\\"};
+  std::string stringProp{std::string{\\"\\"}};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ArrayPropsNativeComponentObjectStruct&) const = default;
@@ -129,7 +131,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayObjectStruct {
-  std::string stringProp{\\"\\"};
+  std::string stringProp{std::string{\\"\\"}};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ArrayPropsNativeComponentArrayObjectStruct&) const = default;
@@ -174,6 +177,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 struct ArrayPropsNativeComponentArrayStruct {
   std::vector<ArrayPropsNativeComponentArrayObjectStruct> object{};
 
+
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ArrayPropsNativeComponentArrayStruct&) const = default;
 
@@ -215,7 +219,8 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 
 
 struct ArrayPropsNativeComponentArrayOfArrayOfObjectStruct {
-  std::string stringProp{\\"\\"};
+  std::string stringProp{std::string{\\"\\"}};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ArrayPropsNativeComponentArrayOfArrayOfObjectStruct&) const = default;
@@ -286,6 +291,8 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -310,6 +317,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -321,6 +329,7 @@ struct ArrayPropsNativeComponentNativePrimitivesStruct {
   std::vector<SharedColor> colors{};
   std::vector<ImageSource> srcs{};
   std::vector<Point> points{};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ArrayPropsNativeComponentNativePrimitivesStruct&) const = default;
@@ -385,6 +394,8 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -407,6 +418,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -424,6 +436,8 @@ class BooleanPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -446,6 +460,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {
@@ -464,6 +479,8 @@ class ColorPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -486,6 +503,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -503,6 +521,8 @@ class CommandNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -525,6 +545,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -535,13 +556,15 @@ class CommandNativeComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  std::string accessibilityHint{\\"\\"};
+  std::string accessibilityHint{std::string{\\"\\"}};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -565,6 +588,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <yoga/Yoga.h>
 
 namespace facebook::react {
@@ -583,6 +607,8 @@ class DimensionPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -605,6 +631,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -627,6 +654,8 @@ class DoublePropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -649,6 +678,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -666,6 +696,8 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -688,6 +720,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -705,6 +738,8 @@ class EventsNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -727,6 +762,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -744,6 +780,8 @@ class InterfaceOnlyComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -766,6 +804,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -783,6 +822,8 @@ class ExcludedAndroidComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -805,6 +846,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -822,6 +864,8 @@ class ExcludedAndroidIosComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -844,6 +888,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -861,6 +906,8 @@ class ExcludedIosComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 class MultiFileIncludedNativeComponentProps final : public ViewProps {
@@ -877,6 +924,8 @@ class MultiFileIncludedNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -899,6 +948,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -921,6 +971,8 @@ class FloatPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -943,6 +995,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 namespace facebook::react {
@@ -961,6 +1014,8 @@ class ImagePropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -983,6 +1038,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 
 namespace facebook::react {
@@ -1001,6 +1057,8 @@ class InsetsPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1023,6 +1081,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1077,6 +1136,8 @@ class Int32EnumPropsNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1099,6 +1160,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1118,6 +1180,8 @@ class IntegerPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1140,6 +1204,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1150,13 +1215,15 @@ class InterfaceOnlyComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  std::string accessibilityHint{\\"\\"};
+  std::string accessibilityHint{std::string{\\"\\"}};
 
   #ifdef RN_SERIALIZABLE_STATE
   ComponentName getDiffPropsImplementationTarget() const override;
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1179,6 +1246,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1196,6 +1264,8 @@ class MixedPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1218,6 +1288,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -1241,6 +1312,8 @@ class ImageColorPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1263,6 +1336,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1280,6 +1354,8 @@ class NoPropsNoEventsComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1304,6 +1380,7 @@ Map {
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/imagemanager/primitives.h>
@@ -1359,6 +1436,7 @@ static inline folly::dynamic toDynamic(const ObjectPropsIntEnumProp &value) {
 struct ObjectPropsObjectPropObjectArrayPropStruct {
   std::vector<std::string> array{};
 
+
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropObjectArrayPropStruct&) const = default;
 
@@ -1393,6 +1471,7 @@ struct ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct {
   ImageSource image{};
   SharedColor color{};
   Point point{};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct&) const = default;
@@ -1435,7 +1514,8 @@ static inline folly::dynamic toDynamic(const ObjectPropsObjectPropObjectPrimitiv
 #endif
 
 struct ObjectPropsObjectPropNestedPropANestedPropBStruct {
-  std::string nestedPropC{\\"\\"};
+  std::string nestedPropC{std::string{\\"\\"}};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropNestedPropANestedPropBStruct&) const = default;
@@ -1470,6 +1550,7 @@ static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropANes
 struct ObjectPropsObjectPropNestedPropAStruct {
   ObjectPropsObjectPropNestedPropANestedPropBStruct nestedPropB{};
 
+
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropNestedPropAStruct&) const = default;
 
@@ -1501,7 +1582,8 @@ static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedPropAStr
 #endif
 
 struct ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct {
-  std::string stringProp{\\"\\"};
+  std::string stringProp{std::string{\\"\\"}};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct&) const = default;
@@ -1546,6 +1628,7 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 struct ObjectPropsObjectPropNestedArrayAsPropertyStruct {
   std::vector<ObjectPropsObjectPropNestedArrayAsPropertyArrayPropStruct> arrayProp{};
 
+
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropNestedArrayAsPropertyStruct&) const = default;
 
@@ -1577,11 +1660,11 @@ static inline folly::dynamic toDynamic(const ObjectPropsObjectPropNestedArrayAsP
 #endif
 
 struct ObjectPropsObjectPropStruct {
-  std::string stringProp{\\"\\"};
+  std::string stringProp{std::string{\\"\\"}};
   bool booleanProp{false};
   Float floatProp{0.0};
   int intProp{0};
-  std::string stringUserDefaultProp{\\"user_default\\"};
+  std::string stringUserDefaultProp{std::string{\\"user_default\\"}};
   bool booleanUserDefaultProp{true};
   Float floatUserDefaultProp{3.14};
   int intUserDefaultProp{9999};
@@ -1591,6 +1674,7 @@ struct ObjectPropsObjectPropStruct {
   ObjectPropsObjectPropObjectPrimitiveRequiredPropStruct objectPrimitiveRequiredProp{};
   ObjectPropsObjectPropNestedPropAStruct nestedPropA{};
   ObjectPropsObjectPropNestedArrayAsPropertyStruct nestedArrayAsProperty{};
+
 
 #ifdef RN_SERIALIZABLE_STATE
   bool operator==(const ObjectPropsObjectPropStruct&) const = default;
@@ -1700,6 +1784,8 @@ class ObjectPropsProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1722,6 +1808,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Point.h>
 
 namespace facebook::react {
@@ -1740,6 +1827,8 @@ class PointPropNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1762,6 +1851,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1803,6 +1893,8 @@ class StringEnumPropsNativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1825,6 +1917,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1835,7 +1928,7 @@ class StringPropComponentProps final : public ViewProps {
 
 #pragma mark - Props
 
-  std::string accessibilityHint{\\"\\"};
+  std::string accessibilityHint{std::string{\\"\\"}};
   std::string accessibilityRole{};
 
   #ifdef RN_SERIALIZABLE_STATE
@@ -1843,6 +1936,8 @@ class StringPropComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1865,6 +1960,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1882,6 +1978,8 @@ class MultiFile1NativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 class MultiFile2NativeComponentProps final : public ViewProps {
@@ -1898,6 +1996,8 @@ class MultiFile2NativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
@@ -1920,6 +2020,7 @@ Map {
 
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 namespace facebook::react {
 
@@ -1937,6 +2038,8 @@ class MultiComponent1NativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 class MultiComponent2NativeComponentProps final : public ViewProps {
@@ -1953,6 +2056,8 @@ class MultiComponent2NativeComponentProps final : public ViewProps {
 
   folly::dynamic getDiffProps(const Props* prevProps) const override;
   #endif
+
+  
 };
 
 } // namespace facebook::react
