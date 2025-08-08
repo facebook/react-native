@@ -18,7 +18,67 @@ import {Modal} from 'react-native';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
+const DEFAULT_MODAL_CHILD_VIEW = (
+  <rn-view
+    backgroundColor="rgba(255, 255, 255, 1)"
+    flex="1.000000"
+    left="0.000000"
+    top="0.000000"
+  />
+);
+
 describe('<Modal>', () => {
+  describe('props', () => {
+    it('renders a Modal with the default values when no props are passed', () => {
+      const root = Fantom.createRoot();
+
+      Fantom.runTask(() => {
+        root.render(<Modal />);
+      });
+
+      expect(root.getRenderedOutput().toJSX()).toEqual(
+        <rn-modalHostView positionType="absolute" visible="true">
+          {DEFAULT_MODAL_CHILD_VIEW}
+        </rn-modalHostView>,
+      );
+    });
+    describe('animationType', () => {
+      it('renders a Modal with animationType="none" by default', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal animationType="none" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['animationType']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      (['slide', 'fade'] as const).forEach(animationType => {
+        it(`renders a Modal with animationType="${animationType}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Modal animationType={animationType} />);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['animationType']}).toJSX(),
+          ).toEqual(
+            <rn-modalHostView animationType={animationType}>
+              <rn-view />
+            </rn-modalHostView>,
+          );
+        });
+      });
+    });
+    // ... more props
+  });
   describe('ref', () => {
     describe('exampleMethod()', () => {
       // more describe('<context>') or tests with it('<behaviour>')
