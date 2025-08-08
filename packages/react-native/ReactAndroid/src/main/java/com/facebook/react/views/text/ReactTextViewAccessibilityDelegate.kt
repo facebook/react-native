@@ -102,7 +102,7 @@ internal class ReactTextViewAccessibilityDelegate(
     return false
   }
 
-  override fun getVisibleVirtualViews(virtualViewIds: MutableList<Int?>) {
+  override fun getVisibleVirtualViews(virtualViewIds: MutableList<Int>) {
     val accessibilityLinks = accessibilityLinks ?: return
 
     for (i in 0 until accessibilityLinks.size()) {
