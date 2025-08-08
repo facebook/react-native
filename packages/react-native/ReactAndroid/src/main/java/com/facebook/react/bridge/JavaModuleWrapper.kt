@@ -74,6 +74,7 @@ internal class JavaModuleWrapper(
       targetMethod.getAnnotation(ReactMethod::class.java)?.let { annotation ->
         val methodName = targetMethod.name
         val md = MethodDescriptor()
+        @Suppress("DEPRECATION")
         val method = JavaMethodWrapper(this, targetMethod, annotation.isBlockingSynchronousMethod)
         md.name = methodName
         md.type = method.type
