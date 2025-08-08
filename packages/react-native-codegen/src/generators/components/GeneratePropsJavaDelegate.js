@@ -55,6 +55,7 @@ package ${packageName};
 
 ${imports}
 
+@SuppressWarnings("deprecation")
 public class ${className}<T extends ${extendClasses}, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ${interfaceClassName}<T>> extends BaseViewManagerDelegate<T, U> {
   public ${className}(U viewManager) {
     super(viewManager);
