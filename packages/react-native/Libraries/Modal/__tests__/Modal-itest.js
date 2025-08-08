@@ -115,6 +115,45 @@ describe('<Modal>', () => {
         },
       );
     });
+    describe('transparent', () => {
+      it('renders a Modal with transparent="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal transparent={true} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({props: ['transparent', 'presentationStyle']})
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView
+            transparent="true"
+            presentationStyle="overFullScreen">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      it('renders a Modal with transparent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal transparent={false} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({props: ['transparent', 'presentationStyle']})
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
