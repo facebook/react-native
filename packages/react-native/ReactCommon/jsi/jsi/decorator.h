@@ -311,12 +311,18 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
   Value getProperty(const Object& o, const String& name) override {
     return plain_.getProperty(o, name);
   };
+  Value getProperty(const Object& o, const Value& name) override {
+    return plain_.getProperty(o, name);
+  }
   bool hasProperty(const Object& o, const PropNameID& name) override {
     return plain_.hasProperty(o, name);
   };
   bool hasProperty(const Object& o, const String& name) override {
     return plain_.hasProperty(o, name);
   };
+  bool hasProperty(const Object& o, const Value& name) override {
+    return plain_.hasProperty(o, name);
+  }
   void setPropertyValue(
       const Object& o,
       const PropNameID& name,
@@ -327,6 +333,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
       override {
     plain_.setPropertyValue(o, name, value);
   };
+  void setPropertyValue(const Object& o, const Value& name, const Value& value)
+      override {
+    plain_.setPropertyValue(o, name, value);
+  }
 
   bool isArray(const Object& o) const override {
     return plain_.isArray(o);
@@ -831,11 +841,19 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::getProperty(o, name);
   };
+  Value getProperty(const Object& o, const Value& name) override {
+    Around around{with_};
+    return RD::getProperty(o, name);
+  };
   bool hasProperty(const Object& o, const PropNameID& name) override {
     Around around{with_};
     return RD::hasProperty(o, name);
   };
   bool hasProperty(const Object& o, const String& name) override {
+    Around around{with_};
+    return RD::hasProperty(o, name);
+  };
+  bool hasProperty(const Object& o, const Value& name) override {
     Around around{with_};
     return RD::hasProperty(o, name);
   };
@@ -847,6 +865,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     RD::setPropertyValue(o, name, value);
   };
   void setPropertyValue(const Object& o, const String& name, const Value& value)
+      override {
+    Around around{with_};
+    RD::setPropertyValue(o, name, value);
+  };
+  void setPropertyValue(const Object& o, const Value& name, const Value& value)
       override {
     Around around{with_};
     RD::setPropertyValue(o, name, value);
