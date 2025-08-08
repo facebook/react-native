@@ -252,6 +252,67 @@ class JSI_EXPORT NativeState {
   virtual ~NativeState();
 };
 
+/// Opaque class that is used to store serialized object from a runtime. The
+/// lifetime of this object is orthogonal to the original runtime object, and
+/// may outlive the original object.
+class JSI_EXPORT Serialized {
+ public:
+  /// Return true if this Serialized object is the same type specified by \p
+  /// uuid. This is used by the runtime to check if it can deserialize this
+  /// object.
+  /// We have this because we manage the life-time of Serialized object directly
+  /// in deserialization with a unique pointer, so we cannot use castInterface
+  /// directly.
+  virtual bool checkUuid(const jsi::UUID& uuid) = 0;
+  virtual ~Serialized();
+};
+
+/// Provides a set of APIs that allows copying objects between different
+/// runtime instances. The runtimes instances must be of the same type. As an
+/// example, a serialized object from Hermes runtime may only be deserialized by
+/// another Hermes runtime.
+class JSI_EXPORT ISerialization : public ICast {
+ public:
+  static constexpr jsi::UUID uuid{
+      0xd40fe0ec,
+      0xa47c,
+      0x42c9,
+      0x8c09,
+      0x661aeab832d8};
+
+  /// Serializes the given Value \p value using the structured clone algorithm.
+  /// It returns a shared pointer of an opaque Serialized object that can be
+  /// deserialized multiple times. The lifetime of the Serialized object is not
+  /// tied to the lifetime of the original object.
+  virtual std::shared_ptr<Serialized> serialize(Value& value) = 0;
+
+  /// Given a Serialized object provided by \p serialized, deserialize it using
+  /// the structured clone algorithm into a JS value in the current runtime.
+  /// Returns the deserialized JS value.
+  virtual Value deserialize(const std::shared_ptr<Serialized>& serialized) = 0;
+
+  /// Serializes the given jsi::Value \p value using the structured clone
+  /// algorithm, transferring everything in \p transferList out of the current
+  /// runtime. It returns a unique pointer of an opaque Serialized object that
+  /// can be deserialized once only by deserializeWithTransfer. The lifetime of
+  /// the Serialized object is not tied to the lifetime of the original object.
+  virtual std::unique_ptr<Serialized> serializeWithTransfer(
+      Value& value,
+      const std::vector<Value>& transferList) = 0;
+
+  /// Using the structure clone algorithm, deserialize the object provided by \p
+  /// serialized into a JS value in the current runtimed. \p serialized must be
+  /// created by serializeWithTransfer. This will consume the serialized data
+  /// entirely to transfer the object to the current runtime. Returns a list of
+  /// deserialized values, where the first element is the value, followed by all
+  /// transferred values in the transferList.
+  virtual std::vector<Value> deserializeWithTransfer(
+      std::unique_ptr<Serialized>& serialized) = 0;
+
+ protected:
+  ~ISerialization() = default;
+};
+
 /// Represents a JS runtime.  Movable, but not copyable.  Note that
 /// this object may not be thread-aware, but cannot be used safely from
 /// multiple threads at once.  The application is responsible for
