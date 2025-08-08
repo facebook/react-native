@@ -235,6 +235,39 @@ describe('<Modal>', () => {
         );
       });
     });
+
+    describe('hardwareAccelerated', () => {
+      it('renders a Modal with hardwareAccelerated="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal hardwareAccelerated={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['hardwareAccelerated']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView hardwareAccelerated="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with hardwareAccelerated="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal hardwareAccelerated={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['hardwareAccelerated']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
