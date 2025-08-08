@@ -346,6 +346,95 @@ describe('<Modal>', () => {
         });
       });
     });
+
+    describe('supportedOrientations', () => {
+      const supportedOrientations = [
+        'portrait',
+        'portrait-upside-down',
+        'landscape',
+        'landscape-left',
+        'landscape-right',
+      ] as const;
+
+      const orientationMap = {
+        portrait: 1,
+        'portrait-upside-down': 2,
+        landscape: 4,
+        'landscape-left': 8,
+        'landscape-right': 16,
+      };
+      it('renders a Modal with no supportedOrientations', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={[]} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView supportedOrientations="0">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      it(`renders a Modal with supportedOrientations="portait"`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={['portrait']} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      supportedOrientations
+        .filter(orientation => orientation !== 'portrait')
+        .forEach(orientation => {
+          it(`renders a Modal with supportedOrientations="[${orientation}]"`, () => {
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(<Modal supportedOrientations={[orientation]} />);
+            });
+
+            const expectedOrientationValue = `${orientationMap[orientation]}`;
+            expect(
+              root
+                .getRenderedOutput({props: ['supportedOrientations']})
+                .toJSX(),
+            ).toEqual(
+              <rn-modalHostView
+                supportedOrientations={expectedOrientationValue}>
+                <rn-view />
+              </rn-modalHostView>,
+            );
+          });
+        });
+
+      it(`renders a Modal with all the supportedOrientations`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={supportedOrientations} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView supportedOrientations="31">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
