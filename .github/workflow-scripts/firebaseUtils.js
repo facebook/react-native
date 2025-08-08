@@ -15,7 +15,7 @@ class FirebaseClient {
     this.password = process.env.FIREBASE_APP_PASS;
     this.apiKey = process.env.FIREBASE_APP_APIKEY;
     this.projectId = process.env.FIREBASE_APP_PROJECTNAME;
-    this.databaseUrl = `${this.projectId}-default-rtdb.firebaseio.com`;
+    this.databaseUrl = `${this.projectId}.firebaseio.com`;
     this.idToken = null;
   }
 
