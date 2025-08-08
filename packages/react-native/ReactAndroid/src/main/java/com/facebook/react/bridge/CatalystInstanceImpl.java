@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @LegacyArchitecture
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
-    BridgeSoLoader.staticInit();
+    ReactNativeJNISoLoader.staticInit();
     LegacyArchitectureLogger.assertLegacyArchitecture(
         "CatalystInstanceImpl", LegacyArchitectureLogLevel.WARNING);
   }
