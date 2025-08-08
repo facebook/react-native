@@ -124,6 +124,47 @@ describe('<Text>', () => {
       });
     });
 
+    describe('id and nativeID', () => {
+      it(`has 'id' propagated correctly`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text id="alpha">{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-paragraph nativeID={'alpha'}>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+
+      it(`has 'nativeID' propagated correctly`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text nativeID="alpha">{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput({props: ['nativeID']}).toJSX()).toEqual(
+          <rn-paragraph nativeID={'alpha'}>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+      it(`has a precedence of 'id' over 'nativeID'`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(
+            <Text id="alpha" nativeID="gamma">
+              {TEST_TEXT}
+            </Text>,
+          );
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['id', 'nativeID']}).toJSX(),
+        ).toEqual(<rn-paragraph nativeID={'alpha'}>{TEST_TEXT}</rn-paragraph>);
+      });
+    });
+
     describe('numberOfLines', () => {
       let originalConsoleError = null;
 
