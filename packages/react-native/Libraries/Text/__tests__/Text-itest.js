@@ -124,6 +124,51 @@ describe('<Text>', () => {
       });
     });
 
+    describe('numberOfLines', () => {
+      it(`doesn't allow negative numbers`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text numberOfLines={-1}>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          // NB. "numberOfLines" is mapped to "maximumNumberOfLines" in C++
+          root.getRenderedOutput({props: ['maximumNumberOfLines']}).toJSX(),
+        ).toEqual(<rn-paragraph>{TEST_TEXT}</rn-paragraph>);
+      });
+
+      it(`has 0 as defult`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text numberOfLines={0}>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['maximumNumberOfLines']}).toJSX(),
+        ).toEqual(<rn-paragraph>{TEST_TEXT}</rn-paragraph>);
+      });
+
+      it(`propagates valid numbers correctly`, () => {
+        const root = Fantom.createRoot();
+
+        [3, 1000].forEach(val => {
+          Fantom.runTask(() => {
+            root.render(<Text numberOfLines={val}>{TEST_TEXT}</Text>);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['maximumNumberOfLines']}).toJSX(),
+          ).toEqual(
+            <rn-paragraph maximumNumberOfLines={val.toString()}>
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+      });
+    });
+
     describe('style', () => {
       describe('writingDirection', () => {
         it('propagates to mounting layer', () => {
