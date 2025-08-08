@@ -268,6 +268,31 @@ describe('<Modal>', () => {
         );
       });
     });
+
+    describe('visible', () => {
+      it('renders a Modal with visible="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal visible={true} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['visible']}).toJSX()).toEqual(
+          <rn-modalHostView visible="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders nothing when visible="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal visible={false} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['visible']}).toJSX()).toBeNull();
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
