@@ -77,6 +77,44 @@ describe('<Modal>', () => {
         });
       });
     });
+
+    describe('presentationStyle', () => {
+      it('renders a Modal with presentationStyle="fullScreen" by default', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal presentationStyle="fullScreen" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['presentationStyle']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      (['pageSheet', 'formSheet', 'overFullScreen'] as const).forEach(
+        presentationStyle => {
+          it(`renders a Modal with presentationStyle="${presentationStyle}"`, () => {
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(<Modal presentationStyle={presentationStyle} />);
+            });
+
+            expect(
+              root.getRenderedOutput({props: ['presentationStyle']}).toJSX(),
+            ).toEqual(
+              <rn-modalHostView presentationStyle={presentationStyle}>
+                <rn-view />
+              </rn-modalHostView>,
+            );
+          });
+        },
+      );
+    });
     // ... more props
   });
   describe('ref', () => {
