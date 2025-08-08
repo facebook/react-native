@@ -154,6 +154,39 @@ describe('<Modal>', () => {
         );
       });
     });
+    describe('statusBarTranslucent', () => {
+      it('renders a Modal with statusBarTranslucent="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal statusBarTranslucent={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['statusBarTranslucent']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView statusBarTranslucent="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with statusBarTranslucent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal statusBarTranslucent={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['statusBarTranslucent']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+
     // ... more props
   });
   describe('ref', () => {
