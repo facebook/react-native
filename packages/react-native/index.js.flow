@@ -311,6 +311,8 @@ export {default as LogBox} from './Libraries/LogBox/LogBox';
 
 export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';
 
+export * as NativeComponentRegistry from './Libraries/NativeComponent/NativeComponentRegistry';
+
 export {default as NativeDialogManagerAndroid} from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 
 export type {
