@@ -46,6 +46,8 @@ import com.facebook.yoga.YogaWrap;
  * NativeViewHierarchyOptimizer} for more information.
  */
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public interface ReactShadowNode<T extends ReactShadowNode> {
 
   /**
