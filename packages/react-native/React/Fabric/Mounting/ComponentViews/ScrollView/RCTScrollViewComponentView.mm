@@ -24,6 +24,7 @@
 #import "RCTCustomPullToRefreshViewProtocol.h"
 #import "RCTEnhancedScrollView.h"
 #import "RCTFabricComponentsPlugins.h"
+#import "RCTVirtualViewContainerState.h"
 
 using namespace facebook::react;
 
@@ -117,6 +118,8 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   // It is not restored to the default value in prepareForRecycle.
   // Once an accessibility API is used, view culling will be disabled for the entire session.
   BOOL _isAccessibilityAPIUsed;
+
+  RCTVirtualViewContainerState *_virtualViewContainerState;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -678,6 +681,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   _contentView = nil;
   _prevFirstVisibleFrame = CGRectZero;
   _firstVisibleView = nil;
+  _virtualViewContainerState = nil;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1088,6 +1092,16 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       }
     }
   }
+}
+
+#pragma mark - RCTVirtualViewContainerProtocol
+
+- (RCTVirtualViewContainerState *)virtualViewContainerState
+{
+  if (!_virtualViewContainerState) {
+    _virtualViewContainerState = [[RCTVirtualViewContainerState alloc] initWithScrollView:self];
+  }
+  return _virtualViewContainerState;
 }
 
 @end
