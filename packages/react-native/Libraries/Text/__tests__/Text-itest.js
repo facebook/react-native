@@ -46,6 +46,40 @@ describe('<Text>', () => {
       });
     });
 
+    describe('allowFontScaling', () => {
+      ([true, false] as const).forEach(propVal => {
+        it(`can be set to "${propVal.toString()}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Text allowFontScaling={propVal}>{TEST_TEXT}</Text>);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['allowFontScaling']}).toJSX(),
+          ).toEqual(
+            <rn-paragraph allowFontScaling={propVal.toString()}>
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+      });
+
+      it(`has 'true' as default`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowFontScaling']}).toJSX(),
+        ).toEqual(
+          <rn-paragraph allowFontScaling={'true'}>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+    });
+
     describe('ellipsizeMode', () => {
       it(`has 'tail' as default on JS side`, () => {
         const root = Fantom.createRoot();
