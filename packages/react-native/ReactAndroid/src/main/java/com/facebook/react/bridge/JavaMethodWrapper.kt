@@ -324,7 +324,7 @@ internal class JavaMethodWrapper(
                 null
               } else {
                 val id = jsArguments.getDouble(atIndex).toInt()
-                CallbackImpl(jsInstance, id)
+                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
               }
         }
 
