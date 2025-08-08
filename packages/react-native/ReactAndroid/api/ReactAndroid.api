@@ -6012,6 +6012,7 @@ public final class com/facebook/react/views/text/DefaultStyleValuesUtil {
 }
 
 public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : com/facebook/react/uimanager/LayoutShadowNode {
+	public static final field Companion Lcom/facebook/react/views/text/ReactBaseTextShadowNode$Companion;
 	public static final field DEFAULT_TEXT_SHADOW_COLOR I
 	public static final field PROP_SHADOW_COLOR Ljava/lang/String;
 	public static final field PROP_SHADOW_OFFSET Ljava/lang/String;
@@ -6019,61 +6020,86 @@ public abstract class com/facebook/react/views/text/ReactBaseTextShadowNode : co
 	public static final field PROP_SHADOW_OFFSET_WIDTH Ljava/lang/String;
 	public static final field PROP_SHADOW_RADIUS Ljava/lang/String;
 	public static final field PROP_TEXT_TRANSFORM Ljava/lang/String;
-	protected field mAccessibilityRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	protected field mAdjustsFontSizeToFit Z
-	protected field mBackgroundColor I
-	protected field mColor I
-	protected field mContainsImages Z
-	protected field mFontFamily Ljava/lang/String;
-	protected field mFontFeatureSettings Ljava/lang/String;
-	protected field mFontStyle I
-	protected field mFontWeight I
-	protected field mHyphenationFrequency I
-	protected field mIncludeFontPadding Z
-	protected field mInlineViews Ljava/util/Map;
-	protected field mIsBackgroundColorSet Z
-	protected field mIsColorSet Z
-	protected field mIsLineThroughTextDecorationSet Z
-	protected field mIsUnderlineTextDecorationSet Z
-	protected field mJustificationMode I
-	protected field mMinimumFontScale F
-	protected field mNumberOfLines I
-	protected field mReactTextViewManagerCallback Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
-	protected field mRole Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
-	protected field mTextAlign I
-	protected field mTextAttributes Lcom/facebook/react/views/text/TextAttributes;
-	protected field mTextBreakStrategy I
-	protected field mTextShadowColor I
-	protected field mTextShadowOffsetDx F
-	protected field mTextShadowOffsetDy F
-	protected field mTextShadowRadius F
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
-	public fun setAccessibilityRole (Ljava/lang/String;)V
-	public fun setAdjustFontSizeToFit (Z)V
-	public fun setAllowFontScaling (Z)V
-	public fun setBackgroundColor (Ljava/lang/Integer;)V
-	public fun setColor (Ljava/lang/Integer;)V
-	public fun setFontFamily (Ljava/lang/String;)V
-	public fun setFontSize (F)V
-	public fun setFontStyle (Ljava/lang/String;)V
-	public fun setFontVariant (Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun setFontWeight (Ljava/lang/String;)V
-	public fun setIncludeFontPadding (Z)V
-	public fun setLetterSpacing (F)V
-	public fun setLineHeight (F)V
-	public fun setMaxFontSizeMultiplier (F)V
-	public fun setMinimumFontScale (F)V
-	public fun setNumberOfLines (I)V
-	public fun setRole (Ljava/lang/String;)V
-	public fun setTextAlign (Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	protected final fun getAccessibilityRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	protected final fun getAdjustsFontSizeToFit ()Z
+	protected final fun getBackgroundColor ()I
+	protected final fun getColor ()I
+	protected final fun getContainsImages ()Z
+	protected final fun getFontFamily ()Ljava/lang/String;
+	protected final fun getFontFeatureSettings ()Ljava/lang/String;
+	protected final fun getFontStyle ()I
+	protected final fun getFontWeight ()I
+	protected final fun getHyphenationFrequency ()I
+	protected final fun getIncludeFontPadding ()Z
+	protected final fun getInlineViews ()Ljava/util/Map;
+	protected final fun getJustificationMode ()I
+	protected final fun getMinimumFontScale ()F
+	protected final fun getNumberOfLines ()I
+	protected final fun getReactTextViewManagerCallback ()Lcom/facebook/react/views/text/ReactTextViewManagerCallback;
+	protected final fun getRole ()Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	protected final fun getTextAlign ()I
+	protected final fun getTextAttributes ()Lcom/facebook/react/views/text/TextAttributes;
+	protected final fun getTextBreakStrategy ()I
+	protected final fun getTextShadowColor ()I
+	protected final fun getTextShadowOffsetDx ()F
+	protected final fun getTextShadowOffsetDy ()F
+	protected final fun getTextShadowRadius ()F
+	protected final fun isBackgroundColorSet ()Z
+	protected final fun isColorSet ()Z
+	protected final fun isLineThroughTextDecorationSet ()Z
+	protected final fun isUnderlineTextDecorationSet ()Z
+	protected final fun setAccessibilityRole (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;)V
+	public final fun setAccessibilityRole (Ljava/lang/String;)V
+	public final fun setAdjustFontSizeToFit (Z)V
+	protected final fun setAdjustsFontSizeToFit (Z)V
+	public final fun setAllowFontScaling (Z)V
+	protected final fun setBackgroundColor (I)V
+	public final fun setBackgroundColor (Ljava/lang/Integer;)V
+	protected final fun setBackgroundColorSet (Z)V
+	protected final fun setColor (I)V
+	public final fun setColor (Ljava/lang/Integer;)V
+	protected final fun setColorSet (Z)V
+	protected final fun setContainsImages (Z)V
+	public final fun setFontFamily (Ljava/lang/String;)V
+	protected final fun setFontFeatureSettings (Ljava/lang/String;)V
+	public final fun setFontSize (F)V
+	protected final fun setFontStyle (I)V
+	public final fun setFontStyle (Ljava/lang/String;)V
+	public final fun setFontVariant (Lcom/facebook/react/bridge/ReadableArray;)V
+	protected final fun setFontWeight (I)V
+	public final fun setFontWeight (Ljava/lang/String;)V
+	protected final fun setHyphenationFrequency (I)V
+	public final fun setIncludeFontPadding (Z)V
+	protected final fun setInlineViews (Ljava/util/Map;)V
+	protected final fun setJustificationMode (I)V
+	public final fun setLetterSpacing (F)V
+	public final fun setLineHeight (F)V
+	protected final fun setLineThroughTextDecorationSet (Z)V
+	public final fun setMaxFontSizeMultiplier (F)V
+	public final fun setMinimumFontScale (F)V
+	public final fun setNumberOfLines (I)V
+	protected final fun setReactTextViewManagerCallback (Lcom/facebook/react/views/text/ReactTextViewManagerCallback;)V
+	protected final fun setRole (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;)V
+	public final fun setRole (Ljava/lang/String;)V
+	public final fun setTextAlign (Ljava/lang/String;)V
+	protected final fun setTextAttributes (Lcom/facebook/react/views/text/TextAttributes;)V
+	protected final fun setTextBreakStrategy (I)V
 	public fun setTextBreakStrategy (Ljava/lang/String;)V
-	public fun setTextDecorationLine (Ljava/lang/String;)V
-	public fun setTextShadowColor (I)V
-	public fun setTextShadowOffset (Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun setTextShadowRadius (F)V
-	public fun setTextTransform (Ljava/lang/String;)V
-	protected fun spannedFromShadowNode (Lcom/facebook/react/views/text/ReactBaseTextShadowNode;Ljava/lang/String;ZLcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)Landroid/text/Spannable;
+	public final fun setTextDecorationLine (Ljava/lang/String;)V
+	public final fun setTextShadowColor (I)V
+	public final fun setTextShadowOffset (Lcom/facebook/react/bridge/ReadableMap;)V
+	protected final fun setTextShadowOffsetDx (F)V
+	protected final fun setTextShadowOffsetDy (F)V
+	public final fun setTextShadowRadius (F)V
+	public final fun setTextTransform (Ljava/lang/String;)V
+	protected final fun setUnderlineTextDecorationSet (Z)V
+	protected final fun spannedFromShadowNode (Lcom/facebook/react/views/text/ReactBaseTextShadowNode;Ljava/lang/String;ZLcom/facebook/react/uimanager/NativeViewHierarchyOptimizer;)Landroid/text/Spannable;
+}
+
+public final class com/facebook/react/views/text/ReactBaseTextShadowNode$Companion {
 }
 
 public final class com/facebook/react/views/text/ReactFontManager {
