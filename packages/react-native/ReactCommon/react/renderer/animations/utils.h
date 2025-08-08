@@ -37,7 +37,7 @@ static inline void handleShouldFirstComeBeforeSecondRemovesOnly(
     }
   }
 
-  if (removeMutationsByTag.size() == 0) {
+  if (removeMutationsByTag.empty()) {
     return;
   }
 
