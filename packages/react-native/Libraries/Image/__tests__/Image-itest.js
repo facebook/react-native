@@ -35,10 +35,11 @@ describe('<Image>', () => {
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-image
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             overflow="hidden"
+            resizeMode="cover"
             source-scale="1"
             source-type="remote"
-            resizeMode="cover"
           />,
         );
 
@@ -48,10 +49,11 @@ describe('<Image>', () => {
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-image
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             overflow="hidden"
+            resizeMode="cover"
             source-scale="1"
             source-type="remote"
-            resizeMode="cover"
           />,
         );
       });
@@ -94,7 +96,11 @@ describe('<Image>', () => {
             root.render(<Image alt="React Native Logo" />);
           });
 
-          expect(root.getRenderedOutput({props: ['^access']}).toJSX()).toEqual(
+          expect(
+            root
+              .getRenderedOutput({props: ['accessible', 'accessibilityLabel']})
+              .toJSX(),
+          ).toEqual(
             <rn-image
               accessible="true"
               accessibilityLabel="React Native Logo"
@@ -114,7 +120,11 @@ describe('<Image>', () => {
             );
           });
 
-          expect(root.getRenderedOutput({props: ['^access']}).toJSX()).toEqual(
+          expect(
+            root
+              .getRenderedOutput({props: ['accessible', 'accessibilityLabel']})
+              .toJSX(),
+          ).toEqual(
             <rn-image accessible="true" accessibilityLabel="React Native" />,
           );
         });
@@ -605,15 +615,15 @@ describe('<Image>', () => {
           );
         });
 
-        expect(root.getRenderedOutput().toJSX()).toEqual(
+        expect(
+          root
+            .getRenderedOutput({props: ['width', 'height', 'resizeMode']})
+            .toJSX(),
+        ).toEqual(
           <rn-image
             height="100.000000"
-            overflow="hidden"
             resizeMode="contain"
             width="100.000000"
-            source-scale="1"
-            source-type="remote"
-            source-uri="https://reactnative.dev/img/tiny_logo.png"
           />,
         );
       });
