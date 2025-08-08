@@ -77,6 +77,364 @@ describe('<Modal>', () => {
         });
       });
     });
+
+    describe('presentationStyle', () => {
+      it('renders a Modal with presentationStyle="fullScreen" by default', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal presentationStyle="fullScreen" />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['presentationStyle']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      (['pageSheet', 'formSheet', 'overFullScreen'] as const).forEach(
+        presentationStyle => {
+          it(`renders a Modal with presentationStyle="${presentationStyle}"`, () => {
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(<Modal presentationStyle={presentationStyle} />);
+            });
+
+            expect(
+              root.getRenderedOutput({props: ['presentationStyle']}).toJSX(),
+            ).toEqual(
+              <rn-modalHostView presentationStyle={presentationStyle}>
+                <rn-view />
+              </rn-modalHostView>,
+            );
+          });
+        },
+      );
+    });
+    describe('transparent', () => {
+      it('renders a Modal with transparent="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal transparent={true} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({props: ['transparent', 'presentationStyle']})
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView
+            transparent="true"
+            presentationStyle="overFullScreen">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      it('renders a Modal with transparent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal transparent={false} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({props: ['transparent', 'presentationStyle']})
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+    describe('statusBarTranslucent', () => {
+      it('renders a Modal with statusBarTranslucent="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal statusBarTranslucent={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['statusBarTranslucent']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView statusBarTranslucent="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with statusBarTranslucent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal statusBarTranslucent={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['statusBarTranslucent']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+    describe('navigationBarTranslucent', () => {
+      it('renders a Modal with navigationBarTranslucent="true" and statusBarTranslucent="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          // navigationBarTranslucent=true with statusBarTranslucent=false is not supported
+          // and it emits a warning.
+          root.render(
+            <Modal
+              navigationBarTranslucent={true}
+              statusBarTranslucent={true}
+            />,
+          );
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['navigationBarTranslucent', 'statusBarTranslucent'],
+            })
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView
+            navigationBarTranslucent="true"
+            statusBarTranslucent="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with navigationBarTranslucent="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal navigationBarTranslucent={false} />);
+        });
+
+        expect(
+          root
+            .getRenderedOutput({
+              props: ['navigationBarTranslucent', 'statusBarTranslucent'],
+            })
+            .toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+
+    describe('hardwareAccelerated', () => {
+      it('renders a Modal with hardwareAccelerated="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal hardwareAccelerated={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['hardwareAccelerated']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView hardwareAccelerated="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with hardwareAccelerated="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal hardwareAccelerated={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['hardwareAccelerated']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+
+    describe('visible', () => {
+      it('renders a Modal with visible="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal visible={true} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['visible']}).toJSX()).toEqual(
+          <rn-modalHostView visible="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders nothing when visible="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal visible={false} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['visible']}).toJSX()).toBeNull();
+      });
+    });
+
+    describe('allowSwipeDismissal', () => {
+      it('renders a Modal with allowSwipeDismissal="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal allowSwipeDismissal={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowSwipeDismissal']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView allowSwipeDismissal="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with allowSwipeDismissal="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal allowSwipeDismissal={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowSwipeDismissal']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
+
+    describe('animated', () => {
+      [true, false].forEach(animated => {
+        // The 'animated' prop is deprecated and ignored when the Modal is rendered
+        // Users should use the 'animationType' prop instead.
+        it(`[DEPRECATED] renders a Modal with animated="${animated ? 'true' : 'false'}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Modal animated={animated} />);
+          });
+
+          expect(root.getRenderedOutput({props: ['animated']}).toJSX()).toEqual(
+            <rn-modalHostView>
+              <rn-view />
+            </rn-modalHostView>,
+          );
+        });
+      });
+    });
+
+    describe('supportedOrientations', () => {
+      const supportedOrientations = [
+        'portrait',
+        'portrait-upside-down',
+        'landscape',
+        'landscape-left',
+        'landscape-right',
+      ] as const;
+
+      const orientationMap = {
+        portrait: 1,
+        'portrait-upside-down': 2,
+        landscape: 4,
+        'landscape-left': 8,
+        'landscape-right': 16,
+      };
+      it('renders a Modal with no supportedOrientations', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={[]} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView supportedOrientations="0">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      it(`renders a Modal with supportedOrientations="portait"`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={['portrait']} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+
+      supportedOrientations
+        .filter(orientation => orientation !== 'portrait')
+        .forEach(orientation => {
+          it(`renders a Modal with supportedOrientations="[${orientation}]"`, () => {
+            const root = Fantom.createRoot();
+
+            Fantom.runTask(() => {
+              root.render(<Modal supportedOrientations={[orientation]} />);
+            });
+
+            const expectedOrientationValue = `${orientationMap[orientation]}`;
+            expect(
+              root
+                .getRenderedOutput({props: ['supportedOrientations']})
+                .toJSX(),
+            ).toEqual(
+              <rn-modalHostView
+                supportedOrientations={expectedOrientationValue}>
+                <rn-view />
+              </rn-modalHostView>,
+            );
+          });
+        });
+
+      it(`renders a Modal with all the supportedOrientations`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal supportedOrientations={supportedOrientations} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['supportedOrientations']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView supportedOrientations="31">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
