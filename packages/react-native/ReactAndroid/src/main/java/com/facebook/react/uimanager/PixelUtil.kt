@@ -20,7 +20,7 @@ public object PixelUtil {
     }
 
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getScreenDisplayMetrics())
+        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getWindowDisplayMetrics())
   }
 
   /** Convert from DIP to PX */
@@ -37,7 +37,7 @@ public object PixelUtil {
       return Float.NaN
     }
 
-    val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
+    val displayMetrics = DisplayMetricsHolder.getWindowDisplayMetrics()
     val scaledValue = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value, displayMetrics)
 
     if (maxFontScale >= 1) {
@@ -60,13 +60,13 @@ public object PixelUtil {
       return Float.NaN
     }
 
-    return value / DisplayMetricsHolder.getScreenDisplayMetrics().density
+    return value / DisplayMetricsHolder.getWindowDisplayMetrics().density
   }
 
   /** @return [Float] that represents the density of the display metrics for device screen. */
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
-      DisplayMetricsHolder.getScreenDisplayMetrics().density
+      DisplayMetricsHolder.getWindowDisplayMetrics().density
 
   /* Kotlin extensions */
   public fun Int.dpToPx(): Float = toPixelFromDIP(this.toFloat())

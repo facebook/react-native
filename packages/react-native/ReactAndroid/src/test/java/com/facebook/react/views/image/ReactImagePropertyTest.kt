@@ -75,14 +75,14 @@ class ReactImagePropertyTest {
     context.initializeWithInstance(catalystInstanceMock)
     themeContext = ThemedReactContext(context, context, null, -1)
     Fresco.initialize(context)
-    DisplayMetricsHolder.setScreenDisplayMetrics(DisplayMetrics())
+    DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
 
     ReactNativeFeatureFlagsForTests.setUp()
   }
 
   @After
   fun teardown() {
-    DisplayMetricsHolder.setScreenDisplayMetrics(null)
+    DisplayMetricsHolder.setWindowDisplayMetrics(null)
     rnLog.close()
     flogMock.close()
   }

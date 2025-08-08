@@ -65,7 +65,7 @@ class ReactTextInputPropertyTest {
     context.initializeWithInstance(catalystInstanceMock)
     themedContext = ThemedReactContext(context, context.baseContext, null, ID_NULL)
     manager = ReactTextInputManager()
-    DisplayMetricsHolder.setScreenDisplayMetrics(DisplayMetrics())
+    DisplayMetricsHolder.setWindowDisplayMetrics(DisplayMetrics())
     view = manager.createViewInstance(themedContext)
   }
 

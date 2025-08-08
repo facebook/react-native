@@ -47,7 +47,7 @@ class ReactVirtualViewTest {
 
     val displayMetricsHolder = mockStatic(DisplayMetricsHolder::class.java)
     displayMetricsHolder
-        .`when`<DisplayMetrics> { DisplayMetricsHolder.getScreenDisplayMetrics() }
+        .`when`<DisplayMetrics> { DisplayMetricsHolder.getWindowDisplayMetrics() }
         .thenAnswer { DisplayMetrics().apply { density = 1f } }
   }
 
