@@ -293,6 +293,39 @@ describe('<Modal>', () => {
         expect(root.getRenderedOutput({props: ['visible']}).toJSX()).toBeNull();
       });
     });
+
+    describe('allowSwipeDismissal', () => {
+      it('renders a Modal with allowSwipeDismissal="true"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal allowSwipeDismissal={true} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowSwipeDismissal']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView allowSwipeDismissal="true">
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+      it('renders a Modal with allowSwipeDismissal="false"', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Modal allowSwipeDismissal={false} />);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowSwipeDismissal']}).toJSX(),
+        ).toEqual(
+          <rn-modalHostView>
+            <rn-view />
+          </rn-modalHostView>,
+        );
+      });
+    });
     // ... more props
   });
   describe('ref', () => {
