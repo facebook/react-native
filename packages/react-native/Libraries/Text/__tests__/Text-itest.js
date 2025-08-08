@@ -21,8 +21,109 @@ import {Text} from 'react-native';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
+const TEST_TEXT = 'the text';
+
 describe('<Text>', () => {
   describe('props', () => {
+    describe('empty props', () => {
+      it('renders an empty element when there are no props', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(root.getRenderedOutput().toJSX()).toEqual(
+          <rn-paragraph
+            allowFontScaling="true"
+            ellipsizeMode="tail"
+            fontSize="NaN"
+            fontSizeMultiplier="NaN"
+            foregroundColor="rgba(0, 0, 0, 0)">
+            {TEST_TEXT}
+          </rn-paragraph>,
+        );
+      });
+    });
+
+    describe('allowFontScaling', () => {
+      ([true, false] as const).forEach(propVal => {
+        it(`can be set to "${propVal.toString()}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Text allowFontScaling={propVal}>{TEST_TEXT}</Text>);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['allowFontScaling']}).toJSX(),
+          ).toEqual(
+            <rn-paragraph allowFontScaling={propVal.toString()}>
+              {TEST_TEXT}
+            </rn-paragraph>,
+          );
+        });
+      });
+
+      it(`has 'true' as default`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['allowFontScaling']}).toJSX(),
+        ).toEqual(
+          <rn-paragraph allowFontScaling={'true'}>{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+    });
+
+    describe('ellipsizeMode', () => {
+      it(`has 'tail' as default on JS side`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['ellipsizeMode']}).toJSX(),
+        ).toEqual(
+          <rn-paragraph ellipsizeMode="tail">{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+
+      it(`has 'clip' as default on C++ side`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text ellipsizeMode="clip">{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['ellipsizeMode']}).toJSX(),
+        ).toEqual(<rn-paragraph>{TEST_TEXT}</rn-paragraph>);
+      });
+
+      (['head', 'middle', 'tail'] as const).forEach(propVal => {
+        it(`can be set to "${propVal}"`, () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<Text ellipsizeMode={propVal}>{TEST_TEXT}</Text>);
+          });
+
+          expect(
+            root.getRenderedOutput({props: ['ellipsizeMode']}).toJSX(),
+          ).toEqual(
+            <rn-paragraph ellipsizeMode={propVal}>{TEST_TEXT}</rn-paragraph>,
+          );
+        });
+      });
+    });
+
     describe('style', () => {
       describe('writingDirection', () => {
         it('propagates to mounting layer', () => {
