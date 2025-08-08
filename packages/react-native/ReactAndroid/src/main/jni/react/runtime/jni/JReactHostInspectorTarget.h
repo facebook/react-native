@@ -40,11 +40,19 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
 
   void unstable_updatePerfMonitor(
       const std::string& interactionName,
-      uint16_t durationMs) {
+      uint16_t durationMs,
+      jsinspector_modern::InteractionResponsivenessScore responsivenessScore,
+      uint16_t ttl) {
     static auto method =
-        javaClassStatic()->getMethod<void(jni::local_ref<jni::JString>, jint)>(
-            "unstable_updatePerfMonitor");
-    method(self(), jni::make_jstring(interactionName), durationMs);
+        javaClassStatic()
+            ->getMethod<void(jni::local_ref<jni::JString>, jint, jint, jint)>(
+                "unstable_updatePerfMonitor");
+    method(
+        self(),
+        jni::make_jstring(interactionName),
+        durationMs,
+        static_cast<jint>(responsivenessScore),
+        ttl);
   }
 
   jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {
@@ -94,7 +102,7 @@ class JReactHostInspectorTarget
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) override;
   void unstable_onPerfMonitorUpdate(
-      const PerfMonitorUpdateRequest& request) override;
+      const jsinspector_modern::PerfMonitorUpdateRequest& request) override;
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest& params,
       jsinspector_modern::ScopedExecutor<
