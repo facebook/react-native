@@ -75,7 +75,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
 NSString *getJSMethodName(const RCTMethodInfo *methodInfo)
 {
   std::string jsName = methodInfo->jsName;
-  if (jsName != "") {
+  if (!jsName.empty()) {
     return @(jsName.c_str());
   }
 
