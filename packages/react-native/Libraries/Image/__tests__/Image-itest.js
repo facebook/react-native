@@ -33,7 +33,12 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-image overflow="hidden" source-scale="1" source-type="remote" />,
+          <rn-image
+            overflow="hidden"
+            source-scale="1"
+            source-type="remote"
+            resizeMode="cover"
+          />,
         );
 
         Fantom.runTask(() => {
@@ -41,7 +46,12 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-image overflow="hidden" source-scale="1" source-type="remote" />,
+          <rn-image
+            overflow="hidden"
+            source-scale="1"
+            source-type="remote"
+            resizeMode="cover"
+          />,
         );
       });
     });
@@ -312,11 +322,27 @@ describe('<Image>', () => {
         });
 
         expect(root.getRenderedOutput({props: ['resizeMode']}).toJSX()).toEqual(
-          <rn-image />,
+          <rn-image resizeMode="cover" />,
         );
+      });
+
+      it('can be set to "cover" explicitly', () => {
+        const root = Fantom.createRoot();
 
         Fantom.runTask(() => {
           root.render(<Image resizeMode="cover" source={LOGO_SOURCE} />);
+        });
+
+        expect(root.getRenderedOutput({props: ['resizeMode']}).toJSX()).toEqual(
+          <rn-image resizeMode="cover" />,
+        );
+      });
+
+      it('can be set to "stretch", which is the same as not setting it', () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Image resizeMode="stretch" source={LOGO_SOURCE} />);
         });
 
         expect(root.getRenderedOutput({props: ['resizeMode']}).toJSX()).toEqual(
@@ -324,23 +350,19 @@ describe('<Image>', () => {
         );
       });
 
-      (['stretch', 'contain', 'repeat', 'center'] as const).forEach(
-        resizeMode => {
-          it(`can be set to "${resizeMode}"`, () => {
-            const root = Fantom.createRoot();
+      (['contain', 'repeat', 'center'] as const).forEach(resizeMode => {
+        it(`can be set to "${resizeMode}"`, () => {
+          const root = Fantom.createRoot();
 
-            Fantom.runTask(() => {
-              root.render(
-                <Image resizeMode={resizeMode} source={LOGO_SOURCE} />,
-              );
-            });
-
-            expect(
-              root.getRenderedOutput({props: ['resizeMode']}).toJSX(),
-            ).toEqual(<rn-image resizeMode={resizeMode} />);
+          Fantom.runTask(() => {
+            root.render(<Image resizeMode={resizeMode} source={LOGO_SOURCE} />);
           });
-        },
-      );
+
+          expect(
+            root.getRenderedOutput({props: ['resizeMode']}).toJSX(),
+          ).toEqual(<rn-image resizeMode={resizeMode} />);
+        });
+      });
     });
 
     describe('source', () => {
