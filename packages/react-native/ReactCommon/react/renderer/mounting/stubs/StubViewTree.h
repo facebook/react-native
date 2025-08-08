@@ -44,6 +44,10 @@ class StubViewTree {
    */
   std::vector<std::string> takeMountingLogs();
 
+  bool hasTag(Tag tag) const {
+    return registry_.find(tag) != registry_.end();
+  }
+
  private:
   Tag rootTag_{};
   std::unordered_map<Tag, StubView::Shared> registry_{};
@@ -53,10 +57,6 @@ class StubViewTree {
   friend bool operator!=(const StubViewTree& lhs, const StubViewTree& rhs);
 
   std::ostream& dumpTags(std::ostream& stream) const;
-
-  bool hasTag(Tag tag) const {
-    return registry_.find(tag) != registry_.end();
-  }
 
   std::string getNativeId(Tag tag);
   std::string getNativeId(const ShadowView& shadowView);

@@ -14,6 +14,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "render/RenderOutput.h"
+
 namespace facebook::react {
 class IImageLoader;
 
@@ -56,11 +58,17 @@ class TesterMountingManager : public IMountingManager {
     return imageLoader_;
   }
 
+  std::unique_ptr<RenderOutput>& renderer() {
+    return renderer_;
+  }
+
  private:
   std::function<void(SurfaceId)> onAfterMount_;
   std::unordered_map<SurfaceId, StubViewTree> viewTrees_;
   std::unordered_map<Tag, folly::dynamic> viewDirectManipulationProps_;
   std::unordered_map<Tag, folly::dynamic> viewFabricUpdateProps_;
+
+  std::unique_ptr<RenderOutput> renderer_;
 };
 
 }; // namespace facebook::react
