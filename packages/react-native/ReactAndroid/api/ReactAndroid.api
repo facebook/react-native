@@ -3348,10 +3348,8 @@ public final class com/facebook/react/uimanager/DisplayMetricsHolder {
 	public static final fun getDisplayMetricsWritableMap (D)Lcom/facebook/react/bridge/WritableMap;
 	public static final fun getScreenDisplayMetrics ()Landroid/util/DisplayMetrics;
 	public static final fun getWindowDisplayMetrics ()Landroid/util/DisplayMetrics;
-	public static final fun initScreenDisplayMetrics (Landroid/content/Context;)V
-	public static final fun initScreenDisplayMetricsIfNotInitialized (Landroid/content/Context;)V
-	public static final fun initWindowDisplayMetrics (Landroid/content/Context;)V
-	public static final fun initWindowDisplayMetricsIfNotInitialized (Landroid/content/Context;)V
+	public static final fun initDisplayMetrics (Landroid/content/Context;)V
+	public static final fun initDisplayMetricsIfNotInitialized (Landroid/content/Context;)V
 	public static final fun setScreenDisplayMetrics (Landroid/util/DisplayMetrics;)V
 	public static final fun setWindowDisplayMetrics (Landroid/util/DisplayMetrics;)V
 }

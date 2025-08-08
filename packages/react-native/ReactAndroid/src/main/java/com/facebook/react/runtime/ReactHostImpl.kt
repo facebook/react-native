@@ -625,8 +625,9 @@ public class ReactHostImpl(
   override fun onConfigurationChanged(context: Context) {
     val currentReactContext = this.currentReactContext
     if (currentReactContext != null) {
-      DisplayMetricsHolder.initScreenDisplayMetrics(currentReactContext)
-      currentReactContext.currentActivity?.let { DisplayMetricsHolder.initWindowDisplayMetrics(it) }
+      if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+        DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+      }
 
       val appearanceModule = currentReactContext.getNativeModule(AppearanceModule::class.java)
       appearanceModule?.onConfigurationChanged(context)
@@ -917,7 +918,6 @@ public class ReactHostImpl(
                 val instance =
                     ReactInstance(
                         reactContext,
-                        currentActivity,
                         reactHostDelegate,
                         componentFactory,
                         devSupportManager,
