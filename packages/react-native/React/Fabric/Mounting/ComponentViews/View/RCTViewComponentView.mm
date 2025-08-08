@@ -986,6 +986,7 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   // filter
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
+  self.layer.filters = nil;
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
@@ -995,6 +996,36 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
         } else if (primitive.type == FilterType::Opacity) {
           self.layer.opacity *= std::get<Float>(primitive.parameters);
+        } else if (primitive.type == FilterType::Blur) {
+          NSMutableArray *layerFilters = [NSMutableArray new];
+          static Class FilterClass = nil;
+          if (FilterClass == nil) {
+            UIVisualEffectView *tempBlurView =
+                [[UIVisualEffectView alloc] initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular]];
+            // We search for the backdrop subview from UIVisualEffectView
+            // to access the underlying filter class
+            for (UIView *subview in tempBlurView.subviews) {
+              if ([NSStringFromClass(subview.class).lowercaseString containsString:@"backdrop"]) {
+                if (subview.layer.filters.firstObject) {
+                  FilterClass = [subview.layer.filters.firstObject class];
+                  break;
+                }
+              }
+            }
+          }
+          if (FilterClass) {
+            SEL selector = NSSelectorFromString(@"filterWithType:");
+            if ([FilterClass respondsToSelector:selector]) {
+              IMP methodIMP = [FilterClass methodForSelector:selector];
+              id (*filterWithType)(Class, SEL, NSString *) = (id (*)(Class, SEL, NSString *))methodIMP;
+              id gaussianBlurFilter = filterWithType(FilterClass, selector, @"gaussianBlur");
+
+              CGFloat blurRadius = std::get<Float>(primitive.parameters);
+              [gaussianBlurFilter setValue:@(blurRadius) forKey:@"inputRadius"];
+              [layerFilters addObject:gaussianBlurFilter];
+            }
+          }
+          self.layer.filters = layerFilters.count > 0 ? layerFilters : nil;
         }
       }
     }
@@ -1003,10 +1034,10 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     [self shapeLayerToMatchView:_filterLayer borderMetrics:borderMetrics];
     _filterLayer.compositingFilter = @"multiplyBlendMode";
     _filterLayer.backgroundColor = [UIColor colorWithRed:multiplicativeBrightness
-                                                   green:multiplicativeBrightness
+                                                    green:multiplicativeBrightness
                                                     blue:multiplicativeBrightness
-                                                   alpha:self.layer.opacity]
-                                       .CGColor;
+                                                  alpha:self.layer.opacity]
+                                        .CGColor;
     // So that this layer is always above any potential sublayers this view may
     // add
     _filterLayer.zPosition = CGFLOAT_MAX;

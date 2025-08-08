@@ -189,7 +189,6 @@ exports.examples = [
     title: 'Blur',
     description: 'blur(10)',
     name: 'blur',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
