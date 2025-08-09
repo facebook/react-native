@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config
  * Test that verifies that spec of methods annotated with @ReactProp in {@link ReactShadowNode} is
  * correct
  */
+@Suppress("DEPRECATION")
 @RunWith(RobolectricTestRunner::class)
 @Config(shadows = [ShadowSoLoader::class])
 class ReactPropForShadowNodeSpecTest {

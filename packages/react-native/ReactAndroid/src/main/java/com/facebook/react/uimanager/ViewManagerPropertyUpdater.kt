@@ -13,6 +13,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManagersPropertyCache.PropSetter
 import java.util.HashMap
 
+@Suppress("DEPRECATION")
 public object ViewManagerPropertyUpdater {
   public fun interface Settable {
     public fun getProperties(props: MutableMap<String, String>)
@@ -24,7 +25,7 @@ public object ViewManagerPropertyUpdater {
   }
 
   @Suppress("FINITE_BOUNDS_VIOLATION_IN_JAVA")
-  public interface ShadowNodeSetter<in T : ReactShadowNode<*>> : Settable {
+  public interface ShadowNodeSetter<@Suppress("DEPRECATION") in T : ReactShadowNode<*>> : Settable {
     public fun setProperty(node: T, name: String, value: Any?)
   }
 
@@ -71,7 +72,10 @@ public object ViewManagerPropertyUpdater {
 
   @JvmStatic
   @Deprecated("Use ViewManager#updateProperties to update a view's properties")
-  public fun <T : ReactShadowNode<T>> updateProps(node: T, props: ReactStylesDiffMap) {
+  public fun <@Suppress("DEPRECATION") T : ReactShadowNode<T>> updateProps(
+      node: T,
+      props: ReactStylesDiffMap
+  ) {
     val setter = findNodeSetter(node.javaClass)
     val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
@@ -108,7 +112,7 @@ public object ViewManagerPropertyUpdater {
     return setter as ViewManagerSetter<ViewManager<V, *>, V>
   }
 
-  private fun <T : ReactShadowNode<T>> findNodeSetter(
+  private fun <@Suppress("DEPRECATION") T : ReactShadowNode<T>> findNodeSetter(
       nodeClass: Class<out T>
   ): ShadowNodeSetter<T> {
     var setter = SHADOW_NODE_SETTER_MAP[nodeClass]

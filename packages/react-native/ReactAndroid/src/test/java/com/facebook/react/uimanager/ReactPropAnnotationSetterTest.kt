@@ -52,7 +52,7 @@ class ReactPropAnnotationSetterTest {
     fun onBoxedIntGroupPropSetterCalled(index: Int, value: Int?)
   }
 
-  @Suppress("UNUSED_PARAMETER")
+  @Suppress("UNUSED_PARAMETER", "DEPRECATION")
   private inner class ViewManagerUnderTest(
       val viewManagerUpdatesReceiver: ViewManagerUpdatesReceiver
   ) : ViewManager<View, ReactShadowNode<*>>() {
