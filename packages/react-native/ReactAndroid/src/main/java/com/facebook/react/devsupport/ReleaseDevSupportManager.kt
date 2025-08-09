@@ -151,5 +151,10 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun hidePausedInDebuggerOverlay(): Unit = Unit
 
+  public override fun unstable_updatePerfMonitor(
+      interactionName: String,
+      durationMs: Int,
+  ): Unit = Unit
+
   public override fun setAdditionalOptionForPackager(name: String, value: String): Unit = Unit
 }
