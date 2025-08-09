@@ -3613,30 +3613,30 @@ public final class com/facebook/react/uimanager/PointerEvents$Companion {
 }
 
 public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/customview/widget/ExploreByTouchHelper {
+	public static final field Companion Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Companion;
 	public static final field TOP_ACCESSIBILITY_ACTION_EVENT Ljava/lang/String;
-	public static final field sActionIdMap Ljava/util/HashMap;
 	public fun <init> (Landroid/view/View;ZI)V
-	public static fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
+	public static final fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 	public fun getAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
-	protected fun getHostView ()Landroid/view/View;
-	public static fun getTalkbackDescription (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Ljava/lang/CharSequence;
+	protected final fun getHostView ()Landroid/view/View;
+	public static final fun getTalkbackDescription (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Ljava/lang/CharSequence;
 	protected fun getVirtualViewAt (FF)I
 	protected fun getVisibleVirtualViews (Ljava/util/List;)V
-	public static fun hasNonActionableSpeakingDescendants (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
-	public static fun hasText (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
-	public static fun hasValidRangeInfo (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
-	public static fun isAccessibilityFocusable (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
-	public static fun isActionableForAccessibility (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
-	public static fun isSpeakingNode (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public static final fun hasNonActionableSpeakingDescendants (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public static final fun hasText (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public static final fun hasValidRangeInfo (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public static final fun isAccessibilityFocusable (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public static final fun isActionableForAccessibility (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public static final fun isSpeakingNode (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
 	public fun onInitializeAccessibilityEvent (Landroid/view/View;Landroid/view/accessibility/AccessibilityEvent;)V
 	public fun onInitializeAccessibilityNodeInfo (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
 	protected fun onPerformActionForVirtualView (IILandroid/os/Bundle;)Z
 	protected fun onPopulateNodeForVirtualView (ILandroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
 	public fun performAccessibilityAction (Landroid/view/View;ILandroid/os/Bundle;)Z
-	public static fun resetDelegate (Landroid/view/View;ZI)V
-	public static fun setDelegate (Landroid/view/View;ZI)V
-	public static fun setRole (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;Landroid/content/Context;)V
-	public fun superGetAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
+	public static final fun resetDelegate (Landroid/view/View;ZI)V
+	public static final fun setDelegate (Landroid/view/View;ZI)V
+	public static final fun setRole (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;Landroid/content/Context;)V
+	protected final fun superGetAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 }
 
 public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole : java/lang/Enum {
@@ -3645,6 +3645,7 @@ public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Acces
 	public static final field BUTTON Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field CHECKBOX Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field COMBOBOX Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public static final field Companion Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole$Companion;
 	public static final field DRAWERLAYOUT Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field DROPDOWNLIST Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field GRID Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
@@ -3679,12 +3680,34 @@ public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Acces
 	public static final field TOOLBAR Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field VIEWGROUP Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static final field WEBVIEW Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	public static fun fromRole (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	public static fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	public static fun fromViewTag (Landroid/view/View;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
-	public static fun getValue (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;)Ljava/lang/String;
+	public static final fun fromRole (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public static final fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public static final fun fromViewTag (Landroid/view/View;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static final fun getValue (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;)Ljava/lang/String;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
 	public static fun values ()[Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+}
+
+public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole$Companion {
+	public final fun fromRole (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public final fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public final fun fromViewTag (Landroid/view/View;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;
+	public final fun getValue (Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;)Ljava/lang/String;
+}
+
+public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Companion {
+	public final fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
+	public final fun getTalkbackDescription (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Ljava/lang/CharSequence;
+	public final fun hasNonActionableSpeakingDescendants (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public final fun hasText (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public final fun hasValidRangeInfo (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public final fun isAccessibilityFocusable (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public final fun isActionableForAccessibility (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Z
+	public final fun isSpeakingNode (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Landroid/view/View;)Z
+	public final fun resetDelegate (Landroid/view/View;ZI)V
+	public final fun setDelegate (Landroid/view/View;ZI)V
+	public final fun setRole (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;Landroid/content/Context;)V
 }
 
 public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Role : java/lang/Enum {
@@ -3700,6 +3723,7 @@ public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Role 
 	public static final field COMBOBOX Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field COMPLEMENTARY Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field CONTENTINFO Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	public static final field Companion Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role$Companion;
 	public static final field DEFINITION Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field DIALOG Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field DIRECTORY Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
@@ -3753,9 +3777,14 @@ public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Role 
 	public static final field TREE Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field TREEGRID Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static final field TREEITEM Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
-	public static fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	public static final fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 	public static fun values ()[Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
+}
+
+public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$Role$Companion {
+	public final fun fromValue (Ljava/lang/String;)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$Role;
 }
 
 public final class com/facebook/react/uimanager/ReactAxOrderHelper {

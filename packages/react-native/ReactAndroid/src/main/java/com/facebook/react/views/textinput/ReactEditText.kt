@@ -224,7 +224,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
     val editTextAccessibilityDelegate: ReactAccessibilityDelegate =
         object :
-            ReactAccessibilityDelegate(this, this.isFocusable, this.importantForAccessibility) {
+            ReactAccessibilityDelegate(
+                this@ReactEditText,
+                this@ReactEditText.isFocusable,
+                this@ReactEditText.importantForAccessibility) {
           override fun performAccessibilityAction(host: View, action: Int, args: Bundle?): Boolean {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
               val length = checkNotNull(text).length
