@@ -13,6 +13,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
   constructor(detailMessage: String) : super(detailMessage)
