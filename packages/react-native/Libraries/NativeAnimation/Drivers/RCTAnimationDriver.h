@@ -9,8 +9,20 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
+#import <React/RCTUtils.h>
 
-static CGFloat RCTSingleFrameInterval = (CGFloat)(1.0 / 60.0);
+static CGFloat RCTSingleFrameInterval(void)
+{
+  static CGFloat maximumFramesPerSecond;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      maximumFramesPerSecond = [UIScreen mainScreen].maximumFramesPerSecond;
+    });
+  });
+
+  return 1.0 / maximumFramesPerSecond;
+};
 
 @class RCTValueAnimatedNode;
 
