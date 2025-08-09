@@ -56,9 +56,7 @@ import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
 import com.facebook.react.views.text.PreparedLayoutTextViewManager
-import com.facebook.react.views.text.ReactRawTextManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.ReactVirtualTextViewManager
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
@@ -133,6 +131,7 @@ constructor(private val config: MainPackageConfig? = null) :
         else -> null
       }
 
+  @Suppress("DEPRECATION")
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
       listOf(
           ReactDrawerLayoutManager(),
@@ -147,18 +146,19 @@ constructor(private val config: MainPackageConfig? = null) :
           FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          ReactRawTextManager(),
+          com.facebook.react.views.text.ReactRawTextManager(),
           ReactTextInputManager(),
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
           ReactViewManager(),
-          ReactVirtualTextViewManager(),
+          com.facebook.react.views.text.ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager())
 
   /**
    * A map of view managers that should be registered with
    * [com.facebook.react.uimanager.UIManagerModule]
    */
+  @Suppress("DEPRECATION")
   @SuppressLint("VisibleForTests")
   public val viewManagersMap: Map<String, ModuleSpec> =
       mapOf(
@@ -182,7 +182,8 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
+          com.facebook.react.views.text.ReactRawTextManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { com.facebook.react.views.text.ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
           ReactTextViewManager.REACT_CLASS to
@@ -192,8 +193,10 @@ constructor(private val config: MainPackageConfig? = null) :
                 else ReactTextViewManager()
               },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
+          com.facebook.react.views.text.ReactVirtualTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec {
+                com.facebook.react.views.text.ReactVirtualTextViewManager()
+              },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() })
 
