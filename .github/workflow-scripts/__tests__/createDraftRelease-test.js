@@ -188,6 +188,7 @@ View the whole changelog in the [CHANGELOG.md file](https://github.com/facebook/
           status: 201,
           json: () =>
             Promise.resolve({
+              id: 1,
               html_url:
                 'https://github.com/facebook/react-native/releases/tag/v0.77.1',
             }),
@@ -208,9 +209,11 @@ View the whole changelog in the [CHANGELOG.md file](https://github.com/facebook/
           body: fetchBody,
         },
       );
-      expect(response).toEqual(
-        'https://github.com/facebook/react-native/releases/tag/v0.77.1',
-      );
+      expect(response).toEqual({
+        id: 1,
+        html_url:
+          'https://github.com/facebook/react-native/releases/tag/v0.77.1',
+      });
     });
 
     it('creates a draft release for prerelease on GitHub', async () => {
@@ -238,6 +241,7 @@ View the whole changelog in the [CHANGELOG.md file](https://github.com/facebook/
           status: 201,
           json: () =>
             Promise.resolve({
+              id: 1,
               html_url:
                 'https://github.com/facebook/react-native/releases/tag/v0.77.1',
             }),
@@ -258,9 +262,11 @@ View the whole changelog in the [CHANGELOG.md file](https://github.com/facebook/
           body: fetchBody,
         },
       );
-      expect(response).toEqual(
-        'https://github.com/facebook/react-native/releases/tag/v0.77.1',
-      );
+      expect(response).toEqual({
+        id: 1,
+        html_url:
+          'https://github.com/facebook/react-native/releases/tag/v0.77.1',
+      });
     });
 
     it('throws if the post failes', async () => {
