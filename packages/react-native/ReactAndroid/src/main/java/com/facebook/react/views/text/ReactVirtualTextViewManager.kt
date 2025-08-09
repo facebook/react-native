@@ -22,6 +22,9 @@ import com.facebook.react.uimanager.ThemedReactContext
 @Suppress("DEPRECATION")
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
   override fun getName(): String = REACT_CLASS

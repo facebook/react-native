@@ -22,6 +22,9 @@ import com.facebook.react.uimanager.ViewManager
  */
 @ReactModule(name = ReactRawTextManager.REACT_CLASS)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
 
   override fun getName(): String {
