@@ -51,6 +51,9 @@ import kotlin.math.min
  * constructed in superclass.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public class ReactTextShadowNode
 @JvmOverloads
 public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :

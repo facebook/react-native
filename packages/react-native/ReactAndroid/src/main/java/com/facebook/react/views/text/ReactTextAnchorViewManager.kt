@@ -37,8 +37,8 @@ import com.facebook.react.views.text.DefaultStyleValuesUtil.getDefaultTextColorH
  * whole text subtree.
  */
 @UnstableReactNativeAPI
-public abstract class ReactTextAnchorViewManager<C : ReactBaseTextShadowNode?> :
-    BaseViewManager<ReactTextView, C>() {
+public abstract class ReactTextAnchorViewManager<
+    @Suppress("DEPRECATION") C : ReactBaseTextShadowNode?> : BaseViewManager<ReactTextView, C>() {
 
   @ReactProp(name = "accessible")
   internal fun setAccessible(view: ReactTextView, accessible: Boolean) {

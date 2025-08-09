@@ -63,6 +63,8 @@ import com.facebook.yoga.YogaUnit
  * used in concrete classes to feed native views and compute layout.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release")
 public abstract class ReactBaseTextShadowNode
 @JvmOverloads
 public constructor(
