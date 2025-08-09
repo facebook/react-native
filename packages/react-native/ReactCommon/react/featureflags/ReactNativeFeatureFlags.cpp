@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ff8aafa0de2f6c5cf8b42e0d43302e9>>
+ * @generated SignedSource<<afac3c9a1b09e19b98699c67e4e9b86e>>
  */
 
 /**
@@ -172,6 +172,10 @@ bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
 
 bool ReactNativeFeatureFlags::enableResourceTimingAPI() {
   return getAccessor().enableResourceTimingAPI();
+}
+
+bool ReactNativeFeatureFlags::enableSwiftUIBasedFilters() {
+  return getAccessor().enableSwiftUIBasedFilters();
 }
 
 bool ReactNativeFeatureFlags::enableViewCulling() {

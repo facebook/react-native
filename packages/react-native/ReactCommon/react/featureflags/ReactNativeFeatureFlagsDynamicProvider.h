@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<757089d037ab0f7c6cda11b079dafa2c>>
+ * @generated SignedSource<<49925440c97d02cffe248072a14370b6>>
  */
 
 /**
@@ -376,6 +376,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableResourceTimingAPI();
+  }
+
+  bool enableSwiftUIBasedFilters() override {
+    auto value = values_["enableSwiftUIBasedFilters"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableSwiftUIBasedFilters();
   }
 
   bool enableViewCulling() override {

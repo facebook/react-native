@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d306b263212bd856fd6fd14ea4198b29>>
+ * @generated SignedSource<<0475f8a956182c197023fce2e38a6820>>
  */
 
 /**
@@ -69,6 +69,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableResourceTimingAPI();
+  bool enableSwiftUIBasedFilters();
   bool enableViewCulling();
   bool enableViewRecycling();
   bool enableViewRecyclingForText();
@@ -111,7 +112,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 68> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -150,6 +151,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableResourceTimingAPI_;
+  std::atomic<std::optional<bool>> enableSwiftUIBasedFilters_;
   std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
