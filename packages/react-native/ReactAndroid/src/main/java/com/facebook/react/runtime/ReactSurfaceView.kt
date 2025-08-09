@@ -33,7 +33,7 @@ import kotlin.math.max
  * rendering a React component.
  */
 @OptIn(FrameworkAPI::class, UnstableReactNativeAPI::class)
-public class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
+public open class ReactSurfaceView(context: Context?, private val surface: ReactSurfaceImpl) :
     ReactRootView(context) {
   private val jsTouchDispatcher: JSTouchDispatcher = JSTouchDispatcher(this)
   private var jsPointerDispatcher: JSPointerDispatcher? = null
