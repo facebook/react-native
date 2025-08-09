@@ -9,7 +9,7 @@
 
 #import <React/RCTConversions.h>
 
-#import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
+#import <react/renderer/components/switch/IOSSwitchComponentDescriptor.h>
 #import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
