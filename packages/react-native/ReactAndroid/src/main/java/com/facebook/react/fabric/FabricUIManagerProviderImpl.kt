@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.fabric
 
 import com.facebook.react.bridge.ReactApplicationContext
@@ -20,6 +22,9 @@ import com.facebook.systrace.Systrace
  * @param [componentFactory] The factory for creating components.
  * @param [viewManagerRegistry] The registry of view managers.
  */
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public class FabricUIManagerProviderImpl(
     private val componentFactory: ComponentFactory,
     private val viewManagerRegistry: ViewManagerRegistry
