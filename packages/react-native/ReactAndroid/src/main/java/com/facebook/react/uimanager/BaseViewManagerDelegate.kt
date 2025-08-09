@@ -20,7 +20,7 @@ import com.facebook.yoga.YogaConstants
  * every view should support, such as rotation, background color, etc.
  */
 public abstract class BaseViewManagerDelegate<
-    T : View, U : BaseViewManager<T, out LayoutShadowNode>>(
+    T : View, @Suppress("DEPRECATION") U : BaseViewManager<T, out LayoutShadowNode>>(
     @Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U
 ) : ViewManagerDelegate<T> {
   @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
