@@ -19,6 +19,9 @@ import com.facebook.react.uimanager.annotations.ReactProp
  * terms of DOM). Raw text node can only have simple string value without any attributes, properties
  * or state.
  */
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactRawTextShadowNode : ReactShadowNodeImpl() {
   @set:ReactProp(name = "text")

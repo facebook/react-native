@@ -39,6 +39,9 @@ import com.facebook.yoga.YogaNode
 
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @LegacyArchitectureShadowNodeWithCxxImpl
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ReactTextInputShadowNode
 @JvmOverloads
 constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :

@@ -19,6 +19,9 @@ import com.facebook.yoga.YogaNode
 
 @Suppress("DEPRECATION")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 @LegacyArchitectureShadowNodeWithCxxImpl
 internal class ReactSwitchShadowNode :
     com.facebook.react.uimanager.LayoutShadowNode(), YogaMeasureFunction {

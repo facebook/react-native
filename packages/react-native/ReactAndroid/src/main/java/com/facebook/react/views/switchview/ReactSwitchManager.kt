@@ -25,6 +25,7 @@ import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 
+@Suppress("DEPRECATION")
 internal class ReactSwitchManager :
     BaseViewManager<ReactSwitch, ReactSwitchShadowNode>(),
     AndroidSwitchManagerInterface<ReactSwitch> {
