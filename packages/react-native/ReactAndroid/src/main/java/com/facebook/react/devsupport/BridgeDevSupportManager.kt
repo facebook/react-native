@@ -46,6 +46,9 @@ import com.facebook.react.packagerconnection.RequestHandler
  * when all the views has been detached from the instance (through `setDevSupportEnabled` method).
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public class BridgeDevSupportManager(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
