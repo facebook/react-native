@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
                           }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = './'
     s.module_name             = 'React_FabricImage'
   end
