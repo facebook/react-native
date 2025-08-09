@@ -25,11 +25,11 @@ import java.lang.reflect.Method
 @DoNotStrip
 @InteropLegacyArchitecture
 internal class JavaModuleWrapper(
-    private val jsInstance: JSInstance,
+    @Suppress("DEPRECATION") private val jsInstance: JSInstance,
     private val moduleHolder: ModuleHolder
 ) {
   interface NativeMethod {
-    fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
+    @Suppress("DEPRECATION") fun invoke(jsInstance: JSInstance, parameters: ReadableArray)
 
     val type: String
   }
