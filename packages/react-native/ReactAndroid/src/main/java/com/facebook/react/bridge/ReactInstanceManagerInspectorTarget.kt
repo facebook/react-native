@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.bridge
 
 import com.facebook.jni.HybridData
@@ -17,6 +19,9 @@ import java.util.concurrent.Executor
 
 @DoNotStripAny
 @LegacyArchitecture
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : AutoCloseable {
 
   @DoNotStripAny
