@@ -27,6 +27,7 @@ import java.util.HashMap
  * Concrete class for [ReactTextAnchorViewManager] which represents view managers of anchor `<Text>`
  * nodes.
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 @OptIn(UnstableReactNativeAPI::class)
 public class ReactTextViewManager

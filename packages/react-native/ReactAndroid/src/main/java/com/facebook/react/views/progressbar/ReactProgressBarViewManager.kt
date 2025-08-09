@@ -33,6 +33,7 @@ import java.util.WeakHashMap
  * a [ProgressBar] changes, we have to drop the existing [ProgressBar] (if there is one) and create
  * a new one with the style given.
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 internal class ReactProgressBarViewManager :
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>(),
