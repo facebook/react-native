@@ -27,6 +27,9 @@ import com.facebook.yoga.YogaNode
 @Suppress("DEPRECATION")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @LegacyArchitectureShadowNodeWithCxxImpl
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ProgressBarShadowNode :
     com.facebook.react.uimanager.LayoutShadowNode(), YogaMeasureFunction {
   private val height: SparseIntArray = SparseIntArray()
