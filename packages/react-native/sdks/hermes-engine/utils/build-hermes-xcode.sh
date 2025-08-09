@@ -80,7 +80,7 @@ echo "Configure Apple framework"
   -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
   -DCMAKE_CXX_FLAGS:STRING="-gdwarf" \
   -DCMAKE_C_FLAGS:STRING="-gdwarf" \
-  -DIMPORT_HERMESC:PATH="${hermesc_path}" \
+  -DIMPORT_HOST_COMPILERS:PATH="${hermesc_path}" \
   -DJSI_DIR="$jsi_path" \
   -DHERMES_RELEASE_VERSION="for RN $release_version" \
   -DCMAKE_BUILD_TYPE="$cmake_build_type"
@@ -89,7 +89,7 @@ echo "Build Apple framework"
 
 "$CMAKE_BINARY" \
   --build "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
-  --target libhermes \
+  --target hermesvm \
   -j "$(sysctl -n hw.ncpu)"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
@@ -97,5 +97,5 @@ echo "Copy Apple framework to destroot/Library/Frameworks"
 platform_copy_destination=$(get_platform_copy_destination $PLATFORM_NAME)
 
 cp -pfR \
-  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/lib/hermesvm.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"

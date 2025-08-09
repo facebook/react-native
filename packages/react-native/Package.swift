@@ -43,7 +43,7 @@ let reactNativeDependencies = BinaryTarget(
 
 let hermesPrebuilt = BinaryTarget(
   name: .hermesPrebuilt,
-  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermes.xcframework",
+  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermesvm.xcframework",
   searchPaths: [".build/artifacts/hermes/destroot/include"]
 )
 
