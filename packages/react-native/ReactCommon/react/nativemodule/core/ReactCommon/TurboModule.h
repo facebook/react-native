@@ -61,7 +61,8 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
     // If we have a JS wrapper, cache the result of this lookup
     // We don't cache misses, to allow for methodMap_ to dynamically be
     // extended
-    if (jsRepresentation_ && !prop.isUndefined()) {
+    if (jsRepresentation_ && &runtime == representationRuntime_ &&
+        !prop.isUndefined()) {
       jsRepresentation_->lock(runtime).asObject(runtime).setProperty(
           runtime, propName, prop);
     }
@@ -150,6 +151,7 @@ class JSI_EXPORT TurboModule : public jsi::HostObject {
  private:
   friend class TurboModuleBinding;
   std::unique_ptr<jsi::WeakObject> jsRepresentation_;
+  jsi::Runtime* representationRuntime_;
 };
 
 /**
