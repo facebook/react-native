@@ -47,6 +47,7 @@ import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
+import com.facebook.react.devsupport.interfaces.PerfMonitorV2Handler
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.interfaces.TaskInterface
@@ -409,6 +410,18 @@ public class ReactHostImpl(
               reactHostInspectorTarget?.sendDebuggerResumeCommand()
             }
           })
+    }
+  }
+
+  @DoNotStrip
+  private fun unstable_updatePerfMonitor(
+      eventName: String,
+      durationMs: Int,
+      responsivenessScore: Int,
+      ttl: Int
+  ) {
+    if (devSupportManager is PerfMonitorV2Handler) {
+      devSupportManager.unstable_updatePerfMonitor(eventName, durationMs, responsivenessScore, ttl)
     }
   }
 
