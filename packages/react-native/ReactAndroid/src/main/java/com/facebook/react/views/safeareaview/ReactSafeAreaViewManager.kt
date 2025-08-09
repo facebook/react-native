@@ -8,7 +8,6 @@
 package com.facebook.react.views.safeareaview
 
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
@@ -31,9 +30,13 @@ internal class ReactSafeAreaViewManager :
 
   override fun getName(): String = REACT_CLASS
 
-  override fun createShadowNodeInstance(): LayoutShadowNode = LayoutShadowNode()
+  @Suppress("DEPRECATION")
+  override fun createShadowNodeInstance(): com.facebook.react.uimanager.LayoutShadowNode =
+      com.facebook.react.uimanager.LayoutShadowNode()
 
-  override fun getShadowNodeClass(): Class<out LayoutShadowNode> = LayoutShadowNode::class.java
+  @Suppress("DEPRECATION")
+  override fun getShadowNodeClass(): Class<out com.facebook.react.uimanager.LayoutShadowNode> =
+      com.facebook.react.uimanager.LayoutShadowNode::class.java
 
   override fun updateState(
       view: ReactSafeAreaView,
