@@ -217,6 +217,13 @@ module.exports = {
   get findNodeHandle() {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
+  get HMRClient() {
+    if (__DEV__) {
+      return require('./Libraries/Utilities/HMRClient').default;
+    }
+    return require('./Libraries/Utilities/HMRClientProdShim').default;
+  },
+
   get I18nManager() {
     return require('./Libraries/ReactNative/I18nManager').default;
   },
