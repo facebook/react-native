@@ -13,6 +13,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Implementation of javascript callback function that uses Bridge to schedule method execution. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class CallbackImpl(private val jsInstance: JSInstance, private val callbackId: Int) :
     Callback {
   private var invoked = false
