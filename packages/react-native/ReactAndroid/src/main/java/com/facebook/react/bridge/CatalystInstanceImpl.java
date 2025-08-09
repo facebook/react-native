@@ -48,6 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @DoNotStrip
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
     ReactNativeJNISoLoader.staticInit();
