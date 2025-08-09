@@ -321,6 +321,10 @@ SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
           accessibilityActions,
           defaultProps.accessibilityActions),
       debugStringConvertibleItem(
+          "accessibilityState",
+          accessibilityState,
+          defaultProps.accessibilityState),
+      debugStringConvertibleItem(
           "accessibilityElementsHidden",
           accessibilityElementsHidden,
           defaultProps.accessibilityElementsHidden),

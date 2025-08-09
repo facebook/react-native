@@ -10,12 +10,13 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {HostInstance} from 'react-native';
+import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Image} from 'react-native';
+import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -35,10 +36,11 @@ describe('<Image>', () => {
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-image
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             overflow="hidden"
+            resizeMode="cover"
             source-scale="1"
             source-type="remote"
-            resizeMode="cover"
           />,
         );
 
@@ -48,78 +50,21 @@ describe('<Image>', () => {
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-image
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             overflow="hidden"
+            resizeMode="cover"
             source-scale="1"
             source-type="remote"
-            resizeMode="cover"
           />,
         );
       });
     });
 
-    describe('accessibility', () => {
-      describe('accessible', () => {
-        it('indicates that image is an accessibility element', () => {
-          const root = Fantom.createRoot();
+    component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
+      return <Image {...props} source={LOGO_SOURCE} />;
+    }
 
-          Fantom.runTask(() => {
-            root.render(<Image accessible={true} />);
-          });
-
-          expect(
-            root.getRenderedOutput({props: ['accessible']}).toJSX(),
-          ).toEqual(<rn-image accessible="true" />);
-        });
-      });
-
-      describe('accessibilityLabel', () => {
-        it('provides information for screen reader', () => {
-          const root = Fantom.createRoot();
-
-          Fantom.runTask(() => {
-            root.render(<Image accessibilityLabel="React Native Logo" />);
-          });
-
-          expect(
-            root.getRenderedOutput({props: ['accessibilityLabel']}).toJSX(),
-          ).toEqual(<rn-image accessibilityLabel="React Native Logo" />);
-        });
-      });
-
-      describe('alt', () => {
-        it('provides information for screen reader', () => {
-          const root = Fantom.createRoot();
-
-          Fantom.runTask(() => {
-            root.render(<Image alt="React Native Logo" />);
-          });
-
-          expect(root.getRenderedOutput({props: ['^access']}).toJSX()).toEqual(
-            <rn-image
-              accessible="true"
-              accessibilityLabel="React Native Logo"
-            />,
-          );
-        });
-
-        it('can be set alongside accessibilityLabel, but accessibilityLabel has higher priority', () => {
-          const root = Fantom.createRoot();
-
-          Fantom.runTask(() => {
-            root.render(
-              <Image
-                alt="React Native Logo"
-                accessibilityLabel="React Native"
-              />,
-            );
-          });
-
-          expect(root.getRenderedOutput({props: ['^access']}).toJSX()).toEqual(
-            <rn-image accessible="true" accessibilityLabel="React Native" />,
-          );
-        });
-      });
-    });
+    accessibilityPropsSuite(ComponentWithAccessibilityProps, false);
 
     describe('blurRadius', () => {
       it('provides blur radius for image', () => {
@@ -605,15 +550,15 @@ describe('<Image>', () => {
           );
         });
 
-        expect(root.getRenderedOutput().toJSX()).toEqual(
+        expect(
+          root
+            .getRenderedOutput({props: ['width', 'height', 'resizeMode']})
+            .toJSX(),
+        ).toEqual(
           <rn-image
             height="100.000000"
-            overflow="hidden"
             resizeMode="contain"
             width="100.000000"
-            source-scale="1"
-            source-type="remote"
-            source-uri="https://reactnative.dev/img/tiny_logo.png"
           />,
         );
       });
