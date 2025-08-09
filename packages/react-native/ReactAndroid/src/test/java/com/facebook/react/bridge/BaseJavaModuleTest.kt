@@ -19,6 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /** Tests for [BaseJavaModule] and [JavaModuleWrapper] */
+@Suppress("DEPRECATION")
 @Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 @RunWith(RobolectricTestRunner::class)
 class BaseJavaModuleTest {
