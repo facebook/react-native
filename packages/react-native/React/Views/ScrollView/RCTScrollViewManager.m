@@ -104,6 +104,7 @@ RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(inverted, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustsScrollIndicatorInsets, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(contentInsetAdjustmentBehavior, UIScrollViewContentInsetAdjustmentBehavior)
+RCT_EXPORT_VIEW_PROPERTY(allowsKeyboardScrolling, UIScrollViewContentInsetAdjustmentBehavior)
 
 // overflow is used both in css-layout as well as by react-native. In css-layout
 // we always want to treat overflow as scroll but depending on what the overflow
