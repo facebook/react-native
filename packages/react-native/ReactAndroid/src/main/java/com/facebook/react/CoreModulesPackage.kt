@@ -37,6 +37,7 @@ import com.facebook.systrace.Systrace
 /**
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
+@Suppress("DEPRECATION")
 @ReactModuleList(
     // WARNING: If you modify this list, ensure that the list below in method
     // getReactModuleInfoByInitialization is also updated
@@ -54,7 +55,9 @@ import com.facebook.systrace.Systrace
             TimingModule::class,
             com.facebook.react.uimanager.UIManagerModule::class])
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-@Suppress("DEPRECATION")
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
