@@ -935,14 +935,14 @@ public class FabricUIManager
     if (shouldSchedule) {
       Assertions.assertNotNull(mountItem, "MountItem is null");
       mMountItemDispatcher.addMountItem(mountItem);
-      Runnable runnable =
-          new GuardedRunnable(mReactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              mMountItemDispatcher.tryDispatchMountItems();
-            }
-          };
       if (UiThreadUtil.isOnUiThread()) {
+        Runnable runnable =
+            new GuardedRunnable(mReactApplicationContext) {
+              @Override
+              public void runGuarded() {
+                mMountItemDispatcher.tryDispatchMountItems();
+              }
+            };
         runnable.run();
       }
     }
