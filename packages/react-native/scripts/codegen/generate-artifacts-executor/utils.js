@@ -204,15 +204,19 @@ function findExternalLibraries(
         paths: [projectRoot],
       });
     } catch (e) {
-      if(
+      if (
         // require.resolve fails if the `./package.json` subpath is not explicitly defined in the library's `exports` field in its package.json
         'code' in e &&
         e.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
       ) {
         // find the closest library's package.json with the search paths
         for (const nodeModulesPath of require.main.paths) {
-          const packageJsonFilePath = path.join(nodeModulesPath, dependency, 'package.json');
-          if(fs.existsSync(packageJsonFilePath)) {
+          const packageJsonFilePath = path.join(
+            nodeModulesPath,
+            dependency,
+            'package.json',
+          );
+          if (fs.existsSync(packageJsonFilePath)) {
             configFilePath = packageJsonFilePath;
             break;
           }
@@ -229,7 +233,7 @@ function findExternalLibraries(
         );
       }
 
-      if(!configFilePath) {
+      if (!configFilePath) {
         return [];
       }
     }
