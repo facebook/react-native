@@ -40,6 +40,7 @@ class EventPerformanceLogger : public EventLogger,
 #pragma mark - RuntimeSchedulerEventTimingDelegate
 
   void dispatchPendingEventTimingEntries(
+      HighResTimeStamp taskEndTime,
       const std::unordered_set<SurfaceId>&
           surfaceIdsWithPendingRenderingUpdates) override;
 
@@ -56,6 +57,7 @@ class EventPerformanceLogger : public EventLogger,
     HighResTimeStamp startTime;
     std::optional<HighResTimeStamp> processingStartTime;
     std::optional<HighResTimeStamp> processingEndTime;
+    std::optional<HighResTimeStamp> taskEndTime;
 
     bool isWaitingForMount{false};
 

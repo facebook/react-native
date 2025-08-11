@@ -247,6 +247,7 @@ void PerformanceEntryReporter::reportEvent(
     HighResDuration duration,
     HighResTimeStamp processingStart,
     HighResTimeStamp processingEnd,
+    HighResTimeStamp taskEndTime,
     uint32_t interactionId) {
   eventCounts_[name]++;
 
@@ -260,6 +261,7 @@ void PerformanceEntryReporter::reportEvent(
       {.name = name, .startTime = startTime, .duration = duration},
       processingStart,
       processingEnd,
+      taskEndTime,
       interactionId};
 
   {
