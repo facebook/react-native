@@ -119,7 +119,7 @@ PerformanceEntryReporter::UserTimingDetailProvider getDetailProviderFromEntry(
     try {
       auto detail = entry.asObject(rt).getProperty(rt, "detail");
       return jsi::dynamicFromValue(rt, detail);
-    } catch (jsi::JSIException& ex) {
+    } catch (jsi::JSIException&) {
       return nullptr;
     }
   };
