@@ -12,6 +12,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray)
 const char ScrollViewComponentName[] = "ScrollView";
 
 void ScrollViewShadowNode::updateStateIfNeeded() {
