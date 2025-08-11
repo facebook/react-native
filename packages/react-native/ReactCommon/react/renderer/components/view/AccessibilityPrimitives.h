@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include <react/renderer/debug/DebugStringConvertible.h>
+
 namespace facebook::react {
 
 enum class AccessibilityTraits : uint32_t {
@@ -91,7 +93,7 @@ struct AccessibilityState {
   bool selected{false};
   bool busy{false};
   std::optional<bool> expanded{std::nullopt};
-  enum { Unchecked, Checked, Mixed, None } checked{None};
+  enum CheckedState { Unchecked, Checked, Mixed, None } checked{None};
 };
 
 constexpr bool operator==(
@@ -107,6 +109,29 @@ constexpr bool operator!=(
     const AccessibilityState& rhs) {
   return !(rhs == lhs);
 }
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+inline std::string toString(AccessibilityState::CheckedState state) {
+  switch (state) {
+    case AccessibilityState::Unchecked:
+      return "Unchecked";
+    case AccessibilityState::Checked:
+      return "Checked";
+    case AccessibilityState::Mixed:
+      return "Mixed";
+    case AccessibilityState::None:
+      return "None";
+  }
+}
+
+inline std::string toString(const AccessibilityState& accessibilityState) {
+  return "{disabled:" + toString(accessibilityState.disabled) +
+      ",selected:" + toString(accessibilityState.selected) +
+      ",checked:" + toString(accessibilityState.checked) +
+      ",busy:" + toString(accessibilityState.busy) +
+      ",expanded:" + toString(accessibilityState.expanded) + "}";
+}
+#endif
 
 struct AccessibilityLabelledBy {
   std::vector<std::string> value{};
