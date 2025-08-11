@@ -10,9 +10,12 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
+import type {AccessibilityProps} from 'react-native';
+
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Text, TouchableWithoutFeedback, View} from 'react-native';
+import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -36,23 +39,15 @@ describe('<TouchableWithoutFeedback>', () => {
       });
     });
 
-    describe('accessibility', () => {
-      it('is accessible by default', () => {
-        const root = Fantom.createRoot();
+    component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
+      return (
+        <TouchableWithoutFeedback {...props}>
+          <Text>Touchable</Text>
+        </TouchableWithoutFeedback>
+      );
+    }
 
-        Fantom.runTask(() => {
-          root.render(
-            <TouchableWithoutFeedback>
-              <Text>Touchable</Text>
-            </TouchableWithoutFeedback>,
-          );
-        });
-
-        expect(root.getRenderedOutput({props: ['accessible']}).toJSX()).toEqual(
-          <rn-paragraph accessible="true">Touchable</rn-paragraph>,
-        );
-      });
-    });
+    accessibilityPropsSuite(ComponentWithAccessibilityProps);
   });
 
   describe('ref', () => {

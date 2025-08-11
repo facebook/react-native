@@ -43,6 +43,14 @@ class FantomRenderedOutput {
     return Array.isArray(this.#json) ? [...this.#json] : {...this.#json};
   }
 
+  toJSONObject(): FantomJsonObject {
+    if (Array.isArray(this.#json)) {
+      throw new Error('Cannot convert array to JSON object');
+    }
+
+    return {...this.#json};
+  }
+
   toJSX(): React.Node {
     return convertRawJsonToJSX(this.#json);
   }
