@@ -76,8 +76,8 @@ jobs:
               yarn ./packages/react-native npm publish --tag $(publishTag)
             else
               echo "Publishing with npm publish"
-              npm publish ./packages/virtualized-lists --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
-              npm publish ./packages/react-native      --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+              npm publish ./packages/virtualized-lists --tag $(publishTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+              npm publish ./packages/react-native      --tag $(publishTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
             fi
           fi
         displayName: Publish packages
