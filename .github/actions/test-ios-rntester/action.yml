@@ -102,13 +102,6 @@ runs:
     - name: Print ReactCore folder
       shell: bash
       run: ls -lR /tmp/ReactCore
-    - name: Setup xcode build cache
-      uses: ./.github/actions/setup-xcode-build-cache
-      with:
-        hermes-version: ${{ inputs.hermes-version }}
-        use-frameworks: ${{ inputs.use-frameworks }}
-        flavor: ${{ inputs.flavor }}
-        ruby-version: ${{ inputs.ruby-version }}
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
