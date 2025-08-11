@@ -24,7 +24,7 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
   JniJSModulesUnbundle() = default;
   JniJSModulesUnbundle(
       AAssetManager* assetManager,
-      const std::string& moduleDirectory);
+      std::string moduleDirectory);
   JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
   JniJSModulesUnbundle& operator=(JSModulesUnbundle&& other) = delete;
 

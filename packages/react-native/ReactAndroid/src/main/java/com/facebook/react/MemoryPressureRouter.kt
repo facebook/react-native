@@ -21,7 +21,7 @@ public class MemoryPressureRouter(context: Context) : ComponentCallbacks2 {
     context.applicationContext.registerComponentCallbacks(this)
   }
 
-  public fun destroy(context: Context): Unit {
+  public fun destroy(context: Context) {
     context.applicationContext.unregisterComponentCallbacks(this)
   }
 

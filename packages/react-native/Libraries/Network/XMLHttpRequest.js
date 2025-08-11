@@ -400,7 +400,6 @@ class XMLHttpRequest extends EventTarget {
     if (XMLHttpRequest._profiling) {
       console.timeStamp(
         'Incremental Data: ' + this._getMeasureURL(),
-        // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
         start,
         undefined,
         PERFORMANCE_TRACK_NAME,
@@ -455,7 +454,6 @@ class XMLHttpRequest extends EventTarget {
         const start = this._startTime;
         console.timeStamp(
           this._getMeasureURL(),
-          // $FlowFixMe[extra-arg] Add correct typing for `console.timeStamp`
           start,
           undefined,
           PERFORMANCE_TRACK_NAME,

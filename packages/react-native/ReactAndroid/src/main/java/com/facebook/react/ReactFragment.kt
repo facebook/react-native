@@ -151,17 +151,17 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   }
 
   override fun checkPermission(permission: String, pid: Int, uid: Int): Int =
-      getActivity()?.checkPermission(permission, pid, uid) ?: 0
+      activity?.checkPermission(permission, pid, uid) ?: 0
 
   override fun checkSelfPermission(permission: String): Int =
-      getActivity()?.checkSelfPermission(permission) ?: 0
+      activity?.checkSelfPermission(permission) ?: 0
 
   @Suppress("DEPRECATION")
   override fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
       listener: PermissionListener?
-  ): Unit {
+  ) {
     permissionListener = listener
     requestPermissions(permissions, requestCode)
   }

@@ -83,7 +83,7 @@ class TextAlignRTLExample extends React.Component<
   }
 }
 
-class Entity extends React.Component<$FlowFixMeProps> {
+class Entity extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: '500', color: '#527fe4'}}>
@@ -93,7 +93,7 @@ class Entity extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   state: any | {fontSize: number, fontWeight: string} = {
     fontWeight: 'bold',
     fontSize: 15,

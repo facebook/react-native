@@ -77,15 +77,13 @@ test('moving box by 100 points', () => {
 
   // Animation is completed now. C++ Animated will commit the final position to the shadow tree.
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    expect(viewElement.getBoundingClientRect().x).toBe(100);
-    // TODO(T223344928): this shouldn't be neccessary
+    // TODO(T232605345): this shouldn't be neccessary once we fix Android's race condition.
     Fantom.runWorkLoop();
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
   } else {
-    expect(viewElement.getBoundingClientRect().x).toBe(0);
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+    expect(viewElement.getBoundingClientRect().x).toBe(100);
   }
-
-  expect(viewElement.getBoundingClientRect().x).toBe(100);
 });
 
 test('animation driven by onScroll event', () => {
@@ -148,7 +146,71 @@ test('animation driven by onScroll event', () => {
 
   expect(transform.translateY).toBeCloseTo(100, 0.001);
 
+  // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+  expect(viewElement.getBoundingClientRect().y).toBe(0);
+  Fantom.runWorkLoop();
+
   expect(viewElement.getBoundingClientRect().y).toBe(100);
+});
+
+test('animation driven by onScroll event when animated view is unmounted', () => {
+  const scrollViewRef = createRef<HostInstance>();
+
+  component PressableWithNativeDriver(mountAnimatedView: boolean) {
+    const currScroll = useAnimatedValue(0);
+
+    return (
+      <View style={{flex: 1}}>
+        {mountAnimatedView ? (
+          <Animated.View
+            style={{
+              position: 'absolute',
+              width: 10,
+              height: 10,
+              transform: [{translateY: currScroll}],
+            }}
+          />
+        ) : null}
+        <Animated.ScrollView
+          ref={scrollViewRef}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    y: currScroll,
+                  },
+                },
+              },
+            ],
+            {useNativeDriver: true},
+          )}>
+          <View style={{height: 1000, width: 100}} />
+        </Animated.ScrollView>
+      </View>
+    );
+  }
+
+  const root = Fantom.createRoot();
+  Fantom.runTask(() => {
+    root.render(<PressableWithNativeDriver mountAnimatedView={true} />);
+  });
+
+  Fantom.runTask(() => {
+    root.render(<PressableWithNativeDriver mountAnimatedView={false} />);
+  });
+
+  const scrollViewelement = ensureInstance(
+    scrollViewRef.current,
+    ReactNativeElement,
+  );
+
+  Fantom.scrollTo(scrollViewelement, {
+    x: 0,
+    y: 50,
+  });
+
+  Fantom.runWorkLoop();
 });
 
 test('animated opacity', () => {
@@ -273,21 +335,20 @@ test('moving box by 50 points with offset 10', () => {
   ).toBeCloseTo(60, 0.001);
 
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
+    // TODO(T232605345): The following line won't be necessary once race condition on Android is fixed.
+    Fantom.runWorkLoop();
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform='[{"translateX": 60.000000}]' />,
     );
-    // TODO(T223344928): this shouldn't be neccessary
-    Fantom.runWorkLoop();
   } else {
     expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
       <rn-view transform="[]" />,
     );
     Fantom.runWorkLoop(); // Animated still schedules a React state update for synchronisation to shadow tree
+    expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
+      <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
+    );
   }
-
-  expect(root.getRenderedOutput({props: ['transform']}).toJSX()).toEqual(
-    <rn-view transform='[{"translateX": 60.000000}]' />, // // must include offset.
-  );
 
   expect(finishValue?.finished).toBe(true);
   expect(finishValue?.value).toBe(50); // must not include offset.
@@ -375,9 +436,6 @@ describe('Value.flattenOffset', () => {
       Fantom.unstable_getDirectManipulationProps(viewElement).transform[0];
 
     expect(transform.translateY).toBeCloseTo(40, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -474,9 +532,6 @@ describe('Value.extractOffset', () => {
     // `extractOffset` resets value back to 0.
     // Previously we set offset to 35. The final value is 35.
     expect(transform.translateY).toBeCloseTo(35, 0.001);
-
-    // TODO(T223344928): this shouldn't be neccessary with cxxNativeAnimatedRemoveJsSync:true
-    Fantom.runWorkLoop();
   });
 });
 
@@ -670,27 +725,25 @@ test('Animated.sequence', () => {
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(-16, 0.001);
 
-  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
-  }
-  expect(_isSequenceFinished).toBe(false);
-  expect(element.getBoundingClientRect().y).toBe(-16);
+  Fantom.runWorkLoop(); // React update to sync end state of 1st timing animation in sequence
 
-  Fantom.runWorkLoop(); // React render
+  expect(_isSequenceFinished).toBe(false);
 
   expect(
     // $FlowFixMe[incompatible-use]
     Fantom.unstable_getDirectManipulationProps(element).transform[0].translateY,
   ).toBeCloseTo(0, 0.001);
 
-  if (!ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
-  }
-  expect(element.getBoundingClientRect().y).toBe(0);
-
   if (ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()) {
-    expect(_isSequenceFinished).toBe(false);
+    // TODO(T232605345): The following two lines won't be necessary once race condition on Android is fixed
+    expect(element.getBoundingClientRect().y).toBe(-16);
     Fantom.runWorkLoop();
+    expect(element.getBoundingClientRect().y).toBe(0);
+  } else {
+    expect(element.getBoundingClientRect().y).toBe(-16);
+    Fantom.runWorkLoop(); // React update to sync end state of 2nd timing animation in sequence
+    expect(element.getBoundingClientRect().y).toBe(0);
   }
+
   expect(_isSequenceFinished).toBe(true);
 });

@@ -7,14 +7,7 @@
 
 #pragma once
 
-#include <limits>
-#include <memory>
-
-#include <react/renderer/attributedstring/ParagraphAttributes.h>
-#include <react/renderer/components/text/BaseTextProps.h>
-#include <react/renderer/components/view/ViewProps.h>
-#include <react/renderer/core/Props.h>
-#include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/components/text/HostPlatformParagraphProps.h>
 
 namespace facebook::react {
 
@@ -23,45 +16,5 @@ namespace facebook::react {
  * Most of the props are directly stored in composed `ParagraphAttributes`
  * object.
  */
-class ParagraphProps : public ViewProps, public BaseTextProps {
- public:
-  ParagraphProps() = default;
-  ParagraphProps(
-      const PropsParserContext& context,
-      const ParagraphProps& sourceProps,
-      const RawProps& rawProps);
-
-  void setProp(
-      const PropsParserContext& context,
-      RawPropsPropNameHash hash,
-      const char* propName,
-      const RawValue& value);
-
-#pragma mark - Props
-
-  /*
-   * Contains all prop values that affect visual representation of the
-   * paragraph.
-   */
-  ParagraphAttributes paragraphAttributes{};
-
-  /*
-   * Defines can the text be selected (and copied) or not.
-   */
-  bool isSelectable{};
-
-  bool onTextLayout{};
-
-#pragma mark - DebugStringConvertible
-
-#if RN_DEBUG_STRING_CONVERTIBLE
-  SharedDebugStringConvertibleList getDebugProps() const override;
-#endif
-
-#ifdef RN_SERIALIZABLE_STATE
-  ComponentName getDiffPropsImplementationTarget() const override;
-  folly::dynamic getDiffProps(const Props* prevProps) const override;
-#endif
-};
-
+using ParagraphProps = HostPlatformParagraphProps;
 } // namespace facebook::react

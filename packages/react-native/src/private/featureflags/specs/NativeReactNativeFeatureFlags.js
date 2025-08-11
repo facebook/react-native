@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6cac48969d6e6bc72bd7713f9aaaf86e>>
+ * @generated SignedSource<<4bd1c1bd236e9afa5b010f58683d5e67>>
  * @flow strict
  * @noformat
  */
@@ -26,9 +26,12 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
+  +cdpInteractionMetricsEnabled?: () => boolean;
   +cxxNativeAnimatedEnabled?: () => boolean;
   +cxxNativeAnimatedRemoveJsSync?: () => boolean;
+  +disableFabricCommitInCXXAnimated?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
+  +disableOldAndroidAttachmentMetricsWorkarounds?: () => boolean;
   +disableTextLayoutManagerCacheAndroid?: () => boolean;
   +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
@@ -46,6 +49,8 @@ export interface Spec extends TurboModule {
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
+  +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
@@ -57,7 +62,6 @@ export interface Spec extends TurboModule {
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
-  +enableSynchronousStateUpdates?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
@@ -69,12 +73,19 @@ export interface Spec extends TurboModule {
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
+  +preventShadowTreeCommitExhaustion?: () => boolean;
   +releaseImageDataWhenConsumed?: () => boolean;
+  +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
+  +skipActivityIdentityAssertionOnHostPause?: () => boolean;
+  +sweepActiveTouchOnChildNativeGesturesAndroid?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +updateRuntimeShadowNodeReferencesOnCommit?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
+  +useNativeEqualsInNativeReadableArrayAndroid?: () => boolean;
+  +useNativeTransformHelperAndroid?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;

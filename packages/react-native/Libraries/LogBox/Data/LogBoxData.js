@@ -20,7 +20,6 @@ import type {
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
@@ -493,6 +492,10 @@ function showFuseboxWarningsMigrationMessageOnce() {
     return;
   }
   hasShownFuseboxWarningsMigrationMessage = true;
+
+  const NativeDevSettings =
+    require('../../NativeModules/specs/NativeDevSettings').default;
+
   appendNewLog(
     new LogBoxLog({
       level: 'warn',

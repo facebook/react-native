@@ -319,7 +319,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
   reportLongTasks(task, taskStartTime, taskEndTime);
 
   // "Update the rendering" step.
-  updateRendering();
+  updateRendering(taskEndTime);
 
   currentTask_ = nullptr;
 }
@@ -329,7 +329,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
  * event loop. See
  * https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering.
  */
-void RuntimeScheduler_Modern::updateRendering() {
+void RuntimeScheduler_Modern::updateRendering(HighResTimeStamp taskEndTime) {
   TraceSection s("RuntimeScheduler::updateRendering");
 
   // This is the integration of the Event Timing API in the Event Loop.
@@ -337,7 +337,7 @@ void RuntimeScheduler_Modern::updateRendering() {
   const auto eventTimingDelegate = eventTimingDelegate_.load();
   if (eventTimingDelegate != nullptr) {
     eventTimingDelegate->dispatchPendingEventTimingEntries(
-        surfaceIdsWithPendingRenderingUpdates_);
+        taskEndTime, surfaceIdsWithPendingRenderingUpdates_);
   }
 
   // This is the integration of the Intersection Observer API in the Event Loop.

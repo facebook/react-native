@@ -175,7 +175,11 @@ class NativeAnimatedNodesManager {
   void updateNodes(
       const std::set<int>& finishedAnimationValueNodes = {}) noexcept;
 
-  folly::dynamic managedProps(Tag tag) noexcept;
+  folly::dynamic managedProps(Tag tag) const noexcept;
+
+  bool hasManagedProps() const noexcept;
+
+  void onManagedPropsRemoved(Tag tag) noexcept;
 
   bool isOnRenderThread() const noexcept;
 
@@ -209,7 +213,7 @@ class NativeAnimatedNodesManager {
       eventDrivers_;
   std::unordered_set<Tag> updatedNodeTags_;
 
-  std::mutex connectedAnimatedNodesMutex_;
+  mutable std::mutex connectedAnimatedNodesMutex_;
 
   std::mutex uiTasksMutex_;
   std::vector<UiTask> operations_;
@@ -223,20 +227,30 @@ class NativeAnimatedNodesManager {
   bool isEventAnimationInProgress_{false};
 
   // React context required to commit props onto Component View
-  DirectManipulationCallback directManipulationCallback_;
-  FabricCommitCallback fabricCommitCallback_;
+  const DirectManipulationCallback directManipulationCallback_;
+  const FabricCommitCallback fabricCommitCallback_;
 
   /*
    * Tracks whether the render callback loop for animations is currently active.
    */
   std::atomic_bool isRenderCallbackStarted_{false};
-  StartOnRenderCallback startOnRenderCallback_;
-  StopOnRenderCallback stopOnRenderCallback_;
+  const StartOnRenderCallback startOnRenderCallback_;
+  const StopOnRenderCallback stopOnRenderCallback_;
 
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
 
   std::unordered_map<Tag, folly::dynamic> updateViewProps_{};
   std::unordered_map<Tag, folly::dynamic> updateViewPropsDirect_{};
+
+  /*
+   * Sometimes a view is not longer connected to a PropsAnimatedNode, but
+   * NativeAnimated has previously changed the view's props via direct
+   * manipulation, we use unsyncedDirectViewProps_ to keep track of those
+   * props, to make sure later Fabric commits will not override direct
+   * manipulation result on this view.
+   */
+  mutable std::mutex unsyncedDirectViewPropsMutex_;
+  std::unordered_map<Tag, folly::dynamic> unsyncedDirectViewProps_{};
 
   int animatedGraphBFSColor_ = 0;
 #ifdef REACT_NATIVE_DEBUG

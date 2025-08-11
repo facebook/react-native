@@ -29,7 +29,7 @@ public class I18nUtil private constructor() {
    * set.
    */
   private fun applicationHasRtlSupport(context: Context): Boolean {
-    return (context.getApplicationInfo().flags and ApplicationInfo.FLAG_SUPPORTS_RTL) != 0
+    return (context.applicationInfo.flags and ApplicationInfo.FLAG_SUPPORTS_RTL) != 0
   }
 
   /**

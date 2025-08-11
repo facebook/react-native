@@ -141,7 +141,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
       // We need Intent.FLAG_ACTIVITY_NEW_TASK since getReactApplicationContext() returns
       // the ApplicationContext instead of the Activity context.
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      val packageManager = getReactApplicationContext().getPackageManager()
+      val packageManager = reactApplicationContext.packageManager
       val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
       promise.resolve(canOpen)
     } catch (e: Exception) {
@@ -159,9 +159,8 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   override fun openSettings(promise: Promise) {
     try {
       val intent = Intent()
-      val currentActivity: Activity =
-          checkNotNull(getReactApplicationContext().getCurrentActivity())
-      val selfPackageName = getReactApplicationContext().getPackageName()
+      val currentActivity: Activity = checkNotNull(reactApplicationContext.getCurrentActivity())
+      val selfPackageName = reactApplicationContext.packageName
 
       intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
       intent.addCategory(Intent.CATEGORY_DEFAULT)
@@ -196,7 +195,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
     val intent = Intent(action)
 
-    val packageManager = getReactApplicationContext().getPackageManager()
+    val packageManager = reactApplicationContext.packageManager
     if (packageManager == null || intent.resolveActivity(packageManager) == null) {
       promise.reject(
           JSApplicationIllegalArgumentException("Could not launch Intent with action $action."))
@@ -241,10 +240,10 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
   }
 
   private fun sendOSIntent(intent: Intent, useNewTaskFlag: Boolean) {
-    val currentActivity = getReactApplicationContext().getCurrentActivity()
+    val currentActivity = reactApplicationContext.getCurrentActivity()
 
-    val selfPackageName = getReactApplicationContext().getPackageName()
-    val packageManager = getReactApplicationContext().getPackageManager()
+    val selfPackageName = reactApplicationContext.packageName
+    val packageManager = reactApplicationContext.packageManager
     val componentName =
         if (packageManager == null) {
           intent.component
@@ -262,7 +261,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
     if (currentActivity != null) {
       currentActivity.startActivity(intent)
     } else {
-      getReactApplicationContext().startActivity(intent)
+      reactApplicationContext.startActivity(intent)
     }
   }
 

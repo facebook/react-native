@@ -22,31 +22,31 @@ const REACT_NATIVE_REPOSITORY_ROOT = path.join(
   '..',
 );
 
-const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(
-    __dirname,
-    '..',
-    '..',
-    '..',
-  ) /*:: as string */;
+const REACT_NATIVE_PACKAGE_ROOT_FOLDER /*: string */ = path.join(
+  __dirname,
+  '..',
+  '..',
+  '..',
+);
 const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
 
-const CORE_LIBRARIES_WITH_OUTPUT_FOLDER = {
-    FBReactNativeSpec: {
-      ios: path.join(
-        REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-        'React',
-        'FBReactNativeSpec',
-      ) /*:: as string */,
-      android: path.join(
-        REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-        'ReactAndroid',
-        'build',
-        'generated',
-        'source',
-        'codegen',
-      ) /*:: as string */,
-    },
-  } /*:: as {[string]: $FlowFixMe} */;
+const CORE_LIBRARIES_WITH_OUTPUT_FOLDER /*: {[string]: $FlowFixMe} */ = {
+  FBReactNativeSpec: {
+    ios: path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'React',
+      'FBReactNativeSpec',
+    ) /*:: as string */,
+    android: path.join(
+      REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+      'ReactAndroid',
+      'build',
+      'generated',
+      'source',
+      'codegen',
+    ) /*:: as string */,
+  },
+};
 
 const packageJsonPath = path.join(
   REACT_NATIVE_PACKAGE_ROOT_FOLDER,
@@ -57,12 +57,12 @@ const packageJsonPath = path.join(
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 const REACT_NATIVE = packageJson.name;
 
-const TEMPLATES_FOLDER_PATH = path.join(
-    REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-    'scripts',
-    'codegen',
-    'templates',
-  ) /*:: as string */;
+const TEMPLATES_FOLDER_PATH /*: string */ = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+);
 
 module.exports = {
   CODEGEN_REPO_PATH,

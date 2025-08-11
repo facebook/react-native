@@ -104,7 +104,7 @@ function readReactNativeConfig(projectRoot /*: string */) /*: $FlowFixMe */ {
     return {};
   }
 
-  // $FlowIgnore[unsupported-syntax]
+  // $FlowFixMe[unsupported-syntax]
   return require(rnConfigFilePath);
 }
 
@@ -327,8 +327,8 @@ function isReactNativeCoreLibrary(libraryName /*: string */) /*: boolean */ {
 function parseiOSAnnotations(
   libraries /*: $ReadOnlyArray<$FlowFixMe> */,
 ) /*: {[string]: $FlowFixMe} */ {
-  const mLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
-  const cLibraryMap = {} /*:: as {[string]: $FlowFixMe} */;
+  const mLibraryMap /*: {[string]: $FlowFixMe} */ = {};
+  const cLibraryMap /*: {[string]: $FlowFixMe} */ = {};
   const map = {};
 
   for (const library of libraries) {

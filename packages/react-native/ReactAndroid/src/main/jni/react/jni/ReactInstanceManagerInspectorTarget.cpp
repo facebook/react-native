@@ -53,7 +53,7 @@ void ReactInstanceManagerInspectorTarget::TargetDelegate::loadNetworkResource(
 }
 
 ReactInstanceManagerInspectorTarget::ReactInstanceManagerInspectorTarget(
-    jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> jobj,
+    jni::alias_ref<ReactInstanceManagerInspectorTarget::jhybridobject> /*jobj*/,
     jni::alias_ref<JExecutor::javaobject> javaExecutor,
     jni::alias_ref<ReactInstanceManagerInspectorTarget::TargetDelegate>
         delegate)

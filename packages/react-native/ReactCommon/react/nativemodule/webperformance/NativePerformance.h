@@ -90,32 +90,20 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 
 #pragma mark - User Timing Level 3 functions (https://w3c.github.io/user-timing/)
 
-  // https://w3c.github.io/user-timing/#mark-method
-  HighResTimeStamp markWithResult(
+  void reportMark(
       jsi::Runtime& rt,
-      std::string name,
-      std::optional<HighResTimeStamp> startTime);
+      const std::string& name,
+      HighResTimeStamp time,
+      jsi::Value entry);
 
-  // https://w3c.github.io/user-timing/#measure-method
-  std::tuple<HighResTimeStamp, HighResDuration> measure(
+  void reportMeasure(
       jsi::Runtime& rt,
-      std::string name,
-      std::optional<HighResTimeStamp> startTime,
-      std::optional<HighResTimeStamp> endTime,
-      std::optional<HighResDuration> duration,
-      std::optional<std::string> startMark,
-      std::optional<std::string> endMark);
-
-  // https://w3c.github.io/user-timing/#measure-method
-  [[deprecated("This method is deprecated. Use the measure method instead.")]]
-  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
-      jsi::Runtime& rt,
-      std::string name,
+      const std::string& name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      std::optional<HighResDuration> duration,
-      std::optional<std::string> startMark,
-      std::optional<std::string> endMark);
+      HighResDuration duration,
+      jsi::Value entry);
+
+  std::optional<double> getMarkTime(jsi::Runtime& rt, const std::string& name);
 
   // https://w3c.github.io/user-timing/#clearmarks-method
   void clearMarks(
@@ -140,7 +128,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   // https://www.w3.org/TR/performance-timeline/#getentriesbyname-method
   std::vector<NativePerformanceEntry> getEntriesByName(
       jsi::Runtime& rt,
-      std::string entryName,
+      const std::string& entryName,
       std::optional<PerformanceEntryType> entryType = std::nullopt);
 
 #pragma mark - Performance Observer (https://w3c.github.io/performance-timeline/#the-performanceobserver-interface)
@@ -198,11 +186,7 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
 
 #pragma mark - Testing
 
-  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
   void clearEventCountsForTesting(jsi::Runtime& rt);
-
- private:
-  std::optional<HighResTimeStamp> forcedCurrentTimeStamp_;
 };
 
 } // namespace facebook::react

@@ -6,7 +6,6 @@
  */
 
 #import "RCTViewComponentView.h"
-#import "RCTViewAccessibilityElement.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
@@ -51,8 +50,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   UIView *_containerView;
   BOOL _useCustomContainerView;
   NSMutableSet<NSString *> *_accessibilityOrderNativeIDs;
-  NSMutableArray<NSObject *> *_accessibilityElements;
-  RCTViewAccessibilityElement *_axElementDescribingSelf;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -405,7 +402,11 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
       [_accessibilityOrderNativeIDs addObject:RCTNSStringFromString(childId)];
     }
 
-    _accessibilityElements = [NSMutableArray new];
+    // If we are prop updating and have children we can go ahead and assign this prop.
+    // Otherwise, we might not have children attached yet and need to wait before then.
+    if (self.currentContainerView.subviews.count > 0) {
+      [self updateAccessibilityElements];
+    }
   }
 
   // `accessibilityTraits`
@@ -570,7 +571,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
-  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+  if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
       layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);
@@ -617,7 +618,6 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
-  _accessibilityElements = [NSMutableArray new];
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props
@@ -1149,43 +1149,37 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   return self;
 }
 
-- (NSArray<NSObject *> *)accessibilityElements
+- (void)didMoveToSuperview
 {
-  if ([_accessibilityOrderNativeIDs count] <= 0) {
-    return super.accessibilityElements;
+  // At this point we are guaranteed to have subviews, if we are going to have them
+  if (ReactNativeFeatureFlags::enableAccessibilityOrder()) {
+    [self updateAccessibilityElements];
   }
+}
 
-  // TODO: Currently this ignores changes to descendant nativeID's. While that should rarely, if ever happen, it's an
-  // edge case we should address. Currently this fixes some app deaths so landing this without addressing that edge case
-  // for now.
-  if ([_accessibilityElements count] > 0) {
-    return _accessibilityElements;
+- (void)updateAccessibilityElements
+{
+  if ([_accessibilityOrderNativeIDs count] == 0) {
+    self.accessibilityElements = nil;
+    return;
   }
 
   NSMutableDictionary<NSString *, UIView *> *nativeIdToView = [NSMutableDictionary new];
-
   [RCTViewComponentView collectAccessibilityElements:self
                                       intoDictionary:nativeIdToView
                                            nativeIds:_accessibilityOrderNativeIDs];
 
-  for (auto childId : _props->accessibilityOrder) {
+  NSMutableArray *accessibilityElements = [NSMutableArray new];
+  for (const auto &childId : _props->accessibilityOrder) {
     NSString *nsStringChildId = RCTNSStringFromString(childId);
-    // Special case to allow for self-referencing with accessibilityOrder
-    if ([nsStringChildId isEqualToString:self.nativeId]) {
-      if (!_axElementDescribingSelf) {
-        _axElementDescribingSelf = [[RCTViewAccessibilityElement alloc] initWithView:self];
-      }
-      _axElementDescribingSelf.isAccessibilityElement = [super isAccessibilityElement];
-      [_accessibilityElements addObject:_axElementDescribingSelf];
-    } else {
-      UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
-      if (viewWithMatchingNativeId) {
-        [_accessibilityElements addObject:viewWithMatchingNativeId];
-      }
+
+    UIView *viewWithMatchingNativeId = [nativeIdToView objectForKey:nsStringChildId];
+    if (viewWithMatchingNativeId != nil) {
+      [accessibilityElements addObject:viewWithMatchingNativeId];
     }
   }
 
-  return _accessibilityElements;
+  self.accessibilityElements = accessibilityElements;
 }
 
 + (void)collectAccessibilityElements:(UIView *)view
@@ -1250,13 +1244,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   if (self.contentView != nil) {
     return self.contentView.isAccessibilityElement;
-  }
-
-  // If we reference ourselves in accessibilityOrder then we will make a
-  // UIAccessibilityElement object to represent ourselves since returning YES
-  // here would mean iOS would not call into accessibilityElements
-  if ([_accessibilityOrderNativeIDs containsObject:self.nativeId]) {
-    return NO;
   }
 
   return [super isAccessibilityElement];

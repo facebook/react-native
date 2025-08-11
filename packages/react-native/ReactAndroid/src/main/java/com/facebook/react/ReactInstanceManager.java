@@ -229,6 +229,9 @@ public class ReactInstanceManager {
     return new ReactInstanceManagerBuilder();
   }
 
+  /**
+   * @noinspection deprecation
+   */
   /* package */ ReactInstanceManager(
       Context applicationContext,
       @Nullable Activity currentActivity,

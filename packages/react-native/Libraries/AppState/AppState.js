@@ -120,18 +120,18 @@ class AppStateImpl {
     }
     switch (type) {
       case 'change':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const changeHandler: AppStateStatus => void = handler;
         return emitter.addListener('appStateDidChange', appStateData => {
           changeHandler(appStateData.app_state);
         });
       case 'memoryWarning':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const memoryWarningHandler: () => void = handler;
         return emitter.addListener('memoryWarning', memoryWarningHandler);
       case 'blur':
       case 'focus':
-        // $FlowIssue[invalid-tuple-arity] Flow cannot refine handler based on the event type
+        // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const focusOrBlurHandler: () => void = handler;
         return emitter.addListener('appStateFocusChange', hasFocus => {
           if (type === 'blur' && !hasFocus) {

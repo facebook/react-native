@@ -10,7 +10,7 @@
 namespace facebook::react {
 
 TextLayoutManager::TextLayoutManager(
-    const ContextContainer::Shared& /*contextContainer*/)
+    const std::shared_ptr<const ContextContainer>& /*contextContainer*/)
     : textMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
 TextMeasurement TextLayoutManager::measure(

@@ -23,7 +23,7 @@ class HermesSamplingProfiler : public jni::JavaClass<HermesSamplingProfiler> {
   static void disable(jni::alias_ref<jclass>);
   static void dumpSampledTraceToFile(
       jni::alias_ref<jclass>,
-      std::string filename);
+      const std::string& filename);
 
   static void registerNatives();
 

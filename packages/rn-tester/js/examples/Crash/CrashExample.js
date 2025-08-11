@@ -8,6 +8,7 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Node} from 'react';
 
 import React from 'react';
@@ -28,8 +29,8 @@ exports.examples = [
           title="JS crash"
           onPress={() => {
             const a = {};
-            // $FlowIgnore[prop-missing]
-            // $FlowIgnore[incompatible-use]
+            // $FlowFixMe[prop-missing]
+            // $FlowFixMe[incompatible-use]
             const b = a.w.q; // js crash here
             console.log(b);
           }}
@@ -37,4 +38,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

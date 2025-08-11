@@ -11,8 +11,15 @@ const fs = require('fs');
 const path = require('path');
 const {
   prepareFailurePayload,
+  prepareComparisonPayload,
   sendMessageToDiscord,
 } = require('./notifyDiscord');
+const {
+  FirebaseClient,
+  compareResults,
+  getYesterdayDate,
+  getTodayDate,
+} = require('./firebaseUtils');
 
 function readOutcomes() {
   const baseDir = '/tmp';
@@ -103,16 +110,62 @@ async function collectResults(discordWebHook) {
   const outcomes = readOutcomes();
   const failures = printFailures(outcomes);
 
+  // Send failure notification if there are current failures
   if (failures.length > 0) {
     if (discordWebHook) {
-      console.log('Sending to discord');
+      console.log('Sending current failures to Discord...');
       await notifyDiscord(discordWebHook, failures);
     } else {
-      console.log('Web hook not set');
+      console.log('Discord webhook not set');
     }
-    process.exit(1);
   }
-  console.log('✅ All tests passed!');
+
+  // Initialize Firebase client
+  const firebaseClient = new FirebaseClient();
+  const today = getTodayDate();
+
+  try {
+    // Store today's results in Firebase
+    console.log(`Storing results for ${today} in Firebase...`);
+    await firebaseClient.storeResults(today, outcomes);
+
+    // Get the most recent previous results for comparison
+    console.log(`Looking for most recent previous results before ${today}...`);
+    const {results: previousResults, date: previousDate} =
+      await firebaseClient.getLatestResults(today);
+
+    let broken = [];
+    let recovered = [];
+
+    if (previousResults) {
+      console.log(`Comparing with results from ${previousDate}`);
+      // Compare results and identify broken/recovered jobs
+      const comparison = compareResults(outcomes, previousResults);
+      broken = comparison.broken;
+      recovered = comparison.recovered;
+
+      console.log(
+        `Found ${broken.length} newly broken jobs and ${recovered.length} recovered jobs compared to ${previousDate}`,
+      );
+    } else {
+      console.log(
+        'No previous results found for comparison - this might be the first run or no recent data available',
+      );
+    }
+
+    // Send comparison message to Discord if there are changes
+    if (discordWebHook && (broken.length > 0 || recovered.length > 0)) {
+      console.log('Sending comparison results to Discord...');
+      const comparisonMessage = prepareComparisonPayload(broken, recovered);
+      await sendMessageToDiscord(discordWebHook, comparisonMessage);
+    }
+
+    console.log('✅ All tests passed!');
+  } catch (error) {
+    console.error('Error in collectResults:', error);
+    // If Firebase fails but there are no test failures, don't fail the workflow
+    console.log('⚠️ Firebase operations failed, but all tests passed');
+  }
 }
 
 module.exports = {

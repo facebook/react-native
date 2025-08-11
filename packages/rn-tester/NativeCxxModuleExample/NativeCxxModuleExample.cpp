@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <ostream>
 #include <sstream>
+#include <utility>
 
 namespace facebook::react {
 
@@ -28,13 +29,13 @@ NativeCxxModuleExample::NativeCxxModuleExample(
     : NativeCxxModuleExampleCxxSpec(std::move(jsInvoker)) {}
 
 void NativeCxxModuleExample::getValueWithCallback(
-    jsi::Runtime& rt,
-    AsyncCallback<std::string> callback) {
+    jsi::Runtime& /*rt*/,
+    const AsyncCallback<std::string>& callback) {
   callback({"value from callback!"});
 }
 
 std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     AsyncCallback<std::string> callback) {
   valueCallback_ = std::make_optional(callback);
   return [&]() {
@@ -46,46 +47,46 @@ std::function<void()> NativeCxxModuleExample::setValueCallbackWithSubscription(
 }
 
 std::vector<std::optional<ObjectStruct>> NativeCxxModuleExample::getArray(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::vector<std::optional<ObjectStruct>> arg) {
   return arg;
 }
 
-bool NativeCxxModuleExample::getBool(jsi::Runtime& rt, bool arg) {
+bool NativeCxxModuleExample::getBool(jsi::Runtime& /*rt*/, bool arg) {
   return arg;
 }
 
-ConstantsStruct NativeCxxModuleExample::getConstants(jsi::Runtime& rt) {
+ConstantsStruct NativeCxxModuleExample::getConstants(jsi::Runtime& /*rt*/) {
   return ConstantsStruct{true, 69, "react-native"};
 }
 
 CustomEnumInt NativeCxxModuleExample::getCustomEnum(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     CustomEnumInt arg) {
   return arg;
 }
 
 std::shared_ptr<CustomHostObject> NativeCxxModuleExample::getCustomHostObject(
-    jsi::Runtime& rt) {
+    jsi::Runtime& /*rt*/) {
   return std::make_shared<CustomHostObject>(
       std::make_shared<CustomHostObjectRef>("answer", 42));
 }
 
 std::string NativeCxxModuleExample::consumeCustomHostObject(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::shared_ptr<CustomHostObject> arg) {
   auto value = arg->getValue();
   return value->a_ + std::to_string(value->b_);
 }
 
 BinaryTreeNode NativeCxxModuleExample::getBinaryTreeNode(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     BinaryTreeNode arg) {
   return arg;
 }
 
 GraphNode NativeCxxModuleExample::getGraphNode(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     GraphNode arg) {
   if (arg.neighbors) {
     arg.neighbors->emplace_back(GraphNode{.label = "top"});
@@ -95,41 +96,41 @@ GraphNode NativeCxxModuleExample::getGraphNode(
 }
 
 NativeCxxModuleExampleEnumInt NativeCxxModuleExample::getNumEnum(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     NativeCxxModuleExampleEnumInt arg) {
   return arg;
 }
 
 NativeCxxModuleExampleEnumStr NativeCxxModuleExample::getStrEnum(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     NativeCxxModuleExampleEnumNone /*arg*/) {
   return NativeCxxModuleExampleEnumStr::SB;
 }
 
 std::map<std::string, std::optional<int32_t>> NativeCxxModuleExample::getMap(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::map<std::string, std::optional<int32_t>> arg) {
   return arg;
 }
 
-double NativeCxxModuleExample::getNumber(jsi::Runtime& rt, double arg) {
+double NativeCxxModuleExample::getNumber(jsi::Runtime& /*rt*/, double arg) {
   return arg;
 }
 
 ObjectStruct NativeCxxModuleExample::getObject(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     ObjectStruct arg) {
   return arg;
 }
 
 std::set<float> NativeCxxModuleExample::getSet(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::set<float> arg) {
   return arg;
 }
 
 std::string NativeCxxModuleExample::getString(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::string arg) {
   return arg;
 }
@@ -137,7 +138,7 @@ std::string NativeCxxModuleExample::getString(
 std::string NativeCxxModuleExample::getUnion(
     jsi::Runtime& rt,
     float x,
-    std::string y,
+    const std::string& y,
     jsi::Object z) {
   std::string result =
       "x: " + to_string_with_precision(x) + ", y: " + y + ", z: { ";
@@ -154,11 +155,11 @@ std::string NativeCxxModuleExample::getUnion(
 }
 
 ValueStruct NativeCxxModuleExample::getValue(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     double x,
     std::string y,
     ObjectStruct z) {
-  ValueStruct result{x, y, z};
+  ValueStruct result{x, std::move(y), std::move(z)};
   return result;
 }
 
@@ -175,12 +176,12 @@ AsyncPromise<std::string> NativeCxxModuleExample::getValueWithPromise(
 }
 
 std::optional<bool> NativeCxxModuleExample::getWithWithOptionalArgs(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     std::optional<bool> optionalArg) {
   return optionalArg;
 }
 
-void NativeCxxModuleExample::voidFunc(jsi::Runtime& rt) {
+void NativeCxxModuleExample::voidFunc(jsi::Runtime& /*rt*/) {
   // Emit some events
   emitOnPress();
   emitOnClick<std::string>("value from callback on click!");
@@ -198,17 +199,17 @@ AsyncPromise<> NativeCxxModuleExample::voidPromise(jsi::Runtime& rt) {
   return promise;
 }
 
-void NativeCxxModuleExample::setMenu(jsi::Runtime& rt, MenuItem menuItem) {
+void NativeCxxModuleExample::setMenu(jsi::Runtime& /*rt*/, MenuItem menuItem) {
   menuItem.onPress("value", true);
   if (menuItem.items) {
-    for (auto subMenuItem : *menuItem.items) {
+    for (const auto& subMenuItem : *menuItem.items) {
       subMenuItem.onPress("another value", false);
     }
   }
 }
 
 void NativeCxxModuleExample::emitCustomDeviceEvent(
-    jsi::Runtime& rt,
+    jsi::Runtime& /*rt*/,
     const std::string& eventName) {
   // Test emitting device events (RCTDeviceEventEmitter.emit) from C++
   // TurboModule with arbitrary arguments. This can be called from any thread
@@ -226,27 +227,27 @@ void NativeCxxModuleExample::emitCustomDeviceEvent(
       });
 }
 
-void NativeCxxModuleExample::voidFuncThrows(jsi::Runtime& rt) {
+void NativeCxxModuleExample::voidFuncThrows(jsi::Runtime& /*rt*/) {
   throw std::runtime_error("Intentional exception from Cxx voidFuncThrows");
 };
 
 ObjectStruct NativeCxxModuleExample::getObjectThrows(
-    jsi::Runtime& rt,
-    ObjectStruct arg) {
+    jsi::Runtime& /*rt*/,
+    const ObjectStruct& /*arg*/) {
   throw std::runtime_error("Intentional exception from Cxx getObjectThrows");
 };
 
-AsyncPromise<> NativeCxxModuleExample::promiseThrows(jsi::Runtime& rt) {
+AsyncPromise<> NativeCxxModuleExample::promiseThrows(jsi::Runtime& /*rt*/) {
   throw std::runtime_error("Intentional exception from Cxx promiseThrows");
 };
 
-void NativeCxxModuleExample::voidFuncAssert(jsi::Runtime& rt) {
+void NativeCxxModuleExample::voidFuncAssert(jsi::Runtime& /*rt*/) {
   react_native_assert(false && "Intentional assert from Cxx voidFuncAssert");
 };
 
 ObjectStruct NativeCxxModuleExample::getObjectAssert(
-    jsi::Runtime& rt,
-    ObjectStruct arg) {
+    jsi::Runtime& /*rt*/,
+    const ObjectStruct& /*arg*/) {
   react_native_assert(false && "Intentional assert from Cxx getObjectAssert");
 
   // Asserts disabled

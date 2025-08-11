@@ -134,13 +134,13 @@ void AnimatedModule::setAnimatedNodeOffset(
 void AnimatedModule::flattenAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  operations_.push_back(FlattenAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
+  operations_.emplace_back(FlattenAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
 }
 
 void AnimatedModule::extractAnimatedNodeOffset(
     jsi::Runtime& /*rt*/,
     Tag nodeTag) {
-  operations_.push_back(ExtractAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
+  operations_.emplace_back(ExtractAnimatedNodeOffsetOp({.nodeTag = nodeTag}));
 }
 
 void AnimatedModule::connectAnimatedNodeToView(
@@ -284,7 +284,7 @@ void AnimatedModule::executeOperation(const Operation& operation) {
 
 void AnimatedModule::installJSIBindingsWithRuntime(jsi::Runtime& runtime) {
   if (nodesManagerProvider_) {
-    nodesManager_ = nodesManagerProvider_->getOrCreate(runtime);
+    nodesManager_ = nodesManagerProvider_->getOrCreate(runtime, jsInvoker_);
   }
 }
 

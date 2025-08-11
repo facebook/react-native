@@ -31,6 +31,7 @@ class OnLayoutEventTest {
     val width = 100
     val height = 200
 
+    @Suppress("DEPRECATION")
     val event = OnLayoutEvent.obtain(surfaceId, viewTag, x, y, width, height)
 
     assertThat(event).isNotNull
@@ -43,14 +44,14 @@ class OnLayoutEventTest {
 
   @Test
   fun testGetEventName_shouldReturnCorrectEventName() {
-    val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
+    @Suppress("DEPRECATION") val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
 
     assertThat(event.getEventName()).isEqualTo("topLayout")
   }
 
   @Test
   fun testInit_shouldCorrectlyInitializeValues() {
-    val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
+    @Suppress("DEPRECATION") val event = OnLayoutEvent.obtain(1, 1, 10, 20, 100, 200)
 
     assertThat(event.surfaceId).isEqualTo(1)
     assertThat(event.viewTag).isEqualTo(1)

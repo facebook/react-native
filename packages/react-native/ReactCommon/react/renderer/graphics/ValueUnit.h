@@ -36,9 +36,9 @@ struct ValueUnit {
       case UnitType::Percent:
         return value * referenceLength * 0.01f;
       case UnitType::Undefined:
+      default:
         return 0.0f;
     }
-    return 0.0f;
   }
 
   constexpr operator bool() const {

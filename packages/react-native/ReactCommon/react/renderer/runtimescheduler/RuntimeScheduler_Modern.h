@@ -198,7 +198,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       Task& task,
       bool didUserCallbackTimeout) const;
 
-  void updateRendering();
+  void updateRendering(HighResTimeStamp taskEndTime);
 
   bool performingMicrotaskCheckpoint_{false};
   void performMicrotaskCheckpoint(jsi::Runtime& runtime);

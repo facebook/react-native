@@ -11,11 +11,19 @@
 // flowlint unsafe-getters-setters:off
 
 import type {DOMHighResTimeStamp} from './PerformanceEntry';
+import type {
+  ExtensionMarkerPayload,
+  ExtensionTrackEntryPayload,
+} from './UserTimingExtensibility';
 
 import {getCurrentTimeStamp} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 
-export type DetailType = mixed;
+export type DetailType =
+  | mixed
+  // This will effectively ignored by Flow (mixed | anything = mixed)
+  // but we'll use it as documentation for how to use the extensibility API.
+  | {devtools?: ExtensionMarkerPayload | ExtensionTrackEntryPayload, ...};
 
 export type PerformanceMarkOptions = $ReadOnly<{
   detail?: DetailType,

@@ -7,6 +7,8 @@
 
 #include "HttpUtils.h"
 
+#include <algorithm>
+
 namespace facebook::react::jsinspector_modern {
 
 std::string httpReasonPhrase(uint16_t status) {
@@ -147,8 +149,22 @@ std::string httpReasonPhrase(uint16_t status) {
 std::string mimeTypeFromHeaders(const Headers& headers) {
   std::string mimeType = "application/octet-stream";
 
-  if (headers.find("Content-Type") != headers.end()) {
-    mimeType = headers.at("Content-Type");
+  for (const auto& [name, value] : headers) {
+    std::string lowerName = name;
+    std::transform(
+        lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+    if (lowerName == "content-type") {
+      // Parse MIME type (discarding any parameters after ";") from the
+      // Content-Type header
+      // https://datatracker.ietf.org/doc/html/rfc7231#section-3.1.1.1
+      size_t pos = value.find(';');
+      if (pos != std::string::npos) {
+        mimeType = value.substr(0, pos);
+      } else {
+        mimeType = value;
+      }
+      break;
+    }
   }
 
   return mimeType;

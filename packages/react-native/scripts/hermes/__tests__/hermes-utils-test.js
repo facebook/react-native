@@ -8,8 +8,6 @@
  * @format
  */
 
-import typeof FS from 'fs';
-
 import * as path from 'path';
 
 const {
@@ -27,11 +25,9 @@ const {
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
-const os = require('os');
-
 // $FlowFixMe[untyped-import] (OSS) memfs
-// $FlowFixMe[cannot-resolve-module] (Meta) memfs
-const {memfs} = require('memfs') as {memfs: () => {fs: FS}};
+const {memfs} = require('memfs');
+const os = require('os');
 
 const hermesTag =
   'hermes-2022-04-28-RNv0.69.0-15d07c2edd29a4ea0b8f15ab0588a0c1adb1200f';

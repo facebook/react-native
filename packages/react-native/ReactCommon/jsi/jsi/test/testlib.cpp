@@ -1877,7 +1877,9 @@ TEST_P(JSITest, CastInterface) {
   auto randomUuid = UUID{0xf2cd96cf, 0x455e, 0x42d9, 0x850a, 0x13e2cde59b8b};
   auto ptr = rd.castInterface(randomUuid);
 
-  EXPECT_EQ(ptr, nullptr);
+  // Use == instead of EXPECT_EQ to avoid ambiguous operator usage due to the
+  // type of 'ptr'.
+  EXPECT_TRUE(ptr == nullptr);
 }
 
 INSTANTIATE_TEST_CASE_P(

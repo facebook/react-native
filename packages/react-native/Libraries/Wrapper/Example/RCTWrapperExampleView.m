@@ -7,6 +7,8 @@
 
 #import "RCTWrapperExampleView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <RCTWrapper/RCTWrapper.h>
 
 @implementation RCTWrapperExampleView {
@@ -51,3 +53,5 @@
 @end
 
 RCT_WRAPPER_FOR_VIEW(RCTWrapperExampleView)
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

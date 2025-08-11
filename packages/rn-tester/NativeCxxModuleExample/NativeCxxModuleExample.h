@@ -134,7 +134,7 @@ class NativeCxxModuleExample
 
   void getValueWithCallback(
       jsi::Runtime& rt,
-      AsyncCallback<std::string> callback);
+      const AsyncCallback<std::string>& callback);
 
   std::function<void()> setValueCallbackWithSubscription(
       jsi::Runtime& rt,
@@ -180,7 +180,8 @@ class NativeCxxModuleExample
 
   std::string getString(jsi::Runtime& rt, std::string arg);
 
-  std::string getUnion(jsi::Runtime& rt, float x, std::string y, jsi::Object z);
+  std::string
+  getUnion(jsi::Runtime& rt, float x, const std::string& y, jsi::Object z);
 
   ValueStruct
   getValue(jsi::Runtime& rt, double x, std::string y, ObjectStruct z);
@@ -201,13 +202,13 @@ class NativeCxxModuleExample
 
   void voidFuncThrows(jsi::Runtime& rt);
 
-  ObjectStruct getObjectThrows(jsi::Runtime& rt, ObjectStruct arg);
+  ObjectStruct getObjectThrows(jsi::Runtime& rt, const ObjectStruct& arg);
 
   AsyncPromise<> promiseThrows(jsi::Runtime& rt);
 
   void voidFuncAssert(jsi::Runtime& rt);
 
-  ObjectStruct getObjectAssert(jsi::Runtime& rt, ObjectStruct arg);
+  ObjectStruct getObjectAssert(jsi::Runtime& rt, const ObjectStruct& arg);
 
   AsyncPromise<> promiseAssert(jsi::Runtime& rt);
 

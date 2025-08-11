@@ -7,6 +7,10 @@
 
 #import "RCTBaseTextShadowView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 @interface RCTVirtualTextShadowView : RCTBaseTextShadowView
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

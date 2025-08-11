@@ -9,6 +9,7 @@
 #include <react/renderer/components/image/ImageProps.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/debugStringConvertibleUtils.h>
 
 namespace facebook::react {
 
@@ -278,6 +279,55 @@ folly::dynamic ImageProps::getDiffProps(const Props* prevProps) const {
   }
 
   return result;
+}
+
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
+  const auto& imageProps = ImageProps();
+
+  auto sourcesList = SharedDebugStringConvertibleList{};
+  if (sources.size() == 1) {
+    sourcesList = sources[0].getDebugProps("source");
+  } else if (sources.size() > 1) {
+    for (const auto& source : sources) {
+      std::string sourceName = "source-" + react::toString(source.scale) + "x";
+      auto debugProps = source.getDebugProps(sourceName);
+      sourcesList.insert(
+          sourcesList.end(), debugProps.begin(), debugProps.end());
+    }
+  }
+
+  return ViewProps::getDebugProps() +
+      defaultSource.getDebugProps("defaultSource") + sourcesList +
+      SharedDebugStringConvertibleList{
+          debugStringConvertibleItem(
+              "blurRadius", blurRadius, imageProps.blurRadius),
+          debugStringConvertibleItem(
+              "resizeMode",
+              toString(resizeMode),
+              toString(imageProps.resizeMode)),
+          debugStringConvertibleItem(
+              "tintColor", toString(tintColor), toString(imageProps.tintColor)),
+      };
+}
+
+inline std::string toString(ImageResizeMode resizeMode) {
+  switch (resizeMode) {
+    case ImageResizeMode::Cover:
+      return "cover";
+    case ImageResizeMode::Contain:
+      return "contain";
+    case ImageResizeMode::Stretch:
+      return "stretch";
+    case ImageResizeMode::Center:
+      return "center";
+    case ImageResizeMode::Repeat:
+      return "repeat";
+    case ImageResizeMode::None:
+      return "none";
+  }
 }
 
 #endif

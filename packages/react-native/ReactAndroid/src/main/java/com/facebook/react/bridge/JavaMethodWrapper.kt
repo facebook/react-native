@@ -17,6 +17,9 @@ import com.facebook.systrace.SystraceMessage
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class JavaMethodWrapper(
     private val moduleWrapper: JavaModuleWrapper,
@@ -26,6 +29,7 @@ internal class JavaMethodWrapper(
   private abstract class ArgumentExtractor<T> {
     open fun getJSArgumentsNeeded(): Int = 1
 
+    @Suppress("DEPRECATION")
     abstract fun extractArgument(
         jsInstance: JSInstance,
         jsArguments: ReadableArray,
@@ -157,6 +161,7 @@ internal class JavaMethodWrapper(
         "$startIndex"
       }
 
+  @Suppress("DEPRECATION")
   override fun invoke(jsInstance: JSInstance, parameters: ReadableArray) {
     val traceName = moduleWrapper.name + "." + method.name
     SystraceMessage.beginSection(TRACE_TAG_REACT, "callJavaModuleMethod")
@@ -240,6 +245,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_BOOLEAN: ArgumentExtractor<Boolean> =
         object : ArgumentExtractor<Boolean>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -249,6 +255,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_DOUBLE: ArgumentExtractor<Double> =
         object : ArgumentExtractor<Double>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -258,6 +265,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_FLOAT: ArgumentExtractor<Float> =
         object : ArgumentExtractor<Float>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -267,6 +275,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_INTEGER: ArgumentExtractor<Int> =
         object : ArgumentExtractor<Int>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -276,6 +285,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_STRING: ArgumentExtractor<String> =
         object : ArgumentExtractor<String>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -285,6 +295,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_ARRAY: ArgumentExtractor<ReadableArray> =
         object : ArgumentExtractor<ReadableArray>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -294,6 +305,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_DYNAMIC: ArgumentExtractor<Dynamic> =
         object : ArgumentExtractor<Dynamic>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -303,6 +315,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_MAP: ArgumentExtractor<ReadableMap> =
         object : ArgumentExtractor<ReadableMap>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -312,6 +325,7 @@ internal class JavaMethodWrapper(
 
     private val ARGUMENT_EXTRACTOR_CALLBACK: ArgumentExtractor<Callback> =
         object : ArgumentExtractor<Callback>() {
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,
@@ -321,7 +335,7 @@ internal class JavaMethodWrapper(
                 null
               } else {
                 val id = jsArguments.getDouble(atIndex).toInt()
-                CallbackImpl(jsInstance, id)
+                @Suppress("DEPRECATION") CallbackImpl(jsInstance, id)
               }
         }
 
@@ -329,6 +343,7 @@ internal class JavaMethodWrapper(
         object : ArgumentExtractor<Promise>() {
           override fun getJSArgumentsNeeded(): Int = 2
 
+          @Suppress("DEPRECATION")
           override fun extractArgument(
               jsInstance: JSInstance,
               jsArguments: ReadableArray,

@@ -17,7 +17,7 @@ import '@react-native/js-polyfills/error-guard';
 
 import mock from './mock';
 
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 Object.defineProperties(global, {
   __DEV__: {
     configurable: true,
@@ -43,7 +43,7 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value: {
-      // $FlowIgnore[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       now: jest.fn(Date.now),
     },
     writable: true,
@@ -68,6 +68,17 @@ Object.defineProperties(global, {
     value: global,
     writable: true,
   },
+});
+
+/**
+ * Prettier v3 uses import (cjs/mjs) file formats that jest-runtime does not
+ * support. To work around this we need to bypass the jest module system by
+ * using the orginal node `require` function.
+ */
+jest.mock('prettier', () => {
+  // $FlowExpectedError[underconstrained-implicit-instantiation]
+  const module = jest.requireActual('module');
+  return module.prototype.require(require.resolve('prettier'));
 });
 
 // $FlowFixMe[incompatible-call] - `./mocks/AppState` is incomplete.

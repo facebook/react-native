@@ -7,6 +7,8 @@
 
 #import "RCTWrapperExampleViewController.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <RCTWrapper/RCTWrapper.h>
 
 #import "RCTWrapperExampleView.h"
@@ -21,3 +23,5 @@
 @end
 
 RCT_WRAPPER_FOR_VIEW_CONTROLLER(RCTWrapperExampleViewController)
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

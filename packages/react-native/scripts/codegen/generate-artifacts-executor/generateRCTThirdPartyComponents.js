@@ -45,7 +45,7 @@ function generateRCTThirdPartyComponents(
   codegenLog(`Generated artifact: ${finalPathH}`);
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
-  let componentsInLibraries = {} /*:: as {[string]: Array<$FlowFixMe>} */;
+  let componentsInLibraries /*: {[string]: Array<$FlowFixMe>} */ = {};
 
   const componentLibraries = libraries.filter(({config, libraryPath}) => {
     if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
@@ -54,7 +54,7 @@ function generateRCTThirdPartyComponents(
     return true;
   });
 
-  const librariesToCrawl = {} /*:: as {[string]: $FlowFixMe} */;
+  const librariesToCrawl /*: {[string]: $FlowFixMe} */ = {};
 
   // Using new API explicitly or not using any config field to define components.
   const componentLibrariesUsingNewApi = [];

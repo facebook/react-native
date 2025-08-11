@@ -9,8 +9,10 @@ package com.facebook.react.views.scroll
 
 import android.graphics.Rect
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import com.facebook.common.logging.FLog
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.views.virtual.VirtualViewMode
 import java.util.*
 
@@ -45,22 +47,44 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
   return true
 }
 
-internal class VirtualViewContainerState(private val scrollView: ViewGroup) :
-    ReactScrollViewHelper.ScrollListener {
+internal class VirtualViewContainerState {
 
-  private val prerenderRatio: Int = 1
+  private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
+
   private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
   private val emptyRect: Rect = Rect()
   private val visibleRect: Rect = Rect()
   private val prerenderRect: Rect = Rect()
+  private val onWindowFocusChangeListener =
+      if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
+        ViewTreeObserver.OnWindowFocusChangeListener {
+          debugLog("onWindowFocusChanged")
+          updateModes()
+        }
+      } else {
+        null
+      }
 
-  init {
-    ReactScrollViewHelper.addScrollListener(this)
+  private val scrollView: ViewGroup
+
+  constructor(scrollView: ViewGroup) {
+    this.scrollView = scrollView
+    if (onWindowFocusChangeListener != null) {
+      scrollView.viewTreeObserver.addOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
   }
 
-  public fun add(virtualView: VirtualView) {
-    assert(virtualViews.add(virtualView)) {
-      "Attempting to add duplicate VirtualView: ${virtualView.virtualViewID}"
+  public fun cleanup() {
+    if (onWindowFocusChangeListener != null) {
+      scrollView.viewTreeObserver.removeOnWindowFocusChangeListener(onWindowFocusChangeListener)
+    }
+  }
+
+  public fun onChange(virtualView: VirtualView) {
+    if (virtualViews.add(virtualView)) {
+      debugLog("add", { "virtualViewID=${virtualView.virtualViewID}" })
+    } else {
+      debugLog("update", { "virtualViewID=${virtualView.virtualViewID}" })
     }
     updateModes(virtualView)
   }
@@ -69,35 +93,13 @@ internal class VirtualViewContainerState(private val scrollView: ViewGroup) :
     assert(virtualViews.remove(virtualView)) {
       "Attempting to remove non-existent VirtualView: ${virtualView.virtualViewID}"
     }
+    debugLog("remove", { "virtualViewID=${virtualView.virtualViewID}" })
   }
 
-  // ReactScrollViewHelper.ScrollListener.onLayout
-  // Emitted from ScrollView's onLayout
-  override fun onLayout(scrollView: ViewGroup?) {
-    // ReactScrollViewHelper is global
-    if (this.scrollView == scrollView) {
-      debugLog("ReactScrollViewHelper.onLayout")
-      updateModes()
-    }
-  }
-
-  // ReactScrollViewHelper.ScrollListener.onScroll
-  // Emitted from ScrollView's onLayout
-  override fun onScroll(
-      scrollView: ViewGroup?,
-      scrollEventType: ScrollEventType?,
-      xVelocity: Float,
-      yVelocity: Float
-  ) {
-    // ReactScrollViewHelper is global
-    if (this.scrollView == scrollView) {
-      debugLog("ReactScrollViewHelper.onScroll")
-      updateModes()
-    }
-  }
-
-  public fun update(virtualView: VirtualView) {
-    updateModes(virtualView)
+  // Called on ScrollView onLayout or onScroll
+  public fun updateState() {
+    debugLog("updateState")
+    updateModes()
   }
 
   private fun updateModes(virtualView: VirtualView? = null) {
@@ -110,17 +112,34 @@ internal class VirtualViewContainerState(private val scrollView: ViewGroup) :
     val virtualViewsIt = if (virtualView != null) listOf(virtualView) else virtualViews
     virtualViewsIt.forEach { vv ->
       val rect = vv.containerRelativeRect
+
+      var mode = VirtualViewMode.Hidden
+      var thresholdRect = emptyRect
       when {
+        rect.isEmpty -> {}
         rectsOverlap(rect, visibleRect) -> {
-          vv.onModeChange(VirtualViewMode.Visible, visibleRect)
+          thresholdRect = visibleRect
+          if (onWindowFocusChangeListener != null) {
+            if (scrollView.hasWindowFocus()) {
+              mode = VirtualViewMode.Visible
+            } else {
+              mode = VirtualViewMode.Prerender
+            }
+          } else {
+            mode = VirtualViewMode.Visible
+          }
         }
         rectsOverlap(rect, prerenderRect) -> {
-          vv.onModeChange(VirtualViewMode.Prerender, prerenderRect)
+          mode = VirtualViewMode.Prerender
+          thresholdRect = prerenderRect
         }
-        else -> {
-          vv.onModeChange(VirtualViewMode.Hidden, emptyRect)
-        }
+        else -> {}
       }
+
+      debugLog(
+          "updateModes",
+          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" })
+      vv.onModeChange(mode, thresholdRect)
     }
   }
 }
@@ -130,7 +149,7 @@ private val IS_DEBUG_BUILD =
     ReactBuildConfig.DEBUG || ReactBuildConfig.IS_INTERNAL_BUILD || ReactBuildConfig.ENABLE_PERFETTO
 
 internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
-  if (IS_DEBUG_BUILD) {
+  if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
     FLog.d("$DEBUG_TAG:$subtag", block())
   }
 }

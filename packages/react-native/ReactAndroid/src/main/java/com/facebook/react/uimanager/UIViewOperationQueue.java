@@ -49,6 +49,8 @@ import java.util.Map;
  * for operations queue to save on allocations
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIViewOperationQueue {
 
   static {

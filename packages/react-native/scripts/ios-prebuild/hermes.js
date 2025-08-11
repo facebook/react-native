@@ -126,11 +126,15 @@ type HermesEngineSourceType =
   | 'download_prebuilt_nightly_tarball'
 */
 
-const HermesEngineSourceTypes = {
-    LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
-    DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
-    DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
-  } /*:: as const */;
+const HermesEngineSourceTypes /*:{
+  +DOWNLOAD_PREBUILD_TARBALL: "download_prebuild_tarball",
+  +DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: "download_prebuilt_nightly_tarball",
+  +LOCAL_PREBUILT_TARBALL: "local_prebuilt_tarball"
+} */ = {
+  LOCAL_PREBUILT_TARBALL: 'local_prebuilt_tarball',
+  DOWNLOAD_PREBUILD_TARBALL: 'download_prebuild_tarball',
+  DOWNLOAD_PREBUILT_NIGHTLY_TARBALL: 'download_prebuilt_nightly_tarball',
+};
 
 /**
  * Checks if the Hermes artifacts are already downloaded and up to date with the specified version.

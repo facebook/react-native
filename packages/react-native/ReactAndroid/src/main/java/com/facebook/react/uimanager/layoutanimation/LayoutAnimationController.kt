@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.util.SparseArray
@@ -29,6 +31,9 @@ import javax.annotation.concurrent.NotThreadSafe
  */
 @NotThreadSafe
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public open class LayoutAnimationController {
   private val layoutCreateAnimation: AbstractLayoutAnimation = LayoutCreateAnimation()
   private val layoutUpdateAnimation: AbstractLayoutAnimation = LayoutUpdateAnimation()

@@ -12,6 +12,7 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
 #include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -73,6 +74,27 @@ class HostAgent final {
   class Impl;
 
   std::unique_ptr<Impl> impl_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular InstanceTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording.
+ */
+class HostTracingAgent : tracing::TargetTracingAgent {
+ public:
+  explicit HostTracingAgent(tracing::TraceRecordingState& state);
+
+  /**
+   * Registers the InstanceTarget with this tracing agent.
+   */
+  void setTracedInstance(InstanceTarget* instanceTarget);
+
+ private:
+  std::shared_ptr<InstanceTracingAgent> instanceTracingAgent_{nullptr};
 };
 
 } // namespace facebook::react::jsinspector_modern

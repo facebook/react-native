@@ -86,10 +86,15 @@ void addAncestorsToUpdateList(
  * license).
  */
 void UIManager::updateShadowTree(
-    const std::unordered_map<Tag, folly::dynamic>& tagToProps) {
+    std::unordered_map<Tag, folly::dynamic>&& tagToProps) {
   const auto& contextContainer = *contextContainer_;
 
-  std::unordered_map<Tag, folly::dynamic> remainingTagToProps = tagToProps;
+  auto remainingTagToProps = std::move(tagToProps);
+
+  if (delegate_ != nullptr) {
+    delegate_->uiManagerDidUpdateShadowTree(remainingTagToProps);
+  }
+
   getShadowTreeRegistry().enumerate([&](const ShadowTree& shadowTree,
                                         bool& stop) {
     if (remainingTagToProps.empty()) {
@@ -219,10 +224,6 @@ void UIManager::updateShadowTree(
       LOG(ERROR) << "Root ShadowNode has not been cloned";
     }
   });
-
-  if (delegate_ != nullptr) {
-    delegate_->uiManagerDidUpdateShadowTree(tagToProps);
-  }
 }
 
 } // namespace facebook::react

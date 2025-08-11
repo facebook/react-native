@@ -48,11 +48,6 @@ const argv = yargs
     coerce: platform => platform.toLowerCase(),
     choices: ['ios', 'android'],
   })
-  .option('h', {
-    alias: 'hermes',
-    type: 'boolean',
-    default: true,
-  })
   .option('c', {
     alias: 'ciToken',
     type: 'string',
@@ -80,9 +75,7 @@ async function testRNTesterIOS(
   onReleaseBranch /*: boolean */,
 ) {
   console.info(
-    `We're going to test the ${
-      argv.hermes === true ? 'Hermes' : 'JSC'
-    } version of RNTester iOS with the new Architecture enabled`,
+    `We're going to test the 'Hermes' version of RNTester iOS with the new Architecture enabled`,
   );
 
   // if everything succeeded so far, we can launch Metro and the app
@@ -98,25 +91,15 @@ async function testRNTesterIOS(
       'RNTester.app',
     );
     exec(`rm -rf ${appOutputFolder}`);
-    if (argv.hermes === true) {
-      // download hermes App
-      const hermesAppUrl = await ciArtifacts.artifactURLForHermesRNTesterApp();
-      const hermesAppZipPath = path.join(
-        ciArtifacts.baseTmpPath(),
-        'RNTesterAppHermes.zip',
-      );
-      ciArtifacts.downloadArtifact(hermesAppUrl, hermesAppZipPath);
-      exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
-    } else {
-      // download JSC app
-      const hermesAppUrl = await ciArtifacts.artifactURLForJSCRNTesterApp();
-      const hermesAppZipPath = path.join(
-        ciArtifacts.baseTmpPath(),
-        'RNTesterAppJSC.zip',
-      );
-      ciArtifacts.downloadArtifact(hermesAppUrl, hermesAppZipPath);
-      exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
-    }
+
+    // download hermes App
+    const hermesAppUrl = await ciArtifacts.artifactURLForHermesRNTesterApp();
+    const hermesAppZipPath = path.join(
+      ciArtifacts.baseTmpPath(),
+      'RNTesterAppHermes.zip',
+    );
+    ciArtifacts.downloadArtifact(hermesAppUrl, hermesAppZipPath);
+    exec(`unzip ${hermesAppZipPath} -d ${appOutputFolder}`);
 
     // boot device
     const bootedDevice = String(
@@ -130,21 +113,26 @@ async function testRNTesterIOS(
 
     // install app on device
     exec(`xcrun simctl install booted ${appOutputFolder}`);
-
-    // launch the app on iOS simulator
-    exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
   } else {
     exec(
-      `USE_HERMES=${
-        argv.hermes === true ? 1 : 0
-      } CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
+      `USE_HERMES=1 CI=${onReleaseBranch.toString()} RCT_NEW_ARCH_ENABLED=1 bundle exec pod install --ansi`,
     );
 
-    // launch the app on iOS simulator
+    // build the app on iOS simulator
     exec(
-      'npx react-native run-ios --scheme RNTester --simulator "iPhone 15 Pro"',
+      'xcodebuild -workspace RNTesterPods.xcworkspace -scheme RNTester -sdk "iphonesimulator" -destination "generic/platform=iOS Simulator" -derivedDataPath "/tmp/RNTesterBuild"',
     );
+    // boot device
+    exec('xcrun simctl boot "iPhone 16 Pro"');
+    // install app on device
+    exec(
+      'xcrun simctl install booted "/tmp/RNTesterBuild/Build/Products/Debug-iphonesimulator/RNTester.app"',
+    );
+    // bring iOS simulator to the front
+    exec('open -a simulator');
   }
+  // launch the app on iOS simulator
+  exec('xcrun simctl launch booted com.meta.RNTester.localDevelopment');
 }
 
 /**
@@ -320,26 +308,13 @@ async function testRNTestProject(
     'reactNativeArchitectures=arm64-v8a',
     'android/gradle.properties',
   );
-  const hermesEnabled = (await argv).hermes === true;
-
-  // Update gradle properties to set Hermes as false
-  if (!hermesEnabled) {
-    sed(
-      '-i',
-      'hermesEnabled=true',
-      'hermesEnabled=false',
-      'android/gradle.properties',
-    );
-  }
 
   if (argv.platform === 'ios') {
     // doing the pod install here so that it's easier to play around RNTestProject
     cd('ios');
     exec('bundle install');
     exec(
-      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        hermesEnabled ? 1 : 0
-      } bundle exec pod install --ansi`,
+      `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=1 bundle exec pod install --ansi`,
     );
 
     cd('..');
@@ -370,10 +345,10 @@ async function main() {
   const onReleaseBranch = branchName.endsWith('-stable');
 
   let ghaArtifacts = await setupGHAArtifacts(
-    // $FlowIgnoreError[prop-missing]
+    // $FlowFixMe[prop-missing]
     argv.ciToken,
     branchName,
-    // $FlowIgnoreError[prop-missing]
+    // $FlowFixMe[prop-missing]
     argv.useLastSuccessfulPipeline,
   );
 

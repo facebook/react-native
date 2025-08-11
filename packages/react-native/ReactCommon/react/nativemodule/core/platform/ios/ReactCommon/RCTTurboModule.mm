@@ -26,6 +26,8 @@
 #import <objc/runtime.h>
 #import <atomic>
 #import <iostream>
+#import <mutex>
+
 #import <sstream>
 #import <vector>
 
@@ -284,44 +286,77 @@ ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodN
                 {rt, args[0].getObject(rt).getFunction(rt), std::move(jsInvoker)});
             __block std::optional<AsyncCallback<>> reject(
                 {rt, args[1].getObject(rt).getFunction(rt), std::move(jsInvoker)});
+            __block std::shared_ptr<std::mutex> mutex = std::make_shared<std::mutex>();
 
             RCTPromiseResolveBlock resolveBlock = ^(id result) {
-              if (!resolve || !reject) {
-                if (resolveWasCalled) {
-                  RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
+              std::optional<AsyncCallback<>> localResolve;
+              bool alreadyResolved = false;
+              bool alreadyRejected = false;
+              {
+                std::lock_guard<std::mutex> lock(*mutex);
+                if (!resolve || !reject) {
+                  alreadyResolved = resolveWasCalled;
+                  alreadyRejected = !resolveWasCalled;
                 } else {
-                  RCTLogError(
-                      @"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+                  resolveWasCalled = YES;
+                  localResolve = std::move(resolve);
+                  resolve = std::nullopt;
+                  reject = std::nullopt;
                 }
+              }
+
+              if (alreadyResolved) {
+                RCTLogError(@"%s: Tried to resolve a promise more than once.", moduleMethod.c_str());
                 return;
               }
 
-              resolve->call([result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+              if (alreadyRejected) {
+                RCTLogError(@"%s: Tried to resolve a promise after it's already been rejected.", moduleMethod.c_str());
+                return;
+              }
+
+              localResolve->call([result](jsi::Runtime &rt, jsi::Function &jsFunction) {
                 jsFunction.call(rt, convertObjCObjectToJSIValue(rt, result));
               });
-
-              resolveWasCalled = YES;
-              resolve = std::nullopt;
-              reject = std::nullopt;
             };
 
             RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
-              if (!resolve || !reject) {
-                if (resolveWasCalled) {
-                  RCTLogError(@"%s: Tried to reject a promise after it's already been resolved.", moduleMethod.c_str());
+              std::optional<AsyncCallback<>> localReject;
+              bool alreadyResolved = false;
+              bool alreadyRejected = false;
+              {
+                std::lock_guard<std::mutex> lock(*mutex);
+                if (!resolve || !reject) {
+                  alreadyResolved = resolveWasCalled;
+                  alreadyRejected = !resolveWasCalled;
                 } else {
-                  RCTLogError(@"%s: Tried to reject a promise more than once.", moduleMethod.c_str());
+                  resolveWasCalled = NO;
+                  localReject = std::move(reject);
+                  reject = std::nullopt;
+                  resolve = std::nullopt;
                 }
+              }
+
+              if (alreadyResolved) {
+                RCTLogError(
+                    @"%s: Tried to reject a promise after it's already been resolved. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
+                return;
+              }
+
+              if (alreadyRejected) {
+                RCTLogError(
+                    @"%s: Tried to reject a promise more than once. Message: %s",
+                    moduleMethod.c_str(),
+                    message.UTF8String);
                 return;
               }
 
               NSDictionary *jsErrorDetails = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-              reject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
+              localReject->call([jsErrorDetails](jsi::Runtime &rt, jsi::Function &jsFunction) {
                 jsFunction.call(rt, convertJSErrorDetailsToJSRuntimeError(rt, jsErrorDetails));
               });
-              resolveWasCalled = NO;
-              resolve = std::nullopt;
-              reject = std::nullopt;
             };
 
             invokeCopy(resolveBlock, rejectBlock);

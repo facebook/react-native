@@ -66,7 +66,7 @@ internal class IntBufferBatchMountItem(
           TAG, "Skipping batch of MountItems; no SurfaceMountingManager found for [%d].", surfaceId)
       return
     }
-    if (surfaceMountingManager.isStopped()) {
+    if (surfaceMountingManager.isStopped) {
       FLog.e(TAG, "Skipping batch of MountItems; was stopped [%d].", surfaceId)
       return
     }

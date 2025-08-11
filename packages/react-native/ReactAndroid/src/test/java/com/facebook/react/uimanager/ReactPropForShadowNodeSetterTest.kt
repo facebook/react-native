@@ -73,7 +73,7 @@ class ReactPropForShadowNodeSetterTest {
     init {
       setViewClassName("ShadowViewUnderTest")
       val context = BridgeReactContext(RuntimeEnvironment.getApplication())
-      setThemedContext(ThemedReactContext(context, context, null, -1))
+      themedContext = ThemedReactContext(context, context, null, -1)
     }
 
     @ReactProp(name = "boolProp")

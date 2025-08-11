@@ -197,7 +197,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setBorderStyle(view: View, borderStyle: BorderStyle?): Unit {
+  public fun setBorderStyle(view: View, borderStyle: BorderStyle?) {
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
       ensureBorderDrawable(view).borderStyle = borderStyle
     } else {
@@ -215,7 +215,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setOutlineColor(view: View, @ColorInt outlineColor: Int?): Unit {
+  public fun setOutlineColor(view: View, @ColorInt outlineColor: Int?) {
     if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
       return
     }
@@ -255,7 +255,7 @@ public object BackgroundStyleApplicator {
   public fun getOutlineStyle(view: View): OutlineStyle? = getOutlineDrawable(view)?.outlineStyle
 
   @JvmStatic
-  public fun setOutlineWidth(view: View, width: Float): Unit {
+  public fun setOutlineWidth(view: View, width: Float) {
     if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
       return
     }
@@ -267,7 +267,7 @@ public object BackgroundStyleApplicator {
   public fun getOutlineWidth(view: View): Float? = getOutlineDrawable(view)?.outlineOffset
 
   @JvmStatic
-  public fun setBoxShadow(view: View, shadows: List<BoxShadow>): Unit {
+  public fun setBoxShadow(view: View, shadows: List<BoxShadow>) {
     if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC) {
       return
     }
@@ -321,7 +321,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setBoxShadow(view: View, shadows: ReadableArray?): Unit {
+  public fun setBoxShadow(view: View, shadows: ReadableArray?) {
     if (shadows == null) {
       BackgroundStyleApplicator.setBoxShadow(view, emptyList())
       return
@@ -335,7 +335,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun setFeedbackUnderlay(view: View, drawable: Drawable?): Unit {
+  public fun setFeedbackUnderlay(view: View, drawable: Drawable?) {
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
 
       ensureCompositeBackgroundDrawable(view).withNewFeedbackUnderlay(drawable)
@@ -345,7 +345,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun clipToPaddingBox(view: View, canvas: Canvas): Unit {
+  public fun clipToPaddingBox(view: View, canvas: Canvas) {
     if (ReactNativeFeatureFlags.enableNewBackgroundAndBorderDrawables()) {
       val drawingRect = Rect()
       view.getDrawingRect(drawingRect)
@@ -405,7 +405,7 @@ public object BackgroundStyleApplicator {
   }
 
   @JvmStatic
-  public fun reset(view: View): Unit {
+  public fun reset(view: View) {
     if (view.background is CompositeBackgroundDrawable) {
       view.background = (view.background as CompositeBackgroundDrawable).originalBackground
     }

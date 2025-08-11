@@ -41,4 +41,6 @@ Pod::Spec.new do |s|
     s.module_name            = "React_timing"
     s.header_mappings_dir  = "./"
   end
+
+  add_dependency(s, "React-debug")
 end

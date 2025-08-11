@@ -567,6 +567,11 @@ export function enqueueModalSizeUpdate(
 
 export const unstable_benchmark = Benchmark;
 
+export type {
+  SuiteOptions as BenchmarkSuiteOptions,
+  TestOptions as BenchmarkTestOptions,
+} from './Benchmark';
+
 /**
  * Quick and dirty polyfills required by tinybench.
  */
@@ -661,21 +666,47 @@ export function createShadowNodeRevisionGetter(
 /**
  * Saves a heap snapshot after forcing garbage collection.
  *
- * The heapsnapshot is saved to the filename supplied as an argument.
- * If a relative path is supplied, it will be saved relative to where you are invoking the tests.
- *
- * The supplied filename should end in .heapsnapshot, and it can be opened
- * using the "Memory" pane in Chrome DevTools.
- *
- * @param filepath - File where JS memory heap will be saved.
+ * It prints the location of the saved snapshot file, which can be opened using
+ * the "Memory" pane in Chrome DevTools.
  */
-export function saveJSMemoryHeapSnapshot(filePath: string): void {
-  if (getConstants().isRunningFromCI) {
+export function takeJSMemoryHeapSnapshot(): void {
+  const constants = getConstants();
+
+  if (constants.isRunningFromCI) {
     throw new Error('Unexpected call to `saveJSMemoryHeapSnapshot` from CI');
   }
 
-  NativeFantom.saveJSMemoryHeapSnapshot(filePath);
+  const filePath = constants.jsHeapSnapshotOutputPathTemplate.replace(
+    constants.jsHeapSnapshotOutputPathTemplateToken,
+    new Date().toISOString(),
+  );
+
+  try {
+    NativeFantom.saveJSMemoryHeapSnapshot(filePath);
+  } catch (nativeError: mixed) {
+    let errorMessage = 'Error saving JS heap snapshot.';
+    if (
+      nativeError instanceof Error &&
+      nativeError.message.includes(
+        "Cannot create heap snapshots if Hermes isn't built with memory instrumentation.",
+      )
+    ) {
+      // We would generally use an error with nativeError as cause, but our infra
+      // doesn't support that yet (it expects a `cause` property on the error with
+      // a very specific shape).
+      errorMessage +=
+        ' If you want to take JS heap snapshots in optimized builds, ' +
+        'please call Fantom with FANTOM_ENABLE_MEMORY_INSTRUMENTATION=1 ' +
+        '(only works locally with Buck).';
+    }
+
+    throw new Error(errorMessage, {cause: nativeError});
+  }
+
+  console.info(`💾 JS heap snapshot saved to ${filePath}\n`);
 }
+
+export * from './HighResTimeStampMock';
 
 function runLogBoxCheck() {
   if (isLogBoxCheckEnabled && LogBox.isInstalled()) {

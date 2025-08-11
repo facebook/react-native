@@ -2,7 +2,7 @@
  * This file is generated, do not edit.
  * @generated
  *
- * @file_count 1206
+ * @file_count 1208
  * @generate-command: node tools/api/public-api.js
  */
 
@@ -628,8 +628,9 @@ class LazyVector {
     return _size;
   }
   const_reference at(size_type pos) const {
-    if (!(pos < _size))
+    if (!(pos < _size)) {
       throw std::out_of_range("out of range");
+    }
     return _convert(_v[pos]);
   }
   const_reference operator[](size_type pos) const {
@@ -3192,7 +3193,6 @@ RCT_EXTERN NSString *RCTMD5Hash(NSString *string);
 RCT_EXTERN BOOL RCTIsMainQueue(void);
 RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
-RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context);
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
@@ -3893,9 +3893,9 @@ RCT_EXTERN BOOL RCTDevLoadingViewGetEnabled(void);
 
 
 /// @src {packages/react-native/React/DevSupport/RCTInspectorNetworkHelper.h}:
-typedef facebook::react::jsinspector_modern::NetworkRequestListener RCTInspectorNetworkListener;
-typedef facebook::react::jsinspector_modern::ScopedExecutor<RCTInspectorNetworkListener> RCTInspectorNetworkExecutor;
-typedef facebook::react::jsinspector_modern::LoadNetworkResourceRequest RCTInspectorLoadNetworkResourceRequest;
+using RCTInspectorNetworkListener = facebook::react::jsinspector_modern::NetworkRequestListener;
+using RCTInspectorNetworkExecutor = facebook::react::jsinspector_modern::ScopedExecutor<RCTInspectorNetworkListener>;
+using RCTInspectorLoadNetworkResourceRequest = facebook::react::jsinspector_modern::LoadNetworkResourceRequest;
 @interface RCTInspectorNetworkHelper : NSObject
 - (instancetype)init;
 - (void)loadNetworkResourceWithParams:(const RCTInspectorLoadNetworkResourceRequest &)params
@@ -4203,15 +4203,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 NS_ASSUME_NONNULL_END
 
-/// @src {packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewAccessibilityElement.h}:
-/// @dep {packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.h}
-NS_ASSUME_NONNULL_BEGIN
-@interface RCTViewAccessibilityElement : UIAccessibilityElement
-@property (readonly) RCTViewComponentView *view;
-- (instancetype)initWithView:(RCTViewComponentView *)view;
-@end
-NS_ASSUME_NONNULL_END
-
 /// @src {packages/react-native/React/Fabric/Mounting/ComponentViews/View/RCTViewComponentView.h}:
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
@@ -4241,6 +4232,16 @@ NS_ASSUME_NONNULL_END
 /// @src {packages/react-native/React/Fabric/Mounting/ComponentViews/VirtualView/RCTVirtualViewComponentView.h}:
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTVirtualViewComponentView : RCTViewComponentView
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
+@end
+NS_ASSUME_NONNULL_END
+
+/// @src {packages/react-native/React/Fabric/Mounting/ComponentViews/VirtualViewExperimental/RCTVirtualViewExperimentalComponentView.h}:
+NS_ASSUME_NONNULL_BEGIN
+@interface RCTVirtualViewExperimentalComponentView : RCTViewComponentView
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
@@ -4355,7 +4356,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTMountingManager : NSObject
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
-- (void)setContextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+- (void)setContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 - (void)attachSurfaceToView:(UIView *)view surfaceId:(facebook::react::SurfaceId)surfaceId;
 - (void)detachSurfaceFromView:(UIView *)view surfaceId:(facebook::react::SurfaceId)surfaceId;
 - (void)scheduleTransaction:(std::shared_ptr<const facebook::react::MountingCoordinator>)mountingCoordinator;
@@ -4620,7 +4621,7 @@ RCT_EXTERN void setLocalizationLanguagePack(NSDictionary<NSString *, NSString *>
 @end
 
 /// @src {packages/react-native/React/Fabric/RCTPrimitives.h}:
-typedef NSInteger ReactTag;
+using ReactTag = NSInteger;
 
 /// @src {packages/react-native/React/Fabric/RCTScheduler.h}:
 NS_ASSUME_NONNULL_BEGIN
@@ -4668,10 +4669,10 @@ NS_ASSUME_NONNULL_END
 /// @src {packages/react-native/React/Fabric/RCTSurfacePresenter.h}:
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter : NSObject
-- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
-@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) std::shared_ptr<const facebook::react::ContextContainer> contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
 - (BOOL)suspend;
 - (BOOL)resume;
@@ -4698,7 +4699,7 @@ NS_ASSUME_NONNULL_BEGIN
 facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge);
 @interface RCTSurfacePresenterBridgeAdapter : NSObject
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-              contextContainer:(facebook::react::ContextContainer::Shared)contextContainer;
+              contextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer;
 @property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;
 @property (nonatomic, weak) RCTBridge *bridge;
 @end
@@ -4706,7 +4707,7 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/RCTSurfaceRegistry.h}:
 NS_ASSUME_NONNULL_BEGIN
-typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
+using RCTSurfaceEnumeratorBlock = void (^)(NSEnumerator<RCTFabricSurface *> *_Nonnull __strong);
 @interface RCTSurfaceRegistry : NSObject
 - (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block;
 - (void)registerSurface:(RCTFabricSurface *)surface;
@@ -6625,15 +6626,13 @@ class JReactNativeFeatureFlagsCxxInterop
       "Lcom/facebook/react/internal/featureflags/ReactNativeFeatureFlagsCxxInterop;";
   static bool commonTestFlag(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool animatedShouldSignalBatch(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool cxxNativeAnimatedEnabled(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool cxxNativeAnimatedRemoveJsSync(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool disableMainQueueSyncDispatchIOS(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool disableMountItemReorderingAndroid(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool disableOldAndroidAttachmentMetricsWorkarounds(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool disableTextLayoutManagerCacheAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6653,6 +6652,8 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableDoubleMeasurementFixAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableEagerMainQueueModulesOnIOS(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableEagerRootViewAttachment(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableFabricLogs(
@@ -6667,6 +6668,10 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableIOSViewClipToPaddingBox(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableImagePrefetchingAndroid(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool enableImmediateUpdateModeForContentOffsetChanges(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableInteropViewManagerClassLookUpOptimizationIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableLayoutAnimationsOnAndroid(
@@ -6674,8 +6679,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableLayoutAnimationsOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableMainQueueCoordinatorOnIOS(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableEagerMainQueueModulesOnIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableModuleArgumentNSNullConversionIOS(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6690,8 +6693,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enablePropsUpdateReconciliationAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableResourceTimingAPI(
-      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-  static bool enableSynchronousStateUpdates(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool enableViewCulling(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6717,6 +6718,12 @@ class JReactNativeFeatureFlagsCxxInterop
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static double preparedTextCacheSize(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool preventShadowTreeCommitExhaustionWithLocking(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool releaseImageDataWhenConsumed(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool skipActivityIdentityAssertionOnHostPause(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool traceTurboModulePromiseRejectionsOnAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool updateRuntimeShadowNodeReferencesOnCommit(
@@ -6724,6 +6731,10 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool useAlwaysAvailableJSErrorHandling(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool useFabricInterop(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool useNativeEqualsInNativeReadableArrayAndroid(
+      facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+  static bool useNativeTransformHelperAndroid(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
   static bool useNativeViewConfigsInBridgelessMode(
       facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
@@ -6908,6 +6919,51 @@ class CxxSharedModuleWrapper : public CxxModuleWrapperBase {
 };
 } // namespace facebook::react
 
+/// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/InspectorNetworkReporter.h}:
+namespace facebook::react {
+class InspectorNetworkReporter
+    : public jni::HybridClass<InspectorNetworkReporter> {
+ public:
+  static constexpr auto kJavaDescriptor =
+      "Lcom/facebook/react/modules/network/InspectorNetworkReporter;";
+  static void reportRequestStart(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jni::alias_ref<jstring> requestUrl,
+      jni::alias_ref<jstring> requestMethod,
+      jni::alias_ref<jni::JMap<jstring, jstring>> requestHeaders,
+      jni::alias_ref<jstring> requestBody,
+      jlong encodedDataLength);
+  static void reportConnectionTiming(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jni::alias_ref<jni::JMap<jstring, jstring>> headers);
+  static void reportResponseStart(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jni::alias_ref<jstring> requestUrl,
+      jint responseStatus,
+      jni::alias_ref<jni::JMap<jstring, jstring>> responseHeaders,
+      jlong encodedDataLength);
+  static void
+  reportDataReceived(jni::alias_ref<jclass>, jint requestId, jint dataLength);
+  static void reportResponseEnd(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jlong encodedDataLength);
+  static void maybeStoreResponseBody(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jni::alias_ref<jstring> body,
+      jboolean base64Encoded);
+  static void maybeStoreResponseBodyIncremental(
+      jni::alias_ref<jclass>,
+      jint requestId,
+      jni::alias_ref<jstring> data);
+  static void registerNatives();
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/InspectorNetworkRequestListener.h}:
 namespace facebook::react {
 class InspectorNetworkRequestListener
@@ -6953,6 +7009,9 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   static auto constexpr* kJavaDescriptor =
       "Lcom/facebook/react/bridge/NativeArray;";
   jni::local_ref<jstring> toString();
+  const folly::dynamic& getArray() const {
+    return array_;
+  }
   __attribute__((visibility("default"))) folly::dynamic consume();
   bool isConsumed;
   static void registerNatives();
@@ -7011,6 +7070,7 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
@@ -7359,6 +7419,9 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   static auto constexpr* kJavaDescriptor =
       "Lcom/facebook/react/bridge/NativeArray;";
   jni::local_ref<jstring> toString();
+  const folly::dynamic& getArray() const {
+    return array_;
+  }
   __attribute__((visibility("default"))) folly::dynamic consume();
   bool isConsumed;
   static void registerNatives();
@@ -7498,6 +7561,7 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
@@ -7532,6 +7596,9 @@ class NativeArray : public jni::HybridClass<NativeArray> {
   static auto constexpr* kJavaDescriptor =
       "Lcom/facebook/react/bridge/NativeArray;";
   jni::local_ref<jstring> toString();
+  const folly::dynamic& getArray() const {
+    return array_;
+  }
   __attribute__((visibility("default"))) folly::dynamic consume();
   bool isConsumed;
   static void registerNatives();
@@ -7568,6 +7635,7 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
@@ -7641,6 +7709,16 @@ class SafeReleaseJniRef {
 };
 } // namespace facebook::react
 
+/// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/TransformHelper.h}:
+namespace facebook::react {
+class TransformHelper : public jni::JavaClass<TransformHelper> {
+ public:
+  static auto constexpr* kJavaDescriptor =
+      "Lcom/facebook/react/uimanager/TransformHelper;";
+  static void registerNatives();
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/WritableNativeArray.h}:
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/NativeArray.h}
 namespace facebook::react {
@@ -7683,6 +7761,7 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
@@ -7754,6 +7833,7 @@ class ReadableNativeArray
       "Lcom/facebook/react/bridge/ReadableNativeArray;";
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };
@@ -8333,6 +8413,30 @@ enum class SchedulerPriority : int {
 };
 }
 
+/// @src {packages/react-native/ReactCommon/callinvoker/ReactCommon/tests/TestCallInvoker.h}:
+namespace facebook::react {
+class TestCallInvoker : public CallInvoker {
+ public:
+  explicit TestCallInvoker(std::shared_ptr<facebook::jsi::Runtime> runtime)
+      : runtime_(runtime) {}
+  void invokeAsync(CallFunc&& func) noexcept override {
+    queue_.push_back(std::move(func));
+  }
+  void invokeSync(CallFunc&& func) override {
+    func(*runtime_);
+  }
+  void flushQueue() {
+    while (!queue_.empty()) {
+      queue_.front()(*runtime_);
+      queue_.pop_front();
+      runtime_->drainMicrotasks();
+    }
+  }
+};
+  std::shared_ptr<facebook::jsi::Runtime> runtime_{};
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactCommon/cxxreact/CxxModule.h}:
 namespace facebook::react {
 }
@@ -8342,8 +8446,8 @@ class CxxModule {
   class SyncTagType {};
 
  public:
-  typedef std::function<std::unique_ptr<CxxModule>()> Provider;
-  typedef std::function<void(std::vector<folly::dynamic>)> Callback;
+  using Provider = std::function<std::unique_ptr<CxxModule>()>;
+  using Callback = std::function<void(std::vector<folly::dynamic>)>;
   constexpr static AsyncTagType AsyncTag = AsyncTagType();
   constexpr static SyncTagType SyncTag = SyncTagType();
   struct Method {
@@ -8948,8 +9052,8 @@ R jsArgN(
 namespace detail {
 template <typename T>
 struct is_dynamic {
-  typedef typename std::
-      enable_if<std::is_assignable<folly::dynamic, T>::value, T>::type type;
+  using type = typename std::
+      enable_if<std::is_assignable<folly::dynamic, T>::value, T>::type;
 };
 } // namespace detail
 template <typename T>
@@ -11795,7 +11899,7 @@ struct ConsoleMessage {
 namespace facebook::react::jsinspector_modern {
 struct ExecutionContextDescription {
   int32_t id{};
-  std::string origin{""};
+  std::string origin;
   std::string name{"<anonymous>"};
   std::optional<std::string> uniqueId;
 };
@@ -12850,7 +12954,7 @@ struct InspectorTargetCapabilities {
   bool nativeSourceCodeFetching = false;
   bool prefersFuseboxFrontend = false;
 };
-const folly::dynamic targetCapabilitiesToDynamic(
+folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities);
 struct InspectorPageDescription {
   const int id;
@@ -14330,13 +14434,6 @@ class InspectorFlagOverridesGuard {
 };
 } // namespace facebook::react::jsinspector_modern
 
-/// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/CdpTracing.h}:
-namespace facebook::react::jsinspector_modern {
-struct DevToolsTrackEntryPayload {
-  std::string track;
-};
-} // namespace facebook::react::jsinspector_modern
-
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}:
 namespace facebook::react::jsinspector_modern::tracing {
 using ConsoleTimeStampEntry = std::variant<HighResTimeStamp, std::string>;
@@ -14350,6 +14447,7 @@ enum class ConsoleTimeStampColor {
   Tertiary,
   TertiaryLight,
   TertiaryDark,
+  Warning,
   Error,
 };
 inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color) {
@@ -14372,6 +14470,8 @@ inline std::string consoleTimeStampColorToString(ConsoleTimeStampColor color) {
       return "tertiary-light";
     case ConsoleTimeStampColor::TertiaryDark:
       return "tertiary-dark";
+    case ConsoleTimeStampColor::Warning:
+      return "warning";
     case ConsoleTimeStampColor::Error:
       return "error";
     default:
@@ -14398,6 +14498,8 @@ inline std::optional<ConsoleTimeStampColor> getConsoleTimeStampColorFromString(
     return ConsoleTimeStampColor::TertiaryLight;
   } else if (str == "tertiary-dark") {
     return ConsoleTimeStampColor::TertiaryDark;
+  } else if (str == "warning") {
+    return ConsoleTimeStampColor::Warning;
   } else if (str == "error") {
     return ConsoleTimeStampColor::Error;
   } else {
@@ -14438,7 +14540,6 @@ struct InstanceTracingProfile {
 } // namespace facebook::react::jsinspector_modern::tracing
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/PerformanceTracer.h}:
-/// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/CdpTracing.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h}
@@ -14455,12 +14556,16 @@ class PerformanceTracer {
       const std::function<void(const folly::dynamic& eventsChunk)>&
           resultCallback,
       uint16_t chunkSize);
-  void reportMark(const std::string_view& name, HighResTimeStamp start);
+  folly::dynamic collectEvents(uint16_t chunkSize);
+  void reportMark(
+      const std::string_view& name,
+      HighResTimeStamp start,
+      folly::dynamic&& detail = nullptr);
   void reportMeasure(
       const std::string_view& name,
       HighResTimeStamp start,
       HighResDuration duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      folly::dynamic&& detail = nullptr);
   void reportTimeStamp(
       std::string name,
       std::optional<ConsoleTimeStampEntry> start = std::nullopt,
@@ -14663,7 +14768,6 @@ struct RuntimeSamplingProfile {
 } // namespace facebook::react::jsinspector_modern::tracing
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h}:
-/// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/CdpTracing.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/ConsoleTimeStamp.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEvent.h}
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/tracing/TraceEventProfile.h}
@@ -14680,12 +14784,16 @@ class PerformanceTracer {
       const std::function<void(const folly::dynamic& eventsChunk)>&
           resultCallback,
       uint16_t chunkSize);
-  void reportMark(const std::string_view& name, HighResTimeStamp start);
+  folly::dynamic collectEvents(uint16_t chunkSize);
+  void reportMark(
+      const std::string_view& name,
+      HighResTimeStamp start,
+      folly::dynamic&& detail = nullptr);
   void reportMeasure(
       const std::string_view& name,
       HighResTimeStamp start,
       HighResDuration duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      folly::dynamic&& detail = nullptr);
   void reportTimeStamp(
       std::string name,
       std::optional<ConsoleTimeStampEntry> start = std::nullopt,
@@ -14914,7 +15022,7 @@ enum ReactNativeLogLevel {
   ReactNativeLogLevelError = 3,
   ReactNativeLogLevelFatal = 4
 };
-typedef void (*reactnativelogfunctype)(ReactNativeLogLevel, const char*);
+using reactnativelogfunctype = void (*)(ReactNativeLogLevel, const char*);
 extern "C" {
 void set_react_native_logfunc(reactnativelogfunctype newlogfunc);
 void react_native_log_info(const char* text);
@@ -16074,24 +16182,21 @@ struct Bridging<std::weak_ptr<T>> {
 
 /// @src {packages/react-native/ReactCommon/react/bridging/tests/BridgingTest.h}:
 namespace facebook::react {
-class TestCallInvoker : public CallInvoker {
- public:
-  void invokeAsync(CallFunc&& fn) noexcept override {
-    queue_.push_back(std::move(fn));
-  }
-  void invokeSync(CallFunc&&) override {
-    FAIL() << "JSCallInvoker does not support invokeSync()";
-  }
-};
 class BridgingTest : public ::testing::Test {
+ public:
+  BridgingTest(BridgingTest& other) = delete;
+  BridgingTest& operator=(BridgingTest& other) = delete;
+  BridgingTest(BridgingTest&& other) = delete;
+  BridgingTest& operator=(BridgingTest&& other) = delete;
+
  protected:
   BridgingTest()
-      : invoker(std::make_shared<TestCallInvoker>()),
-        runtime(hermes::makeHermesRuntime(::hermes::vm::RuntimeConfig::Builder()
+      : runtime(hermes::makeHermesRuntime(::hermes::vm::RuntimeConfig::Builder()
                                               .withMicrotaskQueue(true)
                                               .build())),
-        rt(*runtime) {}
-  ~BridgingTest() {
+        rt(*runtime),
+        invoker(std::make_shared<TestCallInvoker>(runtime)) {}
+  ~BridgingTest() override {
     LongLivedObjectCollection::get(rt).clear();
   }
   void TearDown() override {
@@ -16105,15 +16210,11 @@ class BridgingTest : public ::testing::Test {
     return eval(("(" + js + ")").c_str()).getObject(rt).getFunction(rt);
   }
   void flushQueue() {
-    while (!invoker->queue_.empty()) {
-      invoker->queue_.front()(*runtime);
-      invoker->queue_.pop_front();
-      rt.drainMicrotasks();
-    }
+    invoker->flushQueue();
   }
-  std::shared_ptr<TestCallInvoker> invoker;
-  std::unique_ptr<jsi::Runtime> runtime;
+  std::shared_ptr<jsi::Runtime> runtime;
   jsi::Runtime& rt;
+  std::shared_ptr<TestCallInvoker> invoker;
 };
 } // namespace facebook::react
 
@@ -16124,9 +16225,6 @@ class BridgingTest : public ::testing::Test {
 
 
 /// @src {packages/react-native/ReactCommon/react/debug/react_native_expect.h}:
-
-
-/// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/CallbackWrapper.h}:
 
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/CxxTurboModuleUtils.h}:
@@ -16141,9 +16239,6 @@ void registerCxxModuleToGlobalModuleMap(
     std::function<std::shared_ptr<TurboModule>(
         std::shared_ptr<CallInvoker> jsInvoker)> moduleProviderFunc);
 } // namespace facebook::react
-
-/// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/LongLivedObject.h}:
-
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboCxxModule.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModule.h}
@@ -16687,6 +16782,23 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
     __attribute__((deprecated("Use 'installJSIBindingsWithRuntime:callInvoker:' instead")));
 @end
 
+/// @src {packages/react-native/ReactCommon/react/nativemodule/core/tests/TurboModuleTestFixture.h}:
+namespace facebook::react {
+template <typename T, typename... Args>
+class TurboModuleTestFixture : public ::testing::Test {
+ public:
+  explicit TurboModuleTestFixture(Args... args)
+      : runtime_(facebook::hermes::makeHermesRuntime()),
+        jsInvoker_(std::make_shared<TestCallInvoker>(runtime_)),
+        module_(std::make_shared<T>(jsInvoker_, std::forward<Args>(args)...)) {}
+
+ protected:
+  std::shared_ptr<jsi::Runtime> runtime_{};
+  std::shared_ptr<TestCallInvoker> jsInvoker_{};
+  std::shared_ptr<T> module_;
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactCommon/react/nativemodule/cputime/CPUTime.h}:
 namespace facebook::react {
 inline double getCPUTimeNanos() {
@@ -16736,6 +16848,12 @@ class DevToolsRuntimeSettingsModule
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/dom/NativeDOM.h}:
 namespace facebook::react {
+using MeasureOnSuccessCallback =
+    SyncCallback<void(double, double, double, double, double, double)>;
+using MeasureInWindowOnSuccessCallback =
+    SyncCallback<void(double, double, double, double)>;
+using MeasureLayoutOnSuccessCallback =
+    SyncCallback<void(double, double, double, double)>;
 class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
  public:
   NativeDOM(std::shared_ptr<CallInvoker> jsInvoker);
@@ -16792,17 +16910,17 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
   void measure(
       jsi::Runtime& rt,
       std::shared_ptr<const ShadowNode> shadowNode,
-      jsi::Function callback);
+      const MeasureOnSuccessCallback& callback);
   void measureInWindow(
       jsi::Runtime& rt,
       std::shared_ptr<const ShadowNode> shadowNode,
-      jsi::Function callback);
+      const MeasureInWindowOnSuccessCallback& callback);
   void measureLayout(
       jsi::Runtime& rt,
       std::shared_ptr<const ShadowNode> shadowNode,
       std::shared_ptr<const ShadowNode> relativeToShadowNode,
       jsi::Function onFail,
-      jsi::Function onSuccess);
+      const MeasureLayoutOnSuccessCallback& onSuccess);
   void setNativeProps(
       jsi::Runtime& rt,
       std::shared_ptr<const ShadowNode> shadowNode,
@@ -16846,11 +16964,10 @@ class NativeReactNativeFeatureFlags
       "NativeReactNativeFeatureFlagsCxx";
   bool commonTestFlag(jsi::Runtime& runtime);
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
-  bool animatedShouldSignalBatch(jsi::Runtime& runtime);
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
-  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+  bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
@@ -16860,6 +16977,7 @@ class NativeReactNativeFeatureFlags
   bool enableCustomFocusSearchOnClippedElementsAndroid(jsi::Runtime& runtime);
   bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
+  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
   bool enableFabricLogs(jsi::Runtime& runtime);
   bool enableFabricRenderer(jsi::Runtime& runtime);
@@ -16867,12 +16985,13 @@ class NativeReactNativeFeatureFlags
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
+  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+  bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
   bool enableInteropViewManagerClassLookUpOptimizationIOS(
       jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
-  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
   bool enableNetworkEventReporting(jsi::Runtime& runtime);
@@ -16880,7 +16999,6 @@ class NativeReactNativeFeatureFlags
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
-  bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
   bool enableViewCulling(jsi::Runtime& runtime);
   bool enableViewRecycling(jsi::Runtime& runtime);
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
@@ -16893,10 +17011,15 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
   double preparedTextCacheSize(jsi::Runtime& runtime);
+  bool preventShadowTreeCommitExhaustionWithLocking(jsi::Runtime& runtime);
+  bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
+  bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
   bool updateRuntimeShadowNodeReferencesOnCommit(jsi::Runtime& runtime);
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
   bool useFabricInterop(jsi::Runtime& runtime);
+  bool useNativeEqualsInNativeReadableArrayAndroid(jsi::Runtime& runtime);
+  bool useNativeTransformHelperAndroid(jsi::Runtime& runtime);
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
@@ -16961,15 +17084,6 @@ class NativeIntersectionObserver
     : public NativeIntersectionObserverCxxSpec<NativeIntersectionObserver> {
  public:
   NativeIntersectionObserver(std::shared_ptr<CallInvoker> jsInvoker);
-  [[deprecated("Please use observeV2")]]
-  void observe(
-      jsi::Runtime& runtime,
-      NativeIntersectionObserverObserveOptions options);
-  [[deprecated("Please use unobserveV2")]]
-  void unobserve(
-      jsi::Runtime& runtime,
-      IntersectionObserverObserverId intersectionObserverId,
-      std::shared_ptr<const ShadowNode> targetShadowNode);
   jsi::Object observeV2(
       jsi::Runtime& runtime,
       NativeIntersectionObserverObserveOptions options);
@@ -17104,35 +17218,6 @@ std::shared_ptr<TurboModule> SampleTurboModuleSpec_ModuleProvider(
 /// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/RCTSampleTurboModulePlugin.h}:
 /// @dep {packages/react-native/ReactCommon/react/nativemodule/samples/platform/ios/ReactCommon/RCTSampleTurboModulePlugin.h}
 
-/// @src {packages/react-native/ReactCommon/react/nativemodule/samples/platform/macos/ReactCommon/SampleTurboCxxModuleLegacyImpl.h}:
-namespace facebook::react {
-class SampleTurboCxxModuleLegacyImpl
-    : public facebook::xplat::module::CxxModule {
- public:
-  SampleTurboCxxModuleLegacyImpl();
-  std::string getName() override;
-  std::map<std::string, folly::dynamic> getConstants() override;
-  std::vector<facebook::xplat::module::CxxModule::Method> getMethods() override;
-  void voidFunc();
-  bool getBool(bool arg);
-  double getEnum(double arg);
-  double getNumber(double arg);
-  std::string getString(const std::string& arg);
-  folly::dynamic getArray(const folly::dynamic& arg);
-  folly::dynamic getObject(const folly::dynamic& arg);
-  folly::dynamic getUnsafeObject(const folly::dynamic& arg);
-  double getRootTag(double arg);
-  folly::dynamic
-  getValue(double x, const std::string& y, const folly::dynamic& z);
-  void getValueWithCallback(
-      const facebook::xplat::module::CxxModule::Callback& callback);
-  void getValueWithPromise(
-      bool error,
-      const facebook::xplat::module::CxxModule::Callback& resolve,
-      const facebook::xplat::module::CxxModule::Callback& reject);
-};
-} // namespace facebook::react
-
 /// @src {packages/react-native/ReactCommon/react/nativemodule/webperformance/NativePerformance.h}:
 namespace facebook::react {
 using NativePerformancePerformanceObserverCallback = AsyncCallback<>;
@@ -17178,27 +17263,18 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
  public:
   NativePerformance(std::shared_ptr<CallInvoker> jsInvoker);
   HighResTimeStamp now(jsi::Runtime& rt);
-  HighResTimeStamp markWithResult(
+  void reportMark(
       jsi::Runtime& rt,
       std::string name,
-      std::optional<HighResTimeStamp> startTime);
-  std::tuple<HighResTimeStamp, HighResDuration> measure(
-      jsi::Runtime& rt,
-      std::string name,
-      std::optional<HighResTimeStamp> startTime,
-      std::optional<HighResTimeStamp> endTime,
-      std::optional<HighResDuration> duration,
-      std::optional<std::string> startMark,
-      std::optional<std::string> endMark);
-  [[deprecated("This method is deprecated. Use the measure method instead.")]]
-  std::tuple<HighResTimeStamp, HighResDuration> measureWithResult(
+      HighResTimeStamp time,
+      jsi::Value entry);
+  void reportMeasure(
       jsi::Runtime& rt,
       std::string name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      std::optional<HighResDuration> duration,
-      std::optional<std::string> startMark,
-      std::optional<std::string> endMark);
+      HighResDuration duration,
+      jsi::Value entry);
+  std::optional<double> getMarkTime(jsi::Runtime& rt, std::string name);
   void clearMarks(
       jsi::Runtime& rt,
       std::optional<std::string> entryName = std::nullopt);
@@ -17231,7 +17307,6 @@ class NativePerformance : public NativePerformanceCxxSpec<NativePerformance> {
   std::unordered_map<std::string, double> getSimpleMemoryInfo(jsi::Runtime& rt);
   std::unordered_map<std::string, double> getReactNativeStartupTiming(
       jsi::Runtime& rt);
-  void setCurrentTimeStampForTesting(jsi::Runtime& rt, HighResTimeStamp ts);
   void clearEventCountsForTesting(jsi::Runtime& rt);
 };
 } // namespace facebook::react
@@ -17563,9 +17638,6 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
   HighResTimeStamp getCurrentTimeStamp() const;
-  void setTimeStampProvider(std::function<HighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
   uint32_t getDroppedEntriesCount(PerformanceEntryType type) const noexcept;
   const std::unordered_map<std::string, uint32_t>& getEventCounts() const {
@@ -17574,15 +17646,16 @@ class PerformanceEntryReporter {
   void clearEventCounts();
   std::optional<HighResTimeStamp> getMarkTime(
       const std::string& markName) const;
-  PerformanceMark reportMark(
-      const std::string& name,
-      const std::optional<HighResTimeStamp>& startTime = std::nullopt);
-  PerformanceMeasure reportMeasure(
+  using UserTimingDetailProvider = std::function<folly::dynamic()>;
+  void reportMark(
       const std::string& name,
       HighResTimeStamp startTime,
-      HighResTimeStamp endTime,
-      const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-          trackMetadata = std::nullopt);
+      UserTimingDetailProvider&& detailProvider = nullptr);
+  void reportMeasure(
+      const std::string& name,
+      HighResTimeStamp startTime,
+      HighResDuration duration,
+      UserTimingDetailProvider&& detailProvider = nullptr);
   void reportEvent(
       std::string name,
       HighResTimeStamp startTime,
@@ -17591,7 +17664,7 @@ class PerformanceEntryReporter {
       HighResTimeStamp processingEnd,
       uint32_t interactionId);
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
-  PerformanceResourceTiming reportResourceTiming(
+  void reportResourceTiming(
       const std::string& url,
       HighResTimeStamp fetchStart,
       HighResTimeStamp requestStart,
@@ -17643,8 +17716,12 @@ class PerformanceEntryReporter {
     }
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
-  void traceMark(const PerformanceMark& entry) const;
-  void traceMeasure(const PerformanceMeasure& entry) const;
+  void traceMark(
+      const PerformanceMark& entry,
+      UserTimingDetailProvider&& detailProvider) const;
+  void traceMeasure(
+      const PerformanceMeasure& entry,
+      UserTimingDetailProvider&& detailProvider) const;
 };
 } // namespace facebook::react
 
@@ -17755,7 +17832,7 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate)
       : LayoutAnimationKeyFrameManager(
             runtimeExecutor,
@@ -17777,7 +17854,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate);
   void uiManagerDidConfigureNextLayoutAnimation(
       jsi::Runtime& runtime,
@@ -19404,7 +19481,7 @@ namespace facebook::react {
 using ComponentRegistryFactory =
     std::function<SharedComponentDescriptorRegistry(
         const EventDispatcher::Weak& eventDispatcher,
-        const ContextContainer::Shared& contextContainer)>;
+        const std::shared_ptr<const ContextContainer>& contextContainer)>;
 ComponentRegistryFactory getDefaultComponentRegistryFactory();
 } // namespace facebook::react
 
@@ -19465,7 +19542,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptorRegistry(
       ComponentDescriptorParameters parameters,
       const ComponentDescriptorProviderRegistry& providerRegistry,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
   const ComponentDescriptor*
   findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN(
       ComponentHandle componentHandle) const;
@@ -19477,7 +19554,7 @@ class ComponentDescriptorRegistry {
   ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
 };
   const ComponentDescriptorProviderRegistry& providerRegistry_;
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react
 
@@ -19567,7 +19644,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
     return traits;
   }
-  void setImageManager(const SharedImageManager& imageManager);
+  void setImageManager(const std::shared_ptr<ImageManager>& imageManager);
   static ImageState initialStateData(
       const Props::Shared& props,
       const ShadowNodeFamily::Shared&,
@@ -19988,7 +20065,7 @@ namespace facebook::react {
 class AndroidProgressBarMeasurementsManager {
  public:
   AndroidProgressBarMeasurementsManager(
-      const ContextContainer::Shared& contextContainer)
+      const std::shared_ptr<const ContextContainer>& contextContainer)
       : contextContainer_(contextContainer) {}
   Size measure(
       SurfaceId surfaceId,
@@ -20316,6 +20393,7 @@ class ScrollViewState final {
   Point contentOffset;
   Rect contentBoundingRect;
   int scrollAwayPaddingTop;
+  bool disableViewCulling{false};
   Size getContentSize() const;
 };
 } // namespace facebook::react
@@ -20550,7 +20628,7 @@ namespace facebook::react {
 class AndroidSwitchMeasurementsManager {
  public:
   AndroidSwitchMeasurementsManager(
-      const ContextContainer::Shared& contextContainer)
+      const std::shared_ptr<const ContextContainer>& contextContainer)
       : contextContainer_(contextContainer) {}
   Size measure(SurfaceId surfaceId, LayoutConstraints layoutConstraints) const;
 };
@@ -22873,13 +22951,7 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   BlendMode mixBlendMode{BlendMode::Normal};
   Isolation isolation{Isolation::Auto};
   Transform transform{};
-  TransformOrigin transformOrigin{
-      {
-          ValueUnit{50.0f, UnitType::Percent},
-          ValueUnit{50.0f, UnitType::Percent},
-      },
-      0.0f,
-  };
+  TransformOrigin transformOrigin{};
   BackfaceVisibility backfaceVisibility{};
   bool shouldRasterize{};
   std::optional<int> zIndex{};
@@ -22894,6 +22966,10 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
   Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;
+  static Transform resolveTransform(
+      const Size& frameSize,
+      const Transform& transform,
+      const TransformOrigin& transformOrigin);
 };
 } // namespace facebook::react
 
@@ -27790,6 +27866,31 @@ class VirtualViewShadowNode final : public ConcreteViewShadowNode<
 };
 } // namespace facebook::react
 
+/// @src {packages/react-native/ReactCommon/react/renderer/components/virtualviewexperimental/VirtualViewExperimentalComponentDescriptor.h}:
+namespace facebook::react {
+using VirtualViewExperimentalComponentDescriptor =
+    ConcreteComponentDescriptor<VirtualViewExperimentalShadowNode>;
+}
+
+/// @src {packages/react-native/ReactCommon/react/renderer/components/virtualviewexperimental/VirtualViewExperimentalShadowNode.h}:
+namespace facebook::react {
+constexpr const char VirtualViewExperimentalComponentName[] =
+    "VirtualViewExperimental";
+class VirtualViewExperimentalShadowNode final
+    : public ConcreteViewShadowNode<
+          VirtualViewExperimentalComponentName,
+          VirtualViewExperimentalProps,
+          VirtualViewEventEmitter> {
+ public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::Unstable_uncullableView);
+    return traits;
+  }
+};
+} // namespace facebook::react
+
 /// @src {packages/react-native/ReactCommon/react/renderer/consistency/ScopedShadowTreeRevisionLock.h}:
 namespace facebook::react {
 class ScopedShadowTreeRevisionLock {
@@ -27874,7 +27975,7 @@ class ComponentDescriptor {
 class ComponentDescriptorParameters {
  public:
   EventDispatcher::Weak eventDispatcher;
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
   ComponentDescriptor::Flavor flavor;
 };
 } // namespace facebook::react
@@ -28118,13 +28219,20 @@ class ConcreteState : public State {
   const Data& getData() const {
     return *static_cast<const Data*>(data_.get());
   }
-  void updateState(Data&& newData) const {
-    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
-      return std::make_shared<const Data>(data);
-    });
+  void updateState(
+      Data&& newData,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
+    updateState(
+        [data{std::move(newData)}](const Data&) -> SharedData {
+          return std::make_shared<const Data>(data);
+        },
+        updateMode);
   }
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback) const {
+      std::function<StateData::Shared(const Data& oldData)> callback,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
     auto family = family_.lock();
     if (!family) {
       return;
@@ -28134,7 +28242,7 @@ class ConcreteState : public State {
           react_native_assert(oldData);
           return callback(*static_cast<const Data*>(oldData.get()));
         }};
-    family->dispatchRawState(std::move(stateUpdate));
+    family->dispatchRawState(std::move(stateUpdate), updateMode);
   }
 };
 } // namespace facebook::react
@@ -28212,7 +28320,9 @@ class EventDispatcher {
   void dispatchEvent(RawEvent&& rawEvent) const;
   void experimental_flushSync() const;
   void dispatchUniqueEvent(RawEvent&& rawEvent) const;
-  void dispatchStateUpdate(StateUpdate&& stateUpdate) const;
+  void dispatchStateUpdate(
+      StateUpdate&& stateUpdate,
+      EventQueue::UpdateMode updateMode) const;
   void addListener(std::shared_ptr<const EventListener> listener) const;
   void removeListener(
       const std::shared_ptr<const EventListener>& listener) const;
@@ -28335,12 +28445,18 @@ using EventPipeConclusion = std::function<void(jsi::Runtime& runtime)>;
 namespace facebook::react {
 class EventQueue {
  public:
+  enum class UpdateMode {
+    Asynchronous,
+    unstable_Immediate,
+  };
   EventQueue(
       EventQueueProcessor eventProcessor,
       std::unique_ptr<EventBeat> eventBeat);
   void enqueueEvent(RawEvent&& rawEvent) const;
   void enqueueUniqueEvent(RawEvent&& rawEvent) const;
-  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
+  void enqueueStateUpdate(
+      StateUpdate&& stateUpdate,
+      UpdateMode updateMode = UpdateMode::Asynchronous) const;
   void experimental_flushSync() const;
 
  protected:
@@ -29058,7 +29174,7 @@ class ShadowNode : public Sealable,
   Tag getTag() const;
   SurfaceId getSurfaceId() const;
   const ComponentDescriptor& getComponentDescriptor() const;
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
   const State::Shared& getState() const;
   State::Shared getMostRecentState() const;
   int getOrderIndex() const;
@@ -29136,7 +29252,9 @@ class ShadowNodeFamily final : public jsi::NativeState {
   std::shared_ptr<const State> getMostRecentState() const;
   void setMostRecentState(const std::shared_ptr<const State>& state) const;
   void setMounted() const;
-  void dispatchRawState(StateUpdate&& stateUpdate) const;
+  void dispatchRawState(
+      StateUpdate&& stateUpdate,
+      EventQueue::UpdateMode updateMode) const;
   mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
   Tag getTag() const;
   jsi::Value getInstanceHandle(jsi::Runtime& runtime) const;
@@ -29182,6 +29300,7 @@ class ShadowNodeTraits {
     KeyboardFocusable = 1 << 11,
     Unstable_uncullableView = 1 << 12,
     Unstable_uncullableTrace = 1 << 13,
+    DirtyYogaNode = 1 << 14,
   };
   inline void set(Trait trait) {
     traits_ = ShadowNodeTraits::Trait(traits_ | trait);
@@ -30438,9 +30557,9 @@ constexpr uint8_t hexToNumeric(std::string_view hex, HexColorType hexType) {
     result += value;
   }
   if (hexType == HexColorType::Short) {
-    return result * 16 + result;
+    return static_cast<uint8_t>(result * 16 + result);
   } else {
-    return result;
+    return static_cast<uint8_t>(result);
   }
 }
 constexpr bool isHexDigit(char c) {
@@ -33733,7 +33852,7 @@ class ElementFragment final {
 /// @src {packages/react-native/ReactCommon/react/renderer/element/testUtils.h}:
 namespace facebook::react {
 inline ComponentBuilder simpleComponentBuilder(
-    ContextContainer::Shared contextContainer = nullptr) {
+    std::shared_ptr<const ContextContainer> contextContainer = nullptr) {
   ComponentDescriptorProviderRegistry componentDescriptorProviderRegistry{};
   auto eventDispatcher = EventDispatcher::Shared{};
   auto componentDescriptorRegistry =
@@ -33897,10 +34016,10 @@ class SharedColor {
 bool isColorMeaningful(const SharedColor& color) noexcept;
 SharedColor colorFromComponents(ColorComponents components);
 ColorComponents colorComponentsFromColor(SharedColor color);
-uint8_t alphaFromColor(SharedColor color);
-uint8_t redFromColor(SharedColor color);
-uint8_t greenFromColor(SharedColor color);
-uint8_t blueFromColor(SharedColor color);
+uint8_t alphaFromColor(SharedColor color) noexcept;
+uint8_t redFromColor(SharedColor color) noexcept;
+uint8_t greenFromColor(SharedColor color) noexcept;
+uint8_t blueFromColor(SharedColor color) noexcept;
 SharedColor colorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 SharedColor clearColor();
 SharedColor blackColor();
@@ -33955,18 +34074,6 @@ enum class FilterType {
   Sepia,
   DropShadow
 };
-struct DropShadowParams {
-  bool operator==(const DropShadowParams& other) const = default;
-  Float offsetX{};
-  Float offsetY{};
-  Float standardDeviation{};
-  SharedColor color{};
-};
-struct FilterFunction {
-  bool operator==(const FilterFunction& other) const = default;
-  FilterType type{};
-  std::variant<Float, DropShadowParams> parameters{};
-};
 inline FilterType filterTypeFromString(std::string_view filterName) {
   if (filterName == "blur") {
     return FilterType::Blur;
@@ -34016,6 +34123,18 @@ inline std::string toString(const FilterType& filterType) {
       return "dropShadow";
   }
 }
+struct DropShadowParams {
+  bool operator==(const DropShadowParams& other) const = default;
+  Float offsetX{};
+  Float offsetY{};
+  Float standardDeviation{};
+  SharedColor color{};
+};
+struct FilterFunction {
+  bool operator==(const FilterFunction& other) const = default;
+  FilterType type{};
+  std::variant<Float, DropShadowParams> parameters{};
+};
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/renderer/graphics/Geometry.h}:
@@ -34428,7 +34547,7 @@ namespace facebook::react {
 inline bool isZero(Float n) {
   return (n < 0 ? n * (-1) : n) < 0.00001;
 }
-enum class TransformOperationType {
+enum class TransformOperationType : uint8_t {
   Arbitrary,
   Identity,
   Perspective,
@@ -34445,7 +34564,9 @@ struct TransformOperation {
   bool operator==(const TransformOperation& other) const = default;
 };
 struct TransformOrigin {
-  std::array<ValueUnit, 2> xy;
+  std::array<ValueUnit, 2> xy = {
+      ValueUnit(0.0f, UnitType::Undefined),
+      ValueUnit(0.0f, UnitType::Undefined)};
   float z = 0.0f;
   bool operator==(const TransformOrigin& other) const {
     return xy[0] == other.xy[0] && xy[1] == other.xy[1] && z == other.z;
@@ -34468,28 +34589,28 @@ struct Transform {
       const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
-  static Transform Identity();
-  static Transform VerticalInversion();
-  static Transform HorizontalInversion();
-  static Transform Perspective(Float perspective);
-  static Transform Scale(Float factorX, Float factorY, Float factorZ);
-  static Transform Translate(Float x, Float y, Float z);
-  static Transform Skew(Float x, Float y);
-  static Transform RotateX(Float radians);
-  static Transform RotateY(Float radians);
-  static Transform RotateZ(Float radians);
-  static Transform Rotate(Float angleX, Float angleY, Float angleZ);
+  static Transform Identity() noexcept;
+  static Transform VerticalInversion() noexcept;
+  static Transform HorizontalInversion() noexcept;
+  static Transform Perspective(Float perspective) noexcept;
+  static Transform Scale(Float factorX, Float factorY, Float factorZ) noexcept;
+  static Transform Translate(Float x, Float y, Float z) noexcept;
+  static Transform Skew(Float x, Float y) noexcept;
+  static Transform RotateX(Float radians) noexcept;
+  static Transform RotateY(Float radians) noexcept;
+  static Transform RotateZ(Float radians) noexcept;
+  static Transform Rotate(Float angleX, Float angleY, Float angleZ) noexcept;
   static Transform Interpolate(
       Float animationProgress,
       const Transform& lhs,
       const Transform& rhs,
       const Size& size);
-  static bool isVerticalInversion(const Transform& transform);
-  static bool isHorizontalInversion(const Transform& transform);
-  bool operator==(const Transform& rhs) const;
-  bool operator!=(const Transform& rhs) const;
-  Float& at(int i, int j);
-  const Float& at(int i, int j) const;
+  static bool isVerticalInversion(const Transform& transform) noexcept;
+  static bool isHorizontalInversion(const Transform& transform) noexcept;
+  bool operator==(const Transform& rhs) const noexcept;
+  bool operator!=(const Transform& rhs) const noexcept;
+  Float& at(int i, int j) noexcept;
+  const Float& at(int i, int j) const noexcept;
   Transform operator*(const Transform& rhs) const;
   Rect applyWithCenter(const Rect& rect, const Point& center) const;
 };
@@ -35159,10 +35280,9 @@ inline long double floor(long double value) noexcept {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/imagemanager/ImageManager.h}:
 namespace facebook::react {
-using SharedImageManager = std::shared_ptr<ImageManager>;
 class ImageManager {
  public:
-  ImageManager(const ContextContainer::Shared& contextContainer);
+  ImageManager(const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~ImageManager();
   virtual ImageRequest requestImage(
       const ImageSource& imageSource,
@@ -35209,6 +35329,7 @@ class ImageResponse final {
     Completed,
     Failed,
     Cancelled,
+    Consumed,
   };
   ImageResponse(std::shared_ptr<void> image, std::shared_ptr<void> metadata);
   std::shared_ptr<void> getImage() const;
@@ -35277,7 +35398,7 @@ class ImageTelemetry final {
 namespace facebook::react {
 class ImageFetcher {
  public:
-  ImageFetcher(ContextContainer::Shared contextContainer)
+  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer)
       : contextContainer_(std::move(contextContainer)) {}
   ImageRequest requestImage(
       const ImageSource& imageSource,
@@ -35365,6 +35486,7 @@ class ImageRequestParams {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/imagemanager/platform/android/react/renderer/imagemanager/conversions.h}:
 namespace facebook::react {
+namespace {
 inline std::string toString(const ImageResizeMode& value) {
   switch (value) {
     case ImageResizeMode::Cover:
@@ -35381,21 +35503,21 @@ inline std::string toString(const ImageResizeMode& value) {
       return "none";
   }
 }
-constexpr static MapBuffer::Key IS_KEY_URI = 0;
-constexpr static MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_MODE = 2;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_METHOD = 3;
-constexpr static MapBuffer::Key IS_KEY_BLUR_RADIUS = 4;
-constexpr static MapBuffer::Key IS_KEY_VIEW_WIDTH = 5;
-constexpr static MapBuffer::Key IS_KEY_VIEW_HEIGHT = 6;
-constexpr static MapBuffer::Key IS_KEY_RESIZE_MULTIPLIER = 7;
-constexpr static MapBuffer::Key IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS = 8;
-constexpr static MapBuffer::Key IS_KEY_OVERLAY_COLOR = 9;
-constexpr static MapBuffer::Key IS_KEY_TINT_COLOR = 10;
-constexpr static MapBuffer::Key IS_KEY_FADE_DURATION = 11;
-constexpr static MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
-constexpr static MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
-constexpr static MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
+constexpr MapBuffer::Key IS_KEY_URI = 0;
+constexpr MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
+constexpr MapBuffer::Key IS_KEY_RESIZE_MODE = 2;
+constexpr MapBuffer::Key IS_KEY_RESIZE_METHOD = 3;
+constexpr MapBuffer::Key IS_KEY_BLUR_RADIUS = 4;
+constexpr MapBuffer::Key IS_KEY_VIEW_WIDTH = 5;
+constexpr MapBuffer::Key IS_KEY_VIEW_HEIGHT = 6;
+constexpr MapBuffer::Key IS_KEY_RESIZE_MULTIPLIER = 7;
+constexpr MapBuffer::Key IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS = 8;
+constexpr MapBuffer::Key IS_KEY_OVERLAY_COLOR = 9;
+constexpr MapBuffer::Key IS_KEY_TINT_COLOR = 10;
+constexpr MapBuffer::Key IS_KEY_FADE_DURATION = 11;
+constexpr MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
+constexpr MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
+constexpr MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
 inline void serializeImageSource(
     MapBufferBuilder& builder,
     const ImageSource& imageSource) {
@@ -35433,6 +35555,7 @@ inline void serializeImageRequestParams(
       imageRequestParams.loadingIndicatorSource.uri);
   builder.putString(IS_KEY_ANALYTIC_TAG, imageRequestParams.analyticTag);
 }
+} // namespace
 inline MapBuffer serializeImageRequest(
     const ImageSource& imageSource,
     const ImageRequestParams& imageRequestParams) {
@@ -36008,7 +36131,8 @@ class ShadowTree final {
   CommitMode getCommitMode() const;
   CommitStatus tryCommit(
       const ShadowTreeCommitTransaction& transaction,
-      const CommitOptions& commitOptions) const;
+      const CommitOptions& commitOptions,
+      bool hasLocked = false) const;
   CommitStatus commit(
       const ShadowTreeCommitTransaction& transaction,
       const CommitOptions& commitOptions) const;
@@ -37116,7 +37240,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldRemoveEventListener(
       const std::shared_ptr<const EventListener>& listener) final;
   void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
-  ContextContainer::Shared getContextContainer() const;
+  std::shared_ptr<const ContextContainer> getContextContainer() const;
   std::shared_ptr<UIManager> getUIManager() const;
   void reportMount(SurfaceId surfaceId) const;
   void addEventListener(std::shared_ptr<const EventListener> listener);
@@ -37165,7 +37289,7 @@ class SchedulerDelegate {
 /// @src {packages/react-native/ReactCommon/react/renderer/scheduler/SchedulerToolbox.h}:
 namespace facebook::react {
 struct SchedulerToolbox final {
-  ContextContainer::Shared contextContainer;
+  std::shared_ptr<const ContextContainer> contextContainer;
   ComponentRegistryFactory componentRegistryFactory;
   std::optional<RuntimeExecutor> bridgelessBindingsExecutor;
   RuntimeExecutor runtimeExecutor;
@@ -37190,7 +37314,7 @@ class SurfaceHandler {
   SurfaceHandler& operator=(SurfaceHandler&& other) noexcept;
   SurfaceHandler& operator=(const SurfaceHandler& other) noexcept = delete;
   void setContextContainer(
-      ContextContainer::Shared contextContainer) const noexcept;
+      std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
   Status getStatus() const noexcept;
   void start() const noexcept;
   void stop() const noexcept;
@@ -37217,7 +37341,7 @@ class SurfaceHandler {
     folly::dynamic props{};
     LayoutConstraints layoutConstraints{};
     LayoutContext layoutContext{};
-    ContextContainer::Shared contextContainer{};
+    std::shared_ptr<const ContextContainer> contextContainer{};
   };
   struct Link {
     Status status{Status::Unregistered};
@@ -37704,7 +37828,8 @@ namespace facebook::react {
 class TextLayoutManager {
  public:
   using PreparedLayout = SafeReleaseJniRef<jni::global_ref<JPreparedLayout>>;
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -37739,7 +37864,8 @@ class TextLayoutManager {
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  explicit TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   virtual ~TextLayoutManager() = default;
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
@@ -37958,7 +38084,8 @@ inline static UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38145,7 +38272,8 @@ inline static RCTUIColor *_Nullable RCTUIColorFromSharedColor(const facebook::re
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38167,7 +38295,8 @@ class TextLayoutManager {
 namespace facebook::react {
 class TextLayoutManager {
  public:
-  TextLayoutManager(const ContextContainer::Shared& contextContainer);
+  TextLayoutManager(
+      const std::shared_ptr<const ContextContainer>& contextContainer);
   TextLayoutManager(const TextLayoutManager&) = delete;
   TextLayoutManager& operator=(const TextLayoutManager&) = delete;
   TextLayoutManager(TextLayoutManager&&) = delete;
@@ -38348,7 +38477,7 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       const RuntimeExecutor& runtimeExecutor,
-      ContextContainer::Shared contextContainer);
+      std::shared_ptr<const ContextContainer> contextContainer);
   ~UIManager() override;
   void setComponentDescriptorRegistry(
       const SharedComponentDescriptorRegistry& componentDescriptorRegistry);
@@ -38448,7 +38577,7 @@ class UIManager final : public ShadowTreeDelegate {
   std::weak_ptr<UIManagerNativeAnimatedDelegate> nativeAnimatedDelegate_;
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
   mutable std::shared_mutex commitHookMutex_;
   mutable std::vector<UIManagerCommitHook*> commitHooks_;
   mutable std::shared_mutex mountHookMutex_;
@@ -39130,7 +39259,15 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/ReactCommon/react/runtime/platform/macos/ReactCommon/RCTJSThreadManager.h}
 
 /// @src {packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTJscInstance.h}:
-/// @dep {packages/react-native/ReactCommon/react/runtime/platform/macos/ReactCommon/RCTJscInstance.h}
+namespace facebook::react {
+class RCTJscInstance : public JSRuntimeFactory {
+ public:
+  RCTJscInstance();
+  std::unique_ptr<JSRuntime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
+  ~RCTJscInstance() {};
+};
+} // namespace facebook::react
 
 /// @src {packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTLegacyUIManagerConstantsProvider.h}:
 /// @dep {packages/react-native/ReactCommon/react/runtime/platform/macos/ReactCommon/RCTLegacyUIManagerConstantsProvider.h}
@@ -39383,7 +39520,17 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTJSThreadManager.h}
 
 /// @src {packages/react-native/ReactCommon/react/runtime/platform/macos/ReactCommon/RCTJscInstance.h}:
-/// @dep {packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTJscInstance.h}
+namespace facebook {
+namespace react {
+class RCTJscInstance : public JSRuntimeFactory {
+ public:
+  RCTJscInstance();
+  std::unique_ptr<JSRuntime> createJSRuntime(
+      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
+  ~RCTJscInstance() {};
+};
+} // namespace react
+} // namespace facebook
 
 /// @src {packages/react-native/ReactCommon/react/runtime/platform/macos/ReactCommon/RCTLegacyUIManagerConstantsProvider.h}:
 /// @dep {packages/react-native/ReactCommon/react/runtime/platform/ios/ReactCommon/RCTLegacyUIManagerConstantsProvider.h}
@@ -39863,12 +40010,14 @@ class ReactPerfettoLogger {
   static void mark(
       const std::string_view& eventName,
       HighResTimeStamp startTime,
-      const std::optional<std::string_view>& trackName);
+      const std::optional<std::string_view>& trackName = std::nullopt,
+      const std::optional<std::string_view>& trackGroup = std::nullopt);
   static void measure(
       const std::string_view& eventName,
       HighResTimeStamp startTime,
       HighResTimeStamp endTime,
-      const std::optional<std::string_view>& trackName);
+      const std::optional<std::string_view>& trackName = std::nullopt,
+      const std::optional<std::string_view>& trackGroup = std::nullopt);
 };
 } // namespace facebook::react
 
@@ -41544,6 +41693,9 @@ class YG_EXPORT Node : public ::YGNode {
   bool hasErrata(Errata errata) const {
     return config_->hasErrata(errata);
   }
+  bool hasContentsChildren() const {
+    return contentsChildrenCount_ != 0;
+  }
   YGDirtiedFunc getDirtiedFunc() const {
     return dirtiedFunc_;
   }
@@ -41653,11 +41805,9 @@ class YG_EXPORT Node : public ::YGNode {
   void setOwner(Node* owner) {
     owner_ = owner;
   }
-  void setChildren(const std::vector<Node*>& children) {
-    children_ = children;
-  }
   void setConfig(Config* config);
   void setDirty(bool isDirty);
+  void setChildren(const std::vector<Node*>& children);
   void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
@@ -41686,6 +41836,7 @@ class YG_EXPORT Node : public ::YGNode {
   bool removeChild(Node* child);
   void removeChild(size_t index);
   void cloneChildrenIfNeeded();
+  void cloneContentsChildrenIfNeeded();
   void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;
@@ -43838,6 +43989,7 @@ class NativeAnimatedNodesManager {
 };
   DirectManipulationCallback directManipulationCallback_;
   FabricCommitCallback fabricCommitCallback_;
+  std::atomic_bool isRenderCallbackStarted_{false};
   StartOnRenderCallback startOnRenderCallback_;
   StopOnRenderCallback stopOnRenderCallback_;
   std::shared_ptr<EventEmitterListener> eventEmitterListener_{nullptr};
@@ -44563,6 +44715,7 @@ class StyleAnimatedNode final : public AnimatedNode {
     return layoutStyleUpdated_;
   }
 };
+};
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactCxxPlatform/react/renderer/animated/nodes/SubtractionAnimatedNode.h}:
@@ -44836,32 +44989,34 @@ class ReactHost {
       std::shared_ptr<SurfaceDelegate> logBoxSurfaceDelegate = nullptr,
       std::shared_ptr<NativeAnimatedNodesManagerProvider>
           animatedNodesManagerProvider = nullptr,
-      ReactInstance::BindingsInstallFunc bindingsInstallFunc =
-          nullptr) noexcept;
+      ReactInstance::BindingsInstallFunc bindingsInstallFunc = nullptr);
   ReactHost(const ReactHost&) = delete;
   ReactHost& operator=(const ReactHost&) = delete;
   ReactHost(ReactHost&&) noexcept = delete;
   ReactHost& operator=(ReactHost&&) noexcept = delete;
   ~ReactHost() noexcept;
-  bool loadScript(const std::string& bundlePath, const std::string& sourcePath);
+  bool loadScript(
+      const std::string& bundlePath,
+      const std::string& sourcePath) noexcept;
   void startSurface(
       SurfaceId surfaceId,
       const std::string& moduleName,
       const folly::dynamic& initialProps,
       const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext = {});
+      const LayoutContext& layoutContext = {}) noexcept;
   void setSurfaceConstraints(
       SurfaceId surfaceId,
       const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext);
-  void stopSurface(SurfaceId surfaceId);
-  void stopAllSurfaces();
+      const LayoutContext& layoutContext) noexcept;
+  void stopSurface(SurfaceId surfaceId) noexcept;
+  void stopAllSurfaces() noexcept;
   bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
   std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
   void runOnScheduler(std::function<void(Scheduler& scheduler)>&& task) const;
   void runOnRuntimeScheduler(
       std::function<void(jsi::Runtime& runtime)>&& task,
-      SchedulerPriority priority = SchedulerPriority::NormalPriority) const;
+      SchedulerPriority priority =
+          SchedulerPriority::NormalPriority) const noexcept;
   void emitDeviceEvent(folly::dynamic&& args);
 };
   std::unique_ptr<SchedulerDelegate> schedulerDelegate_;

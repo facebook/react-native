@@ -46,6 +46,7 @@ Pod::Spec.new do |s|
   s.dependency "hermes-engine"
   s.dependency "React-jsi"
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
+  add_dependency(s, "React-oscompat")
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)

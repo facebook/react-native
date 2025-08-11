@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import AnExSet from './AnExSet';
 import React from 'react';
 import {
@@ -396,4 +398,4 @@ exports.examples = [
       return <AnExApp />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

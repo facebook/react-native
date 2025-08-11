@@ -21,22 +21,12 @@
 #import <react/renderer/components/virtualview/VirtualViewComponentDescriptor.h>
 #import <react/renderer/components/virtualview/VirtualViewShadowNode.h>
 
+#import "../VirtualViewExperimental/RCTVirtualViewMode.h"
+#import "../VirtualViewExperimental/RCTVirtualViewRenderState.h"
 #import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook;
 using namespace facebook::react;
-
-typedef NS_ENUM(NSInteger, RCTVirtualViewMode) {
-  RCTVirtualViewModeVisible = 0,
-  RCTVirtualViewModePrerender = 1,
-  RCTVirtualViewModeHidden = 2,
-};
-
-typedef NS_ENUM(NSInteger, RCTVirtualViewRenderState) {
-  RCTVirtualViewRenderStateUnknown = 0,
-  RCTVirtualViewRenderStateRendered = 1,
-  RCTVirtualViewRenderStateNone = 2,
-};
 
 /**
  * Checks whether one CGRect overlaps with another CGRect.
@@ -72,8 +62,8 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
 
 @implementation RCTVirtualViewComponentView {
   RCTScrollViewComponentView *_lastParentScrollViewComponentView;
-  std::optional<enum RCTVirtualViewMode> _mode;
-  enum RCTVirtualViewRenderState _renderState;
+  std::optional<RCTVirtualViewMode> _mode;
+  RCTVirtualViewRenderState _renderState;
   std::optional<CGRect> _targetRect;
 }
 
@@ -234,7 +224,7 @@ static BOOL sIsAccessibilityUsed = NO;
     _targetRect = targetRect;
   }
 
-  enum RCTVirtualViewMode newMode;
+  RCTVirtualViewMode newMode;
   CGRect thresholdRect = CGRectMake(
       scrollView.contentOffset.x,
       scrollView.contentOffset.y,
@@ -278,7 +268,7 @@ static BOOL sIsAccessibilityUsed = NO;
            .height = thresholdRect.size.height},
   };
 
-  const std::optional<enum RCTVirtualViewMode> oldMode = _mode;
+  const std::optional<RCTVirtualViewMode> oldMode = _mode;
   _mode = newMode;
 
   switch (newMode) {

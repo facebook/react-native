@@ -79,7 +79,7 @@ function createVersionExportedApis(
           if (t.isTSModuleDeclaration(node) && node.body) {
             const namespaceName = node.id.name;
 
-            // $FlowIgnore[prop-missing]
+            // $FlowFixMe[prop-missing]
             for (const item of node.body.body) {
               if (t.isExportNamedDeclaration(item) && item.specifiers) {
                 for (const specifier of item.specifiers) {
@@ -91,7 +91,7 @@ function createVersionExportedApis(
                     const localName = specifier.local.name;
                     const exportedName = specifier.exported.name;
                     namespaceAliases.set(
-                      // $FlowIgnore[incompatible-type]
+                      // $FlowFixMe[incompatible-type]
                       `${namespaceName}.${exportedName}`,
                       localName,
                     );
@@ -224,8 +224,8 @@ function createVersionExportedApis(
             nodePath.node.specifiers != null
           ) {
             const specifiers = nodePath.node.specifiers.map(specifier => {
-              // $FlowIgnore[incompatible-type] nodePath is refined above
-              // $FlowIgnore[incompatible-use]
+              // $FlowFixMe[incompatible-type] nodePath is refined above
+              // $FlowFixMe[incompatible-use]
               const name: string = specifier.exported.name;
               if (declarations.has(name)) {
                 const hash = generateTypeHash(name);
@@ -245,8 +245,8 @@ function createVersionExportedApis(
               }
               return specifier;
             });
-            // $FlowIgnore[prop-missing]
-            // $FlowIgnore[incompatible-type]
+            // $FlowFixMe[prop-missing]
+            // $FlowFixMe[incompatible-type]
             nodePath.node.specifiers = specifiers;
           }
         }
@@ -359,7 +359,7 @@ function createVersionExportedApis(
 
     // Recursively traverse all properties
     for (const key in node) {
-      // $FlowIgnore[invalid-computed-prop]
+      // $FlowFixMe[invalid-computed-prop]
       const value = node[key];
       if (Array.isArray(value)) {
         value.forEach(item => getTypeReferencesForNode(item, refs));
@@ -386,8 +386,8 @@ function createVersionExportedApis(
         if (current.right && current.right.name) {
           fullName = '.' + current.right.name + fullName;
         }
-        // $FlowIgnore[prop-missing]
-        // $FlowIgnore[incompatible-type]
+        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-type]
         current = current.left;
       }
 

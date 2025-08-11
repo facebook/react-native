@@ -22,6 +22,7 @@ namespace facebook::react::jsinspector_modern {
 
 static constexpr long DEFAULT_BYTES_PER_READ =
     1048576; // 1MB (Chrome v112 default)
+static constexpr unsigned long MAX_BYTES_PER_READ = 10485760; // 10MB
 
 // https://github.com/chromium/chromium/blob/128.0.6593.1/content/browser/devtools/devtools_io_context.cc#L71-L73
 static constexpr std::array kTextMIMETypePrefixes{
@@ -59,7 +60,7 @@ class Stream : public NetworkRequestListener,
   Stream(const Stream& other) = delete;
   Stream& operator=(const Stream& other) = delete;
   Stream(Stream&& other) = default;
-  Stream& operator=(Stream&& other) = default;
+  Stream& operator=(Stream&& other) noexcept = default;
 
   /**
    * Factory method to create a Stream with a callback for the initial result
@@ -72,9 +73,9 @@ class Stream : public NetworkRequestListener,
    */
   static std::shared_ptr<Stream> create(
       VoidExecutor executor,
-      StreamInitCallback initCb) {
+      const StreamInitCallback& initCb) {
     std::shared_ptr<Stream> stream{new Stream(initCb)};
-    stream->setExecutor(executor);
+    stream->setExecutor(std::move(executor));
     return stream;
   }
 
@@ -87,8 +88,7 @@ class Stream : public NetworkRequestListener,
    * with the result of the read, or an error string.
    */
   void read(long maxBytesToRead, const IOReadCallback& callback) {
-    pendingReadRequests_.emplace_back(
-        std::make_tuple(maxBytesToRead, callback));
+    pendingReadRequests_.emplace_back(maxBytesToRead, callback);
     processPending();
   }
 
@@ -404,9 +404,17 @@ void NetworkIOAgent::handleIoRead(const cdp::PreparsedRequest& req) {
         "Invalid params: handle is missing or not a string."));
     return;
   }
-  std::optional<unsigned long> size = std::nullopt;
+  std::optional<int64_t> size = std::nullopt;
   if ((req.params.count("size") != 0u) && req.params.at("size").isInt()) {
     size = req.params.at("size").asInt();
+
+    if (size > MAX_BYTES_PER_READ) {
+      frontendChannel_(cdp::jsonError(
+          requestId,
+          cdp::ErrorCode::InvalidParams,
+          "Invalid params: size cannot be greater than 10MB."));
+      return;
+    }
   }
 
   auto streamId = req.params.at("handle").asString();

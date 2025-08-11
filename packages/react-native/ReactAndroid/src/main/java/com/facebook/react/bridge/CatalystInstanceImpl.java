@@ -48,9 +48,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @DoNotStrip
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
-    BridgeSoLoader.staticInit();
+    ReactNativeJNISoLoader.staticInit();
     LegacyArchitectureLogger.assertLegacyArchitecture(
         "CatalystInstanceImpl", LegacyArchitectureLogLevel.WARNING);
   }
@@ -528,6 +530,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
    * whenever the bridge transitions from idle to busy and vice-versa, where the busy state is
    * defined as there being some non-zero number of calls to JS that haven't resolved via a
    * onBatchComplete call. The listener should be purely passive and not affect application logic.
+   *
+   * @noinspection deprecation
    */
   @Override
   public void addBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {
@@ -537,6 +541,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
   /**
    * Removes a NotThreadSafeBridgeIdleDebugListener previously added with {@link
    * #addBridgeIdleDebugListener}
+   *
+   * @noinspection deprecation
    */
   @Override
   public void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener) {

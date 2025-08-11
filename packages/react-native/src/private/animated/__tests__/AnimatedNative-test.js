@@ -20,11 +20,11 @@ describe('Native Animated', () => {
 
   function importModules() {
     return {
-      // $FlowIgnore[unsafe-getters-setters]
+      // $FlowFixMe[unsafe-getters-setters]
       get Animated() {
         return require('../../../../Libraries/Animated/Animated').default;
       },
-      // $FlowIgnore[unsafe-getters-setters]
+      // $FlowFixMe[unsafe-getters-setters]
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;
       },
@@ -105,7 +105,7 @@ describe('Native Animated', () => {
         expect.any(Number),
         0.5,
       );
-      // $FlowIssue[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       expect(ref.current?.setNativeProps).not.toHaveBeenCalled();
     });
 
@@ -467,7 +467,6 @@ describe('Native Animated', () => {
       );
       const additionCalls =
         // $FlowFixMe[prop-missing]
-        // $FlowFixMe[prop-missing]
         NativeAnimatedModule.createAnimatedNode.mock.calls.filter(
           call => call[1].type === 'addition',
         );
@@ -475,7 +474,6 @@ describe('Native Animated', () => {
       const additionCall = additionCalls[0];
       const additionNodeTag = additionCall[0];
       const additionConnectionCalls =
-        // $FlowFixMe[prop-missing]
         // $FlowFixMe[prop-missing]
         NativeAnimatedModule.connectAnimatedNodes.mock.calls.filter(
           call => call[1] === additionNodeTag,
@@ -1132,8 +1130,8 @@ describe('Native Animated', () => {
 
       // Necessary to simulate the native animation.
       expect(ref.current).not.toBeNull();
-      // $FlowIgnore[cannot-write]
-      // $FlowIgnore[incompatible-use]
+      // $FlowFixMe[cannot-write]
+      // $FlowFixMe[incompatible-use]
       ref.current.setNativeProps = jest.fn();
 
       Animated.timing(opacity, {
@@ -1503,6 +1501,259 @@ describe('Native Animated', () => {
         2,
         propsTag,
         1,
+      );
+    });
+
+    it('creates new props, style and transform nodes at update', async () => {
+      const {Animated} = importModules();
+
+      const opacityA = new Animated.Value(0, {
+        debugID: 'opacityA',
+        useNativeDriver: true,
+      });
+      const opacityB = new Animated.Value(0, {
+        debugID: 'opacityB',
+        useNativeDriver: true,
+      });
+      opacityA.__makeNative();
+      opacityB.__makeNative();
+      const scaleA = new Animated.Value(0, {
+        debugID: 'scaleA',
+        useNativeDriver: true,
+      });
+      const scaleB = new Animated.Value(0, {
+        debugID: 'scaleB',
+        useNativeDriver: true,
+      });
+      scaleA.__makeNative();
+      scaleB.__makeNative();
+
+      expect(NativeAnimatedModule.createAnimatedNode).not.toHaveBeenCalled();
+
+      // 1. First render, both opacity and transform scale are managed by Animated
+      const root = await create(
+        <Animated.View
+          style={{opacity: opacityA, transform: [{scale: scaleA}]}}
+        />,
+      );
+
+      let createAnimatedNodeCalledTimes = 0;
+      let dropAnimatedNodeCalledTimes = 0;
+
+      expect(
+        // $FlowFixMe[prop-missing]
+        NativeAnimatedModule.createAnimatedNode.mock.calls.slice(0, 5),
+      ).toEqual([
+        [1, {debugID: 'opacityA', offset: 0, type: 'value', value: 0}],
+        [4, {debugID: 'scaleA', offset: 0, type: 'value', value: 0}],
+        [
+          3,
+          {
+            debugID: undefined,
+            transforms: [{nodeTag: 4, property: 'scale', type: 'animated'}],
+            type: 'transform',
+          },
+        ],
+        [
+          2,
+          {
+            debugID: undefined,
+            style: {
+              opacity: 1,
+              transform: 3,
+            },
+            type: 'style',
+          },
+        ],
+        [5, {debugID: undefined, props: {style: 2}, type: 'props'}],
+      ]);
+
+      createAnimatedNodeCalledTimes += 5;
+
+      expect(NativeAnimatedModule.dropAnimatedNode).not.toHaveBeenCalled();
+      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).not.toHaveBeenCalled();
+      expect(
+        NativeAnimatedModule.connectAnimatedNodeToView,
+      ).toHaveBeenCalledTimes(1);
+
+      // 2. Update the Animated node to control opacity style
+      await update(
+        root,
+        <Animated.View
+          style={{opacity: opacityB, transform: [{scale: scaleA}]}}
+        />,
+      );
+      jest.runAllTicks();
+
+      expect(
+        // $FlowFixMe[prop-missing]
+        NativeAnimatedModule.createAnimatedNode.mock.calls.slice(5, 9),
+      ).toEqual([
+        [6, {debugID: 'opacityB', offset: 0, type: 'value', value: 0}],
+        // transform node is still recreated even though `scale` is unchanged
+        [
+          8,
+          {
+            debugID: undefined,
+            transforms: [{nodeTag: 4, property: 'scale', type: 'animated'}],
+            type: 'transform',
+          },
+        ],
+        [
+          7,
+          {
+            debugID: undefined,
+            style: {
+              opacity: 6,
+              transform: 8,
+            },
+            type: 'style',
+          },
+        ],
+        [9, {debugID: undefined, props: {style: 7}, type: 'props'}],
+      ]);
+
+      createAnimatedNodeCalledTimes += 4;
+
+      expect(
+        // $FlowFixMe[prop-missing]
+        NativeAnimatedModule.dropAnimatedNode.mock.calls.slice(0, 4),
+      ).toEqual([[1], [3], [2], [5]]);
+
+      dropAnimatedNodeCalledTimes += 4;
+
+      expect(NativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(
+        createAnimatedNodeCalledTimes,
+      );
+      expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(
+        dropAnimatedNodeCalledTimes,
+      );
+
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        NativeAnimatedModule.connectAnimatedNodeToView,
+      ).toHaveBeenCalledTimes(2);
+
+      // 3. Opacity is controlled by React while transform scale is still managed by Animated
+      await update(
+        root,
+        <Animated.View style={{opacity: 1, transform: [{scale: scaleB}]}} />,
+      );
+      jest.runAllTicks();
+
+      expect(
+        // $FlowFixMe[prop-missing]
+        NativeAnimatedModule.createAnimatedNode.mock.calls.slice(9, 13),
+      ).toEqual([
+        [10, {debugID: 'scaleB', offset: 0, type: 'value', value: 0}],
+        [
+          11,
+          {
+            debugID: undefined,
+            transforms: [{nodeTag: 10, property: 'scale', type: 'animated'}],
+            type: 'transform',
+          },
+        ],
+        [
+          12,
+          {
+            debugID: undefined,
+            style: {
+              transform: 11,
+            },
+            type: 'style',
+          },
+        ],
+        [13, {debugID: undefined, props: {style: 12}, type: 'props'}],
+      ]);
+
+      createAnimatedNodeCalledTimes += 4;
+
+      expect(
+        // $FlowFixMe[prop-missing]
+        NativeAnimatedModule.dropAnimatedNode.mock.calls.slice(4, 9),
+      ).toEqual([[6], [4], [8], [7], [9]]);
+
+      dropAnimatedNodeCalledTimes += 5;
+
+      expect(NativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(
+        createAnimatedNodeCalledTimes,
+      );
+      expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(
+        dropAnimatedNodeCalledTimes,
+      );
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        2,
+      );
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toHaveBeenCalledTimes(2);
+      expect(
+        NativeAnimatedModule.connectAnimatedNodeToView,
+      ).toHaveBeenCalledTimes(3);
+
+      // 4. Both opacity and transform scale are controlled by React instead of Animated
+      await update(
+        root,
+        <Animated.View style={{opacity: 1, transform: [{scale: 1}]}} />,
+      );
+      jest.runAllTicks();
+
+      {
+        const droppedTags = [10, 11, 12, 13];
+        for (let i = 0; i < droppedTags.length; i++) {
+          expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenNthCalledWith(
+            i + dropAnimatedNodeCalledTimes + 1,
+            droppedTags[i],
+          );
+        }
+
+        dropAnimatedNodeCalledTimes += droppedTags.length;
+      }
+      expect(NativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(
+        createAnimatedNodeCalledTimes,
+      );
+      expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(
+        dropAnimatedNodeCalledTimes,
+      );
+
+      // View is no longer connected to PropsAnimatedNode
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toHaveBeenCalledTimes(3);
+      expect(
+        NativeAnimatedModule.connectAnimatedNodeToView,
+      ).toHaveBeenCalledTimes(3);
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        3,
+      );
+
+      // 5. Unmount
+      await unmount(root);
+      jest.runAllTicks();
+      // No change for Animated nodes on unmount.
+      expect(NativeAnimatedModule.createAnimatedNode).toHaveBeenCalledTimes(
+        createAnimatedNodeCalledTimes,
+      );
+      expect(NativeAnimatedModule.dropAnimatedNode).toHaveBeenCalledTimes(
+        dropAnimatedNodeCalledTimes,
+      );
+      expect(
+        NativeAnimatedModule.disconnectAnimatedNodeFromView,
+      ).toHaveBeenCalledTimes(3);
+      expect(
+        NativeAnimatedModule.connectAnimatedNodeToView,
+      ).toHaveBeenCalledTimes(3);
+      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
+        3,
       );
     });
   });

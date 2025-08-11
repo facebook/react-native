@@ -52,18 +52,19 @@ std::unique_ptr<JniJSModulesUnbundle> JniJSModulesUnbundle::fromEntryFile(
 
 JniJSModulesUnbundle::JniJSModulesUnbundle(
     AAssetManager* assetManager,
-    const std::string& moduleDirectory)
-    : m_assetManager(assetManager), m_moduleDirectory(moduleDirectory) {}
+    std::string moduleDirectory)
+    : m_assetManager(assetManager),
+      m_moduleDirectory(std::move(moduleDirectory)) {}
 
 bool JniJSModulesUnbundle::isUnbundle(
     AAssetManager* assetManager,
     const std::string& assetName) {
-  if (!assetManager) {
+  if (assetManager == nullptr) {
     return false;
   }
 
   auto magicFileName = jsModulesDir(assetName) + MAGIC_FILE_NAME;
-  auto asset = openAsset(assetManager, magicFileName.c_str());
+  auto asset = openAsset(assetManager, magicFileName);
   if (asset == nullptr) {
     return false;
   }
@@ -92,7 +93,9 @@ JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
   if (buffer == nullptr) {
     throw ModuleNotFound(moduleId);
   }
-  return {sourceUrl, std::string(buffer, AAsset_getLength(asset.get()))};
+  return {
+      .name = sourceUrl,
+      .code = std::string(buffer, AAsset_getLength(asset.get()))};
 }
 
 } // namespace facebook::react

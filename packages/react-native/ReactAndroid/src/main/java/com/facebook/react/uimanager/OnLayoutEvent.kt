@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import androidx.core.util.Pools.SynchronizedPool
@@ -19,7 +21,10 @@ import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.events.Event
 
 /** Event used to notify JS component about changes of its position or dimensions. */
-@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.WARNING)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   @VisibleForTesting internal var x: Int = 0
   @VisibleForTesting internal var y: Int = 0
@@ -60,7 +65,7 @@ public class OnLayoutEvent private constructor() : Event<OnLayoutEvent>() {
   public companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "OnLayoutEvent", LegacyArchitectureLogLevel.ERROR)
+          "OnLayoutEvent", LegacyArchitectureLogLevel.WARNING)
     }
 
     private val EVENTS_POOL: SynchronizedPool<OnLayoutEvent> = SynchronizedPool<OnLayoutEvent>(20)

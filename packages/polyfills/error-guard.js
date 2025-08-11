@@ -42,10 +42,14 @@ const ErrorUtils = {
     return _globalHandler;
   },
   reportError(error: mixed): void {
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, false);
   },
   reportFatalError(error: mixed): void {
     // NOTE: This has an untyped call site in Metro.
+    /* $FlowFixMe[constant-condition] Error discovered during Constant
+     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     _globalHandler && _globalHandler(error, true);
   },
   applyWithGuard<TArgs: $ReadOnlyArray<mixed>, TOut>(

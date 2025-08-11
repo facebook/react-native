@@ -74,22 +74,22 @@ namespace facebook::react {
           }),
         )
         .join('\n' + ' '.repeat(8))}${
-  eventEmitters.length > 0
-    ? eventEmitters
-        .map(eventEmitter => {
-          return `
+        eventEmitters.length > 0
+          ? eventEmitters
+              .map(eventEmitter => {
+                return `
         eventEmitterMap_["${eventEmitter.name}"] = std::make_shared<AsyncEventEmitter<id>>();`;
-        })
-        .join('')
-    : ''
-}${
-  eventEmitters.length > 0
-    ? `
+              })
+              .join('')
+          : ''
+      }${
+        eventEmitters.length > 0
+          ? `
         setEventEmitterCallback([&](const std::string &name, id value) {
           static_cast<AsyncEventEmitter<id> &>(*eventEmitterMap_[name]).emit(value);
         });`
-    : ''
-}
+          : ''
+      }
   }
 } // namespace facebook::react`;
 

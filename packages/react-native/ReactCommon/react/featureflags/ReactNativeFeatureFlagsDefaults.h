@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fbc0fe5e434b2f367ec6e73383a91d4c>>
+ * @generated SignedSource<<ae55e689a40ace36cdf181b4f62c3d4d>>
  */
 
 /**
@@ -31,6 +31,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool cdpInteractionMetricsEnabled() override {
+    return false;
+  }
+
   bool cxxNativeAnimatedEnabled() override {
     return false;
   }
@@ -39,8 +43,16 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool disableFabricCommitInCXXAnimated() override {
+    return false;
+  }
+
   bool disableMountItemReorderingAndroid() override {
     return false;
+  }
+
+  bool disableOldAndroidAttachmentMetricsWorkarounds() override {
+    return true;
   }
 
   bool disableTextLayoutManagerCacheAndroid() override {
@@ -111,6 +123,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableImmediateUpdateModeForContentOffsetChanges() override {
+    return false;
+  }
+
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
     return false;
   }
@@ -155,10 +175,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableSynchronousStateUpdates() override {
-    return false;
-  }
-
   bool enableViewCulling() override {
     return false;
   }
@@ -180,7 +196,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableVirtualViewRenderState() override {
-    return false;
+    return true;
   }
 
   bool enableVirtualViewWindowFocusDetection() override {
@@ -203,11 +219,31 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool perfMonitorV2Enabled() override {
+    return false;
+  }
+
   double preparedTextCacheSize() override {
     return 200.0;
   }
 
+  bool preventShadowTreeCommitExhaustion() override {
+    return false;
+  }
+
   bool releaseImageDataWhenConsumed() override {
+    return false;
+  }
+
+  bool shouldPressibilityUseW3CPointerEventsForHover() override {
+    return false;
+  }
+
+  bool skipActivityIdentityAssertionOnHostPause() override {
+    return false;
+  }
+
+  bool sweepActiveTouchOnChildNativeGesturesAndroid() override {
     return false;
   }
 
@@ -225,6 +261,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useFabricInterop() override {
     return true;
+  }
+
+  bool useNativeEqualsInNativeReadableArrayAndroid() override {
+    return false;
+  }
+
+  bool useNativeTransformHelperAndroid() override {
+    return false;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

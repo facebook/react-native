@@ -90,7 +90,7 @@ export class DeviceAgent {
     });
   }
 
-  // $FlowIgnore[unsafe-getters-setters]
+  // $FlowFixMe[unsafe-getters-setters]
   get socket(): WebSocket {
     return nullthrows(this.#ws);
   }

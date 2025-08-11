@@ -210,7 +210,7 @@ internal constructor(
 
     private fun getFontScale(context: Context): Float =
         if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout())
-            context.getResources().getConfiguration().fontScale
+            context.resources.configuration.fontScale
         else 1f
 
     private fun doRTLSwap(context: Context): Boolean =

@@ -7,6 +7,8 @@
 
 #import "RCTScrollViewManager.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTBridge.h"
 #import "RCTScrollView.h"
 #import "RCTShadowView.h"
@@ -199,3 +201,5 @@ RCT_EXPORT_METHOD(flashScrollIndicators : (nonnull NSNumber *)reactTag)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

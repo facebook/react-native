@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import * as React from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 
@@ -191,4 +193,4 @@ exports.examples = [
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

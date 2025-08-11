@@ -113,7 +113,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
    * somewhere.
    */
   @Suppress("DEPRECATION")
-  protected val reactNativeHost: ReactNativeHost
+  protected open val reactNativeHost: ReactNativeHost
     get() = (application as ReactApplication).reactNativeHost
 
   /**
@@ -121,7 +121,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
    * [ReactApplication] and calls [ReactApplication.reactHost]. This method assumes it is called in
    * new architecture and returns null if not.
    */
-  protected val reactHost: ReactHost?
+  protected open val reactHost: ReactHost?
     get() = (application as ReactApplication).reactHost
 
   protected val reactContext: ReactContext?
