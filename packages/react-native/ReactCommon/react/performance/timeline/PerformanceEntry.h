@@ -46,6 +46,10 @@ struct PerformanceEventTiming : AbstractPerformanceEntry {
   static constexpr PerformanceEntryType entryType = PerformanceEntryType::EVENT;
   HighResTimeStamp processingStart;
   HighResTimeStamp processingEnd;
+  // Custom RN extension not exposed to JS for now.
+  // It's the same "taskEndTime" defined in the spec for the Event Loop:
+  // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
+  HighResTimeStamp taskEndTime;
   PerformanceEntryInteractionId interactionId;
 };
 
