@@ -53,19 +53,6 @@ jobs:
     # Disable Nightly publishing on the main branch
     - ${{ if endsWith(variables['Build.SourceBranchName'], '-stable') }}:
       - script: |
-          if [ "$(USE_YARN_FOR_PUBLISH)" = "true" ]; then
-            echo "Configuring yarn for npm publishing"
-            yarn config set npmPublishRegistry "https://registry.npmjs.org"
-            yarn config set npmAuthToken $(npmAuthToken)
-          else
-            echo "Configuring npm for publishing"
-            echo "//registry.npmjs.org/:_authToken=$(npmAuthToken)" > ~/.npmrc
-          fi
-          node .ado/scripts/prepublish-check.mjs --verbose --tag $(publishTag)
-        displayName: Set and validate npm auth
-        condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
-
-      - script: |
           git switch $(Build.SourceBranchName)
           yarn nx release --skip-publish --verbose
         env:
@@ -81,13 +68,16 @@ jobs:
             # Let's call publish directly instead on the packages we want to publish.
             # yarn nx release publish --tag $(publishTag) --excludeTaskDependencies
             if [ "$(USE_YARN_FOR_PUBLISH)" = "true" ]; then
+              echo "Configuring yarn for npm publishing"
+              yarn config set npmPublishRegistry "https://registry.npmjs.org"
+              yarn config set npmAuthToken $(npmAuthToken)
               echo "Publishing with yarn npm publish"
               yarn ./packages/virtualized-lists npm publish --tag $(publishTag)
               yarn ./packages/react-native npm publish --tag $(publishTag)
             else
               echo "Publishing with npm publish"
-              (cd ./packages/virtualized-lists && npm publish --tag $(publishTag))
-              (cd ./packages/react-native && npm publish --tag $(publishTag))
+              npm publish ./packages/virtualized-lists --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+              npm publish ./packages/react-native      --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
             fi
           fi
         displayName: Publish packages
