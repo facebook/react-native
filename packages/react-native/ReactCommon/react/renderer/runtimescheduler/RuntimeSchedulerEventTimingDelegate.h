@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/timing/primitives.h>
 #include <unordered_set>
 
 namespace facebook::react {
@@ -18,6 +19,7 @@ class RuntimeSchedulerEventTimingDelegate {
   virtual ~RuntimeSchedulerEventTimingDelegate() = default;
 
   virtual void dispatchPendingEventTimingEntries(
+      HighResTimeStamp taskEndTime,
       const std::unordered_set<SurfaceId>&
           surfaceIdsWithPendingRenderingUpdates) = 0;
 };

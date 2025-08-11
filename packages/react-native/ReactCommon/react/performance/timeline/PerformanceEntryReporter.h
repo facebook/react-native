@@ -105,6 +105,7 @@ class PerformanceEntryReporter {
       HighResDuration duration,
       HighResTimeStamp processingStart,
       HighResTimeStamp processingEnd,
+      HighResTimeStamp taskEndTime,
       uint32_t interactionId);
 
   void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
