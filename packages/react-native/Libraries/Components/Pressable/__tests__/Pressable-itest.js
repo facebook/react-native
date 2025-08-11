@@ -11,13 +11,14 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {HostInstance} from 'react-native';
+import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Pressable} from 'react-native';
 import {Text} from 'react-native';
+import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -156,6 +157,11 @@ describe('<Pressable>', () => {
         );
       });
     });
+
+    component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
+      return <Pressable {...props} />;
+    }
+    accessibilityPropsSuite(ComponentWithAccessibilityProps);
   });
 
   describe('ref', () => {
