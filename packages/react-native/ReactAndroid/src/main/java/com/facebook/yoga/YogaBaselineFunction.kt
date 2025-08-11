@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.yoga;
+package com.facebook.yoga
 
-public interface YogaBaselineFunction {
+public fun interface YogaBaselineFunction {
   /**
    * Return the baseline of the node in points. When no baseline function is set the baseline
    * default to the computed height of the node.
    */
-  float baseline(YogaNode node, float width, float height);
+  public fun baseline(node: YogaNode, width: Float, height: Float): Float
 }
