@@ -47,6 +47,34 @@ describe('<Text>', () => {
       });
     });
 
+    describe('adjustsFontSizeToFit', () => {
+      it(`can be set to "true"`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text adjustsFontSizeToFit={true}>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['adjustsFontSizeToFit']}).toJSX(),
+        ).toEqual(
+          <rn-paragraph adjustsFontSizeToFit="true">{TEST_TEXT}</rn-paragraph>,
+        );
+      });
+
+      it(`has 'false' as default`, () => {
+        const root = Fantom.createRoot();
+
+        Fantom.runTask(() => {
+          root.render(<Text>{TEST_TEXT}</Text>);
+        });
+
+        expect(
+          root.getRenderedOutput({props: ['adjustsFontSizeToFit']}).toJSX(),
+        ).toEqual(<rn-paragraph>{TEST_TEXT}</rn-paragraph>);
+      });
+    });
+
     describe('allowFontScaling', () => {
       ([true, false] as const).forEach(propVal => {
         it(`can be set to "${propVal.toString()}"`, () => {
