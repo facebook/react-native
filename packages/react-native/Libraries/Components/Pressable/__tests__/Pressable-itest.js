@@ -45,6 +45,7 @@ describe('<Pressable>', () => {
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-view
             accessible="true"
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             backgroundColor="rgba(0, 0, 255, 1)"
             borderWidth="3.000000"
             height="50.000000"
@@ -68,6 +69,7 @@ describe('<Pressable>', () => {
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-view
             accessible="true"
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}"
             backgroundColor="rgba(128, 128, 128, 1)"
           />,
         );
@@ -139,7 +141,9 @@ describe('<Pressable>', () => {
         expect(element.childNodes.length).toBe(1);
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
-          <rn-view accessible="true">
+          <rn-view
+            accessible="true"
+            accessibilityState="{disabled:false,selected:false,checked:None,busy:false,expanded:null}">
             <rn-paragraph
               allowFontScaling="true"
               ellipsizeMode="tail"
