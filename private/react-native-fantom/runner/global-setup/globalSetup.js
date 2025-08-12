@@ -50,7 +50,7 @@ async function startMetroServer() {
   });
 
   // $FlowExpectedError[prop-missing]
-  globalThis.__METRO_SERVER__ = server;
+  globalThis.__FANTOM_METRO_SERVER__ = server;
 }
 
 async function findAvailablePort(): Promise<number> {
