@@ -136,6 +136,16 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->contextContainer->at<WebSocketClientFactory>(
           WebSocketClientFactoryKey);
 
+  auto devToolsHttpClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<HttpClientFactory>(DevToolsHttpClientFactoryKey)
+          .value_or(httpClientFactory);
+
+  auto devToolsWebSocketClientFactory =
+      reactInstanceData_->contextContainer
+          ->find<WebSocketClientFactory>(DevToolsWebSocketClientFactoryKey)
+          .value_or(webSocketClientFactory);
+
   // Create devServerHelper
   if (!devServerHelper_ &&
       (reactInstanceConfig_.enableInspector ||
@@ -145,7 +155,7 @@ void ReactHost::createReactInstance() {
         reactInstanceConfig_.deviceName,
         reactInstanceConfig_.devServerHost,
         reactInstanceConfig_.devServerPort,
-        httpClientFactory,
+        devToolsHttpClientFactory,
         [this](
             const std::string& moduleName,
             const std::string& methodName,
@@ -159,8 +169,8 @@ void ReactHost::createReactInstance() {
     inspector_ = std::make_shared<Inspector>(
         reactInstanceConfig_.appId,
         reactInstanceConfig_.deviceName,
-        webSocketClientFactory,
-        httpClientFactory);
+        devToolsWebSocketClientFactory,
+        devToolsHttpClientFactory);
     inspector_->ensureHostTarget(
         [this]() { reloadReactInstance(); },
         [weakDevUIDelegate =
@@ -179,7 +189,7 @@ void ReactHost::createReactInstance() {
 
   if (!packagerConnection_ && reactInstanceConfig_.enableDevMode) {
     packagerConnection_ = std::make_unique<PackagerConnection>(
-        webSocketClientFactory,
+        devToolsWebSocketClientFactory,
         devServerHelper_->getPackagerConnectionUrl(),
         [this]() { reloadReactInstance(); },
         []() {});
