@@ -13,7 +13,7 @@
 
 #include "AnimatedNode.h"
 
-#include <react/renderer/animated/primitives.h>
+#include <react/renderer/animated/internal/primitives.h>
 #include <mutex>
 
 namespace facebook::react {

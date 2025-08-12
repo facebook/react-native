@@ -11,8 +11,8 @@
 
 #include "StyleAnimatedNode.h"
 
-#include <react/renderer/animated/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
+#include <react/renderer/animated/internal/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
