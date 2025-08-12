@@ -444,6 +444,12 @@ bool ReactHost::loadScript(
   return isLoaded;
 }
 
+void ReactHost::openDebugger() {
+  if (inspector_ != nullptr && devServerHelper_ != nullptr) {
+    devServerHelper_->openDebugger();
+  }
+}
+
 bool ReactHost::loadScriptFromDevServer() {
   try {
     auto bundleUrl = devServerHelper_->getBundleUrl();

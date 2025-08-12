@@ -13,6 +13,8 @@ import type {FantomTestConfig} from './getFantomTestConfigs';
 import formatFantomConfig from './formatFantomConfig';
 import path from 'path';
 
+export const PROJECT_ROOT: string = path.resolve(__dirname, '..', '..', '..');
+
 export const OUTPUT_PATH: string = path.resolve(__dirname, '..', '.out');
 export const JS_BUILD_OUTPUT_PATH: string = path.join(OUTPUT_PATH, 'js-builds');
 export const NATIVE_BUILD_OUTPUT_PATH: string = path.join(

@@ -16,6 +16,7 @@ const VALID_ENVIRONMENT_VARIABLES = [
   'FANTOM_FORCE_TEST_MODE',
   'FANTOM_LOG_COMMANDS',
   'FANTOM_PRINT_OUTPUT',
+  'FANTOM_DEBUG_JS',
   'FANTOM_PROFILE_JS',
   'FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION',
 ];
@@ -61,6 +62,8 @@ export const isCI: boolean =
 export const forceTestModeForBenchmarks: boolean = Boolean(
   process.env.FANTOM_FORCE_TEST_MODE,
 );
+
+export const debugJS: boolean = Boolean(process.env.FANTOM_DEBUG_JS);
 
 export const profileJS: boolean = Boolean(process.env.FANTOM_PROFILE_JS);
 

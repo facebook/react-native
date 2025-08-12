@@ -364,6 +364,13 @@ module.exports = async function runTest(
       EnvironmentOptions.printCLIOutput ? 'info' : 'error',
     ];
 
+    if (EnvironmentOptions.debugJS) {
+      rnTesterCommandArgs.push(
+        '--inspectorPort',
+        nullthrows(process.env.__FANTOM_METRO_PORT__),
+      );
+    }
+
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),

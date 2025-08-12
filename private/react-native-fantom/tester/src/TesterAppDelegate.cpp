@@ -6,6 +6,7 @@
  */
 
 #include "TesterAppDelegate.h"
+
 #include "NativeFantom.h"
 #include "platform/TesterTurboModuleManagerDelegate.h"
 #include "stubs/StubClock.h"
@@ -77,9 +78,13 @@ TesterAppDelegate::TesterAppDelegate(
         queue_ = queue;
         return queue;
       }));
-  contextContainer->insert(HttpClientFactoryKey, getHttpClientFactory());
+  contextContainer->insert(HttpClientFactoryKey, getStubHttpClientFactory());
   contextContainer->insert(
-      WebSocketClientFactoryKey, getWebSocketClientFactory());
+      WebSocketClientFactoryKey, getStubWebSocketClientFactory());
+  contextContainer->insert(
+      DevToolsHttpClientFactoryKey, getHttpClientFactory());
+  contextContainer->insert(
+      DevToolsWebSocketClientFactoryKey, getWebSocketClientFactory());
 
   runLoopObserverManager_ = std::make_shared<RunLoopObserverManager>();
 
@@ -153,6 +158,10 @@ void TesterAppDelegate::loadScript(
                   .asFunction(*runtimePtr);
 
   func.call(*runtimePtr);
+}
+
+void TesterAppDelegate::openDebugger() const {
+  reactHost_->openDebugger();
 }
 
 void TesterAppDelegate::startSurface(

@@ -8,8 +8,13 @@
  * @format
  */
 
+import type {ConfigT} from 'metro-config';
+
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
+import {PROJECT_ROOT} from '../paths';
 import build from './build';
+import {createDevMiddleware} from '@react-native/dev-middleware';
+import connect from 'connect';
 import Metro from 'metro';
 import {Server} from 'net';
 import path from 'path';
@@ -44,9 +49,33 @@ async function startMetroServer() {
   // $FlowExpectedError[cannot-write]
   metroConfig.server.port = Number(process.env.__FANTOM_METRO_PORT__);
 
+  const {
+    middleware: devMiddleware,
+    websocketEndpoints: debuggerWebsocketEndpoints,
+  } = createDevMiddleware({
+    projectRoot: PROJECT_ROOT,
+    serverBaseUrl: `http://localhost:${metroConfig.server.port}`,
+  });
+
+  const enhanceMiddleware: ConfigT['server']['enhanceMiddleware'] = (
+    metroMiddleware,
+    metroServer,
+  ) => {
+    const server = connect();
+    server.use(metroMiddleware);
+    server.use(devMiddleware);
+    return server;
+  };
+
+  // $FlowExpectedError[cannot-write]
+  metroConfig.server.enhanceMiddleware = enhanceMiddleware;
+
   const server = await Metro.runServer(metroConfig, {
     waitForBundler: true,
     watch: true,
+    websocketEndpoints: {
+      ...debuggerWebsocketEndpoints,
+    },
   });
 
   // $FlowExpectedError[prop-missing]

@@ -63,6 +63,8 @@ class ReactHost {
       const std::string& bundlePath,
       const std::string& sourcePath) noexcept;
 
+  void openDebugger();
+
   void startSurface(
       SurfaceId surfaceId,
       const std::string& moduleName /* can be empty */,

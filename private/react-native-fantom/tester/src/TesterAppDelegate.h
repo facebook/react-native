@@ -38,6 +38,8 @@ class TesterAppDelegate {
 
   void loadScript(const std::string& bundlePath, const std::string& sourcePath);
 
+  void openDebugger() const;
+
   void startSurface(
       jsi::Runtime& runtime,
       float widthDp,
