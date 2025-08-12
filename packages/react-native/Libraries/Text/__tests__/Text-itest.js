@@ -12,13 +12,14 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Role} from '../../Components/View/ViewAccessibility';
-import type {HostInstance} from 'react-native';
+import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Text} from 'react-native';
+import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
@@ -423,38 +424,38 @@ describe('<Text>', () => {
 
           Fantom.runTask(() => {
             root.render(
-              <Text style={{writingDirection: 'rtl'}}>dummy text</Text>,
+              <Text style={{writingDirection: 'rtl'}}>{TEST_TEXT}</Text>,
             );
           });
 
           expect(
             root.getRenderedOutput({props: ['writingDirection']}).toJSX(),
           ).toEqual(
-            <rn-paragraph writingDirection="rtl">dummy text</rn-paragraph>,
+            <rn-paragraph writingDirection="rtl">{TEST_TEXT}</rn-paragraph>,
           );
 
           Fantom.runTask(() => {
             root.render(
-              <Text style={{writingDirection: 'ltr'}}>dummy text</Text>,
+              <Text style={{writingDirection: 'ltr'}}>{TEST_TEXT}</Text>,
             );
           });
 
           expect(
             root.getRenderedOutput({props: ['writingDirection']}).toJSX(),
           ).toEqual(
-            <rn-paragraph writingDirection="ltr">dummy text</rn-paragraph>,
+            <rn-paragraph writingDirection="ltr">{TEST_TEXT}</rn-paragraph>,
           );
 
           Fantom.runTask(() => {
             root.render(
-              <Text style={{writingDirection: 'auto'}}>dummy text</Text>,
+              <Text style={{writingDirection: 'auto'}}>{TEST_TEXT}</Text>,
             );
           });
 
           expect(
             root.getRenderedOutput({props: ['writingDirection']}).toJSX(),
           ).toEqual(
-            <rn-paragraph writingDirection="auto">dummy text</rn-paragraph>,
+            <rn-paragraph writingDirection="auto">{TEST_TEXT}</rn-paragraph>,
           );
         });
       });
@@ -468,7 +469,7 @@ describe('<Text>', () => {
       const root = Fantom.createRoot();
 
       Fantom.runTask(() => {
-        root.render(<Text ref={elementRef}>Some text</Text>);
+        root.render(<Text ref={elementRef}>{TEST_TEXT}</Text>);
       });
 
       const element = ensureInstance(elementRef.current, ReactNativeElement);
@@ -481,14 +482,14 @@ describe('<Text>', () => {
       const root = Fantom.createRoot();
 
       Fantom.runTask(() => {
-        root.render(<Text ref={elementRef}>Some text</Text>);
+        root.render(<Text ref={elementRef}>{TEST_TEXT}</Text>);
       });
 
       const element = ensureInstance(elementRef.current, ReactNativeElement);
       expect(element.childNodes.length).toBe(1);
 
       const textChild = ensureInstance(element.childNodes[0], ReadOnlyText);
-      expect(textChild.textContent).toBe('Some text');
+      expect(textChild.textContent).toBe(TEST_TEXT);
     });
 
     it('has text and element child nodes when nested', () => {
@@ -524,4 +525,9 @@ describe('<Text>', () => {
       expect(secondChildText.textContent).toBe('also in bold');
     });
   });
+
+  component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
+    return <Text {...props}>{TEST_TEXT}</Text>;
+  }
+  accessibilityPropsSuite(ComponentWithAccessibilityProps, false);
 });
