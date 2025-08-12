@@ -49,14 +49,18 @@ export const printBenchmarkResultsRanking = (
   const results: {[string]: {[string]: string}} = {};
   for (const taskName in testTaskTimings) {
     const kv = Object.entries(testTaskTimings[taskName]);
-    kv.sort((a, b) => a[1] - b[1]);
-    const bestTiming = kv[0][1];
+    kv.sort((a, b) => b[1] - a[1]);
+    const slowest = kv[0][1];
+    const fastest = kv[kv.length - 1][1];
     results[taskName] = {};
-    kv.forEach(([key, val]) => {
-      results[taskName][key] =
-        `${val.toFixed(3)}ms ${getTimingDelta(bestTiming, val)}`;
-    });
-    results[taskName][kv[0][0]] = `🏆 ${bestTiming.toFixed(3)}ms`;
+    for (let i = 0; i < kv.length; i++) {
+      const [title, timing] = kv[i];
+      let caption =
+        timing === fastest ? '🏆 ' : timing === slowest ? '🐌 ' : '';
+      caption += `${timing.toFixed(3)}ms`;
+      caption += getTimingDelta(slowest, timing);
+      results[taskName][title] = caption;
+    }
   }
 
   console.log('### Benchmark Times Comparison (p50): ###');
@@ -65,9 +69,15 @@ export const printBenchmarkResultsRanking = (
 };
 
 function getTimingDelta(lastTiming: ?number, currentTiming: ?number): string {
-  if (lastTiming != null && currentTiming != null) {
-    const deltaPercent = ((currentTiming - lastTiming) / lastTiming) * 100;
-    return `(${deltaPercent.toFixed(2)}% ${deltaPercent > 0 ? 'slower' : 'faster'})`;
+  if (
+    lastTiming != null &&
+    currentTiming != null &&
+    lastTiming !== currentTiming
+  ) {
+    const delta = currentTiming - lastTiming;
+    const deltaPercent =
+      Math.abs(delta / (delta > 0 ? lastTiming : currentTiming)) * 100;
+    return ` (${deltaPercent.toFixed(2)}% ${delta > 0 ? 'slower' : 'faster'})`;
   } else {
     return '';
   }
