@@ -57,7 +57,8 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const paresedUrl = url.parse(req.url, true);
+      const parsedUrl = url.parse(req.url, true);
+
       const query: {
         /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
@@ -66,8 +67,9 @@ export default function openDebuggerMiddleware({
         launchId?: string,
         telemetryInfo?: string,
         target?: string,
+        landingView?: string,
         ...
-      } = paresedUrl.query;
+      } = parsedUrl.query;
 
       const targets = inspectorProxy
         .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
@@ -150,6 +152,7 @@ export default function openDebuggerMiddleware({
                 telemetryInfo: query.telemetryInfo,
                 appId: target.appId,
                 useFuseboxEntryPoint,
+                landingView: query.landingView,
               },
             );
             if (

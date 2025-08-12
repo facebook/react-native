@@ -2023,6 +2023,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
+	public fun unstable_updatePerfMonitor (Ljava/lang/String;I)V
 }
 
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader {
@@ -2106,6 +2107,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
+	public fun unstable_updatePerfMonitor (Ljava/lang/String;I)V
 }
 
 public final class com/facebook/react/devsupport/StackTraceHelper {
@@ -2206,6 +2208,7 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun startInspector ()V
 	public abstract fun stopInspector ()V
 	public abstract fun toggleElementInspector ()V
+	public abstract fun unstable_updatePerfMonitor (Ljava/lang/String;I)V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer {
