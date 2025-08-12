@@ -13,7 +13,7 @@
 
 #include "ValueAnimatedNode.h"
 
-#include <react/renderer/animated/primitives.h>
+#include <react/renderer/animated/internal/primitives.h>
 #include <react/renderer/graphics/Color.h>
 
 namespace facebook::react {

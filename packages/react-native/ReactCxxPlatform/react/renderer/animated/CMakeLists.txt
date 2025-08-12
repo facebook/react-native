@@ -12,6 +12,7 @@ file(GLOB react_cxx_platform_react_renderer_animated_SRC CONFIGURE_DEPENDS
       *.cpp
       drivers/*.cpp
       event_drivers/*.cpp
+      internal/*.cpp
       nodes/*.cpp)
 add_library(react_cxx_platform_react_renderer_animated OBJECT ${react_cxx_platform_react_renderer_animated_SRC})
 

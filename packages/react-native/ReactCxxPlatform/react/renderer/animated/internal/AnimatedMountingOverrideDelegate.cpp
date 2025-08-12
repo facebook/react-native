@@ -6,7 +6,7 @@
  */
 
 #include "AnimatedMountingOverrideDelegate.h"
-#include "NativeAnimatedNodesManager.h"
+#include "../NativeAnimatedNodesManager.h"
 
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
 #include <react/renderer/components/view/ViewProps.h>
