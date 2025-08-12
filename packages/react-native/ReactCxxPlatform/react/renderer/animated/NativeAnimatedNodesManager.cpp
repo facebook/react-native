@@ -699,7 +699,10 @@ bool NativeAnimatedNodesManager::onAnimationFrame(double timestamp) {
 
     if (driver->getIsComplete()) {
       hasFinishedAnimations = true;
-      if (ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync()) {
+      const auto shouldRemoveJsSync =
+          ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
+          !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
+      if (shouldRemoveJsSync) {
         finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
       }
     }
@@ -810,7 +813,9 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     bool forceFabricCommit) noexcept {
   // When fabricCommitCallback_ & directManipulationCallback_ are both
   // available, we commit layout props via Fabric and the other using direct
-  // manipulation; if only one is available, we commit all props using that
+  // manipulation. If only fabricCommitCallback_ is available, we commit all
+  // props using that; if only directManipulationCallback_ is available, we
+  // commit all except for layout props.
   if (fabricCommitCallback_ != nullptr &&
       (layoutStyleUpdated || forceFabricCommit ||
        directManipulationCallback_ == nullptr)) {
@@ -818,7 +823,7 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
 
     // Must call direct manipulation to set final values on components.
     mergeObjects(updateViewPropsDirect_[viewTag], props);
-  } else if (directManipulationCallback_ != nullptr) {
+  } else if (!layoutStyleUpdated && directManipulationCallback_ != nullptr) {
     mergeObjects(updateViewPropsDirect_[viewTag], props);
     {
       std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
