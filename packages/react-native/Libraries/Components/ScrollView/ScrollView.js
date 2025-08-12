@@ -327,6 +327,14 @@ export type ScrollViewPropsIOS = $ReadOnly<{
     | 'never'
     | 'always'
   ),
+
+  /**
+   * A Boolean value that determines whether the scroll view allows scrolling its content with hardware keyboard input.
+   * See: https://developer.apple.com/documentation/uikit/uiscrollview/allowskeyboardscrolling
+   * The default value is true. Available on iOS 17 and later.
+   * @platform ios
+   */
+  allowsKeyboardScrolling?: boolean,
 }>;
 
 export type ScrollViewPropsAndroid = $ReadOnly<{
@@ -1805,6 +1813,8 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
           this.props.snapToInterval != null ||
           this.props.snapToOffsets != null,
       }),
+      // default to true
+      allowsKeyboardScrolling: this.props.allowsKeyboardScrolling !== false,
     };
 
     const {decelerationRate} = this.props;

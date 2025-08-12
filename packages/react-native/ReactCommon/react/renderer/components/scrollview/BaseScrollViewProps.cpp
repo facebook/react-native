@@ -372,7 +372,16 @@ BaseScrollViewProps::BaseScrollViewProps(
                     rawProps,
                     "isInvertedVirtualizedList",
                     sourceProps.isInvertedVirtualizedList,
-                    {})) {}
+                    {})),
+      allowsKeyboardScrolling(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.allowsKeyboardScrolling
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "allowsKeyboardScrolling",
+                    sourceProps.allowsKeyboardScrolling,
+                    (Float)1.0)){}
 
 void BaseScrollViewProps::setProp(
     const PropsParserContext& context,
@@ -425,6 +434,7 @@ void BaseScrollViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(contentInsetAdjustmentBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(scrollToOverflowEnabled);
     RAW_SET_PROP_SWITCH_CASE_BASIC(isInvertedVirtualizedList);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(allowsKeyboardScrolling);
   }
 }
 
@@ -558,8 +568,12 @@ SharedDebugStringConvertibleList BaseScrollViewProps::getDebugProps() const {
               "snapToEnd", snapToEnd, defaultScrollViewProps.snapToEnd),
           debugStringConvertibleItem(
               "isInvertedVirtualizedList",
-              snapToEnd,
-              defaultScrollViewProps.isInvertedVirtualizedList)};
+              isInvertedVirtualizedList,
+              defaultScrollViewProps.isInvertedVirtualizedList),
+          debugStringConvertibleItem(
+              "allowsKeyboardScrolling",
+              allowsKeyboardScrolling,
+              defaultScrollViewProps.allowsKeyboardScrolling)};
 }
 #endif
 

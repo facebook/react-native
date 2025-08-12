@@ -280,6 +280,10 @@ folly::dynamic HostPlatformScrollViewProps::getDiffProps(
     result["snapToInterval"] = snapToInterval;
   }
 
+  if (allowsKeyboardScrolling != oldProps->allowsKeyboardScrolling) {
+    result["allowsKeyboardScrolling"] = allowsKeyboardScrolling;
+  }
+
   if (snapToAlignment != oldProps->snapToAlignment) {
     switch (snapToAlignment) {
       case ScrollViewSnapToAlignment::Start:

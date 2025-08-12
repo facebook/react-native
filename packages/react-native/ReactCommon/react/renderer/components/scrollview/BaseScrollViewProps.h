@@ -73,6 +73,7 @@ class BaseScrollViewProps : public ViewProps {
       ContentInsetAdjustmentBehavior::Never};
   bool scrollToOverflowEnabled{false};
   bool isInvertedVirtualizedList{false};
+  bool allowsKeyboardScrolling{false};
 
 #pragma mark - DebugStringConvertible
 
