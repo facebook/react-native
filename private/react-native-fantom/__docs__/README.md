@@ -192,11 +192,33 @@ With an output such as:
 
 ### Debugging
 
-To debug, run your fantom test with the flag `FANTOM_ENABLE_CPP_DEBUGGING`
+> [!WARNING] Meta-only: debugging only works on Meta's internal infrastructure
+> at the moment.
+
+You can use environment variables to enable debugging for your tests. These
+options can be combined to debug JS and C++ at the same time.
+
+#### Debugging JS
+
+To debug JavaScript, run your fantom test with the flag `FANTOM_DEBUG_JS`:
 
 ```shell
-FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom <regexForTestFiles>
+FANTOM_DEBUG_JS=1 yarn fantom <regexForTestFiles>
 ```
+
+This would open React Native DevTools, which would stop at a breakpoint at the
+beginning of your test so you can debug it.
+
+#### Debugging C++
+
+To debug C++, run your fantom test with the flag `FANTOM_DEBUG_CPP`:
+
+```shell
+FANTOM_DEBUG_CPP=1 yarn fantom <regexForTestFiles>
+```
+
+This would start a debugging session in VS Code with an initial breakpoint in
+the Fantom CLI binary.
 
 ### FAQ
 
