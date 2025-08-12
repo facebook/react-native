@@ -99,13 +99,13 @@ Run the test using the following command from the root of the React Native
 repository:
 
 ```shell
-yarn fantom [optional test pattern]
+yarn fantom <regexForTestFiles>
 ```
 
 Similar to Jest, you can also run Fantom in watch mode using `--watch`:
 
 ```shell
-yarn fantom --watch [optional test pattern]
+yarn fantom <regexForTestFiles> --watch
 ```
 
 ### Test configuration
@@ -195,7 +195,7 @@ With an output such as:
 To debug, run your fantom test with the flag `FANTOM_ENABLE_CPP_DEBUGGING`
 
 ```shell
-FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom [optional test pattern]
+FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom <regexForTestFiles>
 ```
 
 ### FAQ
