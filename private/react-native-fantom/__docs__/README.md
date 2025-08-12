@@ -244,6 +244,44 @@ trace will be created for each variant.
 You can analyze the traces loading them in Chrome DevTools directly. You can
 also open them in VS Code, which provides a built-in extension for analysis.
 
+#### JS memory profiler
+
+You can manually take JS memory heap snapshots during test execution using
+`Fantom.takeJSMemoryHeapSnapshot()`. E.g.:
+
+```javascript
+// Using the 3 snapshot method to detect memory leaks:
+
+// Warm up
+renderView();
+destroyView();
+
+// #1
+Fantom.takeJSMemoryHeapSnapshot();
+
+renderView();
+
+// #2
+Fantom.takeJSMemoryHeapSnapshot();
+
+destroyView();
+
+// #3
+Fantom.takeJSMemoryHeapSnapshot();
+
+// See the objects allocated between #1 and #2 that still exist in #3.
+```
+
+This function will force a garbage collection pass, take a snapshot of the JS
+memory heap and print a message indicating where it was saved. E.g.:
+
+```text
+💾 JS heap snapshot saved to /path/to/react-native/private/react-native-fantom/.out/js-heap-snapshots/View-itest.js-2025-08-12T14:29:25.987Z.heapsnapshot
+```
+
+You can have multiple calls to `Fantom.takeJSMemoryHeapSnapshot()` in your test,
+and each one will create a different file.
+
 ### FAQ
 
 #### How is this different from Jest tests?
