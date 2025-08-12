@@ -220,6 +220,30 @@ FANTOM_DEBUG_CPP=1 yarn fantom <regexForTestFiles>
 This would start a debugging session in VS Code with an initial breakpoint in
 the Fantom CLI binary.
 
+### Profiling
+
+#### JS sampling profiler
+
+You can automatically record JS sampling profiler traces with the flag
+`FANTOM_PROFILE_JS`:
+
+```shell
+FANTOM_PROFILE_JS=1 yarn fantom <regexForTestFiles>
+```
+
+As part of the test results, you will see a message indicating where the traces
+where saved, e.g.:
+
+```text
+🔥 JS sampling profiler trace saved to /path/to/react-native/private/react-native-fantom/.out/js-traces/View-itest.js-2025-08-12T14:08:31.580Z.cpuprofile
+```
+
+If your test has multiple variants (when using wildcards in Fantom pragmas), a
+trace will be created for each variant.
+
+You can analyze the traces loading them in Chrome DevTools directly. You can
+also open them in VS Code, which provides a built-in extension for analysis.
+
 ### FAQ
 
 #### How is this different from Jest tests?
