@@ -9,10 +9,10 @@
 
 #import <React/RCTConversions.h>
 
-#import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
 #import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
 #import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/switch/AppleSwitchComponentDescriptor.h>
 
 #import "RCTFabricComponentsPlugins.h"
 
