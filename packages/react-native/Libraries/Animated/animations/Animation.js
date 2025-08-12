@@ -150,12 +150,11 @@ export default class Animation {
           if (value != null) {
             animatedValue.__onAnimatedValueUpdateReceived(value, offset);
 
-            if (
-              !(
-                ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
-                ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync()
-              )
-            ) {
+            const isJsSyncRemoved =
+              ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+              !ReactNativeFeatureFlags.disableFabricCommitInCXXAnimated() &&
+              ReactNativeFeatureFlags.cxxNativeAnimatedRemoveJsSync();
+            if (!isJsSyncRemoved) {
               if (this.__isLooping === true) {
                 return;
               }
