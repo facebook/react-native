@@ -137,51 +137,52 @@ void ReactHost::createReactInstance() {
           WebSocketClientFactoryKey);
 
   // Create devServerHelper
-  if (reactInstanceConfig_.enableDebugging) {
-    if (!devServerHelper_) {
-      devServerHelper_ = std::make_shared<DevServerHelper>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          reactInstanceConfig_.devServerHost,
-          reactInstanceConfig_.devServerPort,
-          httpClientFactory,
-          [this](
-              const std::string& moduleName,
-              const std::string& methodName,
-              folly::dynamic&& args) {
-            reactInstance_->callFunctionOnModule(
-                moduleName, methodName, std::move(args));
-          });
-    }
-    if (!inspector_) {
-      inspector_ = std::make_shared<Inspector>(
-          reactInstanceConfig_.appId,
-          reactInstanceConfig_.deviceName,
-          webSocketClientFactory,
-          httpClientFactory);
-      inspector_->ensureHostTarget(
-          [this]() { reloadReactInstance(); },
-          [weakDevUIDelegate = std::weak_ptr<IDevUIDelegate>(
-               reactInstanceData_->devUIDelegate)](
-              bool showDebuggerOverlay,
-              std::function<void()>&& resumeDebuggerFn) {
-            if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
-              if (showDebuggerOverlay) {
-                debugUIDelegate->showDebuggerOverlay(
-                    std::move(resumeDebuggerFn));
-              } else {
-                debugUIDelegate->hideDebuggerOverlay();
-              }
+  if (!devServerHelper_ &&
+      (reactInstanceConfig_.enableInspector ||
+       reactInstanceConfig_.enableDevMode)) {
+    devServerHelper_ = std::make_shared<DevServerHelper>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        reactInstanceConfig_.devServerHost,
+        reactInstanceConfig_.devServerPort,
+        httpClientFactory,
+        [this](
+            const std::string& moduleName,
+            const std::string& methodName,
+            folly::dynamic&& args) {
+          reactInstance_->callFunctionOnModule(
+              moduleName, methodName, std::move(args));
+        });
+  }
+
+  if (!inspector_ && reactInstanceConfig_.enableInspector) {
+    inspector_ = std::make_shared<Inspector>(
+        reactInstanceConfig_.appId,
+        reactInstanceConfig_.deviceName,
+        webSocketClientFactory,
+        httpClientFactory);
+    inspector_->ensureHostTarget(
+        [this]() { reloadReactInstance(); },
+        [weakDevUIDelegate =
+             std::weak_ptr<IDevUIDelegate>(reactInstanceData_->devUIDelegate)](
+            bool showDebuggerOverlay,
+            std::function<void()>&& resumeDebuggerFn) {
+          if (auto debugUIDelegate = weakDevUIDelegate.lock()) {
+            if (showDebuggerOverlay) {
+              debugUIDelegate->showDebuggerOverlay(std::move(resumeDebuggerFn));
+            } else {
+              debugUIDelegate->hideDebuggerOverlay();
             }
-          });
-    }
-    if (!packagerConnection_) {
-      packagerConnection_ = std::make_unique<PackagerConnection>(
-          webSocketClientFactory,
-          devServerHelper_->getPackagerConnectionUrl(),
-          [this]() { reloadReactInstance(); },
-          []() {});
-    }
+          }
+        });
+  }
+
+  if (!packagerConnection_ && reactInstanceConfig_.enableDevMode) {
+    packagerConnection_ = std::make_unique<PackagerConnection>(
+        webSocketClientFactory,
+        devServerHelper_->getPackagerConnectionUrl(),
+        [this]() { reloadReactInstance(); },
+        []() {});
   }
 
   // Create the React Instance
@@ -194,7 +195,7 @@ void ReactHost::createReactInstance() {
       reactInstanceData_->messageQueueThread,
       /* allocInOldGenBeforeTTI */ false);
 
-  if (reactInstanceConfig_.enableDebugging) {
+  if (reactInstanceConfig_.enableInspector) {
     react_native_assert(
         inspector_ != nullptr && "Inspector is not initialized");
   }
@@ -262,7 +263,8 @@ void ReactHost::createReactInstance() {
            reactInstanceData_->turboModuleManagerDelegates,
        jsInvoker = std::move(jsInvoker),
        logBoxSurfaceDelegate = reactInstanceData_->logBoxSurfaceDelegate,
-       devServerHelper = devServerHelper_,
+       devServerHelper =
+           reactInstanceConfig_.enableDevMode ? devServerHelper_ : nullptr,
        animatedNodesManagerProvider =
            reactInstanceData_->animatedNodesManagerProvider,
        onJsError = reactInstanceData_->onJsError,
@@ -421,7 +423,7 @@ bool ReactHost::loadScript(
     const std::string& bundlePath,
     const std::string& sourcePath) noexcept {
   bool isLoaded = false;
-  if (devServerHelper_) {
+  if (reactInstanceConfig_.enableDevMode && devServerHelper_) {
     devServerHelper_->setSourcePath(sourcePath);
     isLoaded = loadScriptFromDevServer();
   }
