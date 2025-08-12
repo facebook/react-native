@@ -11,6 +11,7 @@
 import {isOSS, validateEnvironmentVariables} from '../EnvironmentOptions';
 import build from './build';
 import Metro from 'metro';
+import {Server} from 'net';
 import path from 'path';
 
 export default async function globalSetup(
@@ -33,26 +34,38 @@ async function startMetroServer() {
     config: path.resolve(__dirname, '..', '..', 'config', 'metro.config.js'),
   });
 
+  if (process.env.__FANTOM_METRO_PORT__ == null) {
+    const availablePort = await findAvailablePort();
+    process.env.__FANTOM_METRO_PORT__ = String(availablePort);
+  }
+
   // We need to reuse the same port across runs because can only set environment
   // variables for workers in the first one.
   // $FlowExpectedError[cannot-write]
-  metroConfig.server.port =
-    process.env.__FANTOM_METRO_PORT__ != null
-      ? Number(process.env.__FANTOM_METRO_PORT__)
-      : // Any available port
-        0;
+  metroConfig.server.port = Number(process.env.__FANTOM_METRO_PORT__);
 
   const server = await Metro.runServer(metroConfig, {
     waitForBundler: true,
     watch: true,
   });
 
-  if (process.env.__FANTOM_METRO_PORT__ == null) {
-    process.env.__FANTOM_METRO_PORT__ = String(
-      server.httpServer.address().port,
-    );
-  }
-
   // $FlowExpectedError[prop-missing]
   globalThis.__METRO_SERVER__ = server;
+}
+
+async function findAvailablePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const server = new Server();
+    server.listen(0, 'localhost', undefined, () => {
+      const port = server.address().port;
+      server.close(error => {
+        if (error != null) {
+          reject(error);
+        } else {
+          resolve(port);
+        }
+      });
+    });
+    server.on('error', reject);
+  });
 }
