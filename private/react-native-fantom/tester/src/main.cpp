@@ -6,9 +6,12 @@
  */
 
 #include <glog/logging.h>
+#include <react/debug/flags.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/featureflags/ReactNativeFeatureFlagsDynamicProvider.h>
+#include <chrono>
 #include <memory>
+#include <thread>
 #include "AppSettings.h"
 #include "TesterAppDelegate.h"
 
@@ -42,8 +45,30 @@ int main(int argc, char* argv[]) {
 
   setUpFeatureFlags();
 
-  auto appDelegate = TesterAppDelegate(ReactInstanceConfig{
-      .appId = "com.meta.reactnative.fantom", .deviceName = "RN Fantom"});
+  auto config = ReactInstanceConfig{
+      .appId = "com.meta.reactnative.fantom",
+      .deviceName = "RN Fantom",
+  };
+
+  if (AppSettings::inspectorPort.has_value()) {
+    config.enableInspector = true;
+    config.devServerPort = AppSettings::inspectorPort.value();
+  }
+
+  auto appDelegate = TesterAppDelegate(config);
+
+  if (AppSettings::inspectorPort.has_value()) {
+    // FIXME(T234306362): Replace this logic with a call to
+    // `appDelegate.waitForDebugger()` that handles orchestration properly.
+
+    // Wait for inspector websocket to connect.
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    appDelegate.openDebugger();
+
+    // Wait for debugger UI to open and start a debugging session.
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+  }
 
   appDelegate.loadScript(AppSettings::defaultBundlePath, "");
 

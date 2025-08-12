@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "StubHttpClient.h"
-#include <react/http/IHttpClient.h>
+#include "../../stubs/StubHttpClient.h"
 
 namespace facebook::react {
 
-HttpClientFactory getStubHttpClientFactory() {
-  return []() { return std::make_unique<StubHttpClient>(); };
+HttpClientFactory getHttpClientFactory() {
+  return getStubHttpClientFactory();
 }
 
 } // namespace facebook::react
