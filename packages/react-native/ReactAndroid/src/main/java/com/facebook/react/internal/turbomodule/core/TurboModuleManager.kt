@@ -209,6 +209,12 @@ public class TurboModuleManager(
     return module
   }
 
+  public fun <TInterface> getModuleNamesConformingToInterface(
+          clazz: Class<TInterface>
+  ): List<String> {
+    return delegate?.getModuleNamesConformingToInterface(clazz) ?: emptyList()
+  }
+
   /**
    * Given a ModuleHolder, and the TurboModule's moduleName, return the TurboModule instance.
    *
