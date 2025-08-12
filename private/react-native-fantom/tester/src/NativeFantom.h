@@ -7,13 +7,7 @@
 
 #pragma once
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
-#include "FBReactNativeSpecJSI.h"
-#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
-#endif
 
 #include <react/renderer/bridging/bridging.h>
 #include <react/renderer/core/RawEvent.h>
@@ -72,6 +66,16 @@ template <>
 struct Bridging<ScrollOptions>
     : NativeFantomScrollOptionsBridging<ScrollOptions> {};
 
+using NativeFantomSetImageResponseImageResponse = NativeFantomImageResponse<
+    Float, // width
+    Float, // height
+    std::optional<std::string>, // cacheStatus
+    std::optional<std::string>>; // errorMessage
+template <>
+struct Bridging<NativeFantomSetImageResponseImageResponse>
+    : NativeFantomImageResponseBridging<
+          NativeFantomSetImageResponseImageResponse> {};
+
 class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
  public:
   NativeFantom(
@@ -105,11 +109,11 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void reportTestSuiteResultsJSON(
       jsi::Runtime& runtime,
-      std::string testSuiteResultsJSON);
+      const std::string& testSuiteResultsJSON);
 
   void enqueueNativeEvent(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       std::string type,
       const std::optional<folly::dynamic>& payload,
       std::optional<RawEvent::Category> category,
@@ -117,32 +121,51 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void enqueueScrollEvent(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       ScrollOptions options);
 
   jsi::Object getDirectManipulationProps(
       jsi::Runtime& runtime,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
 
   jsi::Object getFabricUpdateProps(
       jsi::Runtime& runtime,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
 
   void enqueueModalSizeUpdate(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode,
+      std::shared_ptr<const ShadowNode> shadowNode,
       double width,
       double height);
 
   jsi::Function createShadowNodeReferenceCounter(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
 
   jsi::Function createShadowNodeRevisionGetter(
       jsi::Runtime& runtime,
-      ShadowNode::Shared shadowNode);
+      std::shared_ptr<const ShadowNode> shadowNode);
 
-  void saveJSMemoryHeapSnapshot(jsi::Runtime& runtime, std::string filePath);
+  void saveJSMemoryHeapSnapshot(
+      jsi::Runtime& runtime,
+      const std::string& filePath);
+
+  void forceHighResTimeStamp(
+      jsi::Runtime& runtime,
+      std::optional<HighResTimeStamp> now);
+
+  void startJSSamplingProfiler(jsi::Runtime& runtime);
+
+  void stopJSSamplingProfilerAndSaveToFile(
+      jsi::Runtime& runtime,
+      std::string filePath);
+
+  void setImageResponse(
+      jsi::Runtime& rt,
+      const std::string& uri,
+      const NativeFantomSetImageResponseImageResponse& imageResponse);
+  void clearImage(jsi::Runtime& rt, const std::string& uri);
+  void clearAllImages(jsi::Runtime& rt);
 
  private:
   TesterAppDelegate& appDelegate_;

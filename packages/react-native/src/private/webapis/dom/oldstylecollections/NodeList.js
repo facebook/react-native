@@ -22,7 +22,7 @@ import {setPlatformObject} from '../../webidl/PlatformObjects';
 // IMPORTANT: The Flow type definition for this module is defined in `NodeList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-// $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
+// $FlowFixMe[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
   #length: number;
 
@@ -88,7 +88,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
     return createValueIterator(this);
   }
 
-  // $FlowIssue[unsupported-syntax] Flow does not support computed properties in classes.
+  // $FlowFixMe[unsupported-syntax] Flow does not support computed properties in classes.
   [Symbol.iterator](): Iterator<T> {
     return createValueIterator(this);
   }

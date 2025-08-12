@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1eb592bf34ec0bd242c44a2f6bb6828>>
+ * @generated SignedSource<<9583365cd9d7786ee9be03ff34b0766f>>
  */
 
 /**
@@ -25,21 +25,25 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun animatedShouldSignalBatch(): Boolean = false
+  override fun cdpInteractionMetricsEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedEnabled(): Boolean = false
 
   override fun cxxNativeAnimatedRemoveJsSync(): Boolean = false
 
-  override fun disableMainQueueSyncDispatchIOS(): Boolean = false
+  override fun disableFabricCommitInCXXAnimated(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun disableOldAndroidAttachmentMetricsWorkarounds(): Boolean = true
 
   override fun disableTextLayoutManagerCacheAndroid(): Boolean = false
 
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
+
+  override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
@@ -50,6 +54,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableDestroyShadowTreeRevisionAsync(): Boolean = false
 
   override fun enableDoubleMeasurementFixAndroid(): Boolean = false
+
+  override fun enableEagerMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
 
@@ -65,6 +71,10 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
+  override fun enableImagePrefetchingAndroid(): Boolean = false
+
+  override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
+
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
@@ -72,8 +82,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLayoutAnimationsOnIOS(): Boolean = true
 
   override fun enableMainQueueCoordinatorOnIOS(): Boolean = false
-
-  override fun enableMainQueueModulesOnIOS(): Boolean = false
 
   override fun enableModuleArgumentNSNullConversionIOS(): Boolean = false
 
@@ -89,8 +97,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableResourceTimingAPI(): Boolean = false
 
-  override fun enableSynchronousStateUpdates(): Boolean = false
-
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
@@ -101,7 +107,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableVirtualViewDebugFeatures(): Boolean = false
 
-  override fun enableVirtualViewRenderState(): Boolean = false
+  override fun enableVirtualViewRenderState(): Boolean = true
 
   override fun enableVirtualViewWindowFocusDetection(): Boolean = false
 
@@ -111,7 +117,21 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
+  override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
+
+  override fun perfMonitorV2Enabled(): Boolean = false
+
   override fun preparedTextCacheSize(): Double = 200.0
+
+  override fun preventShadowTreeCommitExhaustion(): Boolean = false
+
+  override fun releaseImageDataWhenConsumed(): Boolean = false
+
+  override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
+
+  override fun skipActivityIdentityAssertionOnHostPause(): Boolean = false
+
+  override fun sweepActiveTouchOnChildNativeGesturesAndroid(): Boolean = false
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -120,6 +140,10 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
 
   override fun useFabricInterop(): Boolean = true
+
+  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = false
+
+  override fun useNativeTransformHelperAndroid(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

@@ -85,6 +85,7 @@ class NewArchitectureHelper
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"]))
+                .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-runtimeexecutor", "React_runtimeexecutor", ["platform/ios"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-RCTFabric", "RCTFabric", []))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-utils", "React_utils", []))
@@ -132,6 +133,7 @@ class NewArchitectureHelper
 
         depend_on_js_engine(spec)
         add_rn_third_party_dependencies(spec)
+        add_rncore_dependency(spec)
 
         spec.pod_target_xcconfig = current_config
     end
@@ -152,7 +154,7 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
+        return true
     end
 
     def self.set_RCTNewArchEnabled_in_info_plist(installer, new_arch_enabled)
@@ -160,8 +162,7 @@ class NewArchitectureHelper
             .map{ |t| t.user_project }
             .uniq{ |p| p.path }
             .map{ |p| p.path }
-
-        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/", "watchkitapp", "today-extention"]
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle", "build/", "DerivedData/", ".xcframework", ".framework", "watchkitapp", "today-extention"]
         projectPaths.each do |projectPath|
             projectFolderPath = File.dirname(projectPath)
             infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`

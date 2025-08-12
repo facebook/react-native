@@ -105,7 +105,7 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
 }
 
 static const std::shared_ptr<void> constructCoordinator(
-    const ContextContainer::Shared &contextContainer,
+    const std::shared_ptr<const ContextContainer> &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {
   auto optionalBridge = contextContainer->find<std::shared_ptr<void>>("Bridge");

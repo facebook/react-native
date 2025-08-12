@@ -45,6 +45,15 @@ Fantom.unstable_benchmark
     },
   )
   .test(
+    'measure (default)',
+    () => {
+      performance.measure('measure');
+    },
+    {
+      afterEach: clearMarksAndMeasures,
+    },
+  )
+  .test(
     'measure (with start and end timestamps)',
     () => {
       performance.measure('measure', {

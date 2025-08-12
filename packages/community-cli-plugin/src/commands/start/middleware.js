@@ -80,7 +80,7 @@ try {
     '@react-native-community/cli-server-api',
     {paths: [communityCliPath]},
   );
-  // $FlowIgnore[unsupported-syntax] dynamic import
+  // $FlowFixMe[unsupported-syntax] dynamic import
   communityMiddlewareFallback.createDevServerMiddleware = require(
     communityCliServerApiPath,
   ).createDevServerMiddleware as CreateDevServerMiddleware;

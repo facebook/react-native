@@ -24,12 +24,12 @@ try {
 } catch (e) {
   // Fallback to lib when source doesn't exit (e.g. when installed as a dev dependency)
   FlowParser =
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/flow/parser').FlowParser;
   TypeScriptParser =
-    // $FlowIgnore[cannot-resolve-module]
+    // $FlowFixMe[cannot-resolve-module]
     require('@react-native/codegen/lib/parsers/typescript/parser').TypeScriptParser;
-  // $FlowIgnore[cannot-resolve-module]
+  // $FlowFixMe[cannot-resolve-module]
   RNCodegen = require('@react-native/codegen/lib/generators/RNCodegen');
 }
 

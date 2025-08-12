@@ -58,6 +58,10 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
    * method if your application class does not implement `ReactApplication` or you simply have a
    * different mechanism for storing a `ReactNativeHost`, e.g. as a static field somewhere.
    */
+  @Suppress("DEPRECATION")
+  @Deprecated(
+      "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
+      ReplaceWith("reactHost"))
   protected open val reactNativeHost: ReactNativeHost?
     get() = (activity?.application as ReactApplication?)?.reactNativeHost
 
@@ -147,17 +151,17 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   }
 
   override fun checkPermission(permission: String, pid: Int, uid: Int): Int =
-      getActivity()?.checkPermission(permission, pid, uid) ?: 0
+      activity?.checkPermission(permission, pid, uid) ?: 0
 
   override fun checkSelfPermission(permission: String): Int =
-      getActivity()?.checkSelfPermission(permission) ?: 0
+      activity?.checkSelfPermission(permission) ?: 0
 
   @Suppress("DEPRECATION")
   override fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
       listener: PermissionListener?
-  ): Unit {
+  ) {
     permissionListener = listener
     requestPermissions(permissions, requestCode)
   }

@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include "TraceEvent.h"
+
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern::tracing {
@@ -30,6 +31,7 @@ struct RuntimeSamplingProfile {
  public:
   /// Represents a single frame inside the captured sample stack.
   struct SampleCallStackFrame {
+   public:
     /// Represents type of frame inside of recorded call stack.
     enum class Kind {
       JSFunction, /// JavaScript function frame.
@@ -39,76 +41,21 @@ struct RuntimeSamplingProfile {
       GarbageCollector, /// Garbage collection frame.
     };
 
-   public:
-    SampleCallStackFrame(
-        const Kind kind,
-        const uint32_t scriptId,
-        std::string_view functionName,
-        std::optional<std::string_view> url = std::nullopt,
-        const std::optional<uint32_t>& lineNumber = std::nullopt,
-        const std::optional<uint32_t>& columnNumber = std::nullopt)
-        : kind_(kind),
-          scriptId_(scriptId),
-          functionName_(std::move(functionName)),
-          url_(std::move(url)),
-          lineNumber_(lineNumber),
-          columnNumber_(columnNumber) {}
+    inline bool operator==(const SampleCallStackFrame& rhs) const noexcept =
+        default;
 
-    /// \return type of the call stack frame.
-    Kind getKind() const {
-      return kind_;
-    }
-
-    /// \return id of the corresponding script in the VM.
-    uint32_t getScriptId() const {
-      return scriptId_;
-    }
-
-    /// \return name of the function that represents call frame.
-    std::string_view getFunctionName() const {
-      return functionName_;
-    }
-
-    bool hasUrl() const {
-      return url_.has_value();
-    }
-
-    /// \return source url of the corresponding script in the VM.
-    std::string_view getUrl() const {
-      return url_.value();
-    }
-
-    bool hasLineNumber() const {
-      return lineNumber_.has_value();
-    }
-
-    /// \return 0-based line number of the corresponding call frame.
-    uint32_t getLineNumber() const {
-      return lineNumber_.value();
-    }
-
-    bool hasColumnNumber() const {
-      return columnNumber_.has_value();
-    }
-
-    /// \return 0-based column number of the corresponding call frame.
-    uint32_t getColumnNumber() const {
-      return columnNumber_.value();
-    }
-
-    inline bool operator==(const SampleCallStackFrame& rhs) const noexcept {
-      return kind_ == rhs.kind_ && scriptId_ == rhs.scriptId_ &&
-          functionName_ == rhs.functionName_ && url_ == rhs.url_ &&
-          lineNumber_ == rhs.lineNumber_ && columnNumber_ == rhs.columnNumber_;
-    }
-
-   private:
-    Kind kind_;
-    uint32_t scriptId_;
-    std::string_view functionName_;
-    std::optional<std::string_view> url_;
-    std::optional<uint32_t> lineNumber_;
-    std::optional<uint32_t> columnNumber_;
+    /// type of the call stack frame
+    Kind kind;
+    /// id of the corresponding script in the VM.
+    uint32_t scriptId;
+    /// name of the function that represents call frame.
+    std::string_view functionName;
+    /// source url of the corresponding script in the VM.
+    std::optional<std::string_view> scriptURL = std::nullopt;
+    /// 0-based line number of the corresponding call frame.
+    std::optional<uint32_t> lineNumber = std::nullopt;
+    /// 0-based column number of the corresponding call frame.
+    std::optional<uint32_t> columnNumber = std::nullopt;
   };
 
   /// A pair of a timestamp and a snapshot of the call stack at this point in
@@ -117,11 +64,11 @@ struct RuntimeSamplingProfile {
    public:
     Sample(
         uint64_t timestamp,
-        uint64_t threadId,
+        ThreadId threadId,
         std::vector<SampleCallStackFrame> callStack)
-        : timestamp_(timestamp),
-          threadId_(threadId),
-          callStack_(std::move(callStack)) {}
+        : timestamp(timestamp),
+          threadId(threadId),
+          callStack(std::move(callStack)) {}
 
     // Movable.
     Sample& operator=(Sample&&) = default;
@@ -131,40 +78,26 @@ struct RuntimeSamplingProfile {
     Sample(const Sample&) = delete;
     Sample& operator=(const Sample&) = delete;
 
-    /// \return serialized unix timestamp in microseconds granularity. The
-    /// moment when this sample was recorded.
-    uint64_t getTimestamp() const {
-      return timestamp_;
-    }
+    ~Sample() = default;
 
-    /// \return thread id where sample was recorded.
-    uint64_t getThreadId() const {
-      return threadId_;
-    }
-
-    /// \return a snapshot of the call stack. The first element of the vector is
-    /// the lowest frame in the stack.
-    const std::vector<SampleCallStackFrame>& getCallStack() const {
-      return callStack_;
-    }
-
-   private:
     /// When the call stack snapshot was taken (μs).
-    uint64_t timestamp_;
+    uint64_t timestamp;
     /// Thread id where sample was recorded.
-    uint64_t threadId_;
+    ThreadId threadId;
     /// Snapshot of the call stack. The first element of the vector is
     /// the lowest frame in the stack.
-    std::vector<SampleCallStackFrame> callStack_;
+    std::vector<SampleCallStackFrame> callStack;
   };
 
   RuntimeSamplingProfile(
       std::string runtimeName,
+      ProcessId processId,
       std::vector<Sample> samples,
       std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile)
-      : runtimeName_(std::move(runtimeName)),
-        samples_(std::move(samples)),
-        rawRuntimeProfile_(std::move(rawRuntimeProfile)) {}
+      : runtimeName(std::move(runtimeName)),
+        processId(processId),
+        samples(std::move(samples)),
+        rawRuntimeProfile(std::move(rawRuntimeProfile)) {}
 
   // Movable.
   RuntimeSamplingProfile& operator=(RuntimeSamplingProfile&&) = default;
@@ -174,26 +107,19 @@ struct RuntimeSamplingProfile {
   RuntimeSamplingProfile(const RuntimeSamplingProfile&) = delete;
   RuntimeSamplingProfile& operator=(const RuntimeSamplingProfile&) = delete;
 
-  /// \return name of the JavaScript runtime, where sampling occurred.
-  const std::string& getRuntimeName() const {
-    return runtimeName_;
-  }
+  ~RuntimeSamplingProfile() = default;
 
-  /// \return list of recorded samples, should be chronologically sorted.
-  const std::vector<Sample>& getSamples() const {
-    return samples_;
-  }
-
- private:
   /// Name of the runtime, where sampling occurred: Hermes, V8, etc.
-  std::string runtimeName_;
+  std::string runtimeName;
+  /// The ID of the OS-level process where the sampling occurred.
+  ProcessId processId;
   /// List of recorded samples, should be chronologically sorted.
-  std::vector<Sample> samples_;
+  std::vector<Sample> samples;
   /// A unique pointer to the original raw runtime profile, collected from the
   /// runtime in RuntimeTargetDelegate. Keeping a pointer to the original
   /// profile allows it to remain alive as long as RuntimeSamplingProfile is
   /// alive, since it may be using the same std::string_view.
-  std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile_;
+  std::unique_ptr<RawRuntimeProfile> rawRuntimeProfile;
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing

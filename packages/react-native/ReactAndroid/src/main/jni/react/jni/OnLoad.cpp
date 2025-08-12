@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <string>
-
 #include <glog/logging.h>
 
 #include <fb/glog_init.h>

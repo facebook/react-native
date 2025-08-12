@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react
 
 import com.facebook.react.bridge.ModuleHolder
@@ -16,6 +18,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Helper class to build NativeModuleRegistry. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {

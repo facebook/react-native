@@ -14,7 +14,6 @@ import com.facebook.react.common.annotations.LegacyArchitectureShadowNodeWithCxx
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
-import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.yoga.YogaMeasureFunction
 import com.facebook.yoga.YogaMeasureMode
@@ -25,9 +24,14 @@ import com.facebook.yoga.YogaNode
  * Node responsible for holding the style of the ProgressBar, see under [ ] for possible styles.
  * ReactProgressBarViewManager manages how this style is applied to the ProgressBar.
  */
+@Suppress("DEPRECATION")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @LegacyArchitectureShadowNodeWithCxxImpl
-internal class ProgressBarShadowNode : LayoutShadowNode(), YogaMeasureFunction {
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
+internal class ProgressBarShadowNode :
+    com.facebook.react.uimanager.LayoutShadowNode(), YogaMeasureFunction {
   private val height: SparseIntArray = SparseIntArray()
   private val width: SparseIntArray = SparseIntArray()
   private val measured: MutableSet<Int> = HashSet()

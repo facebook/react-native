@@ -324,13 +324,12 @@ constructor(private val fpsListener: FpsListener? = null) :
         // no-op
       }
     }
-    if (view.getFadingEdgeLengthStart() > 0 || view.getFadingEdgeLengthEnd() > 0) {
-      view.setVerticalFadingEdgeEnabled(true)
+    if (view.fadingEdgeLengthStart > 0 || view.fadingEdgeLengthEnd > 0) {
+      view.isVerticalFadingEdgeEnabled = true
       view.setFadingEdgeLength(
-          Math.round(
-              Math.max(view.getFadingEdgeLengthStart(), view.getFadingEdgeLengthEnd()).dpToPx()))
+          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx()))
     } else {
-      view.setVerticalFadingEdgeEnabled(false)
+      view.isVerticalFadingEdgeEnabled = false
       view.setFadingEdgeLength(0)
     }
   }

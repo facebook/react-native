@@ -18,6 +18,7 @@ import com.facebook.react.tasks.GenerateEntryPointTask
 import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildTypesForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevServerLocation
 import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
@@ -27,7 +28,6 @@ import com.facebook.react.utils.DependencyUtils.readVersionAndGroupStrings
 import com.facebook.react.utils.JdkConfiguratorUtils.configureJavaToolChains
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
@@ -84,6 +84,7 @@ class ReactPlugin : Plugin<Project> {
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
       configureResources(project, extension)
+      configureBuildTypesForApp(project)
     }
 
     // Library Only Configuration
@@ -269,19 +270,17 @@ class ReactPlugin : Plugin<Project> {
               task.generatedOutputDirectory.set(generatedAutolinkingJavaDir)
             }
 
-    if (project.isNewArchEnabled(extension)) {
-      // For New Arch, we also need to generate code for C++ Autolinking
-      val generateAutolinkingNewArchitectureFilesTask =
-          project.tasks.register(
-              "generateAutolinkingNewArchitectureFiles",
-              GenerateAutolinkingNewArchitecturesFileTask::class.java) { task ->
-                task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
-                task.generatedOutputDirectory.set(generatedAutolinkingJniDir)
-              }
-      project.tasks
-          .named("preBuild", Task::class.java)
-          .dependsOn(generateAutolinkingNewArchitectureFilesTask)
-    }
+    // We also need to generate code for C++ Autolinking
+    val generateAutolinkingNewArchitectureFilesTask =
+        project.tasks.register(
+            "generateAutolinkingNewArchitectureFiles",
+            GenerateAutolinkingNewArchitecturesFileTask::class.java) { task ->
+              task.autolinkInputFile.set(rootGeneratedAutolinkingFile)
+              task.generatedOutputDirectory.set(generatedAutolinkingJniDir)
+            }
+    project.tasks
+        .named("preBuild", Task::class.java)
+        .dependsOn(generateAutolinkingNewArchitectureFilesTask)
 
     // We let generateAutolinkingPackageList and generateEntryPoint depend on the preBuild task so
     // it's executed before

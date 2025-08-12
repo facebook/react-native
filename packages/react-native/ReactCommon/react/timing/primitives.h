@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <react/debug/flags.h>
 #include <chrono>
+#include <functional>
 
 namespace facebook::react {
 
@@ -193,11 +195,10 @@ class HighResTimeStamp {
       const HighResDuration& rhs);
 
  public:
-  HighResTimeStamp() noexcept
-      : chronoTimePoint_(std::chrono::steady_clock::now()) {}
+  HighResTimeStamp() noexcept : chronoTimePoint_(chronoNow()) {}
 
-  static constexpr HighResTimeStamp now() noexcept {
-    return HighResTimeStamp(std::chrono::steady_clock::now());
+  static HighResTimeStamp now() noexcept {
+    return HighResTimeStamp(chronoNow());
   }
 
   static constexpr HighResTimeStamp min() noexcept {
@@ -227,6 +228,14 @@ class HighResTimeStamp {
       std::chrono::steady_clock::time_point chronoTimePoint) {
     return HighResTimeStamp(chronoTimePoint);
   }
+
+#ifdef REACT_NATIVE_DEBUG
+  static void setTimeStampProviderForTesting(
+      std::function<std::chrono::steady_clock::time_point()>&&
+          timeStampProvider) {
+    getTimeStampProvider() = std::move(timeStampProvider);
+  }
+#endif
 
   // This method is provided for convenience, if you need to convert
   // HighResTimeStamp to some common epoch with time stamps from other sources.
@@ -275,6 +284,25 @@ class HighResTimeStamp {
       : chronoTimePoint_(chronoTimePoint) {}
 
   std::chrono::steady_clock::time_point chronoTimePoint_;
+
+#ifdef REACT_NATIVE_DEBUG
+  static std::function<std::chrono::steady_clock::time_point()>&
+  getTimeStampProvider() {
+    static std::function<std::chrono::steady_clock::time_point()>
+        timeStampProvider = nullptr;
+    return timeStampProvider;
+  }
+
+  static std::chrono::steady_clock::time_point chronoNow() {
+    auto& timeStampProvider = getTimeStampProvider();
+    return timeStampProvider != nullptr ? timeStampProvider()
+                                        : std::chrono::steady_clock::now();
+  }
+#else
+  inline static std::chrono::steady_clock::time_point chronoNow() {
+    return std::chrono::steady_clock::now();
+  }
+#endif
 };
 
 inline constexpr HighResDuration operator-(

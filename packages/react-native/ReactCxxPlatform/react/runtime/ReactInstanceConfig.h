@@ -13,13 +13,15 @@
 namespace facebook::react {
 
 struct ReactInstanceConfig {
-#ifdef REACT_NATIVE_DEBUG
-  bool enableDebugging{true};
-#else
-  bool enableDebugging{false};
-#endif
   std::string appId;
   std::string deviceName;
+#ifdef REACT_NATIVE_DEBUG
+  bool enableDevMode{true};
+  bool enableInspector{true};
+#else
+  bool enableDevMode{false};
+  bool enableInspector{false};
+#endif
   std::string devServerHost{"localhost"};
   uint32_t devServerPort{8081};
 };

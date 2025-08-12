@@ -64,9 +64,9 @@ export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
     originalHandleCallsArray === debugger_.handle.mock.calls
       ? debugger_.handle.mock.calls.slice(originalHandleCallCount)
       : debugger_.handle.mock.calls;
-  // $FlowIgnore[incompatible-type]
+  // $FlowFixMe[incompatible-type]
   const [receivedMessage]: [Message] = newHandleCalls.find(
-    // $FlowIgnore[incompatible-call]
+    // $FlowFixMe[incompatible-call]
     (call: [Message]) => call[0].method === message.method,
   );
   return receivedMessage;
@@ -97,13 +97,13 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
     originalEventCallsArray === device.wrappedEventParsed.mock.calls
       ? device.wrappedEventParsed.mock.calls.slice(originalEventCallCount)
       : device.wrappedEventParsed.mock.calls;
-  // $FlowIgnore[incompatible-use]
+  // $FlowFixMe[incompatible-use]
   const [receivedMessage] = newEventCalls.find(
-    // $FlowIgnore[prop-missing]
-    // $FlowIgnore[incompatible-use]
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-use]
     call => call[0].wrappedEvent.id === message.id,
   );
-  // $FlowIgnore[incompatible-return]
+  // $FlowFixMe[incompatible-return]
   return receivedMessage.wrappedEvent;
 }
 
@@ -141,7 +141,7 @@ export async function createAndConnectTarget(
     await until(async () => {
       pageList = (await fetchJson(
         `${serverRef.serverBaseUrl}/json`,
-        // $FlowIgnore[unclear-type]
+        // $FlowFixMe[unclear-type]
       ): any);
       expect(pageList).toHaveLength(1);
     });

@@ -26,6 +26,7 @@
 #include "TraceSection.h"
 
 #include <memory>
+#include <utility>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -41,7 +42,7 @@ class JsToNativeBridge : public react::ExecutorDelegate {
   JsToNativeBridge(
       std::shared_ptr<ModuleRegistry> registry,
       std::shared_ptr<InstanceCallback> callback)
-      : m_registry(registry), m_callback(callback) {}
+      : m_registry(std::move(registry)), m_callback(std::move(callback)) {}
 
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;

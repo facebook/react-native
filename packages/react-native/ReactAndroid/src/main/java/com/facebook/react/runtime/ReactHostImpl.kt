@@ -29,7 +29,6 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
-import com.facebook.react.bridge.ReactNoCrashBridgeNotAllowedSoftException
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.RuntimeExecutor
@@ -62,7 +61,6 @@ import com.facebook.react.runtime.internal.bolts.Task
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.BlackHoleEventDispatcher
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
@@ -253,11 +251,18 @@ public class ReactHostImpl(
 
     val currentActivity = this.currentActivity
     if (currentActivity != null) {
-      val currentActivityClass = currentActivity.javaClass.simpleName
-      val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
-      Assertions.assertCondition(
-          activity === currentActivity,
-          "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass")
+      val isSameActivity = activity === currentActivity
+      if (!isSameActivity) {
+        val currentActivityClass = currentActivity.javaClass.simpleName
+        val activityClass = if (activity == null) "null" else activity.javaClass.simpleName
+        val isNotSameActivityMessage =
+            "Pausing an activity that is not the current activity, this is incorrect! Current activity: $currentActivityClass Paused activity: $activityClass"
+        if (ReactNativeFeatureFlags.skipActivityIdentityAssertionOnHostPause()) {
+          log(method, isNotSameActivityMessage)
+        } else {
+          Assertions.assertCondition(isSameActivity, isNotSameActivityMessage)
+        }
+      }
     }
 
     maybeEnableDevSupport(false)
@@ -514,14 +519,16 @@ public class ReactHostImpl(
   internal fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactInstance?.hasNativeModule<T>(nativeModuleInterface) ?: false
 
-  internal val nativeModules: Collection<NativeModule> = reactInstance?.nativeModules ?: listOf()
+  internal val nativeModules: Collection<NativeModule>
+    get() = reactInstance?.nativeModules ?: listOf()
 
+  @Suppress("DEPRECATION")
   internal fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
     if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
-        nativeModuleInterface == UIManagerModule::class.java) {
+        nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
-          ReactNoCrashBridgeNotAllowedSoftException(
+          ReactNoCrashSoftException(
               "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"))
     }
 
@@ -657,7 +664,7 @@ public class ReactHostImpl(
     }
   }
 
-  internal fun handleHostException(e: Exception): Unit {
+  internal fun handleHostException(e: Exception) {
     val method = "handleHostException(message = \"${e.message}\")"
     log(method)
 
@@ -829,13 +836,6 @@ public class ReactHostImpl(
                 null
               },
               executor)
-          .continueWith({ task: Task<Void> ->
-            // TODO: validate whether errors during startup go through here?
-            if (task.isFaulted()) {
-              handleHostException(checkNotNull(task.getError()))
-            }
-            null
-          })
 
   private fun getOrCreateReactContext(): BridgelessReactContext {
     val method = "getOrCreateReactContext()"
@@ -912,7 +912,7 @@ public class ReactHostImpl(
               { task ->
                 val bundleLoader = checkNotNull(task.getResult())
                 val reactContext = getOrCreateReactContext()
-                reactContext.setJSExceptionHandler(devSupportManager)
+                reactContext.jsExceptionHandler = devSupportManager
 
                 log(method, "Creating ReactInstance")
                 val instance =
@@ -952,9 +952,14 @@ public class ReactHostImpl(
               },
               bgExecutor)
 
-      val lifecycleUpdateTask = { task: Task<CreationResult> ->
+      val lifecycleUpdateTask = task@{ task: Task<CreationResult> ->
+        if (task.isFaulted()) {
+          // handleHostException may throw, so move it outside of the task scheduler
+          uiExecutor.execute { handleHostException(checkNotNull(task.getError())) }
+          return@task
+        }
+
         val result = checkNotNull(task.getResult())
-        val reactInstance = result.instance
         val reactContext = result.context
         val isReloading = result.isReloading
         val isManagerResumed = reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED
@@ -991,10 +996,9 @@ public class ReactHostImpl(
         for (listener in reactInstanceEventListeners) {
           listener.onReactContextInitialized(reactContext)
         }
-        reactInstance
       }
 
-      creationTask.onSuccess(lifecycleUpdateTask, uiExecutor)
+      creationTask.continueWith(lifecycleUpdateTask, uiExecutor)
       creationTask.onSuccess({ task -> checkNotNull(task.getResult()).instance })
     }
   }
@@ -1446,7 +1450,7 @@ public class ReactHostImpl(
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  internal fun unregisterInstanceFromInspector(reactInstance: ReactInstance?): Unit {
+  internal fun unregisterInstanceFromInspector(reactInstance: ReactInstance?) {
     if (reactInstance != null) {
       if (InspectorFlags.getFuseboxEnabled()) {
         Assertions.assertCondition(

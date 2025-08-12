@@ -123,9 +123,8 @@ EventTag EventPerformanceLogger::onEventStart(
 
   // The event start timestamp may be provided by the caller in order to
   // specify the platform specific event start time.
-  HighResTimeStamp timeStamp = eventStartTimeStamp
-      ? *eventStartTimeStamp
-      : performanceEntryReporter->getCurrentTimeStamp();
+  HighResTimeStamp timeStamp =
+      eventStartTimeStamp ? *eventStartTimeStamp : HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(
@@ -140,7 +139,7 @@ void EventPerformanceLogger::onEventProcessingStart(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -156,7 +155,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -173,6 +172,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
 }
 
 void EventPerformanceLogger::dispatchPendingEventTimingEntries(
+    HighResTimeStamp taskEndTime,
     const std::unordered_set<SurfaceId>&
         surfaceIdsWithPendingRenderingUpdates) {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
@@ -191,6 +191,7 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
                    entry.target, surfaceIdsWithPendingRenderingUpdates)) {
       // We'll wait for mount to report the event
       entry.isWaitingForMount = true;
+      entry.taskEndTime = taskEndTime;
       ++it;
     } else {
       react_native_assert(
@@ -199,12 +200,14 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
       react_native_assert(
           entry.processingEndTime.has_value() &&
           "Attempted to report PerformanceEventTiming, which did not have processingEndTime defined.");
+
       performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
-          performanceEntryReporter->getCurrentTimeStamp() - entry.startTime,
+          taskEndTime - entry.startTime,
           entry.processingStartTime.value(),
           entry.processingEndTime.value(),
+          taskEndTime,
           entry.interactionId);
       it = eventsInFlight_.erase(it);
     }
@@ -237,6 +240,7 @@ void EventPerformanceLogger::shadowTreeDidMount(
           mountTime - entry.startTime,
           entry.processingStartTime.value(),
           entry.processingEndTime.value(),
+          entry.taskEndTime.value(),
           entry.interactionId);
       it = eventsInFlight_.erase(it);
     } else {

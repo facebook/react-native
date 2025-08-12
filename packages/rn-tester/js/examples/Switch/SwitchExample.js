@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Platform, Switch, View} from 'react-native';
@@ -123,7 +125,7 @@ class DisabledSwitchExample extends React.Component<
   }
 }
 
-class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class ColorSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {colorFalseSwitchIsOn: boolean, colorTrueSwitchIsOn: boolean} = {
     colorTrueSwitchIsOn: true,
     colorFalseSwitchIsOn: false,
@@ -158,7 +160,7 @@ class ColorSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
+class EventSwitchExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {eventSwitchIsOn: boolean, eventSwitchRegressionIsOn: boolean} =
     {
       eventSwitchIsOn: false,
@@ -211,7 +213,7 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
+class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMe> {
   state: any | {iosBackgroundColor: string} = {
     iosBackgroundColor: '#ffa500',
   };
@@ -233,7 +235,7 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
+class OnChangeExample extends React.Component<{...}, $FlowFixMe> {
   render(): React.Node {
     return (
       <View>
@@ -250,7 +252,7 @@ class OnChangeExample extends React.Component<{...}, $FlowFixMeState> {
 
 class ContainerBackgroundColorStyleExample extends React.Component<
   {...},
-  $FlowFixMeState,
+  $FlowFixMe,
 > {
   render(): React.Node {
     return (
@@ -318,11 +320,9 @@ exports.examples = [
       return <ContainerBackgroundColorStyleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;
 
 if (Platform.OS === 'ios') {
-  /* $FlowFixMe[incompatible-call] error found during natural inference roll-
-   * out. See https://fburl.com/workplace/tc9m3tcf */
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
     render(): React.MixedElement {

@@ -7,7 +7,7 @@
 
 #include "ParagraphState.h"
 
-#include <react/renderer/components/text/conversions.h>
+#include <react/renderer/components/text/stateConversions.h>
 #include <react/renderer/core/ConcreteState.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
 

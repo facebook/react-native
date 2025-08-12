@@ -53,6 +53,13 @@ export default function setUpPerformanceObserver() {
   );
 
   polyfillGlobal(
+    'PerformanceResourceTiming',
+    () =>
+      require('../webapis/performance/ResourceTiming')
+        .PerformanceResourceTiming,
+  );
+
+  polyfillGlobal(
     'TaskAttributionTiming',
     () => require('../webapis/performance/LongTasks').TaskAttributionTiming,
   );

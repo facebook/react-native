@@ -10,23 +10,20 @@
 package com.facebook.react.animated
 
 import android.annotation.SuppressLint
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableArray
-import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
+import com.facebook.testutils.shadows.ShadowArguments
 import kotlin.collections.Map
 import kotlin.math.abs
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,8 +31,6 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.eq
-import org.mockito.MockedStatic
-import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.atMost
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.reset
@@ -44,8 +39,10 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /** Tests the animated nodes graph traversal algorithm from {@link NativeAnimatedNodesManager}. */
+@Config(shadows = [ShadowArguments::class])
 @RunWith(RobolectricTestRunner::class)
 class NativeAnimatedNodeTraversalTest {
 
@@ -55,7 +52,6 @@ class NativeAnimatedNodeTraversalTest {
   private lateinit var uiManagerMock: UIManagerModule
   private lateinit var eventDispatcherMock: EventDispatcher
   private lateinit var nativeAnimatedNodesManager: NativeAnimatedNodesManager
-  private lateinit var arguments: MockedStatic<Arguments>
 
   private fun nextFrameTime(): Long {
     frameTimeNanos += FRAME_LEN_NANOS
@@ -64,10 +60,6 @@ class NativeAnimatedNodeTraversalTest {
 
   @Before
   fun setUp() {
-    arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
-
     frameTimeNanos = INITIAL_FRAME_TIME_NANOS
 
     reactApplicationContextMock = mock<ReactApplicationContext>()
@@ -111,11 +103,6 @@ class NativeAnimatedNodeTraversalTest {
       "on${arg.substring(3)}"
     }
     nativeAnimatedNodesManager = NativeAnimatedNodesManager(reactApplicationContextMock)
-  }
-
-  @After
-  fun tearDown() {
-    arguments.close()
   }
 
   /**
@@ -226,7 +213,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNodeValueListenerIfNotListening() {
-    val nodeId: Int = 1
+    val nodeId = 1
 
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
@@ -253,7 +240,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testNodeValueListenerIfListening() {
-    val nodeId: Int = 1
+    val nodeId = 1
 
     createSimpleAnimatedViewWithOpacity()
     val frames: JavaOnlyArray = JavaOnlyArray.of(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
@@ -415,10 +402,10 @@ class NativeAnimatedNodeTraversalTest {
     verify(uiManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
     assertThat(stylesCaptor.value.getDouble("opacity")).isEqualTo(0.0)
 
-    var previousValue: Double = 0.0
-    var wasGreaterThanOne: Boolean = false
-    var didComeToRest: Boolean = false
-    var numberOfResets: Int = 0
+    var previousValue = 0.0
+    var wasGreaterThanOne = false
+    var didComeToRest = false
+    var numberOfResets = 0
     /* run 3 secs of animation, five times */
     for (i in 0 until 3 * 60 * 5) {
       reset(uiManagerMock)
@@ -525,8 +512,8 @@ class NativeAnimatedNodeTraversalTest {
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture())
     var previousValue: Double = stylesCaptor.value.getDouble("opacity")
     val initialValue: Double = stylesCaptor.value.getDouble("opacity")
-    var didComeToRest: Boolean = false
-    var numberOfResets: Int = 0
+    var didComeToRest = false
+    var numberOfResets = 0
     /* run 3 secs of animation, five times */
     for (i in 0 until 3 * 60 * 5) {
       reset(uiManagerMock)
@@ -838,7 +825,7 @@ class NativeAnimatedNodeTraversalTest {
 
   @Test
   fun testGetValue() {
-    val tag: Int = 1
+    val tag = 1
     nativeAnimatedNodesManager.createAnimatedNode(
         tag, JavaOnlyMap.of("type", "value", "value", 1.0, "offset", 0.0))
 
@@ -999,7 +986,7 @@ class NativeAnimatedNodeTraversalTest {
   fun testRestoreDefaultProps() {
     val viewTag: Int = 1001
     // restoreDefaultProps not called in Fabric, make sure it's a non-Fabric tag
-    val propsNodeTag: Int = 3
+    val propsNodeTag = 3
     nativeAnimatedNodesManager.createAnimatedNode(
         1, JavaOnlyMap.of("type", "value", "value", 1.0, "offset", 0.0))
     nativeAnimatedNodesManager.createAnimatedNode(
@@ -1224,7 +1211,7 @@ class NativeAnimatedNodeTraversalTest {
 
     // we run several steps of animation until the value starts bouncing, has negative speed and
     // passes the final point (that is 1) while going backwards
-    var isBoucingBack: Boolean = false
+    var isBoucingBack = false
     var previousValue: Double =
         (nativeAnimatedNodesManager.getNodeById(3) as ValueAnimatedNode).getValue()
     for (i in 500 downTo 0) {
@@ -1244,8 +1231,8 @@ class NativeAnimatedNodeTraversalTest {
     // low friction we expect it to keep going in the opposite direction for a few more frames
     nativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.5)
     nativeAnimatedNodesManager.runUpdates(nextFrameTime())
-    var bounceBackInitialFrames: Int = 0
-    var hasTurnedForward: Boolean = false
+    var bounceBackInitialFrames = 0
+    var hasTurnedForward = false
 
     // we run 8 seconds of animation
     for (i in 0 until 8 * 60) {

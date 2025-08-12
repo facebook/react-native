@@ -117,7 +117,7 @@ function findLogBoxInspectorUI(node: ReadOnlyElement): InspectorUI {
 //   anonymous
 //   MockConsoleErrorForTesting  <-- mockConsoleIndex
 //   ManualConsoleError
-//   reactStackBottomFrame       <-- react bottom frame
+//   react_stack_bottom_frame       <-- react bottom frame
 //   <root>
 //
 // Becomes:
@@ -129,9 +129,19 @@ function getStackFrames(node: ReadOnlyElement): ?Array<string> {
   const mockConsoleIndex = text.includes('MockConsoleErrorForTesting')
     ? text.indexOf('MockConsoleErrorForTesting') + 1
     : 0;
-  const bottomFrameIndex = text.includes('reactStackBottomFrame')
-    ? text.indexOf('reactStackBottomFrame')
-    : text.length;
+  let bottomFrameIndex = text.indexOf('react_stack_bottom_frame');
+  if (bottomFrameIndex === -1) {
+    // react@19.1.0 with @babel/plugin-transform-function-name
+    bottomFrameIndex = text.indexOf('reactStackBottomFrame');
+  }
+  if (bottomFrameIndex === -1) {
+    // react@19.1.0 without @babel/plugin-transform-function-name
+    bottomFrameIndex = text.indexOf('react-stack-bottom-frame');
+  }
+  if (bottomFrameIndex === -1) {
+    bottomFrameIndex = text.length;
+  }
+
   return text.slice(mockConsoleIndex, bottomFrameIndex);
 }
 

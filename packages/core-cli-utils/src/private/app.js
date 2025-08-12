@@ -71,14 +71,13 @@ const FIRST = 1,
   FOURTH = 4;
 
 function getNodePackagePath(packageName: string): string {
-  // $FlowIgnore[prop-missing] type definition is incomplete
+  // $FlowFixMe[prop-missing] type definition is incomplete
   return require.resolve(packageName, {cwd: [process.cwd(), ...module.paths]});
 }
 
 function metro(...args: $ReadOnlyArray<string>): ExecaPromise {
-  const metroPath = getNodePackagePath(path.join('metro', 'src', 'cli.js'));
-  log(`🚇 ${metroPath} ${args.join(' ')} `);
-  return execa('node', [metroPath, ...args]);
+  log(`🚇 metro ${args.join(' ')} `);
+  return execa('npx', ['--offline', 'metro', ...args]);
 }
 
 export const tasks = {

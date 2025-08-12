@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeHermes'
   end
@@ -52,4 +52,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

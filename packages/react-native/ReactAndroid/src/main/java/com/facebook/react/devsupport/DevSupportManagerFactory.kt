@@ -22,6 +22,12 @@ public interface DevSupportManagerFactory {
    * Factory used by the Old Architecture flow to create a [DevSupportManager] and a
    * [BridgeDevSupportManager]
    */
+  @Deprecated(
+      message =
+          "Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.",
+      replaceWith =
+          ReplaceWith(
+              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
   public fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,

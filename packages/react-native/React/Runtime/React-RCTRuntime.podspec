@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
@@ -68,4 +69,5 @@ Pod::Spec.new do |s|
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

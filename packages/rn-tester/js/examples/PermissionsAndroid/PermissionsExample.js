@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Permission} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
@@ -158,4 +159,4 @@ exports.examples = [
       'Short example of how to use the runtime permissions API introduced in Android M.',
     render: (): React.Node => <PermissionsExample />,
   },
-];
+] as Array<RNTesterModuleExample>;

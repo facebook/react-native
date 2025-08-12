@@ -79,7 +79,7 @@ function structuredCloneInternal<T>(value: T): T {
   }
 
   // Simple object fast path
-  // $FlowIssue[prop-missing] Why doesn't Flow know about Object.prototype?
+  // $FlowFixMe[prop-missing] Why doesn't Flow know about Object.prototype?
   if (Object.getPrototypeOf(value) === ObjectPrototype) {
     const result = {};
     memory.set(value, result);

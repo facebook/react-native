@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text
 
 import android.text.Spannable
@@ -180,7 +182,7 @@ internal class PreparedLayoutTextViewManager :
 
   @ReactProp(name = "disabled", defaultBoolean = false)
   fun setDisabled(view: PreparedLayoutTextView, disabled: Boolean): Unit {
-    view.setEnabled(!disabled)
+    view.isEnabled = !disabled
   }
 
   override fun setPadding(

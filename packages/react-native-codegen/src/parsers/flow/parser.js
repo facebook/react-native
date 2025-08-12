@@ -187,8 +187,8 @@ class FlowParser implements Parser {
       typeAnnotation.type === 'EnumStringBody'
         ? 'StringTypeAnnotation'
         : typeAnnotation.type === 'EnumNumberBody'
-        ? 'NumberTypeAnnotation'
-        : null;
+          ? 'NumberTypeAnnotation'
+          : null;
     if (!enumMembersType) {
       throw new Error(
         `Unknown enum type annotation type. Got: ${typeAnnotation.type}. Expected: EnumStringBody or EnumNumberBody.`,
@@ -242,14 +242,14 @@ class FlowParser implements Parser {
               value: member.init.value,
             }
           : typeof member.init?.value === 'string'
-          ? {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.init.value,
-            }
-          : {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.id.name,
-            };
+            ? {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.init.value,
+              }
+            : {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.id.name,
+              };
 
       return {
         name: member.id.name,

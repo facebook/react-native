@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {HostInstance} from 'react-native';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -71,10 +72,7 @@ class ActionSheetExample extends React.Component<Props, State> {
   };
 }
 
-class ActionSheetTintExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class ActionSheetTintExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   state: any | {clicked: string} = {
     clicked: 'none',
   };
@@ -114,8 +112,8 @@ class ActionSheetTintExample extends React.Component<
 }
 
 class ActionSheetCancelButtonTintExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
+  $FlowFixMe,
+  $FlowFixMe,
 > {
   state: any | {clicked: string} = {
     clicked: 'none',
@@ -157,8 +155,8 @@ class ActionSheetCancelButtonTintExample extends React.Component<
 }
 
 class ActionSheetDisabledButtonTintExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
+  $FlowFixMe,
+  $FlowFixMe,
 > {
   state: any | {clicked: string} = {
     clicked: 'none',
@@ -200,10 +198,7 @@ class ActionSheetDisabledButtonTintExample extends React.Component<
   };
 }
 
-class ActionSheetAnchorExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class ActionSheetAnchorExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   state: any | {clicked: string} = {
     clicked: 'none',
   };
@@ -325,10 +320,7 @@ class ActionSheetDismissExample extends React.Component<{...}> {
   };
 }
 
-class ShareActionSheetExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class ShareActionSheetExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   state: any | {text: string} = {
     text: '',
   };
@@ -374,10 +366,7 @@ class ShareActionSheetExample extends React.Component<
   };
 }
 
-class ShareScreenshotExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class ShareScreenshotExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   state: any | {text: string} = {
     text: '',
   };
@@ -428,8 +417,8 @@ class ShareScreenshotExample extends React.Component<
 }
 
 class ShareScreenshotAnchorExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
+  $FlowFixMe,
+  $FlowFixMe,
 > {
   state: any | {text: string} = {
     text: '',
@@ -573,4 +562,4 @@ exports.examples = [
       return <ShareScreenshotAnchorExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

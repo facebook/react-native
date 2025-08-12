@@ -9,8 +9,7 @@
 #import <jsi/jsi.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 class RCTJscInstance : public JSRuntimeFactory {
  public:
@@ -21,5 +20,4 @@ class RCTJscInstance : public JSRuntimeFactory {
 
   ~RCTJscInstance(){};
 };
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -14,6 +14,7 @@ import android.os.Build
 import android.text.BoringLayout
 import android.text.Layout
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.StaticLayout
@@ -29,6 +30,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -40,6 +42,8 @@ import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan
 import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan
+import com.facebook.react.views.text.internal.span.ReactFragmentIndexSpan
+import com.facebook.react.views.text.internal.span.ReactLinkSpan
 import com.facebook.react.views.text.internal.span.ReactOpacitySpan
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan
 import com.facebook.react.views.text.internal.span.ReactTagSpan
@@ -216,7 +220,8 @@ internal object TextLayoutManager {
       context: Context,
       fragments: MapBuffer,
       sb: SpannableStringBuilder,
-      ops: MutableList<SetSpanOperation>
+      ops: MutableList<SetSpanOperation>,
+      outputReactTags: IntArray?
   ) {
     for (i in 0 until fragments.count) {
       val fragment = fragments.getMapBuffer(i)
@@ -226,7 +231,7 @@ internal object TextLayoutManager {
           TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES))
 
       sb.append(
-          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.mTextTransform))
+          TextTransform.apply(fragment.getString(FR_KEY_STRING), textAttributes.textTransform))
 
       val end = sb.length
       val reactTag =
@@ -241,21 +246,29 @@ internal object TextLayoutManager {
                 TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt())))
       } else if (end >= start) {
         val roleIsLink =
-            if (textAttributes.mRole != null)
-                (textAttributes.mRole == ReactAccessibilityDelegate.Role.LINK)
+            if (textAttributes.role != null)
+                (textAttributes.role == ReactAccessibilityDelegate.Role.LINK)
             else
-                (textAttributes.mAccessibilityRole ==
+                (textAttributes.accessibilityRole ==
                     ReactAccessibilityDelegate.AccessibilityRole.LINK)
         if (roleIsLink) {
-          ops.add(SetSpanOperation(start, end, ReactClickableSpan(reactTag)))
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+            ops.add(SetSpanOperation(start, end, ReactLinkSpan(i)))
+          } else {
+            ops.add(SetSpanOperation(start, end, ReactClickableSpan(reactTag)))
+          }
         }
-        if (textAttributes.mIsColorSet) {
-          ops.add(SetSpanOperation(start, end, ReactForegroundColorSpan(textAttributes.mColor)))
+        if (textAttributes.isColorSet) {
+          textAttributes.color
+              ?.let { ReactForegroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
-        if (textAttributes.mIsBackgroundColorSet) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, ReactBackgroundColorSpan(textAttributes.mBackgroundColor)))
+        if (textAttributes.isBackgroundColorSet) {
+          textAttributes.backgroundColor
+              ?.let { ReactBackgroundColorSpan(it) }
+              ?.let { SetSpanOperation(start, end, it) }
+              ?.let { ops.add(it) }
         }
         if (!textAttributes.opacity.isNaN()) {
           ops.add(SetSpanOperation(start, end, ReactOpacitySpan(textAttributes.opacity)))
@@ -264,50 +277,219 @@ internal object TextLayoutManager {
           ops.add(
               SetSpanOperation(start, end, CustomLetterSpacingSpan(textAttributes.letterSpacing)))
         }
-        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.mFontSize)))
-        if (textAttributes.mFontStyle != ReactConstants.UNSET ||
-            textAttributes.mFontWeight != ReactConstants.UNSET ||
-            textAttributes.mFontFamily != null) {
+        ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(textAttributes.fontSize)))
+        if (textAttributes.fontStyle != ReactConstants.UNSET ||
+            textAttributes.fontWeight != ReactConstants.UNSET ||
+            textAttributes.fontFamily != null) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   CustomStyleSpan(
-                      textAttributes.mFontStyle,
-                      textAttributes.mFontWeight,
-                      textAttributes.mFontFeatureSettings,
-                      textAttributes.mFontFamily,
+                      textAttributes.fontStyle,
+                      textAttributes.fontWeight,
+                      textAttributes.fontFeatureSettings,
+                      textAttributes.fontFamily,
                       context.assets)))
         }
-        if (textAttributes.mIsUnderlineTextDecorationSet) {
+        if (textAttributes.isUnderlineTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
         }
-        if (textAttributes.mIsLineThroughTextDecorationSet) {
+        if (textAttributes.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
         }
-        if ((textAttributes.mTextShadowOffsetDx != 0f ||
-            textAttributes.mTextShadowOffsetDy != 0f ||
-            textAttributes.mTextShadowRadius != 0f) &&
-            Color.alpha(textAttributes.mTextShadowColor) != 0) {
+        if ((textAttributes.textShadowOffsetDx != 0f ||
+            textAttributes.textShadowOffsetDy != 0f ||
+            textAttributes.textShadowRadius != 0f) &&
+            Color.alpha(textAttributes.textShadowColor) != 0) {
           ops.add(
               SetSpanOperation(
                   start,
                   end,
                   ShadowStyleSpan(
-                      textAttributes.mTextShadowOffsetDx,
-                      textAttributes.mTextShadowOffsetDy,
-                      textAttributes.mTextShadowRadius,
-                      textAttributes.mTextShadowColor)))
+                      textAttributes.textShadowOffsetDx,
+                      textAttributes.textShadowOffsetDy,
+                      textAttributes.textShadowRadius,
+                      textAttributes.textShadowColor)))
         }
-        if (!textAttributes.effectiveLineHeight.isNaN()) {
-          ops.add(
-              SetSpanOperation(
-                  start, end, CustomLineHeightSpan(textAttributes.effectiveLineHeight)))
+        if (!textAttributes.lineHeight.isNaN()) {
+          ops.add(SetSpanOperation(start, end, CustomLineHeightSpan(textAttributes.lineHeight)))
         }
 
-        ops.add(SetSpanOperation(start, end, ReactTagSpan(reactTag)))
+        if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+          ops.add(SetSpanOperation(start, end, ReactFragmentIndexSpan(i)))
+          if (outputReactTags != null) {
+            outputReactTags[i] = reactTag
+          }
+        } else {
+          ops.add(SetSpanOperation(start, end, ReactTagSpan(reactTag)))
+        }
       }
     }
+  }
+
+  private class FragmentAttributes(
+      val props: TextAttributeProps,
+      val length: Int,
+      val reactTag: Int,
+      val isAttachment: Boolean,
+      val width: Double,
+      val height: Double
+  )
+
+  private fun buildSpannableFromFragmentsOptimized(
+      context: Context,
+      fragments: MapBuffer,
+      outputReactTags: IntArray?
+  ): Spannable {
+    val text = StringBuilder()
+    val parsedFragments = ArrayList<FragmentAttributes>(fragments.count)
+
+    for (i in 0 until fragments.count) {
+      val fragment = fragments.getMapBuffer(i)
+      val props = TextAttributeProps.fromMapBuffer(fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES))
+      val fragmentText = TextTransform.apply(fragment.getString(FR_KEY_STRING), props.textTransform)
+      text.append(fragmentText)
+      parsedFragments.add(
+          FragmentAttributes(
+              props = props,
+              length = fragmentText.length,
+              reactTag =
+                  if (fragment.contains(FR_KEY_REACT_TAG)) {
+                    fragment.getInt(FR_KEY_REACT_TAG)
+                  } else {
+                    View.NO_ID
+                  },
+              isAttachment =
+                  fragment.contains(FR_KEY_IS_ATTACHMENT) &&
+                      fragment.getBoolean(FR_KEY_IS_ATTACHMENT),
+              width =
+                  if (fragment.contains(FR_KEY_WIDTH)) {
+                    fragment.getDouble(FR_KEY_WIDTH)
+                  } else {
+                    Double.NaN
+                  },
+              height =
+                  if (fragment.contains(FR_KEY_HEIGHT)) {
+                    fragment.getDouble(FR_KEY_HEIGHT)
+                  } else {
+                    Double.NaN
+                  }))
+    }
+
+    val spannable = SpannableString(text)
+
+    var start = 0
+    for ((i, fragment) in parsedFragments.withIndex()) {
+      val end = start + fragment.length
+      val spanFlags =
+          if (start == 0) Spannable.SPAN_INCLUSIVE_INCLUSIVE else Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+
+      if (fragment.isAttachment) {
+        spannable.setSpan(
+            TextInlineViewPlaceholderSpan(
+                fragment.reactTag,
+                PixelUtil.toPixelFromSP(fragment.width).toInt(),
+                PixelUtil.toPixelFromSP(fragment.height).toInt()),
+            start,
+            end,
+            spanFlags)
+      } else {
+        val roleIsLink =
+            if (fragment.props.role != null)
+                (fragment.props.role == ReactAccessibilityDelegate.Role.LINK)
+            else
+                (fragment.props.accessibilityRole ==
+                    ReactAccessibilityDelegate.AccessibilityRole.LINK)
+
+        if (roleIsLink) {
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+            spannable.setSpan(ReactLinkSpan(i), start, end, spanFlags)
+          } else {
+            spannable.setSpan(ReactClickableSpan(fragment.reactTag), start, end, spanFlags)
+          }
+        }
+
+        if (fragment.props.isColorSet) {
+          spannable.setSpan(
+              fragment.props.color?.let { ReactForegroundColorSpan(it) }, start, end, spanFlags)
+        }
+
+        if (fragment.props.isBackgroundColorSet) {
+          spannable.setSpan(
+              fragment.props.backgroundColor?.let { ReactBackgroundColorSpan(it) },
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (!fragment.props.opacity.isNaN()) {
+          spannable.setSpan(ReactOpacitySpan(fragment.props.opacity), start, end, spanFlags)
+        }
+
+        if (!fragment.props.letterSpacing.isNaN()) {
+          spannable.setSpan(
+              CustomLetterSpacingSpan(fragment.props.letterSpacing), start, end, spanFlags)
+        }
+
+        spannable.setSpan(ReactAbsoluteSizeSpan(fragment.props.fontSize), start, end, spanFlags)
+
+        if (fragment.props.fontStyle != ReactConstants.UNSET ||
+            fragment.props.fontWeight != ReactConstants.UNSET ||
+            fragment.props.fontFamily != null) {
+          spannable.setSpan(
+              CustomStyleSpan(
+                  fragment.props.fontStyle,
+                  fragment.props.fontWeight,
+                  fragment.props.fontFeatureSettings,
+                  fragment.props.fontFamily,
+                  context.assets),
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (fragment.props.isUnderlineTextDecorationSet) {
+          spannable.setSpan(ReactUnderlineSpan(), start, end, spanFlags)
+        }
+
+        if (fragment.props.isLineThroughTextDecorationSet) {
+          spannable.setSpan(ReactStrikethroughSpan(), start, end, spanFlags)
+        }
+
+        if ((fragment.props.textShadowOffsetDx != 0f ||
+            fragment.props.textShadowOffsetDy != 0f ||
+            fragment.props.textShadowRadius != 0f) &&
+            Color.alpha(fragment.props.textShadowColor) != 0) {
+          spannable.setSpan(
+              ShadowStyleSpan(
+                  fragment.props.textShadowOffsetDx,
+                  fragment.props.textShadowOffsetDy,
+                  fragment.props.textShadowRadius,
+                  fragment.props.textShadowColor),
+              start,
+              end,
+              spanFlags)
+        }
+
+        if (!fragment.props.lineHeight.isNaN()) {
+          spannable.setSpan(CustomLineHeightSpan(fragment.props.lineHeight), start, end, spanFlags)
+        }
+
+        if (ReactNativeFeatureFlags.enablePreparedTextLayout()) {
+          spannable.setSpan(ReactFragmentIndexSpan(i), start, end, spanFlags)
+          if (outputReactTags != null) {
+            outputReactTags[i] = fragment.reactTag
+          }
+        } else {
+          spannable.setSpan(ReactTagSpan(fragment.reactTag), start, end, spanFlags)
+        }
+      }
+
+      start = end
+    }
+
+    return spannable
   }
 
   fun getOrCreateSpannableForText(
@@ -322,7 +504,10 @@ internal object TextLayoutManager {
     } else {
       text =
           createSpannableFromAttributedString(
-              context, attributedString, reactTextViewManagerCallback)
+              context,
+              attributedString.getMapBuffer(AS_KEY_FRAGMENTS),
+              reactTextViewManagerCallback,
+              null)
     }
 
     return text
@@ -330,30 +515,38 @@ internal object TextLayoutManager {
 
   private fun createSpannableFromAttributedString(
       context: Context,
-      attributedString: MapBuffer,
-      reactTextViewManagerCallback: ReactTextViewManagerCallback?
+      fragments: MapBuffer,
+      reactTextViewManagerCallback: ReactTextViewManagerCallback?,
+      outputReactTags: IntArray?
   ): Spannable {
-    val sb = SpannableStringBuilder()
+    if (ReactNativeFeatureFlags.enableAndroidTextMeasurementOptimizations()) {
+      val spannable = buildSpannableFromFragmentsOptimized(context, fragments, outputReactTags)
 
-    // The [SpannableStringBuilder] implementation require setSpan operation to be called
-    // up-to-bottom, otherwise all the spannables that are within the region for which one may set
-    // a new spannable will be wiped out
-    val ops: MutableList<SetSpanOperation> = ArrayList()
+      reactTextViewManagerCallback?.onPostProcessSpannable(spannable)
+      return spannable
+    } else {
+      val sb = SpannableStringBuilder()
 
-    buildSpannableFromFragments(context, attributedString.getMapBuffer(AS_KEY_FRAGMENTS), sb, ops)
+      // The [SpannableStringBuilder] implementation require setSpan operation to be called
+      // up-to-bottom, otherwise all the spannables that are within the region for which one may set
+      // a new spannable will be wiped out
+      val ops: MutableList<SetSpanOperation> = ArrayList()
 
-    // TODO T31905686: add support for inline Images
-    // While setting the Spans on the final text, we also check whether any of them are images.
-    for (priorityIndex in ops.indices) {
-      val op = ops[ops.size - priorityIndex - 1]
+      buildSpannableFromFragments(context, fragments, sb, ops, outputReactTags)
 
-      // Actual order of calling {@code execute} does NOT matter,
-      // but the {@code priorityIndex} DOES matter.
-      op.execute(sb, priorityIndex)
+      // TODO T31905686: add support for inline Images
+      // While setting the Spans on the final text, we also check whether any of them are images.
+      for (priorityIndex in ops.indices) {
+        val op = ops[ops.size - priorityIndex - 1]
+
+        // Actual order of calling {@code execute} does NOT matter,
+        // but the {@code priorityIndex} DOES matter.
+        op.execute(sb, priorityIndex)
+      }
+
+      reactTextViewManagerCallback?.onPostProcessSpannable(sb)
+      return sb
     }
-
-    reactTextViewManagerCallback?.onPostProcessSpannable(sb)
-    return sb
   }
 
   private fun createLayout(
@@ -422,8 +615,8 @@ internal object TextLayoutManager {
       baseTextAttributes: TextAttributeProps,
       context: Context
   ) {
-    if (baseTextAttributes.effectiveFontSize != ReactConstants.UNSET) {
-      paint.textSize = baseTextAttributes.effectiveFontSize.toFloat()
+    if (baseTextAttributes.fontSize != ReactConstants.UNSET) {
+      paint.textSize = baseTextAttributes.fontSize.toFloat()
     }
 
     if (baseTextAttributes.fontStyle != ReactConstants.UNSET ||
@@ -595,7 +788,11 @@ internal object TextLayoutManager {
       heightYogaMeasureMode: YogaMeasureMode,
       reactTextViewManagerCallback: ReactTextViewManagerCallback?
   ): PreparedLayout {
-    val text = getOrCreateSpannableForText(context, attributedString, reactTextViewManagerCallback)
+    val fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS)
+    val reactTags = IntArray(fragments.count)
+    val text =
+        createSpannableFromAttributedString(
+            context, fragments, reactTextViewManagerCallback, reactTags)
     val baseTextAttributes =
         TextAttributeProps.fromMapBuffer(attributedString.getMapBuffer(AS_KEY_BASE_ATTRIBUTES))
     val layout =
@@ -618,7 +815,7 @@ internal object TextLayoutManager {
         getVerticalOffset(
             layout, paragraphAttributes, height, heightYogaMeasureMode, maximumNumberOfLines)
 
-    return PreparedLayout(layout, maximumNumberOfLines, verticalOffset)
+    return PreparedLayout(layout, maximumNumberOfLines, verticalOffset, reactTags)
   }
 
   @JvmStatic
@@ -941,7 +1138,8 @@ internal object TextLayoutManager {
       // There's a bug on Samsung devices where calling getPrimaryHorizontal on
       // the last offset in the layout will result in an endless loop. Work around
       // this bug by avoiding getPrimaryHorizontal in that case.
-      if (start == text.length - 1) {
+      if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
+          start == text.length - 1) {
         val endsWithNewLine = text.length > 0 && text[layout.getLineEnd(line) - 1] == '\n'
         val lineWidth = if (endsWithNewLine) layout.getLineMax(line) else layout.getLineWidth(line)
         placeholderLeftPosition =
@@ -966,7 +1164,9 @@ internal object TextLayoutManager {
         placeholderLeftPosition =
             if (characterAndParagraphDirectionMatch) layout.getPrimaryHorizontal(start)
             else layout.getSecondaryHorizontal(start)
-        if (isRtlParagraph && !isRtlChar) {
+        if (!ReactNativeFeatureFlags.disableOldAndroidAttachmentMetricsWorkarounds() &&
+            isRtlParagraph &&
+            !isRtlChar) {
           // Adjust `placeholderLeftPosition` to work around an Android bug.
           // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
           // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and

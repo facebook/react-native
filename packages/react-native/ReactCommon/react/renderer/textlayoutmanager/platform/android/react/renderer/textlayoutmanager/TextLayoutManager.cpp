@@ -40,7 +40,7 @@ int countAttachments(const AttributedString& attributedString) {
 }
 
 Size measureText(
-    const ContextContainer::Shared& contextContainer,
+    const std::shared_ptr<const ContextContainer>& contextContainer,
     Tag rootTag,
     MapBuffer attributedString,
     MapBuffer paragraphAttributes,
@@ -82,7 +82,7 @@ Size measureText(
 }
 
 TextMeasurement doMeasure(
-    const ContextContainer::Shared& contextContainer,
+    const std::shared_ptr<const ContextContainer>& contextContainer,
     const AttributedString& attributedString,
     const ParagraphAttributes& paragraphAttributes,
     const TextLayoutContext& layoutContext,
@@ -155,8 +155,8 @@ TextMeasurement doMeasure(
 } // namespace
 
 TextLayoutManager::TextLayoutManager(
-    const ContextContainer::Shared& contextContainer)
-    : contextContainer_(contextContainer),
+    const std::shared_ptr<const ContextContainer>& contextContainer)
+    : contextContainer_(std::move(contextContainer)),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       preparedTextCache_(static_cast<size_t>(
@@ -190,7 +190,8 @@ TextMeasurement TextLayoutManager::measure(
   };
 
   auto measurement =
-      ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid()
+      (ReactNativeFeatureFlags::disableTextLayoutManagerCacheAndroid() ||
+       ReactNativeFeatureFlags::enablePreparedTextLayout())
       ? measureText()
       : textMeasureCache_.get(
             {.attributedString = attributedString,
@@ -235,7 +236,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
   // TODO: currently we do not support attachments for cached IDs - should we?
   auto attachments = TextMeasurement::Attachments{};
 
-  return TextMeasurement{size, attachments};
+  return TextMeasurement{.size = size, .attachments = attachments};
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
@@ -310,14 +311,19 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
               jfloat,
               jfloat)>("prepareTextLayout");
 
-  return preparedTextCache_.get(
+  static auto reusePreparedLayoutWithNewReactTags =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<JPreparedLayout::javaobject(
+              JPreparedLayout::javaobject, jintArray)>(
+              "reusePreparedLayoutWithNewReactTags");
+
+  const auto [key, preparedText] = preparedTextCache_.getWithKey(
       {.attributedString = attributedString,
        .paragraphAttributes = paragraphAttributes,
        .layoutConstraints = layoutConstraints},
-      [&] {
+      [&]() {
         const auto& fabricUIManager =
             contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
         auto attributedStringMB = JReadableMapBuffer::createWithContents(
             toMapBuffer(attributedString));
         auto paragraphAttributesMB = JReadableMapBuffer::createWithContents(
@@ -336,6 +342,39 @@ TextLayoutManager::PreparedLayout TextLayoutManager::prepareLayout(
             minimumSize.height,
             maximumSize.height))};
       });
+
+  // PreparedTextCacheKey allows equality of layouts which are the same
+  // display-wise, but ShadowView fragments (and thus react tags) may have
+  // changed.
+  const auto& fragments = attributedString.getFragments();
+  const auto& cacheKeyFragments = key->attributedString.getFragments();
+  bool needsNewReactTags = [&] {
+    for (size_t i = 0; i < fragments.size(); i++) {
+      if (fragments[i].parentShadowView.tag !=
+          cacheKeyFragments[i].parentShadowView.tag) {
+        return true;
+      }
+    }
+    return false;
+  }();
+
+  if (needsNewReactTags) {
+    std::vector<int> reactTags(fragments.size());
+    for (size_t i = 0; i < reactTags.size(); i++) {
+      reactTags[i] = fragments[i].parentShadowView.tag;
+    }
+
+    auto javaReactTags = jni::JArrayInt::newArray(fragments.size());
+    javaReactTags->setRegion(
+        0, static_cast<jsize>(reactTags.size()), reactTags.data());
+
+    const auto& fabricUIManager =
+        contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+    return PreparedLayout{jni::make_global(reusePreparedLayoutWithNewReactTags(
+        fabricUIManager, preparedText->get(), javaReactTags.get()))};
+  } else {
+    return PreparedLayout{*preparedText};
+  }
 }
 
 TextMeasurement TextLayoutManager::measurePreparedLayout(

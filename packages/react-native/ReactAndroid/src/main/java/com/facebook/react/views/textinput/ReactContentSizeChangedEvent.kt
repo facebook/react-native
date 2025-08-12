@@ -10,7 +10,6 @@ package com.facebook.react.views.textinput
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.buildReadableMap
-import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
 /** Event emitted by EditText native view when content size changes. */
@@ -20,16 +19,6 @@ internal class ReactContentSizeChangedEvent(
     private val contentWidth: Float,
     private val contentHeight: Float
 ) : Event<ReactTextChangedEvent>(surfaceId, viewId) {
-  @Deprecated(
-      "Use the constructor with surfaceId instead",
-      ReplaceWith(
-          "ReactContentSizeChangedEvent(surfaceId, viewId, contentSizeWidth, contentSizeHeight)"))
-  constructor(
-      viewId: Int,
-      contentSizeWidth: Float,
-      contentSizeHeight: Float
-  ) : this(ViewUtil.NO_SURFACE_ID, viewId, contentSizeWidth, contentSizeHeight)
-
   override fun getEventName(): String = EVENT_NAME
 
   override fun getEventData(): WritableMap {

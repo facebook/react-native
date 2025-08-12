@@ -39,8 +39,9 @@ class InspectorPackagerConnection::Impl
   bool isConnected() const;
   void connect();
   void closeQuietly();
-  void sendEventToAllConnections(std::string event);
-  std::unique_ptr<ILocalConnection> removeConnectionForPage(std::string pageId);
+  void sendEventToAllConnections(const std::string& event);
+  std::unique_ptr<ILocalConnection> removeConnectionForPage(
+      const std::string& pageId);
 
   /**
    * Send a message to the packager as soon as possible. This method is safe
@@ -51,7 +52,7 @@ class InspectorPackagerConnection::Impl
   void scheduleSendToPackager(
       folly::dynamic message,
       SessionId sourceSessionId,
-      std::string sourcePageId);
+      const std::string& sourcePageId);
 
  private:
   struct Session {
@@ -68,15 +69,15 @@ class InspectorPackagerConnection::Impl
   Impl(const Impl&) = delete;
   Impl& operator=(const Impl&) = delete;
 
-  void handleDisconnect(folly::const_dynamic_view payload);
-  void handleConnect(folly::const_dynamic_view payload);
-  void handleWrappedEvent(folly::const_dynamic_view wrappedEvent);
-  void handleProxyMessage(folly::const_dynamic_view message);
+  void handleDisconnect(const folly::const_dynamic_view& payload);
+  void handleConnect(const folly::const_dynamic_view& payload);
+  void handleWrappedEvent(const folly::const_dynamic_view& payload);
+  void handleProxyMessage(const folly::const_dynamic_view& message);
   folly::dynamic pages();
   void reconnect();
   void closeAllConnections();
   void disposeWebSocket();
-  void sendToPackager(folly::dynamic message);
+  void sendToPackager(const folly::dynamic& message);
 
   void abort(
       std::optional<int> posixCode,

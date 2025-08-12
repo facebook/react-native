@@ -43,8 +43,7 @@ UIDeviceOrientation RCTDeviceOrientation(void);
 // Whether the New Architecture is enabled or not
 BOOL RCTIsNewArchEnabled(void)
 {
-  NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
-  return rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  return YES;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
@@ -305,13 +304,6 @@ void RCTExecuteOnMainQueue(dispatch_block_t block)
 // unless you know what you are doing.
 void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 {
-  RCTUnsafeExecuteOnMainQueueSyncWithError(block, @"Sync dispatches to the main queue can deadlock React Native.");
-}
-
-// Please do not use this method
-// unless you know what you are doing.
-void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context)
-{
   if (RCTIsMainQueue()) {
     block();
     return;
@@ -320,10 +312,6 @@ void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
-  }
-
-  if (ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-    RCTLogError(@"RCTUnsafeExecuteOnMainQueueSync: %@", context);
   }
 
   dispatch_sync(dispatch_get_main_queue(), ^{
@@ -352,10 +340,6 @@ static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, disp
   if (ReactNativeFeatureFlags::enableMainQueueCoordinatorOnIOS()) {
     unsafeExecuteOnMainThreadSync(block);
     return;
-  }
-
-  if (ReactNativeFeatureFlags::disableMainQueueSyncDispatchIOS()) {
-    RCTLogError(@"RCTUnsafeExecuteOnMainQueueOnceSync: Sync dispatches to the main queue can deadlock React Native.");
   }
 
   dispatch_sync(dispatch_get_main_queue(), executeOnce);

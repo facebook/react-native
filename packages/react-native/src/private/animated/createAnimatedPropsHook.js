@@ -67,7 +67,7 @@ export default function createAnimatedPropsHook(
 
     useEffect(() => {
       // Animated queue flush is handled deterministically in setImmediate for the following feature flags:
-      // animatedShouldSignalBatch, cxxNativeAnimatedEnabled
+      // cxxNativeAnimatedEnabled
       if (!NativeAnimatedHelper.shouldSignalBatch) {
         // If multiple components call `flushQueue`, the first one will flush the
         // queue and subsequent ones will do nothing.
@@ -88,13 +88,6 @@ export default function createAnimatedPropsHook(
         drivenAnimationEndedListener?.remove();
       };
     });
-
-    // NOTE: This feature flag must be evaluated inside the hook because this
-    // module factory can be evaluated much sooner, before overrides are set.
-    const useAnimatedPropsLifecycle =
-      ReactNativeFeatureFlags.scheduleAnimatedCleanupInMicrotask()
-        ? useAnimatedPropsLifecycleWithCleanupInMicrotask
-        : useAnimatedPropsLifecycleWithPrevNodeRef;
 
     useAnimatedPropsLifecycle(node);
 
@@ -156,7 +149,7 @@ export default function createAnimatedPropsHook(
 
           if (!isFabricNode) {
             // Check 4: this is a paper instance, call setNativeProps.
-            // $FlowIgnore[not-a-function] - Assume it's still a function.
+            // $FlowFixMe[not-a-function] - Assume it's still a function.
             // $FlowFixMe[incompatible-use]
             return instance.setNativeProps(node.__getAnimatedValue());
           }
@@ -168,7 +161,7 @@ export default function createAnimatedPropsHook(
 
           // This is a Fabric instance and setNativeProps is supported.
 
-          // $FlowIgnore[not-a-function] - Assume it's still a function.
+          // $FlowFixMe[not-a-function] - Assume it's still a function.
           // $FlowFixMe[incompatible-use]
           instance.setNativeProps(node.__getAnimatedValue());
 
@@ -264,44 +257,6 @@ function addAnimatedValuesListenersToProps(
 
 /**
  * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
- * and `__detach`. However, this is more complicated because `AnimatedProps`
- * uses reference counting to determine when to recursively detach its children
- * nodes. So in order to optimize this, we avoid detaching until the next attach
- * unless we are unmounting.
- */
-function useAnimatedPropsLifecycleWithPrevNodeRef(node: AnimatedProps): void {
-  const prevNodeRef = useRef<?AnimatedProps>(null);
-  const isUnmountingRef = useRef<boolean>(false);
-
-  useInsertionEffect(() => {
-    isUnmountingRef.current = false;
-    return () => {
-      isUnmountingRef.current = true;
-    };
-  }, []);
-
-  useInsertionEffect(() => {
-    node.__attach();
-    if (prevNodeRef.current != null) {
-      const prevNode = prevNodeRef.current;
-      // TODO: Stop restoring default values (unless `reset` is called).
-      prevNode.__restoreDefaultValues();
-      prevNode.__detach();
-      prevNodeRef.current = null;
-    }
-    return () => {
-      if (isUnmountingRef.current) {
-        // NOTE: Do not restore default values on unmount, see D18197735.
-        node.__detach();
-      } else {
-        prevNodeRef.current = node;
-      }
-    };
-  }, [node]);
-}
-
-/**
- * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
  * and `__detach`. However, `__detach` occurs in a microtask for these reasons:
  *
  *   1. Optimizes detaching and attaching `AnimatedNode` instances that rely on
@@ -314,9 +269,7 @@ function useAnimatedPropsLifecycleWithPrevNodeRef(node: AnimatedProps): void {
  * callbacks may update state, which is unsupported and will force synchronous
  * updates.
  */
-function useAnimatedPropsLifecycleWithCleanupInMicrotask(
-  node: AnimatedProps,
-): void {
+function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const isMounted = useRef<boolean>(false);
 
   useInsertionEffect(() => {

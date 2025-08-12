@@ -92,14 +92,14 @@ async function runServer(
   console.info(`Starting dev server on ${devServerUrl}\n`);
 
   if (args.assetPlugins) {
-    // $FlowIgnore[cannot-write] Assigning to readonly property
+    // $FlowFixMe[cannot-write] Assigning to readonly property
     metroConfig.transformer.assetPlugins = args.assetPlugins.map(plugin =>
       require.resolve(plugin),
     );
   }
   // TODO(T214991636): Remove legacy Metro log forwarding
   if (!args.clientLogs) {
-    // $FlowIgnore[cannot-write] Assigning to readonly property
+    // $FlowFixMe[cannot-write] Assigning to readonly property
     metroConfig.server.forwardClientLogs = false;
   }
 
@@ -127,6 +127,8 @@ async function runServer(
   const reporter: Reporter = {
     update(event: TerminalReportableEvent) {
       terminalReporter.update(event);
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (reportEvent) {
         reportEvent(event);
       }
@@ -144,10 +146,10 @@ async function runServer(
       }
     },
   };
-  // $FlowIgnore[cannot-write] Assigning to readonly property
+  // $FlowFixMe[cannot-write] Assigning to readonly property
   metroConfig.reporter = reporter;
 
-  const serverInstance = await Metro.runServer(metroConfig, {
+  await Metro.runServer(metroConfig, {
     host: args.host,
     secure: args.https,
     secureCert: args.cert,
@@ -161,18 +163,6 @@ async function runServer(
 
   reportEvent = eventsSocketEndpoint.reportEvent;
 
-  // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
-  // early versions of Node 8, this was implemented in a buggy way which caused
-  // some HTTP responses (like those containing large JS bundles) to be
-  // terminated early.
-  //
-  // As a workaround, arbitrarily increase the keep-alive from 5 to 30 seconds,
-  // which should be enough to send even the largest of JS bundles.
-  //
-  // For more info: https://github.com/nodejs/node/issues/13391
-  //
-  serverInstance.keepAliveTimeout = 30000;
-
   await version.logIfUpdateAvailable(cliConfig, terminalReporter);
 }
 
@@ -185,7 +175,7 @@ function getReporterImpl(
   try {
     // First we let require resolve it, so we can require packages in node_modules
     // as expected. eg: require('my-package/reporter');
-    // $FlowIgnore[unsupported-syntax]
+    // $FlowFixMe[unsupported-syntax]
     return require(customLogReporterPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
@@ -193,7 +183,7 @@ function getReporterImpl(
     }
     // If that doesn't work, then we next try relative to the cwd, eg:
     // require('./reporter');
-    // $FlowIgnore[unsupported-syntax]
+    // $FlowFixMe[unsupported-syntax]
     return require(path.resolve(customLogReporterPath));
   }
 }

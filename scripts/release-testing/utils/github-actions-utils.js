@@ -80,8 +80,8 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-call]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
@@ -100,8 +100,8 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-call]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
@@ -209,10 +209,6 @@ async function artifactURLForRNTesterAPK(
   return getArtifactURL('rntester-debug');
 }
 
-async function artifactURLForJSCRNTesterApp() /*: Promise<string> */ {
-  return getArtifactURL('RNTesterApp-NewArch-JSC-Debug');
-}
-
 async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
   return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
 }
@@ -249,7 +245,6 @@ module.exports = {
   initialize,
   downloadArtifact,
   artifactURLForRNTesterAPK,
-  artifactURLForJSCRNTesterApp,
   artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,
   artifactURLHermesDebug,

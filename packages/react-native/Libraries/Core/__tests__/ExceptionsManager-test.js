@@ -477,7 +477,7 @@ function runExceptionsManagerTests() {
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddConsoleLog).toBeCalledTimes(1);
           expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
-          // $FlowIgnore[incompatible-call]
+          // $FlowFixMe[incompatible-call]
           expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
           expect(logBoxAddException).not.toBeCalled();
@@ -554,7 +554,7 @@ function runExceptionsManagerTests() {
         const object = {
           toString: () => 'Warning: Some error may have happened',
         };
-        // $FlowIgnore[prop-missing]
+        // $FlowFixMe[prop-missing]
         object.cycle = object;
 
         const args = [object];

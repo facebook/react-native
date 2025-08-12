@@ -8,58 +8,70 @@
  * @format
  */
 
-import type {FailureDetail, TestSuiteResult} from '../runtime/setup';
+import type {
+  FailureDetail,
+  TestCaseResult,
+  TestSuiteResult,
+} from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
   HermesVariant,
 } from './utils';
 
+import {printBenchmarkResultsRanking} from './benchmarkUtils';
+import {createBundle, createSourceMap} from './bundling';
 import entrypointTemplate from './entrypoint-template';
 import * as EnvironmentOptions from './EnvironmentOptions';
+import {run as runHermesCompiler} from './executables/hermesc';
+import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {FantomTestConfigMode} from './getFantomTestConfigs';
+import {
+  JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
+  JS_TRACES_OUTPUT_PATH,
+  buildJSHeapSnapshotsOutputPathTemplate,
+  buildJSTracesOutputPath,
+  getTestBuildOutputPath,
+} from './paths';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
   HermesVariant as HermesVariantEnum,
-  getBuckModesForPlatform,
-  getBuckOptionsForHermes,
   getDebugInfoFromCommandResult,
-  getHermesCompilerTarget,
-  getShortHash,
-  isRunningFromCI,
   printConsoleLog,
-  runBuck2,
-  runBuck2Sync,
   runCommand,
+  symbolicateJSTrace,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
 import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
-import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 import readline from 'readline';
 
-const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build', 'js');
-fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
-const BUILD_OUTPUT_PATH = fs.mkdtempSync(
-  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
-);
+const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
+fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
+fs.mkdirSync(JS_HEAP_SNAPSHOTS_OUTPUT_PATH, {recursive: true});
+
+if (EnvironmentOptions.profileJS) {
+  fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
+}
 
 function buildError(
   failureDetail: FailureDetail,
   sourceMapPath: string,
 ): Error {
   const error = new Error(failureDetail.message);
-  error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  if (failureDetail.stack != null) {
+    error.stack = symbolicateStackTrace(sourceMapPath, failureDetail.stack);
+  }
   if (failureDetail.cause != null) {
     error.cause = buildError(failureDetail.cause, sourceMapPath);
   }
@@ -68,7 +80,7 @@ function buildError(
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
-): Promise<TestSuiteResult> {
+): Promise<[TestSuiteResult, ?BenchmarkResult]> {
   const stdoutChunks = [];
   const stderrChunks = [];
 
@@ -80,7 +92,7 @@ async function processRNTesterCommandResult(
     stderrChunks.push(chunk);
   });
 
-  let testResult;
+  let testResult, benchmarkResult;
 
   const rl = readline.createInterface({input: result.childProcess.stdout});
   rl.on('line', (rawLine: string) => {
@@ -103,6 +115,9 @@ async function processRNTesterCommandResult(
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
+        break;
+      case 'benchmark-result':
+        benchmarkResult = parsed;
         break;
       case 'console-log':
         printConsoleLog(parsed);
@@ -140,7 +155,7 @@ async function processRNTesterCommandResult(
     );
   }
 
-  return testResult;
+  return [testResult, benchmarkResult];
 }
 
 function generateBytecodeBundle({
@@ -154,13 +169,8 @@ function generateBytecodeBundle({
   isOptimizedMode: boolean,
   hermesVariant: HermesVariant,
 }): void {
-  const hermesCompilerCommandResult = runBuck2Sync(
+  const hermesCompilerCommandResult = runHermesCompiler(
     [
-      'run',
-      ...getBuckModesForPlatform(isOptimizedMode),
-      ...getBuckOptionsForHermes(hermesVariant),
-      getHermesCompilerTarget(hermesVariant),
-      '--',
       '-emit-binary',
       isOptimizedMode ? '-O' : null,
       '-max-diagnostic-width',
@@ -169,6 +179,10 @@ function generateBytecodeBundle({
       bytecodePath,
       sourcePath,
     ].filter(Boolean),
+    {
+      isOptimizedMode,
+      hermesVariant,
+    },
   );
 
   if (hermesCompilerCommandResult.status !== 0) {
@@ -205,10 +219,6 @@ module.exports = async function runTest(
   const testContents = fs.readFileSync(testPath, 'utf8');
   const testConfigs = getFantomTestConfigs(testPath, testContents);
 
-  const metroConfig = await Metro.loadConfig({
-    config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
-  });
-
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
   const featureFlagsModulePath = path.resolve(
     __dirname,
@@ -216,26 +226,37 @@ module.exports = async function runTest(
   );
 
   const testResultsByConfig = [];
+  const benchmarkResults = [];
+
+  const skippedTestResults = ({
+    ancestorTitles,
+    title,
+  }: {
+    ancestorTitles: string[],
+    title: string,
+  }) => [
+    {
+      ancestorTitles,
+      duration: 0,
+      failureDetails: [] as Array<Error>,
+      failureMessages: [] as Array<string>,
+      fullName: title,
+      numPassingAsserts: 0,
+      snapshotResults: {} as TestSnapshotResults,
+      status: 'pending' as TestCaseResult['status'],
+      testFilePath: testPath,
+      title,
+    },
+  ];
 
   for (const testConfig of testConfigs) {
-    if (
-      EnvironmentOptions.isOSS &&
-      testConfig.mode === FantomTestConfigMode.Optimized
-    ) {
-      testResultsByConfig.push([
-        {
+    if (EnvironmentOptions.isOSS && testConfig.isNativeOptimized) {
+      testResultsByConfig.push(
+        skippedTestResults({
           ancestorTitles: ['"@fantom_mode opt" in docblock'],
-          duration: 0,
-          failureDetails: [] as Array<Error>,
-          failureMessages: [] as Array<string>,
-          fullName: 'Optimized mode is not yet supoprted in OSS',
-          numPassingAsserts: 0,
-          snapshotResults: {} as TestSnapshotResults,
-          status: 'pending' as 'passed' | 'failed' | 'pending',
-          testFilePath: testPath,
-          title: 'Optimized mode is not yet supoprted in OSS',
-        },
-      ]);
+          title: 'Optimized mode is not yet supported in OSS',
+        }),
+      );
       continue;
     }
 
@@ -243,40 +264,61 @@ module.exports = async function runTest(
       EnvironmentOptions.isOSS &&
       testConfig.hermesVariant !== HermesVariantEnum.Hermes
     ) {
-      testResultsByConfig.push([
-        {
+      testResultsByConfig.push(
+        skippedTestResults({
           ancestorTitles: [
             '"@fantom_hermes_variant static_hermes" in docblock (shermes 🧪)',
           ],
-          duration: 0,
-          failureDetails: [] as Array<Error>,
-          failureMessages: [] as Array<string>,
-          fullName: 'Static Hermes is not yet supoprted in OSS',
-          numPassingAsserts: 0,
-          snapshotResults: {} as TestSnapshotResults,
-          status: 'pending' as 'passed' | 'failed' | 'pending',
-          testFilePath: testPath,
-          title: 'Static Hermes is not yet supoprted in OSS',
-        },
-      ]);
+          title: 'Static Hermes is not yet supported in OSS',
+        }),
+      );
       continue;
     }
 
+    if (EnvironmentOptions.isOSS && testConfig.isJsBytecode) {
+      testResultsByConfig.push(
+        skippedTestResults({
+          ancestorTitles: ['"@fantom_mode dev" in docblock'],
+          title: 'Hermes bytecode is not yet supported in OSS',
+        }),
+      );
+      continue;
+    }
+
+    const jsTraceOutputPath = EnvironmentOptions.profileJS
+      ? buildJSTracesOutputPath({
+          testPath,
+          testConfig,
+          isMultiConfigTest: testConfigs.length > 1,
+        })
+      : null;
+
+    const [
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+    ] = buildJSHeapSnapshotsOutputPathTemplate({
+      testPath,
+      testConfig,
+      isMultiConfigTest: testConfigs.length > 1,
+    });
+
     const entrypointContents = entrypointTemplate({
-      testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
-      setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
-      featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
+      testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
+      setupModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, setupModulePath)}`,
+      featureFlagsModulePath: `${path.relative(TEST_BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
       testConfig,
       snapshotConfig: {
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
-      isRunningFromCI: isRunningFromCI(),
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+      jsTraceOutputPath,
     });
 
     const entrypointPath = path.join(
-      BUILD_OUTPUT_PATH,
-      `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
+      TEST_BUILD_OUTPUT_PATH,
+      `${Date.now()}-${path.basename(testPath)}`,
     );
     const testJSBundlePath = entrypointPath + '.bundle.js';
     const testBytecodeBundlePath = testJSBundlePath + '.hbc';
@@ -289,60 +331,76 @@ module.exports = async function runTest(
       path.basename(testJSBundlePath, '.js') + '.map',
     );
 
-    await Metro.runBuild(metroConfig, {
+    const bundleOptions = {
+      testPath,
       entry: entrypointPath,
-      out: testJSBundlePath,
       platform: 'android',
-      minify: testConfig.mode === FantomTestConfigMode.Optimized,
-      dev: testConfig.mode !== FantomTestConfigMode.Optimized,
+      minify: testConfig.isJsOptimized,
+      dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+    };
+
+    await createBundle({
+      ...bundleOptions,
+      out: testJSBundlePath,
     });
 
-    if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
+    if (testConfig.isJsBytecode) {
       generateBytecodeBundle({
         sourcePath: testJSBundlePath,
         bytecodePath: testBytecodeBundlePath,
-        isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
+        isOptimizedMode: testConfig.isJsOptimized,
         hermesVariant: testConfig.hermesVariant,
       });
     }
 
     const rnTesterCommandArgs = [
       '--bundlePath',
-      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-        ? testJSBundlePath
-        : testBytecodeBundlePath,
+      !testConfig.isJsBytecode ? testJSBundlePath : testBytecodeBundlePath,
       '--featureFlags',
       JSON.stringify(testConfig.flags.common),
       '--minLogLevel',
       EnvironmentOptions.printCLIOutput ? 'info' : 'error',
     ];
 
+    if (EnvironmentOptions.debugJS) {
+      rnTesterCommandArgs.push(
+        '--inspectorPort',
+        nullthrows(process.env.__FANTOM_METRO_PORT__),
+      );
+    }
+
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
           rnTesterCommandArgs,
         )
-      : runBuck2(
-          [
-            'run',
-            ...getBuckModesForPlatform(
-              testConfig.mode === FantomTestConfigMode.Optimized,
-            ),
-            ...getBuckOptionsForHermes(testConfig.hermesVariant),
-            '//xplat/js/react-native-github/private/react-native-fantom/tester:tester',
-            '--',
-            ...rnTesterCommandArgs,
-          ],
-          {
-            withFDB: EnvironmentOptions.enableCppDebugging,
-          },
-        );
+      : runFantomTester(rnTesterCommandArgs, {
+          isOptimizedMode: testConfig.isNativeOptimized,
+          hermesVariant: testConfig.hermesVariant,
+        });
 
-    const processedResult = await processRNTesterCommandResult(
-      rnTesterCommandResult,
-    );
+    const [processedResult, benchmarkResult] =
+      await processRNTesterCommandResult(rnTesterCommandResult);
+
+    if (containsError(processedResult) || EnvironmentOptions.profileJS) {
+      await createSourceMap({
+        ...bundleOptions,
+        out: sourceMapPath,
+      }).catch(error => {
+        console.error('Failed to generate source map', error);
+      });
+    }
+
+    if (EnvironmentOptions.profileJS && jsTraceOutputPath != null) {
+      symbolicateJSTrace(jsTraceOutputPath, sourceMapPath);
+      console.info(
+        '🔥 JS sampling profiler trace saved to',
+        jsTraceOutputPath,
+        '\n',
+      );
+    }
 
     const testResultError = processedResult.error;
     if (testResultError) {
@@ -390,6 +448,13 @@ module.exports = async function runTest(
       });
     }
 
+    if (benchmarkResult != null) {
+      benchmarkResults.push({
+        title: testResults[0]?.ancestorTitles?.[0] ?? maybeCommonAncestor,
+        result: benchmarkResult,
+      });
+    }
+
     testResultsByConfig.push(testResults);
   }
 
@@ -405,6 +470,8 @@ module.exports = async function runTest(
     snapshotState,
     snapshotResults,
   );
+
+  printBenchmarkResultsRanking(benchmarkResults);
 
   return {
     testFilePath: testPath,
@@ -436,3 +503,13 @@ module.exports = async function runTest(
     testResults,
   };
 };
+
+function containsError(testResult: TestSuiteResult): boolean {
+  return (
+    testResult.error != null ||
+    testResult.testResults.some(
+      result =>
+        result.failureDetails.length > 0 || result.failureMessages.length > 0,
+    )
+  );
+}

@@ -23,6 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (std::pair<CGPoint, CGPoint>)pointsForCAGradientLayerLinearGradient:(CGPoint)startPoint
                                                              endPoint:(CGPoint)endPoint
                                                                bounds:(CGSize)bounds;
+
++ (void)getColors:(NSMutableArray<id> *)colors
+      andLocations:(NSMutableArray<NSNumber *> *)locations
+    fromColorStops:(const std::vector<facebook::react::ProcessedColorStop> &)colorStops;
+
 @end
 
 NS_ASSUME_NONNULL_END

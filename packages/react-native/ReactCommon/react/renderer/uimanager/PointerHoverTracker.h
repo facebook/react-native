@@ -23,7 +23,9 @@ class PointerHoverTracker {
   using Unique = std::unique_ptr<PointerHoverTracker>;
   using EventPath = std::vector<std::reference_wrapper<const ShadowNode>>;
 
-  PointerHoverTracker(ShadowNode::Shared target, const UIManager& uiManager);
+  PointerHoverTracker(
+      std::shared_ptr<const ShadowNode> target,
+      const UIManager& uiManager);
 
   const ShadowNode* getTarget(const UIManager& uiManager) const;
   bool hasSameTarget(const PointerHoverTracker& other) const;
@@ -50,8 +52,8 @@ class PointerHoverTracker {
    */
   bool isOldTracker_ = false;
 
-  ShadowNode::Shared root_;
-  ShadowNode::Shared target_;
+  std::shared_ptr<const ShadowNode> root_;
+  std::shared_ptr<const ShadowNode> target_;
 
   /**
    * A thin wrapper around `UIManager::getNewestCloneOfShadowNode` that only

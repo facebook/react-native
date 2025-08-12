@@ -487,7 +487,7 @@ describe('buildSchemaFromConfigType', () => {
 
       describe('when buildModuleSchema returns null', () => {
         it('throws an error', () => {
-          // $FlowIgnore[incompatible-call] - This is to test an invariant
+          // $FlowFixMe[incompatible-call] - This is to test an invariant
           buildModuleSchemaMock.mockReturnValueOnce(null);
 
           expect(() =>

@@ -94,6 +94,7 @@ std::vector<MethodDescriptor> CxxNativeModule::getMethods() {
   lazyInit();
 
   std::vector<MethodDescriptor> descs;
+  descs.reserve(methods_.size());
   for (auto& method : methods_) {
     descs.emplace_back(method.name, method.getType());
   }
@@ -198,8 +199,8 @@ void CxxNativeModule::invoke(
     TraceSection s(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
-      method.func(std::move(params), first, second);
-    } catch (const facebook::xplat::JsArgumentException& ex) {
+      method.func(params, first, second);
+    } catch (const facebook::xplat::JsArgumentException&) {
       throw;
     } catch (std::exception& e) {
       LOG(ERROR) << "std::exception. Method call " << method.name.c_str()

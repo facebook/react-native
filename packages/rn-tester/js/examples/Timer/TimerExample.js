@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
@@ -376,4 +378,4 @@ exports.examples = [
       return <IntervalExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

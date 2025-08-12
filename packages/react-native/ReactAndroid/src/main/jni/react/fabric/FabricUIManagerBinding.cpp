@@ -200,7 +200,7 @@ jint FabricUIManagerBinding::findNextFocusableElement(
     jint parentTag,
     jint focusedTag,
     jint direction) {
-  ShadowNode::Shared nextNode;
+  std::shared_ptr<const ShadowNode> nextNode;
 
   std::optional<FocusDirection> focusDirection =
       FocusOrderingHelper::resolveFocusDirection(direction);
@@ -211,14 +211,14 @@ jint FabricUIManagerBinding::findNextFocusableElement(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared parentShadowNode =
+  std::shared_ptr<const ShadowNode> parentShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
 
   if (parentShadowNode == nullptr) {
     return -1;
   }
 
-  ShadowNode::Shared focusedShadowNode =
+  std::shared_ptr<const ShadowNode> focusedShadowNode =
       FocusOrderingHelper::findShadowNodeByTagRecursively(
           parentShadowNode, focusedTag);
 
@@ -260,9 +260,9 @@ jintArray FabricUIManagerBinding::getRelativeAncestorList(
 
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
-  ShadowNode::Shared childShadowNode =
+  std::shared_ptr<const ShadowNode> childShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(childTag);
-  ShadowNode::Shared rootShadowNode =
+  std::shared_ptr<const ShadowNode> rootShadowNode =
       uimanager->findShadowNodeByTag_DEPRECATED(rootTag);
 
   if (childShadowNode == nullptr || rootShadowNode == nullptr) {
@@ -320,14 +320,16 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
     return;
   }
 
-  auto minimumSize =
-      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-  auto maximumSize =
-      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  auto minimumSize = Size{
+      .width = minWidth / pointScaleFactor_,
+      .height = minHeight / pointScaleFactor_};
+  auto maximumSize = Size{
+      .width = maxWidth / pointScaleFactor_,
+      .height = maxHeight / pointScaleFactor_};
 
   LayoutContext context;
   context.viewportOffset =
-      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
+      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
@@ -461,21 +463,23 @@ void FabricUIManagerBinding::setConstraints(
     return;
   }
 
-  auto minimumSize =
-      Size{minWidth / pointScaleFactor_, minHeight / pointScaleFactor_};
-  auto maximumSize =
-      Size{maxWidth / pointScaleFactor_, maxHeight / pointScaleFactor_};
+  auto minimumSize = Size{
+      .width = minWidth / pointScaleFactor_,
+      .height = minHeight / pointScaleFactor_};
+  auto maximumSize = Size{
+      .width = maxWidth / pointScaleFactor_,
+      .height = maxHeight / pointScaleFactor_};
 
   LayoutContext context;
   context.viewportOffset =
-      Point{offsetX / pointScaleFactor_, offsetY / pointScaleFactor_};
+      Point{.x = offsetX / pointScaleFactor_, .y = offsetY / pointScaleFactor_};
   context.pointScaleFactor = {pointScaleFactor_};
   context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL != 0;
   LayoutConstraints constraints = {};
   constraints.minimumSize = minimumSize;
   constraints.maximumSize = maximumSize;
-  constraints.layoutDirection =
-      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+  constraints.layoutDirection = (isRTL != 0u) ? LayoutDirection::RightToLeft
+                                              : LayoutDirection::LeftToRight;
 
   {
     std::shared_lock lock(surfaceHandlerRegistryMutex_);
@@ -516,7 +520,7 @@ void FabricUIManagerBinding::installFabricUIManager(
   mountingManager_ =
       std::make_shared<FabricMountingManager>(globalJavaUiManager);
 
-  ContextContainer::Shared contextContainer =
+  std::shared_ptr<const ContextContainer> contextContainer =
       std::make_shared<ContextContainer>();
 
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();

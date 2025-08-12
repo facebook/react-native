@@ -17,8 +17,7 @@
 #import <React/RCTModuleMethod.h>
 #import <React/RCTParserUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -76,7 +75,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
 NSString *getJSMethodName(const RCTMethodInfo *methodInfo)
 {
   std::string jsName = methodInfo->jsName;
-  if (jsName != "") {
+  if (!jsName.empty()) {
     return @(jsName.c_str());
   }
 
@@ -695,5 +694,4 @@ std::vector<facebook::jsi::PropNameID> ObjCInteropTurboModule::getPropertyNames(
   return propNames;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

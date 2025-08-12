@@ -52,10 +52,14 @@ function getSampleLegacyModule() {
 function stringify(obj: mixed): string {
   function replacer(_: string, value: mixed) {
     if (value instanceof Object && !(value instanceof Array)) {
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       return Object.keys(value ?? {})
         .sort()
         .reduce((sorted: {[key: string]: mixed}, key: string) => {
           // $FlowFixMe[invalid-computed-prop]
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           sorted[key] = (value ?? {})[key];
           return sorted;
         }, {});

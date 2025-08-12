@@ -164,7 +164,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         }
 
         rawProps.keyIndexToValueIndex_[keyIndex] = valueIndex;
-        rawProps.values_.push_back(RawValue{pair.second});
+        rawProps.values_.emplace_back(pair.second);
         valueIndex++;
       }
       break;

@@ -81,7 +81,7 @@ interpolateFloats(Float coefficient, Float oldValue, Float newValue) {
 
 LayoutAnimationKeyFrameManager::LayoutAnimationKeyFrameManager(
     RuntimeExecutor runtimeExecutor,
-    ContextContainer::Shared& contextContainer,
+    std::shared_ptr<const ContextContainer>& contextContainer,
     LayoutAnimationStatusDelegate* delegate)
     : runtimeExecutor_(std::move(runtimeExecutor)),
       contextContainer_(contextContainer),

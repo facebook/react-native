@@ -67,7 +67,7 @@ class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   }
 }
 
-class NoneExample extends React.Component<$FlowFixMeProps> {
+class NoneExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View
@@ -94,7 +94,7 @@ class NoneExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class NoneStyleExample extends React.Component<$FlowFixMeProps> {
+class NoneStyleExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View
@@ -128,7 +128,7 @@ class NoneStyleExample extends React.Component<$FlowFixMeProps> {
  * Special demo text that makes itself untouchable so that it doesn't destroy
  * the experiment and confuse the output.
  */
-class DemoText extends React.Component<$FlowFixMeProps> {
+class DemoText extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View pointerEvents="none">
@@ -138,7 +138,7 @@ class DemoText extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class BoxNoneExample extends React.Component<$FlowFixMeProps> {
+class BoxNoneExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View
@@ -171,7 +171,7 @@ class BoxNoneExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class BoxNoneStyleExample extends React.Component<$FlowFixMeProps> {
+class BoxNoneStyleExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View
@@ -206,7 +206,7 @@ class BoxNoneStyleExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
+class BoxOnlyExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View
@@ -241,7 +241,7 @@ class BoxOnlyExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class BoxOnlyStyleExample extends React.Component<$FlowFixMeProps> {
+class BoxOnlyStyleExample extends React.Component<$FlowFixMe> {
   render(): React.Node {
     return (
       <View

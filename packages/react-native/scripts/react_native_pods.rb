@@ -56,7 +56,7 @@ end
 # Parameters
 # - path: path to react_native installation.
 # - fabric_enabled: whether fabric should be enabled or not.
-# - new_arch_enabled: whether the new architecture should be enabled or not.
+# - new_arch_enabled: [DEPRECATED] whether the new architecture should be enabled or not.
 # - :production [DEPRECATED] whether the dependencies must be installed to target a Debug or a Release build.
 # - hermes_enabled: whether Hermes should be enabled or not.
 # - app_path: path to the React Native app. Required by the New Architecture.
@@ -72,6 +72,7 @@ def use_react_native! (
   privacy_file_aggregation_enabled: true
 )
   error_if_try_to_use_jsc_from_core()
+  warn_if_new_arch_disabled()
 
   hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
@@ -94,11 +95,11 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
+  fabric_enabled = true
 
-  ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
+  ENV['RCT_FABRIC_ENABLED'] = "1"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
-  ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
+  ENV["RCT_NEW_ARCH_ENABLED"] = "1"
 
   prefix = path
 
@@ -110,7 +111,7 @@ def use_react_native! (
   # Update ReactNativeCoreUtils so that we can easily switch between source and prebuilt
   ReactNativeCoreUtils.setup_rncore(prefix, react_native_version)
 
-  Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
+  Pod::UI.puts "Configuring the target with the New Architecture\n"
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
@@ -161,6 +162,7 @@ def use_react_native! (
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-performancecdpmetrics', :path => "#{prefix}/ReactCommon/react/performance/cdpmetrics"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
@@ -269,10 +271,10 @@ end
 #
 # Parameters:
 # - spec: The spec that has to be configured with the New Architecture code
-# - new_arch_enabled: Whether the module should install dependencies for the new architecture
+# - new_arch_enabled: [DEPRECATED] Whether the module should install dependencies for the new architecture
 def install_modules_dependencies(spec, new_arch_enabled: NewArchitectureHelper.new_arch_enabled)
   folly_config = get_folly_config()
-  NewArchitectureHelper.install_modules_dependencies(spec, new_arch_enabled, folly_config[:version])
+  NewArchitectureHelper.install_modules_dependencies(spec, true, folly_config[:version])
 end
 
 # This function is used by podspecs that needs to use the prebuilt sources for React Native.
@@ -375,7 +377,7 @@ end
 
 # This method can be used to set the fast_float config
 # that can be used to configure libraries.
-def set_fast_float_config(fmt_config)
+def set_fast_float_config(fast_float_config)
   Helpers::Constants.set_fast_float_config(fast_float_config)
 end
 
@@ -432,6 +434,24 @@ def print_cocoapods_deprecation_message()
   puts '* If you are using the Community CLI, please run:'.yellow
   puts '`yarn ios`'.yellow
   puts '============================================================='.yellow
+  puts ''
+
+end
+
+def warn_if_new_arch_disabled
+  if ENV["RCT_NEW_ARCH_ENABLED"] == "1" || ENV["RCT_NEW_ARCH_ENABLED"] == nil
+    return
+  end
+
+  puts ''
+  puts '====================== NEW ARCH ONLY ======================='.yellow
+  puts 'WARNING: Calling pod install with `RCT_NEW_ARCH_ENABLED=0'.yellow
+  puts 'is not supported anymore since React Native 0.82.'.yellow
+  puts 'You can remove the ENV["RCT_NEW_ARCH_ENABLED"]=0 from your'.yellow
+  puts 'Podfie, if you have it.'.yellow
+  puts 'The application will run with the New Architecture enabled'.yellow
+  puts 'by default.'.yellow
+  puts '============================================================'.yellow
   puts ''
 
 end

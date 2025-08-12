@@ -55,7 +55,7 @@ import usePressability from '../../Pressability/usePressability';
 import flattenStyle from '../../StyleSheet/flattenStyle';
 import StyleSheet, {type TextStyleProp} from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
-import TextAncestor from '../../Text/TextAncestor';
+import TextAncestorContext from '../../Text/TextAncestorContext';
 import Platform from '../../Utilities/Platform';
 import useMergeRefs from '../../Utilities/useMergeRefs';
 import TextInputState from './TextInputState';
@@ -618,6 +618,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
   // so omitting onBlur and onFocus pressability handlers here.
   const {onBlur, onFocus, ...eventHandlers} = usePressability(config);
 
+  const _accessibilityLabel =
+    props?.['aria-label'] ?? props?.accessibilityLabel;
+
   let _accessibilityState;
   if (
     accessibilityState != null ||
@@ -681,6 +684,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         {...otherProps}
         {...eventHandlers}
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -744,8 +748,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
         {...otherProps}
         {...colorProps}
         {...eventHandlers}
-        accessibilityState={_accessibilityState}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityLabelledBy={_accessibilityLabelledBy}
+        accessibilityState={_accessibilityState}
         accessible={accessible}
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         autoCapitalize={autoCapitalize}
@@ -775,9 +780,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
       />
     );
   }
-  return (
-    <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
-  );
+  return <TextAncestorContext value={true}>{textInput}</TextAncestorContext>;
 }
 
 const enterKeyHintToReturnTypeMap = {
@@ -917,8 +920,8 @@ const TextInput: component(
         Platform.OS === 'android'
           ? // $FlowFixMe[invalid-computed-prop]
             // $FlowFixMe[prop-missing]
-            autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
-            autoComplete
+            (autoCompleteWebToAutoCompleteAndroidMap[autoComplete] ??
+            autoComplete)
           : undefined
       }
       textContentType={

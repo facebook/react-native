@@ -30,7 +30,6 @@ import com.facebook.react.modules.debug.DevSettingsModule
 import com.facebook.react.modules.debug.SourceCodeModule
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule
 import com.facebook.react.modules.systeminfo.AndroidInfoModule
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerResolver
 import com.facebook.systrace.Systrace
@@ -38,6 +37,7 @@ import com.facebook.systrace.Systrace
 /**
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
+@Suppress("DEPRECATION")
 @ReactModuleList(
     // WARNING: If you modify this list, ensure that the list below in method
     // getReactModuleInfoByInitialization is also updated
@@ -53,8 +53,11 @@ import com.facebook.systrace.Systrace
             HeadlessJsTaskSupportModule::class,
             SourceCodeModule::class,
             TimingModule::class,
-            UIManagerModule::class])
+            com.facebook.react.uimanager.UIManagerModule::class])
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
@@ -102,7 +105,7 @@ internal class CoreModulesPackage(
             HeadlessJsTaskSupportModule::class.java,
             SourceCodeModule::class.java,
             TimingModule::class.java,
-            UIManagerModule::class.java,
+            com.facebook.react.uimanager.UIManagerModule::class.java,
         )
 
     val reactModuleInfoMap: MutableMap<String, ReactModuleInfo> = HashMap<String, ReactModuleInfo>()
@@ -139,7 +142,7 @@ internal class CoreModulesPackage(
       HeadlessJsTaskSupportModule.NAME -> HeadlessJsTaskSupportModule(reactContext)
       SourceCodeModule.NAME -> SourceCodeModule(reactContext)
       TimingModule.NAME -> TimingModule(reactContext, reactInstanceManager.devSupportManager)
-      UIManagerModule.NAME -> createUIManager(reactContext)
+      com.facebook.react.uimanager.UIManagerModule.NAME -> createUIManager(reactContext)
       DeviceInfoModule.NAME -> DeviceInfoModule(reactContext)
       else ->
           throw IllegalArgumentException(
@@ -147,7 +150,9 @@ internal class CoreModulesPackage(
     }
   }
 
-  private fun createUIManager(reactContext: ReactApplicationContext): UIManagerModule {
+  private fun createUIManager(
+      reactContext: ReactApplicationContext
+  ): com.facebook.react.uimanager.UIManagerModule {
     ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START)
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "createUIManagerModule")
 
@@ -164,9 +169,10 @@ internal class CoreModulesPackage(
               }
             }
 
-        return UIManagerModule(reactContext, resolver, minTimeLeftInFrameForNonBatchedOperationMs)
+        return com.facebook.react.uimanager.UIManagerModule(
+            reactContext, resolver, minTimeLeftInFrameForNonBatchedOperationMs)
       } else {
-        return UIManagerModule(
+        return com.facebook.react.uimanager.UIManagerModule(
             reactContext,
             reactInstanceManager.getOrCreateViewManagers(reactContext),
             minTimeLeftInFrameForNonBatchedOperationMs)

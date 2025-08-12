@@ -20,26 +20,21 @@ class UIManagerModuleConstantsHelperTest {
   }
 
   @Test
-  fun normalizeEventTypes_withNull_doesNothing() {
-    assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(null)).isNull()
-  }
-
-  @Test
   fun normalizeEventTypes_withEmptyMap_doesNothing() {
-    val emptyMap = mutableMapOf<String, Any?>()
+    val emptyMap = mutableMapOf<String, Any>()
     assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(emptyMap)).isEmpty()
   }
 
   @Test
   fun normalizeEventTypes_withOnEvent_doesNormalize() {
-    val onClickMap = mutableMapOf("onClick" to "¯\\_(ツ)_/¯")
+    val onClickMap = mutableMapOf<String, Any>("onClick" to "¯\\_(ツ)_/¯")
     assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap))
         .containsKeys("topClick", "onClick")
   }
 
   @Test
   fun normalizeEventTypes_withTopEvent_doesNormalize() {
-    val onClickMap = mutableMapOf("topOnClick" to "¯\\_(ツ)_/¯")
+    val onClickMap = mutableMapOf<String, Any>("topOnClick" to "¯\\_(ツ)_/¯")
     assertThat(UIManagerModuleConstantsHelper.normalizeEventTypes(onClickMap))
         .containsKey("topOnClick")
         .doesNotContainKey("onClick")
@@ -49,11 +44,11 @@ class UIManagerModuleConstantsHelperTest {
   @Test
   fun normalizeEventTypes_withNestedObjects_doesNotLoseThem() {
     val nestedObjects =
-        mutableMapOf(
+        mutableMapOf<String, Any>(
             "onColorChanged" to
-                mutableMapOf(
+                mutableMapOf<String, Any>(
                     "phasedRegistrationNames" to
-                        mutableMapOf(
+                        mutableMapOf<String, Any>(
                             "bubbled" to "onColorChanged",
                             "captured" to "onColorChangedCapture",
                         )))

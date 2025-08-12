@@ -30,6 +30,7 @@ export default function queueMicrotask(callback: Function) {
   }
 
   // Try to reuse a lazily allocated resolved promise from closure.
+  // $FlowFixMe[constant-condition]
   (resolvedPromise || (resolvedPromise = Promise.resolve()))
     .then(callback)
     .catch(error =>

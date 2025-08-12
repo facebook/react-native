@@ -40,11 +40,12 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES"
   }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_rendererdebug"
     s.header_mappings_dir  = "../../.."
   end
 
   add_dependency(s, "React-debug")
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

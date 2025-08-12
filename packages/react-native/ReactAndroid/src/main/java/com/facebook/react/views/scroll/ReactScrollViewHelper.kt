@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat.FocusDirection
 import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
+import com.facebook.react.animated.NativeAnimatedModule
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -153,6 +154,19 @@ public object ReactScrollViewHelper {
     }
   }
 
+  // TODO: Remove this once C++ animation driver is complete
+  @JvmStatic
+  @JvmName("notifyUserDrivenScrollEnded_internal")
+  internal fun notifyUserDrivenScrollEnded(scrollView: ViewGroup) {
+    val reactContext = scrollView.context as? ReactContext
+    if (reactContext != null) {
+      val nativeAnimated = reactContext.getNativeModule(NativeAnimatedModule::class.java)
+      if (nativeAnimated != null) {
+        nativeAnimated.userDrivenScrollEnded(scrollView.id)
+      }
+    }
+  }
+
   /** This is only for Java listeners. onLayout events emitted to JS are handled elsewhere. */
   @JvmStatic
   public fun emitLayoutEvent(scrollView: ViewGroup) {
@@ -261,7 +275,7 @@ public object ReactScrollViewHelper {
     // Register the listeners for the fling animator if there isn't any
     val flingAnimator = scrollView.getFlingAnimator()
     if (flingAnimator.listeners == null || flingAnimator.listeners.size == 0) {
-      registerFlingAnimator<T>(scrollView)
+      registerFlingAnimator(scrollView)
     }
     val scrollState = scrollView.reactScrollViewScrollState
     scrollState.setFinalAnimatedPositionScroll(x, y)
@@ -400,11 +414,13 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationEnd(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isFinished = true
-                updateFabricScrollState<T>(scrollView)
+                notifyUserDrivenScrollEnded(scrollView)
+                updateFabricScrollState(scrollView)
               }
 
               override fun onAnimationCancel(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isCanceled = true
+                notifyUserDrivenScrollEnded(scrollView)
               }
 
               override fun onAnimationRepeat(animator: Animator) = Unit
@@ -452,13 +468,13 @@ public object ReactScrollViewHelper {
     scroller.setFriction(1.0f - scrollState.decelerationRate)
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
-    val width = scrollView.width - scrollView.getPaddingStart() - scrollView.getPaddingEnd()
+    val width = scrollView.width - scrollView.paddingStart - scrollView.paddingEnd
     val height = scrollView.height - scrollView.paddingBottom - scrollView.paddingTop
     val finalAnimatedPositionScroll = scrollState.finalAnimatedPositionScroll
     scroller.fling(
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollX, finalAnimatedPositionScroll.x, velocityX), // startX
-        getNextFlingStartValue<T>(
+        getNextFlingStartValue(
             scrollView, scrollView.scrollY, finalAnimatedPositionScroll.y, velocityY), // startY
         velocityX, // velocityX
         velocityY, // velocityY

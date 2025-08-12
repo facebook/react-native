@@ -18,20 +18,22 @@ import android.view.KeyEvent;
 import android.view.Window;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.views.view.WindowUtilKt;
 import com.facebook.systrace.Systrace;
+import java.util.Objects;
 
 /**
  * Delegate class for {@link ReactActivity}. You can subclass this to provide custom implementations
  * for e.g. {@link #getReactNativeHost()}, if your Application class doesn't implement {@link
  * ReactApplication}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
@@ -86,8 +88,11 @@ public class ReactActivityDelegate {
    * ReactApplication#getReactNativeHost()}. Override this method if your application class does not
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
+   *
+   * @deprecated "Do not access {@link ReactNativeHost} directly. This class is going away in the
+   *     New Architecture. You should access {@link ReactHost} instead."
    */
-  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
+  @Deprecated
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
@@ -107,16 +112,22 @@ public class ReactActivityDelegate {
     return mReactDelegate;
   }
 
-  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
+  /**
+   * @deprecated @deprecated "Do not access {@link ReactInstanceManager} directly. This class is
+   *     going away in the New Architecture. You should access {@link ReactHost} instead."
+   * @noinspection deprecation
+   */
+  @Deprecated
   public ReactInstanceManager getReactInstanceManager() {
-    return mReactDelegate.getReactInstanceManager();
+    return Objects.requireNonNull(mReactDelegate).getReactInstanceManager();
   }
 
+  @Nullable
   public String getMainComponentName() {
     return mMainComponentName;
   }
 
-  public void onCreate(Bundle savedInstanceState) {
+  public void onCreate(@Nullable Bundle savedInstanceState) {
     Systrace.traceSection(
         Systrace.TRACE_TAG_REACT,
         "ReactActivityDelegate.onCreate::init",
@@ -147,6 +158,7 @@ public class ReactActivityDelegate {
                     launchOptions,
                     isFabricEnabled()) {
                   @Override
+                  @Nullable
                   protected ReactRootView createRootView() {
                     ReactRootView rootView = ReactActivityDelegate.this.createRootView();
                     if (rootView == null) {
@@ -162,31 +174,29 @@ public class ReactActivityDelegate {
         });
   }
 
-  protected void loadApp(String appKey) {
-    mReactDelegate.loadApp(appKey);
+  protected void loadApp(@Nullable String appKey) {
+    Objects.requireNonNull(mReactDelegate).loadApp(Objects.requireNonNull(appKey));
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
   }
 
   public void setReactSurface(ReactSurface reactSurface) {
-    mReactDelegate.setReactSurface(reactSurface);
+    Objects.requireNonNull(mReactDelegate).setReactSurface(reactSurface);
   }
 
   public void setReactRootView(ReactRootView reactRootView) {
-    mReactDelegate.setReactRootView(reactRootView);
+    Objects.requireNonNull(mReactDelegate).setReactRootView(reactRootView);
   }
 
   public void onUserLeaveHint() {
-    if (mReactDelegate != null) {
-      mReactDelegate.onUserLeaveHint();
-    }
+    Objects.requireNonNull(mReactDelegate).onUserLeaveHint();
   }
 
   public void onPause() {
-    mReactDelegate.onHostPause();
+    Objects.requireNonNull(mReactDelegate).onHostPause();
   }
 
   public void onResume() {
-    mReactDelegate.onHostResume();
+    Objects.requireNonNull(mReactDelegate).onHostResume();
 
     if (mPermissionsCallback != null) {
       mPermissionsCallback.invoke();
@@ -195,43 +205,43 @@ public class ReactActivityDelegate {
   }
 
   public void onDestroy() {
-    mReactDelegate.onHostDestroy();
+    Objects.requireNonNull(mReactDelegate).onHostDestroy();
   }
 
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    mReactDelegate.onActivityResult(requestCode, resultCode, data, true);
+  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    Objects.requireNonNull(mReactDelegate).onActivityResult(requestCode, resultCode, data, true);
   }
 
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    return mReactDelegate.onKeyDown(keyCode, event);
+    return Objects.requireNonNull(mReactDelegate).onKeyDown(keyCode, event);
   }
 
   public boolean onKeyUp(int keyCode, KeyEvent event) {
-    return mReactDelegate.shouldShowDevMenuOrReload(keyCode, event);
+    return Objects.requireNonNull(mReactDelegate).shouldShowDevMenuOrReload(keyCode, event);
   }
 
   public boolean onKeyLongPress(int keyCode, KeyEvent event) {
-    return mReactDelegate.onKeyLongPress(keyCode);
+    return Objects.requireNonNull(mReactDelegate).onKeyLongPress(keyCode);
   }
 
   public boolean onBackPressed() {
-    return mReactDelegate.onBackPressed();
+    return Objects.requireNonNull(mReactDelegate).onBackPressed();
   }
 
-  public boolean onNewIntent(Intent intent) {
-    return mReactDelegate.onNewIntent(intent);
+  public boolean onNewIntent(@Nullable Intent intent) {
+    return Objects.requireNonNull(mReactDelegate).onNewIntent(Objects.requireNonNull(intent));
   }
 
   public void onWindowFocusChanged(boolean hasFocus) {
-    mReactDelegate.onWindowFocusChanged(hasFocus);
+    Objects.requireNonNull(mReactDelegate).onWindowFocusChanged(hasFocus);
   }
 
   public void onConfigurationChanged(Configuration newConfig) {
-    mReactDelegate.onConfigurationChanged(newConfig);
+    Objects.requireNonNull(mReactDelegate).onConfigurationChanged(newConfig);
   }
 
   public void requestPermissions(
-      String[] permissions, int requestCode, PermissionListener listener) {
+      String[] permissions, int requestCode, @Nullable PermissionListener listener) {
     mPermissionListener = listener;
     getPlainActivity().requestPermissions(permissions, requestCode);
   }
@@ -267,7 +277,7 @@ public class ReactActivityDelegate {
    * context will no longer be valid.
    */
   public @Nullable ReactContext getCurrentReactContext() {
-    return mReactDelegate.getCurrentReactContext();
+    return Objects.requireNonNull(mReactDelegate).getCurrentReactContext();
   }
 
   /**

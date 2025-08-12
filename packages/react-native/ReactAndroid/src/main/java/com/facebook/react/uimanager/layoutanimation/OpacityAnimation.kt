@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -21,6 +23,9 @@ import java.lang.ref.WeakReference
  * optimize rendering performances.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class OpacityAnimation(view: View, private val startOpacity: Float, endOpacity: Float) :
     Animation() {
   private val viewRef = WeakReference(view)

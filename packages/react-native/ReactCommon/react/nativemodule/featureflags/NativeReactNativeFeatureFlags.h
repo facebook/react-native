@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db43e2975566cc6f34af1a5337b383ee>>
+ * @generated SignedSource<<57b7676134d7d0782f576b852c71aa1f>>
  */
 
 /**
@@ -38,21 +38,25 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool animatedShouldSignalBatch(jsi::Runtime& runtime);
+  bool cdpInteractionMetricsEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedEnabled(jsi::Runtime& runtime);
 
   bool cxxNativeAnimatedRemoveJsSync(jsi::Runtime& runtime);
 
-  bool disableMainQueueSyncDispatchIOS(jsi::Runtime& runtime);
+  bool disableFabricCommitInCXXAnimated(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
+
+  bool disableOldAndroidAttachmentMetricsWorkarounds(jsi::Runtime& runtime);
 
   bool disableTextLayoutManagerCacheAndroid(jsi::Runtime& runtime);
 
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+
+  bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
@@ -63,6 +67,8 @@ class NativeReactNativeFeatureFlags
   bool enableDestroyShadowTreeRevisionAsync(jsi::Runtime& runtime);
 
   bool enableDoubleMeasurementFixAndroid(jsi::Runtime& runtime);
+
+  bool enableEagerMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
@@ -78,6 +84,10 @@ class NativeReactNativeFeatureFlags
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
+  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
+
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
@@ -85,8 +95,6 @@ class NativeReactNativeFeatureFlags
   bool enableLayoutAnimationsOnIOS(jsi::Runtime& runtime);
 
   bool enableMainQueueCoordinatorOnIOS(jsi::Runtime& runtime);
-
-  bool enableMainQueueModulesOnIOS(jsi::Runtime& runtime);
 
   bool enableModuleArgumentNSNullConversionIOS(jsi::Runtime& runtime);
 
@@ -101,8 +109,6 @@ class NativeReactNativeFeatureFlags
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
-
-  bool enableSynchronousStateUpdates(jsi::Runtime& runtime);
 
   bool enableViewCulling(jsi::Runtime& runtime);
 
@@ -124,7 +130,21 @@ class NativeReactNativeFeatureFlags
 
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
+  bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
+
+  bool perfMonitorV2Enabled(jsi::Runtime& runtime);
+
   double preparedTextCacheSize(jsi::Runtime& runtime);
+
+  bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
+
+  bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
+
+  bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
+
+  bool skipActivityIdentityAssertionOnHostPause(jsi::Runtime& runtime);
+
+  bool sweepActiveTouchOnChildNativeGesturesAndroid(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
@@ -133,6 +153,10 @@ class NativeReactNativeFeatureFlags
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
+
+  bool useNativeEqualsInNativeReadableArrayAndroid(jsi::Runtime& runtime);
+
+  bool useNativeTransformHelperAndroid(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 

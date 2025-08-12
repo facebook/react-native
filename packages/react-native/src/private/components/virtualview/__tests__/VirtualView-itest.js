@@ -346,7 +346,7 @@ export function dispatchModeChangeEvent(
     {
       mode: mode as number,
       targetRect,
-      // $FlowIssue[incompatible-cast] - https://fburl.com/workplace/t8a3yvuo
+      // $FlowFixMe[incompatible-cast] - https://fburl.com/workplace/t8a3yvuo
       thresholdRect,
     } as NativeModeChangeEvent,
   );

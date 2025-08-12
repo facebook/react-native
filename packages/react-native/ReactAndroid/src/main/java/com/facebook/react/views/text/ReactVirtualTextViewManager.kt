@@ -19,8 +19,12 @@ import com.facebook.react.uimanager.ThemedReactContext
  * Manages raw text nodes. Since they are used only as a virtual nodes any type of native view
  * operation will throw an [IllegalStateException]
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
