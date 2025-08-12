@@ -26,7 +26,6 @@ target_link_libraries(react_cxx_platform_react_renderer_animated
       react_renderer_uimanager
       react_renderer_scheduler
       glog
-      react_cxx_platform_react_profiling
       folly_runtime
 )
 target_compile_reactnative_options(react_cxx_platform_react_renderer_animated PRIVATE)
