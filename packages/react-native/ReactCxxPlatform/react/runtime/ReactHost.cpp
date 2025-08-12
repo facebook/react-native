@@ -240,6 +240,10 @@ void ReactHost::createReactInstance() {
   auto jsInvoker = std::make_shared<RuntimeSchedulerCallInvoker>(
       reactInstance_->getRuntimeScheduler());
 
+  if (inspector_ != nullptr) {
+    inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
+  }
+
   auto liveReloadCallback = [this]() { reloadReactInstance(); };
   reactInstance_->initializeRuntime(
       {
@@ -451,9 +455,6 @@ bool ReactHost::loadScriptFromDevServer() {
     auto script = std::make_unique<JSBigStdString>(response);
     reactInstance_->loadScript(
         std::move(script), devServerHelper_->getBundleUrl());
-    if (inspector_ != nullptr) {
-      inspector_->connectDebugger(devServerHelper_->getInspectorUrl());
-    }
     devServerHelper_->setupHMRClient();
     return true;
   } catch (...) {
