@@ -7,14 +7,20 @@
 
 package com.facebook.react.modules.deviceinfo
 
+import android.util.DisplayMetrics
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.window.layout.WindowMetricsCalculator
 import com.facebook.fbreact.specs.NativeDeviceInfoSpec
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritableMap
+import com.facebook.react.uimanager.DisplayMetricsHolder.getScreenDisplayMetrics
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
 import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 
@@ -30,8 +36,55 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactContext.addLifecycleEventListener(this)
   }
 
+  private fun getWindowDisplayMetrics(): DisplayMetrics {
+    val windowDisplayMetrics = DisplayMetrics()
+    windowDisplayMetrics.setTo(reactApplicationContext.resources.displayMetrics)
+
+    val activity = reactApplicationContext.currentActivity ?: return windowDisplayMetrics
+    val bounds = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity).bounds
+    var width = bounds.width()
+    var height = bounds.height()
+
+    // WindowMetrics bounds include system bars. When edge-to-edge is not enabled, we subtract them
+    // so that window dimensions reflect the usable content area.
+    if (!isEdgeToEdgeFeatureFlagOn) {
+      ViewCompat.getRootWindowInsets(activity.window.decorView)?.let {
+        val insets = it.getInsets(WindowInsetsCompat.Type.systemBars())
+        width -= (insets.left + insets.right)
+        height -= (insets.top + insets.bottom)
+      }
+    }
+
+    windowDisplayMetrics.widthPixels = width
+    windowDisplayMetrics.heightPixels = height
+    return windowDisplayMetrics
+  }
+
+  fun getDisplayMetricsWritableMap(): WritableMap =
+      WritableNativeMap().apply {
+        putMap(
+            "windowPhysicalPixels",
+            getPhysicalPixelsWritableMap(getWindowDisplayMetrics()),
+        )
+        putMap(
+            "screenPhysicalPixels",
+            getPhysicalPixelsWritableMap(getScreenDisplayMetrics()),
+        )
+      }
+
+  private fun getPhysicalPixelsWritableMap(
+      displayMetrics: DisplayMetrics,
+  ): WritableMap =
+      WritableNativeMap().apply {
+        putInt("width", displayMetrics.widthPixels)
+        putInt("height", displayMetrics.heightPixels)
+        putDouble("scale", displayMetrics.density.toDouble())
+        putDouble("fontScale", fontScale.toDouble())
+        putDouble("densityDpi", displayMetrics.densityDpi.toDouble())
+      }
+
   public override fun getTypedExportedConstants(): Map<String, Any> {
-    val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
+    val displayMetrics = getDisplayMetricsWritableMap()
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
     previousDisplayMetrics = displayMetrics.copy()
@@ -58,7 +111,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactApplicationContext.let { context ->
       if (context.hasActiveReactInstance()) {
         // Don't emit an event to JS if the dimensions haven't changed
-        val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
+        val displayMetrics = getDisplayMetricsWritableMap()
         if (previousDisplayMetrics == null) {
           previousDisplayMetrics = displayMetrics.copy()
         } else if (displayMetrics != previousDisplayMetrics) {
