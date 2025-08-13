@@ -109,7 +109,11 @@ Pod::Spec.new do |s|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/modal/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = ["react/renderer/components/modal/tests", "react/renderer/components/modal/platform/android/**/*.{cpp,h}"]
+      sss.exclude_files        = [
+        "react/renderer/components/modal/tests",
+        "react/renderer/components/modal/platform/android/**/*.{cpp,h}",
+        "react/renderer/components/modal/platform/cxx/**/*.{cpp,h}"
+      ]
       sss.header_dir           = "react/renderer/components/modal"
     end
 
