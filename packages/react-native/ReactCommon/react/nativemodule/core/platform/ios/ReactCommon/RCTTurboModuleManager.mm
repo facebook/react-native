@@ -996,6 +996,23 @@ typedef struct {
   return module;
 }
 
+- (id)moduleNamesRespondingToSelector:(SEL)selector
+{
+  std::unique_lock<std::mutex> guard(_moduleHoldersMutex);
+  NSMutableArray *moduleNames = [NSMutableArray new];
+
+  for (auto &pair : _moduleHolders) {
+    auto * moduleName = pair.first.c_str();
+    Class moduleClass = [self _getModuleClassFromName:moduleName];
+
+    if ([moduleClass instancesRespondToSelector:selector]) {
+      [moduleNames addObject:[NSString stringWithUTF8String:moduleName]];
+    }
+  }
+
+  return moduleNames;
+}
+
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
   std::unique_lock<std::mutex> guard(_moduleHoldersMutex);

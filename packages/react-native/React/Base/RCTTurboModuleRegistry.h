@@ -12,8 +12,6 @@
  */
 @protocol RCTTurboModuleRegistry <NSObject>
 - (id)moduleForName:(const char *)moduleName;
-- (NSMutableArray<id<RCTBridgeModule>> *)modulesRespondingToSelector:(SEL)selector;
-
 /**
  * Rationale:
  * When TurboModules lookup other modules by name, we first check the TurboModule
@@ -24,5 +22,6 @@
  * TurboModules to TurboModules is complete.
  */
 - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
+- (id)moduleNamesRespondingToSelector:(SEL)selector;
 - (BOOL)moduleIsInitialized:(const char *)moduleName;
 @end
