@@ -7,11 +7,11 @@
 
 #include "NativeAnimatedNodesManager.h"
 
+#include <cxxreact/TraceSection.h>
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/profiling/perfetto.h>
 #include <react/renderer/animated/drivers/AnimationDriver.h>
 #include <react/renderer/animated/drivers/AnimationDriverUtils.h>
 #include <react/renderer/animated/drivers/DecayAnimationDriver.h>
@@ -833,8 +833,10 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
 }
 
 void NativeAnimatedNodesManager::onRender() {
-  TRACE_EVENT("rncxx", "NativeAnimatedNodesManager::onRender");
-  TRACE_COUNTER("rncxx", "numActiveAnimations", activeAnimations_.size());
+  TraceSection s(
+      "NativeAnimatedNodesManager::onRender",
+      "numActiveAnimations",
+      activeAnimations_.size());
 
   isOnRenderThread_ = true;
 
