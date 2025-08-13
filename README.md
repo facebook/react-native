@@ -106,7 +106,7 @@ The main purpose of this repository is to continue evolving React Native core. W
 ### [Code of Conduct][code]
 
 Facebook has adopted a Code of Conduct that we expect project participants to adhere to.
-Please read the [full text][code] so that you can understand what actions will and will not be tolerated.
+Please read the [full text][code] so that you can understand what actions will, and will not be tolerated.
 
 [code]: https://code.fb.com/codeofconduct/
 
