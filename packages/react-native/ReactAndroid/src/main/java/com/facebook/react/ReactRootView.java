@@ -14,6 +14,7 @@ import static com.facebook.react.uimanager.common.UIManagerType.LEGACY;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
@@ -37,6 +38,9 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.window.layout.WindowMetricsCalculator;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -72,6 +76,7 @@ import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.view.WindowUtilKt;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -1020,10 +1025,28 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           }
         }
       }
-      final int heightDiff =
-          DisplayMetricsHolder.getWindowDisplayMetrics().heightPixels
-              - mVisibleViewArea.bottom
-              + notchHeight;
+
+      int heightPixels = getContext().getResources().getDisplayMetrics().heightPixels;
+      final ReactContext reactContext = getCurrentReactContext();
+      final Activity activity = reactContext != null ? reactContext.getCurrentActivity() : null;
+
+      if (activity != null) {
+        heightPixels = WindowMetricsCalculator.getOrCreate()
+            .computeCurrentWindowMetrics(activity).getBounds().height();
+
+        if (!WindowUtilKt.isEdgeToEdgeFeatureFlagOn()) {
+          WindowInsetsCompat rootWindowInsets =
+              ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
+
+          if (rootWindowInsets != null) {
+            androidx.core.graphics.Insets insets =
+                rootWindowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            heightPixels -= (insets.top + insets.bottom);
+          }
+        }
+      }
+
+      final int heightDiff = heightPixels - mVisibleViewArea.bottom + notchHeight;
 
       boolean isKeyboardShowingOrKeyboardHeightChanged =
           mKeyboardHeight != heightDiff && heightDiff > mMinKeyboardHeightDetected;
