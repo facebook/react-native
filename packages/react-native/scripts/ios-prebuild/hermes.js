@@ -90,7 +90,7 @@ async function prepareHermesArtifactsAsync(
   }
 
   // Extract the tar.gz
-  execSync(`tar -xzf "${localPath}" -C "${artifactsPath}"`, {
+  execFileSync('tar', ['-xzf', localPath, '-C', artifactsPath], {
     stdio: 'inherit',
   });
 
