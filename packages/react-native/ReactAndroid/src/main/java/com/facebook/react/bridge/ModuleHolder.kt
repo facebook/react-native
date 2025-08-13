@@ -61,7 +61,9 @@ public class ModuleHolder {
             nativeModule.canOverrideExistingModule(),
             true,
             CxxModuleWrapper::class.java.isAssignableFrom(nativeModule.javaClass),
-            ReactModuleInfo.classIsTurboModule(nativeModule.javaClass))
+            ReactModuleInfo.classIsTurboModule(nativeModule.javaClass),
+            nativeModule.javaClass::class.java
+        )
 
     internalModule = nativeModule
     PrinterHolder.printer.logMessage(

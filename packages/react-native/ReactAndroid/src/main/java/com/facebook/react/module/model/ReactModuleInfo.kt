@@ -22,6 +22,8 @@ public class ReactModuleInfo(
   public val isTurboModule: Boolean,
   public val moduleClass: Class<*>
 ) {
+  @Deprecated("Use the constructor that takes the class instance." +
+    " Without passing the class instance your module might not be discovered in some scenarios.")
   public constructor(
     name: String,
     className: String,
@@ -29,10 +31,12 @@ public class ReactModuleInfo(
     needsEagerInit: Boolean,
     isCxxModule: Boolean,
     isTurboModule: Boolean
-  ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
+  ) : this(
+    name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
     ReactModuleInfo::class.java
   )
 
+  @Deprecated("Use constructor that doesn't take `hasConstants` parameter.")
   public constructor(
     name: String,
     className: String,
@@ -41,17 +45,18 @@ public class ReactModuleInfo(
     @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
     isCxxModule: Boolean,
     isTurboModule: Boolean
-  ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
+  ) : this(
+    name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
     ReactModuleInfo::class.java
   )
 
   public companion object {
-  /**
-   * Checks if the passed class is a TurboModule. Useful to populate the parameter [isTurboModule]
-   * in the constructor of ReactModuleInfo.
-   */
-  @JvmStatic
-  public fun classIsTurboModule(clazz: Class<*>): Boolean =
-    TurboModule::class.java.isAssignableFrom(clazz)
+    /**
+     * Checks if the passed class is a TurboModule. Useful to populate the parameter [isTurboModule]
+     * in the constructor of ReactModuleInfo.
+     */
+    @JvmStatic
+    public fun classIsTurboModule(clazz: Class<*>): Boolean =
+      TurboModule::class.java.isAssignableFrom(clazz)
   }
 }

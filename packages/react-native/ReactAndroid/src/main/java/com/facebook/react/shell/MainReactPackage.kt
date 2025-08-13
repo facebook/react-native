@@ -281,7 +281,9 @@ constructor(private val config: MainPackageConfig? = null) :
                       reactModule.canOverrideExistingModule,
                       reactModule.needsEagerInit,
                       reactModule.isCxxModule,
-                      classIsTurboModule(moduleClass))
+                      classIsTurboModule(moduleClass),
+                      reactModule::class.java
+                    )
             }
     return ReactModuleInfoProvider { moduleMap }
   }

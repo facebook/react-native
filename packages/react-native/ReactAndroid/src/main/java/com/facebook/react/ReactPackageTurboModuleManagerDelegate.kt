@@ -104,7 +104,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       reactModule.canOverrideExistingModule,
                       true,
                       reactModule.isCxxModule,
-                      ReactModuleInfo.classIsTurboModule(moduleClass))
+                      ReactModuleInfo.classIsTurboModule(moduleClass),
+                      moduleClass::class.java
+                  )
               else
                   ReactModuleInfo(
                       moduleName,
@@ -112,7 +114,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       module.canOverrideExistingModule(),
                       true,
                       CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
-                      ReactModuleInfo.classIsTurboModule(moduleClass))
+                      ReactModuleInfo.classIsTurboModule(moduleClass),
+                      moduleClass::class.java
+                  )
 
           reactModuleInfoMap[moduleName] = moduleInfo
           moduleMap[moduleName] = module
