@@ -5,10 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.yoga;
+package com.facebook.yoga
 
-public abstract class YogaConfigFactory {
-  public static YogaConfig create() {
-    return new YogaConfigJNIFinalizer();
-  }
+public object YogaConfigFactory {
+  @JvmStatic public fun create(): YogaConfig = YogaConfigJNIFinalizer()
 }
