@@ -5,8 +5,10 @@ name: Automatic Rebase
 on:
   issue_comment:
     types: [created]
+
 permissions:
   contents: read
+
 jobs:
   rebase:
     name: Rebase
@@ -21,7 +23,12 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+
       - name: Automatic Rebase
         uses: cirrus-actions/rebase@1.8
         env:
           GITHUB_TOKEN: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+
+      - name: Run custom scripts after rebase
+        run: |
+          echo "Running post-rebase scripts..."
