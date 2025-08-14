@@ -22,24 +22,11 @@ const {HEADERS} = require('./headers');
 const fs = require('fs');
 const path = require('path');
 
-// Define paths
-const ROOT_DIR = path.resolve(__dirname, '../../../..');
-const REACT_DIR = path.join(ROOT_DIR, 'packages/react-native/React');
-const LIBRARIES_DIR = path.join(ROOT_DIR, 'packages/react-native/Libraries');
-const DESTINATION_DIR = path.join(
-  ROOT_DIR,
-  'packages/react-native/React/includes/React',
-);
-
-// Ensure destination directory exists
-if (!fs.existsSync(DESTINATION_DIR)) {
-  console.log(`Creating directory: ${DESTINATION_DIR}`);
-  fs.mkdirSync(DESTINATION_DIR, {recursive: true});
-}
-
-console.log('Building header file map...');
-
-// Function to recursively scan directories and build a map of header files
+/**
+ * Function to recursively scan directories and build a map of header files
+ * @param {string} directory - Directory to scan for header files
+ * @returns {Map<string, string>} Map of filename to full path
+ */
 function buildHeaderMap(directory) {
   const headerMap = new Map();
 
@@ -62,91 +49,157 @@ function buildHeaderMap(directory) {
   return headerMap;
 }
 
-// Build a map of all header files in React and Libraries directories
-const reactHeaderMap = buildHeaderMap(REACT_DIR);
-const librariesHeaderMap = buildHeaderMap(LIBRARIES_DIR);
+/**
+ * Creates symlinks for header files in React/includes/React
+ * @param {string} reactNativePath - Path to the React Native package directory
+ * @returns {Promise<{found: number, notFound: number, errors: number}>} Statistics about the operation
+ */
+async function createSymlinks(reactNativePath) {
+  console.log(`Creating symlinks for React Native at: ${reactNativePath}`);
 
-// Merge the two maps, with React headers taking precedence
-const headerMap = new Map([...librariesHeaderMap, ...reactHeaderMap]);
+  // Define paths based on the provided reactNativePath
+  const REACT_DIR = path.join(reactNativePath, 'React');
+  const LIBRARIES_DIR = path.join(reactNativePath, 'Libraries');
+  const DESTINATION_DIR = path.join(reactNativePath, 'React/includes/React');
 
-console.log(`Found ${headerMap.size} unique header files`);
+  // Validate that the directories exist
+  if (!fs.existsSync(REACT_DIR)) {
+    throw new Error(`React directory not found: ${REACT_DIR}`);
+  }
 
-// Counter for statistics
-let found = 0;
-let notFound = 0;
-let errors = 0;
+  if (!fs.existsSync(LIBRARIES_DIR)) {
+    throw new Error(`Libraries directory not found: ${LIBRARIES_DIR}`);
+  }
 
-// Arrays to collect headers that couldn't be found or had errors
-const notFoundHeaders = [];
-const errorHeaders = [];
+  // Ensure destination directory exists
+  if (!fs.existsSync(DESTINATION_DIR)) {
+    console.log(`Creating directory: ${DESTINATION_DIR}`);
+    fs.mkdirSync(DESTINATION_DIR, {recursive: true});
+  }
 
-// Process each header
-HEADERS.forEach(header => {
-  try {
-    // Extract just the filename for both search and target
-    let targetFilename = header;
+  console.log('Building header file map...');
 
-    // Handle headers with path components
-    if (header.includes('/')) {
-      const parts = header.split('/');
-      targetFilename = parts[parts.length - 1];
-    }
+  // Build a map of all header files in React and Libraries directories
+  const reactHeaderMap = buildHeaderMap(REACT_DIR);
+  const librariesHeaderMap = buildHeaderMap(LIBRARIES_DIR);
 
-    // Look up the header in our map using just the filename
-    const sourcePath = headerMap.get(targetFilename);
+  // Merge the two maps, with React headers taking precedence
+  const headerMap = new Map([...librariesHeaderMap, ...reactHeaderMap]);
 
-    if (sourcePath) {
-      const destPath = path.join(DESTINATION_DIR, targetFilename);
+  console.log(`Found ${headerMap.size} unique header files`);
 
-      // Create symlink
-      if (fs.existsSync(destPath)) {
-        fs.unlinkSync(destPath);
+  // Counter for statistics
+  let found = 0;
+  let notFound = 0;
+  let errors = 0;
+
+  // Arrays to collect headers that couldn't be found or had errors
+  const notFoundHeaders = [];
+  const errorHeaders = [];
+
+  // Process each header
+  HEADERS.forEach(header => {
+    try {
+      // Extract just the filename for both search and target
+      let targetFilename = header;
+
+      // Handle headers with path components
+      if (header.includes('/')) {
+        const parts = header.split('/');
+        targetFilename = parts[parts.length - 1];
       }
 
-      // Create relative symlink
-      const relativeSourcePath = path.relative(DESTINATION_DIR, sourcePath);
-      fs.symlinkSync(relativeSourcePath, destPath);
+      // Look up the header in our map using just the filename
+      const sourcePath = headerMap.get(targetFilename);
 
-      console.log(
-        `Created symlink: ${targetFilename} -> ${relativeSourcePath}`,
-      );
-      found++;
-    } else {
-      console.warn(
-        `Warning: Could not find header file: ${header} (filename: ${targetFilename})`,
-      );
-      notFoundHeaders.push({header, targetFilename});
-      notFound++;
+      if (sourcePath) {
+        const destPath = path.join(DESTINATION_DIR, targetFilename);
+
+        // Create symlink
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+        }
+
+        // Create relative symlink
+        const relativeSourcePath = path.relative(DESTINATION_DIR, sourcePath);
+        fs.symlinkSync(relativeSourcePath, destPath);
+
+        console.log(
+          `Created symlink: ${targetFilename} -> ${relativeSourcePath}`,
+        );
+        found++;
+      } else {
+        console.warn(
+          `Warning: Could not find header file: ${header} (filename: ${targetFilename})`,
+        );
+        notFoundHeaders.push({header, targetFilename});
+        notFound++;
+      }
+    } catch (error) {
+      console.error(`Error processing ${header}: ${error.message}`);
+      errorHeaders.push({header, error: error.message});
+      errors++;
     }
-  } catch (error) {
-    console.error(`Error processing ${header}: ${error.message}`);
-    errorHeaders.push({header, error: error.message});
-    errors++;
+  });
+
+  console.log('\nSummary:');
+  console.log(`- Found and linked: ${found} files`);
+  console.log(`- Not found: ${notFound} files`);
+  console.log(`- Errors: ${errors} files`);
+
+  if (notFound > 0) {
+    console.log('\nHeaders that could not be found:');
+    notFoundHeaders.forEach(({header, targetFilename}) => {
+      console.log(`  - ${header} (filename: ${targetFilename})`);
+    });
   }
-});
 
-console.log('\nSummary:');
-console.log(`- Found and linked: ${found} files`);
-console.log(`- Not found: ${notFound} files`);
-console.log(`- Errors: ${errors} files`);
+  if (errors > 0) {
+    console.log('\nHeaders that had errors:');
+    errorHeaders.forEach(({header, error}) => {
+      console.log(`  - ${header}: ${error}`);
+    });
+  }
 
-if (notFound > 0) {
-  console.log('\nHeaders that could not be found:');
-  notFoundHeaders.forEach(({header, targetFilename}) => {
-    console.log(`  - ${header} (filename: ${targetFilename})`);
-  });
+  if (notFound > 0 || errors > 0) {
+    const message = 'Some headers could not be found or had errors.';
+    console.log(`\n${message}`);
+    throw new Error(message);
+  } else {
+    console.log('\nAll headers were successfully linked.');
+  }
+
+  return {found, notFound, errors};
 }
 
-if (errors > 0) {
-  console.log('\nHeaders that had errors:');
-  errorHeaders.forEach(({header, error}) => {
-    console.log(`  - ${header}: ${error}`);
-  });
+// CLI usage
+if (require.main === module) {
+  const args = process.argv.slice(2);
+
+  let reactNativePath;
+
+  if (args.length >= 1) {
+    reactNativePath = path.resolve(args[0]);
+  } else {
+    // Default to the current package directory structure for backward compatibility
+    reactNativePath = path.resolve(__dirname, '..');
+  }
+
+  console.log('Usage: node create-symlinks.js [reactNativePath]');
+  console.log(`Using React Native path: ${reactNativePath}`);
+
+  createSymlinks(reactNativePath)
+    .then((stats) => {
+      console.log('\n✅ Symlink creation completed successfully!');
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error('\n❌ Symlink creation failed:', error.message);
+      process.exit(1);
+    });
 }
 
-if (notFound > 0 || errors > 0) {
-  console.log('\nSome headers could not be found or had errors.');
-  process.exit(1);
-} else {
-  console.log('\nAll headers were successfully linked.');
-}
+module.exports = {
+  createSymlinks,
+  buildHeaderMap
+};
