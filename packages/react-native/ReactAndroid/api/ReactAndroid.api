@@ -3112,7 +3112,8 @@ public final class com/facebook/react/runtime/ReactSurfaceImpl : com/facebook/re
 	public fun getContext ()Landroid/content/Context;
 	public fun getModuleName ()Ljava/lang/String;
 	public fun getSurfaceID ()I
-	public fun getView ()Landroid/view/ViewGroup;
+	public synthetic fun getView ()Landroid/view/ViewGroup;
+	public fun getView ()Lcom/facebook/react/runtime/ReactSurfaceView;
 	public fun isRunning ()Z
 	public fun prerender ()Lcom/facebook/react/interfaces/TaskInterface;
 	public fun start ()Lcom/facebook/react/interfaces/TaskInterface;

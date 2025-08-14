@@ -11,7 +11,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.View.MeasureSpec
-import android.view.ViewGroup
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadSafe
 import com.facebook.react.ReactHost
@@ -116,7 +115,7 @@ internal constructor(
     reactHostRef.set(null)
   }
 
-  public override val view: ViewGroup?
+  public override val view: ReactSurfaceView?
     get() = surfaceViewRef.get()
 
   override fun prerender(): TaskInterface<Void> {
