@@ -36,18 +36,20 @@ internal object UIManagerModuleConstantsHelper {
       UIManagerModuleConstants.constants.plus(
           mapOf(
               "ViewManagerNames" to ArrayList<String?>(resolver.getViewManagerNames()),
-              "LazyViewManagersEnabled" to true))
+              "LazyViewManagersEnabled" to true,
+          ))
 
   @JvmStatic
   val defaultExportableEventTypes: Map<String, Any>
     get() =
         mapOf(
             BUBBLING_EVENTS_KEY to UIManagerModuleConstants.bubblingEventTypeConstants,
-            DIRECT_EVENTS_KEY to UIManagerModuleConstants.directEventTypeConstants)
+            DIRECT_EVENTS_KEY to UIManagerModuleConstants.directEventTypeConstants,
+        )
 
   private fun validateDirectEventNames(
       viewManagerName: String,
-      directEvents: MutableMap<String, Any>?
+      directEvents: MutableMap<String, Any>?,
   ) {
     if (!ReactBuildConfig.DEBUG || directEvents == null) {
       return
@@ -63,7 +65,8 @@ internal object UIManagerModuleConstantsHelper {
           FLog.e(
               TAG,
               "Direct event name for '$viewManagerName' doesn't correspond to the naming convention," +
-                  " expected 'topEventName'->'onEventName', got '$key'->'$regName'")
+                  " expected 'topEventName'->'onEventName', got '$key'->'$regName'",
+          )
         }
       }
     }
@@ -85,7 +88,7 @@ internal object UIManagerModuleConstantsHelper {
   internal fun createConstants(
       viewManagers: List<ViewManager<in Nothing, in Nothing>>,
       allBubblingEventTypes: MutableMap<String, Any>?,
-      allDirectEventTypes: MutableMap<String, Any>?
+      allDirectEventTypes: MutableMap<String, Any>?,
   ): MutableMap<String, Any> {
     val constants: MutableMap<String, Any> = UIManagerModuleConstants.constants.toMutableMap()
 
@@ -108,7 +111,12 @@ internal object UIManagerModuleConstantsHelper {
 
       val viewManagerConstants: MutableMap<*, *> =
           createConstantsForViewManager(
-              viewManager, null, null, allBubblingEventTypes, allDirectEventTypes)
+              viewManager,
+              null,
+              null,
+              allBubblingEventTypes,
+              allDirectEventTypes,
+          )
       if (!viewManagerConstants.isEmpty()) {
         constants[viewManagerName] = viewManagerConstants
       }
@@ -126,7 +134,7 @@ internal object UIManagerModuleConstantsHelper {
       defaultBubblingEvents: MutableMap<String, Any>?,
       defaultDirectEvents: MutableMap<String, Any>?,
       cumulativeBubblingEventTypes: MutableMap<String, Any>?,
-      cumulativeDirectEventTypes: MutableMap<String, Any>?
+      cumulativeDirectEventTypes: MutableMap<String, Any>?,
   ): MutableMap<String, Any> {
     val viewManagerConstants: MutableMap<String, Any> = mutableMapOf()
 

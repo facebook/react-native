@@ -37,7 +37,7 @@ public abstract class BaseReactPackage : ReactPackage {
    */
   abstract override fun getModule(
       name: String,
-      reactContext: ReactApplicationContext
+      reactContext: ReactApplicationContext,
   ): NativeModule?
 
   /**
@@ -126,7 +126,7 @@ public abstract class BaseReactPackage : ReactPackage {
 
   private inner class ModuleHolderProvider(
       private val name: String,
-      private val reactContext: ReactApplicationContext
+      private val reactContext: ReactApplicationContext,
   ) : Provider<NativeModule?> {
     override fun get(): NativeModule? = getModule(name, reactContext)
   }

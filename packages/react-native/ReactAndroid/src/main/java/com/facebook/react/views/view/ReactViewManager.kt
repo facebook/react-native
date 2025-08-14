@@ -72,7 +72,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactViewGroup
+      view: ReactViewGroup,
   ): ReactViewGroup? {
     // We don't want to run the view clipping when the view is being prepared for recycling to avoid
     // have size changes iterate over child view that should be removed anyway
@@ -207,7 +207,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Don't use setBorderRadius(view, int, Float) as it was deprecated in React Native 0.75.0.",
-      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"))
+      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"),
+  )
   public open fun setBorderRadius(view: ReactViewGroup, index: Int, borderRadius: Float) {
     setBorderRadius(view, index, DynamicFromObject(borderRadius))
   }
@@ -272,7 +273,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
   public open fun setNeedsOffscreenAlphaCompositing(
       view: ReactViewGroup,
-      needsOffscreenAlphaCompositing: Boolean
+      needsOffscreenAlphaCompositing: Boolean,
   ) {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing)
   }
@@ -288,7 +289,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH,
           ],
-      defaultFloat = Float.NaN)
+      defaultFloat = Float.NaN,
+  )
   public open fun setBorderWidth(view: ReactViewGroup, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -307,10 +309,14 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_BLOCK_END_COLOR,
               ViewProps.BORDER_BLOCK_START_COLOR,
           ],
-      customType = "Color")
+      customType = "Color",
+  )
   public open fun setBorderColor(view: ReactViewGroup, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(
-        view, LogicalEdge.fromSpacingType(SPACING_TYPES[index]), color)
+        view,
+        LogicalEdge.fromSpacingType(SPACING_TYPES[index]),
+        color,
+    )
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
@@ -364,7 +370,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   override fun setTransformProperty(
       view: ReactViewGroup,
       transforms: ReadableArray?,
-      transformOrigin: ReadableArray?
+      transformOrigin: ReadableArray?,
   ) {
     super.setTransformProperty(view, transforms, transformOrigin)
     view.setBackfaceVisibilityDependantOpacity()
@@ -380,7 +386,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Use receiveCommand(View, String, ReadableArray)",
-      ReplaceWith("receiveCommand(root, commandIdString, args)"))
+      ReplaceWith("receiveCommand(root, commandIdString, args)"),
+  )
   override fun receiveCommand(root: ReactViewGroup, commandId: Int, args: ReadableArray?) {
     when (commandId) {
       CMD_HOTSPOT_UPDATE -> handleHotspotUpdate(root, args)

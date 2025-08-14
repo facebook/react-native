@@ -85,7 +85,7 @@ public class ReactVirtualViewManager :
 public class VirtualViewEventEmitter(
     private val viewId: Int,
     private val surfaceId: Int,
-    private val dispatcher: EventDispatcher
+    private val dispatcher: EventDispatcher,
 ) : VirtualViewModeChangeEmitter {
   override fun emitModeChange(
       mode: VirtualViewMode,

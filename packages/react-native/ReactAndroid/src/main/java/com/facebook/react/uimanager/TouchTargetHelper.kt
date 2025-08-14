@@ -59,7 +59,7 @@ public object TouchTargetHelper {
       eventX: Float,
       eventY: Float,
       viewGroup: ViewGroup,
-      nativeViewId: IntArray?
+      nativeViewId: IntArray?,
   ): Int = findTargetTagAndCoordinatesForTouch(eventX, eventY, viewGroup, eventCoords, nativeViewId)
 
   /**
@@ -79,7 +79,7 @@ public object TouchTargetHelper {
       eventY: Float,
       viewGroup: ViewGroup,
       viewCoords: FloatArray,
-      nativeViewTag: IntArray?
+      nativeViewTag: IntArray?,
   ): Int {
     UiThreadUtil.assertOnUiThread()
     var targetTag = viewGroup.id
@@ -115,7 +115,7 @@ public object TouchTargetHelper {
       eventX: Float,
       eventY: Float,
       viewGroup: ViewGroup,
-      viewCoords: FloatArray
+      viewCoords: FloatArray,
   ): List<ViewTarget> {
     UiThreadUtil.assertOnUiThread()
 
@@ -182,7 +182,7 @@ public object TouchTargetHelper {
       eventCoords: FloatArray,
       view: View,
       allowReturnTouchTargetTypes: EnumSet<TouchTargetReturnType>,
-      pathAccumulator: MutableList<ViewTarget>?
+      pathAccumulator: MutableList<ViewTarget>?,
   ): View? {
     // We prefer returning a child, so we check for a child that can handle the touch first
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD) && view is ViewGroup) {
@@ -286,7 +286,7 @@ public object TouchTargetHelper {
       y: Float,
       parent: ViewGroup,
       child: View,
-      outLocalPoint: PointF
+      outLocalPoint: PointF,
   ) {
     var localX = x + parent.scrollX - child.left
     var localY = y + parent.scrollY - child.top
@@ -311,7 +311,7 @@ public object TouchTargetHelper {
   private fun findTouchTargetViewWithPointerEvents(
       eventCoords: FloatArray,
       view: View,
-      pathAccumulator: MutableList<ViewTarget>? = null
+      pathAccumulator: MutableList<ViewTarget>? = null,
   ): View? {
     var pointerEvents =
         if (view is ReactPointerEventsView) {
@@ -341,7 +341,11 @@ public object TouchTargetHelper {
         // This view may be the target, its children don't matter
         val targetView =
             findTouchTargetView(
-                eventCoords, view, EnumSet.of(TouchTargetReturnType.SELF), pathAccumulator)
+                eventCoords,
+                view,
+                EnumSet.of(TouchTargetReturnType.SELF),
+                pathAccumulator,
+            )
         targetView?.let { pathAccumulator?.add(ViewTarget(view.id, view)) }
         targetView
       }
@@ -349,7 +353,11 @@ public object TouchTargetHelper {
         // This view can't be the target, but its children might.
         val targetView =
             findTouchTargetView(
-                eventCoords, view, EnumSet.of(TouchTargetReturnType.CHILD), pathAccumulator)
+                eventCoords,
+                view,
+                EnumSet.of(TouchTargetReturnType.CHILD),
+                pathAccumulator,
+            )
 
         if (targetView != null) {
           pathAccumulator?.add(ViewTarget(view.id, view))
@@ -391,7 +399,8 @@ public object TouchTargetHelper {
                 eventCoords,
                 view,
                 EnumSet.of(TouchTargetReturnType.SELF, TouchTargetReturnType.CHILD),
-                pathAccumulator)
+                pathAccumulator,
+            )
         result?.let { pathAccumulator?.add(ViewTarget(view.id, view)) }
         result
       }

@@ -42,7 +42,8 @@ public object TransformHelper {
 
   @Deprecated(
       "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray, Boolean) instead",
-      ReplaceWith("processTransform(...)"))
+      ReplaceWith("processTransform(...)"),
+  )
   @JvmStatic
   public fun processTransform(transforms: ReadableArray, result: DoubleArray) {
     processTransform(transforms, result, 0f, 0f, null, false)
@@ -50,14 +51,15 @@ public object TransformHelper {
 
   @Deprecated(
       "Use processTransform(ReadableArray, DoubleArray, Float, Float, ReadableArray, Boolean) instead",
-      ReplaceWith("processTransform(...)"))
+      ReplaceWith("processTransform(...)"),
+  )
   @JvmStatic
   public fun processTransform(
       transforms: ReadableArray,
       result: DoubleArray,
       viewWidth: Float,
       viewHeight: Float,
-      transformOrigin: ReadableArray?
+      transformOrigin: ReadableArray?,
   ) {
     processTransform(transforms, result, viewWidth, viewHeight, transformOrigin, false)
   }
@@ -69,7 +71,7 @@ public object TransformHelper {
       viewWidth: Float,
       viewHeight: Float,
       transformOrigin: ReadableArray?,
-      allowPercentageResolution: Boolean
+      allowPercentageResolution: Boolean,
   ) {
     if (allowPercentageResolution &&
         ReactNativeFeatureFlags.useNativeTransformHelperAndroid() &&
@@ -83,7 +85,11 @@ public object TransformHelper {
     MatrixMathHelper.resetIdentityMatrix(result)
     val offsets =
         getTranslateForTransformOrigin(
-            viewWidth, viewHeight, transformOrigin, allowPercentageResolution)
+            viewWidth,
+            viewHeight,
+            transformOrigin,
+            allowPercentageResolution,
+        )
 
     if (offsets != null) {
       MatrixMathHelper.resetIdentityMatrix(helperMatrix)
@@ -118,14 +124,20 @@ public object TransformHelper {
               MatrixMathHelper.applyPerspective(helperMatrix, transform.getDouble(transformType))
           "rotateX" ->
               MatrixMathHelper.applyRotateX(
-                  helperMatrix, convertToRadians(transform, transformType))
+                  helperMatrix,
+                  convertToRadians(transform, transformType),
+              )
           "rotateY" ->
               MatrixMathHelper.applyRotateY(
-                  helperMatrix, convertToRadians(transform, transformType))
+                  helperMatrix,
+                  convertToRadians(transform, transformType),
+              )
           "rotate",
           "rotateZ" ->
               MatrixMathHelper.applyRotateZ(
-                  helperMatrix, convertToRadians(transform, transformType))
+                  helperMatrix,
+                  convertToRadians(transform, transformType),
+              )
           "scale" -> {
             val scale = transform.getDouble(transformType)
             MatrixMathHelper.applyScaleX(helperMatrix, scale)
@@ -198,7 +210,7 @@ public object TransformHelper {
       viewWidth: Float,
       viewHeight: Float,
       transformOrigin: ReadableArray?,
-      allowPercentageResolution: Boolean
+      allowPercentageResolution: Boolean,
   ): DoubleArray? {
     if (transformOrigin == null || (viewHeight == 0f && viewWidth == 0f)) {
       return null
@@ -237,6 +249,6 @@ public object TransformHelper {
       result: DoubleArray,
       viewWidth: Float,
       viewHeight: Float,
-      transformOrigin: NativeArray?
+      transformOrigin: NativeArray?,
   )
 }

@@ -66,7 +66,7 @@ internal constructor(
   public constructor(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ) : this(SurfaceHandlerBinding(moduleName), context) {
     val nativeProps = initialProps?.let { Arguments.fromBundle(it) as NativeMap }
     surfaceHandler.setProps(nativeProps)
@@ -80,7 +80,8 @@ internal constructor(
         doRTLSwap(context),
         isRTL(context),
         displayMetrics.density,
-        getFontScale(context))
+        getFontScale(context),
+    )
   }
 
   /**
@@ -172,7 +173,7 @@ internal constructor(
       widthMeasureSpec: Int,
       heightMeasureSpec: Int,
       offsetX: Int,
-      offsetY: Int
+      offsetY: Int,
   ) {
     surfaceHandler.setLayoutConstraints(
         widthMeasureSpec,
@@ -182,7 +183,8 @@ internal constructor(
         doRTLSwap(context),
         isRTL(context),
         context.resources.displayMetrics.density,
-        getFontScale(context))
+        getFontScale(context),
+    )
   }
 
   internal val eventDispatcher: EventDispatcher?
@@ -199,7 +201,7 @@ internal constructor(
     public fun createWithView(
         context: Context,
         moduleName: String,
-        initialProps: Bundle?
+        initialProps: Bundle?,
     ): ReactSurfaceImpl {
       val surface = ReactSurfaceImpl(context, moduleName, initialProps)
       surface.attachView(ReactSurfaceView(context, surface))

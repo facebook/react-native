@@ -18,7 +18,7 @@ public data class CornerRadii(
   public constructor(
       length: LengthPercentage,
       referenceWidth: Float,
-      referenceHeight: Float
+      referenceHeight: Float,
   ) : this(horizontal = length.resolve(referenceWidth), vertical = length.resolve(referenceHeight))
 
   public fun toPixelFromDIP(): CornerRadii {

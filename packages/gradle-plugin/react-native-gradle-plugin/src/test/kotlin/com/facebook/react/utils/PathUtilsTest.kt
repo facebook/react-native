@@ -202,7 +202,8 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc",
+            ))
   }
 
   @Test
@@ -212,7 +213,8 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe",
+            ))
   }
 
   @Test

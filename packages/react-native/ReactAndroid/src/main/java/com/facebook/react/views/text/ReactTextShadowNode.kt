@@ -53,7 +53,8 @@ import kotlin.math.min
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 public class ReactTextShadowNode
 @JvmOverloads
 public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? = null) :
@@ -91,7 +92,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
                   max((span.size * ratio).toDouble(), minimumFontSize.toDouble()).toInt()),
               text.getSpanStart(span),
               text.getSpanEnd(span),
-              text.getSpanFlags(span))
+              text.getSpanFlags(span),
+          )
           text.removeSpan(span)
         }
         layout = measureSpannedText(text, width, widthMode)
@@ -109,7 +111,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
       } else {
         logSoftException(
             "ReactTextShadowNode",
-            ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"))
+            ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"),
+        )
       }
     }
 
@@ -176,7 +179,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
   private fun measureSpannedText(
       text: Spannable,
       width: Float,
-      widthMode: YogaMeasureMode
+      widthMode: YogaMeasureMode,
   ): Layout {
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     var width = width
@@ -230,7 +233,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
               1f,
               0f,
               boring,
-              includeFontPadding)
+              includeFontPadding,
+          )
     } else {
       // Is used for multiline, boring text and the width is known.
       // Android 11+ introduces changes in text width calculation which leads to cases
@@ -280,7 +284,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
             this, /* text (e.g. from `value` prop): */
             null, /* supportsInlineViews: */
             true,
-            nativeViewHierarchyOptimizer)
+            nativeViewHierarchyOptimizer,
+        )
     markUpdated()
   }
 
@@ -313,7 +318,8 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
             getPadding(Spacing.BOTTOM),
             _textAlign,
             textBreakStrategy,
-            justificationMode)
+            justificationMode,
+        )
     uiViewOperationQueue.enqueueUpdateExtraData(reactTag, reactTextUpdate)
   }
 

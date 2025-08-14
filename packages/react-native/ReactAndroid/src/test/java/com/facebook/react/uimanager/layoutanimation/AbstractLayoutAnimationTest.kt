@@ -55,7 +55,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
   }
@@ -102,7 +102,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
 
@@ -126,7 +126,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
 

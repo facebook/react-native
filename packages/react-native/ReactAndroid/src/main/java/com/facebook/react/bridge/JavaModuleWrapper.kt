@@ -26,7 +26,7 @@ import java.lang.reflect.Method
 @InteropLegacyArchitecture
 internal class JavaModuleWrapper(
     @Suppress("DEPRECATION") private val jsInstance: JSInstance,
-    private val moduleHolder: ModuleHolder
+    private val moduleHolder: ModuleHolder,
 ) {
   interface NativeMethod {
     @Suppress("DEPRECATION") fun invoke(jsInstance: JSInstance, parameters: ReadableArray)

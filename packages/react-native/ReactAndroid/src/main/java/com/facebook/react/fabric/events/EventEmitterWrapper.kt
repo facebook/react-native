@@ -26,7 +26,7 @@ internal class EventEmitterWrapper private constructor() : HybridClassBase() {
   private external fun dispatchEvent(
       eventName: String,
       params: NativeMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   )
 
   private external fun dispatchEventSynchronously(eventName: String, params: NativeMap?)

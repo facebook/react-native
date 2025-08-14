@@ -24,7 +24,8 @@ import com.facebook.react.uimanager.ThemedReactContext
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
@@ -45,7 +46,9 @@ internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualT
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactVirtualTextViewManager", LegacyArchitectureLogLevel.ERROR)
+          "ReactVirtualTextViewManager",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

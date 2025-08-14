@@ -17,7 +17,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class CallbackImpl(private val jsInstance: JSInstance, private val callbackId: Int) :
     Callback {
   private var invoked = false
@@ -35,7 +36,9 @@ internal class CallbackImpl(private val jsInstance: JSInstance, private val call
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CallbackImpl", LegacyArchitectureLogLevel.ERROR)
+          "CallbackImpl",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

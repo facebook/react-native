@@ -35,7 +35,7 @@ internal fun createProject(projectDir: File? = null): Project {
 internal inline fun <reified T : Task> createTestTask(
     project: Project = createProject(),
     taskName: String = T::class.java.simpleName,
-    crossinline block: (T) -> Unit = {}
+    crossinline block: (T) -> Unit = {},
 ): T = project.tasks.register(taskName, T::class.java) { block(it) }.get()
 
 /** A util function to zip a list of files from [contents] inside the zipfile at [destination]. */

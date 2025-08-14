@@ -50,7 +50,7 @@ internal class FrescoBasedReactTextInlineImageSpan(
     private val headers: ReadableMap?,
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
     private val callerContext: Any?,
-    private val resizeMode: String?
+    private val resizeMode: String?,
 ) : TextInlineImageSpan() {
 
   private var textView: TextView? = null
@@ -94,7 +94,7 @@ internal class FrescoBasedReactTextInlineImageSpan(
       text: CharSequence,
       start: Int,
       end: Int,
-      fm: Paint.FontMetricsInt?
+      fm: Paint.FontMetricsInt?,
   ): Int {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified
     // to not use a Drawable
@@ -123,7 +123,7 @@ internal class FrescoBasedReactTextInlineImageSpan(
       top: Int,
       y: Int,
       bottom: Int,
-      paint: Paint
+      paint: Paint,
   ) {
     if (drawable == null) {
       val imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(_uri)

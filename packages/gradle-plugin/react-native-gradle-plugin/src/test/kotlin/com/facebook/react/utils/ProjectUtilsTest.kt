@@ -203,7 +203,9 @@ class ProjectUtilsTest {
   fun getReactNativeArchitectures_withMultipleArch_returnsList() {
     val project = createProject()
     project.extensions.extraProperties.set(
-        "reactNativeArchitectures", "armeabi-v7a,arm64-v8a,x86,x86_64")
+        "reactNativeArchitectures",
+        "armeabi-v7a,arm64-v8a,x86,x86_64",
+    )
 
     val archs = project.getReactNativeArchitectures()
     assertThat(archs.size).isEqualTo(4)

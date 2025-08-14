@@ -23,7 +23,8 @@ import kotlin.math.sin
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class SimpleSpringInterpolator @JvmOverloads constructor(springDamping: Float = FACTOR) :
     Interpolator {
   private val _springDamping: Float = springDamping
@@ -42,7 +43,9 @@ internal class SimpleSpringInterpolator @JvmOverloads constructor(springDamping:
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.ERROR)
+          "SimpleSpringInterpolator",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
 
     private const val FACTOR = 0.5f

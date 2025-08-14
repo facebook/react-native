@@ -98,7 +98,8 @@ protected constructor(
    */
   @Deprecated(
       "Setting isHermesEnabled inside `ReactNativeHost` is deprecated and this field will be ignored. If this field is set to true, you can safely remove it. If this field is set to false, please follow the setup on https://github.com/react-native-community/javascriptcore to continue using JSC",
-      ReplaceWith(""))
+      ReplaceWith(""),
+  )
   protected open val isHermesEnabled: Boolean
     get() = true
 
@@ -110,7 +111,7 @@ protected constructor(
   @UnstableReactNativeAPI
   internal fun toReactHost(
       context: Context,
-      jsRuntimeFactory: JSRuntimeFactory? = null
+      jsRuntimeFactory: JSRuntimeFactory? = null,
   ): ReactHost {
     val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
     return DefaultReactHost.getDefaultReactHost(

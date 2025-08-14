@@ -29,7 +29,8 @@ import com.facebook.yoga.YogaNode
 @LegacyArchitectureShadowNodeWithCxxImpl
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class ProgressBarShadowNode :
     com.facebook.react.uimanager.LayoutShadowNode(), YogaMeasureFunction {
   private val height: SparseIntArray = SparseIntArray()
@@ -51,14 +52,16 @@ internal class ProgressBarShadowNode :
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
-      heightMode: YogaMeasureMode
+      heightMode: YogaMeasureMode,
   ): Long {
     val style = ReactProgressBarViewManager.getStyleFromString(style)
     if (!measured.contains(style)) {
       val progressBar = ReactProgressBarViewManager.createProgressBar(themedContext, style)
       val spec =
           View.MeasureSpec.makeMeasureSpec(
-              ViewGroup.LayoutParams.WRAP_CONTENT, View.MeasureSpec.UNSPECIFIED)
+              ViewGroup.LayoutParams.WRAP_CONTENT,
+              View.MeasureSpec.UNSPECIFIED,
+          )
       progressBar.measure(spec, spec)
       this.height.put(style, progressBar.measuredHeight)
       this.width.put(style, progressBar.measuredWidth)
@@ -70,7 +73,9 @@ internal class ProgressBarShadowNode :
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ProgressBarShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "ProgressBarShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

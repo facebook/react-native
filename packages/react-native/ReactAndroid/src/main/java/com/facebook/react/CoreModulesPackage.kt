@@ -53,16 +53,18 @@ import com.facebook.systrace.Systrace
             HeadlessJsTaskSupportModule::class,
             SourceCodeModule::class,
             TimingModule::class,
-            com.facebook.react.uimanager.UIManagerModule::class])
+            com.facebook.react.uimanager.UIManagerModule::class,
+        ])
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
     private val lazyViewManagersEnabled: Boolean,
-    private val minTimeLeftInFrameForNonBatchedOperationMs: Int
+    private val minTimeLeftInFrameForNonBatchedOperationMs: Int,
 ) : BaseReactPackage(), ReactPackageLogger {
   /**
    * This method is overridden, since OSS does not run the annotation processor to generate
@@ -84,10 +86,14 @@ internal class CoreModulesPackage(
       return fallbackForMissingClass()
     } catch (e: InstantiationException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     } catch (e: IllegalAccessException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     }
   }
 
@@ -121,7 +127,8 @@ internal class CoreModulesPackage(
                 reactModule.canOverrideExistingModule,
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
-                ReactModuleInfo.classIsTurboModule(moduleClass))
+                ReactModuleInfo.classIsTurboModule(moduleClass),
+            )
       }
     }
 
@@ -170,12 +177,16 @@ internal class CoreModulesPackage(
             }
 
         return com.facebook.react.uimanager.UIManagerModule(
-            reactContext, resolver, minTimeLeftInFrameForNonBatchedOperationMs)
+            reactContext,
+            resolver,
+            minTimeLeftInFrameForNonBatchedOperationMs,
+        )
       } else {
         return com.facebook.react.uimanager.UIManagerModule(
             reactContext,
             reactInstanceManager.getOrCreateViewManagers(reactContext),
-            minTimeLeftInFrameForNonBatchedOperationMs)
+            minTimeLeftInFrameForNonBatchedOperationMs,
+        )
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT)
@@ -194,7 +205,9 @@ internal class CoreModulesPackage(
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CoreModulesPackage", LegacyArchitectureLogLevel.ERROR)
+          "CoreModulesPackage",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

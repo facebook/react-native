@@ -24,7 +24,7 @@ import com.facebook.react.views.text.internal.span.ReactClickableSpan
 internal class ReactTextViewAccessibilityDelegate(
     view: View,
     originalFocus: Boolean,
-    originalImportantForAccessibility: Int
+    originalImportantForAccessibility: Int,
 ) : ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility) {
   private var accessibilityLinks: AccessibilityLinks? = null
 
@@ -47,7 +47,11 @@ internal class ReactTextViewAccessibilityDelegate(
         ViewCompat.setAccessibilityDelegate(
             view,
             ReactTextViewAccessibilityDelegate(
-                view, originalFocus, originalImportantForAccessibility))
+                view,
+                originalFocus,
+                originalImportantForAccessibility,
+            ),
+        )
       }
     }
 
@@ -55,7 +59,11 @@ internal class ReactTextViewAccessibilityDelegate(
       ViewCompat.setAccessibilityDelegate(
           view,
           ReactTextViewAccessibilityDelegate(
-              view, originalFocus, originalImportantForAccessibility))
+              view,
+              originalFocus,
+              originalImportantForAccessibility,
+          ),
+      )
     }
   }
 
@@ -84,7 +92,7 @@ internal class ReactTextViewAccessibilityDelegate(
   override fun onPerformActionForVirtualView(
       virtualViewId: Int,
       action: Int,
-      arguments: Bundle?
+      arguments: Bundle?,
   ): Boolean {
     if (accessibilityLinks == null) {
       return false

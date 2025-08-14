@@ -49,7 +49,7 @@ internal class ReactEditTextInputConnectionWrapper(
     target: InputConnection,
     reactContext: ReactContext,
     private val editText: ReactEditText,
-    private val eventDispatcher: EventDispatcher
+    private val eventDispatcher: EventDispatcher,
 ) : InputConnectionWrapper(target, false) {
 
   private var isBatchEdit = false

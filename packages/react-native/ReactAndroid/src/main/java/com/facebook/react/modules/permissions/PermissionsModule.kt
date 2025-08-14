@@ -88,7 +88,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
                 }
               }
             }
-          })
+          },
+      )
       activity.requestPermissions(arrayOf(permission), requestCode, this)
       requestCode++
     } catch (e: IllegalStateException) {
@@ -136,7 +137,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
               }
               promise.resolve(grantedPermissions)
             }
-          })
+          },
+      )
       activity.requestPermissions(permissionsToCheck.toTypedArray<String>(), requestCode, this)
       requestCode++
     } catch (e: IllegalStateException) {
@@ -148,7 +150,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
   override fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ): Boolean =
       try {
         val callback = callbacks[requestCode]
@@ -163,7 +165,8 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
         FLog.e(
             "PermissionsModule",
             e,
-            "Unexpected invocation of `onRequestPermissionsResult` with invalid current activity")
+            "Unexpected invocation of `onRequestPermissionsResult` with invalid current activity",
+        )
         false
       }
 

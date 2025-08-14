@@ -116,7 +116,8 @@ class ReactExtensionTest {
     assertThat(deps)
         .containsExactly(
             "debugImplementation" to ":react-native_oss-library-example",
-            "releaseImplementation" to ":react-native_oss-library-example")
+            "releaseImplementation" to ":react-native_oss-library-example",
+        )
   }
 
   @Test
@@ -156,7 +157,8 @@ class ReactExtensionTest {
     assertThat(deps)
         .containsExactly(
             "implementation" to ":react-native_oss-library-example",
-            "implementation" to ":react-native_another-library-for-testing")
+            "implementation" to ":react-native_another-library-for-testing",
+        )
   }
 
   @Test

@@ -14,7 +14,7 @@ import kotlin.math.min
 
 internal class DiffClampAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private val inputNodeTag: Int
   private val minValue: Double

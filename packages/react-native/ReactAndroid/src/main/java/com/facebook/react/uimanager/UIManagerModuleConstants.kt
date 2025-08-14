@@ -39,7 +39,8 @@ internal object UIManagerModuleConstants {
           TouchEventType.getJSEventName(TouchEventType.CANCEL) to
               mapOf(
                   "phasedRegistrationNames" to
-                      mapOf("bubbled" to "onTouchCancel", "captured" to "onTouchCancelCapture")))
+                      mapOf("bubbled" to "onTouchCancel", "captured" to "onTouchCancelCapture")),
+      )
 
   @JvmField
   val directEventTypeConstants: Map<String, Any> = run {
@@ -59,7 +60,8 @@ internal object UIManagerModuleConstants {
         "topScrollEndDrag" to mapOf(rn to "onScrollEndDrag"),
         "topScroll" to mapOf(rn to "onScroll"),
         "topMomentumScrollBegin" to mapOf(rn to "onMomentumScrollBegin"),
-        "topMomentumScrollEnd" to mapOf(rn to "onMomentumScrollEnd"))
+        "topMomentumScrollEnd" to mapOf(rn to "onMomentumScrollEnd"),
+    )
   }
 
   @JvmField
@@ -71,7 +73,8 @@ internal object UIManagerModuleConstants {
                       mapOf(
                           "ScaleAspectFit" to ImageView.ScaleType.FIT_CENTER.ordinal,
                           "ScaleAspectFill" to ImageView.ScaleType.CENTER_CROP.ordinal,
-                          "ScaleAspectCenter" to ImageView.ScaleType.CENTER_INSIDE.ordinal)),
+                          "ScaleAspectCenter" to ImageView.ScaleType.CENTER_INSIDE.ordinal,
+                      )),
           "StyleConstants" to
               mapOf(
                   "PointerEventsValues" to
@@ -79,10 +82,13 @@ internal object UIManagerModuleConstants {
                           "none" to PointerEvents.NONE.ordinal,
                           "boxNone" to PointerEvents.BOX_NONE.ordinal,
                           "boxOnly" to PointerEvents.BOX_ONLY.ordinal,
-                          "unspecified" to PointerEvents.AUTO.ordinal)),
+                          "unspecified" to PointerEvents.AUTO.ordinal,
+                      )),
           "AccessibilityEventTypes" to
               mapOf(
                   "typeWindowStateChanged" to AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
                   "typeViewFocused" to AccessibilityEvent.TYPE_VIEW_FOCUSED,
-                  "typeViewClicked" to AccessibilityEvent.TYPE_VIEW_CLICKED))
+                  "typeViewClicked" to AccessibilityEvent.TYPE_VIEW_CLICKED,
+              ),
+      )
 }

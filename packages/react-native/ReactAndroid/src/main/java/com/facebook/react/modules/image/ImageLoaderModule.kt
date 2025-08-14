@@ -61,7 +61,7 @@ internal class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventL
   constructor(
       reactContext: ReactApplicationContext,
       imagePipeline: ImagePipeline,
-      callerContextFactory: ReactCallerContextFactory
+      callerContextFactory: ReactCallerContextFactory,
   ) : super(reactContext) {
     this.callerContextFactory = callerContextFactory
     this.imagePipeline = imagePipeline

@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReadableMap
 
 internal class ModulusAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
 
   private val inputNode: Int = config.getInt("input")

@@ -108,7 +108,8 @@ public class ReactHostImpl(
           surfaceDelegateFactory = null,
           devLoadingViewManager = null,
           pausedInDebuggerOverlayManager = null,
-          useDevSupport = useDevSupport)
+          useDevSupport = useDevSupport,
+      )
   public override val memoryPressureRouter: MemoryPressureRouter = MemoryPressureRouter(context)
 
   private val attachedSurfaces: MutableSet<ReactSurfaceImpl> = HashSet()
@@ -140,7 +141,7 @@ public class ReactHostImpl(
       delegate: ReactHostDelegate,
       componentFactory: ComponentFactory,
       allowPackagerServerAccess: Boolean,
-      useDevSupport: Boolean
+      useDevSupport: Boolean,
   ) : this(
       context,
       delegate,
@@ -148,7 +149,8 @@ public class ReactHostImpl(
       Executors.newSingleThreadExecutor(),
       Task.UI_THREAD_EXECUTOR,
       allowPackagerServerAccess,
-      useDevSupport)
+      useDevSupport,
+  )
 
   public override val lifecycleState: LifecycleState
     get() = reactLifecycleStateManager.lifecycleState
@@ -219,7 +221,7 @@ public class ReactHostImpl(
   @ThreadConfined(ThreadConfined.UI)
   override fun onHostResume(
       activity: Activity?,
-      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?
+      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?,
   ) {
     defaultHardwareBackBtnHandler = defaultBackButtonImpl
     onHostResume(activity)
@@ -321,7 +323,7 @@ public class ReactHostImpl(
   override fun createSurface(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ): ReactSurface {
     val surface = ReactSurfaceImpl(context, moduleName, initialProps)
     val surfaceView = ReactSurfaceView(context, surface)
@@ -374,7 +376,8 @@ public class ReactHostImpl(
                 (destroyTask?.let { destroyTask ->
                       log(
                           "reload()",
-                          "Waiting for destroy to finish, before reloading React Native.")
+                          "Waiting for destroy to finish, before reloading React Native.",
+                      )
                       destroyTask.continueWithTask({ getOrCreateReloadTask(reason) }, bgExecutor)
                     } ?: getOrCreateReloadTask(reason))
                     .makeVoid()
@@ -392,9 +395,11 @@ public class ReactHostImpl(
                     task
                   }
                 },
-                bgExecutor)
+                bgExecutor,
+            )
           },
-          bgExecutor)
+          bgExecutor,
+      )
 
   @DoNotStrip
   private fun setPausedInDebuggerMessage(message: String?) {
@@ -408,7 +413,8 @@ public class ReactHostImpl(
               UiThreadUtil.assertOnUiThread()
               reactHostInspectorTarget?.sendDebuggerResumeCommand()
             }
-          })
+          },
+      )
     }
   }
 
@@ -441,7 +447,7 @@ public class ReactHostImpl(
   override fun destroy(
       reason: String,
       ex: Exception?,
-      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit,
   ): TaskInterface<Void> {
     val destroyTask = destroy(reason, ex) as Task<Void>
     return destroyTask.continueWith({ task: Task<Void> ->
@@ -472,13 +478,15 @@ public class ReactHostImpl(
             if (reloadTask != null) {
               log(
                   "destroy()",
-                  "Reloading React Native. Waiting for reload to finish before destroying React Native.")
+                  "Reloading React Native. Waiting for reload to finish before destroying React Native.",
+              )
               reloadTask.continueWithTask<Void>({ getOrCreateDestroyTask(reason, ex) }, bgExecutor)
             } else {
               getOrCreateDestroyTask(reason, ex)
             }
           },
-          bgExecutor)
+          bgExecutor,
+      )
 
   private fun createMemoryPressureListener(reactInstance: ReactInstance): MemoryPressureListener {
     val weakReactInstance = WeakReference(reactInstance)
@@ -529,7 +537,8 @@ public class ReactHostImpl(
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           ReactNoCrashSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"))
+              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"),
+      )
     }
 
     return reactInstance?.getNativeModule(nativeModuleInterface)
@@ -545,7 +554,9 @@ public class ReactHostImpl(
       }
 
       raiseSoftException(
-          "getRuntimeExecutor()", "Tried to get runtime executor while instance is not ready")
+          "getRuntimeExecutor()",
+          "Tried to get runtime executor while instance is not ready",
+      )
       return null
     }
 
@@ -557,7 +568,8 @@ public class ReactHostImpl(
 
       raiseSoftException(
           "getJSCallInvokerHolder()",
-          "Tried to get JSCallInvokerHolder while instance is not ready")
+          "Tried to get JSCallInvokerHolder while instance is not ready",
+      )
       return null
     }
 
@@ -571,7 +583,7 @@ public class ReactHostImpl(
       activity: Activity,
       requestCode: Int,
       resultCode: Int,
-      data: Intent?
+      data: Intent?,
   ) {
     val method =
         "onActivityResult(activity = \"$activity\", requestCode = \"$requestCode\", resultCode = \"$resultCode\", data = \"$data\")"
@@ -687,7 +699,7 @@ public class ReactHostImpl(
   internal fun callFunctionOnModule(
       moduleName: String,
       methodName: String,
-      args: NativeArray
+      args: NativeArray,
   ): Task<Boolean> {
     val method = "callFunctionOnModule(\"$moduleName\", \"$methodName\")"
     return callWithExistingReactInstance(method) { reactInstance: ReactInstance ->
@@ -736,23 +748,28 @@ public class ReactHostImpl(
     if (ReactBuildConfig.DEBUG) {
       Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture(),
-          "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.")
+          "enableBridgelessArchitecture FeatureFlag must be set to start ReactNative.",
+      )
 
       Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.enableFabricRenderer(),
-          "enableFabricRenderer FeatureFlag must be set to start ReactNative.")
+          "enableFabricRenderer FeatureFlag must be set to start ReactNative.",
+      )
 
       Assertions.assertCondition(
           ReactNativeNewArchitectureFeatureFlags.useTurboModules(),
-          "useTurboModules FeatureFlag must be set to start ReactNative.")
+          "useTurboModules FeatureFlag must be set to start ReactNative.",
+      )
     }
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       Assertions.assertCondition(
           !ReactNativeNewArchitectureFeatureFlags.useFabricInterop(),
-          "useFabricInterop FeatureFlag must be false when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.")
+          "useFabricInterop FeatureFlag must be false when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.",
+      )
       Assertions.assertCondition(
           !ReactNativeNewArchitectureFeatureFlags.useTurboModuleInterop(),
-          "useTurboModuleInterop FeatureFlag must be false when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.")
+          "useTurboModuleInterop FeatureFlag must be false when UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE == true.",
+      )
     }
 
     return waitThenCallGetOrCreateReactInstanceTask()
@@ -772,7 +789,8 @@ public class ReactHostImpl(
                 task.makeVoid()
               }
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .also { startTask = it }
   }
 
@@ -785,12 +803,14 @@ public class ReactHostImpl(
   private fun raiseSoftException(
       callingMethod: String,
       message: String,
-      throwable: Throwable? = null
+      throwable: Throwable? = null,
   ) {
     val method = "raiseSoftException($callingMethod)"
     log(method, message)
     ReactSoftExceptionLogger.logSoftException(
-        TAG, ReactNoCrashSoftException("$method: $message", throwable))
+        TAG,
+        ReactNoCrashSoftException("$method: $message", throwable),
+    )
   }
 
   /** Schedule work on a ReactInstance that is already created. */
@@ -807,14 +827,16 @@ public class ReactHostImpl(
                 if (reactInstance == null) {
                   raiseSoftException(
                       "callWithExistingReactInstance($callingMethod)",
-                      "Execute: reactInstance is null. Dropping work.")
+                      "Execute: reactInstance is null. Dropping work.",
+                  )
                   false
                 } else {
                   runnable(reactInstance)
                   true
                 }
               },
-              executor)
+              executor,
+          )
 
   /** Create a ReactInstance if it doesn't exist already, and schedule work on it. */
   private fun callAfterGetOrCreateReactInstance(
@@ -829,13 +851,15 @@ public class ReactHostImpl(
                 if (reactInstance == null) {
                   raiseSoftException(
                       "callAfterGetOrCreateReactInstance($callingMethod)",
-                      "Execute: reactInstance is null. Dropping work.")
+                      "Execute: reactInstance is null. Dropping work.",
+                  )
                 } else {
                   runnable(reactInstance)
                 }
                 null
               },
-              executor)
+              executor,
+          )
 
   private fun getOrCreateReactContext(): BridgelessReactContext {
     val method = "getOrCreateReactContext()"
@@ -861,7 +885,7 @@ public class ReactHostImpl(
   @ThreadConfined("ReactHost")
   private fun waitThenCallGetOrCreateReactInstanceTaskWithRetries(
       tryNum: Int,
-      maxTries: Int
+      maxTries: Int,
   ): Task<ReactInstance> {
     val method = "waitThenCallGetOrCreateReactInstanceTaskWithRetries"
     reloadTask?.let { task ->
@@ -874,15 +898,18 @@ public class ReactHostImpl(
       if (shouldTryAgain) {
         log(
             method,
-            "React Native is tearing down.Wait for teardown to finish, before trying again (try count = $tryNum).")
+            "React Native is tearing down.Wait for teardown to finish, before trying again (try count = $tryNum).",
+        )
         return task.onSuccessTask(
             { waitThenCallGetOrCreateReactInstanceTaskWithRetries(tryNum + 1, maxTries) },
-            bgExecutor)
+            bgExecutor,
+        )
       }
 
       raiseSoftException(
           method,
-          "React Native is tearing down. Not wait for teardown to finish: reached max retries.")
+          "React Native is tearing down. Not wait for teardown to finish: reached max retries.",
+      )
     }
 
     return getOrCreateReactInstanceTask()
@@ -891,7 +918,7 @@ public class ReactHostImpl(
   private class CreationResult(
       val instance: ReactInstance,
       val context: ReactContext,
-      val isReloading: Boolean
+      val isReloading: Boolean,
   )
 
   @ThreadConfined("ReactHost")
@@ -902,10 +929,14 @@ public class ReactHostImpl(
     return createReactInstanceTaskRef.getOrCreate {
       log(method, "Start")
       Assertions.assertCondition(
-          !hostInvalidated, "Cannot start a new ReactInstance on an invalidated ReactHost")
+          !hostInvalidated,
+          "Cannot start a new ReactInstance on an invalidated ReactHost",
+      )
 
       ReactMarker.logMarker(
-          ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START, BRIDGELESS_MARKER_INSTANCE_KEY)
+          ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START,
+          BRIDGELESS_MARKER_INSTANCE_KEY,
+      )
 
       val creationTask =
           jsBundleLoader.onSuccess(
@@ -923,7 +954,8 @@ public class ReactHostImpl(
                         devSupportManager,
                         { e: Exception -> this.handleHostException(e) },
                         useDevSupport,
-                        getOrCreateReactHostInspectorTarget())
+                        getOrCreateReactHostInspectorTarget(),
+                    )
                 reactInstance = instance
 
                 val memoryPressureListener = createMemoryPressureListener(instance)
@@ -946,11 +978,13 @@ public class ReactHostImpl(
                   // TODO T76081936 Move this if we switch to a sync RTE
                   ReactMarker.logMarker(
                       ReactMarkerConstants.REACT_BRIDGELESS_LOADING_END,
-                      BRIDGELESS_MARKER_INSTANCE_KEY)
+                      BRIDGELESS_MARKER_INSTANCE_KEY,
+                  )
                 }
                 CreationResult(instance, reactContext, reloadTask != null)
               },
-              bgExecutor)
+              bgExecutor,
+          )
 
       val lifecycleUpdateTask = task@{ task: Task<CreationResult> ->
         if (task.isFaulted()) {
@@ -1020,7 +1054,8 @@ public class ReactHostImpl(
                 Task.forResult(reactHostDelegate.jsBundleLoader)
               }
             },
-            bgExecutor)
+            bgExecutor,
+        )
       } else {
         if (ReactBuildConfig.DEBUG) {
           FLog.d(TAG, "Packager server access is disabled in this environment")
@@ -1074,14 +1109,17 @@ public class ReactHostImpl(
             log(method, "Creating BundleLoader")
             val bundleLoader =
                 JSBundleLoader.createCachedBundleFromNetworkLoader(
-                    bundleURL, asyncDevSupportManager.downloadedJSBundleFile)
+                    bundleURL,
+                    asyncDevSupportManager.downloadedJSBundleFile,
+                )
             taskCompletionSource.setResult(bundleLoader)
           }
 
           override fun onError(cause: Exception) {
             taskCompletionSource.setError(cause)
           }
-        })
+        },
+    )
 
     return taskCompletionSource.task
   }
@@ -1118,7 +1156,7 @@ public class ReactHostImpl(
   private fun createReactInstanceUnwrapper(
       tag: String,
       method: String,
-      reason: String
+      reason: String,
   ): (task: Task<ReactInstance>, stage: String) -> ReactInstance? =
       unwrap@{ task: Task<ReactInstance>, stage: String ->
         val reactInstance = task.getResult()
@@ -1130,26 +1168,33 @@ public class ReactHostImpl(
           val ex = checkNotNull(task.getError())
           val faultLabel = "Fault reason: ${ex.message}"
           raiseSoftException(
-              method, "$tag: ReactInstance task faulted. $stageLabel. $faultLabel. $reasonLabel")
+              method,
+              "$tag: ReactInstance task faulted. $stageLabel. $faultLabel. $reasonLabel",
+          )
           return@unwrap currentReactInstance
         }
 
         if (task.isCancelled()) {
           raiseSoftException(
-              method, "$tag: ReactInstance task cancelled. $stageLabel. $reasonLabel")
+              method,
+              "$tag: ReactInstance task cancelled. $stageLabel. $reasonLabel",
+          )
           return@unwrap currentReactInstance
         }
 
         if (reactInstance == null) {
           raiseSoftException(
-              method, "$tag: ReactInstance task returned null. $stageLabel. $reasonLabel")
+              method,
+              "$tag: ReactInstance task returned null. $stageLabel. $reasonLabel",
+          )
           return@unwrap currentReactInstance
         }
 
         if (currentReactInstance != null && reactInstance != currentReactInstance) {
           raiseSoftException(
               method,
-              ("$tag: Detected two different ReactInstances. Returning old. $stageLabel. $reasonLabel"))
+              ("$tag: Detected two different ReactInstances. Returning old. $stageLabel. $reasonLabel"),
+          )
         }
         reactInstance
       }
@@ -1200,7 +1245,8 @@ public class ReactHostImpl(
               }
               Task.forResult(reactInstance)
             },
-            uiExecutor)
+            uiExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               val reactInstance = taskUnwrapper(task, "2: Surface shutdown")
@@ -1211,7 +1257,8 @@ public class ReactHostImpl(
               }
               task
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               taskUnwrapper(task, "3: Destroying ReactContext")
@@ -1239,7 +1286,8 @@ public class ReactHostImpl(
               }
               task
             },
-            uiExecutor)
+            uiExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               val reactInstance = taskUnwrapper(task, "4: Destroying ReactInstance")
@@ -1259,7 +1307,8 @@ public class ReactHostImpl(
               // Kickstart a new ReactInstance create
               getOrCreateReactInstanceTask()
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               val reactInstance = taskUnwrapper(task, "5: Restarting surfaces")
@@ -1270,7 +1319,8 @@ public class ReactHostImpl(
               }
               task
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               if (task.isFaulted()) {
@@ -1278,19 +1328,22 @@ public class ReactHostImpl(
                 raiseSoftException(
                     method,
                     ("Error during reload. ReactInstance task faulted. Fault reason: ${fault.message}. Reload reason: $reason"),
-                    task.getError())
+                    task.getError(),
+                )
               }
               if (task.isCancelled()) {
                 raiseSoftException(
                     method,
-                    "Error during reload. ReactInstance task cancelled. Reload reason: $reason")
+                    "Error during reload. ReactInstance task cancelled. Reload reason: $reason",
+                )
               }
 
               log(method, "Resetting reload task ref")
               reloadTask = null
               task
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .also { reloadTask = it }
   }
 
@@ -1355,7 +1408,8 @@ public class ReactHostImpl(
               reactLifecycleStateManager.moveToOnHostDestroy(reactContext)
               Task.forResult<ReactInstance>(reactInstance)
             },
-            uiExecutor)
+            uiExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               val reactInstance = taskUnwrapper(task, "2: Stopping surfaces")
@@ -1368,7 +1422,8 @@ public class ReactHostImpl(
               }
               task
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               taskUnwrapper(task, "3: Destroying ReactContext")
@@ -1400,7 +1455,8 @@ public class ReactHostImpl(
               ResourceDrawableIdHelper.clear()
               task
             },
-            uiExecutor)
+            uiExecutor,
+        )
         .continueWithTask(
             { task: Task<ReactInstance> ->
               val reactInstance = taskUnwrapper(task, "4: Destroying ReactInstance")
@@ -1421,19 +1477,22 @@ public class ReactHostImpl(
               destroyTask = null
               task
             },
-            bgExecutor)
+            bgExecutor,
+        )
         .continueWith<Void>({ task: Task<ReactInstance> ->
           if (task.isFaulted()) {
             val fault = checkNotNull(task.getError())
             raiseSoftException(
                 method,
                 ("React destruction failed. ReactInstance task faulted. Fault reason: ${fault.message}. Destroy reason: $reason"),
-                task.getError())
+                task.getError(),
+            )
           }
           if (task.isCancelled()) {
             raiseSoftException(
                 method,
-                "React destruction failed. ReactInstance task cancelled. Destroy reason: $reason")
+                "React destruction failed. ReactInstance task cancelled. Destroy reason: $reason",
+            )
           }
           null
         })
@@ -1455,7 +1514,8 @@ public class ReactHostImpl(
       if (InspectorFlags.getFuseboxEnabled()) {
         Assertions.assertCondition(
             reactHostInspectorTarget?.isValid() == true,
-            "Host inspector target destroyed before instance was unregistered")
+            "Host inspector target destroyed before instance was unregistered",
+        )
       }
       reactInstance.unregisterFromInspector()
     }

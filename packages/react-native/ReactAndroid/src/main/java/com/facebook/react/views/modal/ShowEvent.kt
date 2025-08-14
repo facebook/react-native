@@ -17,7 +17,8 @@ internal class ShowEvent(surfaceId: Int, viewTag: Int) : Event<ShowEvent>(surfac
 
   @Deprecated(
       "Do not use this constructor, use the one with explicit surfaceId",
-      ReplaceWith("ShowEvent(surfaceId, viewTag)"))
+      ReplaceWith("ShowEvent(surfaceId, viewTag)"),
+  )
   constructor(viewTag: Int) : this(ViewUtil.NO_SURFACE_ID, viewTag)
 
   override fun getEventName(): String = EVENT_NAME

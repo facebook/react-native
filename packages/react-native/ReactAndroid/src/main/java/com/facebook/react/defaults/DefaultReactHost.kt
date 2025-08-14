@@ -76,7 +76,8 @@ public object DefaultReactHost {
           useDevSupport,
           cxxReactPackageProviders,
           { throw it },
-          null)
+          null,
+      )
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
@@ -136,7 +137,8 @@ public object DefaultReactHost {
               jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance(),
               bindingsInstaller = bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
-              exceptionHandler = exceptionHandler)
+              exceptionHandler = exceptionHandler,
+          )
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost
@@ -189,7 +191,8 @@ public object DefaultReactHost {
         exceptionHandler: (Exception) -> Unit,
         bindingsInstaller: BindingsInstaller?,
       ): ReactHost
-    """))
+    """),
+  )
   @JvmStatic
   public fun getDefaultReactHost(
       context: Context,
@@ -213,7 +216,8 @@ public object DefaultReactHost {
           useDevSupport,
           cxxReactPackageProviders,
           exceptionHandler,
-          bindingsInstaller)
+          bindingsInstaller,
+      )
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
@@ -247,7 +251,8 @@ public object DefaultReactHost {
         useDevSupport: Boolean,
         cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage>,
       ): ReactHost
-    """))
+    """),
+  )
   @JvmStatic
   public fun getDefaultReactHost(
       context: Context,
@@ -288,7 +293,7 @@ public object DefaultReactHost {
   public fun getDefaultReactHost(
       context: Context,
       reactNativeHost: ReactNativeHost,
-      jsRuntimeFactory: JSRuntimeFactory? = null
+      jsRuntimeFactory: JSRuntimeFactory? = null,
   ): ReactHost {
     require(reactNativeHost is DefaultReactNativeHost) {
       "You can call getDefaultReactHost only with instances of DefaultReactNativeHost"

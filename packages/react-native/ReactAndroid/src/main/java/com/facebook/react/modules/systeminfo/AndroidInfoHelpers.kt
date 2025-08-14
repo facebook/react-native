@@ -78,7 +78,8 @@ public object AndroidInfoHelpers {
         "appIdentifier" to appIdentifier,
         "platform" to "android",
         "deviceName" to Build.MODEL,
-        "reactNativeVersion" to getReactNativeVersionString())
+        "reactNativeVersion" to getReactNativeVersionString(),
+    )
   }
 
   private fun getReactNativeVersionString(): String {

@@ -20,7 +20,10 @@ public object PixelUtil {
     }
 
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getWindowDisplayMetrics())
+        TypedValue.COMPLEX_UNIT_DIP,
+        value,
+        DisplayMetricsHolder.getWindowDisplayMetrics(),
+    )
   }
 
   /** Convert from DIP to PX */

@@ -14,5 +14,5 @@ package com.facebook.react.common
 public enum class ReleaseLevel {
   EXPERIMENTAL,
   CANARY,
-  STABLE
+  STABLE,
 }

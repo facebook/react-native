@@ -28,7 +28,7 @@ constructor(
         @JvmSuppressWildcards
         AbstractDraweeControllerBuilder<*, ImageRequest, *, *>? =
         null,
-    private val callerContext: Any? = null
+    private val callerContext: Any? = null,
 ) : BaseViewManager<View, FrescoBasedReactTextInlineImageShadowNode>() {
 
   override fun getName(): String = REACT_CLASS
@@ -39,7 +39,9 @@ constructor(
 
   override fun createShadowNodeInstance(): FrescoBasedReactTextInlineImageShadowNode =
       FrescoBasedReactTextInlineImageShadowNode(
-          draweeControllerBuilder ?: Fresco.newDraweeControllerBuilder(), callerContext)
+          draweeControllerBuilder ?: Fresco.newDraweeControllerBuilder(),
+          callerContext,
+      )
 
   override fun getShadowNodeClass(): Class<FrescoBasedReactTextInlineImageShadowNode> =
       FrescoBasedReactTextInlineImageShadowNode::class.java

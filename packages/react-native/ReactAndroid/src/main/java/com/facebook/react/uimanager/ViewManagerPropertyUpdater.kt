@@ -46,7 +46,7 @@ public object ViewManagerPropertyUpdater {
   public fun <T : ViewManagerDelegate<V>, V : View> updateProps(
       delegate: T,
       view: V,
-      props: ReactStylesDiffMap
+      props: ReactStylesDiffMap,
   ) {
     val iterator = props.backingMap.entryIterator
     while (iterator.hasNext()) {
@@ -60,7 +60,7 @@ public object ViewManagerPropertyUpdater {
   public fun <V : View> updateProps(
       manager: ViewManager<V, *>,
       view: V,
-      props: ReactStylesDiffMap
+      props: ReactStylesDiffMap,
   ) {
     val setter = findManagerSetter(manager.javaClass)
     val iterator = props.backingMap.entryIterator
@@ -74,7 +74,7 @@ public object ViewManagerPropertyUpdater {
   @Deprecated("Use ViewManager#updateProperties to update a view's properties")
   public fun <@Suppress("DEPRECATION") T : ReactShadowNode<T>> updateProps(
       node: T,
-      props: ReactStylesDiffMap
+      props: ReactStylesDiffMap,
   ) {
     val setter = findNodeSetter(node.javaClass)
     val iterator = props.backingMap.entryIterator
@@ -87,7 +87,7 @@ public object ViewManagerPropertyUpdater {
   @JvmStatic
   public fun getNativeProps(
       viewManagerTopClass: Class<out ViewManager<Nothing, *>>,
-      shadowNodeTopClass: Class<out Nothing>?
+      shadowNodeTopClass: Class<out Nothing>?,
   ): Map<String, String> {
     val props: MutableMap<String, String> = HashMap()
     findManagerSetter(viewManagerTopClass).getProperties(props)

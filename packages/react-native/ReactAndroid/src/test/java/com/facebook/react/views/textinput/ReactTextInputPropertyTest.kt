@@ -96,19 +96,25 @@ class ReactTextInputPropertyTest {
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
     manager.updateProperties(
-        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES))
+        view,
+        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_SENTENCES),
+    )
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
     manager.updateProperties(
-        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_WORDS))
+        view,
+        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_WORDS),
+    )
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isNotZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isZero
 
     manager.updateProperties(
-        view, buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS))
+        view,
+        buildStyles("autoCapitalize", InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS),
+    )
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_WORDS).isZero
     assertThat(view.inputType and InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS).isNotZero
@@ -362,7 +368,9 @@ class ReactTextInputPropertyTest {
 
     // region TextAlign + TextAlignVertical
     manager.updateProperties(
-        view, buildStyles("textAlign", "center", "textAlignVertical", "center"))
+        view,
+        buildStyles("textAlign", "center", "textAlignVertical", "center"),
+    )
     assertThat(view.gravity).isEqualTo(Gravity.CENTER)
 
     manager.updateProperties(view, buildStyles("textAlign", "right", "textAlignVertical", "bottom"))
