@@ -44,7 +44,7 @@ public class ReactDrawerLayoutManager :
 
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactDrawerLayout
+      view: ReactDrawerLayout,
   ) {
     val eventDispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
@@ -91,7 +91,9 @@ public class ReactDrawerLayoutManager :
       "right" -> view.setDrawerPosition(Gravity.END)
       else -> {
         FLog.w(
-            ReactConstants.TAG, "drawerPosition must be 'left' or 'right', received$drawerPosition")
+            ReactConstants.TAG,
+            "drawerPosition must be 'left' or 'right', received$drawerPosition",
+        )
         view.setDrawerPosition(Gravity.START)
       }
     }
@@ -158,11 +160,12 @@ public class ReactDrawerLayoutManager :
   @Deprecated(
       message =
           "This method is deprecated. Use receiveCommand(ReactDrawerLayout, String, ReadableArray) instead",
-      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"))
+      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"),
+  )
   public override fun receiveCommand(
       view: ReactDrawerLayout,
       commandId: Int,
-      args: ReadableArray?
+      args: ReadableArray?,
   ): Unit {
     when (commandId) {
       OPEN_DRAWER -> view.openDrawer()
@@ -209,7 +212,7 @@ public class ReactDrawerLayoutManager :
 
   internal class DrawerEventEmitter(
       private val drawerLayout: DrawerLayout,
-      private val eventDispatcher: EventDispatcher
+      private val eventDispatcher: EventDispatcher,
   ) : DrawerListener {
     override fun onDrawerSlide(view: View, v: Float) {
       eventDispatcher.dispatchEvent(

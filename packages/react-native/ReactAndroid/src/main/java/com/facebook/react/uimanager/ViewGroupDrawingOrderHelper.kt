@@ -65,7 +65,8 @@ public class ViewGroupDrawingOrderHelper(private val viewGroup: ViewGroup) {
           "getChildDrawingOrder index out of bounds! Please check any custom view manipulations you" +
               " may have done. childCount = %d, index = %d",
           childCount,
-          index)
+          index,
+      )
       update()
     }
 

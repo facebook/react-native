@@ -29,6 +29,6 @@ public interface RCTModernEventEmitter : RCTEventEmitter {
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   )
 }

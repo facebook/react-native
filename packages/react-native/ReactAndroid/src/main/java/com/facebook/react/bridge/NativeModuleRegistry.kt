@@ -23,10 +23,11 @@ import com.facebook.systrace.Systrace.endSection
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 public class NativeModuleRegistry(
     private val reactApplicationContext: ReactApplicationContext,
-    private val modules: MutableMap<String, ModuleHolder>
+    private val modules: MutableMap<String, ModuleHolder>,
 ) {
   /** Private getters for combining NativeModuleRegistry's */
   private val moduleMap: Map<String, ModuleHolder>
@@ -111,7 +112,9 @@ public class NativeModuleRegistry(
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
     assertLegacyArchitecture(
-        "NativeModuleRegistry.onBatchComplete()", LegacyArchitectureLogLevel.WARNING)
+        "NativeModuleRegistry.onBatchComplete()",
+        LegacyArchitectureLogLevel.WARNING,
+    )
     modules["UIManager"]?.let {
       if (it.hasInstance()) {
         (it.module as OnBatchCompleteListener).onBatchComplete()
@@ -155,7 +158,9 @@ public class NativeModuleRegistry(
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeModuleRegistry", logLevel = LegacyArchitectureLogLevel.ERROR)
+          "NativeModuleRegistry",
+          logLevel = LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

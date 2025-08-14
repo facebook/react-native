@@ -505,7 +505,7 @@ public class TextAttributeProps private constructor() {
     private fun getBooleanProp(
         props: ReactStylesDiffMap,
         name: String,
-        defaultValue: Boolean
+        defaultValue: Boolean,
     ): Boolean = if (props.hasKey(name)) props.getBoolean(name, defaultValue) else defaultValue
 
     private fun getStringProp(props: ReactStylesDiffMap, name: String): String? =

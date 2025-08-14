@@ -72,7 +72,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
     Log.w(
         TAG,
         "[WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of" +
-            " the new architecture is not encouraged usage.")
+            " the new architecture is not encouraged usage.",
+    )
     return BridgelessCatalystInstance(reactHost)
   }
 
@@ -102,12 +103,15 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   private class BridgelessJSModuleInvocationHandler(
       private val reactHost: ReactHostImpl,
-      private val jsModuleInterface: Class<out JavaScriptModule>
+      private val jsModuleInterface: Class<out JavaScriptModule>,
   ) : InvocationHandler {
     override fun invoke(proxy: Any, method: Method, args: Array<Any?>): Any? {
       val jsArgs: NativeArray = Arguments.fromJavaArgs(args)
       reactHost.callFunctionOnModule(
-          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface), method.name, jsArgs)
+          JavaScriptModuleRegistry.getJSModuleName(jsModuleInterface),
+          method.name,
+          jsArgs,
+      )
       return null
     }
   }
@@ -122,7 +126,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
         Proxy.newProxyInstance(
             jsInterface.classLoader,
             arrayOf<Class<*>>(jsInterface),
-            BridgelessJSModuleInvocationHandler(reactHost, jsInterface)) as JavaScriptModule
+            BridgelessJSModuleInvocationHandler(reactHost, jsInterface),
+        ) as JavaScriptModule
     @Suppress("UNCHECKED_CAST")
     return interfaceProxy as? T
   }
@@ -130,7 +135,10 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   /** Shortcut RCTDeviceEventEmitter.emit since it's frequently used */
   override fun emitDeviceEvent(eventName: String, args: Any?) {
     reactHost.callFunctionOnModule(
-        "RCTDeviceEventEmitter", "emit", Arguments.fromJavaArgs(arrayOf(eventName, args)))
+        "RCTDeviceEventEmitter",
+        "emit",
+        Arguments.fromJavaArgs(arrayOf(eventName, args)),
+    )
   }
 
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =

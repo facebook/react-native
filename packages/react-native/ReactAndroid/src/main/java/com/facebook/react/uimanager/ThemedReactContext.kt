@@ -38,20 +38,20 @@ public class ThemedReactContext(
     public val reactApplicationContext: ReactApplicationContext,
     base: Context,
     public val moduleName: String?,
-    public val surfaceId: Int
+    public val surfaceId: Int,
 ) : ReactContext(base) {
 
   @Deprecated("This constructor is deprecated and you should not be using it.")
   public constructor(
       reactApplicationContext: ReactApplicationContext,
       base: Context,
-      moduleName: String? = null
+      moduleName: String? = null,
   ) : this(reactApplicationContext, base, moduleName, -1)
 
   @Deprecated("This constructor is deprecated and you should not be using it.")
   public constructor(
       reactApplicationContext: ReactApplicationContext,
-      base: Context
+      base: Context,
   ) : this(reactApplicationContext, base, null, -1)
 
   init {
@@ -93,7 +93,8 @@ public class ThemedReactContext(
 
   @Deprecated(
       "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead",
-      ReplaceWith("hasActiveReactInstance()"))
+      ReplaceWith("hasActiveReactInstance()"),
+  )
   @LegacyArchitecture
   override fun hasActiveCatalystInstance(): Boolean =
       reactApplicationContext.hasActiveCatalystInstance()
@@ -103,7 +104,8 @@ public class ThemedReactContext(
 
   @Deprecated(
       "This API has been deprecated due to naming consideration, please use hasReactInstance() instead",
-      ReplaceWith("hasReactInstance()"))
+      ReplaceWith("hasReactInstance()"),
+  )
   @LegacyArchitecture
   override fun hasCatalystInstance(): Boolean = reactApplicationContext.hasCatalystInstance()
 
@@ -140,7 +142,8 @@ public class ThemedReactContext(
 
   @Deprecated(
       "This method is deprecated, please use UIManagerHelper.getUIManager() instead.",
-      ReplaceWith("UIManagerHelper.getUIManager()"))
+      ReplaceWith("UIManagerHelper.getUIManager()"),
+  )
   override fun getFabricUIManager(): UIManager? = reactApplicationContext.getFabricUIManager()
 
   override fun getSourceURL(): String? = reactApplicationContext.getSourceURL()

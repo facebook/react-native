@@ -38,5 +38,5 @@ public annotation class ReactModule(
      *
      * @return
      */
-    public val isCxxModule: Boolean = false
+    public val isCxxModule: Boolean = false,
 )

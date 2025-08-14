@@ -17,7 +17,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class ReactVirtualTextShadowNode : ReactBaseTextShadowNode() {
 
   override fun isVirtual(): Boolean = true
@@ -25,7 +26,9 @@ internal class ReactVirtualTextShadowNode : ReactBaseTextShadowNode() {
   internal companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactVirtualTextShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "ReactVirtualTextShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

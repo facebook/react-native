@@ -41,7 +41,7 @@ internal class ReactSafeAreaViewManager :
   override fun updateState(
       view: ReactSafeAreaView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     view.stateWrapper = stateWrapper
     return null

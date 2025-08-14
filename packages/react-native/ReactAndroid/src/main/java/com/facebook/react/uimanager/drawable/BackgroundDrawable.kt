@@ -114,7 +114,8 @@ internal class BackgroundDrawable(
             backgroundRect,
             computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
             computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
-            backgroundPaint)
+            backgroundPaint,
+        )
       } else if (borderRadius?.hasRoundedBorders() != true) {
         canvas.drawRect(backgroundRect, backgroundPaint)
       } else {
@@ -130,7 +131,8 @@ internal class BackgroundDrawable(
             backgroundRect,
             computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
             computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
-            backgroundPaint)
+            backgroundPaint,
+        )
       } else if (borderRadius?.hasRoundedBorders() != true) {
         canvas.drawRect(backgroundRect, backgroundPaint)
       } else {
@@ -148,7 +150,8 @@ internal class BackgroundDrawable(
             it?.left?.dpToPx() ?: 0f,
             it?.top?.dpToPx() ?: 0f,
             it?.right?.dpToPx() ?: 0f,
-            it?.bottom?.dpToPx() ?: 0f)
+            it?.bottom?.dpToPx() ?: 0f,
+        )
       }
 
   private fun getBackgroundImageShader(): Shader? {
@@ -180,7 +183,11 @@ internal class BackgroundDrawable(
     computedBorderInsets = computeBorderInsets()
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
+            layoutDirection,
+            context,
+            bounds.width().pxToDp(),
+            bounds.height().pxToDp(),
+        )
     val hasBorder =
         (computedBorderInsets?.left != 0f ||
             computedBorderInsets?.top != 0f ||
@@ -219,7 +226,8 @@ internal class BackgroundDrawable(
               computedBorderRadius?.bottomLeft?.horizontal?.dpToPx() ?: 0f,
               computedBorderRadius?.bottomLeft?.vertical?.dpToPx() ?: 0f,
           ),
-          Path.Direction.CW)
+          Path.Direction.CW,
+      )
     }
   }
 }

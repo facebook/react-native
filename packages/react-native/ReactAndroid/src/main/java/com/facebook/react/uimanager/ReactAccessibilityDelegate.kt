@@ -46,7 +46,7 @@ import com.facebook.react.uimanager.util.ReactFindViewUtil.findView
 public open class ReactAccessibilityDelegate( // The View this delegate is attached to
     protected val hostView: View,
     originalFocus: Boolean,
-    originalImportantForAccessibility: Int
+    originalImportantForAccessibility: Int,
 ) : ExploreByTouchHelper(hostView) {
   @Suppress("DEPRECATION") // TODO: Replace with handler tied to host view's context
   private val accessibilityEventHandler: Handler =
@@ -152,7 +152,11 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         if (max > min && now >= min && max >= now) {
           info.rangeInfo =
               RangeInfoCompat.obtain(
-                  RangeInfoCompat.RANGE_TYPE_INT, min.toFloat(), max.toFloat(), now.toFloat())
+                  RangeInfoCompat.RANGE_TYPE_INT,
+                  min.toFloat(),
+                  max.toFloat(),
+                  now.toFloat(),
+              )
         }
       }
     }
@@ -225,7 +229,9 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         }
       } else {
         logSoftException(
-            TAG, ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"))
+            TAG,
+            ReactNoCrashSoftException("Cannot get RCTEventEmitter, no CatalystInstance"),
+        )
       }
 
       // In order to make Talkback announce the change of the adjustable's value,
@@ -273,7 +279,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
   override fun onPerformActionForVirtualView(
       virtualViewId: Int,
       action: Int,
-      arguments: Bundle?
+      arguments: Bundle?,
   ): Boolean {
     return false
   }
@@ -375,7 +381,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
   private class AccessibilityActionEvent(
       private val accessibilityEventData: WritableMap,
       surfaceId: Int,
-      viewId: Int
+      viewId: Int,
   ) : Event<AccessibilityActionEvent>(surfaceId, viewId) {
     override fun getEventName(): String {
       return TOP_ACCESSIBILITY_ACTION_EVENT
@@ -569,7 +575,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     public fun setDelegate(
         view: View,
         originalFocus: Boolean,
-        originalImportantForAccessibility: Int
+        originalImportantForAccessibility: Int,
     ) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems, so leave it alone.
@@ -583,7 +589,8 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
               view.getTag(R.id.role) != null)) {
         ViewCompat.setAccessibilityDelegate(
             view,
-            ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility))
+            ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility),
+        )
       }
     }
 
@@ -592,10 +599,12 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     public fun resetDelegate(
         view: View,
         originalFocus: Boolean,
-        originalImportantForAccessibility: Int
+        originalImportantForAccessibility: Int,
     ) {
       ViewCompat.setAccessibilityDelegate(
-          view, ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility))
+          view,
+          ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility),
+      )
     }
 
     private fun setState(
@@ -623,7 +632,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     public fun setRole(
         nodeInfo: AccessibilityNodeInfoCompat,
         role: AccessibilityRole?,
-        context: Context
+        context: Context,
     ) {
       val resolvedRole = role ?: AccessibilityRole.NONE
       nodeInfo.className = AccessibilityRole.getValue(resolvedRole)
@@ -710,7 +719,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     @JvmStatic
     public fun hasNonActionableSpeakingDescendants(
         node: AccessibilityNodeInfoCompat?,
-        view: View?
+        view: View?,
     ): Boolean {
       if (node == null || view == null || (view !is ViewGroup)) {
         return false
@@ -918,7 +927,7 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     @JvmStatic
     public fun getTalkbackDescription(
         view: View,
-        info: AccessibilityNodeInfoCompat?
+        info: AccessibilityNodeInfoCompat?,
     ): CharSequence? {
       val node =
           if (info == null) createNodeInfoFromView(view)

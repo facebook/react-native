@@ -35,7 +35,8 @@ public open class ReactDelegate {
 
   @Deprecated(
       "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
-      ReplaceWith("reactHost"))
+      ReplaceWith("reactHost"),
+  )
   private var reactNativeHost: ReactNativeHost? = null
   public var reactHost: ReactHost? = null
     private set
@@ -63,7 +64,7 @@ public open class ReactDelegate {
       activity: Activity,
       reactNativeHost: ReactNativeHost?,
       appKey: String?,
-      launchOptions: Bundle?
+      launchOptions: Bundle?,
   ) {
     this.activity = activity
     mainComponentName = appKey
@@ -76,7 +77,7 @@ public open class ReactDelegate {
       activity: Activity,
       reactHost: ReactHost?,
       appKey: String?,
-      launchOptions: Bundle?
+      launchOptions: Bundle?,
   ) {
     this.activity = activity
     mainComponentName = appKey
@@ -91,7 +92,7 @@ public open class ReactDelegate {
       reactNativeHost: ReactNativeHost?,
       appKey: String?,
       launchOptions: Bundle?,
-      fabricEnabled: Boolean
+      fabricEnabled: Boolean,
   ) {
     isFabricEnabled = fabricEnabled
     this.activity = activity
@@ -196,7 +197,7 @@ public open class ReactDelegate {
       requestCode: Int,
       resultCode: Int,
       data: Intent?,
-      shouldForwardToReactInstance: Boolean
+      shouldForwardToReactInstance: Boolean,
   ) {
     if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
         reactHost != null &&
@@ -313,7 +314,10 @@ public open class ReactDelegate {
       internalReactRootView = createRootView()
       if (reactNativeHost != null) {
         internalReactRootView?.startReactApplication(
-            reactNativeHost?.reactInstanceManager, appKey, launchOptions)
+            reactNativeHost?.reactInstanceManager,
+            appKey,
+            launchOptions,
+        )
       }
     }
   }

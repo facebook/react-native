@@ -20,7 +20,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {
@@ -29,10 +30,11 @@ public class NativeModuleRegistryBuilder(
 
   @Deprecated(
       "ReactInstanceManager is not used",
-      ReplaceWith("NativeModuleRegistryBuilder(reactApplicationContext)"))
+      ReplaceWith("NativeModuleRegistryBuilder(reactApplicationContext)"),
+  )
   public constructor(
       reactApplicationContext: ReactApplicationContext,
-      @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager
+      @Suppress("UNUSED_PARAMETER") reactInstanceManager: ReactInstanceManager,
   ) : this(reactApplicationContext)
 
   public fun processPackage(reactPackage: ReactPackage) {
@@ -71,7 +73,9 @@ by autolinking. Try removing the existing entry and rebuild.
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.ERROR)
+          "NativeModuleRegistryBuilder",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

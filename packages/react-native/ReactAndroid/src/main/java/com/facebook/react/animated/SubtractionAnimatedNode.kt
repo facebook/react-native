@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class SubtractionAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private val inputNodes: IntArray
 

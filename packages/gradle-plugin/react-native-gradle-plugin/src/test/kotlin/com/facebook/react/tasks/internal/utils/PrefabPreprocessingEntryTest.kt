@@ -16,7 +16,9 @@ class PrefabPreprocessingEntryTest {
   fun secondaryConstructor_createsAList() {
     val sampleEntry =
         PrefabPreprocessingEntry(
-            libraryName = "justALibrary", pathToPrefixCouple = "aPath" to "andAPrefix")
+            libraryName = "justALibrary",
+            pathToPrefixCouple = "aPath" to "andAPrefix",
+        )
 
     assertEquals(1, sampleEntry.pathToPrefixCouples.size)
     assertEquals("aPath", sampleEntry.pathToPrefixCouples[0].first)

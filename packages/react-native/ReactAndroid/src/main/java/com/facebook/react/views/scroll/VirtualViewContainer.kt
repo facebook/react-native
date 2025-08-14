@@ -107,7 +107,8 @@ internal class VirtualViewContainerState {
     prerenderRect.set(visibleRect)
     prerenderRect.inset(
         (-prerenderRect.width() * prerenderRatio).toInt(),
-        (-prerenderRect.height() * prerenderRatio).toInt())
+        (-prerenderRect.height() * prerenderRatio).toInt(),
+    )
 
     val virtualViewsIt = if (virtualView != null) listOf(virtualView) else virtualViews
     virtualViewsIt.forEach { vv ->
@@ -138,7 +139,8 @@ internal class VirtualViewContainerState {
 
       debugLog(
           "updateModes",
-          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" })
+          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" },
+      )
       vv.onModeChange(mode, thresholdRect)
     }
   }

@@ -61,7 +61,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   internal fun composePackageImports(
       packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
   ) =
       packages.entries.joinToString("\n") { (name, dep) ->
         val packageImportPath =
@@ -73,7 +73,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   internal fun composePackageInstance(
       packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
   ) =
       if (packages.isEmpty()) {
         ""

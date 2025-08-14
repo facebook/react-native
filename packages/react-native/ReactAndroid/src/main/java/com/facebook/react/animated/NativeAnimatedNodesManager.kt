@@ -216,7 +216,7 @@ public class NativeAnimatedNodesManager(
       animationId: Int,
       animatedNodeTag: Int,
       animationConfig: ReadableMap,
-      endCallback: Callback?
+      endCallback: Callback?,
   ) {
     val node =
         animatedNodes.get(animatedNodeTag)
@@ -384,7 +384,8 @@ public class NativeAnimatedNodesManager(
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: $viewTag")))
+              ("connectAnimatedNodeToView: Animated node could not be connected to UIManager - uiManager disappeared for tag: $viewTag")),
+      )
       return
     }
 
@@ -450,7 +451,7 @@ public class NativeAnimatedNodesManager(
   public fun addAnimatedEventToView(
       viewTag: Int,
       eventHandlerName: String,
-      eventMapping: ReadableMap
+      eventMapping: ReadableMap,
   ) {
     val nodeTag = eventMapping.getInt("animatedValueTag")
     val node =
@@ -483,7 +484,7 @@ public class NativeAnimatedNodesManager(
   public fun removeAnimatedEventFromView(
       viewTag: Int,
       eventHandlerName: String,
-      animatedValueTag: Int
+      animatedValueTag: Int,
   ) {
     val eventName = normalizeEventName(eventHandlerName)
 

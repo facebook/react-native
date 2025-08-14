@@ -190,7 +190,8 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   @JvmField
   public val PADDING_MARGIN_SPACING_TYPES: IntArray =
       intArrayOf(
@@ -202,7 +203,8 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
           listOf(
@@ -251,7 +253,8 @@ public object ViewProps {
               PADDING_TOP,
               PADDING_BOTTOM,
               PADDING_START,
-              PADDING_END))
+              PADDING_END,
+          ))
 
   @JvmStatic
   public fun isLayoutOnly(map: ReadableMap, prop: String): Boolean {

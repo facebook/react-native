@@ -48,7 +48,12 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
         } else {
           @Suppress("DEPRECATION")
           ReactDelegate(
-              requireActivity(), reactNativeHost, mainComponentName, launchOptions, fabricEnabled)
+              requireActivity(),
+              reactNativeHost,
+              mainComponentName,
+              launchOptions,
+              fabricEnabled,
+          )
         }
   }
 
@@ -61,7 +66,8 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   @Suppress("DEPRECATION")
   @Deprecated(
       "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
-      ReplaceWith("reactHost"))
+      ReplaceWith("reactHost"),
+  )
   protected open val reactNativeHost: ReactNativeHost?
     get() = (activity?.application as ReactApplication?)?.reactNativeHost
 
@@ -80,7 +86,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   public override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
-      savedInstanceState: Bundle?
+      savedInstanceState: Bundle?,
   ): View? {
     reactDelegate.loadApp()
     return reactDelegate.reactRootView
@@ -139,7 +145,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   public override fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ) {
     @Suppress("DEPRECATION")
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -160,7 +166,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
   override fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
-      listener: PermissionListener?
+      listener: PermissionListener?,
   ) {
     permissionListener = listener
     requestPermissions(permissions, requestCode)
@@ -223,7 +229,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     private fun newInstance(
         componentName: String?,
         launchOptions: Bundle?,
-        fabricEnabled: Boolean
+        fabricEnabled: Boolean,
     ): ReactFragment {
       val args =
           Bundle().apply {

@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class TransformAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val transformConfigs: List<TransformConfig>
 

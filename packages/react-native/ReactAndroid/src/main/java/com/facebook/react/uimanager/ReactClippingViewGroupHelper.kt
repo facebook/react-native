@@ -46,7 +46,8 @@ public object ReactClippingViewGroupHelper {
               view.left,
               view.top + view.translationY.toInt(),
               view.right,
-              view.bottom + view.translationY.toInt())) {
+              view.bottom + view.translationY.toInt(),
+          )) {
             outputRect.setEmpty()
             return
           }

@@ -105,7 +105,7 @@ internal class ReactProgressBarViewManager :
       widthMode: YogaMeasureMode,
       height: Float,
       heightMode: YogaMeasureMode,
-      attachmentsPositions: FloatArray?
+      attachmentsPositions: FloatArray?,
   ): Long {
     val style = getStyleFromString(props.getString(PROP_STYLE))
     val value =
@@ -117,7 +117,9 @@ internal class ReactProgressBarViewManager :
         }
 
     return YogaMeasureOutput.make(
-        toDIPFromPixel(value.first.toFloat()), toDIPFromPixel(value.second.toFloat()))
+        toDIPFromPixel(value.first.toFloat()),
+        toDIPFromPixel(value.second.toFloat()),
+    )
   }
 
   companion object {

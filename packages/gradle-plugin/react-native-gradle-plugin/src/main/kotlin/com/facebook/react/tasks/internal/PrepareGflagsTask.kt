@@ -46,7 +46,8 @@ abstract class PrepareGflagsTask : DefaultTask() {
       action.include(
           "gflags-${gflagsVersion.get()}/src/*.h",
           "gflags-${gflagsVersion.get()}/src/*.cc",
-          "CMakeLists.txt")
+          "CMakeLists.txt",
+      )
       action.filesMatching("*/src/*") { matchedFile ->
         matchedFile.path = "gflags/${matchedFile.name}"
       }
@@ -64,7 +65,8 @@ abstract class PrepareGflagsTask : DefaultTask() {
               .replace(
                   Regex(
                       "@(HAVE_STDINT_H|HAVE_SYS_TYPES_H|HAVE_INTTYPES_H|GFLAGS_INTTYPES_FORMAT_C99)@"),
-                  "1")
+                  "1",
+              )
               .replace(Regex("@([A-Z0-9_]+)@"), "1")
         }
         matchedFile.path = "gflags/${matchedFile.name.removeSuffix(".in")}"

@@ -46,7 +46,7 @@ public constructor(
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactTextView
+      view: ReactTextView,
   ): ReactTextView? {
     // BaseViewManager
     val preparedView = super.prepareToRecycleView(reactContext, view)
@@ -63,7 +63,10 @@ public constructor(
 
   override fun updateViewAccessibility(view: ReactTextView) {
     ReactTextViewAccessibilityDelegate.setDelegate(
-        view, view.isFocusable, view.importantForAccessibility)
+        view,
+        view.isFocusable,
+        view.importantForAccessibility,
+    )
   }
 
   public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
@@ -84,9 +87,14 @@ public constructor(
       val accessibilityLinks: ReactTextViewAccessibilityDelegate.AccessibilityLinks =
           ReactTextViewAccessibilityDelegate.AccessibilityLinks(spannable)
       view.setTag(
-          R.id.accessibility_links, if (accessibilityLinks.size() > 0) accessibilityLinks else null)
+          R.id.accessibility_links,
+          if (accessibilityLinks.size() > 0) accessibilityLinks else null,
+      )
       ReactTextViewAccessibilityDelegate.resetDelegate(
-          view, view.isFocusable, view.importantForAccessibility)
+          view,
+          view.isFocusable,
+          view.importantForAccessibility,
+      )
     }
   }
 
@@ -109,7 +117,7 @@ public constructor(
   override fun updateState(
       view: ReactTextView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     SystraceSection("ReactTextViewManager.updateState").use { s ->
       val stateMapBuffer = stateWrapper.stateDataMapBuffer
@@ -124,14 +132,17 @@ public constructor(
   private fun getReactTextUpdate(
       view: ReactTextView,
       props: ReactStylesDiffMap,
-      state: MapBuffer
+      state: MapBuffer,
   ): Any {
     val attributedString: MapBuffer = state.getMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING.toInt())
     val paragraphAttributes: MapBuffer =
         state.getMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES.toInt())
     val spanned: Spannable =
         TextLayoutManager.getOrCreateSpannableForText(
-            view.context, attributedString, reactTextViewManagerCallback)
+            view.context,
+            attributedString,
+            reactTextViewManagerCallback,
+        )
     view.setSpanned(spanned)
 
     val minimumFontSize: Float =
@@ -150,7 +161,8 @@ public constructor(
         false, // TODO add this into local Data
         TextLayoutManager.getTextGravity(attributedString, spanned),
         textBreakStrategy,
-        TextAttributeProps.getJustificationMode(props, currentJustificationMode))
+        TextAttributeProps.getJustificationMode(props, currentJustificationMode),
+    )
   }
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any>? {

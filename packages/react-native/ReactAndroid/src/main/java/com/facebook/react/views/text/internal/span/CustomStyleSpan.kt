@@ -32,7 +32,7 @@ internal class CustomStyleSpan(
     private val privateWeight: Int,
     val fontFeatureSettings: String?,
     val fontFamily: String?,
-    private val assetManager: AssetManager
+    private val assetManager: AssetManager,
 ) : MetricAffectingSpan(), ReactSpan {
   override fun updateDrawState(ds: TextPaint) {
     apply(ds, privateStyle, privateWeight, fontFeatureSettings, fontFamily, assetManager)
@@ -65,7 +65,7 @@ internal class CustomStyleSpan(
         weight: Int,
         fontFeatureSettingsParam: String?,
         family: String?,
-        assetManager: AssetManager
+        assetManager: AssetManager,
     ) {
       val typeface =
           ReactTypefaceUtils.applyStyles(paint.typeface, style, weight, family, assetManager)

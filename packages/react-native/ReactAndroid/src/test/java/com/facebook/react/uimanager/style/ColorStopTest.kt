@@ -33,7 +33,8 @@ class ColorStopTest {
     val colorStops =
         listOf(
             ColorStop(Color.RED, LengthPercentage(0f, LengthPercentageType.PERCENT)),
-            ColorStop(Color.GREEN, LengthPercentage(42f, LengthPercentageType.PERCENT)))
+            ColorStop(Color.GREEN, LengthPercentage(42f, LengthPercentageType.PERCENT)),
+        )
 
     val processed = ColorStopUtils.getFixedColorStops(colorStops, 60f)
     assertThat(processed).hasSize(2)
@@ -49,7 +50,8 @@ class ColorStopTest {
         listOf(
             ColorStop(Color.RED),
             ColorStop(Color.GREEN, LengthPercentage(30f, LengthPercentageType.PERCENT)),
-            ColorStop(Color.BLUE))
+            ColorStop(Color.BLUE),
+        )
     val processed = ColorStopUtils.getFixedColorStops(colorStops, 80f)
 
     assertThat(processed).hasSize(3)
@@ -69,7 +71,8 @@ class ColorStopTest {
             ColorStop(Color.GREEN, LengthPercentage(30f, LengthPercentageType.PERCENT)),
             ColorStop(Color.BLUE, LengthPercentage(20f, LengthPercentageType.PERCENT)),
             ColorStop(Color.GRAY, LengthPercentage(60f, LengthPercentageType.PERCENT)),
-            ColorStop(Color.CYAN, LengthPercentage(50f, LengthPercentageType.PERCENT)))
+            ColorStop(Color.CYAN, LengthPercentage(50f, LengthPercentageType.PERCENT)),
+        )
     val processed = ColorStopUtils.getFixedColorStops(colorStops, 80f)
 
     assertThat(processed).hasSize(5)
@@ -92,7 +95,8 @@ class ColorStopTest {
             ColorStop(Color.RED, LengthPercentage(0f, LengthPercentageType.PERCENT)),
             ColorStop(Color.GREEN),
             ColorStop(Color.BLUE),
-            ColorStop(Color.TRANSPARENT, LengthPercentage(100f, LengthPercentageType.PERCENT)))
+            ColorStop(Color.TRANSPARENT, LengthPercentage(100f, LengthPercentageType.PERCENT)),
+        )
     val processed = ColorStopUtils.getFixedColorStops(colorStops, 100f)
 
     assertThat(processed).hasSize(4)
@@ -111,7 +115,8 @@ class ColorStopTest {
     val colorStops =
         listOf(
             ColorStop(Color.YELLOW, LengthPercentage(100f, LengthPercentageType.POINT)),
-            ColorStop(Color.BLUE, LengthPercentage(50f, LengthPercentageType.PERCENT)))
+            ColorStop(Color.BLUE, LengthPercentage(50f, LengthPercentageType.PERCENT)),
+        )
 
     val processed200px = ColorStopUtils.getFixedColorStops(colorStops, 200f)
     assertThat(processed200px).hasSize(2)
@@ -138,7 +143,8 @@ class ColorStopTest {
             ColorStop(null, LengthPercentage(10f, LengthPercentageType.PERCENT)),
             ColorStop(Color.GREEN, LengthPercentage(50f, LengthPercentageType.PERCENT)),
             ColorStop(null, LengthPercentage(85f, LengthPercentageType.PERCENT)),
-            ColorStop(Color.BLUE, LengthPercentage(100f, LengthPercentageType.PERCENT)))
+            ColorStop(Color.BLUE, LengthPercentage(100f, LengthPercentageType.PERCENT)),
+        )
     val processed = ColorStopUtils.getFixedColorStops(colorStops, 100f)
     assertThat(processed.size).isEqualTo(21)
     assertThat(processed.first().color).isEqualTo(Color.RED)

@@ -14,6 +14,6 @@ public fun interface YogaMeasureFunction {
       width: Float,
       widthMode: YogaMeasureMode,
       height: Float,
-      heightMode: YogaMeasureMode
+      heightMode: YogaMeasureMode,
   ): Long
 }

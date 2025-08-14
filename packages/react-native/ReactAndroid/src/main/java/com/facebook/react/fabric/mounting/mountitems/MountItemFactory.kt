@@ -19,7 +19,7 @@ internal object MountItemFactory {
       surfaceId: Int,
       reactTag: Int,
       commandId: Int,
-      commandArgs: ReadableArray
+      commandArgs: ReadableArray,
   ): DispatchCommandMountItem =
       DispatchIntCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 
@@ -29,7 +29,7 @@ internal object MountItemFactory {
       surfaceId: Int,
       reactTag: Int,
       commandId: String,
-      commandArgs: ReadableArray
+      commandArgs: ReadableArray,
   ): DispatchCommandMountItem =
       DispatchStringCommandMountItem(surfaceId, reactTag, commandId, commandArgs)
 
@@ -38,7 +38,7 @@ internal object MountItemFactory {
   fun createSendAccessibilityEventMountItem(
       surfaceId: Int,
       reactTag: Int,
-      eventType: Int
+      eventType: Int,
   ): MountItem = SendAccessibilityEventMountItem(surfaceId, reactTag, eventType)
 
   /** @return a [MountItem] that will be used to preallocate views */
@@ -49,7 +49,7 @@ internal object MountItemFactory {
       component: String,
       props: ReadableMap?,
       stateWrapper: StateWrapper?,
-      isLayoutable: Boolean
+      isLayoutable: Boolean,
   ): MountItem =
       PreAllocateViewMountItem(surfaceId, reactTag, component, props, stateWrapper, isLayoutable)
 
@@ -67,6 +67,6 @@ internal object MountItemFactory {
       surfaceId: Int,
       intBuf: IntArray,
       objBuf: Array<Any?>,
-      commitNumber: Int
+      commitNumber: Int,
   ): MountItem = IntBufferBatchMountItem(surfaceId, intBuf, objBuf, commitNumber)
 }

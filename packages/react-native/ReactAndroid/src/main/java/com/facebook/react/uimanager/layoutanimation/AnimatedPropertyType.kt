@@ -19,7 +19,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal enum class AnimatedPropertyType {
   OPACITY,
   SCALE_X,

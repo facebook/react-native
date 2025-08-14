@@ -136,7 +136,7 @@ internal class MyNativeView(context: ThemedReactContext) : View(context) {
   inner class OnIntArrayChangedEvent(
       surfaceId: Int,
       viewId: Int,
-      private val payload: WritableMap
+      private val payload: WritableMap,
   ) : Event<OnIntArrayChangedEvent>(surfaceId, viewId) {
     override fun getEventName() = "topIntArrayChanged"
 

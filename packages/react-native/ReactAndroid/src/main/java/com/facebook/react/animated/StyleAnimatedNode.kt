@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class StyleAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val propMapping: Map<String, Int>
 

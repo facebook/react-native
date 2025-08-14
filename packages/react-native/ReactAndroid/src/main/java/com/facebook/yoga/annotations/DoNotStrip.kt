@@ -13,6 +13,7 @@ package com.facebook.yoga.annotations
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER,
-    AnnotationTarget.CONSTRUCTOR)
+    AnnotationTarget.CONSTRUCTOR,
+)
 @Retention(AnnotationRetention.BINARY)
 public annotation class DoNotStrip

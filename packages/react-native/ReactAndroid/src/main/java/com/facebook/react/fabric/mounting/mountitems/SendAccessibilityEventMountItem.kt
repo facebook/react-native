@@ -15,7 +15,7 @@ import com.facebook.react.fabric.mounting.MountingManager
 internal class SendAccessibilityEventMountItem(
     private val _surfaceId: Int,
     private val reactTag: Int,
-    private val eventType: Int
+    private val eventType: Int,
 ) : MountItem {
 
   private val TAG = "Fabric.SendAccessibilityEvent"

@@ -41,7 +41,7 @@ public class HermesExecutor internal constructor(enableDebugger: Boolean, debugg
     @JvmStatic
     private external fun initHybridDefaultConfig(
         enableDebugger: Boolean,
-        debuggerName: String
+        debuggerName: String,
     ): HybridData
 
     @DoNotStrip
@@ -49,7 +49,7 @@ public class HermesExecutor internal constructor(enableDebugger: Boolean, debugg
     private external fun initHybrid(
         enableDebugger: Boolean,
         debuggerName: String,
-        heapSizeMB: Long
+        heapSizeMB: Long,
     ): HybridData
   }
 }
