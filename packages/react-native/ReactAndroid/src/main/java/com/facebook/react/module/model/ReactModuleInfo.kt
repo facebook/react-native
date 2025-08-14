@@ -14,41 +14,50 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule
  * so Java modules don't have to be instantiated at React Native start up.
  */
 public class ReactModuleInfo(
-  @get:JvmName("name") public val name: String,
-  @get:JvmName("className") public val className: String,
-  @get:JvmName("canOverrideExistingModule") public val canOverrideExistingModule: Boolean,
-  @get:JvmName("needsEagerInit") public val needsEagerInit: Boolean,
-  public val isCxxModule: Boolean,
-  public val isTurboModule: Boolean,
-  public val moduleClass: Class<*>
+    @get:JvmName("name") public val name: String,
+    @get:JvmName("className") public val className: String,
+    @get:JvmName("canOverrideExistingModule") public val canOverrideExistingModule: Boolean,
+    @get:JvmName("needsEagerInit") public val needsEagerInit: Boolean,
+    public val isCxxModule: Boolean,
+    public val isTurboModule: Boolean,
+    public val moduleClass: Class<*>
 ) {
-  @Deprecated("Use the constructor that takes the class instance." +
-    " Without passing the class instance your module might not be discovered in some scenarios.")
+  @Deprecated(
+      "Use the constructor that takes the class instance." +
+          " Without passing the class instance your module might not be discovered in some scenarios.")
   public constructor(
-    name: String,
-    className: String,
-    canOverrideExistingModule: Boolean,
-    needsEagerInit: Boolean,
-    isCxxModule: Boolean,
-    isTurboModule: Boolean
+      name: String,
+      className: String,
+      canOverrideExistingModule: Boolean,
+      needsEagerInit: Boolean,
+      isCxxModule: Boolean,
+      isTurboModule: Boolean
   ) : this(
-    name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
-    ReactModuleInfo::class.java
-  )
+      name,
+      className,
+      canOverrideExistingModule,
+      needsEagerInit,
+      isCxxModule,
+      isTurboModule,
+      ReactModuleInfo::class.java)
 
   @Deprecated("Use constructor that doesn't take `hasConstants` parameter.")
   public constructor(
-    name: String,
-    className: String,
-    canOverrideExistingModule: Boolean,
-    needsEagerInit: Boolean,
-    @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
-    isCxxModule: Boolean,
-    isTurboModule: Boolean
+      name: String,
+      className: String,
+      canOverrideExistingModule: Boolean,
+      needsEagerInit: Boolean,
+      @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
+      isCxxModule: Boolean,
+      isTurboModule: Boolean
   ) : this(
-    name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule,
-    ReactModuleInfo::class.java
-  )
+      name,
+      className,
+      canOverrideExistingModule,
+      needsEagerInit,
+      isCxxModule,
+      isTurboModule,
+      ReactModuleInfo::class.java)
 
   public companion object {
     /**
@@ -57,6 +66,6 @@ public class ReactModuleInfo(
      */
     @JvmStatic
     public fun classIsTurboModule(clazz: Class<*>): Boolean =
-      TurboModule::class.java.isAssignableFrom(clazz)
+        TurboModule::class.java.isAssignableFrom(clazz)
   }
 }

@@ -105,8 +105,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       reactModule.isCxxModule,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
-                      moduleClass::class.java
-                  )
+                      moduleClass::class.java)
               else
                   ReactModuleInfo(
                       moduleName,
@@ -115,8 +114,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
                       ReactModuleInfo.classIsTurboModule(moduleClass),
-                      moduleClass::class.java
-                  )
+                      moduleClass::class.java)
 
           reactModuleInfoMap[moduleName] = moduleInfo
           moduleMap[moduleName] = module
@@ -155,7 +153,9 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     return resolvedModule as TurboModule
   }
 
-  override fun <TInterface> getModuleNamesConformingToInterface(clazz: Class<TInterface>): List<String> {
+  override fun <TInterface> getModuleNamesConformingToInterface(
+      clazz: Class<TInterface>
+  ): List<String> {
     val moduleNames = mutableListOf<String>()
 
     for (moduleProvider in moduleProviders) {

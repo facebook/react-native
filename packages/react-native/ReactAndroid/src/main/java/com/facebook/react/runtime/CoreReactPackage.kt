@@ -106,8 +106,7 @@ internal class CoreReactPackage(
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
                 ReactModuleInfo.classIsTurboModule(moduleClass),
-                moduleClass::class.java
-            )
+                moduleClass::class.java)
       }
     }
     return ReactModuleInfoProvider { reactModuleInfoMap }

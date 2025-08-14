@@ -210,7 +210,7 @@ public class TurboModuleManager(
   }
 
   public fun <TInterface> getModuleNamesConformingToInterface(
-          clazz: Class<TInterface>
+      clazz: Class<TInterface>
   ): List<String> {
     return delegate?.getModuleNamesConformingToInterface(clazz) ?: emptyList()
   }
