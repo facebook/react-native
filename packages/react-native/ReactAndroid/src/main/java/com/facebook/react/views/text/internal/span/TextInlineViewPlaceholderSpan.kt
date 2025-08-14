@@ -23,7 +23,7 @@ internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, 
       text: CharSequence?,
       start: Int,
       end: Int,
-      fm: FontMetricsInt?
+      fm: FontMetricsInt?,
   ): Int {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
     if (fm != null) {
@@ -44,6 +44,6 @@ internal class TextInlineViewPlaceholderSpan(val reactTag: Int, val width: Int, 
       top: Int,
       y: Int,
       bottom: Int,
-      paint: Paint
+      paint: Paint,
   ): Unit = Unit
 }

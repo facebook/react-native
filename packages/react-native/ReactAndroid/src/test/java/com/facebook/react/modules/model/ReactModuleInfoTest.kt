@@ -24,7 +24,8 @@ class ReactModuleInfoTest {
             /* needsEagerInit = */ false,
             /* isCxxModule = */ false,
             /* isTurboModule = */ false,
-            /* moduleClass = */ ReactModuleInfoTest::class.java)
+            /* moduleClass = */ ReactModuleInfoTest::class.java,
+        )
     assertThat(reactModuleInfo.name).isEqualTo("name")
     assertThat(reactModuleInfo.canOverrideExistingModule).isFalse()
     assertThat(reactModuleInfo.needsEagerInit).isFalse()

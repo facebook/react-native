@@ -32,6 +32,8 @@ public class ReactVirtualViewExperimental(context: Context) :
   internal var renderState: VirtualViewRenderState = VirtualViewRenderState.Unknown
 
   private var scrollView: VirtualViewContainer? = null
+
+  private val lastContainerRelativeRect: Rect = Rect()
   override val containerRelativeRect: Rect = Rect()
   private var offsetX: Int = 0
   private var offsetY: Int = 0
@@ -52,7 +54,7 @@ public class ReactVirtualViewExperimental(context: Context) :
     // after. If called after, we need to report the updated layout to the VirtualViewContainer
     if (hadLayout) {
       updateParentOffset()
-      reportChangeToContainer()
+      reportRectChangeToContainer()
     }
   }
 
@@ -68,7 +70,7 @@ public class ReactVirtualViewExperimental(context: Context) :
           right + offsetX,
           bottom + offsetY,
       )
-      reportChangeToContainer()
+      reportRectChangeToContainer()
     }
   }
 
@@ -86,7 +88,7 @@ public class ReactVirtualViewExperimental(context: Context) :
   ) {
     if (oldLeft != left || oldTop != top) {
       updateParentOffset()
-      reportChangeToContainer()
+      reportRectChangeToContainer()
     }
   }
 
@@ -102,6 +104,7 @@ public class ReactVirtualViewExperimental(context: Context) :
     mode = null
     modeChangeEmitter = null
     hadLayout = false
+    lastContainerRelativeRect.setEmpty()
     containerRelativeRect.setEmpty()
   }
 
@@ -170,8 +173,13 @@ public class ReactVirtualViewExperimental(context: Context) :
     )
   }
 
-  private fun reportChangeToContainer() {
+  private fun reportRectChangeToContainer() {
+    if (lastContainerRelativeRect == containerRelativeRect) {
+      debugLog("reportRectChangeToContainer") { "no rect change" }
+      return
+    }
     scrollView?.virtualViewContainerState?.onChange(this)
+    lastContainerRelativeRect.set(containerRelativeRect)
   }
 
   private fun getScrollView(): VirtualViewContainer? = traverseParentStack(true)

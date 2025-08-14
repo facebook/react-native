@@ -26,14 +26,14 @@ public class ReactFontManager private constructor(private val delegate: ReactFon
       fontFamilyName: String,
       weight: Int,
       italic: Boolean,
-      assetManager: AssetManager
+      assetManager: AssetManager,
   ): Typeface = delegate.getTypeface(fontFamilyName, weight, italic, assetManager)
 
   public fun getTypeface(
       fontFamilyName: String,
       style: Int,
       weight: Int,
-      assetManager: AssetManager
+      assetManager: AssetManager,
   ): Typeface = delegate.getTypeface(fontFamilyName, style, weight, assetManager)
 
   public fun addCustomFont(context: Context, fontFamily: String, fontId: Int) {

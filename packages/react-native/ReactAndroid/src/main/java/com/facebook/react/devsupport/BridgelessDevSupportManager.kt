@@ -37,7 +37,7 @@ internal class BridgelessDevSupportManager(
     customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
-    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) :
     DevSupportManagerBase(
         applicationContext,
@@ -50,12 +50,13 @@ internal class BridgelessDevSupportManager(
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
         devLoadingViewManager,
-        pausedInDebuggerOverlayManager) {
+        pausedInDebuggerOverlayManager,
+    ) {
 
   constructor(
       context: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
-      packagerPathForJSBundleName: String?
+      packagerPathForJSBundleName: String?,
   ) : this(
       applicationContext = context.applicationContext,
       reactInstanceManagerHelper = reactInstanceManagerHelper,
@@ -67,7 +68,8 @@ internal class BridgelessDevSupportManager(
       customPackagerCommandHandlers = null,
       surfaceDelegateFactory = null,
       devLoadingViewManager = null,
-      pausedInDebuggerOverlayManager = null)
+      pausedInDebuggerOverlayManager = null,
+  )
 
   override val uniqueTag: String
     get() = "Bridgeless"

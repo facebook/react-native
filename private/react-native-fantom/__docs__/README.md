@@ -99,13 +99,13 @@ Run the test using the following command from the root of the React Native
 repository:
 
 ```shell
-yarn fantom [optional test pattern]
+yarn fantom <regexForTestFiles>
 ```
 
 Similar to Jest, you can also run Fantom in watch mode using `--watch`:
 
 ```shell
-yarn fantom --watch [optional test pattern]
+yarn fantom <regexForTestFiles> --watch
 ```
 
 ### Test configuration
@@ -192,11 +192,95 @@ With an output such as:
 
 ### Debugging
 
-To debug, run your fantom test with the flag `FANTOM_ENABLE_CPP_DEBUGGING`
+> [!WARNING] Meta-only: debugging only works on Meta's internal infrastructure
+> at the moment.
+
+You can use environment variables to enable debugging for your tests. These
+options can be combined to debug JS and C++ at the same time.
+
+#### Debugging JS
+
+To debug JavaScript, run your fantom test with the flag `FANTOM_DEBUG_JS`:
 
 ```shell
-FANTOM_ENABLE_CPP_DEBUGGING=1 yarn fantom [optional test pattern]
+FANTOM_DEBUG_JS=1 yarn fantom <regexForTestFiles>
 ```
+
+This would open React Native DevTools, which would stop at a breakpoint at the
+beginning of your test so you can debug it.
+
+#### Debugging C++
+
+To debug C++, run your fantom test with the flag `FANTOM_DEBUG_CPP`:
+
+```shell
+FANTOM_DEBUG_CPP=1 yarn fantom <regexForTestFiles>
+```
+
+This would start a debugging session in VS Code with an initial breakpoint in
+the Fantom CLI binary.
+
+### Profiling
+
+#### JS sampling profiler
+
+You can automatically record JS sampling profiler traces with the flag
+`FANTOM_PROFILE_JS`:
+
+```shell
+FANTOM_PROFILE_JS=1 yarn fantom <regexForTestFiles>
+```
+
+As part of the test results, you will see a message indicating where the traces
+where saved, e.g.:
+
+```text
+🔥 JS sampling profiler trace saved to /path/to/react-native/private/react-native-fantom/.out/js-traces/View-itest.js-2025-08-12T14:08:31.580Z.cpuprofile
+```
+
+If your test has multiple variants (when using wildcards in Fantom pragmas), a
+trace will be created for each variant.
+
+You can analyze the traces loading them in Chrome DevTools directly. You can
+also open them in VS Code, which provides a built-in extension for analysis.
+
+#### JS memory profiler
+
+You can manually take JS memory heap snapshots during test execution using
+`Fantom.takeJSMemoryHeapSnapshot()`. E.g.:
+
+```javascript
+// Using the 3 snapshot method to detect memory leaks:
+
+// Warm up
+renderView();
+destroyView();
+
+// #1
+Fantom.takeJSMemoryHeapSnapshot();
+
+renderView();
+
+// #2
+Fantom.takeJSMemoryHeapSnapshot();
+
+destroyView();
+
+// #3
+Fantom.takeJSMemoryHeapSnapshot();
+
+// See the objects allocated between #1 and #2 that still exist in #3.
+```
+
+This function will force a garbage collection pass, take a snapshot of the JS
+memory heap and print a message indicating where it was saved. E.g.:
+
+```text
+💾 JS heap snapshot saved to /path/to/react-native/private/react-native-fantom/.out/js-heap-snapshots/View-itest.js-2025-08-12T14:29:25.987Z.heapsnapshot
+```
+
+You can have multiple calls to `Fantom.takeJSMemoryHeapSnapshot()` in your test,
+and each one will create a different file.
 
 ### FAQ
 

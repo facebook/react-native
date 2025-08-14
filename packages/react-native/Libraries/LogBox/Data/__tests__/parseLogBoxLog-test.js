@@ -269,7 +269,7 @@ describe('parseLogBoxLog', () => {
   });
 
   it('parses a transform error as a fatal', () => {
-    const error = {
+    const error: ExtendedExceptionData = {
       message: 'TransformError failed to transform file.',
       originalMessage: 'TransformError failed to transform file.',
       name: '',

@@ -32,7 +32,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
   protected constructor(
       reactApplicationContext: ReactApplicationContext,
-      packages: List<ReactPackage>
+      packages: List<ReactPackage>,
   ) : super() {
     initialize(reactApplicationContext, packages)
   }
@@ -40,14 +40,14 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
   protected constructor(
       reactApplicationContext: ReactApplicationContext,
       packages: List<ReactPackage>,
-      hybridData: HybridData
+      hybridData: HybridData,
   ) : super(hybridData) {
     initialize(reactApplicationContext, packages)
   }
 
   private fun initialize(
       reactApplicationContext: ReactApplicationContext,
-      packages: List<ReactPackage>
+      packages: List<ReactPackage>,
   ) {
     val applicationContext: ReactApplicationContext = reactApplicationContext
     for (reactPackage in packages) {
@@ -105,7 +105,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       reactModule.isCxxModule,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
-                      moduleClass::class.java)
+                      moduleClass,
+                  )
               else
                   ReactModuleInfo(
                       moduleName,
@@ -114,7 +115,8 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
                       ReactModuleInfo.classIsTurboModule(moduleClass),
-                      moduleClass::class.java)
+                      moduleClass,
+                  )
 
           reactModuleInfoMap[moduleName] = moduleInfo
           moduleMap[moduleName] = module
@@ -245,7 +247,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     protected abstract fun build(
         context: ReactApplicationContext,
-        packages: List<ReactPackage>
+        packages: List<ReactPackage>,
     ): ReactPackageTurboModuleManagerDelegate
 
     public fun build(): ReactPackageTurboModuleManagerDelegate {

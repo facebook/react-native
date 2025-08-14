@@ -22,7 +22,7 @@ internal class BridgelessAtomicRef<T>(
     Init,
     Creating,
     Success,
-    Failure
+    Failure,
   }
 
   var initialValue: T? = value

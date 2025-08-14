@@ -48,7 +48,8 @@ import com.facebook.react.packagerconnection.RequestHandler
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 public class BridgeDevSupportManager(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -60,7 +61,7 @@ public class BridgeDevSupportManager(
     customPackagerCommandHandlers: Map<String, RequestHandler>?,
     surfaceDelegateFactory: SurfaceDelegateFactory?,
     devLoadingViewManager: DevLoadingViewManager?,
-    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) :
     DevSupportManagerBase(
         applicationContext,
@@ -73,7 +74,8 @@ public class BridgeDevSupportManager(
         customPackagerCommandHandlers,
         surfaceDelegateFactory,
         devLoadingViewManager,
-        pausedInDebuggerOverlayManager) {
+        pausedInDebuggerOverlayManager,
+    ) {
 
   override val uniqueTag: String
     get() = "Bridge"
@@ -81,7 +83,9 @@ public class BridgeDevSupportManager(
   override fun handleReloadJS() {
     UiThreadUtil.assertOnUiThread()
     ReactMarker.logMarker(
-        ReactMarkerConstants.RELOAD, devSettings.packagerConnectionSettings.debugServerHost)
+        ReactMarkerConstants.RELOAD,
+        devSettings.packagerConnectionSettings.debugServerHost,
+    )
 
     // dismiss redbox if exists
     hideRedboxDialog()

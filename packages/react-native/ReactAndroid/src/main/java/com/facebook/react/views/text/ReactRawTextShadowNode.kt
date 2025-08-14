@@ -21,7 +21,8 @@ import com.facebook.react.uimanager.annotations.ReactProp
  */
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal class ReactRawTextShadowNode : ReactShadowNodeImpl() {
   @set:ReactProp(name = "text")

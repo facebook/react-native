@@ -15,6 +15,7 @@ import NativeCPUTime from 'react-native/src/private/testing/fantom/specs/NativeC
 import {
   Bench,
   type BenchOptions,
+  type Fn,
   type FnOptions,
   type TaskResult,
 } from 'tinybench';
@@ -65,20 +66,20 @@ interface ParameterizedTestFunction {
   <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => void,
+    fn: (testArg: TestArgType) => ReturnType<Fn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI;
   only: <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => void,
+    fn: (testArg: TestArgType) => ReturnType<Fn>,
     options?: TestWithArgOptions<TestArgType>,
   ) => SuiteAPI;
 }
 
 interface TestFunction {
-  (name: string, fn: () => void, options?: FnOptions): SuiteAPI;
-  only: (name: string, fn: () => void, options?: FnOptions) => SuiteAPI;
+  (name: string, fn: Fn, options?: FnOptions): SuiteAPI;
+  only: (name: string, fn: Fn, options?: FnOptions) => SuiteAPI;
   // `each` allows to run the same test multiple times with different arguments, provided as an array of values:
   each: ParameterizedTestFunction;
 }
@@ -90,8 +91,12 @@ interface SuiteAPI {
 
 interface TestTask {
   name: string;
-  fn: () => void;
+  fn: Fn;
   options: InternalTestOptions | void;
+}
+
+export function now(): number {
+  return NativeCPUTime.getCPUTimeNanos() / 1000000;
 }
 
 export function suite(
@@ -127,7 +132,7 @@ export function suite(
 
     benchOptions.name = suiteName;
     benchOptions.throws = true;
-    benchOptions.now = () => NativeCPUTime.getCPUTimeNanos() / 1000000;
+    benchOptions.now = now;
 
     if (!isTestOnly) {
       if (suiteOptions.minIterations != null) {
@@ -197,16 +202,12 @@ export function suite(
     reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
   });
 
-  const test = (
-    name: string,
-    fn: () => void,
-    options?: FnOptions,
-  ): SuiteAPI => {
+  const test = (name: string, fn: Fn, options?: FnOptions): SuiteAPI => {
     tasks.push({name, fn, options});
     return suiteAPI;
   };
 
-  test.only = (name: string, fn: () => void, options?: FnOptions): SuiteAPI => {
+  test.only = (name: string, fn: Fn, options?: FnOptions): SuiteAPI => {
     tasks.push({name, fn, options: {...options, only: true}});
     return suiteAPI;
   };
@@ -214,7 +215,7 @@ export function suite(
   const testWithArg = <TestArgType>(
     testArg: TestArgType,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => void,
+    fn: (testArg: TestArgType) => ReturnType<Fn>,
     options?: TestWithArgOptions<TestArgType>,
     only?: boolean = false,
   ): TestTask => {
@@ -232,7 +233,7 @@ export function suite(
   const testEach: ParameterizedTestFunction = <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => void,
+    fn: (testArg: TestArgType) => ReturnType<Fn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI => {
     for (const testArg of testArgs) {

@@ -68,7 +68,8 @@ public class DefaultDevLoadingViewImplementation(
     if (currentActivity == null) {
       FLog.e(
           ReactConstants.TAG,
-          "Unable to display loading message because react " + "activity isn't available")
+          "Unable to display loading message because react " + "activity isn't available",
+      )
       return
     }
 
@@ -85,7 +86,10 @@ public class DefaultDevLoadingViewImplementation(
       view.text = message
       val popup =
           PopupWindow(
-              view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+              view,
+              ViewGroup.LayoutParams.MATCH_PARENT,
+              ViewGroup.LayoutParams.WRAP_CONTENT,
+          )
       popup.isTouchable = false
       popup.showAtLocation(currentActivity.window.decorView, Gravity.NO_GRAVITY, 0, topOffset)
       devLoadingView = view
@@ -94,7 +98,8 @@ public class DefaultDevLoadingViewImplementation(
     } catch (e: WindowManager.BadTokenException) {
       FLog.e(
           ReactConstants.TAG,
-          "Unable to display loading message because react activity isn't active, message: $message")
+          "Unable to display loading message because react activity isn't active, message: $message",
+      )
     }
   }
 

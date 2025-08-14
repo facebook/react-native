@@ -309,7 +309,10 @@ function updatePropertyError(
       oldType,
       oldError,
     );
-    const newFault = {property: name, fault: comparisonError};
+    const newFault: {fault?: TypeComparisonError, property: string} = {
+      property: name,
+      fault: comparisonError,
+    };
     if (result.errorProperties) {
       result.errorProperties.push(newFault);
     } else {
@@ -331,7 +334,10 @@ function updateEnumMemberError(
       oldType,
       oldError,
     );
-    const newFault = {member: name, fault: comparisonError};
+    const newFault: {fault?: TypeComparisonError, member: string} = {
+      member: name,
+      fault: comparisonError,
+    };
     if (result.errorMembers) {
       result.errorMembers.push(newFault);
     } else {

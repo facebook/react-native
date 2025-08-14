@@ -17,11 +17,14 @@ import com.facebook.yoga.YogaNode
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal object YogaNodePool {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "YogaNodePool", LegacyArchitectureLogLevel.ERROR)
+        "YogaNodePool",
+        LegacyArchitectureLogLevel.ERROR,
+    )
   }
 
   private val pool: ClearableSynchronizedPool<YogaNode> by

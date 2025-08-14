@@ -131,7 +131,8 @@ class RootViewTest {
                 "identifier",
                 0.0,
                 "targetSurface",
-                -1))
+                -1,
+            ))
 
     // Test ACTION_UP event
     reset(eventEmitterModuleMock, eventDispatcher)
@@ -163,7 +164,8 @@ class RootViewTest {
                 "identifier",
                 0.0,
                 "targetSurface",
-                -1))
+                -1,
+            ))
 
     // Test other action
     reset(eventDispatcher)

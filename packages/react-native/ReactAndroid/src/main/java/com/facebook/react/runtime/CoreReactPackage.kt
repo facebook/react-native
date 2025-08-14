@@ -37,10 +37,11 @@ import java.util.HashMap
             SourceCodeModule::class,
             LogBoxModule::class,
             DeviceEventManagerModule::class,
-            ExceptionsManagerModule::class])
+            ExceptionsManagerModule::class,
+        ])
 internal class CoreReactPackage(
     private val devSupportManager: DevSupportManager,
-    private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler
+    private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
 ) : BaseReactPackage() {
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
@@ -75,7 +76,8 @@ internal class CoreReactPackage(
         is IllegalAccessException ->
             throw RuntimeException(
                 "No ReactModuleInfoProvider for ${CoreReactPackage::class.java.name}$\$ReactModuleInfoProvider",
-                e)
+                e,
+            )
         else -> throw e
       }
     }
@@ -106,7 +108,8 @@ internal class CoreReactPackage(
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
                 ReactModuleInfo.classIsTurboModule(moduleClass),
-                moduleClass)
+                moduleClass,
+            )
       }
     }
     return ReactModuleInfoProvider { reactModuleInfoMap }

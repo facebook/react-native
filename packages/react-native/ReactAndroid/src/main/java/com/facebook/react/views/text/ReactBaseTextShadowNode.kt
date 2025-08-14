@@ -167,7 +167,7 @@ public constructor(
       textShadowNode: ReactBaseTextShadowNode,
       text: String?,
       supportsInlineViews: Boolean,
-      nativeViewHierarchyOptimizer: com.facebook.react.uimanager.NativeViewHierarchyOptimizer?
+      nativeViewHierarchyOptimizer: com.facebook.react.uimanager.NativeViewHierarchyOptimizer?,
   ): Spannable {
     check(!supportsInlineViews || nativeViewHierarchyOptimizer != null) {
       "nativeViewHierarchyOptimizer is required when inline views are supported"
@@ -511,7 +511,7 @@ public constructor(
         parentTextAttributes: TextAttributes?,
         supportsInlineViews: Boolean,
         inlineViews: MutableMap<Int, ReactShadowNode<*>>?,
-        start: Int
+        start: Int,
     ) {
       val textAttributes =
           parentTextAttributes?.applyChild(textShadowNode.textAttributes)
@@ -526,7 +526,14 @@ public constructor(
           child.text?.let { sb.append(apply(it, textAttributes.textTransform)) }
         } else if (child is ReactBaseTextShadowNode) {
           buildSpannedFromShadowNode(
-              child, sb, ops, textAttributes, supportsInlineViews, inlineViews, sb.length)
+              child,
+              sb,
+              ops,
+              textAttributes,
+              supportsInlineViews,
+              inlineViews,
+              sb.length,
+          )
         } else if (child is ReactTextInlineImageShadowNode) {
           // We make the image take up 1 character in the span and put a corresponding character
           // into the text so that the image doesn't run over any following text.
@@ -535,7 +542,8 @@ public constructor(
               SetSpanOperation(
                   sb.length - INLINE_VIEW_PLACEHOLDER.length,
                   sb.length,
-                  child.buildInlineImageSpan()))
+                  child.buildInlineImageSpan(),
+              ))
         } else if (supportsInlineViews) {
           val reactTag = child.reactTag
           val widthValue = child.styleWidth
@@ -563,7 +571,8 @@ public constructor(
               SetSpanOperation(
                   sb.length - INLINE_VIEW_PLACEHOLDER.length,
                   sb.length,
-                  TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt())))
+                  TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt()),
+              ))
 
           // supportsInlineViews is true, so we can assume that inlineViews is not null
           checkNotNull(inlineViews)[reactTag] = child
@@ -616,7 +625,9 @@ public constructor(
                       textShadowNode.fontWeight,
                       textShadowNode.fontFeatureSettings,
                       textShadowNode.fontFamily,
-                      textShadowNode.themedContext.assets)))
+                      textShadowNode.themedContext.assets,
+                  ),
+              ))
         }
         if (textShadowNode.isUnderlineTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
@@ -636,7 +647,9 @@ public constructor(
                       textShadowNode.textShadowOffsetDx,
                       textShadowNode.textShadowOffsetDy,
                       textShadowNode.textShadowRadius,
-                      textShadowNode.textShadowColor)))
+                      textShadowNode.textShadowColor,
+                  ),
+              ))
         }
         val effectiveLineHeight = textAttributes.effectiveLineHeight
         if (!java.lang.Float.isNaN(effectiveLineHeight) &&

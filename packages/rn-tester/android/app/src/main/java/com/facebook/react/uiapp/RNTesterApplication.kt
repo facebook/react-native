@@ -36,7 +36,8 @@ import com.facebook.react.uimanager.ViewManager
 internal class RNTesterApplication : Application(), ReactApplication {
   @Deprecated(
       "You should not use ReactNativeHost directly in the New Architecture. Use ReactHost instead.",
-      replaceWith = ReplaceWith("reactHost"))
+      replaceWith = ReplaceWith("reactHost"),
+  )
   override val reactNativeHost: ReactNativeHost by
       lazy(LazyThreadSafetyMode.NONE) {
         object : DefaultReactNativeHost(this) {
@@ -52,7 +53,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                     object : BaseReactPackage() {
                       override fun getModule(
                           name: String,
-                          reactContext: ReactApplicationContext
+                          reactContext: ReactApplicationContext,
                       ): NativeModule? =
                           when {
                             SampleTurboModule.NAME == name -> SampleTurboModule(reactContext)
@@ -74,8 +75,8 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                         needsEagerInit = false,
                                         isCxxModule = false,
                                         isTurboModule = true,
-                                        SampleTurboModule::class.java
-                                      ),
+                                        SampleTurboModule::class.java,
+                                    ),
                                 SampleLegacyModule.NAME to
                                     ReactModuleInfo(
                                         SampleLegacyModule.NAME,
@@ -84,14 +85,19 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                         needsEagerInit = false,
                                         isCxxModule = false,
                                         isTurboModule = false,
-                                        SampleTurboModule::class.java))
+                                        SampleTurboModule::class.java,
+                                    ),
+                            )
                           }
                     })
                 add(
                     object : ReactPackage, ViewManagerOnDemandReactPackage {
                       override fun getViewManagerNames(reactContext: ReactApplicationContext) =
                           listOf(
-                              "RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
+                              "RNTMyNativeView",
+                              "RNTMyLegacyNativeView",
+                              "RNTReportFullyDrawnView",
+                          )
 
                       override fun createViewManagers(
                           reactContext: ReactApplicationContext
@@ -99,11 +105,12 @@ internal class RNTesterApplication : Application(), ReactApplication {
                           listOf(
                               MyNativeViewManager(),
                               MyLegacyViewManager(reactContext),
-                              ReportFullyDrawnViewManager())
+                              ReportFullyDrawnViewManager(),
+                          )
 
                       override fun createViewManager(
                           reactContext: ReactApplicationContext,
-                          viewManagerName: String
+                          viewManagerName: String,
                       ): ViewManager<*, out ReactShadowNode<*>>? =
                           when (viewManagerName) {
                             "RNTMyNativeView" -> MyNativeViewManager()

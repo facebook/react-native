@@ -155,7 +155,13 @@ class VirtualizedSectionList<
         .getCellMetricsApprox(index - params.itemIndex, listRef.props);
       viewOffset += frame.length;
     }
-    const toIndexParams = {
+    const toIndexParams: {
+      animated?: ?boolean,
+      index: number,
+      viewOffset?: number,
+      viewPosition?: number,
+      ...
+    } = {
       ...params,
       viewOffset,
       index,

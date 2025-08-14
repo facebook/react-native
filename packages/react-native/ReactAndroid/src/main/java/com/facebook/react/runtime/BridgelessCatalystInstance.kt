@@ -47,7 +47,7 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   override fun loadScriptFromAssets(
       assetManager: AssetManager,
       assetURL: String,
-      loadSynchronously: Boolean
+      loadSynchronously: Boolean,
   ) {
     throw UnsupportedOperationException("Unimplemented method 'loadScriptFromAssets'")
   }
@@ -179,7 +179,9 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "BridgelessCatalystInstance", LegacyArchitectureLogLevel.ERROR)
+          "BridgelessCatalystInstance",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

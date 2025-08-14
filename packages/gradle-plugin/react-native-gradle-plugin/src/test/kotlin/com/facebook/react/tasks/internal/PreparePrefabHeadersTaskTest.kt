@@ -100,7 +100,8 @@ class PreparePrefabHeadersTaskTest {
               listOf(
                   PrefabPreprocessingEntry(
                       "sample_library",
-                      listOf("input/component1/" to "", "input/component2/" to "")),
+                      listOf("input/component1/" to "", "input/component2/" to ""),
+                  ),
               ))
         }
 
@@ -123,7 +124,8 @@ class PreparePrefabHeadersTaskTest {
           it.input.set(
               listOf(
                   PrefabPreprocessingEntry("libraryone", "input/lib1/" to ""),
-                  PrefabPreprocessingEntry("librarytwo", "input/lib2/" to "")))
+                  PrefabPreprocessingEntry("librarytwo", "input/lib2/" to ""),
+              ))
         }
 
     task.taskAction()
@@ -146,9 +148,13 @@ class PreparePrefabHeadersTaskTest {
           it.input.set(
               listOf(
                   PrefabPreprocessingEntry(
-                      "libraryone", listOf("input/lib1/" to "", "input/shared/" to "shared/")),
+                      "libraryone",
+                      listOf("input/lib1/" to "", "input/shared/" to "shared/"),
+                  ),
                   PrefabPreprocessingEntry(
-                      "librarytwo", listOf("input/lib2/" to "", "input/shared/" to "shared/")),
+                      "librarytwo",
+                      listOf("input/lib2/" to "", "input/shared/" to "shared/"),
+                  ),
               ))
         }
 

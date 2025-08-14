@@ -6,22 +6,18 @@
  */
 
 #include "BaseTextInputProps.h"
-
-#include <react/renderer/core/propsConversions.h>
-
-#include <react/renderer/core/Props.h>
-#include <react/renderer/core/PropsMacros.h>
-
-#include <react/renderer/graphics/Color.h>
-
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/components/textinput/baseConversions.h>
+#include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsMacros.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
+#include <limits>
 
 namespace facebook::react {
 
@@ -83,7 +79,7 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "maxLength",
           sourceProps.maxLength,
-          {})),
+          {std::numeric_limits<int>::max()})),
       text(convertRawProp(context, rawProps, "text", sourceProps.text, {})),
       mostRecentEventCount(convertRawProp(
           context,

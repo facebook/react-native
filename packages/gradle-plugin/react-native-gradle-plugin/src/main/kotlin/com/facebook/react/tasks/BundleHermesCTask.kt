@@ -111,7 +111,11 @@ abstract class BundleHermesCTask : DefaultTask() {
         val composeScriptFile = File(reactNativeDir, "scripts/compose-source-maps.js")
         val composeSourceMapsCommand =
             getComposeSourceMapsCommand(
-                composeScriptFile, packagerSourceMap, compilerSourceMap, outputSourceMap)
+                composeScriptFile,
+                packagerSourceMap,
+                compilerSourceMap,
+                outputSourceMap,
+            )
         runCommand(composeSourceMapsCommand)
       }
     }
@@ -172,7 +176,7 @@ abstract class BundleHermesCTask : DefaultTask() {
   internal fun getHermescCommand(
       hermesCommand: String,
       bytecodeFile: File,
-      bundleFile: File
+      bundleFile: File,
   ): List<Any> {
     val rootFile = root.get().asFile
     return windowsAwareCommandLine(
@@ -183,14 +187,15 @@ abstract class BundleHermesCTask : DefaultTask() {
         "-out",
         bytecodeFile.cliPath(rootFile),
         bundleFile.cliPath(rootFile),
-        *hermesFlags.get().toTypedArray())
+        *hermesFlags.get().toTypedArray(),
+    )
   }
 
   internal fun getComposeSourceMapsCommand(
       composeScript: File,
       packagerSourceMap: File,
       compilerSourceMap: File,
-      outputSourceMap: File
+      outputSourceMap: File,
   ): List<Any> {
     val rootFile = root.get().asFile
     return windowsAwareCommandLine(
@@ -199,6 +204,7 @@ abstract class BundleHermesCTask : DefaultTask() {
         packagerSourceMap.cliPath(rootFile),
         compilerSourceMap.cliPath(rootFile),
         "-o",
-        outputSourceMap.cliPath(rootFile))
+        outputSourceMap.cliPath(rootFile),
+    )
   }
 }

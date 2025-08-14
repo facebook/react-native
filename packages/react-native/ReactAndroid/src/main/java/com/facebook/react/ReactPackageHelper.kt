@@ -23,11 +23,12 @@ internal object ReactPackageHelper {
    */
   fun getNativeModuleIterator(
       reactPackage: ReactPackage,
-      reactApplicationContext: ReactApplicationContext
+      reactApplicationContext: ReactApplicationContext,
   ): Iterable<ModuleHolder> {
     FLog.d(
         ReactConstants.TAG,
-        "${reactPackage.javaClass.simpleName} is not a LazyReactPackage, falling back to old version.")
+        "${reactPackage.javaClass.simpleName} is not a LazyReactPackage, falling back to old version.",
+    )
     @Suppress("DEPRECATION")
     val nativeModules = reactPackage.createNativeModules(reactApplicationContext)
     return Iterable {

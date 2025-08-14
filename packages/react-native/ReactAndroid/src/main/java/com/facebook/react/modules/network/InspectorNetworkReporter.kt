@@ -39,7 +39,7 @@ internal object InspectorNetworkReporter {
       requestMethod: String,
       requestHeaders: Map<String, String>,
       requestBody: String,
-      encodedDataLength: Long
+      encodedDataLength: Long,
   )
 
   /**
@@ -62,7 +62,7 @@ internal object InspectorNetworkReporter {
       requestUrl: String,
       responseStatus: Int,
       responseHeaders: Map<String, String>,
-      expectedDataLength: Long
+      expectedDataLength: Long,
   )
 
   /**

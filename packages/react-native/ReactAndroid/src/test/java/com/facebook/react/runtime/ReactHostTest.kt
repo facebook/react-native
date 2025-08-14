@@ -118,7 +118,8 @@ class ReactHostTest {
             Task.IMMEDIATE_EXECUTOR,
             Task.IMMEDIATE_EXECUTOR,
             false /* allowPackagerServerAccess */,
-            true /* useDevSupport */)
+            true, /* useDevSupport */
+        )
     assertThat(reactHost.devSupportManager).isNotInstanceOf(ReleaseDevSupportManager::class.java)
   }
 

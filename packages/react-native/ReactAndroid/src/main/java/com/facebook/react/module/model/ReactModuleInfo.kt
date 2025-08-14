@@ -22,9 +22,15 @@ public class ReactModuleInfo(
     public val isTurboModule: Boolean,
     public val moduleClass: Class<*>
 ) {
+
   @Deprecated(
-      "Use the constructor that takes the class instance." +
-          " Without passing the class instance your module might not be discovered in some scenarios.")
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean, Class<*>)]",
+      replaceWith =
+          ReplaceWith(
+              expression =
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule, moduleClass)"),
+      level = DeprecationLevel.WARNING,
+  )
   public constructor(
       name: String,
       className: String,
@@ -41,7 +47,14 @@ public class ReactModuleInfo(
       isTurboModule,
       ReactModuleInfo::class.java /* placeholder */)
 
-  @Deprecated("Use constructor that doesn't take `hasConstants` parameter.")
+  @Deprecated(
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean, Class<*>)]",
+      replaceWith =
+          ReplaceWith(
+              expression =
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule, moduleClass)"),
+      level = DeprecationLevel.WARNING,
+  )
   public constructor(
       name: String,
       className: String,

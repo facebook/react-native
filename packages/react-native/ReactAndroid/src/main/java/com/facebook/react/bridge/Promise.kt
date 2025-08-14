@@ -109,6 +109,7 @@ public interface Promise {
       message =
           """Prefer passing a module-specific error code to JS. Using this method will pass the
         error code EUNSPECIFIED""",
-      replaceWith = ReplaceWith("reject(code, message)"))
+      replaceWith = ReplaceWith("reject(code, message)"),
+  )
   public fun reject(message: String)
 }

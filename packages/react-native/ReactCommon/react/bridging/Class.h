@@ -27,6 +27,11 @@ JSReturnT callFromJs(
       sizeof...(ArgsT) == sizeof...(JSArgsT), "Incorrect arguments length");
   static_assert(
       (supportsFromJs<ArgsT, JSArgsT> && ...), "Incompatible arguments");
+  if constexpr (std::is_void_v<JSReturnT>) {
+    static_assert(
+        std::is_void_v<ReturnT>,
+        "Method must return void when JSReturnT is void");
+  }
 
   if constexpr (std::is_void_v<JSReturnT>) {
     (instance->*method)(

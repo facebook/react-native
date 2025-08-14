@@ -118,7 +118,7 @@ jsi::Object NativeFantom::getFabricUpdateProps(
 void NativeFantom::enqueueNativeEvent(
     jsi::Runtime& /*runtime*/,
     std::shared_ptr<const ShadowNode> shadowNode,
-    std::string type,
+    const std::string& type,
     const std::optional<folly::dynamic>& payload,
     std::optional<RawEvent::Category> category,
     std::optional<bool> isUnique) {
@@ -285,7 +285,7 @@ void NativeFantom::startJSSamplingProfiler(jsi::Runtime& /*runtime*/) {
 
 void NativeFantom::stopJSSamplingProfilerAndSaveToFile(
     jsi::Runtime& runtime,
-    std::string filePath) {
+    const std::string& filePath) {
   auto* hermesRootAPI =
       jsi::castInterface<hermes::IHermesRootAPI>(hermes::makeHermesRootAPI());
   hermesRootAPI->disableSamplingProfiler();

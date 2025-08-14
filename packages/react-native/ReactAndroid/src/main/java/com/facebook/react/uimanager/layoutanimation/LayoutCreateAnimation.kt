@@ -25,7 +25,9 @@ internal class LayoutCreateAnimation : BaseLayoutAnimation() {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutCreateAnimation", LegacyArchitectureLogLevel.ERROR)
+          "LayoutCreateAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

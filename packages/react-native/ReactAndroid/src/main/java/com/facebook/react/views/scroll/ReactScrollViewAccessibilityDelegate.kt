@@ -31,7 +31,8 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"))
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+      )
     }
   }
 
@@ -43,7 +44,8 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"))
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+      )
     }
   }
 
@@ -104,7 +106,7 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
 
   private fun onInitializeAccessibilityNodeInfoInternal(
       view: View,
-      info: AccessibilityNodeInfoCompat
+      info: AccessibilityNodeInfoCompat,
   ) {
     val accessibilityRole = AccessibilityRole.fromViewTag(view)
 
@@ -121,7 +123,10 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
 
       val collectionInfoCompat =
           AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
-              rowCount, columnCount, hierarchical)
+              rowCount,
+              columnCount,
+              hierarchical,
+          )
       info.setCollectionInfo(collectionInfoCompat)
     }
 

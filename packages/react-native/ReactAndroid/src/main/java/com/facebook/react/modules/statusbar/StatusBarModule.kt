@@ -52,13 +52,15 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     if (isEdgeToEdgeFeatureFlagOn) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
+          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -86,13 +88,15 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     if (isEdgeToEdgeFeatureFlagOn) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
+          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -108,7 +112,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread { activity.window?.setStatusBarVisibility(hidden) }
@@ -120,7 +125,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -132,10 +138,13 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
               // dark-content means dark icons on a light status bar
               insetsController.setSystemBarsAppearance(
                   WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+              )
             } else {
               insetsController.setSystemBarsAppearance(
-                  0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                  0,
+                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+              )
             }
           } else {
             val decorView = window.decorView

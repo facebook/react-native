@@ -29,7 +29,8 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       "Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.",
       replaceWith =
           ReplaceWith(
-              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
+              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"),
+  )
   override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -41,7 +42,7 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
-      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
   ): DevSupportManager {
     return if (!enableOnCreate) {
       ReleaseDevSupportManager()
@@ -74,7 +75,8 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
                   MutableMap::class.java,
                   SurfaceDelegateFactory::class.java,
                   DevLoadingViewManager::class.java,
-                  PausedInDebuggerOverlayManager::class.java)
+                  PausedInDebuggerOverlayManager::class.java,
+              )
           constructor.newInstance(
               applicationContext,
               reactInstanceManagerHelper,
@@ -86,7 +88,8 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
               customPackagerCommandHandlers,
               surfaceDelegateFactory,
               devLoadingViewManager,
-              pausedInDebuggerOverlayManager) as DevSupportManager
+              pausedInDebuggerOverlayManager,
+          ) as DevSupportManager
         } catch (e: Exception) {
           PerftestDevSupportManager(applicationContext)
         }
@@ -104,7 +107,7 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
-      useDevSupport: Boolean
+      useDevSupport: Boolean,
   ): DevSupportManager =
       if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
         PerftestDevSupportManager(applicationContext)
@@ -120,7 +123,8 @@ internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
             customPackagerCommandHandlers,
             surfaceDelegateFactory,
             devLoadingViewManager,
-            pausedInDebuggerOverlayManager)
+            pausedInDebuggerOverlayManager,
+        )
       } else {
         ReleaseDevSupportManager()
       }

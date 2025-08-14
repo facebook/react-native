@@ -422,7 +422,7 @@ const PanResponder = {
       numberActiveTouches: 0,
       _accountsForMovesUpTo: 0,
     };
-    const panHandlers = {
+    const panHandlers: GestureResponderHandlerMethods = {
       onStartShouldSetResponder(event: GestureResponderEvent): boolean {
         return config.onStartShouldSetPanResponder == null
           ? false

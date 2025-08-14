@@ -34,7 +34,7 @@ public class TurboModuleManager(
     runtimeExecutor: RuntimeExecutor,
     private val delegate: TurboModuleManagerDelegate?,
     jsCallInvokerHolder: CallInvokerHolder,
-    nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
+    nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder,
 ) : TurboModuleRegistry {
 
   public override val eagerInitModuleNames: List<String>
@@ -56,7 +56,8 @@ public class TurboModuleManager(
           runtimeExecutor,
           jsCallInvokerHolder as CallInvokerHolderImpl,
           nativeMethodCallInvokerHolder as NativeMethodCallInvokerHolderImpl,
-          delegate)
+          delegate,
+      )
 
   init {
 
@@ -179,7 +180,8 @@ public class TurboModuleManager(
             "getModule(): Tried to get module \"%s\", but TurboModuleManager was tearing down (legacy: %b, turbo: %b)",
             moduleName,
             isLegacyModule(moduleName),
-            isTurboModule(moduleName))
+            isTurboModule(moduleName),
+        )
         return null
       }
       /*
@@ -224,7 +226,7 @@ public class TurboModuleManager(
   private fun getOrCreateModule(
       moduleName: String,
       moduleHolder: ModuleHolder,
-      shouldPerfLog: Boolean
+      shouldPerfLog: Boolean,
   ): NativeModule? {
     var shouldCreateModule = false
 
@@ -269,7 +271,8 @@ public class TurboModuleManager(
             "getOrCreateModule(): Unable to create module \"%s\" (legacy: %b, turbo: %b)",
             moduleName,
             isLegacyModule(moduleName),
-            isTurboModule(moduleName))
+            isTurboModule(moduleName),
+        )
       }
 
       TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.moduleId)
@@ -320,7 +323,7 @@ public class TurboModuleManager(
       runtimeExecutor: RuntimeExecutor,
       jsCallInvokerHolder: CallInvokerHolderImpl,
       nativeMethodCallInvoker: NativeMethodCallInvokerHolderImpl,
-      tmmDelegate: TurboModuleManagerDelegate?
+      tmmDelegate: TurboModuleManagerDelegate?,
   ): HybridData
 
   private external fun installJSIBindings(shouldCreateLegacyModules: Boolean)

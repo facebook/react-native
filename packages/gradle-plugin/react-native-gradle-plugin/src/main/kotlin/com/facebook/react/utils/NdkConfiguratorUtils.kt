@@ -30,7 +30,8 @@ internal object NdkConfiguratorUtils {
           ext.externalNativeBuild.cmake.path =
               File(
                   extension.reactNativeDir.get().asFile,
-                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt")
+                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+              )
         }
 
         // Parameters should be provided in an additive manner (do not override what
@@ -71,7 +72,7 @@ internal object NdkConfiguratorUtils {
   fun configureNewArchPackagingOptions(
       project: Project,
       extension: ReactExtension,
-      variant: Variant
+      variant: Variant,
   ) {
     // We set some packagingOptions { pickFirst ... } for our users for libraries we own.
     variant.packaging.jniLibs.pickFirsts.addAll(
@@ -107,7 +108,7 @@ internal object NdkConfiguratorUtils {
 
   fun getPackagingOptionsForVariant(
       hermesEnabled: Boolean,
-      useThirdPartyJSC: Boolean
+      useThirdPartyJSC: Boolean,
   ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()

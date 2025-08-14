@@ -50,7 +50,10 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
         if (lastSelection != null) {
           if (value != null && field?.layout?.text.toString() == value.layout.text.toString()) {
             value.layout.getSelectionPath(
-                lastSelection.start, lastSelection.end, lastSelection.path)
+                lastSelection.start,
+                lastSelection.end,
+                lastSelection.path,
+            )
           } else {
             clearSelection()
           }
@@ -105,7 +108,9 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
 
     super.onDraw(canvas)
     canvas.translate(
-        paddingLeft.toFloat(), paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f))
+        paddingLeft.toFloat(),
+        paddingTop.toFloat() + (preparedLayout?.verticalOffset ?: 0f),
+    )
 
     val layout = preparedLayout?.layout
     if (layout != null) {
@@ -282,7 +287,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
   public override fun onFocusChanged(
       gainFocus: Boolean,
       direction: Int,
-      previouslyFocusedRect: Rect?
+      previouslyFocusedRect: Rect?,
   ) {
     if (clickableSpans.isNotEmpty() && !gainFocus) {
       clearSelection()

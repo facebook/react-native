@@ -35,6 +35,6 @@ public interface RedBoxHandler {
       title: String,
       stack: Array<StackFrame>,
       sourceUrl: String,
-      reportCompletedListener: ReportCompletedListener
+      reportCompletedListener: ReportCompletedListener,
   )
 }

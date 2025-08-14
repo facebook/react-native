@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class MultiplicationAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
   private var inputNodes: IntArray
 
