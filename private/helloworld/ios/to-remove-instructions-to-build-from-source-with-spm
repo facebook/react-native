@@ -11,5 +11,4 @@ node scripts/swiftpm/prepare-app-dependencies-headers.js . ../../private/hellowo
 node scripts/swiftpm/prepare-app-dependencies-headers.js . ../../private/helloworld/ios ../../private/helloworld/ios/build/generated/ios/ReactCodegen third-party-dependencies
 
 # Fix the REACT_NATIVE_PATH in Xcode project.
-sed -i '' 's|REACT_NATIVE_PATH = "${PODS_ROOT}/../../../react-native";|REACT_NATIVE_PATH
 sed -i '' 's|REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../packages/react-native";|REACT_NATIVE_PATH = "${PROJECT_DIR}/../../../packages/react-native";|' ../../private/helloworld/ios/HelloWorld.xcodeproj/project.pbxproj
