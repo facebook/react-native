@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-#import <React/RCTBridgeModule.h>
 
 /**
  * A protocol that allows TurboModules to do lookup on other TurboModules.
@@ -12,6 +11,7 @@
  */
 @protocol RCTTurboModuleRegistry <NSObject>
 - (id)moduleForName:(const char *)moduleName;
+
 /**
  * Rationale:
  * When TurboModules lookup other modules by name, we first check the TurboModule
@@ -22,6 +22,5 @@
  * TurboModules to TurboModules is complete.
  */
 - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
-- (id)moduleNamesRespondingToSelector:(SEL)selector;
 - (BOOL)moduleIsInitialized:(const char *)moduleName;
 @end

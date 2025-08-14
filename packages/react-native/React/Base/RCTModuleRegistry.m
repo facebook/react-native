@@ -53,12 +53,6 @@
   return module;
 }
 
-- (id)moduleNamesRespondingToSelector:(SEL)selector
-{
-  id<RCTTurboModuleRegistry> turboModuleRegistry = _turboModuleRegistry;
-  return [turboModuleRegistry moduleNamesRespondingToSelector:selector];
-}
-
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
 #ifndef RCT_FIT_RM_OLD_RUNTIME
