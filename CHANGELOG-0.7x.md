@@ -1,5 +1,27 @@
 # Changelog (pre 0.80)
 
+## v0.79.6
+
+### Added
+
+#### Android specific
+
+- **RNGP** Add support for `exclusiveEnterpriseRepository`  ([df5ac988ce](https://github.com/facebook/react-native/commit/df5ac988cec936c430d41b0fcc15181dc06e46a1) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **Cocoapods:** Add the ENTERPRISE_REPOSITORY env var to let user consume artifacts from their personal maven mirror ([a74d930c93](https://github.com/facebook/react-native/commit/a74d930c93ffae8c02142e8cc016a4c390a5f784) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **Codegen:** Add missing Babel dependencies ([bf2c3af93b](https://github.com/facebook/react-native/commit/bf2c3af93b146943cb35866fa9badcd188e63f5b) by [@tido64](https://github.com/tido64))
+
+#### Android specific
+
+- **Legacy Arch:** Fix Legacy arch crashing or freezing upon reload ([db600b2e9e](https://github.com/facebook/react-native/commit/db600b2e9e87863cad6dd5ce262dc1f793bcaeb0) by [@robhogan](https://github.com/robhogan))
+- **Modal:** Fix Modal first frame being rendered on top-left corner ([5a315f8d6b](https://github.com/facebook/react-native/commit/5a315f8d6b0ea54442c7ef94b7346b0c73fd0b4c) by [@cortinico](https://github.com/cortinico))
+- **TurboModule:** Fix emitting event from turbo module crashes on 32bit android ([43bc43e5e8](https://github.com/facebook/react-native/commit/43bc43e5e85519d2924c4fc80765e66d0c48b1a9) by [@vladimirivanoviliev](https://github.com/vladimirivanoviliev))
+
 ## v0.79.5
 
 ### Fixed

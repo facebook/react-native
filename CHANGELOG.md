@@ -554,6 +554,10 @@
 - **Text:** Selection range not respected when changing text or selection when selection is forced ([d32ea66e6a](https://github.com/facebook/react-native/commit/d32ea66e6a945dd84092532401b265b12d482668) by Olivier Bouillet)
 - **TextInput:** Fix TextInput `onContentSizeChange` event being dispatched only once on iOS on the new architecture ([5fd5188172](https://github.com/facebook/react-native/commit/5fd51881727b2d86f87abf04db032940ac0ec8c4) by [@j-piasecki](https://github.com/j-piasecki))
 
+## v0.79.6
+
+See [CHANGELOG-0.7x](./CHANGELOG-0.7x.md#v0796)
+
 ## v0.79.5
 
 See [CHANGELOG-0.7x](./CHANGELOG-0.7x.md#v0795)
