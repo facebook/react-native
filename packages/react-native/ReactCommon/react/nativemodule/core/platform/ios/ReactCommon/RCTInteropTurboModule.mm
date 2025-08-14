@@ -124,7 +124,7 @@ std::vector<ExportedMethod> parseExportedMethods(std::string moduleName, Class m
     NSMethodSignature *objCMethodSignature = [moduleClass instanceMethodSignatureForSelector:objCMethodSelector];
     if (objCMethodSignature == nullptr) {
       RCTLogWarn(
-          @"The objective-c `%s` method signature for the JS method `%@` can not be found in the ObjecitveC definition of the %s module.\nThe `%@` JS method will not be available.",
+          @"The Objective-C `%s` method signature for the JS method `%@` can not be found in the Objective-C definition of the %s module.\nThe `%@` JS method will not be available.",
           methodInfo->objcName,
           jsMethodName,
           moduleName.c_str(),
