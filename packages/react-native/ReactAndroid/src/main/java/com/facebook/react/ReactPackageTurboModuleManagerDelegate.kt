@@ -161,7 +161,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     for (moduleProvider in moduleProviders) {
       val moduleInfos = packageModuleInfos[moduleProvider]?.values ?: continue
       for (moduleInfo in moduleInfos) {
-        if (clazz.isInstance(moduleInfo.moduleClass) && moduleInfo.isTurboModule) {
+        if (clazz.isAssignableFrom(moduleInfo.moduleClass) && moduleInfo.isTurboModule) {
           modules.add(moduleProvider.getModule(moduleInfo.name) as TurboModule)
         }
       }

@@ -282,7 +282,7 @@ constructor(private val config: MainPackageConfig? = null) :
                       reactModule.needsEagerInit,
                       reactModule.isCxxModule,
                       classIsTurboModule(moduleClass),
-                      reactModule::class.java)
+                      moduleClass)
             }
     return ReactModuleInfoProvider { moduleMap }
   }

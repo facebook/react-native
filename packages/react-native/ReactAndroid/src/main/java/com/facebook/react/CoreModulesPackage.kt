@@ -122,7 +122,7 @@ internal class CoreModulesPackage(
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
                 ReactModuleInfo.classIsTurboModule(moduleClass),
-                moduleClass::class.java)
+                moduleClass)
       }
     }
 

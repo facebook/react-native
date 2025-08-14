@@ -62,7 +62,7 @@ public class ModuleHolder {
             true,
             CxxModuleWrapper::class.java.isAssignableFrom(nativeModule.javaClass),
             ReactModuleInfo.classIsTurboModule(nativeModule.javaClass),
-            nativeModule.javaClass::class.java)
+            nativeModule.javaClass)
 
     internalModule = nativeModule
     PrinterHolder.printer.logMessage(
