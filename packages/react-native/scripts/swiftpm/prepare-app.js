@@ -34,7 +34,7 @@ async function prepareApp(appPath = '../../private/helloworld', reactNativePath 
   console.log('🚀 Starting app preparation for SwiftPM build from source...');
 
   // Resolve absolute paths
-  const absoluteAppPath = path.resolve(reactNativePath, appPath);
+  const absoluteAppPath = path.resolve(appPath);
   const absoluteReactNativePath = path.resolve(reactNativePath);
   const appIosPath = path.join(absoluteAppPath, 'ios');
 
@@ -79,6 +79,10 @@ async function prepareApp(appPath = '../../private/helloworld', reactNativePath 
     // Step 7: Fix REACT_NATIVE_PATH in Xcode project
     console.log('\n🔧 Step 7: Fixing REACT_NATIVE_PATH in Xcode project...');
     await fixReactNativePath(appIosPath, absoluteReactNativePath, appXcodeProject);
+
+    // Step 8: Open Xcode project
+    console.log('\n📱 Step 8: Opening Xcode project...');
+    await openXcodeProject(appIosPath, appXcodeProject);
 
     console.log('\n✅ App preparation completed successfully!');
   } catch (error) {
@@ -242,6 +246,13 @@ async function fixReactNativePath(appIosPath, reactNativePath, appXcodeProject) 
     // Read the project file
     let content = fs.readFileSync(projectPath, 'utf8');
 
+    // Apply the sed replacements
+    // Fix the first pattern (the incomplete one from the instructions)
+    content = content.replace(
+      /REACT_NATIVE_PATH = "\${PODS_ROOT}\/\.\.\/\.\.\/\.\.\/react-native";/g,
+      `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`
+    );
+
     // Fix the second pattern
     content = content.replace(
       /REACT_NATIVE_PATH = "\${PODS_ROOT}\/\.\.\/\.\.\/\.\.\/\.\.\/packages\/react-native";/g,
@@ -254,6 +265,27 @@ async function fixReactNativePath(appIosPath, reactNativePath, appXcodeProject) 
     console.log(`✓ REACT_NATIVE_PATH fixed to: \${PROJECT_DIR}/${relativePath}`);
   } catch (error) {
     throw new Error(`Failed to fix REACT_NATIVE_PATH: ${error.message}`);
+  }
+}
+
+/**
+ * Open Xcode project
+ */
+async function openXcodeProject(appIosPath, appXcodeProject) {
+  const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+  if (!fs.existsSync(xcodeProjectPath)) {
+    throw new Error(`Xcode project not found: ${xcodeProjectPath}`);
+  }
+
+  try {
+    console.log(`Opening Xcode project: ${xcodeProjectPath}`);
+    execSync(`open "${xcodeProjectPath}"`, {
+      stdio: 'inherit'
+    });
+    console.log('✓ Xcode project opened');
+  } catch (error) {
+    throw new Error(`Failed to open Xcode project: ${error.message}`);
   }
 }
 
@@ -301,5 +333,6 @@ module.exports = {
   createSymlinks,
   generateCodegenArtifacts,
   prepareHeaders,
-  fixReactNativePath
+  fixReactNativePath,
+  openXcodeProject
 };
