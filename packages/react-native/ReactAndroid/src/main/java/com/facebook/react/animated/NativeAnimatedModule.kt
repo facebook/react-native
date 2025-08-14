@@ -383,14 +383,18 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
   private fun clearFrameCallback() {
     reactChoreographer.removeFrameCallback(
-        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, animatedFrameCallback)
+        ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+        animatedFrameCallback,
+    )
     enqueuedAnimationOnFrame = false
   }
 
   private fun enqueueFrameCallback() {
     if (!enqueuedAnimationOnFrame) {
       reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, animatedFrameCallback)
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
+          animatedFrameCallback,
+      )
       enqueuedAnimationOnFrame = true
     }
   }
@@ -417,7 +421,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
       ReactSoftExceptionLogger.logSoftException(
           NAME,
           RuntimeException(
-              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"))
+              "initializeLifecycleEventListenersForViewTag could not get NativeAnimatedNodesManager"),
+      )
     }
 
     // Subscribe to UIManager (Fabric or non-Fabric) lifecycle events if we haven't yet
@@ -650,7 +655,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
       animationIdDouble: Double,
       animatedNodeTagDouble: Double,
       animationConfig: ReadableMap,
-      endCallback: Callback
+      endCallback: Callback,
   ) {
     val animationId = animationIdDouble.toInt()
     val animatedNodeTag = animatedNodeTagDouble.toInt()
@@ -665,7 +670,11 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
               FLog.d(NAME, "execute startAnimatingNode: ID: $animationId tag: $animatedNodeTag")
             }
             animatedNodesManager.startAnimatingNode(
-                animationId, animatedNodeTag, animationConfig, endCallback)
+                animationId,
+                animatedNodeTag,
+                animationConfig,
+                endCallback,
+            )
           }
         })
   }
@@ -700,7 +709,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute connectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"))
+                  ("execute connectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"),
+              )
             }
             animatedNodesManager.connectAnimatedNodes(parentNodeTag, childNodeTag)
           }
@@ -720,7 +730,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute disconnectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"))
+                  ("execute disconnectAnimatedNodes: parent: $parentNodeTag child: $childNodeTag"),
+              )
             }
             animatedNodesManager.disconnectAnimatedNodes(parentNodeTag, childNodeTag)
           }
@@ -733,7 +744,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"))
+          ("queue connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"),
+      )
     }
 
     initializeLifecycleEventListenersForViewTag(viewTag)
@@ -744,7 +756,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"))
+                  ("execute connectAnimatedNodeToView: animatedNodeTag: $animatedNodeTag viewTag: $viewTag"),
+              )
             }
             animatedNodesManager.connectAnimatedNodeToView(animatedNodeTag, viewTag)
           }
@@ -753,7 +766,7 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
   override fun disconnectAnimatedNodeFromView(
       animatedNodeTagDouble: Double,
-      viewTagDouble: Double
+      viewTagDouble: Double,
   ) {
     val animatedNodeTag = animatedNodeTagDouble.toInt()
     val viewTag = viewTagDouble.toInt()
@@ -769,7 +782,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute disconnectAnimatedNodeFromView: $animatedNodeTag viewTag: $viewTag"))
+                  ("execute disconnectAnimatedNodeFromView: $animatedNodeTag viewTag: $viewTag"),
+              )
             }
             animatedNodesManager.disconnectAnimatedNodeFromView(animatedNodeTag, viewTag)
           }
@@ -796,13 +810,14 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   override fun addAnimatedEventToView(
       viewTagDouble: Double,
       eventName: String,
-      eventMapping: ReadableMap
+      eventMapping: ReadableMap,
   ) {
     val viewTag = viewTagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
+          ("queue addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"),
+      )
     }
 
     initializeLifecycleEventListenersForViewTag(viewTag)
@@ -813,7 +828,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"))
+                  ("execute addAnimatedEventToView: $viewTag eventName: $eventName eventMapping: ${eventMapping.toHashMap()}"),
+              )
             }
             animatedNodesManager.addAnimatedEventToView(viewTag, eventName, eventMapping)
           }
@@ -823,14 +839,15 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
   override fun removeAnimatedEventFromView(
       viewTagDouble: Double,
       eventName: String,
-      animatedValueTagDouble: Double
+      animatedValueTagDouble: Double,
   ) {
     val viewTag = viewTagDouble.toInt()
     val animatedValueTag = animatedValueTagDouble.toInt()
     if (ANIMATED_MODULE_DEBUG) {
       FLog.d(
           NAME,
-          ("queue removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"))
+          ("queue removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"),
+      )
     }
 
     decrementInFlightAnimationsForViewTag(viewTag)
@@ -841,7 +858,8 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
             if (ANIMATED_MODULE_DEBUG) {
               FLog.d(
                   NAME,
-                  ("execute removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"))
+                  ("execute removeAnimatedEventFromView: viewTag: $viewTag eventName: $eventName animatedValueTag: $animatedValueTag"),
+              )
             }
             animatedNodesManager.removeAnimatedEventFromView(viewTag, eventName, animatedValueTag)
           }
@@ -947,11 +965,15 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
               when (command) {
                 BatchExecutionOpCodes.OP_CODE_CREATE_ANIMATED_NODE ->
                     animatedNodesManager.createAnimatedNode(
-                        opsAndArgs.getInt(i++), checkNotNull(opsAndArgs.getMap(i++)))
+                        opsAndArgs.getInt(i++),
+                        checkNotNull(opsAndArgs.getMap(i++)),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_UPDATE_ANIMATED_NODE_CONFIG ->
                     animatedNodesManager.updateAnimatedNodeConfig(
-                        opsAndArgs.getInt(i++), checkNotNull(opsAndArgs.getMap(i++)))
+                        opsAndArgs.getInt(i++),
+                        checkNotNull(opsAndArgs.getMap(i++)),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_GET_VALUE ->
                     animatedNodesManager.getValue(opsAndArgs.getInt(i++), null)
@@ -967,7 +989,9 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
                     val reactApplicationContext = reactApplicationContextIfActiveOrWarn
                     reactApplicationContext?.emitDeviceEvent(
-                        "onAnimatedValueUpdate", onAnimatedValueData)
+                        "onAnimatedValueUpdate",
+                        onAnimatedValueData,
+                    )
                   }
                   animatedNodesManager.startListeningToAnimatedNodeValue(tag, listener)
                 }
@@ -977,29 +1001,38 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
                 BatchExecutionOpCodes.OP_CODE_CONNECT_ANIMATED_NODES ->
                     animatedNodesManager.connectAnimatedNodes(
-                        opsAndArgs.getInt(i++), opsAndArgs.getInt(i++))
+                        opsAndArgs.getInt(i++),
+                        opsAndArgs.getInt(i++),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_DISCONNECT_ANIMATED_NODES ->
                     animatedNodesManager.disconnectAnimatedNodes(
-                        opsAndArgs.getInt(i++), opsAndArgs.getInt(i++))
+                        opsAndArgs.getInt(i++),
+                        opsAndArgs.getInt(i++),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_START_ANIMATING_NODE ->
                     animatedNodesManager.startAnimatingNode(
                         opsAndArgs.getInt(i++),
                         opsAndArgs.getInt(i++),
                         checkNotNull(opsAndArgs.getMap(i++)),
-                        null)
+                        null,
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_STOP_ANIMATION ->
                     animatedNodesManager.stopAnimation(opsAndArgs.getInt(i++))
 
                 BatchExecutionOpCodes.OP_CODE_SET_ANIMATED_NODE_VALUE ->
                     animatedNodesManager.setAnimatedNodeValue(
-                        opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
+                        opsAndArgs.getInt(i++),
+                        opsAndArgs.getDouble(i++),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_SET_ANIMATED_NODE_OFFSET ->
                     animatedNodesManager.setAnimatedNodeOffset(
-                        opsAndArgs.getInt(i++), opsAndArgs.getDouble(i++))
+                        opsAndArgs.getInt(i++),
+                        opsAndArgs.getDouble(i++),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_FLATTEN_ANIMATED_NODE_OFFSET ->
                     animatedNodesManager.flattenAnimatedNodeOffset(opsAndArgs.getInt(i++))
@@ -1009,7 +1042,9 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
                 BatchExecutionOpCodes.OP_CODE_CONNECT_ANIMATED_NODE_TO_VIEW ->
                     animatedNodesManager.connectAnimatedNodeToView(
-                        opsAndArgs.getInt(i++), opsAndArgs.getInt(i++))
+                        opsAndArgs.getInt(i++),
+                        opsAndArgs.getInt(i++),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_DISCONNECT_ANIMATED_NODE_FROM_VIEW -> {
                   val animatedNodeTag = opsAndArgs.getInt(i++)
@@ -1028,13 +1063,17 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
                     animatedNodesManager.addAnimatedEventToView(
                         opsAndArgs.getInt(i++),
                         checkNotNull(opsAndArgs.getString(i++)),
-                        checkNotNull(opsAndArgs.getMap(i++)))
+                        checkNotNull(opsAndArgs.getMap(i++)),
+                    )
 
                 BatchExecutionOpCodes.OP_CODE_REMOVE_ANIMATED_EVENT_FROM_VIEW -> {
                   viewTag = opsAndArgs.getInt(i++)
                   decrementInFlightAnimationsForViewTag(viewTag)
                   animatedNodesManager.removeAnimatedEventFromView(
-                      viewTag, checkNotNull(opsAndArgs.getString(i++)), opsAndArgs.getInt(i++))
+                      viewTag,
+                      checkNotNull(opsAndArgs.getString(i++)),
+                      opsAndArgs.getInt(i++),
+                  )
                 }
 
                 BatchExecutionOpCodes.OP_CODE_ADD_LISTENER,

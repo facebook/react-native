@@ -33,7 +33,8 @@ import javax.annotation.concurrent.NotThreadSafe
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 public open class LayoutAnimationController {
   private val layoutCreateAnimation: AbstractLayoutAnimation = LayoutCreateAnimation()
   private val layoutUpdateAnimation: AbstractLayoutAnimation = LayoutUpdateAnimation()
@@ -54,17 +55,23 @@ public open class LayoutAnimationController {
     val globalDuration = if (config.hasKey("duration")) config.getInt("duration") else 0
     if (config.hasKey(toString(LayoutAnimationType.CREATE))) {
       layoutCreateAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.CREATE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.CREATE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
     if (config.hasKey(toString(LayoutAnimationType.UPDATE))) {
       layoutUpdateAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.UPDATE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.UPDATE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
     if (config.hasKey(toString(LayoutAnimationType.DELETE))) {
       layoutDeleteAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.DELETE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.DELETE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
 

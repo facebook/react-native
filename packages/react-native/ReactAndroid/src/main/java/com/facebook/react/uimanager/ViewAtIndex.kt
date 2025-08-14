@@ -21,10 +21,11 @@ import java.util.Objects
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class ViewAtIndex(
     @Suppress("NoHungarianNotation") @JvmField public val mTag: Int,
-    @Suppress("NoHungarianNotation") @JvmField public val mIndex: Int
+    @Suppress("NoHungarianNotation") @JvmField public val mIndex: Int,
 ) {
 
   override fun equals(other: Any?): Boolean {
@@ -45,7 +46,9 @@ internal class ViewAtIndex(
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ViewAtIndex", LegacyArchitectureLogLevel.ERROR)
+          "ViewAtIndex",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

@@ -19,7 +19,7 @@ import com.facebook.react.bridge.ReadableType
  */
 internal class ObjectAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val configClone: JavaOnlyMap = JavaOnlyMap.deepClone(config)
 

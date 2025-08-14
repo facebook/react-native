@@ -28,7 +28,7 @@ public object LegacyArchitectureShadowNodeLogger {
   public fun assertUnsupportedViewManager(
       reactContext: ReactApplicationContext,
       shadowNodeClass: Class<*>,
-      viewManagerName: String
+      viewManagerName: String,
   ) {
     val implementsYogaMeasureFunction =
         YogaMeasureFunction::class.java in shadowNodeClass.interfaces
@@ -46,7 +46,9 @@ public object LegacyArchitectureShadowNodeLogger {
       if (ReactBuildConfig.DEBUG) {
         RNLog.w(reactContext, message)
         ReactSoftExceptionLogger.logSoftException(
-            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS, ReactNoCrashSoftException(message))
+            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
+            ReactNoCrashSoftException(message),
+        )
       }
     }
   }

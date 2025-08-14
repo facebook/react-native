@@ -81,7 +81,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
     // Case 1: We dispatched a UI update
     val finishedUiUpdate =
         hasEventBetweenTimestamps(
-            viewHierarchyUpdateFinishedEvents, frameStartTimeNanos, frameEndTimeNanos)
+            viewHierarchyUpdateFinishedEvents,
+            frameStartTimeNanos,
+            frameEndTimeNanos,
+        )
     val didEndFrameIdle = didEndFrameIdle(frameStartTimeNanos, frameEndTimeNanos)
     val hitFrame =
         if (finishedUiUpdate) {
@@ -90,7 +93,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
           // Case 2: Ended idle but no UI was enqueued during that frame
           (didEndFrameIdle &&
               !hasEventBetweenTimestamps(
-                  viewHierarchyUpdateEnqueuedEvents, frameStartTimeNanos, frameEndTimeNanos))
+                  viewHierarchyUpdateEnqueuedEvents,
+                  frameStartTimeNanos,
+                  frameEndTimeNanos,
+              ))
         }
     cleanUp(transitionToIdleEvents, frameEndTimeNanos)
     cleanUp(transitionToBusyEvents, frameEndTimeNanos)
@@ -114,13 +120,13 @@ internal class DidJSUpdateUiDuringFrameDetector :
 private fun hasEventBetweenTimestamps(
     eventArray: ArrayList<Long>,
     startTime: Long,
-    endTime: Long
+    endTime: Long,
 ): Boolean = eventArray.any { time -> time in startTime until endTime }
 
 private fun getLastEventBetweenTimestamps(
     eventArray: ArrayList<Long>,
     startTime: Long,
-    endTime: Long
+    endTime: Long,
 ): Long {
   var lastEvent: Long = -1
   for (time in eventArray) {

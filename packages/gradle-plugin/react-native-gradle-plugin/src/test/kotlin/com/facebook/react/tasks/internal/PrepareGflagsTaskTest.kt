@@ -188,7 +188,8 @@ typedef unsigned __int64 uint64;
 #endif
 
 } // namespace GFLAGS_NAMESPACE
-""")
+""",
+    )
 
     val configFile = File(output, "gflags/config.h")
     assertThat(configFile.exists()).isTrue()

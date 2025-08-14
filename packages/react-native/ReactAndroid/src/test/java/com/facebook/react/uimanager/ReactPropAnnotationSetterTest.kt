@@ -145,7 +145,8 @@ class ReactPropAnnotationSetterTest {
 
     @ReactPropGroup(
         names = ["floatGroupPropWithDefaultFirst", "floatGroupPropWithDefaultSecond"],
-        defaultFloat = -100.0f)
+        defaultFloat = -100.0f,
+    )
     fun setFloatGroupPropWithDefault(v: View?, index: Int, value: Float) {
       viewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value)
     }
@@ -156,7 +157,9 @@ class ReactPropAnnotationSetterTest {
     }
 
     @ReactPropGroup(
-        names = ["intGroupPropWithDefaultFirst", "intGroupPropWithDefaultSecond"], defaultInt = 555)
+        names = ["intGroupPropWithDefaultFirst", "intGroupPropWithDefaultSecond"],
+        defaultInt = 555,
+    )
     fun setIntGroupPropWithDefault(v: View?, index: Int, value: Int) {
       viewManagerUpdatesReceiver.onIntGroupPropSetterCalled(index, value)
     }

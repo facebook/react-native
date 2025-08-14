@@ -26,7 +26,8 @@ public abstract class ReactContextBaseJavaModule : BaseJavaModule {
    */
   @Deprecated(
       "Deprecated in 0.80.0. Use getReactApplicationContext.getCurrentActivity() instead.",
-      ReplaceWith("reactApplicationContext.currentActivity"))
+      ReplaceWith("reactApplicationContext.currentActivity"),
+  )
   protected fun getCurrentActivity(): Activity? {
     return reactApplicationContext.currentActivity
   }

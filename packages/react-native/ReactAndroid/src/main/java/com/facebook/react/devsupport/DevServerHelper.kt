@@ -62,7 +62,7 @@ import okio.Okio
 public open class DevServerHelper(
     private val settings: DeveloperSettings,
     private val applicationContext: Context,
-    private val packagerConnectionSettings: PackagerConnectionSettings
+    private val packagerConnectionSettings: PackagerConnectionSettings,
 ) {
   public interface PackagerCommandListener {
     public fun onPackagerConnected()
@@ -82,7 +82,7 @@ public open class DevServerHelper(
 
   private enum class BundleType(val typeID: String) {
     BUNDLE("bundle"),
-    MAP("map")
+    MAP("map"),
   }
 
   private val client: OkHttpClient =
@@ -119,7 +119,8 @@ public open class DevServerHelper(
               "android-%s-%s-%s",
               packageName,
               androidId,
-              if (getFuseboxEnabled()) "fusebox" else "legacy")
+              if (getFuseboxEnabled()) "fusebox" else "legacy",
+          )
       return getSHA256(rawDeviceId)
     }
 
@@ -132,7 +133,8 @@ public open class DevServerHelper(
             Uri.encode(getFriendlyDeviceName()),
             Uri.encode(packageName),
             Uri.encode(inspectorDeviceId),
-            getIsProfilingBuild())
+            getIsProfilingBuild(),
+        )
 
   /** Whether we should enable dev mode when requesting JS bundles. */
   private val devMode: Boolean
@@ -180,7 +182,11 @@ public open class DevServerHelper(
             checkNotNull(clientId)
             packagerClient =
                 JSPackagerClient(
-                        clientId, packagerConnectionSettings, handlers, onPackagerConnectedCallback)
+                        clientId,
+                        packagerConnectionSettings,
+                        handlers,
+                        onPackagerConnectedCallback,
+                    )
                     .apply { init() }
 
             return null
@@ -217,7 +223,10 @@ public open class DevServerHelper(
             }
             inspectorPackagerConnection =
                 CxxInspectorPackagerConnection(
-                        this@DevServerHelper.inspectorDeviceUrl, deviceName, packageName)
+                        this@DevServerHelper.inspectorDeviceUrl,
+                        deviceName,
+                        packageName,
+                    )
                     .apply { connect() }
             return null
           }
@@ -247,10 +256,15 @@ public open class DevServerHelper(
       outputFile: File,
       bundleURL: String?,
       bundleInfo: BundleDownloader.BundleInfo?,
-      requestBuilder: Request.Builder = Request.Builder()
+      requestBuilder: Request.Builder = Request.Builder(),
   ) {
     bundleDownloader.downloadBundleFromURL(
-        callback, outputFile, bundleURL, bundleInfo, requestBuilder)
+        callback,
+        outputFile,
+        bundleURL,
+        bundleInfo,
+        requestBuilder,
+    )
   }
 
   private fun createSplitBundleURL(mainModuleID: String, host: String): String =
@@ -261,7 +275,7 @@ public open class DevServerHelper(
       type: BundleType,
       host: String = packagerConnectionSettings.debugServerHost,
       modulesOnly: Boolean = false,
-      runModule: Boolean = true
+      runModule: Boolean = true,
   ): String {
     val dev = devMode
     val additionalOptionsBuilder = StringBuilder()
@@ -282,7 +296,8 @@ public open class DevServerHelper(
         jSMinifyMode,
         packageName,
         if (modulesOnly) "true" else "false",
-        if (runModule) "true" else "false") +
+        if (runModule) "true" else "false",
+    ) +
         (if (getFuseboxEnabled()) "&excludeSource=true&sourcePaths=url-server" else "") +
         additionalOptionsBuilder.toString())
   }
@@ -329,7 +344,8 @@ public open class DevServerHelper(
           "Failed to fetch resource synchronously - resourcePath: \"%s\", outputFile: \"%s\"",
           resourcePath,
           outputFile.absolutePath,
-          e)
+          e,
+      )
       return null
     }
   }
@@ -342,7 +358,8 @@ public open class DevServerHelper(
             Locale.US,
             "http://%s/open-debugger?device=%s",
             packagerConnectionSettings.debugServerHost,
-            Uri.encode(inspectorDeviceId))
+            Uri.encode(inspectorDeviceId),
+        )
     val request =
         Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build()
 
@@ -397,7 +414,8 @@ public open class DevServerHelper(
           result[16],
           result[17],
           result[18],
-          result[19])
+          result[19],
+      )
     }
 
     private fun createResourceURL(host: String, resourcePathParam: String): String {

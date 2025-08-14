@@ -18,7 +18,7 @@ import com.facebook.react.views.view.ColorUtil.normalize
 internal class ColorAnimatedNode(
     config: ReadableMap,
     private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
-    private val reactApplicationContext: ReactApplicationContext
+    private val reactApplicationContext: ReactApplicationContext,
 ) : AnimatedNode(), AnimatedNodeWithUpdateableConfig {
   private var rNodeId = 0
   private var gNodeId = 0

@@ -43,7 +43,7 @@ internal data class BorderRadiusStyle(
     var startStart: LengthPercentage? = null,
     var startEnd: LengthPercentage? = null,
     var endStart: LengthPercentage? = null,
-    var endEnd: LengthPercentage? = null
+    var endEnd: LengthPercentage? = null,
 ) {
   constructor(properties: List<Pair<BorderRadiusProp, LengthPercentage>>) : this() {
     properties.forEach { (k, v) -> set(k, v) }
@@ -190,7 +190,7 @@ internal data class BorderRadiusStyle(
       bottomLeft: CornerRadii,
       bottomRight: CornerRadii,
       width: Float,
-      height: Float
+      height: Float,
   ): ComputedBorderRadius {
     val leftEdgeRadii = topLeft.vertical + bottomLeft.vertical
     val topEdgeRadii = topLeft.horizontal + topRight.horizontal
@@ -206,18 +206,23 @@ internal data class BorderRadiusStyle(
         topLeft =
             CornerRadii(
                 topLeft.horizontal * minOf(topEdgeRadiiScale, leftEdgeRadiiScale),
-                topLeft.vertical * minOf(topEdgeRadiiScale, leftEdgeRadiiScale)),
+                topLeft.vertical * minOf(topEdgeRadiiScale, leftEdgeRadiiScale),
+            ),
         topRight =
             CornerRadii(
                 topRight.horizontal * minOf(rightEdgeRadiiScale, topEdgeRadiiScale),
-                topRight.vertical * minOf(rightEdgeRadiiScale, topEdgeRadiiScale)),
+                topRight.vertical * minOf(rightEdgeRadiiScale, topEdgeRadiiScale),
+            ),
         bottomLeft =
             CornerRadii(
                 bottomLeft.horizontal * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale),
-                bottomLeft.vertical * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale)),
+                bottomLeft.vertical * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale),
+            ),
         bottomRight =
             CornerRadii(
                 bottomRight.horizontal * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale),
-                bottomRight.vertical * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale)))
+                bottomRight.vertical * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale),
+            ),
+    )
   }
 }

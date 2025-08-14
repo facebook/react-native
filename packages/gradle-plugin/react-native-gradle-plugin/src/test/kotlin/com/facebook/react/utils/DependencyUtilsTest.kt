@@ -106,7 +106,9 @@ class DependencyUtilsTest {
 
     val project = createProject()
     project.rootProject.extensions.extraProperties.set(
-        "exclusiveEnterpriseRepository", repositoryURI.toString())
+        "exclusiveEnterpriseRepository",
+        repositoryURI.toString(),
+    )
 
     configureRepositories(project)
 
@@ -503,7 +505,9 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_withScopedProperty() {
     val project = createProject(tempFolder.root)
     project.extensions.extraProperties.set(
-        "react.exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+        "react.exclusiveEnterpriseRepository",
+        "https://maven.myfabolousorganization.it",
+    )
     assertThat(project.exclusiveEnterpriseRepository())
         .isEqualTo("https://maven.myfabolousorganization.it")
   }
@@ -512,7 +516,9 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_withUnscopedProperty() {
     val project = createProject(tempFolder.root)
     project.extensions.extraProperties.set(
-        "exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+        "exclusiveEnterpriseRepository",
+        "https://maven.myfabolousorganization.it",
+    )
     assertThat(project.exclusiveEnterpriseRepository())
         .isEqualTo("https://maven.myfabolousorganization.it")
   }

@@ -227,7 +227,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
             ReactAccessibilityDelegate(
                 this@ReactEditText,
                 this@ReactEditText.isFocusable,
-                this@ReactEditText.importantForAccessibility) {
+                this@ReactEditText.importantForAccessibility,
+            ) {
           override fun performAccessibilityAction(host: View, action: Int, args: Bundle?): Boolean {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
               val length = checkNotNull(text).length
@@ -344,7 +345,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     if (inputConnection != null && onKeyPress) {
       inputConnection =
           ReactEditTextInputConnectionWrapper(
-              inputConnection, reactContext, this, checkNotNull(eventDispatcher))
+              inputConnection,
+              reactContext,
+              this,
+              checkNotNull(eventDispatcher),
+          )
     }
 
     if (isMultiline && (shouldBlurOnReturn() || shouldSubmitOnReturn())) {
@@ -645,7 +650,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     if (DEBUG_MODE) {
       FLog.e(
           TAG,
-          ("maybeSetText[" + id + "]: current text: " + text + " update: " + reactTextUpdate.text))
+          ("maybeSetText[" + id + "]: current text: " + text + " update: " + reactTextUpdate.text),
+      )
     }
 
     // The current text gets replaced with the text received from JS. However, the spans on the
@@ -762,7 +768,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private fun <T> stripSpansOfKind(
       sb: SpannableStringBuilder,
       clazz: Class<T>,
-      shouldStrip: Predicate<T>
+      shouldStrip: Predicate<T>,
   ) {
     val spans = sb.getSpans(0, sb.length, clazz)
 
@@ -785,15 +791,27 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     spanFlags = spanFlags or Spannable.SPAN_PRIORITY
 
     workingText.setSpan(
-        ReactAbsoluteSizeSpan(textAttributes.effectiveFontSize), 0, workingText.length, spanFlags)
+        ReactAbsoluteSizeSpan(textAttributes.effectiveFontSize),
+        0,
+        workingText.length,
+        spanFlags,
+    )
 
     workingText.setSpan(
-        ReactForegroundColorSpan(currentTextColor), 0, workingText.length, spanFlags)
+        ReactForegroundColorSpan(currentTextColor),
+        0,
+        workingText.length,
+        spanFlags,
+    )
 
     val backgroundColor = getBackgroundColor(this)
     if (backgroundColor != null && backgroundColor != Color.TRANSPARENT) {
       workingText.setSpan(
-          ReactBackgroundColorSpan(backgroundColor), 0, workingText.length, spanFlags)
+          ReactBackgroundColorSpan(backgroundColor),
+          0,
+          workingText.length,
+          spanFlags,
+      )
     }
 
     if ((paintFlags and Paint.STRIKE_THRU_TEXT_FLAG) != 0) {
@@ -807,7 +825,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
     if (!effectiveLetterSpacing.isNaN()) {
       workingText.setSpan(
-          CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length, spanFlags)
+          CustomLetterSpacingSpan(effectiveLetterSpacing),
+          0,
+          workingText.length,
+          spanFlags,
+      )
     }
 
     if (fontStyle != ReactConstants.UNSET ||
@@ -818,7 +840,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
           CustomStyleSpan(fontStyle, fontWeight, fontFeatureSettings, fontFamily, context.assets),
           0,
           workingText.length,
-          spanFlags)
+          spanFlags,
+      )
     }
 
     val lineHeight = textAttributes.effectiveLineHeight
@@ -1140,7 +1163,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         ReactTextPaintHolderSpan(TextPaint(paint)),
         0,
         sb.length,
-        Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE,
+    )
     TextLayoutManager.setCachedSpannableForTag(id, sb)
   }
 
@@ -1258,7 +1282,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         oldText: Editable,
         newText: SpannableStringBuilder,
         start: Int,
-        end: Int
+        end: Int,
     ): Boolean {
       if (start > newText.length || end > newText.length) {
         return false

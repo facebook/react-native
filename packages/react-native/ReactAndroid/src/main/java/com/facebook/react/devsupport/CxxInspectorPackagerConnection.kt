@@ -25,7 +25,7 @@ import okhttp3.WebSocketListener
 internal class CxxInspectorPackagerConnection(
     url: String,
     deviceName: String,
-    packageName: String
+    packageName: String,
 ) : IInspectorPackagerConnection {
   @DoNotStrip private val mHybridData: HybridData
 
@@ -104,7 +104,8 @@ internal class CxxInspectorPackagerConnection(
                         // WebSocketListener.onFailure
                         delegate.close()
                       },
-                      delayMs = 0)
+                      delayMs = 0,
+                  )
                 }
 
                 override fun onMessage(webSocket: WebSocket, text: String) {
@@ -123,9 +124,11 @@ internal class CxxInspectorPackagerConnection(
                         // WebSocketListener.onClosed
                         delegate.close()
                       },
-                      delayMs = 0)
+                      delayMs = 0,
+                  )
                 }
-              })
+              },
+          )
       return object : IWebSocket {
         override fun send(message: String) {
           webSocket.send(message)
@@ -153,7 +156,7 @@ internal class CxxInspectorPackagerConnection(
         url: String,
         deviceName: String,
         packageName: String,
-        delegate: DelegateImpl
+        delegate: DelegateImpl,
     ): HybridData
   }
 }

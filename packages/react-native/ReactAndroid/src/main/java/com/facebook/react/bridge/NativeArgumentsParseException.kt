@@ -15,7 +15,8 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
   constructor(detailMessage: String) : super(detailMessage)
@@ -25,7 +26,9 @@ internal class NativeArgumentsParseException : JSApplicationCausedNativeExceptio
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "NativeArgumentsParseException", logLevel = LegacyArchitectureLogLevel.ERROR)
+          "NativeArgumentsParseException",
+          logLevel = LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

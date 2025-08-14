@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
  */
 internal class PropsAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private var connectedViewTag = -1
   private val propNodeMapping: MutableMap<String, Int>

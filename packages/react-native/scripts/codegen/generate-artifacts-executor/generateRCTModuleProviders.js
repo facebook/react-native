@@ -115,12 +115,11 @@ function generateRCTModuleProviders(
     .join('\n');
 
   // Generate implementation file
-  let templateMM = fs
-  .readFileSync(MODULE_PROVIDERS_MM_TEMPLATE_PATH, 'utf8');
+  let templateMM = fs.readFileSync(MODULE_PROVIDERS_MM_TEMPLATE_PATH, 'utf8');
 
   templateMM = templateMM.replace(/{moduleNames}/, moduleNames);
-
   templateMM = templateMM.replace(/{moduleMapping}/, modulesMapping);
+
   const finalPathMM = path.join(outputDir, 'RCTModuleProviders.mm');
   fs.writeFileSync(finalPathMM, templateMM);
   codegenLog(`Generated artifact: ${finalPathMM}`);

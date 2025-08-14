@@ -127,8 +127,10 @@ public abstract class ReactTextAnchorViewManager<
               ViewProps.BORDER_TOP_LEFT_RADIUS,
               ViewProps.BORDER_TOP_RIGHT_RADIUS,
               ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
-              ViewProps.BORDER_BOTTOM_LEFT_RADIUS],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+          ],
+      defaultFloat = Float.NaN,
+  )
   internal fun setBorderRadius(view: ReactTextView, index: Int, borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) {
@@ -154,8 +156,10 @@ public abstract class ReactTextAnchorViewManager<
               ViewProps.BORDER_TOP_WIDTH,
               ViewProps.BORDER_BOTTOM_WIDTH,
               ViewProps.BORDER_START_WIDTH,
-              ViewProps.BORDER_END_WIDTH],
-      defaultFloat = Float.NaN)
+              ViewProps.BORDER_END_WIDTH,
+          ],
+      defaultFloat = Float.NaN,
+  )
   internal fun setBorderWidth(view: ReactTextView, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -167,8 +171,10 @@ public abstract class ReactTextAnchorViewManager<
               "borderLeftColor",
               "borderRightColor",
               "borderTopColor",
-              "borderBottomColor"],
-      customType = "Color")
+              "borderBottomColor",
+          ],
+      customType = "Color",
+  )
   internal fun setBorderColor(view: ReactTextView, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.values()[index], color)
   }

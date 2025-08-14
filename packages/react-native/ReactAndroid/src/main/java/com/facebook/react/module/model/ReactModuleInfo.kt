@@ -19,7 +19,7 @@ public class ReactModuleInfo(
     @get:JvmName("canOverrideExistingModule") public val canOverrideExistingModule: Boolean,
     @get:JvmName("needsEagerInit") public val needsEagerInit: Boolean,
     public val isCxxModule: Boolean,
-    public val isTurboModule: Boolean
+    public val isTurboModule: Boolean,
 ) {
 
   @Deprecated(
@@ -28,7 +28,8 @@ public class ReactModuleInfo(
           ReplaceWith(
               expression =
                   "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)"),
-      level = DeprecationLevel.WARNING)
+      level = DeprecationLevel.WARNING,
+  )
   public constructor(
       name: String,
       className: String,
@@ -36,7 +37,7 @@ public class ReactModuleInfo(
       needsEagerInit: Boolean,
       @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
       isCxxModule: Boolean,
-      isTurboModule: Boolean
+      isTurboModule: Boolean,
   ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)
 
   public companion object {

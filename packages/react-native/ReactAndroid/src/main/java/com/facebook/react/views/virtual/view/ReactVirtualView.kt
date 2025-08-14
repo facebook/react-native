@@ -127,7 +127,7 @@ public class ReactVirtualView(context: Context) :
       oldLeft: Int,
       oldTop: Int,
       oldRight: Int,
-      oldBottom: Int
+      oldBottom: Int,
   ) {
     offsetChanged = offsetChanged || oldLeft != left || oldTop != top
     dispatchOnModeChangeIfNeeded(true)
@@ -141,7 +141,7 @@ public class ReactVirtualView(context: Context) :
       scrollView: ViewGroup?,
       scrollEventType: ScrollEventType?,
       xVelocity: Float,
-      yVelocity: Float
+      yVelocity: Float,
   ) {
     if (scrollView == parentScrollView) {
       dispatchOnModeChangeIfNeeded(checkRectChange = false)
@@ -219,7 +219,8 @@ public class ReactVirtualView(context: Context) :
       if (prerenderRatio > 0.0) {
         thresholdRect.inset(
             (-thresholdRect.width() * prerenderRatio).toInt(),
-            (-thresholdRect.height() * prerenderRatio).toInt())
+            (-thresholdRect.height() * prerenderRatio).toInt(),
+        )
         prerender = rectsOverlap(targetRect, thresholdRect)
       }
       if (prerender) {
@@ -271,7 +272,8 @@ public class ReactVirtualView(context: Context) :
     debugLog("Mode change") { "$oldMode->$newMode" }
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT,
-        "VirtualView::mode change $oldMode -> $newMode, nativeID=$nativeId")
+        "VirtualView::mode change $oldMode -> $newMode, nativeID=$nativeId",
+    )
     when (newMode) {
       VirtualViewMode.Visible -> {
         if (renderState == VirtualViewRenderState.Unknown) {

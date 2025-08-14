@@ -22,14 +22,15 @@ public class ReactScrollViewCommandHelper {
         hashMapOf(
             "scrollTo" to COMMAND_SCROLL_TO,
             "scrollToEnd" to COMMAND_SCROLL_TO_END,
-            "flashScrollIndicators" to COMMAND_FLASH_SCROLL_INDICATORS)
+            "flashScrollIndicators" to COMMAND_FLASH_SCROLL_INDICATORS,
+        )
 
     @JvmStatic
     public fun <T> receiveCommand(
         viewManager: ScrollCommandHandler<T>,
         scrollView: T,
         commandType: Int,
-        args: ReadableArray?
+        args: ReadableArray?,
     ) {
       checkNotNull(viewManager)
       checkNotNull(scrollView)
@@ -48,7 +49,7 @@ public class ReactScrollViewCommandHelper {
         viewManager: ScrollCommandHandler<T>,
         scrollView: T,
         commandType: String,
-        args: ReadableArray?
+        args: ReadableArray?,
     ) {
       checkNotNull(viewManager)
       checkNotNull(scrollView)
@@ -65,7 +66,7 @@ public class ReactScrollViewCommandHelper {
     private fun <T> scrollTo(
         viewManager: ScrollCommandHandler<T>,
         scrollView: T,
-        args: ReadableArray
+        args: ReadableArray,
     ) {
       val destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)))
       val destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)))
@@ -76,7 +77,7 @@ public class ReactScrollViewCommandHelper {
     private fun <T> scrollToEnd(
         viewManager: ScrollCommandHandler<T>,
         scrollView: T,
-        args: ReadableArray
+        args: ReadableArray,
     ) {
       val animated = args.getBoolean(0)
       viewManager.scrollToEnd(scrollView, ScrollToEndCommandData(animated))
@@ -94,7 +95,7 @@ public class ReactScrollViewCommandHelper {
   public class ScrollToCommandData(
       @JvmField public val mDestX: Int,
       @JvmField public val mDestY: Int,
-      @JvmField public val mAnimated: Boolean
+      @JvmField public val mAnimated: Boolean,
   )
 
   public class ScrollToEndCommandData(@JvmField public val mAnimated: Boolean)

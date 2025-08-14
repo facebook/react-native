@@ -22,14 +22,20 @@ open class ShadowNativeMap {
   @Deprecated(
       "Use ShadowReadableNativeMap",
       ReplaceWith(
-          "ShadowReadableNativeMap", "com.facebook.testutils.shadows.ShadowReadableNativeMap"))
+          "ShadowReadableNativeMap",
+          "com.facebook.testutils.shadows.ShadowReadableNativeMap",
+      ),
+  )
   @Implements(ReadableNativeMap::class)
   class Readable : ShadowNativeMap()
 
   @Deprecated(
       "Use ShadowWritableNativeMap",
       ReplaceWith(
-          "ShadowWritableNativeMap", "com.facebook.testutils.shadows.ShadowWritableNativeMap"))
+          "ShadowWritableNativeMap",
+          "com.facebook.testutils.shadows.ShadowWritableNativeMap",
+      ),
+  )
   @Implements(WritableNativeMap::class)
   class Writable : ShadowNativeMap()
 

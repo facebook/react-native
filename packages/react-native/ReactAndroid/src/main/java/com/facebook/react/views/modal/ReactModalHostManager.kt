@@ -120,7 +120,7 @@ internal class ReactModalHostManager :
   override fun updateState(
       view: ReactModalHostView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     view.stateWrapper = stateWrapper
     return null

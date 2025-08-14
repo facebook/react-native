@@ -30,7 +30,8 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
     detectEntryFile(
         entryFile = config.entryFile.orNull?.asFile,
         reactRoot = config.root.get().asFile,
-        envVariableOverride = envVariableOverride)
+        envVariableOverride = envVariableOverride,
+    )
 
 /**
  * Computes the CLI file for React Native. The Algo follows this order:
@@ -42,7 +43,8 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
 internal fun detectedCliFile(config: ReactExtension): File =
     detectCliFile(
         reactNativeRoot = config.root.get().asFile,
-        preconfiguredCliFile = config.cliFile.asFile.orNull)
+        preconfiguredCliFile = config.cliFile.asFile.orNull,
+    )
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -60,7 +62,7 @@ internal fun detectedHermesCommand(config: ReactExtension): String =
 private fun detectEntryFile(
     entryFile: File?,
     reactRoot: File,
-    envVariableOverride: String? = null
+    envVariableOverride: String? = null,
 ): File =
     when {
       envVariableOverride != null -> File(reactRoot, envVariableOverride)
@@ -83,7 +85,8 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
           .exec(
               arrayOf("node", "--print", "require.resolve('react-native/cli');"),
               emptyArray(),
-              reactNativeRoot)
+              reactNativeRoot,
+          )
 
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
@@ -221,7 +224,7 @@ internal fun findPackageJsonFile(project: Project, rootProperty: DirectoryProper
  */
 internal fun readPackageJsonFile(
     project: Project,
-    rootProperty: DirectoryProperty
+    rootProperty: DirectoryProperty,
 ): ModelPackageJson? {
   val packageJson = findPackageJsonFile(project, rootProperty)
   return packageJson?.let { JsonUtils.fromPackageJson(it) }

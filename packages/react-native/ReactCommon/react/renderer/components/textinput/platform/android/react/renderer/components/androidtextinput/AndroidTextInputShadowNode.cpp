@@ -18,6 +18,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
 void AndroidTextInputShadowNode::setTextLayoutManager(

@@ -175,7 +175,9 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
         wakeLock =
             powerManager
                 .newWakeLock(
-                    PowerManager.PARTIAL_WAKE_LOCK, HeadlessJsTaskService::class.java.canonicalName)
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    HeadlessJsTaskService::class.java.canonicalName,
+                )
                 .also { lock ->
                   lock.setReferenceCounted(false)
                   lock.acquire()

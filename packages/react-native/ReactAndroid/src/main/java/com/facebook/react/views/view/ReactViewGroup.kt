@@ -106,7 +106,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
         oldLeft: Int,
         oldTop: Int,
         oldRight: Int,
-        oldBottom: Int
+        oldBottom: Int,
     ) {
       if (parent?.removeClippedSubviews == true) {
         parent?.updateSubviewClipStatus(v)
@@ -227,7 +227,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
     assertExplicitMeasureSpec(widthMeasureSpec, heightMeasureSpec)
 
     setMeasuredDimension(
-        MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec))
+        MeasureSpec.getSize(widthMeasureSpec),
+        MeasureSpec.getSize(heightMeasureSpec),
+    )
   }
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -326,7 +328,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   @Deprecated(
       message = "setBorderRadius(Float) is deprecated and will be removed in the future.",
-      replaceWith = ReplaceWith("setBorderRadius(Float,LengthPercentage)"))
+      replaceWith = ReplaceWith("setBorderRadius(Float,LengthPercentage)"),
+  )
   public fun setBorderRadius(borderRadius: Float) {
     val radius =
         if (borderRadius.isNaN()) null
@@ -336,7 +339,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
   @Deprecated(
       message = "setBorderRadius(Float) is deprecated and will be removed in the future.",
-      replaceWith = ReplaceWith("setBorderRadius(Float,LengthPercentage)"))
+      replaceWith = ReplaceWith("setBorderRadius(Float,LengthPercentage)"),
+  )
   public fun setBorderRadius(borderRadius: Float, position: Int) {
     val radius =
         if (borderRadius.isNaN()) null
@@ -445,7 +449,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
 
         throw IllegalStateException(
             "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount realClippedSoFar=$realClippedSoFar uniqueViewsCount=${uniqueViews.size} excludedViews=${excludedViewsSet?.size ?: 0}",
-            ex)
+            ex,
+        )
       }
       if (isViewClipped(childArray[i], i)) {
         clippedSoFar++
@@ -462,7 +467,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
       clippingRect: Rect,
       idx: Int,
       clippedSoFar: Int,
-      excludedViewsSet: Set<Int>? = null
+      excludedViewsSet: Set<Int>? = null,
   ) {
     assertOnUiThread()
 
@@ -602,7 +607,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
       if (expectedTag != tag) {
         logSoftException(
             ReactSoftExceptionLogger.Categories.RVG_ON_VIEW_REMOVED,
-            ReactNoCrashSoftException("View clipping tag mismatch: tag=$tag expected=$expectedTag"))
+            ReactNoCrashSoftException("View clipping tag mismatch: tag=$tag expected=$expectedTag"),
+        )
       }
     }
     if (_removeClippedSubviews) {
@@ -686,7 +692,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
                 logSoftException(
                     ReactSoftExceptionLogger.Categories.CLIPPING_PROHIBITED_VIEW,
                     ReactNoCrashSoftException(
-                        "Child view has been added to Parent view in which it is clipped and not visible. This is not legal for this particular child view. Child: [${child.id}] $child Parent: [$id] ${toString()}"))
+                        "Child view has been added to Parent view in which it is clipped and not visible. This is not legal for this particular child view. Child: [${child.id}] $child Parent: [$id] ${toString()}"),
+                )
               }
             }
           })
@@ -740,7 +747,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
       logSoftException(
           ReactSoftExceptionLogger.Categories.RVG_IS_VIEW_CLIPPED,
           ReactNoCrashSoftException(
-              "View missing clipping tag: index=$index parentNull=${parent == null} parentThis=${parent === this} transitioning=$transitioning"))
+              "View missing clipping tag: index=$index parentNull=${parent == null} parentThis=${parent === this} transitioning=$transitioning"),
+      )
     }
     // fallback - should be transitioning or have no parent if the view was removed
     if (parent == null || transitioning) {
@@ -857,7 +865,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
           overflowInset.top.toFloat(),
           (width + -overflowInset.right).toFloat(),
           (height + -overflowInset.bottom).toFloat(),
-          null)
+          null,
+      )
       super.draw(canvas)
       canvas.restore()
     } else {
@@ -893,7 +902,8 @@ public open class ReactViewGroup public constructor(context: Context?) :
             overflowInset.top.toFloat(),
             (width + -overflowInset.right).toFloat(),
             (height + -overflowInset.bottom).toFloat(),
-            p)
+            p,
+        )
       }
     }
 

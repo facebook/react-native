@@ -61,13 +61,22 @@ internal object CanvasUtil {
               Class::class
                   .java
                   .getDeclaredMethod(
-                      "getDeclaredMethod", String::class.java, Array<Any>::class.java)
+                      "getDeclaredMethod",
+                      String::class.java,
+                      Array<Any>::class.java,
+                  )
           reorderBarrierMethod =
               getDeclaredMethod.invoke(
-                  Canvas::class.java, "insertReorderBarrier", arrayOfNulls<Class<*>>(0)) as Method
+                  Canvas::class.java,
+                  "insertReorderBarrier",
+                  arrayOfNulls<Class<*>>(0),
+              ) as Method
           inorderBarrierMethod =
               getDeclaredMethod.invoke(
-                  Canvas::class.java, "insertInorderBarrier", arrayOfNulls<Class<*>>(0)) as Method
+                  Canvas::class.java,
+                  "insertInorderBarrier",
+                  arrayOfNulls<Class<*>>(0),
+              ) as Method
         } else {
           reorderBarrierMethod = Canvas::class.java.getDeclaredMethod("insertReorderBarrier")
           inorderBarrierMethod = Canvas::class.java.getDeclaredMethod("insertInorderBarrier")

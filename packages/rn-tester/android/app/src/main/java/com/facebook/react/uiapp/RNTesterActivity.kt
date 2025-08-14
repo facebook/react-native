@@ -100,7 +100,7 @@ internal class RNTesterActivity : ReactActivity() {
       prefix: String,
       fd: FileDescriptor?,
       writer: PrintWriter,
-      args: Array<String>?
+      args: Array<String>?,
   ) {
     FBRNTesterEndToEndHelper.maybeDump(prefix, writer, args)
   }

@@ -52,7 +52,9 @@ protected constructor(
     init {
       ReactNativeJNISoLoader.staticInit()
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING)
+          "CxxModuleWrapperBase",
+          LegacyArchitectureLogLevel.WARNING,
+      )
     }
   }
 }

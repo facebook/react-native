@@ -21,7 +21,8 @@ import java.util.concurrent.Executor
 @LegacyArchitecture
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING,
+)
 internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : AutoCloseable {
 
   @DoNotStripAny
@@ -49,7 +50,8 @@ internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : A
               UiThreadUtil.runOnUiThread(command)
             }
           },
-          delegate)
+          delegate,
+      )
 
   private external fun initHybrid(executor: Executor, delegate: TargetDelegate): HybridData
 
@@ -67,7 +69,9 @@ internal class ReactInstanceManagerInspectorTarget(delegate: TargetDelegate) : A
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "ReactInstanceManagerInspectorTarget", LegacyArchitectureLogLevel.WARNING)
+          "ReactInstanceManagerInspectorTarget",
+          LegacyArchitectureLogLevel.WARNING,
+      )
       ReactNativeJNISoLoader.staticInit()
     }
   }

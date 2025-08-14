@@ -33,7 +33,7 @@ constructor(
     public val data: WritableMap,
     public val timeout: Long = 0,
     public val isAllowedInForeground: Boolean = false,
-    public val retryPolicy: HeadlessJsTaskRetryPolicy? = NoRetryPolicy.INSTANCE
+    public val retryPolicy: HeadlessJsTaskRetryPolicy? = NoRetryPolicy.INSTANCE,
 ) {
 
   /**
@@ -47,5 +47,6 @@ constructor(
       source.data.copy(),
       source.timeout,
       source.isAllowedInForeground,
-      source.retryPolicy?.copy())
+      source.retryPolicy?.copy(),
+  )
 }

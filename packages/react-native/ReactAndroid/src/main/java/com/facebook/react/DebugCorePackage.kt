@@ -35,7 +35,7 @@ public class DebugCorePackage public constructor() :
 
   public override fun getModule(
       name: String,
-      reactContext: ReactApplicationContext
+      reactContext: ReactApplicationContext,
   ): NativeModule? = null
 
   public override fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> =
@@ -46,7 +46,7 @@ public class DebugCorePackage public constructor() :
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
-      viewManagerName: String
+      viewManagerName: String,
   ): ViewManager<*, *>? =
       viewManagersMap.getOrDefault(viewManagerName, null)?.provider?.get() as? ViewManager<*, *>
 }

@@ -114,7 +114,7 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
   void enqueueNativeEvent(
       jsi::Runtime& runtime,
       std::shared_ptr<const ShadowNode> shadowNode,
-      std::string type,
+      const std::string& type,
       const std::optional<folly::dynamic>& payload,
       std::optional<RawEvent::Category> category,
       std::optional<bool> isUnique);
@@ -158,7 +158,7 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void stopJSSamplingProfilerAndSaveToFile(
       jsi::Runtime& runtime,
-      std::string filePath);
+      const std::string& filePath);
 
   void setImageResponse(
       jsi::Runtime& rt,

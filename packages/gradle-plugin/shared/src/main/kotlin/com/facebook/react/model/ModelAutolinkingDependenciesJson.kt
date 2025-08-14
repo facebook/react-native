@@ -10,7 +10,7 @@ package com.facebook.react.model
 data class ModelAutolinkingDependenciesJson(
     val root: String,
     val name: String,
-    val platforms: ModelAutolinkingDependenciesPlatformJson?
+    val platforms: ModelAutolinkingDependenciesPlatformJson?,
 ) {
 
   val nameCleansed: String

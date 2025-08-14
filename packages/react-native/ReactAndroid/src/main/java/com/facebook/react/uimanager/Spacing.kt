@@ -180,7 +180,8 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
             256, /*ALL*/
             512, /*BLOCK*/
             1024, /*BLOCK_END*/
-            2048)
+            2048,
+        )
 
     private fun newFullSpacingArray(): FloatArray {
       return floatArrayOf(
@@ -195,7 +196,8 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
           YogaConstants.UNDEFINED,
           YogaConstants.UNDEFINED,
           YogaConstants.UNDEFINED,
-          YogaConstants.UNDEFINED)
+          YogaConstants.UNDEFINED,
+      )
     }
   }
 }

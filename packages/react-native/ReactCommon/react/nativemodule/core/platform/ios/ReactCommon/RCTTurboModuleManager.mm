@@ -475,7 +475,7 @@ typedef struct {
 
 #pragma mark - Private Methods
 
-- (void)discoverModules_{
+- (void)_discoverModules{
     NSArray<NSString *> *moduleNames = [_delegate getModuleNames];
     for (NSString *moduleName in moduleNames) {
       [self _getOrCreateModuleHolder:[moduleName UTF8String]];
