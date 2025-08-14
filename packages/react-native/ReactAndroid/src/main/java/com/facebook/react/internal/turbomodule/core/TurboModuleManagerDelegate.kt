@@ -36,9 +36,9 @@ public abstract class TurboModuleManagerDelegate {
    */
   public abstract fun getModule(moduleName: String): TurboModule?
 
-  public abstract fun <TInterface> getModuleNamesConformingToInterface(
+  public abstract fun <TInterface> getModulesConformingToInterface(
       clazz: Class<TInterface>
-  ): List<String>
+  ): List<TurboModule?>
 
   public abstract fun unstable_isModuleRegistered(moduleName: String): Boolean
 

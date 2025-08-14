@@ -39,7 +39,7 @@ public class ReactModuleInfo(
       needsEagerInit,
       isCxxModule,
       isTurboModule,
-      ReactModuleInfo::class.java)
+      ReactModuleInfo::class.java /* placeholder */)
 
   @Deprecated("Use constructor that doesn't take `hasConstants` parameter.")
   public constructor(
@@ -57,7 +57,7 @@ public class ReactModuleInfo(
       needsEagerInit,
       isCxxModule,
       isTurboModule,
-      ReactModuleInfo::class.java)
+      ReactModuleInfo::class.java /* placeholder */)
 
   public companion object {
     /**

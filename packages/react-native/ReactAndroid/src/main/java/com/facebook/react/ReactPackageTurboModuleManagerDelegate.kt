@@ -153,20 +153,21 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     return resolvedModule as TurboModule
   }
 
-  override fun <TInterface> getModuleNamesConformingToInterface(
+  override fun <TInterface> getModulesConformingToInterface(
       clazz: Class<TInterface>
-  ): List<String> {
-    val moduleNames = mutableListOf<String>()
+  ): List<TurboModule?> {
+    val modules = mutableListOf<TurboModule?>()
 
     for (moduleProvider in moduleProviders) {
       val moduleInfos = packageModuleInfos[moduleProvider]?.values ?: continue
       for (moduleInfo in moduleInfos) {
-        if (clazz.isInstance(moduleInfo.moduleClass)) {
-          moduleNames.add(moduleInfo.name)
+        if (clazz.isInstance(moduleInfo.moduleClass) && moduleInfo.isTurboModule) {
+          modules.add(moduleProvider.getModule(moduleInfo.name) as TurboModule)
         }
       }
     }
-    return moduleNames
+
+    return modules
   }
 
   override fun unstable_isModuleRegistered(moduleName: String): Boolean {
