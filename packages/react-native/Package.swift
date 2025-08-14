@@ -9,7 +9,7 @@
 import PackageDescription
 import Foundation
 
-let BUILD_FROM_SOURCE = false
+let BUILD_FROM_SOURCE = true
 
 /**
  This is the `Package.swift` file that allows to build React Native core using Swift PM.
