@@ -211,7 +211,7 @@ public class TurboModuleManager(
 
   public fun <TInterface> getModulesConformingToInterface(
       clazz: Class<TInterface>
-  ): List<NativeModule?> {
+  ): List<TurboModule?> {
     return delegate?.getModulesConformingToInterface(clazz) ?: emptyList()
   }
 
