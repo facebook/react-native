@@ -10,7 +10,7 @@
 
 import setUpDefaultReactNativeEnvironment from 'react-native/src/private/setup/setUpDefaultReactNativeEnvironment';
 
-describe('setUpReactNativeEnvironment', () => {
+describe('setUpReactNativeEnvironment (components side-effects)', () => {
   it('should not load components as a side effect', () => {
     // We set up has not been done yet.
     expect(globalThis.self).toBeUndefined();
