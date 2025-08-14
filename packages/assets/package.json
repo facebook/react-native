@@ -1,6 +1,6 @@
 {
   "name": "@react-native/assets-registry",
-  "version": "0.79.5",
+  "version": "0.79.6",
   "description": "Asset support code for React Native.",
   "license": "MIT",
   "repository": {
