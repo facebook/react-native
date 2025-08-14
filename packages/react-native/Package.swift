@@ -9,7 +9,7 @@
 import PackageDescription
 import Foundation
 
-let BUILD_FROM_SOURCE = false
+let BUILD_FROM_SOURCE = true
 
 /**
  This is the `Package.swift` file that allows to build React Native core using Swift PM.
@@ -768,7 +768,7 @@ extension String {
   static let reactCoreRCTWebsocket = "React/RCTWebSocket"
   static let reactFabric = "React-Fabric"
   static let reactRCTFabric = "React-RCTFabric"
-  
+
   static let reactFabricImage = "React-FabricImage"
   static let reactFabricInputAccessory = "React-FabricInputAccessory"
   static let reactFabricModal = "React-FabricModal"
