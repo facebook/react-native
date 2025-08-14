@@ -996,6 +996,24 @@ typedef struct {
   return module;
 }
 
+- (id)getModulesConformingToProtocol:(Protocol *)protocol{
+  NSMutableArray *modules = [NSMutableArray new];
+
+  for (auto &pair : _moduleHolders) {
+    auto * moduleName = pair.first.c_str();
+    Class moduleClass = [self _getModuleClassFromName:moduleName];
+
+    if ([moduleClass conformsToProtocol:protocol]) {
+      id module = [self moduleForName:moduleName];
+      if (module) {
+        [modules addObject:module];
+      }
+    }
+  }
+
+  return modules;
+}
+
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
   std::unique_lock<std::mutex> guard(_moduleHoldersMutex);
