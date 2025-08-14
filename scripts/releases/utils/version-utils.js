@@ -40,7 +40,7 @@ function parseVersion(
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
 
-  const parsedVersion: Version = {
+  const parsedVersion /*: Version */ = {
     version,
     major,
     minor,
