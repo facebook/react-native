@@ -265,16 +265,9 @@ typedef struct {
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:nil];
                                                
-    [self discoverModules_];
+    [self _discoverModules];
   }
   return self;
-}
-
-- (void)discoverModules_{
-    NSArray<NSString *> *moduleNames = [_delegate getModuleNames];
-    for (NSString *moduleName in moduleNames) {
-      [self _getOrCreateModuleHolder:[moduleName UTF8String]];
-    }
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -481,6 +474,13 @@ typedef struct {
 }
 
 #pragma mark - Private Methods
+
+- (void)discoverModules_{
+    NSArray<NSString *> *moduleNames = [_delegate getModuleNames];
+    for (NSString *moduleName in moduleNames) {
+      [self _getOrCreateModuleHolder:[moduleName UTF8String]];
+    }
+}
 
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
