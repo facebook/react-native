@@ -9,10 +9,66 @@
  */
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
+import type {FlatListProps} from 'react-native/Libraries/Lists/FlatList';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {FlatList, Text} from 'react-native';
+
+function testPropPropagatedToMountingLayer<TValue>({
+  propName,
+  value,
+  defaultValue,
+  renderChildrenForValue,
+}: $ReadOnly<{
+  propName: string,
+  value: TValue,
+  defaultValue: TValue,
+  renderChildrenForValue?: () => React.Node,
+}>) {
+  describe(propName, () => {
+    it('is propagated to the mounting layer', () => {
+      const root = Fantom.createRoot();
+      const props: FlatListProps<$ReadOnly<{}>> = {
+        // $FlowFixMe[incompatible-type]
+        [propName]: value,
+      };
+      Fantom.runTask(() => {
+        root.render(<FlatList data={null} {...props} />);
+      });
+
+      expect(root.getRenderedOutput({props: [propName]}).toJSX()).toEqual(
+        <rn-scrollView
+          {...{
+            [propName]: JSON.stringify(value),
+          }}>
+          {renderChildrenForValue != null ? (
+            renderChildrenForValue()
+          ) : (
+            <rn-view />
+          )}
+        </rn-scrollView>,
+      );
+    });
+
+    it(`default value is ${JSON.stringify(defaultValue) ?? 'null'}`, () => {
+      const root = Fantom.createRoot();
+      const props: FlatListProps<$ReadOnly<{}>> = {
+        // $FlowFixMe[incompatible-type]
+        [propName]: defaultValue,
+      };
+      Fantom.runTask(() => {
+        root.render(<FlatList data={null} {...props} />);
+      });
+
+      expect(root.getRenderedOutput({props: [propName]}).toJSX()).toEqual(
+        <rn-scrollView>
+          <rn-view />
+        </rn-scrollView>,
+      );
+    });
+  });
+}
 
 describe('<FlatList>', () => {
   describe('props', () => {
@@ -88,61 +144,47 @@ describe('<FlatList>', () => {
   });
 
   describe('props inherited from ScrollView', () => {
-    describe('horizontal', () => {
-      const root = Fantom.createRoot();
-      it('is propagated to the mounting layer', () => {
-        Fantom.runTask(() => {
-          root.render(<FlatList data={null} horizontal={true} />);
-        });
-
-        expect(root.getRenderedOutput({props: ['horizontal']}).toJSX()).toEqual(
-          <rn-scrollView horizontal="true">
-            <rn-androidHorizontalScrollContentView />
-          </rn-scrollView>,
-        );
-      });
-
-      it('default value is false', () => {
-        Fantom.runTask(() => {
-          root.render(<FlatList data={null} horizontal={false} />);
-        });
-
-        expect(root.getRenderedOutput({props: ['horizontal']}).toJSX()).toEqual(
-          <rn-scrollView>
-            <rn-view />
-          </rn-scrollView>,
-        );
-      });
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'disableIntervalMomentum',
+      value: true,
+      defaultValue: false,
     });
 
-    describe('scrollEnabled', () => {
-      const root = Fantom.createRoot();
-      it('default value is true', () => {
-        Fantom.runTask(() => {
-          root.render(<FlatList data={null} scrollEnabled={true} />);
-        });
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'horizontal',
+      value: true,
+      defaultValue: false,
+      renderChildrenForValue: () => <rn-androidHorizontalScrollContentView />,
+    });
 
-        expect(
-          root.getRenderedOutput({props: ['scrollEnabled']}).toJSX(),
-        ).toEqual(
-          <rn-scrollView>
-            <rn-view />
-          </rn-scrollView>,
-        );
-      });
-      it('is propagated to the mounting layer', () => {
-        Fantom.runTask(() => {
-          root.render(<FlatList data={null} scrollEnabled={false} />);
-        });
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'scrollEnabled',
+      value: false,
+      defaultValue: true,
+    });
 
-        expect(
-          root.getRenderedOutput({props: ['scrollEnabled']}).toJSX(),
-        ).toEqual(
-          <rn-scrollView scrollEnabled="false">
-            <rn-view />
-          </rn-scrollView>,
-        );
-      });
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'pagingEnabled',
+      value: true,
+      defaultValue: false,
+    });
+
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'showsVerticalScrollIndicator',
+      value: false,
+      defaultValue: true,
+    });
+
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'snapToStart',
+      value: false,
+      defaultValue: true,
+    });
+
+    testPropPropagatedToMountingLayer<boolean>({
+      propName: 'snapToEnd',
+      value: false,
+      defaultValue: true,
     });
   });
 });
