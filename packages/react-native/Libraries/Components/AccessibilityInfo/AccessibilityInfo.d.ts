@@ -19,7 +19,8 @@ type AccessibilityChangeEventName =
   | 'highTextContrastChanged' // Android-only Event
   | 'darkerSystemColorsChanged' // iOS-only Event
   | 'screenReaderChanged'
-  | 'reduceTransparencyChanged'; // iOS-only Event
+  | 'reduceTransparencyChanged' // iOS-only Event
+  | 'accessibilityServiceChanged'; // Android-only Event
 
 type AccessibilityChangeEvent = boolean;
 
