@@ -346,7 +346,7 @@ export default class Device {
       frontendUserAgent: userAgent,
     });
 
-    const debuggerInfo = {
+    const debuggerInfo: ?DebuggerConnection & DebuggerConnection = {
       socket,
       prependedFilePrefix: false,
       pageId,

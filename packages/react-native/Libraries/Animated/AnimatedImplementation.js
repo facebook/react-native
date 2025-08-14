@@ -374,7 +374,7 @@ const parallelImpl = function (
   const hasEnded: {[number]: boolean} = {};
   const stopTogether = !(config && config.stopTogether === false);
 
-  const result = {
+  const result: CompositeAnimation = {
     start: function (callback?: ?EndCallback, isLooping?: boolean) {
       if (doneCount === animations.length) {
         callback && callback({finished: true});
