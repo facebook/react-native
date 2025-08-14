@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @interface RCTDefaultReactNativeFactoryDelegate : UIResponder <RCTReactNativeFactoryDelegate>
+
+- (nonnull NSArray<NSString *> *)getModuleNames;
+
 @end
 
 NS_ASSUME_NONNULL_END

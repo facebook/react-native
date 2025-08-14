@@ -141,6 +141,10 @@ using namespace facebook::react;
 
 #pragma mark - RCTTurboModuleManagerDelegate
 
+- (nonnull NSArray<NSString *> *)getModuleNames{
+  return [_delegate getModuleNames];
+}
+
 - (Class)getModuleClassFromName:(const char *)name
 {
 #if RN_DISABLE_OSS_PLUGIN_HEADER

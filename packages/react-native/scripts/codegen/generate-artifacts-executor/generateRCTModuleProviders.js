@@ -36,7 +36,7 @@ function generateRCTModuleProviders(
 ) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
-  codegenLog('Generating RCTModulesProvider.h');
+  codegenLog('Generating RCTModuleProviders.h');
   const templateH = fs.readFileSync(MODULE_PROVIDERS_H_TEMPLATE_PATH, 'utf8');
   const finalPathH = path.join(outputDir, 'RCTModuleProviders.h');
   fs.writeFileSync(finalPathH, templateH);
@@ -98,6 +98,13 @@ function generateRCTModuleProviders(
     }
   }
 
+  const moduleNames = Object.keys(modulesInLibraries)
+    .flatMap(library => {
+      const modules = modulesInLibraries[library];
+      return modules.map(({className}) => `@"${className}"`);
+    })
+    .join(',\n');
+
   const modulesMapping = Object.keys(modulesInLibraries)
     .flatMap(library => {
       const modules = modulesInLibraries[library];
@@ -108,9 +115,12 @@ function generateRCTModuleProviders(
     .join('\n');
 
   // Generate implementation file
-  const templateMM = fs
-    .readFileSync(MODULE_PROVIDERS_MM_TEMPLATE_PATH, 'utf8')
-    .replace(/{moduleMapping}/, modulesMapping);
+  let templateMM = fs
+  .readFileSync(MODULE_PROVIDERS_MM_TEMPLATE_PATH, 'utf8');
+
+  templateMM = templateMM.replace(/{moduleNames}/, moduleNames);
+
+  templateMM = templateMM.replace(/{moduleMapping}/, modulesMapping);
   const finalPathMM = path.join(outputDir, 'RCTModuleProviders.mm');
   fs.writeFileSync(finalPathMM, templateMM);
   codegenLog(`Generated artifact: ${finalPathMM}`);

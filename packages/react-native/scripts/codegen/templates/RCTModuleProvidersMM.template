@@ -48,4 +48,10 @@
   return providers;
 }
 
++ (nonnull NSArray<NSString *> *)moduleNames
+{
+  NSArray<NSString *> * moduleNames = @[{moduleNames}];
+  return moduleNames;
+}
+
 @end

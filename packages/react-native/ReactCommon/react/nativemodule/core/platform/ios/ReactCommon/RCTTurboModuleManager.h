@@ -22,6 +22,8 @@
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
+- (nonnull NSArray<NSString *> *)getModuleNames;
+
 /**
  * Given a module name, return its actual class. If nil is returned, basic ObjC class lookup is performed.
  */

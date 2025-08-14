@@ -226,6 +226,10 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 #pragma mark - RCTTurboModuleManagerDelegate
 
+- (NSArray<NSString *> *)getModuleNames{
+  return [_appTMMDelegate getModuleNames];
+}
+
 - (Class)getModuleClassFromName:(const char *)name
 {
   return [_appTMMDelegate getModuleClassFromName:name];

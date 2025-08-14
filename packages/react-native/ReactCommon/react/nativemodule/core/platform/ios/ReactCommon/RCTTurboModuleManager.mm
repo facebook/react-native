@@ -264,8 +264,17 @@ typedef struct {
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:nil];
+                                               
+    [self discoverModules_];
   }
   return self;
+}
+
+- (void)discoverModules_{
+    NSArray<NSString *> *moduleNames = [_delegate getModuleNames];
+    for (NSString *moduleName in moduleNames) {
+      [self _getOrCreateModuleHolder:[moduleName UTF8String]];
+    }
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge

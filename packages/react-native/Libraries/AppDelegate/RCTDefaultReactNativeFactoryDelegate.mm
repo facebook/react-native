@@ -129,6 +129,10 @@
   return nullptr;
 }
 
+- (nonnull NSArray<NSString *> *)getModuleNames{
+   return [dependencyProvider moduleNames];
+}
+
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
