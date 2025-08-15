@@ -11,10 +11,6 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		6EA01F72FAC10D00AECACF94 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0EC7AB76F90EED035707BA4E /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		CD5E3C2F2E3BB44B009D2895 /* React in Frameworks */ = {isa = PBXBuildFile; productRef = CD5E3C2E2E3BB44B009D2895 /* React */; };
-		CD60B7A12E4CEC8100311E25 /* React in Frameworks */ = {isa = PBXBuildFile; productRef = CD60B7A02E4CEC8100311E25 /* React */; };
-		CD60B7A42E4CEC8D00311E25 /* ReactAppDependencyProvider in Frameworks */ = {isa = PBXBuildFile; productRef = CD60B7A32E4CEC8D00311E25 /* ReactAppDependencyProvider */; };
-		CD60B7A62E4CEC8D00311E25 /* ReactCodegen in Frameworks */ = {isa = PBXBuildFile; productRef = CD60B7A52E4CEC8D00311E25 /* ReactCodegen */; };
 		CDA0ED1A2D0B2D810079F561 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA0ED192D0B2D810079F561 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -54,10 +50,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD60B7A62E4CEC8D00311E25 /* ReactCodegen in Frameworks */,
-				CD60B7A12E4CEC8100311E25 /* React in Frameworks */,
-				CD5E3C2F2E3BB44B009D2895 /* React in Frameworks */,
-				CD60B7A42E4CEC8D00311E25 /* ReactAppDependencyProvider in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,10 +189,6 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
-			packageReferences = (
-				CD60B79F2E4CEC8100311E25 /* XCLocalSwiftPackageReference "../../../packages/react-native" */,
-				CD60B7A22E4CEC8D00311E25 /* XCLocalSwiftPackageReference "build/generated/ios" */,
-			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -476,7 +464,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PROJECT_DIR}/../../../packages/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -556,7 +547,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PROJECT_DIR}/../../../packages/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
@@ -595,36 +589,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		CD60B79F2E4CEC8100311E25 /* XCLocalSwiftPackageReference "../../../packages/react-native" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../../../packages/react-native";
-		};
-		CD60B7A22E4CEC8D00311E25 /* XCLocalSwiftPackageReference "build/generated/ios" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = build/generated/ios;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		CD5E3C2E2E3BB44B009D2895 /* React */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = React;
-		};
-		CD60B7A02E4CEC8100311E25 /* React */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = React;
-		};
-		CD60B7A32E4CEC8D00311E25 /* ReactAppDependencyProvider */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ReactAppDependencyProvider;
-		};
-		CD60B7A52E4CEC8D00311E25 /* ReactCodegen */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ReactCodegen;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
