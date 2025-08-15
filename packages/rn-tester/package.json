@@ -55,7 +55,7 @@
         }
       },
       "modulesProvider": {
-        "SampleTurboModule": "SampleTurboModule"
+        "SampleTurboModule": "RCTSampleTurboModule"
       }
     }
   },

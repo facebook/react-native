@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2294f3350aca0f19862f8cfdbe9479b6>>
+ * @generated SignedSource<<7c5701ed1e7ddafa497364e72afbbbe2>>
  */
 
 /**
@@ -317,6 +317,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * Enables creating Module Holders for TurboModules before the JS Runtime is started, iOS only. Android already creates them early.
+   */
+  @JvmStatic
+  public fun iosEarlyTurboModuleDiscovery(): Boolean = accessor.iosEarlyTurboModuleDiscovery()
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

@@ -130,7 +130,10 @@
 }
 
 - (nonnull NSArray<NSString *> *)getModuleNames{
-   return [dependencyProvider moduleNames];
+  if([dependencyProvider respondsToSelector:@selector(moduleNames)]) {
+    return [dependencyProvider moduleNames];
+  }
+  return @[]; 
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

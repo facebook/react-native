@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<07c2f85e56246236c44e30e936cb9a40>>
+ * @generated SignedSource<<18bb6a659df8134d3028640cee2f1fe6>>
  */
 
 /**
@@ -282,6 +282,11 @@ bool NativeReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(
 bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::iosEarlyTurboModuleDiscovery(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::iosEarlyTurboModuleDiscovery();
 }
 
 bool NativeReactNativeFeatureFlags::perfMonitorV2Enabled(

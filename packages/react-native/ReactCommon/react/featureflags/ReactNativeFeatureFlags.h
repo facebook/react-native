@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de9db1b4e8ad4d4a81368613a7d1cfb2>>
+ * @generated SignedSource<<a17777271d96555d577c8d9dca867918>>
  */
 
 /**
@@ -278,6 +278,11 @@ class ReactNativeFeatureFlags {
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
+   * Enables creating Module Holders for TurboModules before the JS Runtime is started, iOS only. Android already creates them early.
+   */
+  RN_EXPORT static bool iosEarlyTurboModuleDiscovery();
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

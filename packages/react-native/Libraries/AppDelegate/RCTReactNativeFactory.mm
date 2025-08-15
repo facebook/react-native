@@ -142,7 +142,10 @@ using namespace facebook::react;
 #pragma mark - RCTTurboModuleManagerDelegate
 
 - (nonnull NSArray<NSString *> *)getModuleNames{
-  return [_delegate getModuleNames];
+  if ([_delegate respondsToSelector:@selector(getModuleNames)]) {
+    return [_delegate getModuleNames];
+  }
+  return @[];
 }
 
 - (Class)getModuleClassFromName:(const char *)name

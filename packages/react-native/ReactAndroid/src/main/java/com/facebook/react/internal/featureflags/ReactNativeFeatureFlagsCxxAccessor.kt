@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f50b2fc5f4aad27e6cd8ecbde3d791a>>
+ * @generated SignedSource<<4e4dc5cc02194f3c632c49bb11f50be5>>
  */
 
 /**
@@ -68,6 +68,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
+  private var iosEarlyTurboModuleDiscoveryCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
@@ -517,6 +518,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.hideOffscreenVirtualViewsOnIOS()
       hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun iosEarlyTurboModuleDiscovery(): Boolean {
+    var cached = iosEarlyTurboModuleDiscoveryCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.iosEarlyTurboModuleDiscovery()
+      iosEarlyTurboModuleDiscoveryCache = cached
     }
     return cached
   }

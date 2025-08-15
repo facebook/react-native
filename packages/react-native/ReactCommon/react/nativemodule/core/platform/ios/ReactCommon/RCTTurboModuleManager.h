@@ -22,6 +22,12 @@
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
+@optional
+
+/**
+ * Returns the names of the available TurboModules registered ahead of JS runtime in the delegate. Implement it if you
+ * want to be able to create certain module holders early.
+ */
 - (nonnull NSArray<NSString *> *)getModuleNames;
 
 /**
@@ -51,7 +57,7 @@
                                                           (std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 /**
- * Return a pre-initialized list of leagcy native modules.
+ * Return a pre-initialized list of legacy native modules.
  * These modules shouldn't be TurboModule-compatible (i.e: they should not conform to RCTTurboModule).
  *
  * This method is only used by the TurboModule interop layer.

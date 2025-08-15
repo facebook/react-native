@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nonnull NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders;
 
+@optional
 - (nonnull NSArray<NSString *> *)moduleNames;
 
 @end
