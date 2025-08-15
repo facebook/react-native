@@ -35,6 +35,10 @@ class TestCallInvoker : public CallInvoker {
     }
   }
 
+  size_t queueSize() {
+    return queue_.size();
+  }
+
  private:
   std::list<CallFunc> queue_{};
   std::shared_ptr<facebook::jsi::Runtime> runtime_{};
