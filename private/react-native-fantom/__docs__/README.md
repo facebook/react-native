@@ -220,6 +220,24 @@ FANTOM_DEBUG_CPP=1 yarn fantom <regexForTestFiles>
 This would start a debugging session in VS Code with an initial breakpoint in
 the Fantom CLI binary.
 
+#### Address and thread sanitizer for C++
+
+It's also possible to run the C++ side with the thread or address sanitizer
+enabled, which can help with debugging memory and threading issues.
+
+To enable the address sanitizer, run your fantom test with the flag
+`FANTOM_ENABLE_ASAN`:
+
+```shell
+FANTOM_ENABLE_ASAN=1 yarn fantom <regexForTestFiles>
+```
+
+For thread sanitizer, correspondingly, use flag `FANTOM_ENABLE_TSAN`:
+
+```shell
+FANTOM_ENABLE_TSAN=1 yarn fantom <regexForTestFiles>
+```
+
 ### Profiling
 
 #### JS sampling profiler
