@@ -20,14 +20,39 @@ public class ReactModuleInfo(
     @get:JvmName("needsEagerInit") public val needsEagerInit: Boolean,
     public val isCxxModule: Boolean,
     public val isTurboModule: Boolean,
+    public val moduleClass: Class<*>
 ) {
 
   @Deprecated(
-      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)]",
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean, Class<*>)]",
       replaceWith =
           ReplaceWith(
               expression =
-                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)"),
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule, moduleClass)"),
+      level = DeprecationLevel.WARNING,
+  )
+  public constructor(
+      name: String,
+      className: String,
+      canOverrideExistingModule: Boolean,
+      needsEagerInit: Boolean,
+      isCxxModule: Boolean,
+      isTurboModule: Boolean
+  ) : this(
+      name,
+      className,
+      canOverrideExistingModule,
+      needsEagerInit,
+      isCxxModule,
+      isTurboModule,
+      ReactModuleInfo::class.java /* placeholder */)
+
+  @Deprecated(
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean, Class<*>)]",
+      replaceWith =
+          ReplaceWith(
+              expression =
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule, moduleClass)"),
       level = DeprecationLevel.WARNING,
   )
   public constructor(
@@ -37,8 +62,15 @@ public class ReactModuleInfo(
       needsEagerInit: Boolean,
       @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
       isCxxModule: Boolean,
-      isTurboModule: Boolean,
-  ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)
+      isTurboModule: Boolean
+  ) : this(
+      name,
+      className,
+      canOverrideExistingModule,
+      needsEagerInit,
+      isCxxModule,
+      isTurboModule,
+      ReactModuleInfo::class.java /* placeholder */)
 
   public companion object {
     /**
