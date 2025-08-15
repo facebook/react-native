@@ -6,7 +6,6 @@
  */
 
 #include <NativeCxxModuleExample/NativeCxxModuleExample.h>
-#include <ReactCommon/TestCallInvoker.h>
 #include <ReactCommon/TurboModuleTestFixture.h>
 #include <gtest/gtest.h>
 #include <list>

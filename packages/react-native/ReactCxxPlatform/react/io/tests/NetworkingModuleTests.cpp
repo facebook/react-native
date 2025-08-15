@@ -25,7 +25,7 @@ class NetworkingModuleTests : public testing::Test {
  protected:
   void SetUp() override {
     rt_ = facebook::hermes::makeHermesRuntime();
-    jsInvoker_ = std::make_shared<TestCallInvoker>(rt_);
+    jsInvoker_ = std::make_shared<TestCallInvoker>(*rt_);
   }
 
   static void verifyFormData(

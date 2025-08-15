@@ -27,7 +27,7 @@ class TurboModuleTestFixture : public ::testing::Test {
  public:
   explicit TurboModuleTestFixture(Args... args)
       : runtime_(hermes::makeHermesRuntime()),
-        jsInvoker_(std::make_shared<TestCallInvoker>(runtime_)),
+        jsInvoker_(std::make_shared<TestCallInvoker>(*runtime_)),
         module_(std::make_shared<T>(jsInvoker_, std::forward<Args>(args)...)) {}
 
   void SetUp() override {
