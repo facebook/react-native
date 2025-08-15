@@ -169,6 +169,11 @@ public class ReactVirtualView(context: Context) :
     }
   }
 
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    dispatchOnModeChangeIfNeeded(true)
+  }
+
   private fun dispatchOnModeChangeIfNeeded(checkRectChange: Boolean) {
     modeChangeEmitter ?: return
     val scrollView = parentScrollView ?: return
