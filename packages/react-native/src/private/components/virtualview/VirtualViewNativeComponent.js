@@ -68,6 +68,12 @@ type VirtualViewNativeProps = $ReadOnly<{
   initialHidden?: boolean,
 
   /**
+   * This was needed to get VirtualViewManagerDelegate to set this property.
+   * TODO: Investigate why this doesn't work by default since we spread ViewProps
+   */
+  removeClippedSubviews?: boolean,
+
+  /**
    * Render state of children.
    *
    * - `0`: Reserved to represent unknown future values.

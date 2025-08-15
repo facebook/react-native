@@ -130,14 +130,14 @@ public open class ReactViewGroup public constructor(context: Context?) :
    * those methods may return views that are not attached. This is risky but allows us to perform a
    * correct cleanup in `NativeViewHierarchyManager`.
    */
-  private var _removeClippedSubviews = false
+  internal var _removeClippedSubviews = false
 
   @Volatile private var inSubviewClippingLoop = false
   private var allChildren: Array<View?>? = null
   internal var allChildrenCount: Int = 0
     private set
 
-  private var clippingRect: Rect? = null
+  internal var clippingRect: Rect? = null
 
   public override var hitSlopRect: Rect? = null
   public override var pointerEvents: PointerEvents = PointerEvents.AUTO
@@ -430,7 +430,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   private fun isChildRemovedWhileTransitioning(child: View): Boolean =
       childrenRemovedWhileTransitioning?.contains(child.id) == true
 
-  private fun updateClippingToRect(clippingRect: Rect, excludedViewsSet: Set<Int>? = null) {
+  internal fun updateClippingToRect(clippingRect: Rect, excludedViewsSet: Set<Int>? = null) {
     val childArray = checkNotNull(allChildren)
     inSubviewClippingLoop = true
     var clippedSoFar = 0
