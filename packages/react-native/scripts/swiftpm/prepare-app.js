@@ -22,6 +22,7 @@ const {execSync} = require('child_process');
 // Import functions from other scripts
 const {prepareAppDependenciesHeaders} = require('./prepare-app-dependencies-headers');
 const {createSymlinks: createSymlinksFunction} = require('./create-symlinks');
+const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
 const codegenExecutor = require('../codegen/generate-artifacts-executor');
 
 /**
@@ -29,8 +30,9 @@ const codegenExecutor = require('../codegen/generate-artifacts-executor');
  * @param {string} appPath - Path to the app (e.g., '../../private/helloworld')
  * @param {string} reactNativePath - Path to the React Native package (e.g., '.')
  * @param {string} appXcodeProject - Name of the Xcode project (e.g., 'HelloWorld.xcodeproj')
+ * @param {string} targetName - Name of the app target (e.g., 'HelloWorld')
  */
-async function prepareApp(appPath = '../../private/helloworld', reactNativePath = '.', appXcodeProject = 'HelloWorld.xcodeproj') {
+async function prepareApp(appPath = '../../private/helloworld', reactNativePath = '.', appXcodeProject = 'HelloWorld.xcodeproj', targetName = 'HelloWorld') {
   console.log('🚀 Starting app preparation for SwiftPM build from source...');
 
   // Resolve absolute paths
@@ -80,8 +82,12 @@ async function prepareApp(appPath = '../../private/helloworld', reactNativePath 
     console.log('\n🔧 Step 7: Fixing REACT_NATIVE_PATH in Xcode project...');
     await fixReactNativePath(appIosPath, absoluteReactNativePath, appXcodeProject);
 
-    // Step 8: Open Xcode project
-    console.log('\n📱 Step 8: Opening Xcode project...');
+    // Step 8: Integrate SwiftPM packages in Xcode
+    console.log('\n📦 Step 8: Integrating SwiftPM packages in Xcode...');
+    await integrateSwiftPMPackages(appIosPath, absoluteReactNativePath, absoluteAppPath, appXcodeProject, targetName);
+
+    // Step 9: Open Xcode project
+    console.log('\n📱 Step 9: Opening Xcode project...');
     await openXcodeProject(appIosPath, appXcodeProject);
 
     console.log('\n✅ App preparation completed successfully!');
@@ -269,6 +275,40 @@ async function fixReactNativePath(appIosPath, reactNativePath, appXcodeProject) 
 }
 
 /**
+ * Integrate SwiftPM packages into Xcode project
+ */
+async function integrateSwiftPMPackages(appIosPath, reactNativePath, appPath, appXcodeProject, targetName) {
+  try {
+    console.log('Preparing SwiftPM package integrations...');
+
+    // Calculate relative paths from appIosPath
+    const relativeReactNativePath = path.relative(appIosPath, reactNativePath);
+    const relativeGeneratedPath = path.join('build', 'generated', 'ios');
+
+    // Create PackageSwift objects
+    const packageSwiftObjects = [
+      {
+        "relativePath": relativeReactNativePath,
+        "targets": ["React"]
+      },
+      {
+        "relativePath": relativeGeneratedPath,
+        "targets": ["ReactCodegen", "ReactAppDependencyProvider"]
+      }
+    ];
+
+    const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+    // Call integrateSwiftPackagesInXcode function
+    integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, targetName);
+
+    console.log('✓ SwiftPM packages integrated into Xcode project');
+  } catch (error) {
+    throw new Error(`SwiftPM integration failed: ${error.message}`);
+  }
+}
+
+/**
  * Open Xcode project
  */
 async function openXcodeProject(appIosPath, appXcodeProject) {
@@ -296,6 +336,7 @@ if (require.main === module) {
   let appPath = '../../private/helloworld';
   let reactNativePath = '.';
   let appXcodeProject = 'HelloWorld.xcodeproj';
+  let targetName = 'HelloWorld';
 
   if (args.length >= 1) {
     appPath = args[0];
@@ -309,12 +350,17 @@ if (require.main === module) {
     appXcodeProject = args[2];
   }
 
-  console.log('Usage: node prepare-app.js [appPath] [reactNativePath] [appXcodeProject]');
+  if (args.length >= 4) {
+    targetName = args[3];
+  }
+
+  console.log('Usage: node prepare-app.js [appPath] [reactNativePath] [appXcodeProject] [targetName]');
   console.log(`Using App path: ${appPath}`);
   console.log(`Using React Native path: ${reactNativePath}`);
   console.log(`Using App Xcode project: ${appXcodeProject}`);
+  console.log(`Using Target name: ${targetName}`);
 
-  prepareApp(appPath, reactNativePath, appXcodeProject)
+  prepareApp(appPath, reactNativePath, appXcodeProject, targetName)
     .then(() => {
       console.log('\n🎉 All done! Your app is ready for SwiftPM build from source.');
       process.exit(0);
@@ -334,5 +380,6 @@ module.exports = {
   generateCodegenArtifacts,
   prepareHeaders,
   fixReactNativePath,
+  integrateSwiftPMPackages,
   openXcodeProject
 };
