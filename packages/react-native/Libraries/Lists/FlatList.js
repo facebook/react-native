@@ -669,6 +669,11 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       : {renderItem: renderProp};
   };
 
+  _getStickyHeaderIndices =
+    this._getItemCount(this.props.data) > 0
+      ? this.props.stickyHeaderIndices
+      : [];
+
   _memoizedRenderer: ReturnType<typeof memoizeOne> = memoizeOne(this._renderer);
 
   render(): React.Node {
@@ -686,6 +691,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       // $FlowFixMe[incompatible-exact] - `restProps` (`Props`) is inexact.
       <VirtualizedList
         {...restProps}
+        stickyHeaderIndices={this._getStickyHeaderIndices}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
