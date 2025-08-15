@@ -8,39 +8,177 @@
  * @format
  */
 
+import type {AccessibilityRole, Role} from '../../../..';
 import type {Root} from '@react-native/fantom';
 import type {AccessibilityProps} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 
+const ACCESIBILITY_ROLE_VALUES: $ReadOnlyArray<AccessibilityRole> = [
+  'none',
+  'button',
+  'link',
+  'search',
+  'image',
+  'keyboardkey',
+  'text',
+  'adjustable',
+  'imagebutton',
+  'header',
+  'summary',
+  'alert',
+  'checkbox',
+  'combobox',
+  'menu',
+  'menubar',
+  'menuitem',
+  'progressbar',
+  'radio',
+  'radiogroup',
+  'scrollbar',
+  'spinbutton',
+  'switch',
+  'tab',
+  'tablist',
+  'timer',
+  'toolbar',
+];
+
+const ROLE_VALUES: $ReadOnlyArray<Role> = [
+  'alert',
+  'alertdialog',
+  'application',
+  'article',
+  'banner',
+  'button',
+  'cell',
+  'checkbox',
+  'columnheader',
+  'combobox',
+  'complementary',
+  'contentinfo',
+  'definition',
+  'dialog',
+  'directory',
+  'document',
+  'feed',
+  'figure',
+  'form',
+  'grid',
+  'group',
+  'heading',
+  'img',
+  'link',
+  'list',
+  'listitem',
+  'log',
+  'main',
+  'marquee',
+  'math',
+  'menu',
+  'menubar',
+  'menuitem',
+  'meter',
+  'navigation',
+  'none',
+  'note',
+  'option',
+  'presentation',
+  'progressbar',
+  'radio',
+  'radiogroup',
+  'region',
+  'row',
+  'rowgroup',
+  'rowheader',
+  'scrollbar',
+  'searchbox',
+  'separator',
+  'slider',
+  'spinbutton',
+  'status',
+  'summary',
+  'switch',
+  'tab',
+  'table',
+  'tablist',
+  'tabpanel',
+  'term',
+  'timer',
+  'toolbar',
+  'tooltip',
+  'tree',
+  'treegrid',
+  'treeitem',
+  'treeitem',
+];
+
+let root: Root;
+
+function getAccessibilityProp(
+  content: React.MixedElement,
+  name: $Keys<AccessibilityProps>,
+) {
+  Fantom.runTask(() => {
+    root.render(content);
+  });
+  return root.getRenderedOutput({props: [name]}).toJSONObject().props[name];
+}
+
+function getAccessibilityProps(
+  content: React.MixedElement,
+  names: $ReadOnlyArray<$Keys<AccessibilityProps>>,
+) {
+  Fantom.runTask(() => {
+    root.render(content);
+  });
+  const props = root.getRenderedOutput({props: names}).toJSONObject().props;
+  return {...props};
+}
+
+export function rolePropSuite(
+  Component: component(...AccessibilityProps),
+): void {
+  describe('role', () => {
+    beforeEach(() => {
+      root = Fantom.createRoot();
+    });
+
+    afterEach(() => {
+      root.destroy();
+    });
+
+    it(`'role' has none by default`, () => {
+      expect(getAccessibilityProps(<Component />, ['role'])).toEqual({});
+    });
+
+    it(`'role' maps invalid values to 'none'`, () => {
+      expect(
+        getAccessibilityProps(
+          // $FlowExpectedError[incompatible-type]
+          <Component role="__some_invalid_value" />,
+          ['role'],
+        ),
+      ).toEqual({['role']: 'none'});
+    });
+
+    describe(`'role' propagation`, () => {
+      ROLE_VALUES.forEach(role => {
+        it(`can be set to ${role}`, () => {
+          expect(
+            getAccessibilityProp(<Component role={role} />, 'role'),
+          ).toEqual(role);
+        });
+      });
+    });
+  });
+}
+
 export default function accessibilityPropsSuite(
   Component: component(...AccessibilityProps),
   accessibleByDefault: boolean = true,
 ): void {
-  let root: Root;
-
-  function getAccessibilityProp(
-    content: React.MixedElement,
-    name: $Keys<AccessibilityProps>,
-  ) {
-    Fantom.runTask(() => {
-      root.render(content);
-    });
-    return root.getRenderedOutput({props: [name]}).toJSONObject().props[name];
-  }
-
-  function getAccessibilityProps(
-    content: React.MixedElement,
-    names: $ReadOnlyArray<$Keys<AccessibilityProps>>,
-  ) {
-    Fantom.runTask(() => {
-      root.render(content);
-    });
-    const props = root.getRenderedOutput({props: names}).toJSONObject().props;
-    return {...props};
-  }
-
   describe('accessibility', () => {
     beforeEach(() => {
       root = Fantom.createRoot();
@@ -106,39 +244,9 @@ export default function accessibilityPropsSuite(
       });
     });
 
-    (['role', 'accessibilityRole'] as const).forEach(prop =>
-      describe(prop, () => {
-        (
-          [
-            'none',
-            'button',
-            'link',
-            'search',
-            'image',
-            'keyboardkey',
-            'text',
-            'adjustable',
-            'imagebutton',
-            'header',
-            'summary',
-            'alert',
-            'checkbox',
-            'combobox',
-            'menu',
-            'menubar',
-            'menuitem',
-            'progressbar',
-            'radio',
-            'radiogroup',
-            'scrollbar',
-            'spinbutton',
-            'switch',
-            'tab',
-            'tablist',
-            'timer',
-            'toolbar',
-          ] as const
-        ).forEach(role => {
+    describe('accessibilityRole', () => {
+      describe(`value propagation`, () => {
+        ACCESIBILITY_ROLE_VALUES.forEach(role => {
           it(`can be set to ${role}`, () => {
             expect(
               getAccessibilityProp(
@@ -148,28 +256,17 @@ export default function accessibilityPropsSuite(
             ).toEqual(role);
           });
         });
+      });
 
-        prop === 'accessibilityRole' &&
-          it('has higher priority than "role"', () => {
-            expect(
-              getAccessibilityProp(
-                <Component accessibilityRole="button" role="radio" />,
-                'accessibilityRole',
-              ),
-            ).toEqual('button');
-          });
-
-        prop === 'role' &&
-          it('has lower priority than "accessibilityRole"', () => {
-            expect(
-              getAccessibilityProp(
-                <Component accessibilityRole="button" role="radio" />,
-                'accessibilityRole',
-              ),
-            ).toEqual('button');
-          });
-      }),
-    );
+      it(`has 'accessibilityRole' of higher priority than "role"`, () => {
+        expect(
+          getAccessibilityProp(
+            <Component accessibilityRole="button" role="radio" />,
+            'accessibilityRole',
+          ),
+        ).toEqual('button');
+      });
+    });
 
     describe('accessibilityState', () => {
       (['disabled', 'selected', 'busy', 'expanded'] as const).forEach(

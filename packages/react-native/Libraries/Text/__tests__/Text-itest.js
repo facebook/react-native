@@ -11,7 +11,6 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {Role} from '../../Components/View/ViewAccessibility';
 import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
@@ -19,7 +18,9 @@ import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Text} from 'react-native';
-import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
+import accessibilityPropsSuite, {
+  rolePropSuite,
+} from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
@@ -274,115 +275,6 @@ describe('<Text>', () => {
       });
     });
 
-    describe('role', () => {
-      it(`has none by default`, () => {
-        const root = Fantom.createRoot();
-
-        Fantom.runTask(() => {
-          root.render(<Text>{TEST_TEXT}</Text>);
-        });
-
-        expect(root.getRenderedOutput({props: ['role']}).toJSX()).toEqual(
-          <rn-paragraph>{TEST_TEXT}</rn-paragraph>,
-        );
-      });
-
-      it(`maps invalid values to 'none'`, () => {
-        const root = Fantom.createRoot();
-
-        Fantom.runTask(() => {
-          // $FlowExpectedError[incompatible-type]
-          root.render(<Text role="__some_invalid_value">{TEST_TEXT}</Text>);
-        });
-
-        expect(root.getRenderedOutput({props: ['role']}).toJSX()).toEqual(
-          <rn-paragraph role="none">{TEST_TEXT}</rn-paragraph>,
-        );
-      });
-
-      it(`propagates correctly all possible values`, () => {
-        const root = Fantom.createRoot();
-        (
-          [
-            'alert',
-            'alertdialog',
-            'application',
-            'article',
-            'banner',
-            'button',
-            'cell',
-            'checkbox',
-            'columnheader',
-            'combobox',
-            'complementary',
-            'contentinfo',
-            'definition',
-            'dialog',
-            'directory',
-            'document',
-            'feed',
-            'figure',
-            'form',
-            'grid',
-            'group',
-            'heading',
-            'img',
-            'link',
-            'list',
-            'listitem',
-            'log',
-            'main',
-            'marquee',
-            'math',
-            'menu',
-            'menubar',
-            'menuitem',
-            'meter',
-            'navigation',
-            'none',
-            'note',
-            'option',
-            'presentation',
-            'progressbar',
-            'radio',
-            'radiogroup',
-            'region',
-            'row',
-            'rowgroup',
-            'rowheader',
-            'scrollbar',
-            'searchbox',
-            'separator',
-            'slider',
-            'spinbutton',
-            'status',
-            'summary',
-            'switch',
-            'tab',
-            'table',
-            'tablist',
-            'tabpanel',
-            'term',
-            'timer',
-            'toolbar',
-            'tooltip',
-            'tree',
-            'treegrid',
-            'treeitem',
-            'treeitem',
-          ] as Array<Role>
-        ).forEach(propVal => {
-          Fantom.runTask(() => {
-            root.render(<Text role={propVal}>{TEST_TEXT}</Text>);
-          });
-
-          expect(root.getRenderedOutput({props: ['role']}).toJSX()).toEqual(
-            <rn-paragraph role={propVal}>{TEST_TEXT}</rn-paragraph>,
-          );
-        });
-      });
-    });
-
     describe('selectable', () => {
       it(`can be set to "true"`, () => {
         const root = Fantom.createRoot();
@@ -530,4 +422,5 @@ describe('<Text>', () => {
     return <Text {...props}>{TEST_TEXT}</Text>;
   }
   accessibilityPropsSuite(ComponentWithAccessibilityProps, false);
+  rolePropSuite(ComponentWithAccessibilityProps);
 });
