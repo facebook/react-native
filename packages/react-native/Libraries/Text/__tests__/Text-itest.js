@@ -21,6 +21,7 @@ import {Text} from 'react-native';
 import accessibilityPropsSuite, {
   rolePropSuite,
 } from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
+import {testIDPropSuite} from 'react-native/src/private/__tests__/utilities/commonPropsSuite';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
@@ -418,9 +419,15 @@ describe('<Text>', () => {
     });
   });
 
-  component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
-    return <Text {...props}>{TEST_TEXT}</Text>;
+  component TestComponent(testID?: ?string, ...props: AccessibilityProps) {
+    return (
+      <Text testID={testID} {...props}>
+        {TEST_TEXT}
+      </Text>
+    );
   }
-  accessibilityPropsSuite(ComponentWithAccessibilityProps, false);
-  rolePropSuite(ComponentWithAccessibilityProps);
+  accessibilityPropsSuite(TestComponent, false);
+  rolePropSuite(TestComponent);
+
+  testIDPropSuite(TestComponent);
 });
