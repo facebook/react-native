@@ -669,7 +669,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
       : {renderItem: renderProp};
   };
 
-  _getStickyHeaderIndices =
+  _getStickyHeaderIndices: Array<number> =
     this._getItemCount(this.props.data) > 0
       ? this.props.stickyHeaderIndices
       : [];
