@@ -54,7 +54,32 @@ export function getHermesCompilerTarget(variant: HermesVariant): string {
 export function getBuckModesForPlatform(
   enableRelease: boolean = false,
 ): $ReadOnlyArray<string> {
-  const mode = enableRelease ? 'opt' : 'dev';
+  let mode = enableRelease ? 'opt' : 'dev';
+
+  if (enableRelease) {
+    if (EnvironmentOptions.enableASAN || EnvironmentOptions.enableTSAN) {
+      printConsoleLog({
+        type: 'console-log',
+        level: 'warn',
+        message:
+          'ASAN and TSAN are not supported in release mode. Use dev mode instead.',
+      });
+    }
+  } else {
+    if (EnvironmentOptions.enableASAN) {
+      printConsoleLog({
+        type: 'console-log',
+        level: 'warn',
+        message:
+          'ASAN and TSAN modes cannot be used together. Using ASAN mode as a fallback.',
+      });
+      mode = 'dev-asan';
+    } else if (EnvironmentOptions.enableASAN) {
+      mode = 'dev-asan';
+    } else if (EnvironmentOptions.enableTSAN) {
+      mode = 'dev-tsan';
+    }
+  }
 
   let osPlatform;
   switch (os.platform()) {
