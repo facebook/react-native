@@ -24,8 +24,7 @@ enum class InteractionResponsivenessScore : int32_t {
   Poor = 2
 };
 
-struct InteractionPayload {
-  std::string eventName;
+struct LongTaskPayload {
   uint16_t startTime;
   uint16_t duration;
   InteractionResponsivenessScore responsivenessScore;
@@ -33,7 +32,7 @@ struct InteractionPayload {
 };
 
 struct PerfMonitorUpdateRequest {
-  InteractionPayload activeInteraction;
+  LongTaskPayload activeInteraction;
 };
 
 /**
@@ -42,7 +41,7 @@ struct PerfMonitorUpdateRequest {
  */
 class PerfMonitorUpdateHandler {
  public:
-  PerfMonitorUpdateHandler(HostTargetDelegate& delegate)
+  explicit PerfMonitorUpdateHandler(HostTargetDelegate& delegate)
       : delegate_(delegate) {}
 
   /**
@@ -52,9 +51,9 @@ class PerfMonitorUpdateHandler {
 
  private:
   HostTargetDelegate& delegate_;
-  std::optional<InteractionPayload> lastInteraction_;
+  std::optional<LongTaskPayload> lastEvent_;
 
-  bool shouldOverrideLastInteraction(const InteractionPayload& newInteraction);
+  bool shouldOverrideLastEvent(const LongTaskPayload& newInteraction);
 };
 
 } // namespace facebook::react::jsinspector_modern

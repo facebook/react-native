@@ -16,8 +16,7 @@ internal interface PerfMonitorV2Handler {
   /** [Experimental] Update the V2 Perf Monitor overlay with the given data. */
   // FIXME(T233950466): Refactor ReactHostImpl/DevSupport setup to avoid this public API addition
   public fun unstable_updatePerfMonitor(
-      eventName: String,
-      durationMs: Int,
+      longTaskDuration: Int,
       responsivenessScore: Int,
       ttl: Int,
   )

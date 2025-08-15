@@ -39,20 +39,13 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
   }
 
   void unstable_updatePerfMonitor(
-      const std::string& interactionName,
-      uint16_t durationMs,
+      uint16_t longTaskDuration,
       jsinspector_modern::InteractionResponsivenessScore responsivenessScore,
       uint16_t ttl) {
-    static auto method =
-        javaClassStatic()
-            ->getMethod<void(jni::local_ref<jni::JString>, jint, jint, jint)>(
-                "unstable_updatePerfMonitor");
+    static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
+        "unstable_updatePerfMonitor");
     method(
-        self(),
-        jni::make_jstring(interactionName),
-        durationMs,
-        static_cast<jint>(responsivenessScore),
-        ttl);
+        self(), longTaskDuration, static_cast<jint>(responsivenessScore), ttl);
   }
 
   jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {

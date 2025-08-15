@@ -297,6 +297,16 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+
+  std::vector<PerformanceEntryReporterEventTimingListener*> listenersCopy;
+  {
+    std::shared_lock lock(listenersMutex_);
+    listenersCopy = eventTimingListeners_;
+  }
+
+  for (auto* listener : listenersCopy) {
+    listener->onLongTaskEntry(entry);
+  }
 }
 
 void PerformanceEntryReporter::reportResourceTiming(

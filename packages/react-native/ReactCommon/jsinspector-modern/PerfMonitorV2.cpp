@@ -15,7 +15,7 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
-constexpr uint16_t MIN_DURATION = 10;
+constexpr uint16_t MIN_DURATION = 200;
 constexpr uint16_t DEFAULT_TTL = 4000;
 constexpr uint16_t BAD_EVENT_TTL = 20000;
 
@@ -39,6 +39,10 @@ void PerfMonitorUpdateHandler::handlePerfMetricsUpdate(
   auto payload = folly::parseJson(message);
 
   if (payload.isObject()) {
+    if (payload["name"] != "__ReactNative__LongTask") {
+      return;
+    }
+
     auto duration = static_cast<uint16_t>(payload["duration"].asInt());
 
     if (duration < MIN_DURATION) {
@@ -50,36 +54,34 @@ void PerfMonitorUpdateHandler::handlePerfMetricsUpdate(
         ? BAD_EVENT_TTL
         : DEFAULT_TTL;
 
-    InteractionPayload newInteraction{
-        payload["eventName"].asString(),
+    LongTaskPayload newEvent{
         static_cast<uint16_t>(payload["startTime"].asInt()),
         duration,
         responsivenessScore,
         ttl};
 
-    if (shouldOverrideLastInteraction(newInteraction)) {
-      lastInteraction_ = newInteraction;
+    if (shouldOverrideLastEvent(newEvent)) {
+      lastEvent_ = newEvent;
       delegate_.unstable_onPerfMonitorUpdate(
-          PerfMonitorUpdateRequest{newInteraction});
+          PerfMonitorUpdateRequest{newEvent});
     }
   }
 }
 
-bool PerfMonitorUpdateHandler::shouldOverrideLastInteraction(
-    const InteractionPayload& newInteraction) {
-  if (!lastInteraction_) {
+bool PerfMonitorUpdateHandler::shouldOverrideLastEvent(
+    const LongTaskPayload& newEvent) {
+  if (!lastEvent_) {
     return true;
   }
 
   // Override if last event has expired
   if (HighResTimeStamp::now().toDOMHighResTimeStamp() >
-      lastInteraction_->startTime + lastInteraction_->ttl) {
+      lastEvent_->startTime + lastEvent_->ttl) {
     return true;
   }
 
   // Override if same or greater responsiveness score
-  if (newInteraction.responsivenessScore >=
-      lastInteraction_->responsivenessScore) {
+  if (newEvent.responsivenessScore >= lastEvent_->responsivenessScore) {
     return true;
   }
 
