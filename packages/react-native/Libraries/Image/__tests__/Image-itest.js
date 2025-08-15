@@ -19,6 +19,7 @@ import * as React from 'react';
 import {createRef} from 'react';
 import {Image} from 'react-native';
 import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
+import {testIDPropSuite} from 'react-native/src/private/__tests__/utilities/commonPropsSuite';
 import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
@@ -582,20 +583,6 @@ describe('<Image>', () => {
       });
     });
 
-    describe('testID', () => {
-      it('can be set', () => {
-        const root = Fantom.createRoot();
-
-        Fantom.runTask(() => {
-          root.render(<Image testID="test" source={LOGO_SOURCE} />);
-        });
-
-        expect(root.getRenderedOutput({props: ['testID']}).toJSX()).toEqual(
-          <rn-image testID="test" />,
-        );
-      });
-    });
-
     describe('tintColor', () => {
       it('can be set', () => {
         const root = Fantom.createRoot();
@@ -610,11 +597,12 @@ describe('<Image>', () => {
       });
     });
 
-    component ComponentWithAccessibilityProps(...props: AccessibilityProps) {
-      return <Image {...props} source={LOGO_SOURCE} />;
+    component TestComponent(testID?: ?string, ...props: AccessibilityProps) {
+      return <Image {...props} testID={testID} source={LOGO_SOURCE} />;
     }
 
-    accessibilityPropsSuite(ComponentWithAccessibilityProps, false);
+    accessibilityPropsSuite(TestComponent, false);
+    testIDPropSuite(TestComponent);
   });
 
   describe('ref', () => {
