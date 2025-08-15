@@ -4,16 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
 const React = require('react');
 const ReactNative = require('react-native');
+
 const {Component} = React;
 const {StyleSheet, Text, View, Animated, Easing, TouchableOpacity, Dimensions} =
   ReactNative;
@@ -96,4 +98,4 @@ exports.examples = [
       return <ScrollViewAnimatedExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

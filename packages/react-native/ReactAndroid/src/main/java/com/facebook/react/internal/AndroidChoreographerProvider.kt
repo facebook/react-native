@@ -10,23 +10,23 @@ package com.facebook.react.internal
 import com.facebook.react.bridge.UiThreadUtil
 
 /** An implementation of ChoreographerProvider that directly uses android.view.Choreographer. */
-public object AndroidChoreographerProvider : ChoreographerProvider {
+internal object AndroidChoreographerProvider : ChoreographerProvider {
 
   private class AndroidChoreographer : ChoreographerProvider.Choreographer {
     private val instance: android.view.Choreographer = android.view.Choreographer.getInstance()
 
-    override public fun postFrameCallback(callback: android.view.Choreographer.FrameCallback) {
+    override fun postFrameCallback(callback: android.view.Choreographer.FrameCallback) {
       instance.postFrameCallback(callback)
     }
 
-    override public fun removeFrameCallback(callback: android.view.Choreographer.FrameCallback) {
+    override fun removeFrameCallback(callback: android.view.Choreographer.FrameCallback) {
       instance.removeFrameCallback(callback)
     }
   }
 
-  @JvmStatic public fun getInstance(): AndroidChoreographerProvider = this
+  @JvmStatic fun getInstance(): AndroidChoreographerProvider = this
 
-  override public fun getChoreographer(): ChoreographerProvider.Choreographer {
+  override fun getChoreographer(): ChoreographerProvider.Choreographer {
     UiThreadUtil.assertOnUiThread()
     return AndroidChoreographer()
   }

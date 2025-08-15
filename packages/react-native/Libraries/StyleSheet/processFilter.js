@@ -4,9 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format strict-local
  * @flow
- * @oncall react-native
+ * @format strict-local
  */
 
 'use strict';
@@ -314,6 +313,10 @@ function parseLength(length: string): ?number {
   }
 
   if (match[3] != null && match[3] !== 'px') {
+    return null;
+  }
+
+  if (match[3] == null && match[1] !== '0') {
     return null;
   }
 

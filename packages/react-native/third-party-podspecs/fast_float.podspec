@@ -8,14 +8,14 @@ fast_float_git_url = fast_float_config[:git]
 
 Pod::Spec.new do |spec|
   spec.name = "fast_float"
-  spec.version = "6.1.4"
+  spec.version = "8.0.0"
   spec.license = { :type => "MIT" }
   spec.homepage = "https://github.com/fastfloat/fast_float"
   spec.summary = "{fast_float} is an open-source number parsing library for C++. The library provides fast header-only implementations."
   spec.authors = "The fast_float contributors"
   spec.source = {
     :git => fast_float_git_url,
-    :tag => "v6.1.4"
+    :tag => "v8.0.0"
   }
   spec.pod_target_xcconfig = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),

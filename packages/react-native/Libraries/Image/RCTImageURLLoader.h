@@ -38,6 +38,8 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (BOOL)canLoadImageURL:(NSURL *)requestURL;
 
 /**
+ * DEPRECATED: Please use updated signature for loadImageForURL which uses
+ * completionHandlerWithMetadata instead.
  * Send a network request to load the request URL. The method should call the
  * progressHandler (if applicable) and the completionHandler when the request
  * has finished. The method should also return a cancellation block, if
@@ -49,9 +51,25 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                                                  resizeMode:(RCTResizeMode)resizeMode
                                             progressHandler:(RCTImageLoaderProgressBlock)progressHandler
                                          partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
-                                          completionHandler:(RCTImageLoaderCompletionBlock)completionHandler;
+                                          completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
+    RCT_DEPRECATED;
 
 @optional
+
+/*
+ * Send a network request to load the request URL. The method should call the
+ * progressHandler (if applicable) and the completionHandler when the request
+ * has finished. The method should also return a cancellation block, if
+ * applicable.
+ */
+- (nullable RCTImageLoaderCancellationBlock)loadImageForURL:(NSURL *)imageURL
+                                                       size:(CGSize)size
+                                                      scale:(CGFloat)scale
+                                                 resizeMode:(RCTResizeMode)resizeMode
+                                            progressHandler:(RCTImageLoaderProgressBlock)progressHandler
+                                         partialLoadHandler:(RCTImageLoaderPartialLoadBlock)partialLoadHandler
+                              completionHandlerWithMetadata:
+                                  (RCTImageLoaderCompletionBlockWithMetadata)completionHandlerWithMetadata;
 
 /**
  * If more than one RCTImageURLLoader responds YES to `-canLoadImageURL:`

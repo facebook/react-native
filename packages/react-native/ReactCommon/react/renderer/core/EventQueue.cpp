@@ -7,6 +7,7 @@
 
 #include "EventQueue.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
@@ -24,43 +25,45 @@ EventQueue::EventQueue(
 void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
   {
     std::scoped_lock lock(queueMutex_);
-    eventQueue_.push_back(std::move(rawEvent));
+
+    if (rawEvent.isUnique) {
+      auto repeatedEvent = eventQueue_.rend();
+
+      for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
+        if (it->eventTarget == rawEvent.eventTarget) {
+          // It is necessary to maintain order of different event types
+          // for the same target. If the same target has event types A1, B1
+          // in the event queue and event A2 occurs. A1 has to stay in the
+          // queue.
+          if (it->isUnique && it->type == rawEvent.type) {
+            repeatedEvent = it;
+          }
+
+          break;
+        }
+      }
+
+      if (repeatedEvent == eventQueue_.rend()) {
+        eventQueue_.push_back(std::move(rawEvent));
+      } else {
+        *repeatedEvent = std::move(rawEvent);
+      }
+    } else {
+      eventQueue_.push_back(std::move(rawEvent));
+    }
   }
 
   onEnqueue();
 }
 
 void EventQueue::enqueueUniqueEvent(RawEvent&& rawEvent) const {
-  {
-    std::scoped_lock lock(queueMutex_);
-
-    auto repeatedEvent = eventQueue_.rend();
-
-    for (auto it = eventQueue_.rbegin(); it != eventQueue_.rend(); ++it) {
-      if (it->type == rawEvent.type &&
-          it->eventTarget == rawEvent.eventTarget) {
-        repeatedEvent = it;
-        break;
-      } else if (it->eventTarget == rawEvent.eventTarget) {
-        // It is necessary to maintain order of different event types
-        // for the same target. If the same target has event types A1, B1
-        // in the event queue and event A2 occurs. A1 has to stay in the
-        // queue.
-        break;
-      }
-    }
-
-    if (repeatedEvent == eventQueue_.rend()) {
-      eventQueue_.push_back(std::move(rawEvent));
-    } else {
-      *repeatedEvent = std::move(rawEvent);
-    }
-  }
-
-  onEnqueue();
+  rawEvent.isUnique = true;
+  enqueueEvent(std::move(rawEvent));
 }
 
-void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
+void EventQueue::enqueueStateUpdate(
+    StateUpdate&& stateUpdate,
+    UpdateMode updateMode) const {
   {
     std::scoped_lock lock(queueMutex_);
     if (!stateUpdateQueue_.empty()) {
@@ -72,7 +75,11 @@ void EventQueue::enqueueStateUpdate(StateUpdate&& stateUpdate) const {
     stateUpdateQueue_.push_back(std::move(stateUpdate));
   }
 
-  onEnqueue();
+  if (updateMode == UpdateMode::unstable_Immediate) {
+    flushStateUpdates();
+  } else {
+    onEnqueue();
+  }
 }
 
 void EventQueue::onEnqueue() const {

@@ -23,9 +23,15 @@ import com.facebook.react.packagerconnection.RequestHandler
  * dependencies in release builds. If the class isn't found, [PerftestDevSupportManager] is returned
  * instead.
  */
-public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
+internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
-  public override fun create(
+  @Deprecated(
+      "Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.",
+      replaceWith =
+          ReplaceWith(
+              "create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"),
+  )
+  override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
       packagerPathForJSBundleName: String?,
@@ -36,7 +42,7 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
-      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+      pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
   ): DevSupportManager {
     return if (!enableOnCreate) {
       ReleaseDevSupportManager()
@@ -69,7 +75,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
                   MutableMap::class.java,
                   SurfaceDelegateFactory::class.java,
                   DevLoadingViewManager::class.java,
-                  PausedInDebuggerOverlayManager::class.java)
+                  PausedInDebuggerOverlayManager::class.java,
+              )
           constructor.newInstance(
               applicationContext,
               reactInstanceManagerHelper,
@@ -81,7 +88,8 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
               customPackagerCommandHandlers,
               surfaceDelegateFactory,
               devLoadingViewManager,
-              pausedInDebuggerOverlayManager) as DevSupportManager
+              pausedInDebuggerOverlayManager,
+          ) as DevSupportManager
         } catch (e: Exception) {
           PerftestDevSupportManager(applicationContext)
         }
@@ -95,19 +103,15 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       redBoxHandler: RedBoxHandler?,
       devBundleDownloadListener: DevBundleDownloadListener?,
       minNumShakes: Int,
-      customPackagerCommandHandlers: MutableMap<String, RequestHandler>?,
+      customPackagerCommandHandlers: Map<String, RequestHandler>?,
       surfaceDelegateFactory: SurfaceDelegateFactory?,
       devLoadingViewManager: DevLoadingViewManager?,
       pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
-      useDevSupport: Boolean
+      useDevSupport: Boolean,
   ): DevSupportManager =
-      if (!useDevSupport) {
-        if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
-          PerftestDevSupportManager(applicationContext)
-        } else {
-          ReleaseDevSupportManager()
-        }
-      } else {
+      if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
+        PerftestDevSupportManager(applicationContext)
+      } else if (useDevSupport) {
         BridgelessDevSupportManager(
             applicationContext,
             reactInstanceManagerHelper,
@@ -119,7 +123,10 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
             customPackagerCommandHandlers,
             surfaceDelegateFactory,
             devLoadingViewManager,
-            pausedInDebuggerOverlayManager)
+            pausedInDebuggerOverlayManager,
+        )
+      } else {
+        ReleaseDevSupportManager()
       }
 
   private companion object {

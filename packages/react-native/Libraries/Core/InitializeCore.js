@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use client';
@@ -28,27 +28,10 @@
 
 const start = Date.now();
 
-require('./setUpGlobals');
-require('../../src/private/setup/setUpDOM').default();
-require('./setUpPerformance');
-require('./setUpErrorHandling');
-require('./polyfillPromise');
-require('./setUpRegeneratorRuntime');
-require('./setUpTimers');
-require('./setUpXHR');
-require('./setUpAlert');
-require('./setUpNavigator');
-require('./setUpBatchedBridge');
-require('./setUpSegmentFetcher');
-if (__DEV__) {
-  require('./checkNativeVersion');
-  require('./setUpDeveloperTools');
-  require('../LogBox/LogBox').default.install();
-}
+require('../../src/private/setup/setUpDefaultReactNativeEnvironment').default();
 
-require('../ReactNative/AppRegistry');
-
-const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+const GlobalPerformanceLogger =
+  require('../Utilities/GlobalPerformanceLogger').default;
 // We could just call GlobalPerformanceLogger.markPoint at the top of the file,
 // but then we'd be excluding the time it took to require the logger.
 // Instead, we just use Date.now and backdate the timestamp.

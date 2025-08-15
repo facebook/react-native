@@ -5,17 +5,30 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <jsinspector-modern/InstanceAgent.h>
-#include "CdpJson.h"
+#include "InstanceAgent.h"
 #include "RuntimeTarget.h"
 
+#include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
+
+#include <utility>
+
 namespace facebook::react::jsinspector_modern {
+
+namespace {
+
+// The size of the timeline for the trace recording that happened in the
+// background.
+constexpr HighResDuration kBackgroundTracePerformanceTracerWindowSize =
+    HighResDuration::fromMilliseconds(20000);
+
+} // namespace
 
 InstanceAgent::InstanceAgent(
     FrontendChannel frontendChannel,
     InstanceTarget& target,
     SessionState& sessionState)
-    : frontendChannel_(frontendChannel),
+    : frontendChannel_(std::move(frontendChannel)),
       target_(target),
       sessionState_(sessionState) {
   (void)target_;
@@ -35,7 +48,7 @@ bool InstanceAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
 void InstanceAgent::setCurrentRuntime(RuntimeTarget* runtimeTarget) {
   auto previousRuntimeAgent = std::move(runtimeAgent_);
-  if (runtimeTarget) {
+  if (runtimeTarget != nullptr) {
     runtimeAgent_ = runtimeTarget->createAgent(frontendChannel_, sessionState_);
   } else {
     runtimeAgent_.reset();
@@ -149,6 +162,36 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
     for (auto& message : messages) {
       sendConsoleMessageImmediately(std::move(message));
     }
+  }
+}
+
+#pragma mark - Tracing
+
+InstanceTracingAgent::InstanceTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  if (state.mode == tracing::Mode::Background) {
+    performanceTracer.startTracing(kBackgroundTracePerformanceTracerWindowSize);
+  } else {
+    performanceTracer.startTracing();
+  }
+}
+
+InstanceTracingAgent::~InstanceTracingAgent() {
+  auto& performanceTracer = tracing::PerformanceTracer::getInstance();
+  auto performanceTraceEvents = performanceTracer.stopTracing();
+  if (performanceTraceEvents) {
+    state_.instanceTracingProfiles.emplace_back(tracing::InstanceTracingProfile{
+        .performanceTraceEvents = std::move(*performanceTraceEvents),
+    });
+  }
+}
+
+void InstanceTracingAgent::setTracedRuntime(RuntimeTarget* runtimeTarget) {
+  if (runtimeTarget != nullptr) {
+    runtimeTracingAgent_ = runtimeTarget->createTracingAgent(state_);
+  } else {
+    runtimeTracingAgent_ = nullptr;
   }
 }
 

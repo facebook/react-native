@@ -7,7 +7,11 @@
 
 #import "RCTLinearGradient.h"
 
+#import <React/RCTAnimationUtils.h>
 #import <React/RCTConversions.h>
+#include <react/renderer/graphics/ValueUnit.h>
+#import <react/utils/FloatComparison.h>
+#import "RCTGradientUtils.h"
 
 using namespace facebook::react;
 
@@ -15,50 +19,49 @@ using namespace facebook::react;
 
 + (CALayer *)gradientLayerWithSize:(CGSize)size gradient:(const LinearGradient &)gradient
 {
-  UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
   const auto &direction = gradient.direction;
-  const auto &colorStops = gradient.colorStops;
+  CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+  CGPoint startPoint;
+  CGPoint endPoint;
 
-  UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
-    CGContextRef context = rendererContext.CGContext;
-    NSMutableArray *colors = [NSMutableArray array];
-    CGFloat locations[colorStops.size()];
+  if (direction.type == GradientDirectionType::Angle) {
+    CGFloat angle = std::get<Float>(direction.value);
+    std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
+  } else if (direction.type == GradientDirectionType::Keyword) {
+    auto keyword = std::get<GradientKeyword>(direction.value);
+    CGFloat angle = getAngleForKeyword(keyword, size);
+    std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
+  } else {
+    // Default to top-to-bottom gradient
+    CGFloat centerX = size.width / 2;
+    startPoint = CGPointMake(centerX, 0.0);
+    endPoint = CGPointMake(centerX, size.height);
+  }
 
-    for (size_t i = 0; i < colorStops.size(); ++i) {
-      const auto &colorStop = colorStops[i];
-      CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
-      [colors addObject:(__bridge id)cgColor];
-      locations[i] = colorStop.position;
-    }
+  CGFloat dx = endPoint.x - startPoint.x;
+  CGFloat dy = endPoint.y - startPoint.y;
+  CGFloat gradientLineLength = sqrt(dx * dx + dy * dy);
+  const auto colorStops = [RCTGradientUtils getFixedColorStops:gradient.colorStops
+                                            gradientLineLength:gradientLineLength];
+  NSMutableArray<id> *colors = [NSMutableArray array];
+  NSMutableArray<NSNumber *> *locations = [NSMutableArray array];
+  CGPoint relativeStartPoint = CGPointMake(startPoint.x / size.width, startPoint.y / size.height);
+  CGPoint relativeEndPoint = CGPointMake(endPoint.x / size.width, endPoint.y / size.height);
 
-    CGGradientRef cgGradient = CGGradientCreateWithColors(NULL, (__bridge CFArrayRef)colors, locations);
+  CGPoint fixedStartPoint;
+  CGPoint fixedEndPoint;
 
-    CGPoint startPoint;
-    CGPoint endPoint;
+  std::tie(fixedStartPoint, fixedEndPoint) = [RCTGradientUtils pointsForCAGradientLayerLinearGradient:relativeStartPoint
+                                                                                             endPoint:relativeEndPoint
+                                                                                               bounds:size];
 
-    if (direction.type == GradientDirectionType::Angle) {
-      CGFloat angle = std::get<Float>(direction.value);
-      std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
-    } else if (direction.type == GradientDirectionType::Keyword) {
-      auto keyword = std::get<GradientKeyword>(direction.value);
-      CGFloat angle = getAngleForKeyword(keyword, size);
-      std::tie(startPoint, endPoint) = getPointsFromAngle(angle, size);
-    } else {
-      // Default to top-to-bottom gradient
-      startPoint = CGPointMake(0.0, 0.0);
-      endPoint = CGPointMake(0.0, size.height);
-    }
+  gradientLayer.startPoint = fixedStartPoint;
+  gradientLayer.endPoint = fixedEndPoint;
 
-    CGContextDrawLinearGradient(context, cgGradient, startPoint, endPoint, 0);
+  [RCTGradientUtils getColors:colors andLocations:locations fromColorStops:colorStops];
 
-    for (id color in colors) {
-      CGColorRelease((__bridge CGColorRef)color);
-    }
-    CGGradientRelease(cgGradient);
-  }];
-
-  CALayer *gradientLayer = [CALayer layer];
-  gradientLayer.contents = (__bridge id)gradientImage.CGImage;
+  gradientLayer.colors = colors;
+  gradientLayer.locations = locations;
 
   return gradientLayer;
 }

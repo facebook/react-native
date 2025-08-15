@@ -15,8 +15,7 @@ namespace facebook::react {
 using Color = int32_t;
 
 namespace HostPlatformColor {
-static const facebook::react::Color UndefinedColor =
-    std::numeric_limits<facebook::react::Color>::max();
+constexpr facebook::react::Color UndefinedColor = 0;
 }
 
 inline Color
@@ -55,6 +54,10 @@ inline float greenFromHostPlatformColor(Color color) {
 
 inline float blueFromHostPlatformColor(Color color) {
   return static_cast<uint8_t>((color >> 0) & 0xff);
+}
+
+inline bool hostPlatformColorIsColorMeaningful(Color color) noexcept {
+  return alphaFromHostPlatformColor(color) > 0;
 }
 
 } // namespace facebook::react

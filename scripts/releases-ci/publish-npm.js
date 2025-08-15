@@ -6,7 +6,6 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -15,18 +14,17 @@
 import type {BuildType} from '../releases/utils/version-utils';
 */
 
-const {REPO_ROOT} = require('../consts');
-const {getNpmInfo, publishPackage} = require('../npm-utils');
-const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
+const {getNpmInfo, publishPackage} = require('../releases/utils/npm-utils');
 const {
   publishAndroidArtifactsToMaven,
   publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
-const {getPackages} = require('../utils/monorepo');
+const {REPO_ROOT} = require('../shared/consts');
+const {getPackages} = require('../shared/monorepoUtils');
 const path = require('path');
 const yargs = require('yargs');
 
@@ -57,7 +55,7 @@ async function main() {
     .option('t', {
       alias: 'builtType',
       describe: 'The type of build you want to perform.',
-      choices: ['dry-run', 'nightly', 'release', 'prealpha'],
+      choices: ['dry-run', 'nightly', 'release'],
       default: 'dry-run',
     })
     .strict().argv;
@@ -96,12 +94,8 @@ async function publishMonorepoPackages(tag /*: ?string */) {
 async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
-  if (buildType === 'prealpha') {
-    removeNewArchFlags();
-  }
-
-  // For stable releases, CircleCI job `prepare_package_for_release` handles this
-  if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
+  // For stable releases, ci job `prepare_package_for_release` handles this
+  if (['dry-run', 'nightly'].includes(buildType)) {
     if (buildType === 'nightly') {
       // Set same version for all monorepo packages
       await setVersion(version);
@@ -142,6 +136,5 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -194,7 +193,7 @@ describe('visit', () => {
   describe('when the astNode is null', () => {
     it("doesn't call the visitor function", () => {
       const visitorFunction = jest.fn();
-      const visitor = {
+      const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
         itemType: visitorFunction,
       };
 
@@ -209,7 +208,7 @@ describe('visit', () => {
   describe('when the astNode is not an object', () => {
     it("doesn't call the visitor function", () => {
       const visitorFunction = jest.fn();
-      const visitor = {
+      const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
         itemType: visitorFunction,
       };
 
@@ -225,7 +224,7 @@ describe('visit', () => {
     describe("when the astNode has a string type that doesn't exist in the visitor object", () => {
       it("doesn't call the visitor function", () => {
         const visitorFunction = jest.fn();
-        const visitor = {
+        const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
           itemType: visitorFunction,
         };
 
@@ -240,7 +239,7 @@ describe('visit', () => {
     describe('when the astNode has a string type that exists in the visitor object', () => {
       it("doesn't call the visitor function", () => {
         const visitorFunction = jest.fn();
-        const visitor = {
+        const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
           itemType: visitorFunction,
         };
 
@@ -255,7 +254,7 @@ describe('visit', () => {
     describe("when the astNode doesn't have a string type", () => {
       it('iterates on every values of the astNode', () => {
         const visitorFunction = jest.fn();
-        const visitor = {
+        const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
           itemType1: visitorFunction,
           itemType2: visitorFunction,
         };
@@ -276,7 +275,7 @@ describe('visit', () => {
   describe('when the astNode is an array', () => {
     it('iterates on every values of the astNode', () => {
       const visitorFunction = jest.fn();
-      const visitor = {
+      const visitor: {[type: string]: (node: $FlowFixMe) => void} = {
         itemType1: visitorFunction,
         itemType2: visitorFunction,
       };

@@ -24,7 +24,8 @@ jint SurfaceHandlerBinding::getSurfaceId() {
 }
 
 jboolean SurfaceHandlerBinding::isRunning() {
-  return surfaceHandler_.getStatus() == SurfaceHandler::Status::Running;
+  return static_cast<jboolean>(
+      surfaceHandler_.getStatus() == SurfaceHandler::Status::Running);
 }
 
 jni::local_ref<jstring> SurfaceHandlerBinding::getModuleName() {
@@ -47,23 +48,26 @@ void SurfaceHandlerBinding::setLayoutConstraints(
     jfloat offsetY,
     jboolean doLeftAndRightSwapInRTL,
     jboolean isRTL,
-    jfloat pixelDensity) {
+    jfloat pixelDensity,
+    jfloat fontScale) {
   LayoutConstraints constraints = {};
-  constraints.minimumSize = {minWidth, minHeight};
-  constraints.maximumSize = {maxWidth, maxHeight};
-  constraints.layoutDirection =
-      isRTL ? LayoutDirection::RightToLeft : LayoutDirection::LeftToRight;
+  constraints.minimumSize = {.width = minWidth, .height = minHeight};
+  constraints.maximumSize = {.width = maxWidth, .height = maxHeight};
+  constraints.layoutDirection = (isRTL != 0u) ? LayoutDirection::RightToLeft
+                                              : LayoutDirection::LeftToRight;
 
   LayoutContext context = {};
-  context.swapLeftAndRightInRTL = doLeftAndRightSwapInRTL;
+  context.swapLeftAndRightInRTL = (doLeftAndRightSwapInRTL != 0u);
   context.pointScaleFactor = pixelDensity;
-  context.viewportOffset = {offsetX, offsetY};
+  context.viewportOffset = {.x = offsetX, .y = offsetY};
+  context.fontSizeMultiplier = fontScale;
 
   surfaceHandler_.constraintLayout(constraints, context);
 }
 
 void SurfaceHandlerBinding::setProps(NativeMap* props) {
-  surfaceHandler_.setProps(props->consume());
+  surfaceHandler_.setProps(
+      props != nullptr ? props->consume() : folly::dynamic::object());
 }
 
 const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
@@ -73,9 +77,9 @@ const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
-      makeNativeMethod("getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
-      makeNativeMethod("isRunning", SurfaceHandlerBinding::isRunning),
-      makeNativeMethod("getModuleName", SurfaceHandlerBinding::getModuleName),
+      makeNativeMethod("_getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
+      makeNativeMethod("_isRunning", SurfaceHandlerBinding::isRunning),
+      makeNativeMethod("_getModuleName", SurfaceHandlerBinding::getModuleName),
       makeNativeMethod(
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),

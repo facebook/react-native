@@ -20,9 +20,9 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 
 /**
- * A ReactHost is an object that manages a single {@link ReactInstance}. A ReactHost can be
- * constructed without initializing the ReactInstance, and it will continue to exist after the
- * instance is destroyed.
+ * A ReactHost is an object that manages a single [com.facebook.react.runtime.ReactInstance]. A
+ * ReactHost can be constructed without initializing the ReactInstance, and it will continue to
+ * exist after the instance is destroyed.
  *
  * The implementation of this interface should be Thread Safe
  */
@@ -55,7 +55,7 @@ public interface ReactHost {
   /** To be called when the host activity is resumed. */
   public fun onHostResume(
       activity: Activity?,
-      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?
+      defaultBackButtonImpl: DefaultHardwareBackBtnHandler?,
   )
 
   /** To be called when the host activity is resumed. */
@@ -83,7 +83,7 @@ public interface ReactHost {
   public fun createSurface(
       context: Context,
       moduleName: String,
-      initialProps: Bundle?
+      initialProps: Bundle?,
   ): ReactSurface
 
   /**
@@ -147,7 +147,7 @@ public interface ReactHost {
   public fun destroy(
       reason: String,
       ex: Exception?,
-      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {},
   ): TaskInterface<Void>
 
   /**
@@ -187,6 +187,6 @@ public interface ReactHost {
   /** Add a listener to be notified of ReactInstance events. */
   public fun addReactInstanceEventListener(listener: ReactInstanceEventListener)
 
-  /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
+  /** Remove a listener previously added with [addReactInstanceEventListener]. */
   public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
 }

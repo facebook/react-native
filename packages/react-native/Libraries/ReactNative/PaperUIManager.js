@@ -14,10 +14,11 @@ import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 import NativeUIManager from './NativeUIManager';
 import nullthrows from 'nullthrows';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
-const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
-const Platform = require('../Utilities/Platform');
-const UIManagerProperties = require('./UIManagerProperties');
+const NativeModules = require('../BatchedBridge/NativeModules').default;
+const defineLazyObjectProperty =
+  require('../Utilities/defineLazyObjectProperty').default;
+const Platform = require('../Utilities/Platform').default;
+const UIManagerProperties = require('./UIManagerProperties').default;
 
 const viewManagerConfigs: {[string]: any | null} = {};
 
@@ -36,7 +37,6 @@ function getConstants(): Object {
 function getViewManagerConfig(viewManagerName: string): any {
   if (
     viewManagerConfigs[viewManagerName] === undefined &&
-    global.nativeCallSyncHook && // If we're in the Chrome Debugger, let's not even try calling the sync method
     NativeUIManager.getConstantsForViewManager
   ) {
     try {
@@ -188,4 +188,4 @@ if (!global.nativeCallSyncHook) {
   });
 }
 
-module.exports = UIManagerJS;
+export default UIManagerJS;

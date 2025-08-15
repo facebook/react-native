@@ -4,18 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @oncall react_native
+ * @flow strict
  */
 
-'use strict';
-
-const base64 = require('base64-js');
-const {TextDecoder, TextEncoder} = require('util');
+import binaryToBase64 from '../binaryToBase64';
+import base64 from 'base64-js';
+import {TextDecoder, TextEncoder} from 'util';
 
 describe('binaryToBase64', () => {
-  const binaryToBase64 = require('../binaryToBase64');
-
   it('should encode a Uint8Array', () => {
     const input = new TextEncoder().encode('Test string');
 
@@ -34,15 +30,17 @@ describe('binaryToBase64', () => {
     expect(base64ToString(binaryToBase64(input))).toEqual('Test string');
   });
 
-  it('should not encode a non ArrayBuffer or non typed array', () => {
+  it('should not encode a non-ArrayBuffer or non-TypedArray', () => {
     const input = ['i', 'n', 'v', 'a', 'l', 'i', 'd'];
 
+    // $FlowExpectedError[incompatible-call]
     expect(() => binaryToBase64(input)).toThrowError();
   });
 });
 
-function base64ToString(base64String) {
+function base64ToString(base64String: string) {
   const byteArray = base64.toByteArray(base64String);
 
+  // $FlowFixMe[incompatible-call] - `TextEncoder` constructor type is wrong.
   return new TextDecoder().decode(byteArray);
 }

@@ -70,6 +70,18 @@ class ParagraphAttributes : public DebugStringConvertible {
   Float minimumFontSize{std::numeric_limits<Float>::quiet_NaN()};
   Float maximumFontSize{std::numeric_limits<Float>::quiet_NaN()};
 
+  /*
+   * Specifies the smallest possible scale a font can reach when
+   * adjustsFontSizeToFit is enabled. (values 0.01-1.0).
+   */
+  Float minimumFontScale{std::numeric_limits<Float>::quiet_NaN()};
+
+  /*
+   * The vertical alignment of the text, causing the glyphs to be vertically
+   * aligned in its container.
+   */
+  std::optional<TextAlignmentVertical> textAlignVertical{};
+
   bool operator==(const ParagraphAttributes&) const;
   bool operator!=(const ParagraphAttributes&) const;
 
@@ -96,7 +108,9 @@ struct hash<facebook::react::ParagraphAttributes> {
         attributes.minimumFontSize,
         attributes.maximumFontSize,
         attributes.includeFontPadding,
-        attributes.android_hyphenationFrequency);
+        attributes.android_hyphenationFrequency,
+        attributes.minimumFontScale,
+        attributes.textAlignVertical);
   }
 };
 } // namespace std

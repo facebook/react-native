@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // Determine the base URL (scheme and host) used by a client to reach this

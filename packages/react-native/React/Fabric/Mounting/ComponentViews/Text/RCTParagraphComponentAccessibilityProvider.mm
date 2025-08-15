@@ -62,32 +62,37 @@ using namespace facebook::react;
     accessibilityLabel = RCTNSStringFromString(_attributedString.getString());
   }
   // add first element has the text for the whole textview in order to read out the whole text
-  RCTAccessibilityElement *firstElement =
-      [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view.superview];
+  RCTAccessibilityElement *firstElement = [[RCTAccessibilityElement alloc] initWithAccessibilityContainer:_view];
   firstElement.isAccessibilityElement = YES;
   firstElement.accessibilityTraits = _view.accessibilityTraits;
   firstElement.accessibilityLabel = accessibilityLabel;
   firstElement.accessibilityLanguage = _view.accessibilityLanguage;
-  firstElement.accessibilityFrame = UIAccessibilityConvertFrameToScreenCoordinates(_view.bounds, _view);
   [firstElement setAccessibilityActivationPoint:CGPointMake(
                                                     firstElement.accessibilityFrame.origin.x + 1.0,
                                                     firstElement.accessibilityFrame.origin.y + 1.0)];
+
   [elements addObject:firstElement];
 
   // add additional elements for those parts of text with embedded link so VoiceOver could specially recognize links
-
   [_layoutManager getRectWithAttributedString:_attributedString
                           paragraphAttributes:_paragraphAttributes
                            enumerateAttribute:RCTTextAttributesAccessibilityRoleAttributeName
                                         frame:_frame
                                    usingBlock:^(CGRect fragmentRect, NSString *_Nonnull fragmentText, NSString *value) {
-                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
-                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
-                                       return;
-                                     }
                                      if ((![value isEqualToString:@"button"] && ![value isEqualToString:@"link"])) {
                                        return;
                                      }
+
+                                     if ([fragmentText isEqualToString:firstElement.accessibilityLabel]) {
+                                       if ([value isEqualToString:@"link"]) {
+                                         firstElement.accessibilityTraits |= UIAccessibilityTraitLink;
+                                       } else if ([value isEqualToString:@"button"]) {
+                                         firstElement.accessibilityTraits |= UIAccessibilityTraitButton;
+                                       }
+                                       // The fragment is the entire paragraph. This is handled as `firstElement`.
+                                       return;
+                                     }
+
                                      if ([value isEqualToString:@"button"] &&
                                          ([fragmentText isEqualToString:@"See Less"] ||
                                           [fragmentText isEqualToString:@"See More"])) {
@@ -105,7 +110,7 @@ using namespace facebook::react;
                                        numberOfButtons++;
                                      }
                                      element.accessibilityLabel = fragmentText;
-                                     element.frame = fragmentRect;
+                                     element.frameInContainerSpace = fragmentRect;
                                      [elements addObject:element];
                                    }];
 

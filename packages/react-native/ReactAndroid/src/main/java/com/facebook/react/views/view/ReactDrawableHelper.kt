@@ -31,7 +31,7 @@ public object ReactDrawableHelper {
   @JvmStatic
   public fun createDrawableFromJSDescription(
       context: Context,
-      drawableDescriptionDict: ReadableMap
+      drawableDescriptionDict: ReadableMap,
   ): Drawable? {
     val type = drawableDescriptionDict.getString("type")
     if ("ThemeAttrAndroid" == type) {
@@ -69,7 +69,7 @@ public object ReactDrawableHelper {
 
   private fun getRippleDrawable(
       context: Context,
-      drawableDescriptionDict: ReadableMap
+      drawableDescriptionDict: ReadableMap,
   ): RippleDrawable {
     val color = getColor(context, drawableDescriptionDict)
     val mask = getMask(drawableDescriptionDict)
@@ -92,7 +92,10 @@ public object ReactDrawableHelper {
         drawableDescriptionDict.getInt(ViewProps.COLOR)
       } else {
         if (context.theme.resolveAttribute(
-            android.R.attr.colorControlHighlight, resolveOutValue, true)) {
+            android.R.attr.colorControlHighlight,
+            resolveOutValue,
+            true,
+        )) {
           context.resources.getColor(resolveOutValue.resourceId, context.theme)
         } else {
           throw JSApplicationIllegalArgumentException(

@@ -13,6 +13,7 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import org.junit.Before
@@ -51,7 +52,7 @@ class ReactPropAnnotationSetterTest {
     fun onBoxedIntGroupPropSetterCalled(index: Int, value: Int?)
   }
 
-  @Suppress("UNUSED_PARAMETER")
+  @Suppress("UNUSED_PARAMETER", "DEPRECATION")
   private inner class ViewManagerUnderTest(
       val viewManagerUpdatesReceiver: ViewManagerUpdatesReceiver
   ) : ViewManager<View, ReactShadowNode<*>>() {
@@ -144,7 +145,8 @@ class ReactPropAnnotationSetterTest {
 
     @ReactPropGroup(
         names = ["floatGroupPropWithDefaultFirst", "floatGroupPropWithDefaultSecond"],
-        defaultFloat = -100.0f)
+        defaultFloat = -100.0f,
+    )
     fun setFloatGroupPropWithDefault(v: View?, index: Int, value: Float) {
       viewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value)
     }
@@ -155,7 +157,9 @@ class ReactPropAnnotationSetterTest {
     }
 
     @ReactPropGroup(
-        names = ["intGroupPropWithDefaultFirst", "intGroupPropWithDefaultSecond"], defaultInt = 555)
+        names = ["intGroupPropWithDefaultFirst", "intGroupPropWithDefaultSecond"],
+        defaultInt = 555,
+    )
     fun setIntGroupPropWithDefault(v: View?, index: Int, value: Int) {
       viewManagerUpdatesReceiver.onIntGroupPropSetterCalled(index, value)
     }
@@ -172,6 +176,7 @@ class ReactPropAnnotationSetterTest {
 
   @Before
   fun setup() {
+    ReactNativeFeatureFlagsForTests.setUp()
     updatesReceiverMock = Mockito.mock(ViewManagerUpdatesReceiver::class.java)
     viewManager = ViewManagerUnderTest(updatesReceiverMock)
     targetView = View(RuntimeEnvironment.getApplication())

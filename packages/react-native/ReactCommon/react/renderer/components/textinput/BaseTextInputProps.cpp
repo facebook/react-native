@@ -6,22 +6,18 @@
  */
 
 #include "BaseTextInputProps.h"
-
-#include <react/renderer/core/propsConversions.h>
-
-#include <react/renderer/core/Props.h>
-#include <react/renderer/core/PropsMacros.h>
-
-#include <react/renderer/graphics/Color.h>
-
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/components/textinput/baseConversions.h>
+#include <react/renderer/core/Props.h>
+#include <react/renderer/core/PropsMacros.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
+#include <limits>
 
 namespace facebook::react {
 
@@ -83,7 +79,7 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "maxLength",
           sourceProps.maxLength,
-          {})),
+          {std::numeric_limits<int>::max()})),
       text(convertRawProp(context, rawProps, "text", sourceProps.text, {})),
       mostRecentEventCount(convertRawProp(
           context,
@@ -132,7 +128,13 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "disableKeyboardShortcuts",
           sourceProps.disableKeyboardShortcuts,
-          {false})) {}
+          {false})),
+      acceptDragAndDropTypes(convertRawProp(
+          context,
+          rawProps,
+          "acceptDragAndDropTypes",
+          sourceProps.acceptDragAndDropTypes,
+          {})) {}
 
 void BaseTextInputProps::setProp(
     const PropsParserContext& context,
@@ -195,6 +197,12 @@ void BaseTextInputProps::setProp(
         paragraphAttributes,
         android_hyphenationFrequency,
         "android_hyphenationFrequency");
+    REBUILD_FIELD_SWITCH_CASE(
+        paDefaults,
+        value,
+        paragraphAttributes,
+        textAlignVertical,
+        "textAlignVertical");
   }
 
   switch (hash) {
@@ -215,6 +223,7 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
     RAW_SET_PROP_SWITCH_CASE_BASIC(disableKeyboardShortcuts);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(acceptDragAndDropTypes);
   }
 }
 

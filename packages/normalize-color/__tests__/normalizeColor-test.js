@@ -6,7 +6,6 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -85,6 +84,9 @@ it('handles rgb properly', () => {
   expect(normalizeColor('rgb(256, 256, 256)')).toBe(0xffffffff);
   expect(normalizeColor('rgb(0  0  0)')).toBe(0x000000ff);
   expect(normalizeColor('rgb(0 0 255)')).toBe(0x0000ffff);
+  expect(normalizeColor('rgb(0 0 0 / 0.5)')).toBe(0x00000080);
+  expect(normalizeColor('rgb(0 0 0 / 1)')).toBe(0x000000ff);
+  expect(normalizeColor('rgb(0, 0, 0, 0.5)')).toBe(0x00000080);
 });
 
 it('handles rgba properly', () => {
@@ -98,6 +100,7 @@ it('handles rgba properly', () => {
   expect(normalizeColor('rgba(0  0  0 / 0.0)')).toBe(0x00000000);
   expect(normalizeColor('rgba(0 0 0 / 1)')).toBe(0x000000ff);
   expect(normalizeColor('rgba(100 15 69 / 0.5)')).toBe(0x640f4580);
+  expect(normalizeColor('rgba(0, 0, 0)')).toBe(0x000000ff);
 });
 
 it('handles hsl properly', () => {
@@ -127,14 +130,16 @@ it('handles hsla properly', () => {
 });
 
 it('handles hwb properly', () => {
-  expect(normalizeColor('hwb(0, 0%, 100%)')).toBe(0x000000ff);
-  expect(normalizeColor('hwb(0, 100%, 0%)')).toBe(0xffffffff);
-  expect(normalizeColor('hwb(0, 0%, 0%)')).toBe(0xff0000ff);
-  expect(normalizeColor('hwb(70, 50%, 0%)')).toBe(0xeaff80ff);
-  expect(normalizeColor('hwb(0, 50%, 50%)')).toBe(0x808080ff);
-  expect(normalizeColor('hwb(360, 100%, 100%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(0 0% 100%)')).toBe(0x000000ff);
+  expect(normalizeColor('hwb(0 100% 0%)')).toBe(0xffffffff);
   expect(normalizeColor('hwb(0 0% 0%)')).toBe(0xff0000ff);
   expect(normalizeColor('hwb(70 50% 0%)')).toBe(0xeaff80ff);
+  expect(normalizeColor('hwb(0 50% 50%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(360 100% 100%)')).toBe(0x808080ff);
+  expect(normalizeColor('hwb(0 0% 0%)')).toBe(0xff0000ff);
+  expect(normalizeColor('hwb(70 50% 0%)')).toBe(0xeaff80ff);
+  expect(normalizeColor('hwb(0, 0%, 100%)')).toBe(null);
+  expect(normalizeColor('hwb(200 30% 20% / 0.5)')).toBe(0x4da1cc80);
 });
 
 it('handles named colors properly', () => {

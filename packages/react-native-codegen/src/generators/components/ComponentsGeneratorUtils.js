@@ -245,6 +245,7 @@ function getLocalImports(
         return;
       case 'DimensionPrimitive':
         imports.add('#include <yoga/Yoga.h>');
+        imports.add('#include <react/renderer/core/graphicsConversions.h>');
         return;
       default:
         (name: empty);

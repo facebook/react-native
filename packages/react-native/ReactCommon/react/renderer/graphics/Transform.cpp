@@ -15,32 +15,19 @@
 
 namespace facebook::react {
 
-#if RN_DEBUG_STRING_CONVERTIBLE
-void Transform::print(const Transform& t, std::string prefix) {
-  LOG(ERROR) << prefix << "[ " << t.matrix[0] << " " << t.matrix[1] << " "
-             << t.matrix[2] << " " << t.matrix[3] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[4] << " " << t.matrix[5] << " "
-             << t.matrix[6] << " " << t.matrix[7] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[8] << " " << t.matrix[9] << " "
-             << t.matrix[10] << " " << t.matrix[11] << " ]";
-  LOG(ERROR) << prefix << "[ " << t.matrix[12] << " " << t.matrix[13] << " "
-             << t.matrix[14] << " " << t.matrix[15] << " ]";
-}
-#endif
-
-Transform Transform::Identity() {
+/* static */ Transform Transform::Identity() noexcept {
   return {};
 }
 
-Transform Transform::VerticalInversion() {
+/* static */ Transform Transform::VerticalInversion() noexcept {
   return Transform::Scale(1, -1, 1);
 }
 
-Transform Transform::HorizontalInversion() {
+/* static */ Transform Transform::HorizontalInversion() noexcept {
   return Transform::Scale(-1, 1, 1);
 }
 
-Transform Transform::Perspective(Float perspective) {
+/* static */ Transform Transform::Perspective(Float perspective) noexcept {
   auto transform = Transform{};
   auto Zero = ValueUnit(0, UnitType::Point);
   transform.operations.push_back(TransformOperation{
@@ -52,7 +39,7 @@ Transform Transform::Perspective(Float perspective) {
   return transform;
 }
 
-Transform Transform::Scale(Float x, Float y, Float z) {
+/* static */ Transform Transform::Scale(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   Float xprime = isZero(x) ? 0 : x;
   Float yprime = isZero(y) ? 0 : y;
@@ -70,7 +57,8 @@ Transform Transform::Scale(Float x, Float y, Float z) {
   return transform;
 }
 
-Transform Transform::Translate(Float x, Float y, Float z) {
+/* static */ Transform
+Transform::Translate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   Float xprime = isZero(x) ? 0 : x;
   Float yprime = isZero(y) ? 0 : y;
@@ -88,7 +76,7 @@ Transform Transform::Translate(Float x, Float y, Float z) {
   return transform;
 }
 
-Transform Transform::Skew(Float x, Float y) {
+/* static */ Transform Transform::Skew(Float x, Float y) noexcept {
   auto transform = Transform{};
   Float xprime = isZero(x) ? 0 : x;
   Float yprime = isZero(y) ? 0 : y;
@@ -102,7 +90,7 @@ Transform Transform::Skew(Float x, Float y) {
   return transform;
 }
 
-Transform Transform::RotateX(Float radians) {
+/* static */ Transform Transform::RotateX(Float radians) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
@@ -119,7 +107,7 @@ Transform Transform::RotateX(Float radians) {
   return transform;
 }
 
-Transform Transform::RotateY(Float radians) {
+/* static */ Transform Transform::RotateY(Float radians) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
@@ -136,7 +124,7 @@ Transform Transform::RotateY(Float radians) {
   return transform;
 }
 
-Transform Transform::RotateZ(Float radians) {
+/* static */ Transform Transform::RotateZ(Float radians) noexcept {
   auto transform = Transform{};
   if (!isZero(radians)) {
     auto Zero = ValueUnit(0, UnitType::Point);
@@ -153,7 +141,7 @@ Transform Transform::RotateZ(Float radians) {
   return transform;
 }
 
-Transform Transform::Rotate(Float x, Float y, Float z) {
+/* static */ Transform Transform::Rotate(Float x, Float y, Float z) noexcept {
   auto transform = Transform{};
   if (!isZero(x)) {
     transform = transform * Transform::RotateX(x);
@@ -167,7 +155,7 @@ Transform Transform::Rotate(Float x, Float y, Float z) {
   return transform;
 }
 
-Transform Transform::FromTransformOperation(
+/* static */ Transform Transform::FromTransformOperation(
     TransformOperation transformOperation,
     const Size& size,
     const Transform& transform) {
@@ -210,7 +198,7 @@ Transform Transform::FromTransformOperation(
   return Transform::Identity();
 }
 
-TransformOperation Transform::DefaultTransformOperation(
+/* static */ TransformOperation Transform::DefaultTransformOperation(
     TransformOperationType type) {
   auto Zero = ValueUnit{0, UnitType::Point};
   auto One = ValueUnit{1, UnitType::Point};
@@ -238,7 +226,7 @@ TransformOperation Transform::DefaultTransformOperation(
   }
 }
 
-Transform Transform::Interpolate(
+/* static */ Transform Transform::Interpolate(
     Float animationProgress,
     const Transform& lhs,
     const Transform& rhs,
@@ -255,7 +243,7 @@ Transform Transform::Interpolate(
     if ((haveLHS &&
          lhs.operations[i].type == TransformOperationType::Arbitrary) ||
         (haveRHS &&
-         rhs.operations[i].type == TransformOperationType::Arbitrary)) {
+         rhs.operations[j].type == TransformOperationType::Arbitrary)) {
       return result;
     }
     if (haveLHS && lhs.operations[i].type == TransformOperationType::Identity) {
@@ -314,15 +302,17 @@ Transform Transform::Interpolate(
   return result;
 }
 
-bool Transform::isVerticalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(1, 1), -1.0f);
+/* static */ bool Transform::isVerticalInversion(
+    const Transform& transform) noexcept {
+  return floatEquality(transform.at(1, 1), static_cast<Float>(-1.0f));
 }
 
-bool Transform::isHorizontalInversion(const Transform& transform) {
-  return facebook::react::floatEquality(transform.at(0, 0), -1.0f);
+/* static */ bool Transform::isHorizontalInversion(
+    const Transform& transform) noexcept {
+  return floatEquality(transform.at(0, 0), static_cast<Float>(-1.0f));
 }
 
-bool Transform::operator==(const Transform& rhs) const {
+bool Transform::operator==(const Transform& rhs) const noexcept {
   for (auto i = 0; i < 16; i++) {
     if (matrix[i] != rhs.matrix[i]) {
       return false;
@@ -339,7 +329,7 @@ bool Transform::operator==(const Transform& rhs) const {
   return true;
 }
 
-bool Transform::operator!=(const Transform& rhs) const {
+bool Transform::operator!=(const Transform& rhs) const noexcept {
   return !(*this == rhs);
 }
 
@@ -421,11 +411,11 @@ Transform Transform::operator*(const Transform& rhs) const {
   return result;
 }
 
-Float& Transform::at(int i, int j) {
+Float& Transform::at(int i, int j) noexcept {
   return matrix[(i * 4) + j];
 }
 
-const Float& Transform::at(int i, int j) const {
+const Float& Transform::at(int i, int j) const noexcept {
   return matrix[(i * 4) + j];
 }
 

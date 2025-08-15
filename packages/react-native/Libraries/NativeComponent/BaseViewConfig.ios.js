@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -195,19 +196,21 @@ const validAttributesForNonEventProps = {
   accessibilityIgnoresInvertColors: true,
   accessibilityShowsLargeContentViewer: true,
   accessibilityLargeContentTitle: true,
+  experimental_accessibilityOrder: true,
+  accessibilityRespondsToUserInteraction: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,
   cursor: true,
   opacity: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
-  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer')},
+  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer').default},
   shadowOpacity: true,
   shadowRadius: true,
   needsOffscreenAlphaCompositing: true,
   overflow: true,
   shouldRasterizeIOS: true,
-  transform: {diff: require('../Utilities/differ/matricesDiffer')},
+  transform: {diff: require('../Utilities/differ/matricesDiffer').default},
   transformOrigin: true,
   accessibilityRole: true,
   accessibilityState: true,
@@ -222,15 +225,15 @@ const validAttributesForNonEventProps = {
   borderWidth: true,
   borderBlockWidth: true,
   borderStyle: true,
-  hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
+  hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
-  filter: {
-    process: require('../StyleSheet/processFilter').default,
-  },
-  boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
-  },
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processFilter').default},
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processBoxShadow').default},
   mixBlendMode: true,
   isolation: true,
 
@@ -357,7 +360,7 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
-};
+} as const;
 
 // Props for bubbling and direct events
 const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({

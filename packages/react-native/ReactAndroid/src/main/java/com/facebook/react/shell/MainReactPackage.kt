@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ModuleSpec
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.ClassFinder
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
@@ -54,9 +55,8 @@ import com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
 import com.facebook.react.views.scroll.ReactScrollViewManager
 import com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
 import com.facebook.react.views.switchview.ReactSwitchManager
-import com.facebook.react.views.text.ReactRawTextManager
+import com.facebook.react.views.text.PreparedLayoutTextViewManager
 import com.facebook.react.views.text.ReactTextViewManager
-import com.facebook.react.views.text.ReactVirtualTextViewManager
 import com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
 import com.facebook.react.views.textinput.ReactTextInputManager
 import com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
@@ -115,7 +115,9 @@ constructor(private val config: MainPackageConfig? = null) :
         ImageLoaderModule.NAME -> ImageLoaderModule(reactContext)
         ImageStoreManager.NAME -> ImageStoreManager(reactContext)
         IntentModule.NAME -> IntentModule(reactContext)
-        NativeAnimatedModule.NAME -> NativeAnimatedModule(reactContext)
+        NativeAnimatedModule.NAME ->
+            if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+            else NativeAnimatedModule(reactContext)
         NetworkingModule.NAME -> NetworkingModule(reactContext)
         PermissionsModule.NAME -> PermissionsModule(reactContext)
         ShareModule.NAME -> ShareModule(reactContext)
@@ -129,6 +131,7 @@ constructor(private val config: MainPackageConfig? = null) :
         else -> null
       }
 
+  @Suppress("DEPRECATION")
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> =
       listOf(
           ReactDrawerLayoutManager(),
@@ -143,17 +146,20 @@ constructor(private val config: MainPackageConfig? = null) :
           FrescoBasedReactTextInlineImageViewManager(),
           ReactImageManager(),
           ReactModalHostManager(),
-          ReactRawTextManager(),
+          com.facebook.react.views.text.ReactRawTextManager(),
           ReactTextInputManager(),
-          ReactTextViewManager(),
+          if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
+          else ReactTextViewManager(),
           ReactViewManager(),
-          ReactVirtualTextViewManager(),
-          ReactUnimplementedViewManager())
+          com.facebook.react.views.text.ReactVirtualTextViewManager(),
+          ReactUnimplementedViewManager(),
+      )
 
   /**
    * A map of view managers that should be registered with
    * [com.facebook.react.uimanager.UIManagerModule]
    */
+  @Suppress("DEPRECATION")
   @SuppressLint("VisibleForTests")
   public val viewManagersMap: Map<String, ModuleSpec> =
       mapOf(
@@ -177,15 +183,24 @@ constructor(private val config: MainPackageConfig? = null) :
           ReactImageManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactImageManager() },
           ReactModalHostManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactModalHostManager() },
-          ReactRawTextManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactRawTextManager() },
+          com.facebook.react.views.text.ReactRawTextManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec { com.facebook.react.views.text.ReactRawTextManager() },
           ReactTextInputManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactTextInputManager() },
-          ReactTextViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactTextViewManager() },
+          ReactTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec {
+                if (ReactNativeFeatureFlags.enablePreparedTextLayout())
+                    PreparedLayoutTextViewManager()
+                else ReactTextViewManager()
+              },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactVirtualTextViewManager() },
+          com.facebook.react.views.text.ReactVirtualTextViewManager.REACT_CLASS to
+              ModuleSpec.viewManagerSpec {
+                com.facebook.react.views.text.ReactVirtualTextViewManager()
+              },
           ReactUnimplementedViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() })
+              ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
+      )
 
   public override fun getViewManagers(reactContext: ReactApplicationContext): List<ModuleSpec> =
       viewManagersMap.values.toList()
@@ -195,7 +210,7 @@ constructor(private val config: MainPackageConfig? = null) :
 
   override fun createViewManager(
       reactContext: ReactApplicationContext,
-      viewManagerName: String
+      viewManagerName: String,
   ): ViewManager<*, *>? {
     val spec = viewManagersMap[viewManagerName]
     return spec?.provider?.get() as? ViewManager<*, *>
@@ -216,10 +231,14 @@ constructor(private val config: MainPackageConfig? = null) :
       return fallbackForMissingClass()
     } catch (e: InstantiationException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     } catch (e: IllegalAccessException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for MainReactPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     }
   }
 
@@ -228,30 +247,34 @@ constructor(private val config: MainPackageConfig? = null) :
     // We fall back to creating this by hand
     val moduleList: Array<Class<*>> =
         arrayOf(
-            AccessibilityInfoModule::class.java,
-            AppearanceModule::class.java,
-            AppStateModule::class.java,
-            BlobModule::class.java,
-            DevLoadingModule::class.java,
-            FileReaderModule::class.java,
-            ClipboardModule::class.java,
-            DialogModule::class.java,
-            FrescoModule::class.java,
-            I18nManagerModule::class.java,
-            ImageLoaderModule::class.java,
-            ImageStoreManager::class.java,
-            IntentModule::class.java,
-            NativeAnimatedModule::class.java,
-            NetworkingModule::class.java,
-            PermissionsModule::class.java,
-            ReactDevToolsSettingsManagerModule::class.java,
-            ReactDevToolsRuntimeSettingsModule::class.java,
-            ShareModule::class.java,
-            StatusBarModule::class.java,
-            SoundManagerModule::class.java,
-            ToastModule::class.java,
-            VibrationModule::class.java,
-            WebSocketModule::class.java)
+                AccessibilityInfoModule::class.java,
+                AppearanceModule::class.java,
+                AppStateModule::class.java,
+                BlobModule::class.java,
+                DevLoadingModule::class.java,
+                FileReaderModule::class.java,
+                ClipboardModule::class.java,
+                DialogModule::class.java,
+                FrescoModule::class.java,
+                I18nManagerModule::class.java,
+                ImageLoaderModule::class.java,
+                ImageStoreManager::class.java,
+                IntentModule::class.java,
+                if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) null
+                else NativeAnimatedModule::class.java,
+                NetworkingModule::class.java,
+                PermissionsModule::class.java,
+                ReactDevToolsSettingsManagerModule::class.java,
+                ReactDevToolsRuntimeSettingsModule::class.java,
+                ShareModule::class.java,
+                StatusBarModule::class.java,
+                SoundManagerModule::class.java,
+                ToastModule::class.java,
+                VibrationModule::class.java,
+                WebSocketModule::class.java,
+            )
+            .filterNotNull()
+            .toTypedArray()
 
     val moduleMap =
         moduleList
@@ -265,7 +288,8 @@ constructor(private val config: MainPackageConfig? = null) :
                       reactModule.canOverrideExistingModule,
                       reactModule.needsEagerInit,
                       reactModule.isCxxModule,
-                      classIsTurboModule(moduleClass))
+                      classIsTurboModule(moduleClass),
+                  )
             }
     return ReactModuleInfoProvider { moduleMap }
   }

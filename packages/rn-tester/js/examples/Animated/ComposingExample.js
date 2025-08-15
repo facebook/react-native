@@ -17,6 +17,7 @@ import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useContext, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   FlatList,
@@ -26,7 +27,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 const boxSize = 12;
 const padding = 8;
 const leftToRightTimingConfig = (useNativeDriver: boolean) => ({
@@ -146,14 +147,12 @@ function ComposingExampleItem({
   // Figure out how far along the x axis we should translate the box by taking into
   // account the window width, box size, and padding
   const maxXTranslation = windowWidth - boxSize - 4 * padding;
-  const boxIndexes = React.useMemo(() => [0, 1, 2, 3, 4], []);
-  const xTranslations = React.useRef(
-    boxIndexes.map(() => new Animated.Value(0)),
-  );
-  const animation = React.useRef(
+  const boxIndexes = useMemo(() => [0, 1, 2, 3, 4], []);
+  const xTranslations = useRef(boxIndexes.map(() => new Animated.Value(0)));
+  const animation = useRef(
     compositeAnimation(xTranslations.current, useNativeDriver),
   );
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View style={styles.itemContainer}>
@@ -208,7 +207,7 @@ function ComposingExampleItem({
 }
 
 function ComposingExample(props: Props): React.Node {
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <>

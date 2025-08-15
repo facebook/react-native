@@ -6,15 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {
-  HostInstance,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes.js';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 
 import View from '../../Components/View/View';
 import useRefEffect from '../useRefEffect';
@@ -31,18 +25,7 @@ function TestView({
   childKey: ?string,
   effect: () => (() => void) | void,
 }) {
-  const ref = useRefEffect<{
-    blur(): void,
-    focus(): void,
-    measure(callback: MeasureOnSuccessCallback): void,
-    measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
-    measureLayout(
-      relativeToNativeNode: number | HostInstance,
-      onSuccess: MeasureLayoutOnSuccessCallback,
-      onFail?: () => void,
-    ): void,
-    setNativeProps(nativeProps: {...}): void,
-  }>(effect);
+  const ref = useRefEffect<?HostInstance>(effect);
   return <View key={childKey} ref={ref} testID={childKey} />;
 }
 
@@ -57,7 +40,7 @@ class TestEffect {
     this.key = key;
   }
   static called(name: string, key: ?string): $FlowFixMe {
-    // $FlowIssue[prop-missing] - Flow does not support type augmentation.
+    // $FlowFixMe[prop-missing] - Flow does not support type augmentation.
     return expect.effect(name, key);
   }
 }
@@ -73,7 +56,7 @@ class TestEffectCleanup {
     this.key = key;
   }
   static called(name: string, key: ?string): $FlowFixMe {
-    // $FlowIssue[prop-missing] - Flow does not support type augmentation.
+    // $FlowFixMe[prop-missing] - Flow does not support type augmentation.
     return expect.effectCleanup(name, key);
   }
 }

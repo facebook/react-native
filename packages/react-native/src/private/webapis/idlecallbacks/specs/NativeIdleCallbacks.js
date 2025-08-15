@@ -12,6 +12,8 @@ import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
+export opaque type IdleCallbackID = mixed;
+
 export type RequestIdleCallbackOptions = {
   timeout?: number,
 };
@@ -25,8 +27,8 @@ export interface Spec extends TurboModule {
   +requestIdleCallback: (
     callback: (idleDeadline: IdleDeadline) => mixed,
     options?: RequestIdleCallbackOptions,
-  ) => mixed;
-  +cancelIdleCallback: (handle: mixed) => void;
+  ) => IdleCallbackID;
+  +cancelIdleCallback: (handle: IdleCallbackID) => void;
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

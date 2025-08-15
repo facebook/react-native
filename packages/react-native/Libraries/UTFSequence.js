@@ -10,7 +10,8 @@
 
 'use strict';
 
-const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('./Utilities/deepFreezeAndThrowOnMutationInDev').default;
 
 /**
  * A collection of Unicode sequences for various characters and emoji.
@@ -19,7 +20,7 @@ const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThro
  *  - Source code should be limited to ASCII.
  *  - Less chance of typos.
  */
-const UTFSequence: {|
+const UTFSequence: {
   BOM: string,
   BULLET: string,
   BULLET_SP: string,
@@ -35,7 +36,7 @@ const UTFSequence: {|
   PIZZA: string,
   TRIANGLE_LEFT: string,
   TRIANGLE_RIGHT: string,
-|} = deepFreezeAndThrowOnMutationInDev({
+} = deepFreezeAndThrowOnMutationInDev({
   BOM: '\ufeff', // byte order mark
   BULLET: '\u2022', // bullet: &#8226;
   BULLET_SP: '\u00A0\u2022\u00A0', // &nbsp;&#8226;&nbsp;

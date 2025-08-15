@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -315,7 +314,7 @@ describe('inspector-proxy device socket handoff', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverRef.serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList).toEqual(
           expect.arrayContaining(

@@ -12,6 +12,7 @@
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(facebook-hte-CArray,modernize-avoid-c-arrays)
 const char RootComponentName[] = "RootView";
 
 bool RootShadowNode::layoutIfNeeded(
@@ -54,6 +55,11 @@ RootShadowNode::Unshared RootShadowNode::clone(
   }
 
   return newRootShadowNode;
+}
+
+void RootShadowNode::setInstanceHandle(
+    InstanceHandle::Shared instanceHandle) const {
+  getFamily().setInstanceHandle(instanceHandle);
 }
 
 } // namespace facebook::react

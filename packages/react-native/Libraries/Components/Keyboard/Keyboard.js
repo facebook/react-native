@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
@@ -25,32 +25,32 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-export type KeyboardMetrics = $ReadOnly<{|
+export type KeyboardMetrics = $ReadOnly<{
   screenX: number,
   screenY: number,
   width: number,
   height: number,
-|}>;
+}>;
 
 export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
 
-type BaseKeyboardEvent = {|
+type BaseKeyboardEvent = {
   duration: number,
   easing: KeyboardEventEasing,
   endCoordinates: KeyboardMetrics,
-|};
+};
 
-export type AndroidKeyboardEvent = $ReadOnly<{|
+export type AndroidKeyboardEvent = $ReadOnly<{
   ...BaseKeyboardEvent,
   duration: 0,
   easing: 'keyboard',
-|}>;
+}>;
 
-export type IOSKeyboardEvent = $ReadOnly<{|
+export type IOSKeyboardEvent = $ReadOnly<{
   ...BaseKeyboardEvent,
   startCoordinates: KeyboardMetrics,
   isEventFromThisApp: boolean,
-|}>;
+}>;
 
 type KeyboardEventDefinitions = {
   keyboardWillShow: [KeyboardEvent],
@@ -103,7 +103,7 @@ type KeyboardEventDefinitions = {
  *```
  */
 
-class Keyboard {
+class KeyboardImpl {
   _currentlyShowing: ?KeyboardEvent;
 
   _emitter: NativeEventEmitter<KeyboardEventDefinitions> =
@@ -148,7 +148,7 @@ class Keyboard {
    */
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
+    listener: (...KeyboardEventDefinitions[K]) => mixed,
     context?: mixed,
   ): EventSubscription {
     return this._emitter.addListener(eventType, listener);
@@ -202,4 +202,6 @@ class Keyboard {
   }
 }
 
-module.exports = (new Keyboard(): Keyboard);
+const Keyboard: KeyboardImpl = new KeyboardImpl();
+
+export default Keyboard;

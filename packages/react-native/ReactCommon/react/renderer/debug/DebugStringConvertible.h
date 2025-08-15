@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "flags.h"
+#include <react/renderer/debug/flags.h>
 
 namespace facebook::react {
 
@@ -90,14 +90,26 @@ class DebugStringConvertible {};
 
 /*
  * Set of particular-format-opinionated functions that convert base types to
- * `std::string`; practically incapsulate `folly:to<>` and `folly::format`.
+ * `std::string`
  */
-std::string toString(const std::string& value);
-std::string toString(const int& value);
-std::string toString(const bool& value);
-std::string toString(const float& value);
 std::string toString(const double& value);
 std::string toString(const void* value);
+
+inline std::string toString(const std::string& value) {
+  return value;
+}
+inline std::string toString(const int& value) {
+  return std::to_string(value);
+}
+inline std::string toString(const unsigned int& value) {
+  return std::to_string(value);
+}
+inline std::string toString(const bool& value) {
+  return value ? "true" : "false";
+}
+inline std::string toString(const float& value) {
+  return toString(static_cast<double>(value));
+}
 
 template <typename T>
 std::string toString(const std::optional<T>& value) {
@@ -105,6 +117,19 @@ std::string toString(const std::optional<T>& value) {
     return "null";
   }
   return toString(value.value());
+}
+
+template <typename T>
+std::string toString(const std::vector<T>& value) {
+  std::string result = "[";
+  for (size_t i = 0; i < value.size(); i++) {
+    result += toString(value[i]);
+    if (i < value.size() - 1) {
+      result += ", ";
+    }
+  }
+  result += "]";
+  return result;
 }
 
 /*

@@ -30,6 +30,8 @@
 
 NSString *const RCTContentDidAppearNotification = @"RCTContentDidAppearNotification";
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 @implementation RCTRootView {
   RCTBridge *_bridge;
   NSString *_moduleName;
@@ -396,3 +398,33 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+
+@implementation RCTRootView
+- (nonnull instancetype)initWithFrame:(CGRect)frame
+                               bridge:(nonnull RCTBridge *)bridge
+                           moduleName:(nonnull NSString *)moduleName
+                    initialProperties:(nullable NSDictionary *)initialProperties
+{
+  return self;
+}
+
+- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge
+                            moduleName:(nonnull NSString *)moduleName
+                     initialProperties:(nullable NSDictionary *)initialProperties
+{
+  return self;
+}
+
+- (nonnull instancetype)initWithBundleURL:(nonnull NSURL *)bundleURL
+                               moduleName:(nonnull NSString *)moduleName
+                        initialProperties:(nullable NSDictionary *)initialProperties
+                            launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return self;
+}
+
+@end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

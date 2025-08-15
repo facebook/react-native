@@ -6,44 +6,50 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/internal/react-native-platform-selector.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_render_textlayourmanager_SRC CONFIGURE_DEPENDS
+react_native_android_selector(platform_SRC
+        platform/android/react/renderer/textlayoutmanager/*.cpp
+        platform/cxx/react/renderer/textlayoutmanager/*.cpp)
+file(GLOB react_renderer_textlayourmanager_SRC CONFIGURE_DEPENDS
         *.cpp
-        platform/android/react/renderer/textlayoutmanager/*.cpp)
+        ${platform_SRC})
 
-add_library(react_render_textlayoutmanager
+add_library(react_renderer_textlayoutmanager
         OBJECT
-        ${react_render_textlayourmanager_SRC})
+        ${react_renderer_textlayourmanager_SRC})
 
-target_include_directories(react_render_textlayoutmanager
+react_native_android_selector(platform_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+        ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/)
+target_include_directories(react_renderer_textlayoutmanager
         PUBLIC
           .
           ${REACT_COMMON_DIR}
-          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
+          ${platform_DIR}
 )
 
-target_link_libraries(react_render_textlayoutmanager
+react_native_android_selector(fbjni fbjni "")
+react_native_android_selector(mapbufferjni mapbufferjni "")
+react_native_android_selector(reactnativejni reactnativejni "")
+target_link_libraries(react_renderer_textlayoutmanager
         glog
-        fbjni
+        ${fbjni}
         folly_runtime
-        mapbufferjni
+        ${mapbufferjni}
         react_debug
-        react_render_attributedstring
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
-        react_render_mounting
-        react_render_telemetry
+        react_renderer_attributedstring
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
+        react_renderer_mounting
+        react_renderer_telemetry
         react_utils
-        reactnativejni
+        ${reactnativejni}
         yoga
 )
+target_compile_reactnative_options(react_renderer_textlayoutmanager PRIVATE)
+target_compile_options(react_renderer_textlayoutmanager PRIVATE -Wpedantic)

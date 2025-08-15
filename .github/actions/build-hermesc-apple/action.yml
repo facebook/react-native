@@ -10,6 +10,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Setup xcode
+      uses: ./.github/actions/setup-xcode
     - name: Restore Hermes workspace
       uses: ./.github/actions/restore-hermes-workspace
     - name: Hermes apple cache

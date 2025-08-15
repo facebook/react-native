@@ -36,10 +36,7 @@ export type NativeMutationObserverObserveOptions = {
 
 export interface Spec extends TurboModule {
   +observe: (options: NativeMutationObserverObserveOptions) => void;
-  +unobserve: (
-    mutationObserverId: number,
-    targetShadowNode: ShadowNode,
-  ) => void;
+  +unobserveAll: (mutationObserverId: number) => void;
   +connect: (
     notifyMutationObservers: () => void,
     // We need this to retain the public instance before React removes the

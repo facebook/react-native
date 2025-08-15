@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -87,4 +87,4 @@ function identity(value: mixed) {
   return value;
 }
 
-module.exports = deepFreezeAndThrowOnMutationInDev;
+export default deepFreezeAndThrowOnMutationInDev;

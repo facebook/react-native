@@ -6,12 +6,11 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 export function withAbortSignalForEachTest(): $ReadOnly<{signal: AbortSignal}> {
   const ref: {signal: AbortSignal} = {
-    // $FlowIgnore[unsafe-getters-setters]
+    // $FlowFixMe[unsafe-getters-setters]
     get signal() {
       throw new Error(
         'The return value of withAbortSignalForEachTest is lazily initialized and can only be accessed in tests.',

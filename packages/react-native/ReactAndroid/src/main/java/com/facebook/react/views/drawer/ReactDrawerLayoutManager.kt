@@ -44,7 +44,7 @@ public class ReactDrawerLayoutManager :
 
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactDrawerLayout
+      view: ReactDrawerLayout,
   ) {
     val eventDispatcher =
         UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
@@ -76,7 +76,7 @@ public class ReactDrawerLayoutManager :
       }
 
       drawerPosition.type == ReadableType.String ->
-          setDrawerPositionInternal(view, drawerPosition.asString())
+          setDrawerPositionInternal(view, checkNotNull(drawerPosition.asString()))
 
       else -> {
         FLog.w(ReactConstants.TAG, "drawerPosition must be a string or int")
@@ -91,7 +91,9 @@ public class ReactDrawerLayoutManager :
       "right" -> view.setDrawerPosition(Gravity.END)
       else -> {
         FLog.w(
-            ReactConstants.TAG, "drawerPosition must be 'left' or 'right', received$drawerPosition")
+            ReactConstants.TAG,
+            "drawerPosition must be 'left' or 'right', received$drawerPosition",
+        )
         view.setDrawerPosition(Gravity.START)
       }
     }
@@ -108,20 +110,20 @@ public class ReactDrawerLayoutManager :
     view.setDrawerWidth(widthInPx)
   }
 
-  public override fun setDrawerWidth(view: ReactDrawerLayout, width: Float?) {
-    val widthInPx = width?.let { Math.round(it.dpToPx()) } ?: ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
+  public override fun setDrawerWidth(view: ReactDrawerLayout, value: Float?) {
+    val widthInPx = value?.let { Math.round(it.dpToPx()) } ?: ReactDrawerLayout.DEFAULT_DRAWER_WIDTH
     view.setDrawerWidth(widthInPx)
   }
 
   @ReactProp(name = "drawerLockMode")
-  public override fun setDrawerLockMode(view: ReactDrawerLayout, drawerLockMode: String?) {
-    when (drawerLockMode) {
+  public override fun setDrawerLockMode(view: ReactDrawerLayout, value: String?) {
+    when (value) {
       null,
       "unlocked" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
       "locked-closed" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
       "locked-open" -> view.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
       else -> {
-        FLog.w(ReactConstants.TAG, "Unknown drawerLockMode $drawerLockMode")
+        FLog.w(ReactConstants.TAG, "Unknown drawerLockMode $value")
         view.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
       }
     }
@@ -158,26 +160,16 @@ public class ReactDrawerLayoutManager :
   @Deprecated(
       message =
           "This method is deprecated. Use receiveCommand(ReactDrawerLayout, String, ReadableArray) instead",
-      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"))
+      replaceWith = ReplaceWith("receiveCommand(ReactDrawerLayout, String, ReadableArray)"),
+  )
   public override fun receiveCommand(
-      root: ReactDrawerLayout,
+      view: ReactDrawerLayout,
       commandId: Int,
-      args: ReadableArray?
-  ) {
+      args: ReadableArray?,
+  ): Unit {
     when (commandId) {
-      OPEN_DRAWER -> root.openDrawer()
-      CLOSE_DRAWER -> root.closeDrawer()
-    }
-  }
-
-  public override fun receiveCommand(
-      root: ReactDrawerLayout,
-      commandId: String,
-      args: ReadableArray?
-  ) {
-    when (commandId) {
-      COMMAND_OPEN_DRAWER -> root.openDrawer()
-      COMMAND_CLOSE_DRAWER -> root.closeDrawer()
+      OPEN_DRAWER -> view.openDrawer()
+      CLOSE_DRAWER -> view.closeDrawer()
     }
   }
 
@@ -220,7 +212,7 @@ public class ReactDrawerLayoutManager :
 
   internal class DrawerEventEmitter(
       private val drawerLayout: DrawerLayout,
-      private val eventDispatcher: EventDispatcher
+      private val eventDispatcher: EventDispatcher,
   ) : DrawerListener {
     override fun onDrawerSlide(view: View, v: Float) {
       eventDispatcher.dispatchEvent(

@@ -4,16 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import RNTesterComponentTitle from './RNTesterComponentTitle';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
-type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
+type ViewStyleProp = React.ElementConfig<typeof View>['style'];
 type Props = {
   accessibilityLabel?: ?string,
   testID?: ?string,
@@ -35,7 +36,7 @@ export default function RNTPressableRow({
   style,
   accessibilityLabel,
 }: Props): React.Node {
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
   const label = accessibilityLabel ?? `${title} ${description ?? ''}`;
   return (
     <Pressable

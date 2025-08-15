@@ -13,17 +13,12 @@
 
 #import <memory>
 
-#if USE_HERMES
-#if __has_include(<jsireact/HermesExecutorFactory.h>)
-#import <jsireact/HermesExecutorFactory.h>
-#elif __has_include(<reacthermes/HermesExecutorFactory.h>)
+#if USE_THIRD_PARTY_JSC != 1
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
-#else // USE_HERMES
-#import <React/JSCExecutorFactory.h>
-#endif // USE_HERMES
 
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <jsireact/JSIExecutor.h>
 
 @protocol RCTDependencyProvider;
 
@@ -31,6 +26,8 @@
 namespace facebook::react {
 class RuntimeScheduler;
 }
+RCT_EXTERN NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(
+    id<RCTDependencyProvider> dependencyProvider);
 
 RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
     Class moduleClass,

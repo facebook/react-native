@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -19,6 +19,8 @@ function processAspectRatio(aspectRatio?: number | string): ?number {
   if (typeof aspectRatio !== 'string') {
     if (__DEV__) {
       invariant(
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         !aspectRatio,
         'aspectRatio must either be a number, a ratio string or `auto`. You passed: %s',
         aspectRatio,
@@ -60,4 +62,4 @@ function processAspectRatio(aspectRatio?: number | string): ?number {
   return Number(matches[0]);
 }
 
-module.exports = processAspectRatio;
+export default processAspectRatio;

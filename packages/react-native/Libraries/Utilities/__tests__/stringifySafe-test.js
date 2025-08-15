@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import stringifySafe, {createStringifySafeWithLimits} from '../stringifySafe';
@@ -40,7 +39,7 @@ describe('stringifySafe', () => {
   });
 
   it('stringifySafe stringifies circular objects without toString', () => {
-    const arg = {x: {}, toString: undefined};
+    const arg = {x: {} as {...}, toString: undefined};
     arg.x = arg;
     const result = stringifySafe(arg);
     expect(result).toEqual('["object" failed to stringify]');

@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB rrc_legacyviewmanagerinterop_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(rrc_legacyviewmanagerinterop OBJECT ${rrc_legacyviewmanagerinterop_SRC})
@@ -24,7 +18,9 @@ target_link_libraries(rrc_legacyviewmanagerinterop
         glog_init
         folly_runtime
         jsi
-        react_render_core
+        react_renderer_core
         rrc_view
         yoga
 )
+target_compile_reactnative_options(rrc_legacyviewmanagerinterop PRIVATE)
+target_compile_options(rrc_legacyviewmanagerinterop PRIVATE -Wpedantic)

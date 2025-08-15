@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 import type {
@@ -20,11 +20,13 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
-} from './RawPerformanceEntry';
-import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
+} from './internals/RawPerformanceEntry';
+import MaybeNativePerformance from './specs/NativePerformance';
+import nullthrows from 'nullthrows';
 
 export {PerformanceEntry} from './PerformanceEntry';
+
+const NativePerformance = nullthrows(MaybeNativePerformance);
 
 export class PerformanceObserverEntryList {
   #entries: PerformanceEntryList;
@@ -66,21 +68,14 @@ export type PerformanceObserverCallback = (
   options?: PerformanceObserverCallbackOptions,
 ) => void;
 
-export type PerformanceObserverInit = {
-  entryTypes?: Array<PerformanceEntryType>,
-  type?: PerformanceEntryType,
-  buffered?: boolean,
-  durationThreshold?: DOMHighResTimeStamp,
-};
+export interface PerformanceObserverInit {
+  +entryTypes?: Array<PerformanceEntryType>;
+  +type?: PerformanceEntryType;
+  +buffered?: boolean;
+  +durationThreshold?: DOMHighResTimeStamp;
+}
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
-  if (!NativePerformance) {
-    return Object.freeze([]);
-  }
-  if (!NativePerformance.getSupportedPerformanceEntryTypes) {
-    // fallback if getSupportedPerformanceEntryTypes is not defined on native side
-    return Object.freeze(['mark', 'measure', 'event']);
-  }
   return Object.freeze(
     NativePerformance.getSupportedPerformanceEntryTypes().map(
       rawToPerformanceEntryType,
@@ -119,25 +114,22 @@ export class PerformanceObserver {
   }
 
   observe(options: PerformanceObserverInit): void {
-    if (!NativePerformance || NativePerformance.observe == null) {
-      warnNoNativePerformance();
-      return;
-    }
-
     this.#validateObserveOptions(options);
 
     if (this.#nativeObserverHandle == null) {
       this.#nativeObserverHandle = this.#createNativeObserver();
     }
 
+    const observerHandle = nullthrows(this.#nativeObserverHandle);
+
     if (options.entryTypes) {
       this.#type = 'multiple';
-      NativePerformance.observe?.(this.#nativeObserverHandle, {
+      NativePerformance.observe(observerHandle, {
         entryTypes: options.entryTypes.map(performanceEntryTypeToRaw),
       });
     } else if (options.type) {
       this.#type = 'single';
-      NativePerformance.observe?.(this.#nativeObserverHandle, {
+      NativePerformance.observe(observerHandle, {
         type: performanceEntryTypeToRaw(options.type),
         buffered: options.buffered,
         durationThreshold: options.durationThreshold,
@@ -146,49 +138,40 @@ export class PerformanceObserver {
   }
 
   disconnect(): void {
-    if (!NativePerformance) {
-      warnNoNativePerformance();
-      return;
-    }
-
-    if (this.#nativeObserverHandle == null || !NativePerformance.disconnect) {
+    if (this.#nativeObserverHandle == null) {
       return;
     }
 
     NativePerformance.disconnect(this.#nativeObserverHandle);
   }
 
-  #createNativeObserver(): OpaqueNativeObserverHandle {
-    if (!NativePerformance || !NativePerformance.createObserver) {
-      warnNoNativePerformance();
-      return;
-    }
-
+  #createNativeObserver(): OpaqueNativeObserverHandle | null {
     this.#calledAtLeastOnce = false;
 
-    return NativePerformance.createObserver(() => {
-      const rawEntries = NativePerformance.takeRecords?.(
-        this.#nativeObserverHandle,
-        true, // sort records
-      );
-      if (!rawEntries) {
-        return;
-      }
+    const observerHandle: OpaqueNativeObserverHandle =
+      NativePerformance.createObserver(() => {
+        const rawEntries = NativePerformance.takeRecords(
+          observerHandle,
+          true, // sort records
+        );
+        if (!rawEntries) {
+          return;
+        }
 
-      const entries = rawEntries.map(rawToPerformanceEntry);
-      const entryList = new PerformanceObserverEntryList(entries);
+        const entries = rawEntries.map(rawToPerformanceEntry);
+        const entryList = new PerformanceObserverEntryList(entries);
 
-      let droppedEntriesCount = 0;
-      if (!this.#calledAtLeastOnce) {
-        droppedEntriesCount =
-          NativePerformance.getDroppedEntriesCount?.(
-            this.#nativeObserverHandle,
-          ) ?? 0;
-        this.#calledAtLeastOnce = true;
-      }
+        let droppedEntriesCount = 0;
+        if (!this.#calledAtLeastOnce) {
+          droppedEntriesCount =
+            NativePerformance.getDroppedEntriesCount(observerHandle);
+          this.#calledAtLeastOnce = true;
+        }
 
-      this.#callback(entryList, this, {droppedEntriesCount});
-    });
+        this.#callback(entryList, this, {droppedEntriesCount});
+      });
+
+    return observerHandle;
   }
 
   #validateObserveOptions(options: PerformanceObserverInit): void {

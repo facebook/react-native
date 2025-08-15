@@ -4,11 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {IPerformanceLogger} from '../createPerformanceLogger';
+import type {Extras} from '../IPerformanceLogger';
 
 import createPerformanceLogger from '../createPerformanceLogger';
 import GlobalPerformanceLogger from '../GlobalPerformanceLogger';
@@ -20,8 +21,8 @@ const EXTRA_VALUE_2 = '<extra_value_2>';
 const POINT = '<point>';
 const POINT_TIMESTAMP = 99;
 const POINT_TIMESTAMP_2 = 999;
-const POINT_ANNOTATION_1 = {extra: 'value1'};
-const POINT_ANNOTATION_2 = {extra: 'value2'};
+const POINT_ANNOTATION_1: Extras = {extra: 'value1'};
+const POINT_ANNOTATION_2: Extras = {extra: 'value2'};
 
 describe('PerformanceLogger', () => {
   beforeEach(() => {

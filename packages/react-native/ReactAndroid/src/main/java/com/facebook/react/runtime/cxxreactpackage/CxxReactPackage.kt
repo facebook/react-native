@@ -16,5 +16,8 @@ import com.facebook.react.common.annotations.FrameworkAPI
 @OptIn(FrameworkAPI::class)
 public abstract class CxxReactPackage protected constructor(hybridData: HybridData?) {
 
-  @DoNotStrip @Suppress("NoHungarianNotation") private var mHybridData: HybridData? = hybridData
+  @DoNotStrip
+  @JvmField
+  @Suppress("NoHungarianNotation")
+  protected var mHybridData: HybridData? = hybridData
 }

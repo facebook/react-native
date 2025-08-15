@@ -9,18 +9,16 @@ package com.facebook.react.defaults
 
 import com.facebook.soloader.SoLoader
 
-internal class DefaultSoLoader {
-  companion object {
-    @Synchronized
-    @JvmStatic
-    fun maybeLoadSoLibrary() {
-      SoLoader.loadLibrary("react_newarchdefaults")
-      try {
-        SoLoader.loadLibrary("appmodules")
-      } catch (e: UnsatisfiedLinkError) {
-        // ignore: DefaultTurboModuleManagerDelegate is still used in apps that don't have
-        // appmodules.so
-      }
+internal object DefaultSoLoader {
+  @Synchronized
+  @JvmStatic
+  fun maybeLoadSoLibrary() {
+    SoLoader.loadLibrary("react_newarchdefaults")
+    try {
+      SoLoader.loadLibrary("appmodules")
+    } catch (e: UnsatisfiedLinkError) {
+      // ignore: DefaultTurboModuleManagerDelegate is still used in apps that don't have
+      // appmodules.so
     }
   }
 }

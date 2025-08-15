@@ -18,6 +18,7 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
   >
     <LogBoxInspectorHeaderButton
       disabled={false}
+      id="logbox_header_button_prev"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
@@ -36,6 +37,7 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
       }
     >
       <Text
+        id="logbox_header_title_text"
         style={
           Object {
             "color": "rgba(255, 255, 255, 1)",
@@ -51,6 +53,7 @@ exports[`LogBoxInspectorHeader should render both buttons for two total 1`] = `
     </View>
     <LogBoxInspectorHeaderButton
       disabled={false}
+      id="logbox_header_button_next"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
@@ -81,6 +84,7 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
   >
     <LogBoxInspectorHeaderButton
       disabled={true}
+      id="logbox_header_button_prev"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
@@ -99,6 +103,7 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
       }
     >
       <Text
+        id="logbox_header_title_text"
         style={
           Object {
             "color": "rgba(255, 255, 255, 1)",
@@ -114,6 +119,7 @@ exports[`LogBoxInspectorHeader should render no buttons for one total 1`] = `
     </View>
     <LogBoxInspectorHeaderButton
       disabled={true}
+      id="logbox_header_button_next"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",
@@ -152,6 +158,7 @@ exports[`LogBoxInspectorHeader should render syntax error header 1`] = `
       }
     >
       <Text
+        id="logbox_header_title_text"
         style={
           Object {
             "color": "rgba(255, 255, 255, 1)",
@@ -187,6 +194,7 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
   >
     <LogBoxInspectorHeaderButton
       disabled={true}
+      id="logbox_header_button_prev"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-left.png",
@@ -205,6 +213,7 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
       }
     >
       <Text
+        id="logbox_header_title_text"
         style={
           Object {
             "color": "rgba(255, 255, 255, 1)",
@@ -220,6 +229,7 @@ exports[`LogBoxInspectorHeader should render two buttons for three or more total
     </View>
     <LogBoxInspectorHeaderButton
       disabled={true}
+      id="logbox_header_button_next"
       image={
         Object {
           "testUri": "../Libraries/LogBox/UI/LogBoxImages/chevron-right.png",

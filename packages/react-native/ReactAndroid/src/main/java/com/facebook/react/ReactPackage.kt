@@ -9,9 +9,8 @@ package com.facebook.react
 
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
+import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.StableReactNativeAPI
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 
 /**
@@ -34,10 +33,11 @@ public interface ReactPackage {
    * @return list of native modules to register with the newly created catalyst instance This method
    *   is deprecated in the new Architecture of React Native.
    */
-  @DeprecatedInNewArchitecture(message = "Migrate to BaseReactPackage and implement getModule")
-  public fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule>
+  @Deprecated(message = "Migrate to [BaseReactPackage] and implement [getModule] instead.")
+  public fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> =
+      emptyList()
 
-  /** @return a list of view managers that should be registered with [UIManagerModule] */
+  /** @return a list of view managers that should be registered with [UIManager] */
   public fun createViewManagers(
       reactContext: ReactApplicationContext
   ): List<ViewManager<in Nothing, in Nothing>>

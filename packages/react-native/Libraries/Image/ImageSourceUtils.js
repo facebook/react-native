@@ -15,20 +15,26 @@ import type {ImageProps} from './ImageProps';
 
 import resolveAssetSource from './resolveAssetSource';
 
+export type ImageSourceHeaders = {
+  [string]: string,
+};
+
 /**
  * A function which returns the appropriate value for image source
  * by resolving the `source`, `src` and `srcSet` props.
  */
 export function getImageSourcesFromImageProps(
   imageProps: ImageProps,
-): ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}> {
+):
+  | ?ResolvedAssetSource
+  | $ReadOnlyArray<{uri: string, headers: ImageSourceHeaders, ...}> {
   let source = resolveAssetSource(imageProps.source);
 
   let sources;
 
   const {crossOrigin, referrerPolicy, src, srcSet, width, height} = imageProps;
 
-  const headers: {[string]: string} = {};
+  const headers: ImageSourceHeaders = {};
   if (crossOrigin === 'use-credentials') {
     headers['Access-Control-Allow-Credentials'] = 'true';
   }
@@ -52,14 +58,14 @@ export function getImageSourcesFromImageProps(
           // 1x scale is provided in `srcSet` prop so ignore the `src` prop if provided.
           shouldUseSrcForDefaultScale =
             scale === 1 ? false : shouldUseSrcForDefaultScale;
-          sourceList.push({headers: headers, scale, uri, width, height});
+          sourceList.push({headers, scale, uri, width, height});
         }
       }
     });
 
     if (shouldUseSrcForDefaultScale && src != null) {
       sourceList.push({
-        headers: headers,
+        headers,
         scale: 1,
         uri: src,
         width,
@@ -73,6 +79,8 @@ export function getImageSourcesFromImageProps(
     sources = sourceList;
   } else if (src != null) {
     sources = [{uri: src, headers: headers, width, height}];
+  } else if (source != null && source.uri && Object.keys(headers).length > 0) {
+    sources = [{...source, headers}];
   } else {
     sources = source;
   }

@@ -16,7 +16,7 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 
 /** Basic okhttp3 CookieJar container */
-internal class ReactCookieJarContainer : CookieJarContainer {
+public class ReactCookieJarContainer : CookieJarContainer {
 
   private var cookieJar: CookieJar? = null
 

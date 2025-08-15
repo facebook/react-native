@@ -8,4 +8,4 @@
 package com.facebook.react.uimanager
 
 /** Marker interface to be extended by all code-generated ViewManagerInterface. */
-public interface ViewManagerWithGeneratedInterface {}
+public interface ViewManagerWithGeneratedInterface

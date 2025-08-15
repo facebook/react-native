@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import android.view.View
@@ -154,7 +156,8 @@ class UIManagerModuleConstantsTest {
                         mapOf(
                             "keyToOverride" to "innerValueX",
                             "anotherKey" to "valueX",
-                        )))
+                        ),
+                ))
 
     val managerY = ConcreteViewManager("ManagerY")
     managerY.exportedCustomDirectEventTypeConstants =
@@ -167,7 +170,8 @@ class UIManagerModuleConstantsTest {
                         mapOf(
                             "keyToOverride" to "innerValueY",
                             "extraKey" to "valueY",
-                        )))
+                        ),
+                ))
 
     val viewManagers = listOf(managerX, managerY)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)

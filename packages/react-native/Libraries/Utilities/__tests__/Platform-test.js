@@ -4,14 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-'use strict';
+import type {PlatformSelectSpec} from '../PlatformTypes';
 
-const PlatformAndroid = require('../Platform.android');
-const PlatformIOS = require('../Platform.ios');
+// $FlowFixMe[missing-platform-support]
+import PlatformAndroid from '../Platform.android';
+// $FlowFixMe[missing-platform-support]
+import PlatformIOS from '../Platform.ios';
 
 describe('Platform', () => {
   describe('OS', () => {
@@ -23,19 +25,22 @@ describe('Platform', () => {
 
   describe('select', () => {
     it('should return platform specific value', () => {
-      const obj = {ios: 'ios', android: 'android'};
+      const obj: PlatformSelectSpec<string> = {ios: 'ios', android: 'android'};
       expect(PlatformIOS.select(obj)).toEqual(obj.ios);
       expect(PlatformAndroid.select(obj)).toEqual(obj.android);
     });
 
     it('should return native value if no specific value was found', () => {
-      const obj = {native: 'native', default: 'default'};
+      const obj: PlatformSelectSpec<string> = {
+        native: 'native',
+        default: 'default',
+      };
       expect(PlatformIOS.select(obj)).toEqual(obj.native);
       expect(PlatformAndroid.select(obj)).toEqual(obj.native);
     });
 
     it('should return default value if no specific value was found', () => {
-      const obj = {default: 'default'};
+      const obj: PlatformSelectSpec<string> = {default: 'default'};
       expect(PlatformIOS.select(obj)).toEqual(obj.default);
       expect(PlatformAndroid.select(obj)).toEqual(obj.default);
     });

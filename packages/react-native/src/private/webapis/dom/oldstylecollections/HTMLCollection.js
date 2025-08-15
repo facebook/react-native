@@ -4,20 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
 
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
-import {createValueIterator} from './ArrayLikeUtils';
+import {createValueIterator} from '../../utils/ArrayLikeUtils';
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 
 // IMPORTANT: The type definition for this module is defined in `HTMLCollection.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-// $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
+// $FlowFixMe[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
   #length: number;
 
@@ -63,11 +64,13 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
     return null;
   }
 
-  // $FlowIssue[unsupported-syntax] Flow does not support computed properties in classes.
+  // $FlowFixMe[unsupported-syntax] Flow does not support computed properties in classes.
   [Symbol.iterator](): Iterator<T> {
     return createValueIterator(this);
   }
 }
+
+setPlatformObject(HTMLCollection);
 
 /**
  * This is an internal method to create instances of `HTMLCollection`,

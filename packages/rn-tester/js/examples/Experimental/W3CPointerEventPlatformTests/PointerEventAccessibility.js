@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventOccurrence} from './PointerEventSupport';
-import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {PointerEvent} from 'react-native';
 
 import {EventTracker} from './PointerEventSupport';
 import * as React from 'react';
@@ -29,12 +29,16 @@ export default function PointerEventAccessibility(props: {}): React.MixedElement
       <View style={styles.clickableContainer}>
         <EventTracker
           id="pointer-parent"
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           eventsToTrack={eventsToTrack}
           style={styles.targetParent}
           onAnyEvent={onAnyEvent}
           focusable={true}>
           <EventTracker
             id="pointer-child"
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */
             eventsToTrack={eventsToTrack}
             onAnyEvent={onAnyEvent}
             style={styles.target}

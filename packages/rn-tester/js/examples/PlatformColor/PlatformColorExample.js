@@ -4,14 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {ColorValue} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
-import {DynamicColorIOS, PlatformColor, StyleSheet, View} from 'react-native';
-import Platform from 'react-native/Libraries/Utilities/Platform';
+import {
+  DynamicColorIOS,
+  Platform,
+  PlatformColor,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 function PlatformColorsExample() {
   function createTable() {
@@ -191,7 +199,7 @@ function PlatformColorsExample() {
 }
 
 function FallbackColorsExample() {
-  let color = {};
+  let color: {label?: string, color?: ColorValue} = {};
   if (Platform.OS === 'ios') {
     color = {
       label: "PlatformColor('bogus', 'systemGreenColor')",
@@ -350,4 +358,4 @@ exports.examples = [
       return <VariantColorsExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

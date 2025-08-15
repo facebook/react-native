@@ -9,12 +9,12 @@
 
 #include <glog/logging.h>
 
-#include <folly/Memory.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/SysStat.h>
 #include <folly/portability/Unistd.h>
 
+#include <cstring>
 #include <memory>
 
 namespace facebook::react {
@@ -49,7 +49,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
 }
 
 JSBigFileString::~JSBigFileString() {
-  if (m_data) {
+  if (m_data != nullptr) {
     munmap((void*)m_data, m_size);
   }
   folly::fileops::close(m_fd);
@@ -59,9 +59,9 @@ const char* JSBigFileString::c_str() const {
   if (m_size == 0) {
     return "";
   }
-  if (!m_data) {
-    m_data =
-        (const char*)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
+  if (m_data == nullptr) {
+    m_data = (const char*)mmap(
+        nullptr, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
     CHECK(m_data != MAP_FAILED)
         << " fd: " << m_fd << " size: " << m_size << " offset: " << m_mapOff
         << " error: " << std::strerror(errno);

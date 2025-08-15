@@ -8,9 +8,9 @@
 #import "RCTCxxModule.h"
 
 #import <React/RCTBridge.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTLog.h>
 #import <cxxreact/CxxModule.h>
+#import <react/utils/FollyConvert.h>
 
 #import "RCTCxxMethod.h"
 

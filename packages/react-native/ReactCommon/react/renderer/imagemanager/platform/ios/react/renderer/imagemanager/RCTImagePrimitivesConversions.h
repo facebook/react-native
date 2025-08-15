@@ -144,7 +144,7 @@ inline static NSURLRequest *NSURLRequestFromImageSource(const facebook::react::I
   for (const auto &header : imageSource.headers) {
     NSString *key = [NSString stringWithUTF8String:header.first.c_str()];
     NSString *value = [NSString stringWithUTF8String:header.second.c_str()];
-    if (key != NULL && value != NULL) {
+    if (key != nullptr && value != nullptr) {
       [request setValue:value forHTTPHeaderField:key];
     }
   }

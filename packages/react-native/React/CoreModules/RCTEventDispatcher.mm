@@ -107,6 +107,7 @@ RCT_EXPORT_MODULE()
           break;
         case '\n':
           key = @"Enter";
+          break;
         default:
           break;
       }

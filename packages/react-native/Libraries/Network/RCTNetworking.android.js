@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -50,7 +50,7 @@ const emitter = new NativeEventEmitter<$FlowFixMe>(
 const RCTNetworking = {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
+    listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed,
   ): EventSubscription {
     // $FlowFixMe[incompatible-call]
@@ -59,7 +59,7 @@ const RCTNetworking = {
 
   sendRequest(
     method: string,
-    trackingName: string,
+    trackingName: string | void,
     url: string,
     headers: Object,
     data: RequestBody,

@@ -96,6 +96,10 @@ class YG_EXPORT Node : public ::YGNode {
     return config_->hasErrata(errata);
   }
 
+  bool hasContentsChildren() const {
+    return contentsChildrenCount_ != 0;
+  }
+
   YGDirtiedFunc getDirtiedFunc() const {
     return dirtiedFunc_;
   }
@@ -244,15 +248,12 @@ class YG_EXPORT Node : public ::YGNode {
     owner_ = owner;
   }
 
-  void setChildren(const std::vector<Node*>& children) {
-    children_ = children;
-  }
-
   // TODO: rvalue override for setChildren
 
   void setConfig(Config* config);
 
   void setDirty(bool isDirty);
+  void setChildren(const std::vector<Node*>& children);
   void setLayoutLastOwnerDirection(Direction direction);
   void setLayoutComputedFlexBasis(FloatOptional computedFlexBasis);
   void setLayoutComputedFlexBasisGeneration(
@@ -286,6 +287,7 @@ class YG_EXPORT Node : public ::YGNode {
   void removeChild(size_t index);
 
   void cloneChildrenIfNeeded();
+  void cloneContentsChildrenIfNeeded();
   void markDirtyAndPropagate();
   float resolveFlexGrow() const;
   float resolveFlexShrink() const;

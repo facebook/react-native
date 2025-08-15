@@ -4,17 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 
 import BaseViewConfig from './BaseViewConfig';
 
-export type PartialViewConfigWithoutName = $Rest<
+export type PartialViewConfigWithoutName = Omit<
   PartialViewConfig,
-  {uiViewClassName: string},
+  'uiViewClassName',
 >;
 
 const PlatformBaseViewConfig: PartialViewConfigWithoutName = BaseViewConfig;

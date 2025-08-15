@@ -476,6 +476,7 @@ RCT_EXTERN_C_END
     [self processMethodSignature];
     RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
   }
+
   return _selector;
 }
 

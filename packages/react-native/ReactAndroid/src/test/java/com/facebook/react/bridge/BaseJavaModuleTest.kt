@@ -13,12 +13,13 @@ import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /** Tests for [BaseJavaModule] and [JavaModuleWrapper] */
+@Suppress("DEPRECATION")
 @Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 @RunWith(RobolectricTestRunner::class)
 class BaseJavaModuleTest {
@@ -30,13 +31,14 @@ class BaseJavaModuleTest {
 
   @Before
   fun setup() {
+    val jsInstance = mock<JSInstance>()
     val moduleHolder = ModuleHolder(MethodsModule())
-    moduleWrapper = JavaModuleWrapper(null, moduleHolder)
+    moduleWrapper = JavaModuleWrapper(jsInstance, moduleHolder)
     methods = moduleWrapper.methodDescriptors
     val generatedModuleHolder = ModuleHolder(GeneratedMethodsModule())
-    generatedModuleWrapper = JavaModuleWrapper(null, generatedModuleHolder)
+    generatedModuleWrapper = JavaModuleWrapper(jsInstance, generatedModuleHolder)
     generatedMethods = generatedModuleWrapper.methodDescriptors
-    arguments = mock(ReadableNativeArray::class.java)
+    arguments = mock<ReadableNativeArray>()
   }
 
   private fun findMethod(mname: String, methods: List<JavaModuleWrapper.MethodDescriptor>): Int =

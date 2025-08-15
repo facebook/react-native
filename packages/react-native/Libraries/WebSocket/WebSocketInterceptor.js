@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
@@ -40,50 +40,78 @@ let isInterceptorEnabled = false;
 const WebSocketInterceptor = {
   /**
    * Invoked when RCTWebSocketModule.close(...) is called.
+   * The callback is invoked with the following parameters:
+   * - `'code'` - The status code explaining why the connection was closed,
+   * - `'reason'` - The reason explaining why the connection was closed,
+   * - `'socketId'` - The id of the socket.
    */
-  setCloseCallback(callback: $FlowFixMe) {
+  setCloseCallback(callback: ?(number | null, string | null, number) => void) {
     closeCallback = callback;
   },
 
   /**
    * Invoked when RCTWebSocketModule.send(...) or sendBinary(...) is called.
+   * The callback is invoked with the following parameters:
+   * - `'data'` - The data sent,
+   * - `'socketId'` - The id of the socket.
    */
-  setSendCallback(callback: $FlowFixMe) {
+  setSendCallback(callback: ?(string | ArrayBuffer, number) => void) {
     sendCallback = callback;
   },
 
   /**
    * Invoked when RCTWebSocketModule.connect(...) is called.
+   * The callback is invoked with the following parameters:
+   * - `'url'` - The url of the socket,
+   * - `'protocols'` - The protocols of the socket,
+   * - `'options'` - The options of the socket,
+   * - `'socketId'` - The id of the socket.
    */
-  setConnectCallback(callback: $FlowFixMe) {
+  setConnectCallback(
+    callback: ?(string, Array<string> | null, Array<string>, number) => void,
+  ) {
     connectCallback = callback;
   },
 
   /**
    * Invoked when event "websocketOpen" happens.
+   * The callback is invoked with the following parameters:
+   * - `'socketId'` - The id of the socket.
    */
-  setOnOpenCallback(callback: $FlowFixMe) {
+  setOnOpenCallback(callback: ?(number) => void) {
     onOpenCallback = callback;
   },
 
   /**
    * Invoked when event "websocketMessage" happens.
+   * The callback is invoked with the following parameters:
+   * - `'data'` - The data received,
+   * - `'socketId'` - The id of the socket.
    */
-  setOnMessageCallback(callback: $FlowFixMe) {
+  setOnMessageCallback(callback: ?(string | ArrayBuffer, number) => void) {
     onMessageCallback = callback;
   },
 
   /**
    * Invoked when event "websocketFailed" happens.
+   * The callback is invoked with the following parameters:
+   * - `'message'` - The error message,
+   * - `'socketId'` - The id of the socket.
    */
-  setOnErrorCallback(callback: $FlowFixMe) {
+  setOnErrorCallback(callback: ?({message: string}, number) => void) {
     onErrorCallback = callback;
   },
 
   /**
    * Invoked when event "websocketClosed" happens.
+   * The callback is invoked with the following parameters:
+   * - `'code'` - The status code explaining why the connection was closed,
+   * - `'reason'` - The reason explaining why the connection was closed,
+   * - `'socketId'` - The id of the socket.
    */
-  setOnCloseCallback(callback: $FlowFixMe) {
+  setOnCloseCallback(
+    callback: ?({code: number, reason: ?string}, number) => void,
+  ) {
     onCloseCallback = callback;
   },
 
@@ -105,10 +133,10 @@ const WebSocketInterceptor = {
       eventEmitter.addListener('websocketMessage', ev => {
         if (onMessageCallback) {
           onMessageCallback(
-            ev.id,
             ev.type === 'binary'
               ? WebSocketInterceptor._arrayBufferToString(ev.data)
               : ev.data,
+            ev.id,
           );
         }
       }),
@@ -121,13 +149,13 @@ const WebSocketInterceptor = {
       // $FlowFixMe[incompatible-type]
       eventEmitter.addListener('websocketClosed', ev => {
         if (onCloseCallback) {
-          onCloseCallback(ev.id, {code: ev.code, reason: ev.reason});
+          onCloseCallback({code: ev.code, reason: ev.reason}, ev.id);
         }
       }),
       // $FlowFixMe[incompatible-type]
       eventEmitter.addListener('websocketFailed', ev => {
         if (onErrorCallback) {
-          onErrorCallback(ev.id, {message: ev.message});
+          onErrorCallback({message: ev.message}, ev.id);
         }
       }),
     ];
@@ -244,4 +272,4 @@ const WebSocketInterceptor = {
   },
 };
 
-module.exports = WebSocketInterceptor;
+export default WebSocketInterceptor;

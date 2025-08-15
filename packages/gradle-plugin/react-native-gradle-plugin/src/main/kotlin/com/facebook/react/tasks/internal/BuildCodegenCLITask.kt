@@ -9,10 +9,10 @@ package com.facebook.react.tasks.internal
 
 import com.facebook.react.utils.Os.unixifyPath
 import com.facebook.react.utils.windowsAwareBashCommandLine
-import java.io.File
 import java.io.FileOutputStream
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
@@ -28,26 +28,28 @@ abstract class BuildCodegenCLITask : Exec() {
 
   @get:Internal abstract val bashWindowsHome: Property<String>
 
-  @get:InputFiles
-  val inputFiles: FileTree = project.fileTree(codegenDir) { it.include("src/**/*.js") }
+  @get:Internal abstract val rootProjectName: Property<String>
 
-  @get:OutputFiles
-  val outputFiles: FileTree =
-      project.fileTree(codegenDir) {
-        it.include("lib/**/*.js")
-        it.include("lib/**/*.js.flow")
-      }
+  @get:InputFiles abstract val inputFiles: Property<FileTree>
+
+  @get:OutputFiles abstract val outputFiles: Property<FileTree>
+
+  @get:OutputFile abstract val logFile: RegularFileProperty
 
   override fun exec() {
-    val logfile = "${project.layout.buildDirectory.getAsFile().get()}/build-cli.log"
-    File(logfile).apply {
-      parentFile.mkdirs()
-      if (exists()) {
-        delete()
-      }
-      createNewFile()
+    // For build from source scenario, we don't need to build the codegen at all.
+    if (rootProjectName.get() == "react-native-build-from-source") {
+      return
     }
-    standardOutput = FileOutputStream(logfile)
+    val logFileConcrete =
+        logFile.get().asFile.apply {
+          parentFile.mkdirs()
+          if (exists()) {
+            delete()
+          }
+          createNewFile()
+        }
+    standardOutput = FileOutputStream(logFileConcrete)
     commandLine(
         windowsAwareBashCommandLine(
             codegenDir.asFile.get().canonicalPath.unixifyPath().plus(BUILD_SCRIPT_PATH),

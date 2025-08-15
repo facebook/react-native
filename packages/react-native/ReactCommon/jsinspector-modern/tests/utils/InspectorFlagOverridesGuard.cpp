@@ -31,6 +31,11 @@ class ReactNativeFeatureFlagsOverrides
         ReactNativeFeatureFlagsDefaults::fuseboxEnabledRelease());
   }
 
+  bool fuseboxNetworkInspectionEnabled() override {
+    return overrides_.networkInspectionEnabled.value_or(
+        ReactNativeFeatureFlagsDefaults::fuseboxNetworkInspectionEnabled());
+  }
+
  private:
   InspectorFlagOverrides overrides_;
 };

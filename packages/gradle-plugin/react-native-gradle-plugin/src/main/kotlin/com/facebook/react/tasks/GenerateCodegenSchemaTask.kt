@@ -9,9 +9,12 @@ package com.facebook.react.tasks
 
 import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
+import java.io.File
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileTree
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 
@@ -28,16 +31,11 @@ abstract class GenerateCodegenSchemaTask : Exec() {
 
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
+  @get:Input abstract val nodeWorkingDir: Property<String>
+
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
-  @get:InputFiles
-  val jsInputFiles =
-      project.fileTree(jsRootDir) {
-        it.include("**/*.js")
-        it.include("**/*.ts")
-        // We want to exclude the build directory, to don't pick them up for execution avoidance.
-        it.exclude("**/build/**/*")
-      }
+  @get:InputFiles abstract val jsInputFiles: Property<FileTree>
 
   @get:OutputFile
   val generatedSchemaFile: Provider<RegularFile> = generatedSrcDir.file("schema.json")
@@ -56,7 +54,7 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   }
 
   internal fun setupCommandLine() {
-    val workingDir = project.projectDir
+    val workingDir = File(nodeWorkingDir.get())
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),

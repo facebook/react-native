@@ -16,17 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
-header_search_paths = [
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fast_float/include\"",
-    "\"$(PODS_ROOT)/fmt/include\""
-]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the Renderer/Debug access its own files
@@ -41,8 +31,7 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h,mm}"
-  s.compiler_flags         = folly_compiler_flags
+  s.source_files           = podspec_sources("**/*.{cpp,h,mm}", "**/*.h")
   s.header_dir             = "react/renderer/debug"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
@@ -51,14 +40,12 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES"
   }
 
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.module_name            = "React_rendererdebug"
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
-  s.dependency "fmt", "11.0.2"
   add_dependency(s, "React-debug")
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

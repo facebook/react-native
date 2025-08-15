@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {Parser} from '../parser';
 import type {TypeDeclarationMap} from '../utils';
 
 export type LegalDefaultValues = string | number | boolean | null;
@@ -98,11 +99,12 @@ function evaluateLiteral(
 function handleUnionAndParen(
   type: $FlowFixMe,
   result: TopLevelTypeInternal,
+  parser: Parser,
   knownTypes?: TypeDeclarationMap,
 ): void {
   switch (type.type) {
     case 'TSParenthesizedType': {
-      handleUnionAndParen(type.typeAnnotation, result, knownTypes);
+      handleUnionAndParen(type.typeAnnotation, result, parser, knownTypes);
       break;
     }
     case 'TSUnionType': {
@@ -115,15 +117,20 @@ function handleUnionAndParen(
       }
       for (const t of type.types) {
         if (!isNullOrVoid(t)) {
-          handleUnionAndParen(t, result, knownTypes);
+          handleUnionAndParen(t, result, parser, knownTypes);
         }
       }
       break;
     }
     case 'TSTypeReference':
       if (type.typeName.name === 'Readonly') {
-        handleUnionAndParen(type.typeParameters.params[0], result, knownTypes);
-      } else if (type.typeName.name === 'WithDefault') {
+        handleUnionAndParen(
+          type.typeParameters.params[0],
+          result,
+          parser,
+          knownTypes,
+        );
+      } else if (parser.getTypeAnnotationName(type) === 'WithDefault') {
         if (result.optional) {
           throw new Error(
             'WithDefault<> is optional and does not need to be marked as optional. Please remove the union of undefined and/or null',
@@ -141,7 +148,12 @@ function handleUnionAndParen(
         }
         result.optional = true;
         result.defaultValue = evaluateLiteral(type.typeParameters.params[1]);
-        handleUnionAndParen(type.typeParameters.params[0], result, knownTypes);
+        handleUnionAndParen(
+          type.typeParameters.params[0],
+          result,
+          parser,
+          knownTypes,
+        );
       } else if (!knownTypes) {
         result.unions.push(type);
       } else {
@@ -152,7 +164,7 @@ function handleUnionAndParen(
         ) {
           result.unions.push(type);
         } else {
-          handleUnionAndParen(resolvedType, result, knownTypes);
+          handleUnionAndParen(resolvedType, result, parser, knownTypes);
         }
       }
       break;
@@ -163,10 +175,11 @@ function handleUnionAndParen(
 
 function parseTopLevelType(
   type: $FlowFixMe,
+  parser: Parser,
   knownTypes?: TypeDeclarationMap,
 ): TopLevelType {
   let result: TopLevelTypeInternal = {unions: [], optional: false};
-  handleUnionAndParen(type, result, knownTypes);
+  handleUnionAndParen(type, result, parser, knownTypes);
   if (result.unions.length === 0) {
     throw new Error('Union type could not be just null or undefined.');
   } else if (result.unions.length === 1) {
@@ -187,16 +200,22 @@ function parseTopLevelType(
 function handleIntersectionAndParen(
   type: $FlowFixMe,
   result: Array<$FlowFixMe>,
+  parser: Parser,
   knownTypes?: TypeDeclarationMap,
 ): void {
   switch (type.type) {
     case 'TSParenthesizedType': {
-      handleIntersectionAndParen(type.typeAnnotation, result, knownTypes);
+      handleIntersectionAndParen(
+        type.typeAnnotation,
+        result,
+        parser,
+        knownTypes,
+      );
       break;
     }
     case 'TSIntersectionType': {
       for (const t of type.types) {
-        handleIntersectionAndParen(t, result, knownTypes);
+        handleIntersectionAndParen(t, result, parser, knownTypes);
       }
       break;
     }
@@ -205,9 +224,10 @@ function handleIntersectionAndParen(
         handleIntersectionAndParen(
           type.typeParameters.params[0],
           result,
+          parser,
           knownTypes,
         );
-      } else if (type.typeName.name === 'WithDefault') {
+      } else if (parser.getTypeAnnotationName(type) === 'WithDefault') {
         throw new Error('WithDefault<> is now allowed in intersection types.');
       } else if (!knownTypes) {
         result.push(type);
@@ -219,7 +239,7 @@ function handleIntersectionAndParen(
         ) {
           result.push(type);
         } else {
-          handleIntersectionAndParen(resolvedType, result, knownTypes);
+          handleIntersectionAndParen(resolvedType, result, parser, knownTypes);
         }
       }
       break;
@@ -230,10 +250,11 @@ function handleIntersectionAndParen(
 
 function flattenIntersectionType(
   type: $FlowFixMe,
+  parser: Parser,
   knownTypes?: TypeDeclarationMap,
 ): Array<$FlowFixMe> {
   const result: Array<$FlowFixMe> = [];
-  handleIntersectionAndParen(type, result, knownTypes);
+  handleIntersectionAndParen(type, result, parser, knownTypes);
   return result;
 }
 

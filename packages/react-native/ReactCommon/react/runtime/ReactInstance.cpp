@@ -21,6 +21,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
+#include <react/timing/primitives.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
 #include <memory>
@@ -35,7 +36,9 @@ std::shared_ptr<RuntimeScheduler> createRuntimeScheduler(
     RuntimeSchedulerTaskErrorHandler taskErrorHandler) {
   std::shared_ptr<RuntimeScheduler> scheduler =
       std::make_shared<RuntimeScheduler>(
-          runtimeExecutor, RuntimeSchedulerClock::now, taskErrorHandler);
+          std::move(runtimeExecutor),
+          HighResTimeStamp::now,
+          std::move(taskErrorHandler));
   scheduler->setPerformanceEntryReporter(
       // FIXME: Move creation of PerformanceEntryReporter to here and
       // guarantee that its lifetime is the same as the runtime.
@@ -53,7 +56,7 @@ ReactInstance::ReactInstance(
     JsErrorHandler::OnJsError onJsError,
     jsinspector_modern::HostTarget* parentInspectorTarget)
     : runtime_(std::move(runtime)),
-      jsMessageQueueThread_(jsMessageQueueThread),
+      jsMessageQueueThread_(std::move(jsMessageQueueThread)),
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(std::make_shared<JsErrorHandler>(std::move(onJsError))),
       parentInspectorTarget_(parentInspectorTarget) {
@@ -81,14 +84,6 @@ ReactInstance::ReactInstance(
             try {
               ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
               callback(jsiRuntime);
-
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
             } catch (jsi::JSError& originalError) {
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {
@@ -100,7 +95,7 @@ ReactInstance::ReactInstance(
         }
       };
 
-  if (parentInspectorTarget_) {
+  if (parentInspectorTarget_ != nullptr) {
     auto executor = parentInspectorTarget_->executorFromThis();
 
     auto bufferedRuntimeExecutorThatWaitsForInspectorSetup =
@@ -162,7 +157,7 @@ ReactInstance::ReactInstance(
 }
 
 void ReactInstance::unregisterFromInspector() {
-  if (inspectorTarget_) {
+  if (inspectorTarget_ != nullptr) {
     assert(runtimeInspectorTarget_);
     inspectorTarget_->unregisterRuntime(*runtimeInspectorTarget_);
 
@@ -207,7 +202,7 @@ namespace {
 // Copied from JSIExecutor.cpp
 // basename_r isn't in all iOS SDKs, so use this simple version instead.
 std::string simpleBasename(const std::string& path) {
-  size_t pos = path.rfind("/");
+  size_t pos = path.rfind('/');
   return (pos != std::string::npos) ? path.substr(pos) : path;
 }
 
@@ -223,7 +218,8 @@ std::string simpleBasename(const std::string& path) {
 void ReactInstance::loadScript(
     std::unique_ptr<const JSBigString> script,
     const std::string& sourceURL,
-    std::function<void(jsi::Runtime& runtime)>&& completion) {
+    std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
+    std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
   auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
@@ -234,9 +230,13 @@ void ReactInstance::loadScript(
                                    weakBufferedRuntimeExecuter =
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
-                                   completion](jsi::Runtime& runtime) {
+                                   beforeLoad,
+                                   afterLoad](jsi::Runtime& runtime) {
+    if (beforeLoad) {
+      beforeLoad(runtime);
+    }
     TraceSection s("ReactInstance::loadScript");
-    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl != nullptr);
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
           ReactMarker::RUN_JS_BUNDLE_START, scriptName.c_str());
@@ -263,8 +263,8 @@ void ReactInstance::loadScript(
             weakBufferedRuntimeExecuter.lock()) {
       strongBufferedRuntimeExecuter->flush();
     }
-    if (completion) {
-      completion(runtime);
+    if (afterLoad) {
+      afterLoad(runtime);
     }
   });
 }
@@ -338,7 +338,7 @@ void ReactInstance::registerSegment(
                << segmentId;
   runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
     TraceSection s("ReactInstance::registerSegment");
-    const auto tag = folly::to<std::string>(segmentId);
+    auto tag = std::to_string(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
     if (script->size() == 0) {
       throw std::invalid_argument(
@@ -346,7 +346,7 @@ void ReactInstance::registerSegment(
     }
     auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
 
-    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
+    bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl != nullptr);
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
           ReactMarker::REGISTER_JS_SEGMENT_START, tag.c_str());
@@ -367,7 +367,7 @@ void ReactInstance::registerSegment(
 namespace {
 void defineReactInstanceFlags(
     jsi::Runtime& runtime,
-    ReactInstance::JSRuntimeFlags options) noexcept {
+    const ReactInstance::JSRuntimeFlags& options) noexcept {
   defineReadOnlyGlobal(runtime, "RN$Bridgeless", jsi::Value(true));
 
   if (options.isProfiling) {
@@ -392,7 +392,10 @@ bool isTruthy(jsi::Runtime& runtime, const jsi::Value& value) {
 void ReactInstance::initializeRuntime(
     JSRuntimeFlags options,
     BindingsInstallFunc bindingsInstallFunc) noexcept {
-  runtimeScheduler_->scheduleWork([this, options, bindingsInstallFunc](
+  runtimeScheduler_->scheduleWork([this,
+                                   options = std::move(options),
+                                   bindingsInstallFunc =
+                                       std::move(bindingsInstallFunc)](
                                       jsi::Runtime& runtime) {
     TraceSection s("ReactInstance::initializeRuntime");
 
@@ -608,7 +611,7 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
     TRIM_MEMORY_RUNNING_MODERATE = 5,
     TRIM_MEMORY_UI_HIDDEN = 20,
   };
-  const char* levelName;
+  const char* levelName = nullptr;
   switch (pressureLevel) {
     case TRIM_MEMORY_BACKGROUND:
       levelName = "TRIM_MEMORY_BACKGROUND";

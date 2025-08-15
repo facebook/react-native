@@ -8,8 +8,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -fno-omit-frame-pointer)
 
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+
 add_library(glog_init OBJECT glog_init.cpp)
 
 target_include_directories(glog_init PUBLIC .)
 
 target_link_libraries(glog_init log glog)
+target_compile_reactnative_options(glog_init PRIVATE)

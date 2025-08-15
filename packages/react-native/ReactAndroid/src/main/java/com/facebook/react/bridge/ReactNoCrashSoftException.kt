@@ -8,9 +8,10 @@
 package com.facebook.react.bridge
 
 /**
- * Extends RuntimeException so that it may be caught by a [ReactSoftExceptionListener]. Any
- * [ReactSoftExceptionListener] that catches a ReactNoCrashSoftException should log it only and not
- * crash, no matter what.
+ * Extends RuntimeException so that it may be caught by a
+ * [ReactSoftExceptionLogger.ReactSoftExceptionListener]. Any
+ * [ReactSoftExceptionLogger.ReactSoftExceptionListener] that catches a ReactNoCrashSoftException
+ * should log it only and not crash, no matter what.
  */
 public open class ReactNoCrashSoftException : RuntimeException {
 

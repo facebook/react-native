@@ -22,8 +22,6 @@
   }
   _touchHandler = [RCTSurfaceTouchHandler new];
 
-  self.modalInPresentation = YES;
-
   return self;
 }
 

@@ -29,13 +29,14 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& /*shadowTree*/,
       const RootShadowNode::Shared& /*oldRootShadowNode*/,
-      const RootShadowNode::Unshared& newRootShadowNode) const override {
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& /*commitOptions*/) const override {
     return newRootShadowNode;
-  };
+  }
 
   void shadowTreeDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
-      bool mountSynchronously) const override {};
+      bool /*mountSynchronously*/) const override {}
 };
 
 namespace {
@@ -46,7 +47,7 @@ const ShadowNode* findDescendantNode(
     return &shadowNode;
   }
 
-  for (auto childNode : shadowNode.getChildren()) {
+  for (const auto& childNode : shadowNode.getChildren()) {
     auto descendant = findDescendantNode(*childNode, family);
     if (descendant != nullptr) {
       return descendant;
@@ -276,7 +277,7 @@ TEST_F(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
 
   // ==== Creact clones tree ====
 
-  ShadowNode::Unshared newlyClonedShadowNode;
+  std::shared_ptr<ShadowNode> newlyClonedShadowNode;
 
   auto rootShadowNodeClonedFromReact = rootShadowNode2->cloneTree(
       scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
@@ -368,7 +369,7 @@ TEST_F(StateReconciliationTest, testStateReconciliationScrollViewChildUpdate) {
 
   // ==== React starts cloning but does not commit ====
 
-  ShadowNode::Unshared newlyClonedViewShadowNode;
+  std::shared_ptr<ShadowNode> newlyClonedViewShadowNode;
 
   auto rootShadowNodeClonedFromReact = initialRootShadowNode->cloneTree(
       initialChildViewShadowNode->getFamily(),

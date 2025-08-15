@@ -31,7 +31,7 @@ const getUIManagerConstants: ?() => {[viewManagerName: string]: Object} =
 
 const getUIManagerConstantsCached = (function () {
   let wasCalledOnce = false;
-  let result = {};
+  let result: {[viewManagerName: string]: Object} = {};
   return (): {[viewManagerName: string]: Object} => {
     if (!wasCalledOnce) {
       result = nullthrows(getUIManagerConstants)();
@@ -182,14 +182,9 @@ const UIManagerJSPlatformAPIs = Platform.select({
       return [];
     },
     setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-      /**
-       * Layout animations are always enabled in the New Architecture.
-       * They cannot be turned off.
-       */
-      if (!enabled) {
-        raiseSoftError(
-          'setLayoutAnimationEnabledExperimental(false)',
-          'Layout animations are always enabled in the New Architecture.',
+      if (__DEV__) {
+        console.warn(
+          'setLayoutAnimationEnabledExperimental is currently a no-op in the New Architecture.',
         );
       }
     },
@@ -416,4 +411,4 @@ if (getUIManagerConstants) {
   }
 }
 
-module.exports = UIManagerJS;
+export default UIManagerJS;

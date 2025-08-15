@@ -13,7 +13,9 @@ import type {Numeric} from 'react-native/Libraries/Animated/AnimatedImplementati
 
 import RNTesterButton from '../../components/RNTesterButton';
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, StyleSheet, Text, TextInput, View} from 'react-native';
+
 export default ({
   title: 'Combine Example',
   name: 'Combine View',
@@ -23,8 +25,8 @@ export default ({
 }: RNTesterModuleExample);
 
 const CombineExample = () => {
-  const [aValue, setAValue] = React.useState('0.4');
-  const [bValue, setBValue] = React.useState('0.5');
+  const [aValue, setAValue] = useState('0.4');
+  const [bValue, setBValue] = useState('0.5');
   const a = new Animated.Value(parseFloat(aValue));
   const b = new Animated.Value(parseFloat(bValue));
   const add = Animated.add(a, b);
@@ -33,7 +35,7 @@ const CombineExample = () => {
   const divide =
     parseFloat(aValue) !== 0 ? Animated.divide(b, a) : new Animated.Value(1);
   const mod = Animated.modulo(a, parseFloat(bValue));
-  const [animation, setAnimation] = React.useState<Numeric>(add);
+  const [animation, setAnimation] = useState<Numeric>(add);
 
   return (
     <View>

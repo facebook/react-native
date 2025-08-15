@@ -4,21 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
-const AnExSet = require('./AnExSet');
-const React = require('react');
-const {
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
+import AnExSet from './AnExSet';
+import React from 'react';
+import {
   Animated,
   LayoutAnimation,
   PanResponder,
   StyleSheet,
   View,
-} = require('react-native');
+} from 'react-native';
 
 const CIRCLE_SIZE = 80;
 const CIRCLE_MARGIN = 18;
@@ -188,7 +190,7 @@ class Circle extends React.Component<any, any> {
       </Animated.View>
     );
   }
-  _toggleIsActive = (velocity: void) => {
+  _toggleIsActive = (velocity: ?number) => {
     const config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {
@@ -396,4 +398,4 @@ exports.examples = [
       return <AnExApp />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

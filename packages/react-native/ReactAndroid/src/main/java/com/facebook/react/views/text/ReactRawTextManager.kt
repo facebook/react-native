@@ -5,9 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text
 
 import android.view.View
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewManager
@@ -17,29 +21,34 @@ import com.facebook.react.uimanager.ViewManager
  * nodes, any type of native view operation will throw an [IllegalStateException].
  */
 @ReactModule(name = ReactRawTextManager.REACT_CLASS)
-public class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
+internal class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
 
-  override public fun getName(): String {
+  override fun getName(): String {
     return REACT_CLASS
   }
 
-  override public fun createViewInstance(context: ThemedReactContext): ReactTextView =
+  public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
       throw IllegalStateException("Attempt to create a native view for RCTRawText")
 
-  override protected fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? =
+  override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View =
       throw IllegalStateException("Attempt to recycle a native view for RCTRawText")
 
-  override public fun updateExtraData(view: View, extraData: Any): Unit = Unit
+  override fun updateExtraData(view: View, extraData: Any): Unit = Unit
 
-  override public fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
+  override fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
     return ReactRawTextShadowNode::class.java
   }
 
-  override public fun createShadowNodeInstance(): ReactRawTextShadowNode {
+  override fun createShadowNodeInstance(): ReactRawTextShadowNode {
     return ReactRawTextShadowNode()
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "RCTRawText"
+    const val REACT_CLASS: String = "RCTRawText"
   }
 }

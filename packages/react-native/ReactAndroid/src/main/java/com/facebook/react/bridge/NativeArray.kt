@@ -19,7 +19,7 @@ public abstract class NativeArray protected constructor() :
 
   private companion object {
     init {
-      ReactBridge.staticInit()
+      ReactNativeJniCommonSoLoader.staticInit()
     }
   }
 }

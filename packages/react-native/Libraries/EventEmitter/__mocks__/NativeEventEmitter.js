@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {
@@ -18,12 +18,13 @@ import RCTDeviceEventEmitter from '../RCTDeviceEventEmitter';
 /**
  * Mock `NativeEventEmitter` to ignore Native Modules.
  */
-export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<mixed>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed,
   ): EventSubscription {
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
@@ -31,7 +32,7 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void {
     RCTDeviceEventEmitter.emit(eventType, ...args);
   }

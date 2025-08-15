@@ -4,13 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
 import Easing from '../Easing';
+
 describe('Easing', () => {
   it('should work with linear', () => {
     const easing = Easing.linear;
@@ -38,7 +39,7 @@ describe('Easing', () => {
   });
 
   it('should work with ease in quad', () => {
-    function easeInQuad(t) {
+    function easeInQuad(t: number) {
       return t * t;
     }
     const easing = Easing.in(Easing.quad);
@@ -48,7 +49,7 @@ describe('Easing', () => {
   });
 
   it('should work with ease out quad', () => {
-    function easeOutQuad(t) {
+    function easeOutQuad(t: number) {
       return -t * (t - 2);
     }
     const easing = Easing.out(Easing.quad);
@@ -58,8 +59,8 @@ describe('Easing', () => {
   });
 
   it('should work with ease in-out quad', () => {
-    function easeInOutQuad(t) {
-      t = t * 2;
+    function easeInOutQuad(_t: number) {
+      const t = _t * 2;
       if (t < 1) {
         return 0.5 * t * t;
       }
@@ -79,7 +80,7 @@ describe('Easing', () => {
     }
   });
 
-  function sampleEasingFunction(easing) {
+  function sampleEasingFunction(easing: number => number) {
     const DURATION = 300;
     const tickCount = Math.round((DURATION * 60) / 1000);
     const samples = [];
@@ -231,10 +232,12 @@ describe('Easing', () => {
   Object.keys(Samples).forEach(function (type) {
     it('should ease ' + type, function () {
       const [modeName, easingName, isFunction] = type.split('_');
+      // $FlowFixMe[invalid-computed-prop]
       let easing = Easing[easingName];
       if (isFunction !== undefined) {
         easing = easing();
       }
+      // $FlowFixMe[invalid-computed-prop]
       const computed = sampleEasingFunction(Easing[modeName](easing));
       const samples = Samples[type];
 

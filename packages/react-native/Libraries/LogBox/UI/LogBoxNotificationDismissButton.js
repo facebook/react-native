@@ -16,11 +16,13 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
 export default function LogBoxNotificationDismissButton(props: {
+  id: string,
   onPress: () => void,
 }): React.Node {
   return (
     <View style={styles.container}>
       <LogBoxButton
+        id={props.id}
         backgroundColor={{
           default: LogBoxStyle.getTextColor(0.3),
           pressed: LogBoxStyle.getTextColor(0.5),

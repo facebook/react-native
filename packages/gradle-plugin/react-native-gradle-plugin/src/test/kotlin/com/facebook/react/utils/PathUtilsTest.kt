@@ -202,7 +202,8 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc",
+            ))
   }
 
   @Test
@@ -212,13 +213,14 @@ class PathUtilsTest {
         .isEqualTo(
             File(
                 tempFolder.root,
-                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe"))
+                "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe",
+            ))
   }
 
   @Test
   fun getBuiltHermescFile_withOverride() {
-    assertThat(getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
-        .isEqualTo(File("/home/circleci/hermes/build/bin/hermesc"))
+    assertThat(getBuiltHermescFile(tempFolder.root, "/home/ci/hermes"))
+        .isEqualTo(File("/home/ci/hermes/build/bin/hermesc"))
   }
 
   @Test

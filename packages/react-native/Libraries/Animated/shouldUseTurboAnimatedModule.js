@@ -8,10 +8,15 @@
  * @format
  */
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import Platform from '../Utilities/Platform';
 
 function shouldUseTurboAnimatedModule(): boolean {
-  return Platform.OS === 'ios' && global.RN$Bridgeless === true;
+  if (ReactNativeFeatureFlags.cxxNativeAnimatedEnabled()) {
+    return false;
+  } else {
+    return Platform.OS === 'ios' && global.RN$Bridgeless === true;
+  }
 }
 
 export default shouldUseTurboAnimatedModule;

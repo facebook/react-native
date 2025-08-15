@@ -106,25 +106,25 @@ void roundLayoutResultsToPixelGrid(
     const bool hasFractionalHeight =
         !yoga::inexactEquals(round(scaledNodeHeight), scaledNodeHeight);
 
-    node->setLayoutDimension(
+    node->getLayout().setDimension(
+        Dimension::Width,
         roundValueToPixelGrid(
             absoluteNodeRight,
             pointScaleFactor,
             (textRounding && hasFractionalWidth),
             (textRounding && !hasFractionalWidth)) -
             roundValueToPixelGrid(
-                absoluteNodeLeft, pointScaleFactor, false, textRounding),
-        Dimension::Width);
+                absoluteNodeLeft, pointScaleFactor, false, textRounding));
 
-    node->setLayoutDimension(
+    node->getLayout().setDimension(
+        Dimension::Height,
         roundValueToPixelGrid(
             absoluteNodeBottom,
             pointScaleFactor,
             (textRounding && hasFractionalHeight),
             (textRounding && !hasFractionalHeight)) -
             roundValueToPixelGrid(
-                absoluteNodeTop, pointScaleFactor, false, textRounding),
-        Dimension::Height);
+                absoluteNodeTop, pointScaleFactor, false, textRounding));
   }
 
   for (yoga::Node* child : node->getChildren()) {

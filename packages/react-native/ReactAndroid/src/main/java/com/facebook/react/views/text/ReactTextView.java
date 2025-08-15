@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -19,6 +20,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +32,12 @@ import androidx.core.view.ViewCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
@@ -53,10 +56,8 @@ import com.facebook.react.views.text.internal.span.ReactTagSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import com.facebook.react.views.text.internal.span.TextInlineViewPlaceholderSpan;
 import com.facebook.yoga.YogaMeasureMode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
@@ -67,18 +68,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   private boolean mContainsImages;
   private int mNumberOfLines;
-  private TextUtils.TruncateAt mEllipsizeLocation;
+  private @Nullable TextUtils.TruncateAt mEllipsizeLocation;
   private boolean mAdjustsFontSizeToFit;
   private float mFontSize;
   private float mMinimumFontSize;
   private float mLetterSpacing;
   private int mLinkifyMaskType;
-  private boolean mNotifyOnInlineViewLayout;
   private boolean mTextIsSelectable;
   private boolean mShouldAdjustSpannableFontSize;
   private Overflow mOverflow = Overflow.VISIBLE;
 
-  private Spannable mSpanned;
+  private @Nullable Spannable mSpanned;
 
   public ReactTextView(Context context) {
     super(context);
@@ -94,7 +94,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
     mAdjustsFontSizeToFit = false;
     mLinkifyMaskType = 0;
-    mNotifyOnInlineViewLayout = false;
     mTextIsSelectable = false;
     mShouldAdjustSpannableFontSize = false;
     mEllipsizeLocation = TextUtils.TruncateAt.END;
@@ -108,6 +107,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   /* package */ void recycleView() {
     // Set default field values
     initView();
+
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
 
     BackgroundStyleApplicator.reset(this);
 
@@ -187,7 +192,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // TODO T62882314: Delete this method when Fabric is fully released in OSS
     int reactTag = getId();
     if (!(getText() instanceof Spanned)
-        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC) {
+        || ViewUtil.getUIManagerType(reactTag) == UIManagerType.FABRIC
+        || ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       /**
        * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
        * before we are laid out. This ordering is a requirement because we utilize the data from
@@ -223,8 +229,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
-    ArrayList inlineViewInfoArray =
-        mNotifyOnInlineViewLayout ? new ArrayList(placeholders.length) : null;
     int textViewWidth = textViewRight - textViewLeft;
     int textViewHeight = textViewBottom - textViewTop;
 
@@ -252,9 +256,6 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         // loop when called on a character that appears after the ellipsis. Avoid this bug by
         // special casing the character truncation case.
         child.setVisibility(View.GONE);
-        if (mNotifyOnInlineViewLayout) {
-          inlineViewInfoArray.add(inlineViewJson(View.GONE, start, -1, -1, -1, -1));
-        }
       } else {
         int width = placeholder.getWidth();
         int height = placeholder.getHeight();
@@ -328,37 +329,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         int layoutRight = left + width;
         int layoutBottom = top + height;
 
-        // Keep these parameters in sync with what goes into `inlineViewInfoArray`.
         child.setVisibility(layoutVisibility);
         child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
-        if (mNotifyOnInlineViewLayout) {
-          inlineViewInfoArray.add(
-              inlineViewJson(
-                  layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
-        }
-      }
-    }
-
-    if (mNotifyOnInlineViewLayout) {
-      Collections.sort(
-          inlineViewInfoArray,
-          new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-              WritableMap m1 = (WritableMap) o1;
-              WritableMap m2 = (WritableMap) o2;
-              return m1.getInt("index") - m2.getInt("index");
-            }
-          });
-      WritableArray inlineViewInfoArray2 = Arguments.createArray();
-      for (Object item : inlineViewInfoArray) {
-        inlineViewInfoArray2.pushMap((WritableMap) item);
-      }
-
-      WritableMap event = Arguments.createMap();
-      event.putArray("inlineViews", inlineViewInfoArray2);
-      if (uiManager != null) {
-        uiManager.receiveEvent(reactTag, "topInlineViewLayout", event);
       }
     }
   }
@@ -366,10 +338,11 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   protected void onDraw(Canvas canvas) {
     try (SystraceSection s = new SystraceSection("ReactTextView.onDraw")) {
-      if (mAdjustsFontSizeToFit && getSpanned() != null && mShouldAdjustSpannableFontSize) {
+      Spannable spanned = getSpanned();
+      if (mAdjustsFontSizeToFit && spanned != null && mShouldAdjustSpannableFontSize) {
         mShouldAdjustSpannableFontSize = false;
         TextLayoutManager.adjustSpannableFontToFit(
-            getSpanned(),
+            spanned,
             getWidth(),
             YogaMeasureMode.EXACTLY,
             getHeight(),
@@ -384,7 +357,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
             Layout.Alignment.ALIGN_NORMAL,
             (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? -1 : getJustificationMode(),
             getPaint());
-        setText(getSpanned());
+        setText(spanned);
       }
 
       if (mOverflow != Overflow.VISIBLE) {
@@ -569,7 +542,16 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    setTextIsSelectable(mTextIsSelectable);
+
+    // This is a workaround to ensure the text becomes selectable as it doesn't work if we call
+    // `setTextIsSelectable(true)` directly when setTextIsSelectable was already true.
+    if (mTextIsSelectable) {
+      setTextIsSelectable(false);
+      setTextIsSelectable(true);
+    } else {
+      setTextIsSelectable(false);
+    }
+
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
@@ -677,12 +659,8 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     applyTextAttributes();
   }
 
-  public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
+  public void setEllipsizeLocation(@Nullable TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
-  }
-
-  public void setNotifyOnInlineViewLayout(boolean notifyOnInlineViewLayout) {
-    mNotifyOnInlineViewLayout = notifyOnInlineViewLayout;
   }
 
   public void updateView() {
@@ -732,7 +710,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mShouldAdjustSpannableFontSize = true;
   }
 
-  public Spannable getSpanned() {
+  public @Nullable Spannable getSpanned() {
     return mSpanned;
   }
 
@@ -754,6 +732,40 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     return super.dispatchHoverEvent(event);
+  }
+
+  /**
+   * Note that if we have a movement method then we DO NOT forward these events to the accessibility
+   * delegate. This is because the movement method should handle the focus highlighting and
+   * changing. If we don't do this then we have mutliple selections happening at once. We cannot get
+   * rid of movement method since links found by Linkify will not be clickable. Also, putting this
+   * gating in the accessibility delegate itself will break screen reader accessibility more
+   * generally, since we still need to register virtual views.
+   */
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    if (accessibilityDelegateCompat != null
+        && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
+        && getMovementMethod() == null) {
+      ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+          .onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    return (accessibilityDelegateCompat != null
+            && getMovementMethod() == null
+            && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
+            && ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+                .dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
   }
 
   private void applyTextAttributes() {

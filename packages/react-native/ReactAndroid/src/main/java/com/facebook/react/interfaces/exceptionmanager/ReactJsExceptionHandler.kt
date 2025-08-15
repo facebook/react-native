@@ -15,25 +15,25 @@ import java.util.ArrayList
 
 @DoNotStripAny
 @UnstableReactNativeAPI
-public fun interface ReactJsExceptionHandler {
+internal fun interface ReactJsExceptionHandler {
   @DoNotStripAny
-  public interface ProcessedError {
+  interface ProcessedError {
     @DoNotStripAny
-    public interface StackFrame {
-      public val file: String?
-      public val methodName: String
-      public val lineNumber: Int?
-      public val column: Int?
+    interface StackFrame {
+      val file: String?
+      val methodName: String
+      val lineNumber: Int?
+      val column: Int?
     }
 
-    public val message: String
-    public val originalMessage: String?
-    public val name: String?
-    public val componentStack: String?
-    public val stack: List<StackFrame>
-    public val id: Int
-    public val isFatal: Boolean
-    public val extraData: ReadableMap
+    val message: String
+    val originalMessage: String?
+    val name: String?
+    val componentStack: String?
+    val stack: List<StackFrame>
+    val id: Int
+    val isFatal: Boolean
+    val extraData: ReadableMap
   }
 
   @DoNotStripAny
@@ -56,5 +56,5 @@ public fun interface ReactJsExceptionHandler {
       override val extraData: ReadableNativeMap,
   ) : ProcessedError
 
-  public fun reportJsException(errorMap: ProcessedError)
+  fun reportJsException(errorMap: ProcessedError)
 }

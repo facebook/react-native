@@ -22,16 +22,22 @@ open class ShadowNativeMap {
   @Deprecated(
       "Use ShadowReadableNativeMap",
       ReplaceWith(
-          "ShadowReadableNativeMap", "com.facebook.testutils.shadows.ShadowReadableNativeMap"))
+          "ShadowReadableNativeMap",
+          "com.facebook.testutils.shadows.ShadowReadableNativeMap",
+      ),
+  )
   @Implements(ReadableNativeMap::class)
-  public class Readable : ShadowNativeMap() {}
+  class Readable : ShadowNativeMap()
 
   @Deprecated(
       "Use ShadowWritableNativeMap",
       ReplaceWith(
-          "ShadowWritableNativeMap", "com.facebook.testutils.shadows.ShadowWritableNativeMap"))
+          "ShadowWritableNativeMap",
+          "com.facebook.testutils.shadows.ShadowWritableNativeMap",
+      ),
+  )
   @Implements(WritableNativeMap::class)
-  public class Writable : ShadowNativeMap() {}
+  class Writable : ShadowNativeMap()
 
   companion object {
     fun getContents(map: NativeMap): Map<String, Any?> =

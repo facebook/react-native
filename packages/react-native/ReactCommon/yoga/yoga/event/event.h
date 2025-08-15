@@ -36,12 +36,12 @@ enum struct LayoutPassReason : int {
 };
 
 struct LayoutData {
-  int layouts;
-  int measures;
-  uint32_t maxMeasureCache;
-  int cachedLayouts;
-  int cachedMeasures;
-  int measureCallbacks;
+  int layouts = 0;
+  int measures = 0;
+  uint32_t maxMeasureCache = 0;
+  int cachedLayouts = 0;
+  int cachedMeasures = 0;
+  int measureCallbacks = 0;
   std::array<int, static_cast<uint8_t>(LayoutPassReason::COUNT)>
       measureCallbackReasonsCount;
 };

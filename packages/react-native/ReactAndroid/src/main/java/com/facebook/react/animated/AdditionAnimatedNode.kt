@@ -16,7 +16,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class AdditionAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
 
   private val inputNodes: IntArray
@@ -44,7 +44,8 @@ internal class AdditionAnimatedNode(
                 throw JSApplicationCausedNativeException(
                     "Illegal node ID set as an input for Animated.Add node")
               }
-            })
+            },
+        )
   }
 
   override fun prettyPrint(): String =

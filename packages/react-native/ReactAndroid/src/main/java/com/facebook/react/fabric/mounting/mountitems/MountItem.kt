@@ -13,9 +13,9 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.fabric.mounting.MountingManager
 
 @DoNotStripAny
-public interface MountItem {
+internal interface MountItem {
   /** Execute this [MountItem] into the operation queue received by parameter. */
-  @UiThread public fun execute(mountingManager: MountingManager)
+  @UiThread fun execute(mountingManager: MountingManager)
 
-  @AnyThread public fun getSurfaceId(): Int
+  @AnyThread fun getSurfaceId(): Int
 }

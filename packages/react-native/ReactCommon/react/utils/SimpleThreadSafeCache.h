@@ -7,23 +7,28 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
+#include <concepts>
+#include <list>
 #include <mutex>
-#include <optional>
-
-#include <folly/container/EvictingCacheMap.h>
+#include <unordered_map>
 
 namespace facebook::react {
 
+template <typename GeneratorT, typename ValueT>
+concept CacheGeneratorFunction = std::invocable<GeneratorT> &&
+    std::same_as<std::invoke_result_t<GeneratorT>, ValueT>;
+
 /*
  * Simple thread-safe LRU cache.
+ *
+ * TODO T228961279: The maxSize template parameter should be removed, since it
+ * may be overriden by the constructor.
  */
 template <typename KeyT, typename ValueT, int maxSize>
 class SimpleThreadSafeCache {
  public:
-  SimpleThreadSafeCache() : map_{maxSize} {}
-  SimpleThreadSafeCache(unsigned long size) : map_{size} {}
+  SimpleThreadSafeCache() : maxSize_(maxSize) {}
+  SimpleThreadSafeCache(unsigned long size) : maxSize_{size} {}
 
   /*
    * Returns a value from the map with a given key.
@@ -31,17 +36,22 @@ class SimpleThreadSafeCache {
    * generator function, stores it inside a cache and returns it.
    * Can be called from any thread.
    */
-  ValueT get(const KeyT& key, std::function<ValueT(const KeyT& key)> generator)
+  ValueT get(const KeyT& key, CacheGeneratorFunction<ValueT> auto generator)
       const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
-    if (iterator == map_.end()) {
-      auto value = generator(key);
-      map_.set(key, value);
-      return value;
-    }
+    return getMapIterator(key, std::move(generator))->second->second;
+  }
 
-    return iterator->second;
+  /*
+   * Returns pointers to both the key and value from the map with a given key.
+   * If the value wasn't found in the cache, constructs the value using given
+   * generator function, stores it inside a cache and returns it.
+   * Can be called from any thread.
+   */
+  std::pair<const KeyT*, const ValueT*> getWithKey(
+      const KeyT& key,
+      CacheGeneratorFunction<ValueT> auto generator) const {
+    auto it = getMapIterator(key, std::move(generator));
+    return std::make_pair(&it->first, &it->second->second);
   }
 
   /*
@@ -51,26 +61,47 @@ class SimpleThreadSafeCache {
    */
   std::optional<ValueT> get(const KeyT& key) const {
     std::lock_guard<std::mutex> lock(mutex_);
-    auto iterator = map_.find(key);
-    if (iterator == map_.end()) {
-      return {};
+
+    if (auto it = map_.find(key); it != map_.end()) {
+      // Move accessed item to front of list
+      list_.splice(list_.begin(), list_, it->second);
+      return it->second->second;
     }
 
-    return iterator->second;
-  }
-
-  /*
-   * Sets a key-value pair in the LRU cache.
-   * Can be called from any thread.
-   */
-  void set(const KeyT& key, const ValueT& value) const {
-    std::lock_guard<std::mutex> lock(mutex_);
-    map_.set(std::move(key), std::move(value));
+    return ValueT{};
   }
 
  private:
-  mutable folly::EvictingCacheMap<KeyT, ValueT> map_;
+  using EntryT = std::pair<KeyT, ValueT>;
+  using iterator = typename std::list<EntryT>::iterator;
+
+  auto getMapIterator(
+      const KeyT& key,
+      CacheGeneratorFunction<ValueT> auto generator) const {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (auto it = map_.find(key); it != map_.end()) {
+      // Move accessed item to front of list
+      list_.splice(list_.begin(), list_, it->second);
+      return it;
+    }
+
+    auto value = generator();
+    // Add new value to front of list and map
+    list_.emplace_front(key, value);
+    auto [it, _] = map_.insert_or_assign(key, list_.begin());
+    if (list_.size() > maxSize_) {
+      // Evict least recently used item (back of list)
+      map_.erase(list_.back().first);
+      list_.pop_back();
+    }
+    return it;
+  }
+
+  size_t maxSize_;
   mutable std::mutex mutex_;
+  mutable std::list<EntryT> list_;
+  mutable std::unordered_map<KeyT, iterator> map_;
 };
 
 } // namespace facebook::react

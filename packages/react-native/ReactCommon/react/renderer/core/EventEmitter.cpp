@@ -9,9 +9,9 @@
 
 #include <cxxreact/TraceSection.h>
 #include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
+#include "DynamicEventPayload.h"
 #include "RawEvent.h"
 
 namespace facebook::react {
@@ -57,22 +57,20 @@ EventEmitter::EventEmitter(
 
 void EventEmitter::dispatchEvent(
     std::string type,
-    const folly::dynamic& payload,
+    folly::dynamic&& payload,
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime& runtime) {
-        return valueFromDynamic(runtime, payload);
-      },
+      std::make_shared<DynamicEventPayload>(std::move(payload)),
       category);
 }
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
-    const folly::dynamic& payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
+    folly::dynamic&& payload) const {
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<DynamicEventPayload>(std::move(payload)));
 }
 
 void EventEmitter::dispatchEvent(
@@ -100,6 +98,7 @@ void EventEmitter::dispatchEvent(
       normalizeEventType(std::move(type)),
       std::move(payload),
       eventTarget_,
+      shadowNodeFamily_,
       category));
 }
 
@@ -125,6 +124,7 @@ void EventEmitter::dispatchUniqueEvent(
       normalizeEventType(std::move(type)),
       std::move(payload),
       eventTarget_,
+      shadowNodeFamily_,
       RawEvent::Category::Continuous));
 }
 
@@ -149,6 +149,11 @@ void EventEmitter::setEnabled(bool enabled) const {
       eventTarget_.reset();
     }
   }
+}
+
+void EventEmitter::setShadowNodeFamily(
+    std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily) const {
+  shadowNodeFamily_ = std::move(shadowNodeFamily);
 }
 
 const SharedEventTarget& EventEmitter::getEventTarget() const {

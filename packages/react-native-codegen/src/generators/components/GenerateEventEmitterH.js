@@ -320,6 +320,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const moduleComponents: ComponentCollection = Object.keys(schema.modules)
       .map(moduleName => {
@@ -337,6 +338,7 @@ module.exports = {
         return components;
       })
       .filter(Boolean)
+      // $FlowFixMe[unsafe-object-assign]
       .reduce((acc, components) => Object.assign(acc, components), {});
 
     const extraIncludes = new Set<string>();

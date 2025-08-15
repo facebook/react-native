@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/Format.h>
+#include <fmt/format.h>
 #include <folly/dynamic.h>
 #include <folly/executors/ManualExecutor.h>
 #include <folly/executors/QueuedImmediateExecutor.h>
@@ -16,7 +16,6 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
 
-#include <functional>
 #include <memory>
 
 #include "FollyDynamicMatchers.h"
@@ -26,8 +25,7 @@
 using namespace ::testing;
 using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;
-using folly::dynamic, folly::parseJson, folly::toJson, folly::format,
-    folly::sformat;
+using folly::dynamic, folly::toJson;
 
 namespace facebook::react::jsinspector_modern {
 
@@ -42,10 +40,15 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
             "my-device",
             "my-app",
             packagerConnectionDelegates_.make_unique(asyncExecutor_)}) {
+    auto makeSocket = webSockets_.lazily_make_unique<
+        const std::string&,
+        std::weak_ptr<IWebSocketDelegate>>();
     ON_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
-        .WillByDefault(webSockets_.lazily_make_unique<
-                       const std::string&,
-                       std::weak_ptr<IWebSocketDelegate>>());
+        .WillByDefault([makeSocket](auto&&... args) {
+          auto socket = makeSocket(std::forward<decltype(args)>(args)...);
+          socket->getDelegate().didOpen();
+          return std::move(socket);
+        });
   }
 
   void TearDown() override {
@@ -278,7 +281,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -318,7 +321,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
           AtJsonPtr("/params", ElementsAre("arg1", "arg2"))))))
       .RetiresOnSaturation();
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -370,7 +373,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
 
   for (int i = 0; i < kNumPages; ++i) {
     // Connect to the i-th page.
-    webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+    webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
         R"({{
         "event": "connect",
         "payload": {{
@@ -412,7 +415,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
         *localConnections_[i],
         sendMessage(JsonParsed(AtJsonPtr("/method", Eq(method)))))
         .RetiresOnSaturation();
-    webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+    webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
         R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -442,7 +445,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToAllConnections) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -483,7 +486,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -495,7 +498,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
 
   // Disconnect from the page.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -518,7 +521,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenCloseSocket) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -546,7 +549,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenSocketFailure) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -576,7 +579,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -622,7 +625,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -634,7 +637,7 @@ TEST_F(
 
   // Try connecting to the same page again. This results in a disconnection.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -657,7 +660,7 @@ TEST_F(InspectorPackagerConnectionTest, TestMultipleDisconnect) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -669,7 +672,7 @@ TEST_F(InspectorPackagerConnectionTest, TestMultipleDisconnect) {
 
   // Disconnect from the page.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -680,7 +683,7 @@ TEST_F(InspectorPackagerConnectionTest, TestMultipleDisconnect) {
   EXPECT_FALSE(localConnections_[0]);
 
   // Disconnect again. This is a noop.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -703,7 +706,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDisconnectThenSendEvent) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -715,7 +718,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDisconnectThenSendEvent) {
 
   // Disconnect from the page.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -727,7 +730,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDisconnectThenSendEvent) {
 
   // Send an event from the frontend (remote) to the backend (local). This
   // is a noop.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -751,7 +754,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToUnknownPage) {
 
   // Send an event from the frontend (remote) to the backend (local). This
   // is a noop (except for logging).
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -918,7 +921,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  retainedWebSocketDelegate->didReceiveMessage(sformat(
+  retainedWebSocketDelegate->didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -938,7 +941,7 @@ TEST_F(
           AtJsonPtr("/params", ElementsAre("arg1", "arg2"))))))
       .RetiresOnSaturation();
 
-  retainedWebSocketDelegate->didReceiveMessage(sformat(
+  retainedWebSocketDelegate->didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -972,7 +975,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDestroyConnectionOnPageRemoved) {
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1002,7 +1005,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1042,7 +1045,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1061,7 +1064,7 @@ TEST_F(
 
   // Disconnect from the page.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -1072,7 +1075,7 @@ TEST_F(
   EXPECT_FALSE(localConnections_[0]);
 
   // Connect to the same page again.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1124,7 +1127,7 @@ TEST_F(
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
 
   // Connect to the page.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1148,7 +1151,7 @@ TEST_F(
 
   // Disconnect from the page.
   EXPECT_CALL(*localConnections_[0], disconnect()).RetiresOnSaturation();
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "disconnect",
           "payload": {{
@@ -1159,7 +1162,7 @@ TEST_F(
   EXPECT_FALSE(localConnections_[0]);
 
   // Connect to the same page again.
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1253,7 +1256,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
           AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
       .RetiresOnSaturation();
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1262,7 +1265,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
         }})",
       toJson(std::to_string(pageId))));
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -1288,7 +1291,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
           AtJsonPtr("/payload/pageId", Eq(std::to_string(pageId)))))))
       .RetiresOnSaturation();
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1297,7 +1300,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
         }})",
       toJson(std::to_string(pageId))));
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{
@@ -1316,7 +1319,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
   // page.
   mockNextConnectionBehavior = Accept;
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "connect",
           "payload": {{
@@ -1333,7 +1336,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
           AtJsonPtr("/params", ElementsAre("arg1", "arg2"))))))
       .RetiresOnSaturation();
 
-  webSockets_[0]->getDelegate().didReceiveMessage(sformat(
+  webSockets_[0]->getDelegate().didReceiveMessage(fmt::format(
       R"({{
           "event": "wrappedEvent",
           "payload": {{

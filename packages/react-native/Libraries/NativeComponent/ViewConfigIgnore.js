@@ -34,9 +34,9 @@ export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
  *
  * TODO(T110872225): Remove this logic, after achieving platform-consistency
  */
-export function ConditionallyIgnoredEventHandlers<T: {[name: string]: true}>(
-  value: T,
-): T | void {
+export function ConditionallyIgnoredEventHandlers<
+  const T: {+[name: string]: true},
+>(value: T): T | void {
   if (Platform.OS === 'ios') {
     return value;
   }

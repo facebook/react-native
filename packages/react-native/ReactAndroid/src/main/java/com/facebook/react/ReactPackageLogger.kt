@@ -7,10 +7,14 @@
 
 package com.facebook.react
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+
 /** Interface for the bridge to call for TTI start and end markers. */
-public interface ReactPackageLogger {
+@Deprecated("This class is deprecated and will be removed in the next major release.")
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+internal interface ReactPackageLogger {
+  fun startProcessPackage()
 
-  public fun startProcessPackage(): Unit
-
-  public fun endProcessPackage(): Unit
+  fun endProcessPackage()
 }

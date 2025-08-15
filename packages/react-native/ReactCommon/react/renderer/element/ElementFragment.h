@@ -27,7 +27,7 @@ class ElementFragment final {
   using List = std::vector<ElementFragment>;
   using ListOfShared = std::vector<Shared>;
   using ReferenceCallback =
-      std::function<void(const ShadowNode::Unshared& shadowNode)>;
+      std::function<void(const std::shared_ptr<ShadowNode>& shadowNode)>;
   using FinalizeCallback = std::function<void(ShadowNode& shadowNode)>;
   using StateCallback =
       std::function<StateData::Shared(const State::Shared& state)>;

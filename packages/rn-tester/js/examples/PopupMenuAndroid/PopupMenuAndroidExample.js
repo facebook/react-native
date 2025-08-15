@@ -4,24 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {PopupMenuAndroidInstance} from '@react-native/popup-menu-android';
 import type {Node} from 'react';
 
 import PopupMenuAndroid from '@react-native/popup-menu-android';
 import * as React from 'react';
+import {useRef, useState} from 'react';
 import {Button, StyleSheet, Text, View} from 'react-native';
 
 type Fruit = 'Apple' | 'Pear' | 'Banana' | 'Orange' | 'Kiwi';
 
 const PopupMenu = () => {
-  const popupRef = React.useRef<?PopupMenuAndroidInstance>();
-  const [fruit, setFruit] = React.useState<?Fruit>();
+  const popupRef = useRef<?PopupMenuAndroidInstance>();
+  const [fruit, setFruit] = useState<?Fruit>();
   const fruits: Array<Fruit> = ['Apple', 'Pear', 'Banana', 'Orange', 'Kiwi'];
   const items = fruits.map(item => ({
     label: item,
@@ -68,4 +70,4 @@ exports.examples = [
       return <PopupMenu />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

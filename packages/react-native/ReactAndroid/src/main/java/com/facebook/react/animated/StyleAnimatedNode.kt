@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableMap
  */
 internal class StyleAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val propMapping: Map<String, Int>
 
@@ -31,7 +31,7 @@ internal class StyleAnimatedNode(
         }
   }
 
-  public fun collectViewUpdates(propsMap: JavaOnlyMap) {
+  fun collectViewUpdates(propsMap: JavaOnlyMap) {
     for ((key, value) in propMapping) {
       val node = nativeAnimatedNodesManager.getNodeById(value)
       requireNotNull(node) { "Mapped style node does not exist" }

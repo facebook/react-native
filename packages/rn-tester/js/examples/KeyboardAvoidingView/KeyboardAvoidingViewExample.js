@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import React, {useState} from 'react';
 import {
@@ -70,6 +72,8 @@ const KeyboardAvoidingViewBehaviour = () => {
   return (
     <View style={styles.outerContainer}>
       <Modal animationType="fade" visible={modalOpen}>
+        {/* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */}
         <KeyboardAvoidingView behavior={behavior} style={styles.container}>
           <View
             style={{
@@ -274,4 +278,4 @@ exports.examples = [
       return <KeyboardAvoidingContentContainerStyle />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

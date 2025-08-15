@@ -9,14 +9,19 @@ package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaDisplay;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaErrata;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaGutter;
 import com.facebook.yoga.YogaJustify;
@@ -54,12 +59,22 @@ import java.util.Arrays;
  * NativeViewHierarchyOptimizer} for more information.
  */
 @ReactPropertyHolder
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private static final YogaConfig sYogaConfig;
 
   static {
-    sYogaConfig = ReactYogaConfigProvider.get();
+    sYogaConfig = YogaConfigFactory.create();
+    sYogaConfig.setPointScaleFactor(0f);
+    sYogaConfig.setErrata(YogaErrata.ALL);
+  }
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "ReactShadowNodeImpl", LegacyArchitectureLogLevel.ERROR);
   }
 
   private int mReactTag;
@@ -1107,7 +1122,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   }
 
   @Override
-  public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
+  public @Nullable Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
     return isVirtualAnchor()
         ?
         // All of the descendants are virtual so none of them are involved in layout.

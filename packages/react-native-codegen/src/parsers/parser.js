@@ -57,6 +57,7 @@ export type SchemaInfo = {
 export type GetSchemaInfoFN = (
   property: PropAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ) => ?SchemaInfo;
 
 export type BuildSchemaFN<T> = (

@@ -28,7 +28,7 @@ let _assertNativeAnimatedModule: ?() => void = () => {
 };
 
 export default class AnimatedNode {
-  #listeners: Map<string, ValueListenerCallback> = new Map();
+  _listeners: Map<string, ValueListenerCallback>;
 
   _platformConfig: ?PlatformConfig = undefined;
 
@@ -38,6 +38,7 @@ export default class AnimatedNode {
       ...
     }>,
   ) {
+    this._listeners = new Map();
     if (__DEV__) {
       this.__debugID = config?.debugID;
     }
@@ -84,7 +85,7 @@ export default class AnimatedNode {
    */
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
-    this.#listeners.set(id, callback);
+    this._listeners.set(id, callback);
     return id;
   }
 
@@ -95,7 +96,7 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removelistener
    */
   removeListener(id: string): void {
-    this.#listeners.delete(id);
+    this._listeners.delete(id);
   }
 
   /**
@@ -104,20 +105,20 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removealllisteners
    */
   removeAllListeners(): void {
-    this.#listeners.clear();
+    this._listeners.clear();
   }
 
   hasListeners(): boolean {
-    return this.#listeners.size > 0;
+    return this._listeners.size > 0;
   }
 
-  __onAnimatedValueUpdateReceived(value: number): void {
-    this.__callListeners(value);
+  __onAnimatedValueUpdateReceived(value: number, offset: number): void {
+    this.__callListeners(value + offset);
   }
 
   __callListeners(value: number): void {
     const event = {value};
-    this.#listeners.forEach(listener => {
+    this._listeners.forEach(listener => {
       listener(event);
     });
   }

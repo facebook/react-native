@@ -21,7 +21,12 @@ inline bool formsView(const ViewProps& viewProps) {
       viewProps.nativeForeground.has_value() || viewProps.focusable ||
       viewProps.hasTVPreferredFocus ||
       viewProps.needsOffscreenAlphaCompositing ||
-      viewProps.renderToHardwareTextureAndroid;
+      viewProps.renderToHardwareTextureAndroid ||
+      viewProps.screenReaderFocusable;
+}
+
+inline bool isKeyboardFocusable(const ViewProps& viewProps) {
+  return (viewProps.focusable || viewProps.hasTVPreferredFocus);
 }
 
 } // namespace facebook::react::HostPlatformViewTraitsInitializer

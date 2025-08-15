@@ -4,21 +4,24 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
 jest.mock('../../EventEmitter/NativeEventEmitter');
 jest.setMock('../../BatchedBridge/NativeModules', {
-  WebSocketModule: {
-    connect: () => {},
+  __esModule: true,
+  default: {
+    WebSocketModule: {
+      connect: () => {},
+    },
+    PlatformConstants: {},
   },
-  PlatformConstants: {},
 });
 
-const WebSocket = require('../WebSocket');
+const WebSocket = require('../WebSocket').default;
 
 describe('WebSocket', function () {
   it('should have connection lifecycle constants defined on the class', () => {

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -16,12 +15,12 @@ import type {ItemDataType} from '../components/itemData';
 import {generateRandomItems} from '../components/itemData';
 import ItemList from '../components/ItemList';
 import * as React from 'react';
-import {StrictMode, useCallback, useEffect, useState} from 'react';
+import {StrictMode, memo, useCallback, useEffect, useState} from 'react';
 import {Text} from 'react-native';
 
 const TIMEOUT = 500;
 const FETCH_COUNT = 250;
-const ItemListMemo = React.memo(ItemList);
+const ItemListMemo = memo(ItemList);
 
 function ItemFetcherBadExample(props: {
   onFetched: (items: ItemDataType[]) => void,
@@ -65,8 +64,8 @@ function ItemFetcherGoodExample(props: {
   }, [onFetched, count]);
 }
 
-const ItemFetcherBadExampleMemo = React.memo(ItemFetcherBadExample);
-const ItemFetcherGoodExampleMemo = React.memo(ItemFetcherGoodExample);
+const ItemFetcherBadExampleMemo = memo(ItemFetcherBadExample);
+const ItemFetcherGoodExampleMemo = memo(ItemFetcherGoodExample);
 function EffectInRenderBadExample(): React.Node {
   const [visibleItems, setVisibleItems] = useState<ItemDataType[]>([]);
   const [fetchedItems, setFetchedItems] = useState<ItemDataType[]>([]);

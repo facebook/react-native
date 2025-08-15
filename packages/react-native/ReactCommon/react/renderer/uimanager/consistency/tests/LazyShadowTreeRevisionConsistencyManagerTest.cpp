@@ -18,14 +18,15 @@ class FakeShadowTreeDelegate : public ShadowTreeDelegate {
  public:
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& /*shadowTree*/,
-      const RootShadowNode::Shared& /*oldRootShadowNode*/,
-      const RootShadowNode::Unshared& newRootShadowNode) const override {
+      const std::shared_ptr<const RootShadowNode>& /*oldRootShadowNode*/,
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& /*commitOptions*/) const override {
     return newRootShadowNode;
-  };
+  }
 
   void shadowTreeDidFinishTransaction(
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
-      bool mountSynchronously) const override {};
+      bool /*mountSynchronously*/) const override {}
 };
 
 class LazyShadowTreeRevisionConsistencyManagerTest : public ::testing::Test {

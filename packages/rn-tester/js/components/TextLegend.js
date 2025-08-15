@@ -4,13 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import RNTesterText from '../components/RNTesterText';
 import RNTOption from './RNTOption';
 import * as React from 'react';
+import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 const PANGRAMS = {
@@ -39,11 +40,11 @@ const PANGRAMS = {
 };
 
 export default function TextLegend(): React.Node {
-  const [language, setLanguage] = React.useState('english');
-  const [alignment, setAlignment] = React.useState('left');
+  const [language, setLanguage] = useState('english');
+  const [alignment, setAlignment] = useState('left');
   // $FlowFixMe[missing-empty-array-annot]
-  const [textMetrics, setTextMetrics] = React.useState([]);
-  const [fontSize, setFontSize] = React.useState(50);
+  const [textMetrics, setTextMetrics] = useState([]);
+  const [fontSize, setFontSize] = useState(50);
   return (
     <View>
       <RNTesterText onPress={() => setFontSize(fontSize + 3)}>
@@ -203,11 +204,17 @@ export default function TextLegend(): React.Node {
           onTextLayout={event => {
             setTextMetrics(event.nativeEvent.lines);
           }}
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
+           * https://fburl.com/workplace/6291gfvu */
           style={{
             fontSize: fontSize,
             textAlign: alignment,
           }}>
-          {PANGRAMS[language]}
+          {
+            /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
+             * https://fburl.com/workplace/6291gfvu */
+            PANGRAMS[language]
+          }
         </RNTesterText>
       </View>
       <View style={styles.row}>

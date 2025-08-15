@@ -1,0 +1,169 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+import type {HostComponent} from 'react-native';
+import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
+import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  EdgeInsetsValue,
+  PointValue,
+} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
+import type {RootTag} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {
+  Double,
+  Float,
+  Int32,
+  UnsafeMixed,
+  WithDefault,
+} from 'react-native/Libraries/Types/CodegenTypes';
+
+import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
+import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+
+type NativeProps = $ReadOnly<{
+  ...ViewProps,
+  bool: boolean,
+  string: string,
+  double: Double,
+  float: Float,
+  int: Int32,
+  mixed: UnsafeMixed,
+
+  optionalBool?: WithDefault<boolean, false>,
+  optionalString?: WithDefault<string, ''>,
+  optionalStringDiffDefault?: WithDefault<string, 'default'>,
+  optionalDouble?: WithDefault<Double, 0.0>,
+  optionalFloat?: WithDefault<Float, 0.0>,
+  optionalInt?: WithDefault<Int32, 0>,
+
+  reserverdEdgeInsets: EdgeInsetsValue,
+  reservedPointValue: PointValue,
+
+  stringUnion?: WithDefault<'foo' | 'bar', 'bar'>,
+  intUnion?: WithDefault<1 | 2, 1>,
+
+  nestedObject: $ReadOnly<{
+    string: string,
+    color: ColorValue,
+  }>,
+
+  nestedObjectChanged: $ReadOnly<{
+    string: boolean,
+    color: ColorValue,
+  }>,
+
+  arrayStringUnion?: WithDefault<$ReadOnlyArray<'foo' | 'bar'>, 'foo'>,
+  arrayStringUnionExtra?: WithDefault<
+    $ReadOnlyArray<'foo' | 'bar' | 'baz'>,
+    'bar',
+  >,
+
+  arrayNestedObject: $ReadOnlyArray<
+    $ReadOnly<{
+      string: string,
+      color: ColorValue,
+    }>,
+  >,
+
+  arrayNestedObjectChange: $ReadOnlyArray<
+    $ReadOnly<{
+      string: boolean,
+      color: ColorValue,
+    }>,
+  >,
+}>;
+
+type NativeType = HostComponent<NativeProps>;
+
+type Int = Int32;
+type Str = string;
+type Bool = boolean;
+type Fl = Float;
+type Dbl = Double;
+type CustomObj = {foo: string, bar: number};
+type CustomObj2 = {a: Int32, b: string};
+
+interface NativeCommands {
+  +methodInt: (viewRef: React.ElementRef<NativeType>, a: Int32) => void;
+  +methodIntString: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Int32,
+    b: string,
+  ) => void;
+  +methodString: (viewRef: React.ElementRef<NativeType>, a: string) => void;
+  +methodBool: (viewRef: React.ElementRef<NativeType>, a: boolean) => void;
+  +methodFloat: (viewRef: React.ElementRef<NativeType>, a: Float) => void;
+  +methodDouble: (viewRef: React.ElementRef<NativeType>, a: Double) => void;
+
+  +methodIntAlias: (viewRef: React.ElementRef<NativeType>, a: Int) => void;
+  +methodStringAlias: (viewRef: React.ElementRef<NativeType>, a: Str) => void;
+  +methodBoolAlias: (viewRef: React.ElementRef<NativeType>, a: Bool) => void;
+  +methodFloatAlias: (viewRef: React.ElementRef<NativeType>, a: Fl) => void;
+  +methodDoubleAlias: (viewRef: React.ElementRef<NativeType>, a: Dbl) => void;
+
+  +methodIntArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<Int32>,
+  ) => void;
+  +methodStringArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<string>,
+  ) => void;
+  +methodBoolArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<boolean>,
+  ) => void;
+  +methodFloatArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<Float>,
+  ) => void;
+  +methodDoubleArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<Double>,
+  ) => void;
+  +methodCustomObjArray: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<CustomObj>,
+  ) => void;
+  +methodCustomObj2Array: (
+    viewRef: React.ElementRef<NativeType>,
+    a: Array<CustomObj2>,
+  ) => void;
+
+  +methodRootTag: (viewRef: React.ElementRef<NativeType>, a: RootTag) => void;
+}
+
+export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+  supportedCommands: [
+    'methodInt',
+    'methodIntString',
+    'methodString',
+    'methodBool',
+    'methodFloat',
+    'methodDouble',
+    'methodIntAlias',
+    'methodStringAlias',
+    'methodBoolAlias',
+    'methodFloatAlias',
+    'methodDoubleAlias',
+    'methodIntArray',
+    'methodStringArray',
+    'methodBoolArray',
+    'methodFloatArray',
+    'methodDoubleArray',
+    'methodCustomObjArray',
+    'methodCustomObj2Array',
+    'methodRootTag',
+  ],
+});
+
+export default codegenNativeComponent<NativeProps>(
+  'NativeComponent',
+) as NativeType;

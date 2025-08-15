@@ -12,6 +12,8 @@
 #include <android/asset_manager.h>
 #include <cxxreact/JSModulesUnbundle.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class JniJSModulesUnbundle : public JSModulesUnbundle {
@@ -22,7 +24,7 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
   JniJSModulesUnbundle() = default;
   JniJSModulesUnbundle(
       AAssetManager* assetManager,
-      const std::string& moduleDirectory);
+      std::string moduleDirectory);
   JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
   JniJSModulesUnbundle& operator=(JSModulesUnbundle&& other) = delete;
 
@@ -41,3 +43,5 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
 };
 
 } // namespace facebook::react
+
+#endif

@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB_RECURSE hermes_instance_jni_SRC CONFIGURE_DEPENDS *.cpp)
 
@@ -14,20 +15,18 @@ add_library(hermesinstancejni
         OBJECT
         ${hermes_instance_jni_SRC}
 )
-target_compile_options(
-        hermesinstancejni
-        PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -std=c++20
-        -fexceptions
-)
-
 target_include_directories(hermesinstancejni PRIVATE .)
 target_merge_so(hermesinstancejni)
 
 target_link_libraries(hermesinstancejni
         hermes-engine::libhermes
+        jsitooling
         fbjni
         bridgelesshermes
         reactnative
 )
+
+target_compile_reactnative_options(hermesinstancejni PRIVATE)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(hermesinstancejni PRIVATE -DHERMES_ENABLE_DEBUGGER=1)
+endif ()

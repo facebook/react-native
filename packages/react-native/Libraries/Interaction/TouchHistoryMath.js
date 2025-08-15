@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // $FlowFixMe[definition-cycle]
@@ -151,6 +151,32 @@ const TouchHistoryMath = {
   },
 
   noCentroid: -1,
+} as {
+  centroidDimension: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+    isXAxis: boolean,
+    ofCurrent: boolean,
+  ) => number,
+  currentCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  currentCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  previousCentroidXOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  previousCentroidYOfTouchesChangedAfter: (
+    touchHistory: TouchHistoryMath,
+    touchesChangedAfter: number,
+  ) => number,
+  currentCentroidX: (touchHistory: TouchHistoryMath) => number,
+  currentCentroidY: (touchHistory: TouchHistoryMath) => number,
+  noCentroid: number,
 };
 
-module.exports = TouchHistoryMath;
+export default TouchHistoryMath;

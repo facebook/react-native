@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const {
@@ -42,7 +41,7 @@ describe('version-utils', () => {
   });
 
   describe('parseVersion', () => {
-    it('should throw error if buildType is not `release`, `dry-run`, `prealpha`` or `nightly`', () => {
+    it('should throw error if buildType is not `release`, `dry-run` or `nightly`', () => {
       function testInvalidVersion() {
         // $FlowExpectedError[incompatible-call]
         parseVersion('v0.10.5', 'invalid_build_type');
@@ -303,69 +302,6 @@ describe('version-utils', () => {
       expect(minor).toBe('0');
       expect(patch).toBe('0');
       expect(prerelease).toBeUndefined();
-    });
-
-    it('should parse prealpha with valid value', () => {
-      const {version, major, minor, patch, prerelease} = parseVersion(
-        '0.0.0-prealpha-2023100416',
-        'prealpha',
-      );
-
-      expect(version).toBe('0.0.0-prealpha-2023100416');
-      expect(major).toBe('0');
-      expect(minor).toBe('0');
-      expect(patch).toBe('0');
-      expect(prerelease).toBe('prealpha-2023100416');
-    });
-
-    it('should reject prealpha with 1.0.0 version', () => {
-      function testInvalidFunction() {
-        parseVersion('1.0.0-prealpha-2023100416', 'prealpha');
-      }
-
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        '"Version 1.0.0-prealpha-2023100416 is not valid for prealphas"',
-      );
-    });
-
-    it('should reject prealpha with invalid version', () => {
-      function testInvalidFunction() {
-        parseVersion('1.2.3-prealpha-2023100416', 'prealpha');
-      }
-
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        '"Version 1.2.3-prealpha-2023100416 is not valid for prealphas"',
-      );
-    });
-
-    it('should reject prealpha with no prerelease', () => {
-      function testInvalidFunction() {
-        parseVersion('1.0.0', 'prealpha');
-      }
-
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        '"Version 1.0.0 is not valid for prealphas"',
-      );
-    });
-
-    it('should reject prealpha with invalid prerelease (no timestamp)', () => {
-      function testInvalidFunction() {
-        parseVersion('1.0.0-prealpha', 'prealpha');
-      }
-
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        '"Version 1.0.0-prealpha is not valid for prealphas"',
-      );
-    });
-
-    it('should reject prealpha with invalid prerelease (no prealpha)', () => {
-      function testInvalidFunction() {
-        parseVersion('1.0.0-2023100416', 'prealpha');
-      }
-
-      expect(testInvalidFunction).toThrowErrorMatchingInlineSnapshot(
-        '"Version 1.0.0-2023100416 is not valid for prealphas"',
-      );
     });
 
     it('should reject stable releases with major > 0', () => {

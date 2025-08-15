@@ -9,11 +9,8 @@ package com.facebook.react.views.view
 
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 /** Based on Fresco's DrawableUtilsTest (https://github.com/facebook/fresco). */
-@RunWith(RobolectricTestRunner::class)
 class ColorUtilTest {
   @Test
   fun testNormalize() {

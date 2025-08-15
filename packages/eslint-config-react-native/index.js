@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 module.exports = {
@@ -54,6 +55,12 @@ module.exports = {
       parser: '@babel/eslint-parser',
     },
     {
+      files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
+      rules: {
+        '@react-native/no-deep-imports': 1,
+      },
+    },
+    {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint/eslint-plugin'],
@@ -69,8 +76,6 @@ module.exports = {
         'no-shadow': 'off',
         '@typescript-eslint/no-shadow': 1,
         'no-undef': 'off',
-        'func-call-spacing': 'off',
-        '@typescript-eslint/func-call-spacing': 1,
       },
     },
     {
@@ -84,7 +89,6 @@ module.exports = {
       },
       rules: {
         'react-native/no-inline-styles': 0,
-        quotes: [1, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
       },
     },
   ],
@@ -138,7 +142,6 @@ module.exports = {
 
   rules: {
     // General
-    'comma-dangle': [1, 'always-multiline'], // allow or disallow trailing commas
     'no-cond-assign': 1, // disallow assignment in conditional expressions
     'no-console': 0, // disallow use of console (off by default in the node environment)
     'no-const-assign': 2, // disallow assignment to const-declared variables
@@ -150,15 +153,12 @@ module.exports = {
     'no-empty': 0, // disallow empty statements
     'no-ex-assign': 1, // disallow assigning to the exception in a catch block
     'no-extra-boolean-cast': 1, // disallow double-negation boolean casts in a boolean context
-    'no-extra-parens': 0, // disallow unnecessary parentheses (off by default)
-    'no-extra-semi': 1, // disallow unnecessary semicolons
     'no-func-assign': 1, // disallow overwriting functions written as function declarations
     'no-inner-declarations': 0, // disallow function or variable declarations in nested blocks
     'no-invalid-regexp': 1, // disallow invalid regular expression strings in the RegExp constructor
     'no-negated-in-lhs': 1, // disallow negation of the left operand of an in expression
     'no-obj-calls': 1, // disallow the use of object properties of the global object (Math and JSON) as functions
     'no-regex-spaces': 1, // disallow multiple spaces in a regular expression literal
-    'no-reserved-keys': 0, // disallow reserved words being used as object literal keys (off by default)
     'no-sparse-arrays': 1, // disallow sparse arrays
     'no-unreachable': 2, // disallow unreachable statements after a return, throw, continue, or break statement
     'use-isnan': 1, // disallow comparisons with the value NaN
@@ -171,7 +171,6 @@ module.exports = {
     'block-scoped-var': 0, // treat var statements as if they were block scoped (off by default)
     complexity: 0, // specify the maximum cyclomatic complexity allowed in a program (off by default)
     'consistent-return': 0, // require return statements to either always or never specify values
-    curly: 1, // specify curly brace conventions for all control statements
     'default-case': 0, // require default case in switch statements (off by default)
     'dot-notation': 1, // encourages use of dot notation whenever possible
     eqeqeq: [1, 'allow-null'], // require the use of === and !==
@@ -185,7 +184,6 @@ module.exports = {
     'no-extend-native': 1, // disallow adding to native types
     'no-extra-bind': 1, // disallow unnecessary function binding
     'no-fallthrough': 1, // disallow fallthrough of case statements
-    'no-floating-decimal': 1, // disallow the use of leading or trailing decimal points in numeric literals (off by default)
     'no-implied-eval': 1, // disallow use of eval()-like methods
     'no-labels': 1, // disallow use of labeled statements
     'no-iterator': 1, // disallow usage of __iterator__ property
@@ -210,9 +208,7 @@ module.exports = {
     'no-warning-comments': 0, // disallow usage of configurable warning terms in comments": 1,                        // e.g. TODO or FIXME (off by default)
     'no-with': 1, // disallow use of the with statement
     radix: 1, // require use of the second argument for parseInt() (off by default)
-    'semi-spacing': 1, // require a space after a semi-colon
     'vars-on-top': 0, // requires to declare all vars on top of their containing scope (off by default)
-    'wrap-iife': 0, // require immediate function invocation to be wrapped in parentheses (off by default)
     yoda: 1, // require or disallow Yoda conditions
 
     // Variables
@@ -254,45 +250,26 @@ module.exports = {
     // Stylistic Issues
     // These rules are purely matters of style and are quite subjective.
 
-    'key-spacing': 0,
-    'jsx-quotes': [1, 'prefer-double'], // enforces the usage of double quotes for all JSX attribute values which doesn’t contain a double quote
-    'comma-spacing': 0,
-    'no-multi-spaces': 0,
-    'brace-style': 0, // enforce one true brace style (off by default)
     camelcase: 0, // require camel case names
     'consistent-this': 1, // enforces consistent naming when capturing the current execution context (off by default)
-    'eol-last': 1, // enforce newline at the end of file, with no multiple empty lines
     'func-names': 0, // require function expressions to have a name (off by default)
     'func-style': 0, // enforces use of function declarations or expressions (off by default)
     'new-cap': 0, // require a capital letter for constructors
-    'new-parens': 1, // disallow the omission of parentheses when invoking a constructor with no arguments
     'no-nested-ternary': 0, // disallow nested ternary expressions (off by default)
     'no-array-constructor': 1, // disallow use of the Array constructor
     'no-empty-character-class': 1, // disallow the use of empty character classes in regular expressions
     'no-lonely-if': 0, // disallow if as the only statement in an else block (off by default)
     'no-new-object': 1, // disallow use of the Object constructor
-    'func-call-spacing': 1, // disallow space between function identifier and application
     'no-ternary': 0, // disallow the use of ternary operators (off by default)
-    'no-trailing-spaces': 1, // disallow trailing whitespace at the end of lines
     'no-underscore-dangle': 0, // disallow dangling underscores in identifiers
-    'no-mixed-spaces-and-tabs': 1, // disallow mixed spaces and tabs for indentation
-    quotes: [1, 'single', 'avoid-escape'], // specify whether double or single quotes should be used
-    'quote-props': 0, // require quotes around object literal property names (off by default)
-    semi: 1, // require or disallow use of semicolons instead of ASI
     'sort-vars': 0, // sort variables within the same declaration block (off by default)
-    'space-in-brackets': 0, // require or disallow spaces inside brackets (off by default)
-    'space-in-parens': 0, // require or disallow spaces inside parentheses (off by default)
-    'space-infix-ops': 1, // require spaces around operators
-    'space-unary-ops': [1, {words: true, nonwords: false}], // require or disallow spaces before/after unary operators (words on by default, nonwords off by default)
     'max-nested-callbacks': 0, // specify the maximum depth callbacks can be nested (off by default)
     'one-var': 0, // allow just one var statement per function (off by default)
-    'wrap-regex': 0, // require regex literals to be wrapped in parentheses (off by default)
 
     // Legacy
     // The following rules are included for compatibility with JSHint and JSLint. While the names of the rules may not match up with the JSHint/JSLint counterpart, the functionality is the same.
 
     'max-depth': 0, // specify the maximum depth that blocks can be nested (off by default)
-    'max-len': 0, // specify the maximum length of a line in your program (off by default)
     'max-params': 0, // limits the number of parameters that can be used in the function declaration. (off by default)
     'max-statements': 0, // specify the maximum number of statement allowed in a function (off by default)
     'no-bitwise': 1, // disallow use of bitwise operators (off by default)

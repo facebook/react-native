@@ -10,6 +10,8 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/Differentiator.h>
+#include "../internal/ShadowViewNodePair.h"
+#include "../internal/sliceChildShadowNodeViewPairs.h"
 
 namespace facebook::react {
 
@@ -60,7 +62,7 @@ static void calculateShadowViewMutationsForNewTree(
         static_cast<int>(newChildPair->mountIndex)));
 
     auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(*newChildPair, scope);
+        sliceChildShadowNodeViewPairs(*newChildPair, scope, false, {}, {});
 
     calculateShadowViewMutationsForNewTree(
         mutations, scope, newChildPair->shadowView, newGrandChildPairs);
@@ -78,7 +80,7 @@ StubViewTree buildStubViewTreeWithoutUsingDifferentiator(
       mutations,
       scope,
       ShadowView(rootShadowNode),
-      sliceChildShadowNodeViewPairs(rootShadowNodePair, scope));
+      sliceChildShadowNodeViewPairs(rootShadowNodePair, scope, false, {}, {}));
 
   auto emptyRootShadowNode = rootShadowNode.clone(ShadowNodeFragment{
       ShadowNodeFragment::propsPlaceholder(),

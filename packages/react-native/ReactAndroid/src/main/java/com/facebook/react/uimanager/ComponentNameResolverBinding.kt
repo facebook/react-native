@@ -18,6 +18,5 @@ internal object ComponentNameResolverBinding {
     SoLoader.loadLibrary("uimanagerjni")
   }
 
-  @JvmStatic
-  public external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Any)
+  @JvmStatic external fun install(runtimeExecutor: RuntimeExecutor, componentNameResolver: Any)
 }

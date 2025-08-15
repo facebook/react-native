@@ -47,6 +47,6 @@ function composeIndexers<T>(
   maybeB: ?{+[string]: T},
 ): {+[string]: T} {
   return maybeA == null || maybeB == null
-    ? maybeA ?? maybeB ?? {}
+    ? (maybeA ?? maybeB ?? {})
     : {...maybeA, ...maybeB};
 }

@@ -10,21 +10,20 @@
 #include <cassert>
 #include <list>
 #include <mutex>
-#include <tuple>
-#include <unordered_map>
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
 // pure destructors in C++ are odd. You would think they don't want an
 // implementation, but in fact the linker requires one. Define them to be
 // empty so that people don't count on them for any particular behaviour.
-IDestructible::~IDestructible() {}
-ILocalConnection::~ILocalConnection() {}
-IRemoteConnection::~IRemoteConnection() {}
-IInspector::~IInspector() {}
-IPageStatusListener::~IPageStatusListener() {}
+IDestructible::~IDestructible() = default;
+ILocalConnection::~ILocalConnection() = default;
+IRemoteConnection::~IRemoteConnection() = default;
+IInspector::~IInspector() = default;
+IPageStatusListener::~IPageStatusListener() = default;
 
-const folly::dynamic targetCapabilitiesToDynamic(
+folly::dynamic targetCapabilitiesToDynamic(
     const InspectorTargetCapabilities& capabilities) {
   return folly::dynamic::object(
       "nativePageReloads", capabilities.nativePageReloads)(
@@ -56,8 +55,8 @@ class InspectorImpl : public IInspector {
    public:
     Page(
         int id,
-        const std::string& title,
-        const std::string& vm,
+        std::string description,
+        std::string vm,
         ConnectFunc connectFunc,
         InspectorTargetCapabilities capabilities);
     operator InspectorPageDescription() const;
@@ -79,15 +78,15 @@ class InspectorImpl : public IInspector {
 
 InspectorImpl::Page::Page(
     int id,
-    const std::string& description,
-    const std::string& vm,
+    std::string description,
+    std::string vm,
     ConnectFunc connectFunc,
     InspectorTargetCapabilities capabilities)
     : id_(id),
-      description_(description),
-      vm_(vm),
+      description_(std::move(description)),
+      vm_(std::move(vm)),
       connectFunc_(std::move(connectFunc)),
-      capabilities_(std::move(capabilities)) {}
+      capabilities_(capabilities) {}
 
 InspectorImpl::Page::operator InspectorPageDescription() const {
   return InspectorPageDescription{
@@ -124,7 +123,7 @@ void InspectorImpl::removePage(int pageId) {
   std::scoped_lock lock(mutex_);
 
   if (pages_.erase(pageId) != 0) {
-    for (auto listenerWeak : listeners_) {
+    for (const auto& listenerWeak : listeners_) {
       if (auto listener = listenerWeak.lock()) {
         listener->onPageRemoved(pageId);
       }
@@ -138,6 +137,7 @@ std::vector<InspectorPageDescription> InspectorImpl::getPages() const {
   std::vector<InspectorPageDescription> inspectorPages;
   // pages_ is a std::map keyed on an incremental id, so this is insertion
   // ordered.
+  inspectorPages.reserve(pages_.size());
   for (auto& it : pages_) {
     inspectorPages.push_back(InspectorPageDescription(it.second));
   }

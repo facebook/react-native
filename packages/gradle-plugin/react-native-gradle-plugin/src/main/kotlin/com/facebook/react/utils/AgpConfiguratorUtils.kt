@@ -7,14 +7,18 @@
 
 package com.facebook.react.utils
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.facebook.react.ReactExtension
+import com.facebook.react.utils.ProjectUtils.isEdgeToEdgeEnabled
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.plus
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
@@ -23,18 +27,55 @@ import org.w3c.dom.Element
 @Suppress("UnstableApiUsage")
 internal object AgpConfiguratorUtils {
 
+  fun configureBuildTypesForApp(project: Project) {
+    val action =
+        Action<AppliedPlugin> {
+          project.extensions
+              .getByType(ApplicationAndroidComponentsExtension::class.java)
+              .finalizeDsl { ext ->
+                ext.buildTypes {
+                  val debug =
+                      getByName("debug").apply {
+                        manifestPlaceholders["usesCleartextTraffic"] = "true"
+                      }
+                  getByName("release").apply {
+                    manifestPlaceholders["usesCleartextTraffic"] = "false"
+                  }
+                  maybeCreate("debugOptimized").apply {
+                    manifestPlaceholders["usesCleartextTraffic"] = "true"
+                    initWith(debug)
+                    externalNativeBuild {
+                      cmake {
+                        arguments("-DCMAKE_BUILD_TYPE=Release")
+                        matchingFallbacks += listOf("release")
+                      }
+                    }
+                  }
+                }
+              }
+        }
+    project.pluginManager.withPlugin("com.android.application", action)
+  }
+
   fun configureBuildConfigFieldsForApp(project: Project, extension: ReactExtension) {
     val action =
         Action<AppliedPlugin> {
-          project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-            ext.buildFeatures.buildConfig = true
-            ext.defaultConfig.buildConfigField(
-                "boolean",
-                "IS_NEW_ARCHITECTURE_ENABLED",
-                project.isNewArchEnabled(extension).toString())
-            ext.defaultConfig.buildConfigField(
-                "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
-          }
+          project.extensions
+              .getByType(ApplicationAndroidComponentsExtension::class.java)
+              .finalizeDsl { ext ->
+                ext.buildFeatures.buildConfig = true
+                ext.defaultConfig.buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true")
+                ext.defaultConfig.buildConfigField(
+                    "boolean",
+                    "IS_HERMES_ENABLED",
+                    project.isHermesEnabled.toString(),
+                )
+                ext.defaultConfig.buildConfigField(
+                    "boolean",
+                    "IS_EDGE_TO_EDGE_ENABLED",
+                    project.isEdgeToEdgeEnabled.toString(),
+                )
+              }
         }
     project.pluginManager.withPlugin("com.android.application", action)
     project.pluginManager.withPlugin("com.android.library", action)
@@ -43,22 +84,29 @@ internal object AgpConfiguratorUtils {
   fun configureBuildConfigFieldsForLibraries(appProject: Project) {
     appProject.rootProject.allprojects { subproject ->
       subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-          ext.buildFeatures.buildConfig = true
-        }
+        subproject.extensions
+            .getByType(LibraryAndroidComponentsExtension::class.java)
+            .finalizeDsl { ext -> ext.buildFeatures.buildConfig = true }
       }
     }
   }
 
-  fun configureDevPorts(project: Project) {
+  fun configureDevServerLocation(project: Project) {
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
 
     val action =
         Action<AppliedPlugin> {
-          project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-            ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
-          }
+          project.extensions
+              .getByType(ApplicationAndroidComponentsExtension::class.java)
+              .finalizeDsl { ext ->
+                ext.defaultConfig.resValue(
+                    "string",
+                    "react_native_dev_server_ip",
+                    getHostIpAddress(),
+                )
+                ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
+              }
         }
 
     project.pluginManager.withPlugin("com.android.application", action)
@@ -68,20 +116,22 @@ internal object AgpConfiguratorUtils {
   fun configureNamespaceForLibraries(appProject: Project) {
     appProject.rootProject.allprojects { subproject ->
       subproject.pluginManager.withPlugin("com.android.library") {
-        subproject.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-          if (ext.namespace == null) {
-            val android = subproject.extensions.getByType(LibraryExtension::class.java)
-            val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
+        subproject.extensions
+            .getByType(LibraryAndroidComponentsExtension::class.java)
+            .finalizeDsl { ext ->
+              if (ext.namespace == null) {
+                val android = subproject.extensions.getByType(LibraryExtension::class.java)
+                val manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
-            manifestFile
-                .takeIf { it.exists() }
-                ?.let { file ->
-                  getPackageNameFromManifest(file)?.let { packageName ->
-                    ext.namespace = packageName
-                  }
-                }
-          }
-        }
+                manifestFile
+                    .takeIf { it.exists() }
+                    ?.let { file ->
+                      getPackageNameFromManifest(file)?.let { packageName ->
+                        ext.namespace = packageName
+                      }
+                    }
+              }
+            }
       }
     }
   }
@@ -104,3 +154,12 @@ fun getPackageNameFromManifest(manifest: File): String? {
     return null
   }
 }
+
+internal fun getHostIpAddress(): String =
+    NetworkInterface.getNetworkInterfaces()
+        .asSequence()
+        .filter { it.isUp && !it.isLoopback }
+        .flatMap { it.inetAddresses.asSequence() }
+        .filter { it is Inet4Address && !it.isLoopbackAddress }
+        .map { it.hostAddress }
+        .firstOrNull() ?: "localhost"

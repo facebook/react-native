@@ -8,12 +8,14 @@
 package com.facebook.react.utils
 
 import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_JITPACK_REPOSITORY
 import java.io.File
 import java.net.URI
@@ -28,6 +30,12 @@ internal object DependencyUtils {
    * party libraries which are auto-linked.
    */
   fun configureRepositories(project: Project) {
+    val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
+    if (exclusiveEnterpriseRepository != null) {
+      project.logger.lifecycle(
+          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository")
+    }
+
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
@@ -36,8 +44,18 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("org.webkit") }
           }
         }
+
+        if (exclusiveEnterpriseRepository != null) {
+          // We remove all previously set repositories and only configure the proxy provided by the
+          // user.
+          rootProject.repositories.clear()
+          mavenRepoFromUrl(exclusiveEnterpriseRepository)
+          // We return here as we don't want to configure other repositories as well.
+          return@allprojects
+        }
+
         // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/") { repo ->
+        mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
           repo.content { it.excludeGroup("org.webkit") }
         }
         repositories.mavenCentral { repo ->
@@ -81,7 +99,7 @@ internal object DependencyUtils {
   fun configureDependencies(
       project: Project,
       versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP,
   ) {
     if (versionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
@@ -109,30 +127,34 @@ internal object DependencyUtils {
 
   internal fun getDependencySubstitutions(
       versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP,
   ): List<Triple<String, String, String>> {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
             "${groupString}:react-android:${versionString}",
-            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."))
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.",
+        ))
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:hermes-engine",
             "${groupString}:hermes-android:${versionString}",
-            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."))
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.",
+        ))
     if (groupString != DEFAULT_INTERNAL_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:react-android",
               "${groupString}:react-android:${versionString}",
-              "The react-android dependency was modified to use the correct Maven group."))
+              "The react-android dependency was modified to use the correct Maven group.",
+          ))
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
               "${groupString}:hermes-android:${versionString}",
-              "The hermes-android dependency was modified to use the correct Maven group."))
+              "The hermes-android dependency was modified to use the correct Maven group.",
+          ))
     }
     return dependencySubstitution
   }
@@ -157,7 +179,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromUrl(
       url: String,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = URI.create(url)
@@ -166,7 +188,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromURI(
       uri: URI,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = uri
@@ -180,5 +202,14 @@ internal object DependencyUtils {
         hasProperty(INCLUDE_JITPACK_REPOSITORY) ->
             property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
+      }
+
+  internal fun Project.exclusiveEnterpriseRepository() =
+      when {
+        hasProperty(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        hasProperty(EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        else -> null
       }
 }

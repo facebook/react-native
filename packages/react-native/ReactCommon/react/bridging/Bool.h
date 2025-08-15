@@ -17,7 +17,7 @@ struct Bridging<bool> {
     return value.asBool();
   }
 
-  static jsi::Value toJs(jsi::Runtime&, bool value) {
+  static bool toJs(jsi::Runtime& /*unused*/, bool value) {
     return value;
   }
 };

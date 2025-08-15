@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 /**
@@ -31,13 +30,6 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * In the proxy, this disables source fetching emulation and host rewrites.
    */
   nativeSourceCodeFetching?: boolean,
-
-  /**
-   * The target supports native network inspection.
-   *
-   * In the proxy, this disables intercepting and storing network requests.
-   */
-  nativeNetworkInspection?: boolean,
 
   /**
    * The target supports the modern `rn_fusebox.html` entry point.

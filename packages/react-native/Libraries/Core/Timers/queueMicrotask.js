@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -30,6 +30,7 @@ export default function queueMicrotask(callback: Function) {
   }
 
   // Try to reuse a lazily allocated resolved promise from closure.
+  // $FlowFixMe[constant-condition]
   (resolvedPromise || (resolvedPromise = Promise.resolve()))
     .then(callback)
     .catch(error =>

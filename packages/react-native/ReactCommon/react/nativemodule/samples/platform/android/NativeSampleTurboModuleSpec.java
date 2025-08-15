@@ -141,4 +141,7 @@ public abstract class NativeSampleTurboModuleSpec extends ReactContextBaseJavaMo
 
   @ReactMethod
   public void promiseAssert(Promise promise) {}
+
+  @ReactMethod
+  public void getImageUrl(Promise promise) {}
 }

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
@@ -41,7 +40,7 @@ function makeRequest(
   host: ?string,
   encrypted: boolean,
 ): http$IncomingMessage<> | http$IncomingMessage<tls$TLSSocket> {
-  // $FlowIgnore[incompatible-return] Partial mock of request
+  // $FlowFixMe[incompatible-return] Partial mock of request
   return {
     socket: encrypted ? {encrypted: true} : {},
     headers: host != null ? {host} : {},

@@ -37,9 +37,17 @@ void EventBeat::setBeatCallback(BeatCallback beatCallback) {
   beatCallback_ = std::move(beatCallback);
 }
 
+void EventBeat::unstable_setInduceCallback(std::function<void()> callback) {
+  induceCallback_ = std::move(callback);
+}
+
 void EventBeat::induce() const {
   if (!isEventBeatRequested_) {
     return;
+  }
+
+  if (induceCallback_) {
+    induceCallback_();
   }
 
   isEventBeatRequested_ = false;

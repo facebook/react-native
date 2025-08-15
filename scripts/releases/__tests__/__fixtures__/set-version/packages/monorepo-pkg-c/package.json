@@ -3,7 +3,7 @@
   "version": "0.0.3",
   "description": "@monorepo/pkg-c",
   "dependencies": {
-    "metro-config": "^0.80.10",
-    "metro-runtime": "^0.80.10"
+    "third-party-dep-a": "^1.2.3",
+    "third-party-dep-b": "^1.2.3"
   }
 }

@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 export type PackagerAsset = $ReadOnly<{
@@ -40,7 +39,7 @@ function getAndroidAssetSuffix(scale: number): string {
 }
 
 // See https://developer.android.com/guide/topics/resources/drawable-resource.html
-const drawableFileTypes = new Set<string>([
+const drawableFileTypes: Set<string> = new Set<string>([
   'gif',
   'jpeg',
   'jpg',
@@ -86,6 +85,7 @@ function getBasePath(asset: PackagerAsset): string {
 }
 
 export default {
+  drawableFileTypes,
   getAndroidAssetSuffix,
   getAndroidResourceFolderName,
   getResourceIdentifier,

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ProcessedColorValue} from './processColor';
@@ -56,7 +56,7 @@ const _normalizeColorObject = (
     // an ios semantic color
     return color;
   } else if ('dynamic' in color && color.dynamic !== undefined) {
-    const normalizeColor = require('./normalizeColor');
+    const normalizeColor = require('./normalizeColor').default;
 
     // a dynamic, appearance aware color
     const dynamic = color.dynamic;

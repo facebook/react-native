@@ -4,13 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @oncall react_native
  */
 
-'use strict';
-
-const parseErrorStack = require('../parseErrorStack');
+import parseErrorStack from '../parseErrorStack';
 
 function getFakeError() {
   return new Error('Happy Cat');
@@ -29,6 +27,7 @@ describe('parseErrorStack', function () {
   it('does not support framesToPop', function () {
     function getWrappedError() {
       const error = getFakeError();
+      // $FlowFixMe[prop-missing]
       error.framesToPop = 1;
       return error;
     }
@@ -39,6 +38,7 @@ describe('parseErrorStack', function () {
 
   it('ignores bad inputs', function () {
     expect(parseErrorStack(undefined)).toEqual([]);
+    // $FlowExpectedError[incompatible-call]
     expect(parseErrorStack(null)).toEqual([]);
   });
 });

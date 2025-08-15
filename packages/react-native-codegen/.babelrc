@@ -1,8 +1,5 @@
 {
   "plugins": [
-    "@babel/plugin-transform-object-rest-spread",
-    "@babel/plugin-transform-async-to-generator",
-    "@babel/plugin-transform-destructuring",
     "@babel/plugin-transform-flow-strip-types",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-transform-class-properties",

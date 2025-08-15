@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -27,7 +27,7 @@ import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
 
-type ButtonProps = $ReadOnly<{|
+export type ButtonProps = $ReadOnly<{
   /**
     Text to display inside the button. On Android the given title will be
     converted to the uppercased form.
@@ -36,9 +36,9 @@ type ButtonProps = $ReadOnly<{|
 
   /**
     Handler to be called when the user taps the button. The first function
-    argument is an event in form of [PressEvent](pressevent).
+    argument is an event in form of [GestureResponderEvent](pressevent).
    */
-  onPress: (event?: PressEvent) => mixed,
+  onPress?: (event?: GestureResponderEvent) => mixed,
 
   /**
     If `true`, doesn't play system sound on touch.
@@ -63,6 +63,7 @@ type ButtonProps = $ReadOnly<{|
     @platform tv
 
     @default false
+    @deprecated Use `focusable` instead
    */
   hasTVPreferredFocus?: ?boolean,
 
@@ -167,7 +168,7 @@ type ButtonProps = $ReadOnly<{|
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
   accessibilityHint?: ?string,
   accessibilityLanguage?: ?Stringish,
-|}>;
+}>;
 
 /**
   A basic button component that should render nicely on any platform. Supports a
@@ -280,15 +281,17 @@ type ButtonProps = $ReadOnly<{|
   ```
  */
 
-const Touchable: typeof TouchableNativeFeedback | typeof TouchableOpacity =
+const NativeTouchable:
+  | typeof TouchableNativeFeedback
+  | typeof TouchableOpacity =
   Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
 
-type ButtonRef = React.ElementRef<typeof Touchable>;
+type ButtonRef = React.ElementRef<typeof NativeTouchable>;
 
 const Button: component(
-  ref: React.RefSetter<ButtonRef>,
+  ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
-) = React.forwardRef((props: ButtonProps, ref: React.RefSetter<ButtonRef>) => {
+) = ({ref, ...props}: {ref?: React.RefSetter<ButtonRef>, ...ButtonProps}) => {
   const {
     accessibilityLabel,
     accessibilityState,
@@ -361,7 +364,7 @@ const Button: component(
       : importantForAccessibility;
 
   return (
-    <Touchable
+    <NativeTouchable
       accessible={accessible}
       accessibilityActions={accessibilityActions}
       onAccessibilityAction={onAccessibilityAction}
@@ -390,9 +393,9 @@ const Button: component(
           {formattedTitle}
         </Text>
       </View>
-    </Touchable>
+    </NativeTouchable>
   );
-});
+};
 
 Button.displayName = 'Button';
 

@@ -34,7 +34,6 @@ class UtilsTests < Test::Unit::TestCase
         Xcodeproj::Plist.reset()
         XcodebuildMock.reset()
         ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '1'
         ENV['USE_FRAMEWORKS'] = nil
         system_reset_commands
         $RN_PLATFORMS = nil
@@ -106,21 +105,6 @@ class UtilsTests < Test::Unit::TestCase
         })
     end
 
-    def test_getDefaultFlag_whenOldArchitectureButHermesDisabled()
-        # Arrange
-        ENV['RCT_NEW_ARCH_ENABLED'] = '0'
-        ENV['USE_HERMES'] = '0'
-
-        # Act
-        flags = ReactNativePodsUtils.get_default_flags()
-
-        # Assert
-        assert_equal(flags, {
-            :fabric_enabled => false,
-            :hermes_enabled => false,
-        })
-    end
-
     def test_getDefaultFlag_whenNewArchitecture()
         # Arrange
         ENV['RCT_NEW_ARCH_ENABLED'] = '1'
@@ -132,21 +116,6 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal(flags, {
             :fabric_enabled => true,
             :hermes_enabled => true,
-        })
-    end
-
-    def test_getDefaultFlag_whenNewArchitectureButHermesDisabled()
-        # Arrange
-        ENV['RCT_NEW_ARCH_ENABLED'] = '1'
-        ENV['USE_HERMES'] = '0'
-
-        # Act
-        flags = ReactNativePodsUtils.get_default_flags()
-
-        # Assert
-        assert_equal(flags, {
-            :fabric_enabled => true,
-            :hermes_enabled => false,
         })
     end
 
@@ -450,196 +419,6 @@ class UtilsTests < Test::Unit::TestCase
         end
 
         assert_equal(user_project_mock.save_invocation_count, 1)
-    end
-
-    # ================================= #
-    # Test - Apply Xcode 15 Patch       #
-    # ================================= #
-    def test_applyXcode15Patch_whenXcodebuild14_correctlyAppliesNecessaryPatch
-        # Arrange
-        XcodebuildMock.set_version = "Xcode 14.3"
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = TargetMock.new("ThirdTarget", [
-            BuildConfigurationMock.new("Debug", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-            BuildConfigurationMock.new("Release", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-        ], nil)
-
-        user_project_mock = UserProjectMock.new("/a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            third_target
-        ])
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        user_project_mock.build_configurations.each do |config|
-            assert_nil(config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        # User project and Pods project
-        assert_equal(2, XcodebuildMock.version_invocation_count)
-    end
-
-    def test_applyXcode15Patch_whenXcodebuild15_1_does_not_apply_patch
-        # Arrange
-        XcodebuildMock.set_version = "Xcode 15.1"
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = TargetMock.new("ThirdTarget", [
-            BuildConfigurationMock.new("Debug", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-            BuildConfigurationMock.new("Release", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-        ], nil)
-
-        user_project_mock = UserProjectMock.new("/a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            third_target
-        ])
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        user_project_mock.build_configurations.each do |config|
-            assert_nil(config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) ", config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        # User project and Pods project
-        assert_equal(2, XcodebuildMock.version_invocation_count)
-    end
-
-    def test_applyXcode15Patch_whenXcodebuild15_correctlyAppliesNecessaryPatch
-        # Arrange
-        XcodebuildMock.set_version = "Xcode 15.0"
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = TargetMock.new("ThirdTarget", [
-            BuildConfigurationMock.new("Debug", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-            BuildConfigurationMock.new("Release", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-        ], nil)
-
-        user_project_mock = UserProjectMock.new("/a/path", [
-                prepare_config("Debug"),
-                prepare_config("Release"),
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([], {"hermes-engine" => {}}, :native_targets => [
-            third_target
-        ])
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        user_project_mock.build_configurations.each do |config|
-            assert_nil(config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) -Wl -ld_classic", config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        # User project and Pods project
-        assert_equal(2, XcodebuildMock.version_invocation_count)
-    end
-
-    def test_applyXcode15Patch_whenXcodebuild14ButProjectHasSettings_correctlyRemovesNecessaryPatch
-        # Arrange
-        XcodebuildMock.set_version = "Xcode 14.3"
-        first_target = prepare_target("FirstTarget")
-        second_target = prepare_target("SecondTarget")
-        third_target = TargetMock.new("ThirdTarget", [
-            BuildConfigurationMock.new("Debug", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-            BuildConfigurationMock.new("Release", {
-              "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) "SomeFlag=1" '
-            }),
-        ], nil)
-
-        debug_config = prepare_config("Debug", {"OTHER_LDFLAGS" => "$(inherited) -Wl -ld_classic "})
-        release_config = prepare_config("Release", {"OTHER_LDFLAGS" => "$(inherited) -Wl -ld_classic "})
-
-        user_project_mock = UserProjectMock.new("/a/path", [
-                debug_config,
-                release_config,
-            ],
-            :native_targets => [
-                first_target,
-                second_target
-            ]
-        )
-        pods_projects_mock = PodsProjectMock.new([debug_config.clone, release_config.clone], {"hermes-engine" => {}}, :native_targets => [
-            third_target
-        ])
-        installer = InstallerMock.new(pods_projects_mock, [
-            AggregatedProjectMock.new(user_project_mock)
-        ])
-
-        # Act
-        user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited) -Wl -ld_classic ", config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        ReactNativePodsUtils.apply_xcode_15_patch(installer, :xcodebuild_manager => XcodebuildMock)
-
-        # Assert
-        user_project_mock.build_configurations.each do |config|
-            assert_equal("$(inherited)", config.build_settings["OTHER_LDFLAGS"])
-        end
-
-        # User project and Pods project
-        assert_equal(2, XcodebuildMock.version_invocation_count)
     end
 
     # ==================================== #

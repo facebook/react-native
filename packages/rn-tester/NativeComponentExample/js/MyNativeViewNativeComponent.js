@@ -8,46 +8,38 @@
  * @format
  */
 
-import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
-import type {
-  BubblingEventHandler,
-  Double,
-  Float,
-  Int32,
-} from 'react-native/Libraries/Types/CodegenTypes';
+import type {CodegenTypes, HostComponent, ViewProps} from 'react-native';
 
 import * as React from 'react';
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands';
-import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
+import {codegenNativeCommands, codegenNativeComponent} from 'react-native';
 
 type Event = $ReadOnly<{
-  values: $ReadOnlyArray<Int32>,
+  values: $ReadOnlyArray<CodegenTypes.Int32>,
   boolValues: $ReadOnlyArray<boolean>,
-  floats: $ReadOnlyArray<Float>,
-  doubles: $ReadOnlyArray<Double>,
+  floats: $ReadOnlyArray<CodegenTypes.Float>,
+  doubles: $ReadOnlyArray<CodegenTypes.Double>,
   yesNos: $ReadOnlyArray<'yep' | 'nope'>,
   strings: $ReadOnlyArray<string>,
-  latLons: $ReadOnlyArray<{|lat: Double, lon: Double|}>,
-  multiArrays: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
+  latLons: $ReadOnlyArray<{lat: CodegenTypes.Double, lon: CodegenTypes.Double}>,
+  multiArrays: $ReadOnlyArray<$ReadOnlyArray<CodegenTypes.Int32>>,
 }>;
 
 type LegacyStyleEvent = $ReadOnly<{
   string: string,
 }>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
-  opacity?: Float,
-  values: $ReadOnlyArray<Int32>,
+  opacity?: CodegenTypes.Float,
+  values: $ReadOnlyArray<CodegenTypes.Int32>,
 
   // Events
-  onIntArrayChanged?: ?BubblingEventHandler<Event>,
-  onLegacyStyleEvent?: ?BubblingEventHandler<
+  onIntArrayChanged?: ?CodegenTypes.BubblingEventHandler<Event>,
+  onLegacyStyleEvent?: ?CodegenTypes.BubblingEventHandler<
     LegacyStyleEvent,
     'alternativeLegacyName',
   >,
-|}>;
+}>;
 
 export type MyNativeViewType = HostComponent<NativeProps>;
 

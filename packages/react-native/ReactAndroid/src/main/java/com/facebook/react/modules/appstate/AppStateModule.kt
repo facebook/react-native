@@ -34,26 +34,26 @@ internal class AppStateModule(reactContext: ReactApplicationContext) :
   public override fun getTypedExportedConstants(): Map<String, Any> =
       mapOf(INITIAL_STATE to appState)
 
-  public override fun getCurrentAppState(success: Callback, error: Callback?) {
+  override fun getCurrentAppState(success: Callback, error: Callback?) {
     success.invoke(createAppStateEventMap())
   }
 
-  public override fun onHostResume() {
+  override fun onHostResume() {
     appState = APP_STATE_ACTIVE
     sendAppStateChangeEvent()
   }
 
-  public override fun onHostPause() {
+  override fun onHostPause() {
     appState = APP_STATE_BACKGROUND
     sendAppStateChangeEvent()
   }
 
-  public override fun onHostDestroy() {
+  override fun onHostDestroy() {
     // do not set state to destroyed, do not send an event. By the current implementation, the
     // catalyst instance is going to be immediately dropped, and all JS calls with it.
   }
 
-  public override fun onWindowFocusChange(hasFocus: Boolean) {
+  override fun onWindowFocusChange(hasFocus: Boolean) {
     sendEvent("appStateFocusChange", hasFocus)
   }
 
@@ -61,7 +61,7 @@ internal class AppStateModule(reactContext: ReactApplicationContext) :
       Arguments.createMap().apply { putString("app_state", appState) }
 
   private fun sendEvent(eventName: String, data: Any?) {
-    val reactApplicationContext = getReactApplicationContext() ?: return
+    val reactApplicationContext = reactApplicationContext ?: return
     // We don't gain anything interesting from logging here, and it's an extremely common
     // race condition for an AppState event to be triggered as the Catalyst instance is being
     // set up or torn down. So, just fail silently here.
@@ -75,23 +75,23 @@ internal class AppStateModule(reactContext: ReactApplicationContext) :
     sendEvent("appStateDidChange", createAppStateEventMap())
   }
 
-  public override fun addListener(eventName: String?) {
+  override fun addListener(eventName: String?) {
     // iOS only
   }
 
-  public override fun removeListeners(count: Double) {
+  override fun removeListeners(count: Double) {
     // iOS only
   }
 
-  public override fun invalidate() {
+  override fun invalidate() {
     super.invalidate()
-    getReactApplicationContext().removeLifecycleEventListener(this)
+    reactApplicationContext.removeLifecycleEventListener(this)
   }
 
-  public companion object {
-    public const val NAME: String = NativeAppStateSpec.NAME
-    public const val APP_STATE_ACTIVE: String = "active"
-    public const val APP_STATE_BACKGROUND: String = "background"
+  companion object {
+    const val NAME: String = NativeAppStateSpec.NAME
+    const val APP_STATE_ACTIVE: String = "active"
+    const val APP_STATE_BACKGROUND: String = "background"
     private const val INITIAL_STATE: String = "initialAppState"
   }
 }

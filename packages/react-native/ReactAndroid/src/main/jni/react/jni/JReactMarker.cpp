@@ -117,7 +117,7 @@ void JReactMarker::logPerfMarkerWithInstanceKey(
 
 void JReactMarker::nativeLogMarker(
     jni::alias_ref<jclass> /* unused */,
-    std::string markerNameStr,
+    const std::string& markerNameStr,
     jlong markerTime) {
   // TODO: refactor this to a bidirectional map along with
   // logPerfMarkerWithInstanceKey

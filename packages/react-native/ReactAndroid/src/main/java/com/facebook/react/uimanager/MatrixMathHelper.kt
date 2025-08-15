@@ -8,6 +8,12 @@
 package com.facebook.react.uimanager
 
 import com.facebook.infer.annotation.Assertions
+import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 /**
  * Provides helper methods for converting transform operations into a matrix and then into a list of
@@ -19,7 +25,7 @@ public object MatrixMathHelper {
   private fun isZero(d: Double): Boolean {
     return if (java.lang.Double.isNaN(d)) {
       false
-    } else Math.abs(d) < EPSILON
+    } else abs(d) < EPSILON
   }
 
   @JvmStatic
@@ -181,12 +187,11 @@ public object MatrixMathHelper {
     // Now, get the rotations out
     // Based on: http://nghiaho.com/?page_id=846
     val conv = 180 / Math.PI
-    rotationDegrees[0] = roundTo3Places(-Math.atan2(row[2][1], row[2][2]) * conv)
+    rotationDegrees[0] = roundTo3Places(-atan2(row[2][1], row[2][2]) * conv)
     rotationDegrees[1] =
         roundTo3Places(
-            -Math.atan2(-row[2][0], Math.sqrt(row[2][1] * row[2][1] + row[2][2] * row[2][2])) *
-                conv)
-    rotationDegrees[2] = roundTo3Places(-Math.atan2(row[1][0], row[0][0]) * conv)
+            -atan2(-row[2][0], sqrt(row[2][1] * row[2][1] + row[2][2] * row[2][2])) * conv)
+    rotationDegrees[2] = roundTo3Places(-atan2(row[1][0], row[0][0]) * conv)
   }
 
   @JvmStatic
@@ -281,7 +286,8 @@ public object MatrixMathHelper {
         (m02 * m11 * m30 - m01 * m12 * m30 - m02 * m10 * m31 + m00 * m12 * m31 + m01 * m10 * m32 -
             m00 * m11 * m32) / det,
         ((m01 * m12 * m20 - m02 * m11 * m20 + m02 * m10 * m21) - m00 * m12 * m21 - m01 * m10 * m22 +
-            m00 * m11 * m22) / det)
+            m00 * m11 * m22) / det,
+    )
   }
 
   /** Turns columns into rows and rows into columns. */
@@ -303,7 +309,8 @@ public object MatrixMathHelper {
         m[3],
         m[7],
         m[11],
-        m[15])
+        m[15],
+    )
   }
 
   /** Based on: http://tog.acm.org/resources/GraphicsGems/gemsii/unmatrix.c */
@@ -322,7 +329,7 @@ public object MatrixMathHelper {
   /** From: https://code.google.com/p/webgl-mjs/source/browse/mjs.js */
   @JvmStatic
   public fun v3Length(a: DoubleArray): Double {
-    return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
+    return sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
   }
 
   /** Based on: https://code.google.com/p/webgl-mjs/source/browse/mjs.js */
@@ -350,10 +357,13 @@ public object MatrixMathHelper {
       a: DoubleArray,
       b: DoubleArray,
       aScale: Double,
-      bScale: Double
+      bScale: Double,
   ): DoubleArray {
     return doubleArrayOf(
-        aScale * a[0] + bScale * b[0], aScale * a[1] + bScale * b[1], aScale * a[2] + bScale * b[2])
+        aScale * a[0] + bScale * b[0],
+        aScale * a[1] + bScale * b[1],
+        aScale * a[2] + bScale * b[2],
+    )
   }
 
   /**
@@ -363,7 +373,10 @@ public object MatrixMathHelper {
   @JvmStatic
   public fun v3Cross(a: DoubleArray, b: DoubleArray): DoubleArray {
     return doubleArrayOf(
-        a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
   }
 
   @JvmStatic
@@ -437,37 +450,37 @@ public object MatrixMathHelper {
 
   @JvmStatic
   public fun applySkewX(m: DoubleArray, radians: Double) {
-    m[4] = Math.tan(radians)
+    m[4] = tan(radians)
   }
 
   @JvmStatic
   public fun applySkewY(m: DoubleArray, radians: Double) {
-    m[1] = Math.tan(radians)
+    m[1] = tan(radians)
   }
 
   @JvmStatic
   public fun applyRotateX(m: DoubleArray, radians: Double) {
-    m[5] = Math.cos(radians)
-    m[6] = Math.sin(radians)
-    m[9] = -Math.sin(radians)
-    m[10] = Math.cos(radians)
+    m[5] = cos(radians)
+    m[6] = sin(radians)
+    m[9] = -sin(radians)
+    m[10] = cos(radians)
   }
 
   @JvmStatic
   public fun applyRotateY(m: DoubleArray, radians: Double) {
-    m[0] = Math.cos(radians)
-    m[2] = -Math.sin(radians)
-    m[8] = Math.sin(radians)
-    m[10] = Math.cos(radians)
+    m[0] = cos(radians)
+    m[2] = -sin(radians)
+    m[8] = sin(radians)
+    m[10] = cos(radians)
   }
 
   // http://www.w3.org/TR/css3-transforms/#recomposing-to-a-2d-matrix
   @JvmStatic
   public fun applyRotateZ(m: DoubleArray, radians: Double) {
-    m[0] = Math.cos(radians)
-    m[1] = Math.sin(radians)
-    m[4] = -Math.sin(radians)
-    m[5] = Math.cos(radians)
+    m[0] = cos(radians)
+    m[1] = sin(radians)
+    m[4] = -sin(radians)
+    m[5] = cos(radians)
   }
 
   public open class MatrixDecompositionContext {

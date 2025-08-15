@@ -17,9 +17,9 @@ import android.view.ViewGroup
 public fun interface OnInterceptTouchEventListener {
 
   /**
-   * Called when a onInterceptTouch is invoked on a view group
+   * Called when a onInterceptTouch is invoked on a view group.
    *
-   * @param v The view group the onInterceptTouch has been called on
+   * @param view The view group the onInterceptTouch has been called on.
    * @param event The motion event being dispatched down the hierarchy.
    * @return Return true to steal motion event from the children and have the dispatched to this
    *   view, or return false to allow motion event to be delivered to children view

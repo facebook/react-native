@@ -12,7 +12,7 @@
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/Size.h>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -34,11 +34,19 @@ class ScrollViewState final {
   int scrollAwayPaddingTop;
 
   /*
+   * View Culling has to be disabled when accessibility features are used.
+   * View Culling removes views from view hierarchy and for example VoiceOver
+   * wouldn't recognise there is a view outside of the viewport that it can
+   * scroll to.
+   */
+  bool disableViewCulling{false};
+
+  /*
    * Returns size of scrollable area.
    */
   Size getContentSize() const;
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
   ScrollViewState(const ScrollViewState& previousState, folly::dynamic data)
       : contentOffset(
             {(Float)data["contentOffsetLeft"].getDouble(),

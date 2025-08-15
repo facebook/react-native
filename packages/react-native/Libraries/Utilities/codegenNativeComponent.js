@@ -4,26 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
-import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type Options = $ReadOnly<{|
+type NativeComponentOptions = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
-|}>;
+}>;
 
-export type NativeComponentType<T> = HostComponent<T>;
+export type NativeComponentType<T: {...}> = HostComponent<T>;
 
 // If this function runs then that means the view configs were not
 // generated at build time using `GenerateViewConfigJs.js`. Thus
@@ -33,7 +33,7 @@ export type NativeComponentType<T> = HostComponent<T>;
 // from a file suffixed with NativeComponent.js.
 function codegenNativeComponent<Props: {...}>(
   componentName: string,
-  options?: Options,
+  options?: NativeComponentOptions,
 ): NativeComponentType<Props> {
   if (global.RN$Bridgeless === true && __DEV__) {
     console.warn(

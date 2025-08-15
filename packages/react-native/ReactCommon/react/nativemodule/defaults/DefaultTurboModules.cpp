@@ -11,7 +11,7 @@
 #include <react/nativemodule/idlecallbacks/NativeIdleCallbacks.h>
 #include <react/nativemodule/microtasks/NativeMicrotasks.h>
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY
 #include <react/nativemodule/devtoolsruntimesettings/DevToolsRuntimeSettingsModule.h>
 #endif
 
@@ -36,7 +36,7 @@ namespace facebook::react {
     return std::make_shared<NativeDOM>(jsInvoker);
   }
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY
   if (name == DevToolsRuntimeSettingsModule::kModuleName) {
     return std::make_shared<DevToolsRuntimeSettingsModule>(jsInvoker);
   }

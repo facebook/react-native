@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {RefObject} from 'react';
 import type {HostInstance} from 'react-native';
-import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {NativeSyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import PopupMenuAndroidNativeComponent, {
   Commands,
@@ -19,13 +19,13 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useImperativeHandle, useRef} from 'react';
 
-type PopupMenuSelectionEvent = SyntheticEvent<
+type PopupMenuSelectionEvent = NativeSyntheticEvent<
   $ReadOnly<{
     item: number,
   }>,
 >;
 
-type PopupMenuDismissEvent = SyntheticEvent<$ReadOnly<{}>>;
+type PopupMenuDismissEvent = NativeSyntheticEvent<$ReadOnly<{}>>;
 
 export type PopupMenuAndroidInstance = {
   +show: () => void,

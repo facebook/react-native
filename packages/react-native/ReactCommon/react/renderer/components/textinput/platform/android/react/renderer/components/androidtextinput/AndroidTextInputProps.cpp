@@ -11,6 +11,7 @@
 #include <react/renderer/components/textinput/baseConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/utils/FloatComparison.h>
 
 namespace facebook::react {
 
@@ -355,5 +356,281 @@ SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
   return {};
 }
 #endif
+
+ComponentName AndroidTextInputProps::getDiffPropsImplementationTarget() const {
+  return "TextInput";
+}
+
+folly::dynamic AndroidTextInputProps::getDiffProps(
+    const Props* prevProps) const {
+  static const auto defaultProps = AndroidTextInputProps();
+
+  const AndroidTextInputProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const AndroidTextInputProps*>(prevProps);
+
+  folly::dynamic result = ViewProps::getDiffProps(oldProps);
+
+  // Base text input paragraph props
+  if (paragraphAttributes.maximumNumberOfLines !=
+      oldProps->paragraphAttributes.maximumNumberOfLines) {
+    result["numberOfLines"] = paragraphAttributes.maximumNumberOfLines;
+  }
+
+  if (paragraphAttributes.ellipsizeMode !=
+      oldProps->paragraphAttributes.ellipsizeMode) {
+    result["ellipsizeMode"] = toString(paragraphAttributes.ellipsizeMode);
+  }
+
+  if (paragraphAttributes.textBreakStrategy !=
+      oldProps->paragraphAttributes.textBreakStrategy) {
+    result["textBreakStrategy"] =
+        toString(paragraphAttributes.textBreakStrategy);
+  }
+
+  if (paragraphAttributes.adjustsFontSizeToFit !=
+      oldProps->paragraphAttributes.adjustsFontSizeToFit) {
+    result["adjustsFontSizeToFit"] = paragraphAttributes.adjustsFontSizeToFit;
+  }
+
+  if (!floatEquality(
+          paragraphAttributes.minimumFontSize,
+          oldProps->paragraphAttributes.minimumFontSize)) {
+    result["minimumFontSize"] = paragraphAttributes.minimumFontSize;
+  }
+
+  if (!floatEquality(
+          paragraphAttributes.maximumFontSize,
+          oldProps->paragraphAttributes.maximumFontSize)) {
+    result["maximumFontSize"] = paragraphAttributes.maximumFontSize;
+  }
+
+  if (paragraphAttributes.includeFontPadding !=
+      oldProps->paragraphAttributes.includeFontPadding) {
+    result["includeFontPadding"] = paragraphAttributes.includeFontPadding;
+  }
+
+  if (paragraphAttributes.android_hyphenationFrequency !=
+      oldProps->paragraphAttributes.android_hyphenationFrequency) {
+    result["android_hyphenationFrequency"] =
+        toString(paragraphAttributes.android_hyphenationFrequency);
+  }
+
+  if (paragraphAttributes.textAlignVertical !=
+      oldProps->paragraphAttributes.textAlignVertical) {
+    if (!paragraphAttributes.textAlignVertical.has_value()) {
+      result["textAlignVertical"] = nullptr;
+    } else {
+      result["textAlignVertical"] =
+          toString(*paragraphAttributes.textAlignVertical);
+    }
+  }
+
+  // Base text input props
+  if (defaultValue != oldProps->defaultValue) {
+    result["defaultValue"] = defaultValue;
+  }
+
+  if (placeholder != oldProps->placeholder) {
+    result["placeholder"] = placeholder;
+  }
+
+  if (placeholderTextColor != oldProps->placeholderTextColor) {
+    result["placeholderTextColor"] = *placeholderTextColor;
+  }
+
+  if (cursorColor != oldProps->cursorColor) {
+    result["cursorColor"] = *cursorColor;
+  }
+
+  if (selectionColor != oldProps->selectionColor) {
+    result["selectionColor"] = *selectionColor;
+  }
+
+  if (selectionHandleColor != oldProps->selectionHandleColor) {
+    result["selectionHandleColor"] = *selectionHandleColor;
+  }
+
+  if (underlineColorAndroid != oldProps->underlineColorAndroid) {
+    result["underlineColorAndroid"] = *underlineColorAndroid;
+  }
+
+  if (maxLength != oldProps->maxLength) {
+    result["maxLength"] = maxLength;
+  }
+
+  if (text != oldProps->text) {
+    result["text"] = text;
+  }
+
+  if (mostRecentEventCount != oldProps->mostRecentEventCount) {
+    result["mostRecentEventCount"] = mostRecentEventCount;
+  }
+
+  if (autoFocus != oldProps->autoFocus) {
+    result["autoFocus"] = autoFocus;
+  }
+
+  if (autoCapitalize != oldProps->autoCapitalize) {
+    result["autoCapitalize"] = autoCapitalize;
+  }
+
+  if (editable != oldProps->editable) {
+    result["editable"] = editable;
+  }
+
+  if (readOnly != oldProps->readOnly) {
+    result["readOnly"] = readOnly;
+  }
+
+  if (submitBehavior != oldProps->submitBehavior) {
+    result["submitBehavior"] = toDynamic(submitBehavior);
+  }
+
+  if (multiline != oldProps->multiline) {
+    result["multiline"] = multiline;
+  }
+
+  if (disableKeyboardShortcuts != oldProps->disableKeyboardShortcuts) {
+    result["disableKeyboardShortcuts"] = disableKeyboardShortcuts;
+  }
+
+  if (acceptDragAndDropTypes != oldProps->acceptDragAndDropTypes) {
+    result["acceptDragAndDropTypes"] = acceptDragAndDropTypes.has_value()
+        ? toDynamic(acceptDragAndDropTypes.value())
+        : nullptr;
+  }
+
+  // Android text input props
+  if (autoComplete != oldProps->autoComplete) {
+    result["autoComplete"] = autoComplete;
+  }
+
+  if (returnKeyLabel != oldProps->returnKeyLabel) {
+    result["returnKeyLabel"] = returnKeyLabel;
+  }
+
+  if (numberOfLines != oldProps->numberOfLines) {
+    result["numberOfLines"] = numberOfLines;
+  }
+
+  if (disableFullscreenUI != oldProps->disableFullscreenUI) {
+    result["disableFullscreenUI"] = disableFullscreenUI;
+  }
+
+  if (textBreakStrategy != oldProps->textBreakStrategy) {
+    result["textBreakStrategy"] = textBreakStrategy;
+  }
+
+  if (inlineImageLeft != oldProps->inlineImageLeft) {
+    result["inlineImageLeft"] = inlineImageLeft;
+  }
+
+  if (inlineImagePadding != oldProps->inlineImagePadding) {
+    result["inlineImagePadding"] = inlineImagePadding;
+  }
+
+  if (importantForAutofill != oldProps->importantForAutofill) {
+    result["importantForAutofill"] = importantForAutofill;
+  }
+
+  if (showSoftInputOnFocus != oldProps->showSoftInputOnFocus) {
+    result["showSoftInputOnFocus"] = showSoftInputOnFocus;
+  }
+
+  if (autoCorrect != oldProps->autoCorrect) {
+    result["autoCorrect"] = autoCorrect;
+  }
+
+  if (allowFontScaling != oldProps->allowFontScaling) {
+    result["allowFontScaling"] = allowFontScaling;
+  }
+
+  if (maxFontSizeMultiplier != oldProps->maxFontSizeMultiplier) {
+    result["maxFontSizeMultiplier"] = maxFontSizeMultiplier;
+  }
+
+  if (keyboardType != oldProps->keyboardType) {
+    result["keyboardType"] = keyboardType;
+  }
+
+  if (returnKeyType != oldProps->returnKeyType) {
+    result["returnKeyType"] = returnKeyType;
+  }
+
+  if (secureTextEntry != oldProps->secureTextEntry) {
+    result["secureTextEntry"] = secureTextEntry;
+  }
+
+  if (value != oldProps->value) {
+    result["value"] = value;
+  }
+
+  if (selectTextOnFocus != oldProps->selectTextOnFocus) {
+    result["selectTextOnFocus"] = selectTextOnFocus;
+  }
+
+  if (caretHidden != oldProps->caretHidden) {
+    result["caretHidden"] = caretHidden;
+  }
+
+  if (contextMenuHidden != oldProps->contextMenuHidden) {
+    result["contextMenuHidden"] = contextMenuHidden;
+  }
+
+  if (textShadowColor != oldProps->textShadowColor) {
+    result["textShadowColor"] = *textShadowColor;
+  }
+
+  if (textShadowRadius != oldProps->textShadowRadius) {
+    result["textShadowRadius"] = textShadowRadius;
+  }
+
+  if (textDecorationLine != oldProps->textDecorationLine) {
+    result["textDecorationLine"] = textDecorationLine;
+  }
+
+  if (fontStyle != oldProps->fontStyle) {
+    result["fontStyle"] = fontStyle;
+  }
+
+  if (textShadowOffset != oldProps->textShadowOffset) {
+    result["textShadowOffset"] = toDynamic(textShadowOffset);
+  }
+
+  if (lineHeight != oldProps->lineHeight) {
+    result["lineHeight"] = lineHeight;
+  }
+
+  if (textTransform != oldProps->textTransform) {
+    result["textTransform"] = textTransform;
+  }
+
+  if (letterSpacing != oldProps->letterSpacing) {
+    result["letterSpacing"] = letterSpacing;
+  }
+
+  if (fontSize != oldProps->fontSize) {
+    result["fontSize"] = fontSize;
+  }
+
+  if (textAlign != oldProps->textAlign) {
+    result["textAlign"] = textAlign;
+  }
+
+  if (includeFontPadding != oldProps->includeFontPadding) {
+    result["includeFontPadding"] = includeFontPadding;
+  }
+
+  if (fontWeight != oldProps->fontWeight) {
+    result["fontWeight"] = fontWeight;
+  }
+
+  if (fontFamily != oldProps->fontFamily) {
+    result["fontFamily"] = fontFamily;
+  }
+
+  return result;
+}
 
 } // namespace facebook::react

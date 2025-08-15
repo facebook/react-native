@@ -4,75 +4,83 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {View} = ReactNative;
-const {TestModule} = ReactNative.NativeModules;
+import * as React from 'react';
+import {useEffect, useRef} from 'react';
+import {NativeModules, View} from 'react-native';
 
-class PromiseTest extends React.Component<{...}> {
-  shouldResolve: boolean = false;
-  shouldReject: boolean = false;
-  shouldSucceedAsync: boolean = false;
-  shouldThrowAsync: boolean = false;
+const {TestModule} = NativeModules;
 
-  componentDidMount() {
-    // $FlowFixMe[unused-promise]
-    Promise.all([
-      this.testShouldResolve(),
-      this.testShouldReject(),
-      this.testShouldSucceedAsync(),
-      this.testShouldThrowAsync(),
-    ]).then(() =>
-      TestModule.markTestPassed(
-        this.shouldResolve &&
-          this.shouldReject &&
-          this.shouldSucceedAsync &&
-          this.shouldThrowAsync,
-      ),
-    );
-  }
+function PromiseTest(): React.Node {
+  const shouldResolve = useRef(false);
+  const shouldReject = useRef(false);
+  const shouldSucceedAsync = useRef(false);
+  const shouldThrowAsync = useRef(false);
 
-  testShouldResolve: () => any = () => {
+  const testShouldResolve = () => {
     return TestModule.shouldResolve()
-      .then(() => (this.shouldResolve = true))
-      .catch(() => (this.shouldResolve = false));
+      .then(() => {
+        shouldResolve.current = true;
+      })
+      .catch(() => {
+        shouldResolve.current = false;
+      });
   };
 
-  testShouldReject: () => any = () => {
+  const testShouldReject = () => {
     return TestModule.shouldReject()
-      .then(() => (this.shouldReject = false))
-      .catch(() => (this.shouldReject = true));
+      .then(() => {
+        shouldReject.current = false;
+      })
+      .catch(() => {
+        shouldReject.current = true;
+      });
   };
 
-  testShouldSucceedAsync: () => Promise<any> = async (): Promise<any> => {
+  const testShouldSucceedAsync = async () => {
     try {
       await TestModule.shouldResolve();
-      this.shouldSucceedAsync = true;
+      shouldSucceedAsync.current = true;
     } catch (e) {
-      this.shouldSucceedAsync = false;
+      shouldSucceedAsync.current = false;
     }
   };
 
-  testShouldThrowAsync: () => Promise<any> = async (): Promise<any> => {
+  const testShouldThrowAsync = async () => {
     try {
       await TestModule.shouldReject();
-      this.shouldThrowAsync = false;
+      shouldThrowAsync.current = false;
     } catch (e) {
-      this.shouldThrowAsync = true;
+      shouldThrowAsync.current = true;
     }
   };
 
-  render(): React.Node {
-    return <View />;
-  }
+  useEffect(() => {
+    async function runTests() {
+      await Promise.all([
+        testShouldResolve(),
+        testShouldReject(),
+        testShouldSucceedAsync(),
+        testShouldThrowAsync(),
+      ]);
+
+      TestModule.markTestPassed(
+        shouldResolve.current &&
+          shouldReject.current &&
+          shouldSucceedAsync.current &&
+          shouldThrowAsync.current,
+      );
+    }
+
+    runTests().catch(console.error);
+  }, []);
+
+  return <View />;
 }
 
-PromiseTest.displayName = 'PromiseTest';
-
-module.exports = PromiseTest;
+export default PromiseTest;

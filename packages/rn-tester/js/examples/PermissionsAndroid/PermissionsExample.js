@@ -4,23 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {Permission} from 'react-native';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
+import {useState} from 'react';
 import {PermissionsAndroid, StyleSheet, View} from 'react-native';
 
 function PermissionsExample() {
-  const [permission, setPermission] = React.useState<string>(
+  const [permission, setPermission] = useState<Permission>(
     PermissionsAndroid.PERMISSIONS.CAMERA,
   );
-  const [hasPermission, setHasPermission] = React.useState('Not Checked');
+  const [hasPermission, setHasPermission] = useState('Not Checked');
 
   const requestPermission = async () => {
     let result;
@@ -155,4 +159,4 @@ exports.examples = [
       'Short example of how to use the runtime permissions API introduced in Android M.',
     render: (): React.Node => <PermissionsExample />,
   },
-];
+] as Array<RNTesterModuleExample>;

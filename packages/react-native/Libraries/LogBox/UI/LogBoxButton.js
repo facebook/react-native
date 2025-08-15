@@ -10,27 +10,29 @@
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useState} from 'react';
 
-type Props = $ReadOnly<{|
-  backgroundColor: $ReadOnly<{|
+type Props = $ReadOnly<{
+  id?: string,
+  backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
-  |}>,
+  }>,
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   style?: ViewStyleProp,
-|}>;
+}>;
 
 function LogBoxButton(props: Props): React.Node {
-  const [pressed, setPressed] = React.useState(false);
+  const [pressed, setPressed] = useState(false);
 
   let backgroundColor = props.backgroundColor;
   if (!backgroundColor) {
@@ -42,6 +44,7 @@ function LogBoxButton(props: Props): React.Node {
 
   const content = (
     <View
+      id={props.id}
       style={StyleSheet.compose(
         {
           backgroundColor: pressed

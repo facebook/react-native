@@ -7,12 +7,14 @@
 
 #pragma once
 
+#include <array>
 #include <unordered_map>
 
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
@@ -21,6 +23,10 @@
 #include <react/renderer/graphics/RectangleCorners.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
+
+#ifdef RN_SERIALIZABLE_STATE
+#include <yoga/Yoga.h>
+#endif
 
 namespace facebook::react {
 
@@ -37,21 +43,53 @@ inline void fromRawValue(
 inline int toAndroidRepr(const SharedColor& color) {
   return *color;
 }
-inline folly::dynamic toDynamic(const SharedColor& color) {
-  return *color;
-}
 #endif
 
 inline std::string toString(const SharedColor& value) {
   ColorComponents components = colorComponentsFromColor(value);
-  auto ratio = 255.f;
-  return "rgba(" + folly::to<std::string>(round(components.red * ratio)) +
-      ", " + folly::to<std::string>(round(components.green * ratio)) + ", " +
-      folly::to<std::string>(round(components.blue * ratio)) + ", " +
-      folly::to<std::string>(round(components.alpha * ratio)) + ")";
+  std::array<char, 255> buffer{};
+  std::snprintf(
+      buffer.data(),
+      buffer.size(),
+      "rgba(%.0f, %.0f, %.0f, %g)",
+      components.red * 255.f,
+      components.green * 255.f,
+      components.blue * 255.f,
+      components.alpha);
+  return buffer.data();
 }
 
 #pragma mark - Geometry
+
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const YGValue& dimension) {
+  switch (dimension.unit) {
+    case YGUnitUndefined:
+      return "undefined";
+    case YGUnitAuto:
+      return "auto";
+    case YGUnitMaxContent:
+      return "max-content";
+    case YGUnitFitContent:
+      return "fit-content";
+    case YGUnitStretch:
+      return "stretch";
+    case YGUnitPoint:
+      return dimension.value;
+    case YGUnitPercent:
+      return std::format("{}%", dimension.value);
+  }
+
+  return nullptr;
+}
+
+inline folly::dynamic toDynamic(const Point& point) {
+  folly::dynamic pointResult = folly::dynamic::object();
+  pointResult["x"] = point.x;
+  pointResult["y"] = point.y;
+  return pointResult;
+}
+#endif
 
 inline void fromRawValue(
     const PropsParserContext& context,
@@ -162,6 +200,17 @@ inline void fromRawValue(
   }
 }
 
+#ifdef RN_SERIALIZABLE_STATE
+inline folly::dynamic toDynamic(const EdgeInsets& edgeInsets) {
+  folly::dynamic edgeInsetsResult = folly::dynamic::object();
+  edgeInsetsResult["left"] = edgeInsets.left;
+  edgeInsetsResult["top"] = edgeInsets.top;
+  edgeInsetsResult["right"] = edgeInsets.right;
+  edgeInsetsResult["bottom"] = edgeInsets.bottom;
+  return edgeInsetsResult;
+}
+#endif
+
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
@@ -208,14 +257,14 @@ inline void fromRawValue(
   LOG(ERROR) << "Unsupported CornerInsets type";
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
 inline std::string toString(const Point& point) {
-  return "{" + folly::to<std::string>(point.x) + ", " +
-      folly::to<std::string>(point.y) + "}";
+  return "{" + toString(point.x) + ", " + toString(point.y) + "}";
 }
 
 inline std::string toString(const Size& size) {
-  return "{" + folly::to<std::string>(size.width) + ", " +
-      folly::to<std::string>(size.height) + "}";
+  return "{" + toString(size.width) + ", " + toString(size.height) + "}";
 }
 
 inline std::string toString(const Rect& rect) {
@@ -223,17 +272,18 @@ inline std::string toString(const Rect& rect) {
 }
 
 inline std::string toString(const EdgeInsets& edgeInsets) {
-  return "{" + folly::to<std::string>(edgeInsets.left) + ", " +
-      folly::to<std::string>(edgeInsets.top) + ", " +
-      folly::to<std::string>(edgeInsets.right) + ", " +
-      folly::to<std::string>(edgeInsets.bottom) + "}";
+  return "{" + toString(edgeInsets.left) + ", " + toString(edgeInsets.top) +
+      ", " + toString(edgeInsets.right) + ", " + toString(edgeInsets.bottom) +
+      "}";
 }
 
 inline std::string toString(const CornerInsets& cornerInsets) {
-  return "{" + folly::to<std::string>(cornerInsets.topLeft) + ", " +
-      folly::to<std::string>(cornerInsets.topRight) + ", " +
-      folly::to<std::string>(cornerInsets.bottomLeft) + ", " +
-      folly::to<std::string>(cornerInsets.bottomRight) + "}";
+  return "{" + toString(cornerInsets.topLeft) + ", " +
+      toString(cornerInsets.topRight) + ", " +
+      toString(cornerInsets.bottomLeft) + ", " +
+      toString(cornerInsets.bottomRight) + "}";
 }
+
+#endif
 
 } // namespace facebook::react

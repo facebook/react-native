@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -14,7 +14,7 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardEvent} from 'react-native/Libraries/Components/Keyboard/Keyboard';
+import type {KeyboardEvent} from 'react-native';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';

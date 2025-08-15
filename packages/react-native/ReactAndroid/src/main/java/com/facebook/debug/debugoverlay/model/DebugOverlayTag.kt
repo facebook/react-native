@@ -15,7 +15,7 @@ package com.facebook.debug.debugoverlay.model
  * @param color Color for tag display.
  */
 internal class DebugOverlayTag(
-    public val name: String,
-    public val description: String,
-    public val color: Int,
+    val name: String,
+    val description: String,
+    val color: Int,
 )

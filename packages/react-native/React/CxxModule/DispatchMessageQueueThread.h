@@ -10,6 +10,8 @@
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 // RCTNativeModule arranges for native methods to be invoked on a queue which
@@ -43,3 +45,5 @@ class DispatchMessageQueueThread : public MessageQueueThread {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

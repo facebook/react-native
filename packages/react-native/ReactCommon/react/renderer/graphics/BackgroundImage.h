@@ -9,10 +9,11 @@
 
 #include <react/renderer/graphics/ColorComponents.h>
 #include <react/renderer/graphics/LinearGradient.h>
+#include <react/renderer/graphics/RadialGradient.h>
 #include <vector>
 
 namespace facebook::react {
 
-using BackgroundImage = std::variant<LinearGradient>;
+using BackgroundImage = std::variant<LinearGradient, RadialGradient>;
 
 }; // namespace facebook::react

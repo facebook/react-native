@@ -13,13 +13,13 @@ package com.facebook.react.modules.core
 public fun interface PermissionListener {
   /**
    * Method called whenever there's a result to a permission request. It is forwarded from
-   * [Activity.onRequestPermissionsResult].
+   * [android.app.Activity.onRequestPermissionsResult].
    *
    * @return boolean Whether the PermissionListener can be removed.
    */
   public fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ): Boolean
 }

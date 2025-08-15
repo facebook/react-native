@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeFrameRateLogger';
-import NativeFrameRateLogger from '../../src/private/specs/modules/NativeFrameRateLogger';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeFrameRateLogger';
+import NativeFrameRateLogger from '../../src/private/specs_DEPRECATED/modules/NativeFrameRateLogger';
+
 export default NativeFrameRateLogger;

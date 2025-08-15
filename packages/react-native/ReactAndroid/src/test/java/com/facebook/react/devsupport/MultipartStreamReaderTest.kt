@@ -11,10 +11,7 @@ import okio.Buffer
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class MultipartStreamReaderTest {
 
   @Test
@@ -36,11 +33,11 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isTrue
-            assertThat(headers!!["Content-Type"]).isEqualTo("application/json; charset=utf-8")
+            assertThat(headers["Content-Type"]).isEqualTo("application/json; charset=utf-8")
             assertThat(body.readUtf8()).isEqualTo("{}")
           }
         }
@@ -71,7 +68,7 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isEqualTo(callCount == 3)
@@ -128,7 +125,7 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, isLastChunk: Boolean) {
       callCount++
     }
 

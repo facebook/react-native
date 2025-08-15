@@ -146,8 +146,10 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = null),
+                            )),
+                project = null,
+            ))
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -174,8 +176,10 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )),
+                project = null,
+            ))
     assertThat(result.entries.size).isEqualTo(1)
     assertThat(result["a-dependency"]).isEqualTo(android)
   }
@@ -189,7 +193,8 @@ class GeneratePackageListTaskTest {
             packageImportPath = "import com.facebook.react.aPackage;",
             packageInstance = "new APackage()",
             buildTypes = emptyList(),
-            isPureCxxDependency = true)
+            isPureCxxDependency = true,
+        )
 
     val result =
         task.filterAndroidPackages(
@@ -202,8 +207,10 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-pure-cxx-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )),
+                project = null,
+            ))
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -233,6 +240,7 @@ class GeneratePackageListTaskTest {
 
 
 
+    @SuppressWarnings("deprecation")
     public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;
@@ -311,7 +319,8 @@ class GeneratePackageListTaskTest {
     import com.facebook.react.aPackage;
     // @react-native/another-package
     import com.facebook.react.anotherPackage;
-
+    
+    @SuppressWarnings("deprecation")
     public class PackageList {
       private Application application;
       private ReactNativeHost reactNativeHost;
@@ -386,5 +395,6 @@ class GeneratePackageListTaskTest {
                   libraryName = "anotherPackage",
                   componentDescriptors = emptyList(),
                   cmakeListsPath = "./another/directory/CMakeLists.txt",
-              ))
+              ),
+      )
 }

@@ -22,13 +22,6 @@
 RCT_MOCK_DEF(RCTBlobManager, dispatch_async);
 #define dispatch_async RCT_MOCK_USE(RCTBlobManager, dispatch_async)
 
-static BOOL gBlobManagerProcessingQueueEnabled = NO;
-
-RCT_EXTERN void RCTEnableBlobManagerProcessingQueue(BOOL enabled)
-{
-  gBlobManagerProcessingQueueEnabled = enabled;
-}
-
 static NSString *const kBlobURIScheme = @"blob";
 
 @interface RCTBlobManager () <
@@ -59,11 +52,6 @@ RCT_EXPORT_MODULE(BlobModule)
 {
   std::lock_guard<std::mutex> lock(_blobsMutex);
   _blobs = [NSMutableDictionary new];
-
-  if (gBlobManagerProcessingQueueEnabled) {
-    _processingQueue = dispatch_queue_create("com.facebook.react.blobmanager.processing", DISPATCH_QUEUE_SERIAL);
-  }
-
   facebook::react::RCTBlobCollector::install(self);
 }
 
@@ -165,11 +153,11 @@ RCT_EXPORT_METHOD(addNetworkingHandler)
 
   // TODO(T63516227): Why can methodQueue be nil here?
   // We don't want to do anything when methodQueue is nil.
-  if (![networking requestQueue]) {
+  if (!networking.methodQueue) {
     return;
   }
 
-  dispatch_async([networking requestQueue], ^{
+  dispatch_async(networking.methodQueue, ^{
     [networking addRequestHandler:self];
     [networking addResponseHandler:self];
   });
@@ -217,21 +205,16 @@ RCT_EXPORT_METHOD(createFromParts : (NSArray<NSDictionary<NSString *, id> *> *)p
     }
   }
 
-  dispatch_async([self executionQueue], ^{
+  dispatch_async(_methodQueue, ^{
     [self store:data withId:blobId];
   });
 }
 
 RCT_EXPORT_METHOD(release : (NSString *)blobId)
 {
-  dispatch_async([self executionQueue], ^{
+  dispatch_async(_methodQueue, ^{
     [self remove:blobId];
   });
-}
-
-- (dispatch_queue_t)executionQueue
-{
-  return gBlobManagerProcessingQueueEnabled ? _processingQueue : _methodQueue;
 }
 
 #pragma mark - RCTURLRequestHandler methods

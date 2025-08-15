@@ -13,6 +13,9 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -45,7 +48,15 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
  * manageChildren calls for various parent views may be issued to the native view hierarchy
  * depending on where the views being added/removed are attached in the optimized hierarchy
  */
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class NativeViewHierarchyOptimizer {
+
+  static {
+    LegacyArchitectureLogger.assertLegacyArchitecture(
+        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.ERROR);
+  }
 
   private static final String TAG = "NativeViewHierarchyOptimizer";
 
@@ -453,9 +464,9 @@ public class NativeViewHierarchyOptimizer {
       return false;
     }
 
-    ReadableMapKeySetIterator keyIterator = props.mBackingMap.keySetIterator();
+    ReadableMapKeySetIterator keyIterator = props.internal_backingMap().keySetIterator();
     while (keyIterator.hasNextKey()) {
-      if (!ViewProps.isLayoutOnly(props.mBackingMap, keyIterator.nextKey())) {
+      if (!ViewProps.isLayoutOnly(props.internal_backingMap(), keyIterator.nextKey())) {
         return false;
       }
     }

@@ -6,6 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_featureflagsjni_SRCS CONFIGURE_DEPENDS *.cpp)
 
@@ -25,13 +26,4 @@ target_link_libraries(
 )
 
 target_merge_so(react_featureflagsjni)
-
-target_compile_options(
-        react_featureflagsjni
-        PRIVATE
-        -DLOG_TAG=\"ReactNative\"
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-)
+target_compile_reactnative_options(react_featureflagsjni PRIVATE)

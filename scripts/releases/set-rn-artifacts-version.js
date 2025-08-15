@@ -6,15 +6,14 @@
  *
  * @flow
  * @format
- * @oncall react_native
  */
 
 /*::
 import type {BuildType, Version} from './utils/version-utils';
 */
 
-const {REPO_ROOT} = require('../consts');
-const {getNpmInfo} = require('../npm-utils');
+const {getNpmInfo} = require('../releases/utils/npm-utils');
+const {REPO_ROOT} = require('../shared/consts');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
 const {promises: fs} = require('fs');
 const path = require('path');
@@ -46,6 +45,8 @@ const config = {
 async function main() {
   const {
     values: {help, 'build-type': buildType, 'to-version': toVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
@@ -56,7 +57,7 @@ async function main() {
   the given release version. This does not update package.json.
 
   Options:
-    --build-type       One of ['dry-run', 'nightly', 'release', 'prealpha'].
+    --build-type       One of ['dry-run', 'nightly', 'release'].
     --to-version       The new version string.
     `);
     return;
@@ -79,6 +80,7 @@ async function updateReactNativeArtifacts(
   const versionInfo = parseVersion(version, buildType);
 
   await updateSourceFiles(versionInfo);
+  await updateTestFiles(versionInfo);
   await updateGradleFile(versionInfo.version);
 }
 
@@ -91,9 +93,9 @@ function updateSourceFiles(
     fs.writeFile(
       path.join(
         REPO_ROOT,
-        'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java',
+        'packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt',
       ),
-      require('./templates/ReactNativeVersion.java-template')(templateData),
+      require('./templates/ReactNativeVersion.kt-template')(templateData),
     ),
     fs.writeFile(
       path.join(REPO_ROOT, 'packages/react-native/React/Base/RCTVersion.m'),
@@ -116,6 +118,40 @@ function updateSourceFiles(
   ]);
 }
 
+function updateTestFiles(
+  versionInfo /*: Version */,
+) /*: Promise<Array<void>>*/ {
+  const oldVersion = /"\d+\.\d+\.\d+(-rc\.\d+)?\\/g;
+  const newVersion = `"${versionInfo.version}\\`;
+
+  const snapshotTestPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'packages',
+    'react-native',
+    'scripts',
+    'codegen',
+    '__tests__',
+    '__snapshots__',
+    'generate-artifacts-executor-test.js.snap',
+  );
+
+  const promise /*: Promise<void> */ = new Promise(async (resolve, reject) => {
+    try {
+      let snapshot = String(await fs.readFile(snapshotTestPath, 'utf8')).trim();
+      // Replace all occurrences of the old version pattern with the new version
+      snapshot = snapshot.replaceAll(oldVersion, newVersion);
+      await fs.writeFile(snapshotTestPath, snapshot, {encoding: 'utf8'});
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+  return Promise.all([promise]);
+}
+
 async function updateGradleFile(version /*: string */) /*: Promise<void> */ {
   const contents = await fs.readFile(GRADLE_FILE_PATH, 'utf-8');
 
@@ -132,6 +168,5 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
@@ -14,6 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -84,7 +85,7 @@ function RotatingImagesView({useNativeDriver}: {useNativeDriver: boolean}) {
 }
 
 function RotatingImagesExample(): React.Node {
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <View>

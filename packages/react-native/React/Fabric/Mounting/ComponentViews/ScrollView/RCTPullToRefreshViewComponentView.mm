@@ -7,10 +7,10 @@
 
 #import "RCTPullToRefreshViewComponentView.h"
 
-#import <react/renderer/components/rncore/ComponentDescriptors.h>
-#import <react/renderer/components/rncore/EventEmitters.h>
-#import <react/renderer/components/rncore/Props.h>
-#import <react/renderer/components/rncore/RCTComponentViewHelpers.h>
+#import <react/renderer/components/FBReactNativeSpec/ComponentDescriptors.h>
+#import <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
+#import <react/renderer/components/FBReactNativeSpec/Props.h>
+#import <react/renderer/components/FBReactNativeSpec/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
 #import <React/RCTRefreshableProtocol.h>
@@ -26,6 +26,11 @@ using namespace facebook::react;
 @implementation RCTPullToRefreshViewComponentView {
   UIRefreshControl *_refreshControl;
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
+  // This variable keeps track of whether the view is recycled or not. Once the view is recycled, the component
+  // creates a new instance of UIRefreshControl, resetting the native props to the default values.
+  // However, when recycling, we are keeping around the old _props. The flag is used to force the application
+  // of the current props to the newly created UIRefreshControl the first time that updateProps is called.
+  BOOL _recycled;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -35,8 +40,8 @@ using namespace facebook::react;
     // attaching and detaching of a pull-to-refresh view to a scroll view.
     // The pull-to-refresh view is not a subview of this view.
     self.hidden = YES;
-
     _props = PullToRefreshViewShadowNode::defaultSharedProps();
+    _recycled = NO;
     [self _initializeUIRefreshControl];
   }
 
@@ -49,11 +54,6 @@ using namespace facebook::react;
   [_refreshControl addTarget:self
                       action:@selector(handleUIControlEventValueChanged)
             forControlEvents:UIControlEventValueChanged];
-
-  const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
-
-  _refreshControl.tintColor = RCTUIColorFromSharedColor(concreteProps.tintColor);
-  [self _updateProgressViewOffset:concreteProps.progressViewOffset];
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -68,6 +68,7 @@ using namespace facebook::react;
   [super prepareForRecycle];
   _scrollViewComponentView = nil;
   [self _initializeUIRefreshControl];
+  _recycled = YES;
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
@@ -75,37 +76,44 @@ using namespace facebook::react;
   const auto &oldConcreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
   const auto &newConcreteProps = static_cast<const PullToRefreshViewProps &>(*props);
 
-  if (newConcreteProps.refreshing != oldConcreteProps.refreshing) {
-    if (newConcreteProps.refreshing) {
-      [_refreshControl beginRefreshing];
-    } else {
-      [_refreshControl endRefreshing];
-    }
-  }
-
-  if (newConcreteProps.tintColor != oldConcreteProps.tintColor) {
+  if (_recycled || newConcreteProps.tintColor != oldConcreteProps.tintColor) {
     _refreshControl.tintColor = RCTUIColorFromSharedColor(newConcreteProps.tintColor);
   }
 
-  if (newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
+  if (_recycled || newConcreteProps.progressViewOffset != oldConcreteProps.progressViewOffset) {
     [self _updateProgressViewOffset:newConcreteProps.progressViewOffset];
   }
 
   BOOL needsUpdateTitle = NO;
 
-  if (newConcreteProps.title != oldConcreteProps.title) {
+  if (_recycled || newConcreteProps.title != oldConcreteProps.title) {
     needsUpdateTitle = YES;
   }
 
-  if (newConcreteProps.titleColor != oldConcreteProps.titleColor) {
+  if (_recycled || newConcreteProps.titleColor != oldConcreteProps.titleColor) {
     needsUpdateTitle = YES;
   }
 
   [super updateProps:props oldProps:oldProps];
 
-  if (needsUpdateTitle) {
+  if (_recycled || needsUpdateTitle) {
     [self _updateTitle];
   }
+
+  // All prop updates must happen above the call to begin refreshing, or else _refreshControl will ignore the updates
+  if (_recycled || newConcreteProps.refreshing != oldConcreteProps.refreshing) {
+    if (newConcreteProps.refreshing) {
+      [self beginRefreshingProgrammatically];
+    } else {
+      [_refreshControl endRefreshing];
+    }
+  }
+
+  if (_recycled || newConcreteProps.zIndex != oldConcreteProps.zIndex) {
+    _refreshControl.layer.zPosition = newConcreteProps.zIndex.value_or(0);
+  }
+
+  _recycled = NO;
 }
 
 #pragma mark -
@@ -144,10 +152,25 @@ using namespace facebook::react;
 
 #pragma mark - Attaching & Detaching
 
-- (void)didMoveToWindow
+- (void)layoutSubviews
 {
-  [super didMoveToWindow];
+  [super layoutSubviews];
+
+  // Attempts to begin refreshing before the initial layout are ignored by _refreshControl. So if the control is
+  // refreshing when mounted, we need to call beginRefreshing in layoutSubviews or it won't work.
   if (self.window) {
+    const auto &concreteProps = static_cast<const PullToRefreshViewProps &>(*_props);
+
+    if (concreteProps.refreshing) {
+      [self beginRefreshingProgrammatically];
+    }
+  }
+}
+
+- (void)didMoveToSuperview
+{
+  [super didMoveToSuperview];
+  if (self.superview) {
     [self _attach];
   } else {
     [self _detach];
@@ -167,6 +190,9 @@ using namespace facebook::react;
 
   if (@available(macCatalyst 13.1, *)) {
     _scrollViewComponentView.scrollView.refreshControl = _refreshControl;
+
+    // This ensures that layoutSubviews is called. Without this, recycled instances won't refresh on mount
+    [self setNeedsLayout];
   }
 }
 
@@ -185,6 +211,22 @@ using namespace facebook::react;
   _scrollViewComponentView = nil;
 }
 
+- (void)beginRefreshingProgrammatically
+{
+  if (!_scrollViewComponentView) {
+    return;
+  }
+
+  // When refreshing programmatically (i.e. without pulling down), we must explicitly adjust the ScrollView content
+  // offset, or else the _refreshControl won't be visible
+  if (!_refreshControl.isRefreshing) {
+    UIScrollView *scrollView = _scrollViewComponentView.scrollView;
+    CGPoint offset = {scrollView.contentOffset.x, scrollView.contentOffset.y - _refreshControl.frame.size.height};
+    [scrollView setContentOffset:offset];
+    [_refreshControl beginRefreshing];
+  }
+}
+
 #pragma mark - Native commands
 
 - (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
@@ -195,7 +237,7 @@ using namespace facebook::react;
 - (void)setNativeRefreshing:(BOOL)refreshing
 {
   if (refreshing) {
-    [_refreshControl beginRefreshing];
+    [self beginRefreshingProgrammatically];
   } else {
     [_refreshControl endRefreshing];
   }

@@ -16,11 +16,14 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTBridge ()
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 // Private designated initializer
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
                   moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;
@@ -146,6 +149,8 @@ RCT_EXTERN void RCTRegisterModule(Class);
 // TODO(cjhopman): this seems unsafe unless we require that it is only called on the main js queue.
 @property (nonatomic, readonly) void *runtime;
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 @end

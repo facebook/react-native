@@ -15,7 +15,6 @@
 #include <cxxreact/JsArgumentHelpers.h>
 #include <cxxreact/NativeModule.h>
 #include <fbjni/fbjni.h>
-#include <folly/json.h>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -24,7 +23,7 @@
 #include "CatalystInstanceImpl.h"
 #include "ReadableNativeArray.h"
 
-using facebook::xplat::module::CxxModule;
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 
 namespace facebook::react {
 
@@ -51,19 +50,16 @@ std::string JavaNativeModule::getName() {
 
 std::string JavaNativeModule::getSyncMethodName(unsigned int reactMethodId) {
   if (reactMethodId >= syncMethods_.size()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ",
-        reactMethodId,
-        " out of range [0..",
-        syncMethods_.size(),
-        "]"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(reactMethodId) + " out of range [0.." +
+        std::to_string(syncMethods_.size()) + "]");
   }
 
   auto& methodInvoker = syncMethods_[reactMethodId];
-
   if (!methodInvoker.has_value()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ", reactMethodId, " is not a recognized sync method"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(reactMethodId) +
+        " is not a recognized sync method");
   }
 
   return methodInvoker->getMethodName();
@@ -122,13 +118,13 @@ void JavaNativeModule::invoke(
                     "invoke");
 #ifdef WITH_FBSYSTRACE
         if (callId != -1) {
-          fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
+          fbsystrace_end_async_flow(TRACE_TAG_REACT, "native", callId);
         }
 #endif
         invokeMethod(
             wrapper_,
             static_cast<jint>(reactMethodId),
-            ReadableNativeArray::newObjectCxxArgs(std::move(params)).get());
+            ReadableNativeArray::newObjectCxxArgs(params).get());
       });
 }
 
@@ -137,12 +133,9 @@ MethodCallResult JavaNativeModule::callSerializableNativeHook(
     folly::dynamic&& params) {
   // TODO: evaluate whether calling through invoke is potentially faster
   if (reactMethodId >= syncMethods_.size()) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "methodId ",
-        reactMethodId,
-        " out of range [0..",
-        syncMethods_.size(),
-        "]"));
+    throw std::invalid_argument(
+        "methodId " + std::to_string(reactMethodId) + " out of range [0.." +
+        std::to_string(syncMethods_.size()) + "]");
   }
 
   auto& method = syncMethods_[reactMethodId];
@@ -159,3 +152,5 @@ jni::local_ref<JReflectMethod::javaobject> JMethodDescriptor::getMethod()
 }
 
 } // namespace facebook::react
+
+#endif

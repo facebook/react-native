@@ -4,20 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
-type BackPressEventName = 'backPress' | 'hardwareBackPress';
+export type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
+type TBackHandler = {
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
     handler: () => ?boolean,
-  ) => {remove: () => void, ...},
-|};
+  ): {remove: () => void, ...},
+};
 
-declare module.exports: TBackHandler;
+declare const BackHandler: TBackHandler;
+
+declare export default typeof BackHandler;

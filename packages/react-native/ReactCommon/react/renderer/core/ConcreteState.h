@@ -13,12 +13,25 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/State.h>
 
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
+#include <fbjni/fbjni.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 
 namespace facebook::react {
+
+#ifdef RN_SERIALIZABLE_STATE
+template <typename StateDataT>
+concept StateDataWithMapBuffer = requires(StateDataT stateData) {
+  { stateData.getMapBuffer() } -> std::same_as<MapBuffer>;
+};
+
+template <typename StateDataT>
+concept StateDataWithJNIReference = requires(StateDataT stateData) {
+  { stateData.getJNIReference() } -> std::same_as<jni::local_ref<jobject>>;
+};
+#endif
 
 /*
  * Concrete and only template implementation of State interface.
@@ -26,7 +39,7 @@ namespace facebook::react {
  * state update transaction. A data object does not need to be copyable but
  * needs to be moveable.
  */
-template <typename DataT, bool usesMapBufferForStateData = false>
+template <typename DataT>
 class ConcreteState : public State {
  public:
   using Shared = std::shared_ptr<const ConcreteState>;
@@ -36,17 +49,15 @@ class ConcreteState : public State {
   /*
    * Creates an updated `State` object with given previous one and `data`.
    */
-  explicit ConcreteState(const SharedData& data, const State& previousState)
-      : State(data, previousState) {}
+  explicit ConcreteState(SharedData data, const State& previousState)
+      : State(std::move(data), previousState) {}
 
   /*
    * Creates a first-of-its-family `State` object with given `family` and
    * `data`.
    */
-  explicit ConcreteState(
-      const SharedData& data,
-      const ShadowNodeFamily::Shared& family)
-      : State(data, family) {}
+  explicit ConcreteState(SharedData data, ShadowNodeFamily::Weak family)
+      : State(std::move(data), std::move(family)) {}
 
   ~ConcreteState() override = default;
 
@@ -63,10 +74,15 @@ class ConcreteState : public State {
    * function for cases where a new value of data does not depend on an old
    * value.
    */
-  void updateState(Data&& newData) const {
-    updateState([data{std::move(newData)}](const Data& oldData) -> SharedData {
-      return std::make_shared<const Data>(data);
-    });
+  void updateState(
+      Data&& newData,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
+    updateState(
+        [data{std::move(newData)}](const Data& /*oldData*/) -> SharedData {
+          return std::make_shared<const Data>(data);
+        },
+        updateMode);
   }
 
   /*
@@ -78,7 +94,9 @@ class ConcreteState : public State {
    * return `nullptr`.
    */
   void updateState(
-      std::function<StateData::Shared(const Data& oldData)> callback) const {
+      std::function<StateData::Shared(const Data& oldData)> callback,
+      EventQueue::UpdateMode updateMode =
+          EventQueue::UpdateMode::Asynchronous) const {
     auto family = family_.lock();
 
     if (!family) {
@@ -93,10 +111,10 @@ class ConcreteState : public State {
           return callback(*static_cast<const Data*>(oldData.get()));
         }};
 
-    family->dispatchRawState(std::move(stateUpdate));
+    family->dispatchRawState(std::move(stateUpdate), updateMode);
   }
 
-#ifdef ANDROID
+#if defined(RN_SERIALIZABLE_STATE)
   folly::dynamic getDynamic() const override {
     return getData().getDynamic();
   }
@@ -106,10 +124,18 @@ class ConcreteState : public State {
   }
 
   MapBuffer getMapBuffer() const override {
-    if constexpr (usesMapBufferForStateData) {
+    if constexpr (StateDataWithMapBuffer<DataT>) {
       return getData().getMapBuffer();
     } else {
       return MapBufferBuilder::EMPTY();
+    }
+  }
+
+  jni::local_ref<jobject> getJNIReference() const override {
+    if constexpr (StateDataWithJNIReference<DataT>) {
+      return getData().getJNIReference();
+    } else {
+      return nullptr;
     }
   }
 #endif

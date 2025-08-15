@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <atomic>
 #include <functional>
 #include <map>
@@ -57,12 +59,12 @@ class NativeToJsBridge {
   void callFunction(
       std::string&& module,
       std::string&& method,
-      folly::dynamic&& args);
+      folly::dynamic&& arguments);
 
   /**
    * Invokes a callback with the cbID, and optional additional arguments in JS.
    */
-  void invokeCallback(double callbackId, folly::dynamic&& args);
+  void invokeCallback(double callbackId, folly::dynamic&& arguments);
 
   /**
    * Sets global variables in the JS Context.
@@ -76,11 +78,11 @@ class NativeToJsBridge {
    */
   void loadBundle(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-      std::unique_ptr<const JSBigString> startupCode,
+      std::unique_ptr<const JSBigString> startupScript,
       std::string sourceURL);
   void loadBundleSync(
       std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-      std::unique_ptr<const JSBigString> startupCode,
+      std::unique_ptr<const JSBigString> startupScript,
       std::string sourceURL);
 
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
@@ -105,7 +107,7 @@ class NativeToJsBridge {
    * NativeModule thread(s).
    */
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
-      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker) const;
+      std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker) const;
 
   jsinspector_modern::RuntimeTargetDelegate& getInspectorTargetDelegate();
 
@@ -135,3 +137,5 @@ class NativeToJsBridge {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

@@ -434,7 +434,7 @@ function generateEnum(
       )
       .join(' else ') +
     ` else {
-      throw jsi::JSError(rt, "No appropriate enum member found for value");
+      throw jsi::JSError(rt, "No appropriate enum member found for value in ${enumName}");
     }`;
 
   const toCases =
@@ -446,7 +446,7 @@ function generateEnum(
       )
       .join(' else ') +
     ` else {
-      throw jsi::JSError(rt, "No appropriate enum member found for enum value");
+      throw jsi::JSError(rt, "No appropriate enum member found for enum value in ${enumName}");
     }`;
 
   return EnumTemplate({
@@ -572,17 +572,17 @@ function translateEventEmitterToCpp(
   ${
     isVoidTypeAnnotation ? '' : `template <typename ${templateName}> `
   }void emit${toPascalCase(eventEmitter.name)}(${
-      isVoidTypeAnnotation
-        ? ''
-        : `${isArray ? `std::vector<${templateName}>` : templateName} value`
-    }) {${
-      isVoidTypeAnnotation
-        ? ''
-        : `
+    isVoidTypeAnnotation
+      ? ''
+      : `${isArray ? `std::vector<${templateName}>` : templateName} value`
+  }) {${
+    isVoidTypeAnnotation
+      ? ''
+      : `
     static_assert(bridging::supportsFromJs<${
       isArray ? `std::vector<${templateName}>` : templateName
     }, ${jsiType}>, "value cannnot be converted to ${jsiType}");`
-    }
+  }
     static_cast<AsyncEventEmitter<${
       isVoidTypeAnnotation ? '' : 'jsi::Value'
     }>&>(*delegate_.eventEmitterMap_["${eventEmitter.name}"]).emit(${

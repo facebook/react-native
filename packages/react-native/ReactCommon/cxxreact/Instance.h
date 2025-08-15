@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <condition_variable>
 #include <list>
 #include <memory>
@@ -33,7 +35,7 @@ class ModuleRegistry;
 class RAMBundleRegistry;
 
 struct InstanceCallback {
-  virtual ~InstanceCallback() {}
+  virtual ~InstanceCallback() = default;
   virtual void onBatchComplete() {}
   virtual void incrementPendingJSCalls() {}
   virtual void decrementPendingJSCalls() {}
@@ -127,7 +129,7 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
    * NativeMethodCallInvoker that schedules work on the respective thread.
    */
   std::shared_ptr<NativeMethodCallInvoker> getDecoratedNativeMethodCallInvoker(
-      std::shared_ptr<NativeMethodCallInvoker> nativeInvoker);
+      std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker);
 
   /**
    * RuntimeExecutor is used by Fabric to access the jsi::Runtime.
@@ -184,3 +186,5 @@ class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

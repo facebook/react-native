@@ -9,10 +9,7 @@ package com.facebook.react.views.text
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class TextTransformTest {
   @Test
   fun textTransformCapitalize() {

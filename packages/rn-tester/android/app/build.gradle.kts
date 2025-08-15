@@ -37,7 +37,7 @@ react {
   //   The list of variants to that are debuggable. For those we're going to
   //   skip the bundling of the JS bundle and the assets. By default is just 'debug'.
   //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
-  debuggableVariants = listOf("hermesDebug", "jscDebug")
+  // debuggableVariants = listOf("debug")
 
   /* Bundling */
   //   A list containing the node command and its flags. Default is just 'node'.
@@ -62,19 +62,12 @@ react {
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-  enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
 
   autolinkLibrariesWithApp()
 }
 
 /** Run Proguard to shrink the Java bytecode in release builds. */
 val enableProguardInReleaseBuilds = true
-
-/**
- * The preferred build flavor of JavaScriptCore (JSC) For example, to use the international variant,
- * you can use: `def jscFlavor = "io.github.react-native-community:jsc-android-intl:2026004.+"`
- */
-val jscFlavor = "io.github.react-native-community:jsc-android:2026004.+"
 
 /** This allows to customized the CMake version used for compiling RN Tester. */
 val cmakeVersion =
@@ -99,18 +92,6 @@ android {
   }
   if (rootProject.hasProperty("ndkVersion") && rootProject.properties["ndkVersion"] != null) {
     ndkVersion = rootProject.properties["ndkVersion"].toString()
-  }
-
-  flavorDimensions.add("vm")
-  productFlavors {
-    create("hermes") {
-      dimension = "vm"
-      buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "true")
-    }
-    create("jsc") {
-      dimension = "vm"
-      buildConfigField("boolean", "IS_HERMES_ENABLED_IN_FLAVOR", "false")
-    }
   }
 
   defaultConfig {
@@ -160,11 +141,11 @@ dependencies {
   // Build React Native from source
   implementation(project(":packages:react-native:ReactAndroid"))
 
-  // Consume Hermes as built from source only for the Hermes variant.
-  "hermesImplementation"(project(":packages:react-native:ReactAndroid:hermes-engine"))
-  "jscImplementation"(jscFlavor)
+  // Consume Hermes as built from source.
+  implementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
 
   testImplementation(libs.junit)
+  implementation(libs.androidx.profileinstaller)
 }
 
 android {
@@ -199,18 +180,8 @@ afterEvaluate {
     // As we're consuming Hermes from source, we want to make sure
     // `hermesc` is built before we actually invoke the `emit*HermesResource` task
     tasks
-        .getByName("createBundleHermesReleaseJsAndAssets")
+        .getByName("createBundleReleaseJsAndAssets")
         .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
-  }
-
-  // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
-  // `.cxx/Release` folder where the CMake intermediates are stored.
-  // We fixing this by instructing Gradle to always mergeLibs after they've been built.
-  if (isNewArchEnabled) {
-    tasks.getByName("mergeHermesDebugNativeLibs").mustRunAfter("externalNativeBuildJscDebug")
-    tasks.getByName("mergeHermesReleaseNativeLibs").mustRunAfter("externalNativeBuildJscRelease")
-    tasks.getByName("mergeJscDebugNativeLibs").mustRunAfter("externalNativeBuildHermesDebug")
-    tasks.getByName("mergeJscReleaseNativeLibs").mustRunAfter("externalNativeBuildHermesRelease")
   }
 
   // As RN-Tester consumes the codegen from source, we need to make sure the codegen exists before
@@ -219,9 +190,6 @@ afterEvaluate {
       .getByName("generateCodegenSchemaFromJavaScript")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
   tasks
-      .getByName("createBundleJscReleaseJsAndAssets")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
-  tasks
-      .getByName("createBundleHermesReleaseJsAndAssets")
+      .getByName("createBundleReleaseJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }

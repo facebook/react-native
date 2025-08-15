@@ -72,7 +72,8 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
     val reactContext =
         Assertions.assertNotNull(
             reactContext.get(),
-            "Tried to start a task on a react context that has already been destroyed")
+            "Tried to start a task on a react context that has already been destroyed",
+        )
     check(
         !(reactContext.lifecycleState == LifecycleState.RESUMED &&
             !taskConfig.isAllowedInForeground)) {
@@ -87,7 +88,8 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
     } else {
       logSoftException(
           "HeadlessJsTaskContext",
-          RuntimeException("Cannot start headless task, CatalystInstance not available"))
+          RuntimeException("Cannot start headless task, CatalystInstance not available"),
+      )
     }
     if (taskConfig.timeout > 0) {
       scheduleTaskTimeout(taskId, taskConfig.timeout)
@@ -120,7 +122,8 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
             sourceTaskConfig.data,
             sourceTaskConfig.timeout,
             sourceTaskConfig.isAllowedInForeground,
-            retryPolicy.update())
+            retryPolicy.update(),
+        )
 
     val retryAttempt = Runnable { startTask(taskConfig, taskId) }
 
@@ -132,7 +135,7 @@ public class HeadlessJsTaskContext private constructor(reactContext: ReactContex
    * Finish a JS task. Doesn't actually stop the task on the JS side, only removes it from the list
    * of active tasks and notifies listeners.
    *
-   * @param taskId the unique id returned by [.startTask].
+   * @param taskId the unique id returned by [startTask].
    */
   @Synchronized
   public fun finishTask(taskId: Int) {

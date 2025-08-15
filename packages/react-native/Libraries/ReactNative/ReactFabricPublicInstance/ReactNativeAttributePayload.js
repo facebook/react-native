@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {AttributeConfiguration} from '../../Renderer/shims/ReactNativeTypes';
@@ -61,7 +61,7 @@ function restoreDeletedValuesInNestedArray(
   } else if (node && removedKeyCount > 0) {
     const obj = node;
     for (const propKey in removedKeys) {
-      // $FlowFixMe[incompatible-use] found when upgrading Flow
+      // $FlowFixMe[incompatible-use] removedKeys is always non-null
       if (!removedKeys[propKey]) {
         continue;
       }
@@ -133,12 +133,12 @@ function diffNestedArrayProperty(
     );
   }
   for (; i < nextArray.length; i++) {
-    // Add all remaining properties.
-    updatePayload = addNestedProperty(
-      updatePayload,
-      nextArray[i],
-      validAttributes,
-    );
+    // Add all remaining properties
+    const nextProp = nextArray[i];
+    if (!nextProp) {
+      continue;
+    }
+    updatePayload = addNestedProperty(updatePayload, nextProp, validAttributes);
   }
   return updatePayload;
 }
@@ -183,9 +183,7 @@ function diffNestedProperty(
   if (Array.isArray(prevProp)) {
     return diffProperties(
       updatePayload,
-      // $FlowFixMe - We know that this is always an object when the input is.
       flattenStyle(prevProp),
-      // $FlowFixMe - We know that this isn't an array because of above flow.
       nextProp,
       validAttributes,
     );
@@ -194,41 +192,9 @@ function diffNestedProperty(
   return diffProperties(
     updatePayload,
     prevProp,
-    // $FlowFixMe - We know that this is always an object when the input is.
     flattenStyle(nextProp),
     validAttributes,
   );
-}
-
-/**
- * addNestedProperty takes a single set of props and valid attribute
- * attribute configurations. It processes each prop and adds it to the
- * updatePayload.
- */
-function addNestedProperty(
-  updatePayload: null | Object,
-  nextProp: NestedNode,
-  validAttributes: AttributeConfiguration,
-): $FlowFixMe {
-  if (!nextProp) {
-    return updatePayload;
-  }
-
-  if (!Array.isArray(nextProp)) {
-    // Add each property of the leaf.
-    return addProperties(updatePayload, nextProp, validAttributes);
-  }
-
-  for (let i = 0; i < nextProp.length; i++) {
-    // Add all the properties of the array.
-    updatePayload = addNestedProperty(
-      updatePayload,
-      nextProp[i],
-      validAttributes,
-    );
-  }
-
-  return updatePayload;
 }
 
 /**
@@ -285,14 +251,19 @@ function diffProperties(
     prevProp = prevProps[propKey];
     nextProp = nextProps[propKey];
 
-    // functions are converted to booleans as markers that the associated
-    // events should be sent from native.
     if (typeof nextProp === 'function') {
-      nextProp = (true: any);
-      // If nextProp is not a function, then don't bother changing prevProp
-      // since nextProp will win and go into the updatePayload regardless.
-      if (typeof prevProp === 'function') {
-        prevProp = (true: any);
+      const attributeConfigHasProcess =
+        typeof attributeConfig === 'object' &&
+        typeof attributeConfig.process === 'function';
+      if (!attributeConfigHasProcess) {
+        // functions are converted to booleans as markers that the associated
+        // events should be sent from native.
+        nextProp = (true: any);
+        // If nextProp is not a function, then don't bother changing prevProp
+        // since nextProp will win and go into the updatePayload regardless.
+        if (typeof prevProp === 'function') {
+          prevProp = (true: any);
+        }
       }
     }
 
@@ -442,16 +413,69 @@ function diffProperties(
   return updatePayload;
 }
 
-/**
- * addProperties adds all the valid props to the payload after being processed.
- */
-function addProperties(
-  updatePayload: null | Object,
+function addNestedProperty(
+  payload: null | Object,
   props: Object,
   validAttributes: AttributeConfiguration,
 ): null | Object {
-  // TODO: Fast path
-  return diffProperties(updatePayload, emptyObject, props, validAttributes);
+  // Flatten nested style props.
+  if (Array.isArray(props)) {
+    for (let i = 0; i < props.length; i++) {
+      payload = addNestedProperty(payload, props[i], validAttributes);
+    }
+    return payload;
+  }
+
+  for (const propKey in props) {
+    const prop = props[propKey];
+
+    const attributeConfig = ((validAttributes[
+      propKey
+    ]: any): AttributeConfiguration);
+
+    if (attributeConfig == null) {
+      continue;
+    }
+
+    let newValue;
+
+    if (prop === undefined) {
+      // Discard the prop if it was previously defined.
+      if (payload && payload[propKey] !== undefined) {
+        newValue = null;
+      } else {
+        continue;
+      }
+    } else if (typeof attributeConfig === 'object') {
+      if (typeof attributeConfig.process === 'function') {
+        // An atomic prop with custom processing.
+        newValue = attributeConfig.process(prop);
+      } else if (typeof attributeConfig.diff === 'function') {
+        // An atomic prop with custom diffing. We don't need to do diffing when adding props.
+        newValue = prop;
+      }
+    } else {
+      if (typeof prop === 'function') {
+        // A function prop. It represents an event handler. Pass it to native as 'true'.
+        newValue = true;
+      } else {
+        // An atomic prop. Doesn't need to be flattened.
+        newValue = prop;
+      }
+    }
+
+    if (newValue !== undefined) {
+      if (!payload) {
+        payload = ({}: {[string]: $FlowFixMe});
+      }
+      payload[propKey] = newValue;
+      continue;
+    }
+
+    payload = addNestedProperty(payload, prop, attributeConfig);
+  }
+
+  return payload;
 }
 
 /**
@@ -463,7 +487,6 @@ function clearProperties(
   prevProps: Object,
   validAttributes: AttributeConfiguration,
 ): null | Object {
-  // TODO: Fast path
   return diffProperties(updatePayload, prevProps, emptyObject, validAttributes);
 }
 
@@ -471,11 +494,7 @@ export function create(
   props: Object,
   validAttributes: AttributeConfiguration,
 ): null | Object {
-  return addProperties(
-    null, // updatePayload
-    props,
-    validAttributes,
-  );
+  return addNestedProperty(null, props, validAttributes);
 }
 
 export function diff(

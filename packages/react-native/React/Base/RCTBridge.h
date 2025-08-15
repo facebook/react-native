@@ -39,6 +39,11 @@ RCT_EXTERN_C_BEGIN
 NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
 
 /**
+ * This function returns the list of modules that have been registered using the Old Architecture mechanism.
+ */
+NSMutableArray<NSString *> *getModulesLoadedWithOldArch(void);
+
+/**
  * Experimental.
  * Check/set if JSI-bound NativeModule is enabled. By default it's off.
  */
@@ -76,9 +81,6 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
 // Route all TurboModules through TurboModule interop
 BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
-
-BOOL RCTBridgeModuleBatchDidCompleteDisabled(void);
-void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled);
 
 typedef enum {
   kRCTGlobalScope,

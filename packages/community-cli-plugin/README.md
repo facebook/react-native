@@ -15,7 +15,7 @@ Start the React Native development server.
 #### Usage
 
 ```sh
-npx react-native start [options]
+npx @react-native-community/cli start [options]
 ```
 
 #### Options
@@ -37,6 +37,7 @@ npx react-native start [options]
 | `--cert <path>` | Specify path to a custom SSL cert. |
 | `--config <string>` | Path to the CLI configuration file. |
 | `--no-interactive` | Disable interactive mode. |
+| `--client-logs` | **[Deprecated]** Enable plain text JavaScript log streaming for all connected apps. |
 
 ### `bundle`
 
@@ -45,7 +46,7 @@ Build the bundle for the provided JavaScript entry file.
 #### Usage
 
 ```sh
-npx react-native bundle --entry-file <path> [options]
+npx @react-native-community/cli bundle --entry-file <path> [options]
 ```
 
 #### Options

@@ -7,6 +7,8 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 
+#include <variant>
+
 namespace facebook::react {
 
 void PerformanceEntryCircularBuffer::add(const PerformanceEntry& entry) {
@@ -23,8 +25,11 @@ void PerformanceEntryCircularBuffer::getEntries(
 void PerformanceEntryCircularBuffer::getEntries(
     std::vector<PerformanceEntry>& target,
     const std::string& name) const {
-  buffer_.getEntries(
-      target, [&](const PerformanceEntry& e) { return e.name == name; });
+  buffer_.getEntries(target, [&](const PerformanceEntry& entry) {
+    return std::visit(
+        [&name](const auto& entryData) { return entryData.name == name; },
+        entry);
+  });
 }
 
 void PerformanceEntryCircularBuffer::clear() {
@@ -32,7 +37,11 @@ void PerformanceEntryCircularBuffer::clear() {
 }
 
 void PerformanceEntryCircularBuffer::clear(const std::string& name) {
-  buffer_.clear([&](const PerformanceEntry& e) { return e.name == name; });
+  buffer_.clear([&](const PerformanceEntry& entry) {
+    return std::visit(
+        [&name](const auto& entryData) { return entryData.name == name; },
+        entry);
+  });
 }
 
 } // namespace facebook::react

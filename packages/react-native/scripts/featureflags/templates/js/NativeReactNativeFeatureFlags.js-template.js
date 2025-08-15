@@ -22,6 +22,7 @@ export default function (definitions: FeatureFlagDefinitions): string {
  *
  * ${signedsource.getSigningToken()}
  * @flow strict
+ * @noformat
  */
 
 ${DO_NOT_MODIFY_COMMENT}

@@ -19,7 +19,7 @@ namespace {
 
 jsi::Value getConstants(facebook::jsi::Runtime &runtime)
 {
-  static NSMutableDictionary<NSString *, NSObject *> *result = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSObject *> *result = [NSMutableDictionary new];
   auto directEvents = [NSMutableDictionary new];
   auto bubblingEvents = [NSMutableDictionary new];
   for (Class moduleClass in RCTGetModuleClasses()) {

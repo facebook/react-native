@@ -7,10 +7,6 @@
 
 #include "JReactInstance.h"
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-#endif
-
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/RecoverableError.h>
 #include <fbjni/fbjni.h>

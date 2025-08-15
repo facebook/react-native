@@ -10,13 +10,13 @@
 #include <cmath>
 #include <string_view>
 
+#include <fast_float/fast_float.h>
 #include <react/renderer/css/CSSToken.h>
 
 namespace facebook::react {
 
 /**
  * A minimal tokenizer for a subset of CSS syntax.
- * `auto`).
  *
  * This is based on the W3C CSS Syntax specification, with simplifications made
  * for syntax which React Native does not attempt to support.
@@ -136,58 +136,22 @@ class CSSTokenizer {
   constexpr CSSToken consumeNumber() {
     // https://www.w3.org/TR/css-syntax-3/#consume-number
     // https://www.w3.org/TR/css-syntax-3/#convert-a-string-to-a-number
-    int32_t signPart = 1.0;
-    if (peek() == '+' || peek() == '-') {
-      if (peek() == '-') {
-        signPart = -1.0;
-      }
-      advance();
-    }
 
-    int32_t intPart = 0;
-    while (isDigit(peek())) {
-      intPart = intPart * 10 + (peek() - '0');
-      advance();
-    }
+    auto* b = remainingCharacters_.data();
+    auto* e = b + remainingCharacters_.size();
 
-    int32_t fractionalPart = 0;
-    int32_t fractionDigits = 0;
-    if (peek() == '.') {
-      advance();
-      while (isDigit(peek())) {
-        fractionalPart = fractionalPart * 10 + (peek() - '0');
-        fractionDigits++;
-        advance();
-      }
-    }
-
-    int32_t exponentSign = 1.0;
-    int32_t exponentPart = 0;
-    if (peek() == 'e' || peek() == 'E') {
-      advance();
-      if (peek() == '+' || peek() == '-') {
-        if (peek() == '-') {
-          exponentSign = -1.0;
-        }
-        advance();
-      }
-
-      while (isDigit(peek())) {
-        exponentPart = exponentPart * 10 + (peek() - '0');
-        advance();
-      }
-    }
     float value;
-    if (exponentPart == 0 && fractionalPart == 0) {
-      value = static_cast<float>(signPart * intPart);
-    } else {
-      value = static_cast<float>(
-          signPart *
-          (intPart + (fractionalPart * std::pow(10, -fractionDigits))) *
-          std::pow(10, exponentSign * exponentPart));
-    }
+    fast_float::parse_options options{
+        fast_float::chars_format::general |
+        fast_float::chars_format::allow_leading_plus};
+    auto [ptr, ec] = fast_float::from_chars_advanced(b, e, value, options);
 
+    // Do we need to handle any other errors?
+    // bool isOk = ec == std::errc();
+
+    position_ += ptr - b;
     consumeRunningValue();
+
     return {CSSTokenType::Number, value};
   }
 

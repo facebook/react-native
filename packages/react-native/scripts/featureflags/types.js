@@ -15,42 +15,61 @@ export type FeatureFlagDefinitions = $ReadOnly<{
   jsOnly: JsOnlyFeatureFlagList,
 }>;
 
-export type CommonFeatureFlagConfig = $ReadOnly<{
-  defaultValue: FeatureFlagValue,
-  metadata: FeatureFlagMetadata,
+/**
+ * OSSReleaseStageValue is used to determine the value of a feature flag in different release stages:
+ * - none: the value of the feature flag will be `defaultValue` on all releases.
+ * - experimental: the value of the feature flag will be `expectedReleaseValue` on experimental releases and `defaultValue` on canary and stable releases.
+ * - canary: the value of the feature flag will be `expectedReleaseValue` on experimental and canary releases and `defaultValue` on stable releases.
+ * - stable: the value of the feature flag will be `expectedReleaseValue` on all releases.
+ */
+export type OSSReleaseStageValue =
+  | 'none'
+  | 'experimental'
+  | 'canary'
+  | 'stable';
+
+export type CommonFeatureFlagConfig<
+  TValue: FeatureFlagValue = FeatureFlagValue,
+> = $ReadOnly<{
+  defaultValue: TValue,
+  metadata: FeatureFlagMetadata<TValue>,
+  ossReleaseStage: OSSReleaseStageValue,
   // Indicates if this API should only be defined in JavaScript, only to
   // preserve backwards compatibility with existing native code temporarily.
   skipNativeAPI?: true,
 }>;
 
 export type CommonFeatureFlagList = $ReadOnly<{
-  [flagName: string]: CommonFeatureFlagConfig,
+  [flagName: string]: CommonFeatureFlagConfig<>,
 }>;
 
-export type JsOnlyFeatureFlagConfig = $ReadOnly<{
-  defaultValue: FeatureFlagValue,
-  metadata: FeatureFlagMetadata,
+export type JsOnlyFeatureFlagConfig<
+  TValue: FeatureFlagValue = FeatureFlagValue,
+> = $ReadOnly<{
+  defaultValue: TValue,
+  metadata: FeatureFlagMetadata<TValue>,
+  ossReleaseStage: OSSReleaseStageValue,
 }>;
 
 export type JsOnlyFeatureFlagList = $ReadOnly<{
-  [flagName: string]: JsOnlyFeatureFlagConfig,
+  [flagName: string]: JsOnlyFeatureFlagConfig<>,
 }>;
 
-export type FeatureFlagMetadata =
+export type FeatureFlagMetadata<TValue: FeatureFlagValue = FeatureFlagValue> =
   | $ReadOnly<{
       purpose: 'experimentation',
       /**
-       * Aproximate date when the flag was added.
+       * Approximate date when the flag was added.
        * Used to help prioritize feature flags that need to be cleaned up.
        */
       dateAdded: string,
       description: string,
-      expectedReleaseValue: boolean,
+      expectedReleaseValue: TValue,
     }>
   | $ReadOnly<{
       purpose: 'operational' | 'release',
       description: string,
-      expectedReleaseValue: boolean,
+      expectedReleaseValue: TValue,
     }>;
 
 export type GeneratorConfig = $ReadOnly<{

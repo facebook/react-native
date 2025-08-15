@@ -40,7 +40,8 @@ class SurfaceHandlerBinding : public jni::HybridClass<SurfaceHandlerBinding> {
       jfloat offsetY,
       jboolean doLeftAndRightSwapInRTL,
       jboolean isRTL,
-      jfloat pixelDensity);
+      jfloat pixelDensity,
+      jfloat fontScale);
 
   void setProps(NativeMap* props);
 

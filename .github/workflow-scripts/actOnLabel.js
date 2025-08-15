@@ -95,12 +95,6 @@ module.exports = async (github, context, labelWithContext) => {
       );
       await requestAuthorFeedback();
       return;
-    case 'Newer Patch Available':
-      await addComment(
-        `> [!TIP]\n` +
-          `> **Newer version available**: You are on a supported minor version, but it looks like there's a newer patch available - ${labelWithContext.newestPatch}. Please [upgrade](https://reactnative.dev/docs/upgrading) to the highest patch for your minor or latest and verify if the issue persists (alternatively, create a new project and repro the issue in it). If it does not repro, please let us know so we can close out this issue. This helps us ensure we are looking at issues that still exist in the most recent releases.`,
-      );
-      return;
     case 'Needs: Version Info':
       await addComment(
         `> [!WARNING]\n` +
@@ -111,7 +105,7 @@ module.exports = async (github, context, labelWithContext) => {
     case 'Needs: Repro':
       await addComment(
         `> [!WARNING]\n` +
-          `> **Missing reproducer**: We could not detect a reproducible example in your issue report. Please provide either: <br/><ul><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/upgrade related: a project using our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate)</li><li>Otherwise send us a Pull Request with the [RNTesterPlayground.js](https://github.com/facebook/react-native/blob/main/packages/rn-tester/js/examples/Playground/RNTesterPlayground.js) edited to reproduce your bug.</li></ul>`,
+          `> **Missing reproducer**: We could not detect a reproducible example in your issue report. Reproducers are **mandatory** and we can accept only one of those as a valid reproducer: <br/><ul><li>For majority of bugs: send us a Pull Request with the [RNTesterPlayground.js](https://github.com/facebook/react-native/blob/main/packages/rn-tester/js/examples/Playground/RNTesterPlayground.js) edited to reproduce your bug.</li><li>If your bug is UI related: a [Snack](https://snack.expo.dev)</li><li> If your bug is build/upgrade related: a project using our [Reproducer Template](https://github.com/react-native-community/reproducer-react-native/generate)</li></ul><br/>You can read more about about it on our website: [How to report a bug](https://reactnative.dev/contributing/how-to-report-a-bug).`,
       );
       await requestAuthorFeedback();
       return;

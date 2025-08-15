@@ -27,15 +27,10 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible) {}
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
 {
-  __block facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants> constants;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
-        .HEIGHT = 0,
-        .DEFAULT_BACKGROUND_COLOR = std::nullopt,
-    });
+  return facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
+      .HEIGHT = 0,
+      .DEFAULT_BACKGROUND_COLOR = std::nullopt,
   });
-
-  return constants;
 }
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)constantsToExport

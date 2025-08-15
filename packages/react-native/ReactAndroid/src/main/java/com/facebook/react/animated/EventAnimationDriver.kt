@@ -15,16 +15,18 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.EventCategoryDef
 import com.facebook.react.uimanager.events.RCTModernEventEmitter
-import com.facebook.react.uimanager.events.TouchEvent
 
 /** Handles updating a [ValueAnimatedNode] when an event gets dispatched. */
 internal class EventAnimationDriver(
     @JvmField var eventName: String,
     @JvmField internal var viewTag: Int,
     private val eventPath: List<String>,
-    @JvmField internal var valueNode: ValueAnimatedNode
+    @JvmField internal var valueNode: ValueAnimatedNode,
 ) : RCTModernEventEmitter {
-  @Deprecated("Deprecated in Java")
+  @Deprecated(
+      "Deprecated in Java",
+      ReplaceWith("receiveEvent(surfaceId, targetTag, eventName, params)"),
+  )
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
       receiveEvent(-1, targetTag, eventName, params)
 
@@ -32,7 +34,7 @@ internal class EventAnimationDriver(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      params: WritableMap?
+      params: WritableMap?,
   ) =
       // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
       receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
@@ -41,13 +43,8 @@ internal class EventAnimationDriver(
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ) {
-    throw UnsupportedOperationException("receiveTouches is not support by native animated events")
-  }
-
-  @Deprecated("Deprecated in Java")
-  override fun receiveTouches(event: TouchEvent) {
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
 
@@ -58,7 +55,7 @@ internal class EventAnimationDriver(
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   ) {
     requireNotNull(params) { "Native animated events must have event data." }
 
@@ -82,10 +79,10 @@ internal class EventAnimationDriver(
         val index = eventPath[i].toInt()
         val keyType = currArray?.getType(index)
         if (keyType == ReadableType.Map) {
-          currMap = currArray?.getMap(index)
+          currMap = currArray.getMap(index)
           currArray = null
         } else if (keyType == ReadableType.Array) {
-          currArray = currArray?.getArray(index)
+          currArray = currArray.getArray(index)
           currMap = null
         } else {
           throw UnexpectedNativeTypeException("Unexpected type $keyType for index '$index'")

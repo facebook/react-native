@@ -19,15 +19,15 @@ internal class JSTimerExecutor(private val mHybridData: HybridData) : JavaScript
 
   private external fun callTimers(timerIDs: WritableNativeArray)
 
-  override public fun callTimers(timerIDs: WritableArray) {
+  override fun callTimers(timerIDs: WritableArray) {
     callTimers(timerIDs as WritableNativeArray)
   }
 
-  override public fun callIdleCallbacks(frameTime: Double) {
+  override fun callIdleCallbacks(frameTime: Double) {
     // TODO T52558331
   }
 
-  override public fun emitTimeDriftWarning(warningMessage: String) {
+  override fun emitTimeDriftWarning(warningMessage: String) {
     // TODO T52558331
   }
 

@@ -202,7 +202,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
   eventEmitterMap_[\\"onEvent4\\"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_[\\"onEvent5\\"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
   eventEmitterMap_[\\"onEvent6\\"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
-  setEventEmitterCallback(params.instance);
+  configureEventEmitterCallback();
 }
 
 std::shared_ptr<TurboModule> event_emitter_module_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
@@ -486,7 +486,7 @@ NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const JavaTurboMo
   : JavaTurboModule(params) {
   methodMap_[\\"getStringLiteral\\"] = MethodMetadata {1, __hostFunction_NativeSampleTurboModuleSpecJSI_getStringLiteral};
   eventEmitterMap_[\\"literalEvent\\"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
-  setEventEmitterCallback(params.instance);
+  configureEventEmitterCallback();
 }
 
 std::shared_ptr<TurboModule> string_literals_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {

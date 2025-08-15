@@ -6,17 +6,14 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS *.cpp *.h)
+file(GLOB_RECURSE runtimeexecutor_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/ReactCommon/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/*.cpp)
 
 add_library(runtimeexecutor OBJECT ${runtimeexecutor_SRC})
 
-target_include_directories(runtimeexecutor PUBLIC .)
+target_include_directories(runtimeexecutor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx)
 
 target_link_libraries(runtimeexecutor jsi)
+target_compile_reactnative_options(runtimeexecutor PRIVATE)
+target_compile_options(runtimeexecutor PRIVATE -Wpedantic)

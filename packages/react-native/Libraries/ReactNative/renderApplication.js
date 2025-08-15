@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
@@ -13,6 +13,7 @@ import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
 import PerformanceLoggerContext from '../Utilities/PerformanceLoggerContext';
+import warnOnce from '../Utilities/warnOnce';
 import AppContainer from './AppContainer';
 import DisplayMode, {type DisplayModeType} from './DisplayMode';
 import getCachedComponentWithDebugName from './getCachedComponentWithDebugName';
@@ -104,5 +105,13 @@ export default function renderApplication<Props: Object>(
     useFabric: Boolean(fabric),
     useConcurrentRoot,
   });
+
+  const newArchitecture = !!fabric;
+  if (!newArchitecture) {
+    warnOnce(
+      '[OSS][OldArchDeprecatedWarning]',
+      'The app is running using the Legacy Architecture. The Legacy Architecture is deprecated and will be removed in a future version of React Native. Please consider migrating to the New Architecture. For more information, please see https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here',
+    );
+  }
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

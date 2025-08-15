@@ -6,17 +6,12 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-add_library(react_devtoolsruntimesettingscxx INTERFACE)
+file(GLOB devtoolsruntimesettings_SRCS *.cpp)
+add_library(devtoolsruntimesettings OBJECT ${devtoolsruntimesettings_SRCS})
 
-target_include_directories(react_devtoolsruntimesettingscxx INTERFACE .)
+target_include_directories(devtoolsruntimesettings PUBLIC .)
 
-target_link_libraries(react_devtoolsruntimesettingscxx
-        jsi
-)
+target_link_libraries(devtoolsruntimesettings jsi react_codegen_rncore)
+target_compile_reactnative_options(devtoolsruntimesettings PRIVATE)

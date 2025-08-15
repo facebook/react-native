@@ -18,13 +18,13 @@ import LogBoxMessage from './LogBoxMessage';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   collapsed: boolean,
   message: Message,
   level: LogLevel,
   title: string,
   onPress: () => void,
-|}>;
+}>;
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
 
@@ -46,11 +46,13 @@ function LogBoxInspectorMessageHeader(props: Props): React.Node {
   return (
     <View style={messageStyles.body}>
       <View style={messageStyles.heading}>
-        <Text style={[messageStyles.headingText, messageStyles[props.level]]}>
+        <Text
+          style={[messageStyles.headingText, messageStyles[props.level]]}
+          id="logbox_message_title_text">
           {props.title}
         </Text>
       </View>
-      <Text style={messageStyles.bodyText}>
+      <Text style={messageStyles.bodyText} id="logbox_message_contents_text">
         <LogBoxMessage
           maxLength={props.collapsed ? SHOW_MORE_MESSAGE_LENGTH : Infinity}
           message={props.message}

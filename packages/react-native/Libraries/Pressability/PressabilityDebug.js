@@ -15,10 +15,10 @@ import normalizeColor from '../StyleSheet/normalizeColor';
 import {type RectOrSize, normalizeRect} from '../StyleSheet/Rect';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   color: ColorValue,
   hitSlop: ?RectOrSize,
-|}>;
+}>;
 
 /**
  * Displays a debug overlay to visualize press targets when enabled via the

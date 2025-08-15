@@ -8,15 +8,6 @@
 #import <XCTest/XCTest.h>
 
 #import <React/RCTBlobManager.h>
-#import <React/RCTMockDef.h>
-
-RCT_MOCK_REF(RCTBlobManager, dispatch_async);
-
-static void _mock_dispatch_async(dispatch_queue_t queue, dispatch_block_t block)
-{
-  XCTAssertNotNil(queue);
-  block();
-}
 
 @interface RCTBlobManagerTests : XCTestCase
 
@@ -32,12 +23,8 @@ static void _mock_dispatch_async(dispatch_queue_t queue, dispatch_block_t block)
 {
   [super setUp];
 
-  RCT_MOCK_SET(RCTBlobManager, dispatch_async, _mock_dispatch_async);
-
   _module = [RCTBlobManager new];
-  dispatch_queue_t methodQueue = dispatch_queue_create("test.queue", DISPATCH_QUEUE_SERIAL);
   [_module setValue:nil forKey:@"bridge"];
-  [_module setValue:methodQueue forKey:@"methodQueue"];
   [_module initialize];
   NSInteger size = 120;
   _data = [NSMutableData dataWithCapacity:size];
@@ -47,13 +34,6 @@ static void _mock_dispatch_async(dispatch_queue_t queue, dispatch_block_t block)
   }
   _blobId = [NSUUID UUID].UUIDString;
   [_module store:_data withId:_blobId];
-}
-
-- (void)tearDown
-{
-  [super tearDown];
-
-  RCT_MOCK_RESET(RCTBlobManager, dispatch_async);
 }
 
 - (void)testResolve
@@ -90,39 +70,6 @@ static void _mock_dispatch_async(dispatch_queue_t queue, dispatch_block_t block)
 
 - (void)testCreateFromParts
 {
-  NSDictionary<NSString *, id> *blobData = @{
-    @"blobId" : _blobId,
-    @"offset" : @0,
-    @"size" : @(_data.length),
-  };
-  NSDictionary<NSString *, id> *blob = @{
-    @"data" : blobData,
-    @"type" : @"blob",
-  };
-  NSString *stringData = @"i \u2665 dogs";
-  NSDictionary<NSString *, id> *string = @{
-    @"data" : stringData,
-    @"type" : @"string",
-  };
-  NSString *resultId = [NSUUID UUID].UUIDString;
-  NSArray<id> *parts = @[ blob, string ];
-
-  [_module createFromParts:parts withId:resultId];
-
-  NSMutableData *expectedData = [NSMutableData new];
-  [expectedData appendData:_data];
-  [expectedData appendData:[stringData dataUsingEncoding:NSUTF8StringEncoding]];
-
-  NSData *result = [_module resolve:resultId offset:0 size:expectedData.length];
-
-  XCTAssertTrue([expectedData isEqualToData:result]);
-}
-
-- (void)testCreateFromPartsProcessingQueue
-{
-  RCTEnableBlobManagerProcessingQueue(YES);
-  [self setUp];
-
   NSDictionary<NSString *, id> *blobData = @{
     @"blobId" : _blobId,
     @"offset" : @0,

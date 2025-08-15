@@ -15,46 +15,33 @@ MutationObserver::MutationObserver(MutationObserverId mutationObserverId)
     : mutationObserverId_(mutationObserverId) {}
 
 void MutationObserver::observe(
-    ShadowNode::Shared targetShadowNode,
+    std::shared_ptr<const ShadowNodeFamily> targetShadowNodeFamily,
     bool observeSubtree) {
-  if (observeSubtree) {
-    deeplyObservedShadowNodes_.push_back(targetShadowNode);
-  } else {
-    shallowlyObservedShadowNodes_.push_back(targetShadowNode);
+  auto& list = observeSubtree ? deeplyObservedShadowNodeFamilies_
+                              : shallowlyObservedShadowNodeFamilies_;
+  auto& otherList = observeSubtree ? shallowlyObservedShadowNodeFamilies_
+                                   : deeplyObservedShadowNodeFamilies_;
+
+  if (std::find(list.begin(), list.end(), targetShadowNodeFamily) !=
+      list.end()) {
+    // It is already being observed correctly.
+    return;
   }
+
+  auto it =
+      std::find(otherList.begin(), otherList.end(), targetShadowNodeFamily);
+  if (it != otherList.end()) {
+    // It is being observed incorrectly.
+    otherList.erase(it);
+  }
+
+  list.push_back(targetShadowNodeFamily);
 }
 
-void MutationObserver::unobserve(const ShadowNode& targetShadowNode) {
-  // We don't know if it's being observed deeply or not, so we need to check
-  // both possibilities.
-  deeplyObservedShadowNodes_.erase(
-      std::remove_if(
-          deeplyObservedShadowNodes_.begin(),
-          deeplyObservedShadowNodes_.end(),
-          [&targetShadowNode](auto shadowNode) {
-            return ShadowNode::sameFamily(*shadowNode, targetShadowNode);
-          }),
-      deeplyObservedShadowNodes_.end());
-
-  shallowlyObservedShadowNodes_.erase(
-      std::remove_if(
-          shallowlyObservedShadowNodes_.begin(),
-          shallowlyObservedShadowNodes_.end(),
-          [&targetShadowNode](const auto shadowNode) {
-            return ShadowNode::sameFamily(*shadowNode, targetShadowNode);
-          }),
-      shallowlyObservedShadowNodes_.end());
-}
-
-bool MutationObserver::isObserving() const {
-  return !deeplyObservedShadowNodes_.empty() ||
-      !shallowlyObservedShadowNodes_.empty();
-}
-
-static ShadowNode::Shared getShadowNodeInTree(
-    const ShadowNode& shadowNode,
+static std::shared_ptr<const ShadowNode> getShadowNodeInTree(
+    const ShadowNodeFamily& shadowNodeFamily,
     const ShadowNode& newTree) {
-  auto ancestors = shadowNode.getFamily().getAncestors(newTree);
+  auto ancestors = shadowNodeFamily.getAncestors(newTree);
   if (ancestors.empty()) {
     return nullptr;
   }
@@ -63,8 +50,8 @@ static ShadowNode::Shared getShadowNodeInTree(
   return pair->first.get().getChildren().at(pair->second);
 }
 
-static ShadowNode::Shared findNodeOfSameFamily(
-    const ShadowNode::ListOfShared& list,
+static std::shared_ptr<const ShadowNode> findNodeOfSameFamily(
+    const std::vector<std::shared_ptr<const ShadowNode>>& list,
     const ShadowNode& node) {
   for (auto& current : list) {
     if (ShadowNode::sameFamily(node, *current)) {
@@ -84,9 +71,9 @@ void MutationObserver::recordMutations(
 
   // We go over the deeply observed nodes first to avoid skipping nodes that
   // have only been checked shallowly.
-  for (auto targetShadowNode : deeplyObservedShadowNodes_) {
+  for (const auto& targetShadowNodeFamily : deeplyObservedShadowNodeFamilies_) {
     recordMutationsInTarget(
-        targetShadowNode,
+        *targetShadowNodeFamily,
         oldRootShadowNode,
         newRootShadowNode,
         true,
@@ -94,9 +81,10 @@ void MutationObserver::recordMutations(
         processedNodes);
   }
 
-  for (auto targetShadowNode : shallowlyObservedShadowNodes_) {
+  for (const auto& targetShadowNodeFamily :
+       shallowlyObservedShadowNodeFamilies_) {
     recordMutationsInTarget(
-        targetShadowNode,
+        *targetShadowNodeFamily,
         oldRootShadowNode,
         newRootShadowNode,
         false,
@@ -106,7 +94,7 @@ void MutationObserver::recordMutations(
 }
 
 void MutationObserver::recordMutationsInTarget(
-    ShadowNode::Shared targetShadowNode,
+    const ShadowNodeFamily& targetShadowNodeFamily,
     const RootShadowNode& oldRootShadowNode,
     const RootShadowNode& newRootShadowNode,
     bool observeSubtree,
@@ -117,7 +105,7 @@ void MutationObserver::recordMutationsInTarget(
   //   node itself.
   // - A non-existent node. In that case, there are no new mutations.
   auto oldTargetShadowNode =
-      getShadowNodeInTree(*targetShadowNode, oldRootShadowNode);
+      getShadowNodeInTree(targetShadowNodeFamily, oldRootShadowNode);
   if (!oldTargetShadowNode) {
     return;
   }
@@ -127,7 +115,7 @@ void MutationObserver::recordMutationsInTarget(
   // record any mutations in the node itself (maybe in its parent if there are
   // other observers set up).
   auto newTargetShadowNode =
-      getShadowNodeInTree(*targetShadowNode, newRootShadowNode);
+      getShadowNodeInTree(targetShadowNodeFamily, newRootShadowNode);
   if (!newTargetShadowNode) {
     return;
   }
@@ -141,8 +129,8 @@ void MutationObserver::recordMutationsInTarget(
 }
 
 void MutationObserver::recordMutationsInSubtrees(
-    const ShadowNode::Shared& oldNode,
-    const ShadowNode::Shared& newNode,
+    const std::shared_ptr<const ShadowNode>& oldNode,
+    const std::shared_ptr<const ShadowNode>& newNode,
     bool observeSubtree,
     std::vector<MutationRecord>& recordedMutations,
     SetOfShadowNodePointers& processedNodes) const {
@@ -158,8 +146,8 @@ void MutationObserver::recordMutationsInSubtrees(
   auto oldChildren = oldNode->getChildren();
   auto newChildren = newNode->getChildren();
 
-  std::vector<ShadowNode::Shared> addedNodes;
-  std::vector<ShadowNode::Shared> removedNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> addedNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> removedNodes;
 
   // Check for removed nodes (and equal nodes for further inspection)
   for (auto& oldChild : oldChildren) {

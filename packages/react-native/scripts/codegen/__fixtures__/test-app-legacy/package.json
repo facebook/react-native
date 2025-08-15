@@ -1,0 +1,37 @@
+{
+  "name": "test-app-legacy",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "codegenConfig": {
+    "name": "TestAppConfig",
+    "type": "all",
+    "android": {
+      "javaPackageName": "com.testApp"
+    },
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": "RCTTestAppDeprecatedImageURLLoader",
+        "RCTURLRequestHandler": "RCTTestAppDeprecatedURLRequestHandler"
+      },
+      "modulesProvider": {
+        "TestAppDeprecatedImageURLLoader": "RCTTestAppDeprecatedImageURLLoader",
+        "TestAppDeprecatedURLRequestHandler": "RCTTestAppDeprecatedURLRequestHandler",
+        "TestAppDeprecatedImageDataDecoder": "RCTTestAppDeprecatedImageDataDecoder"
+      },
+      "componentProvider": {
+        "TestAppDeprecatedComponent": "RCTTestAppDeprecatedComponentClass"
+      },
+      "unstableModulesRequiringMainQueueSetup": [
+        "RCTTestAppDeprecatedImageURLLoader",
+        "RCTTestAppDeprecatedURLRequestHandler",
+        "RCTTestAppDeprecatedImageDataDecoder"
+      ]
+    }
+  }
+}

@@ -32,14 +32,6 @@ internal object ReactDebugOverlayTags {
       DebugOverlayTag(
           "UI Manager",
           "UI Manager View Operations (requires restart\nwarning: this is spammy)",
-          Color.CYAN)
-  @JvmField
-  val FABRIC_UI_MANAGER: DebugOverlayTag =
-      DebugOverlayTag("FabricUIManager", "Fabric UI Manager View Operations", Color.CYAN)
-  @JvmField
-  val FABRIC_RECONCILER: DebugOverlayTag =
-      DebugOverlayTag("FabricReconciler", "Reconciler for Fabric", Color.CYAN)
-  @JvmField
-  val RELAY: DebugOverlayTag =
-      DebugOverlayTag("Relay", "including prefetching", Color.rgb(0xFF, 0x99, 0x00))
+          Color.CYAN,
+      )
 }

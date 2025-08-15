@@ -12,10 +12,10 @@ import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import java.util.Map;
@@ -48,6 +48,7 @@ import java.util.Map;
  * <p>Please note that it is not allowed to have multiple methods annotated with {@link ReactMethod}
  * with the same name.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @StableReactNativeAPI
 public abstract class BaseJavaModule implements NativeModule {
   // taken from Libraries/Utilities/MessageQueue.js
@@ -70,7 +71,6 @@ public abstract class BaseJavaModule implements NativeModule {
   /**
    * @return a map of constants this module exports to JS. Supports JSON types.
    */
-  @DeprecatedInNewArchitecture()
   public @Nullable Map<String, Object> getConstants() {
     return null;
   }
@@ -118,7 +118,7 @@ public abstract class BaseJavaModule implements NativeModule {
    */
   @ThreadConfined(ANY)
   protected @Nullable final ReactApplicationContext getReactApplicationContextIfActiveOrWarn() {
-    if (mReactApplicationContext.hasActiveReactInstance()) {
+    if (mReactApplicationContext != null && mReactApplicationContext.hasActiveReactInstance()) {
       return mReactApplicationContext;
     }
 

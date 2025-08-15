@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ImageBackgroundProps} from './ImageProps';
 
 import View from '../Components/View/View';
@@ -16,6 +16,8 @@ import flattenStyle from '../StyleSheet/flattenStyle';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import Image from './Image';
 import * as React from 'react';
+
+export type {ImageBackgroundProps} from './ImageProps';
 
 /**
  * Very simple drop-in replacement for <Image> which supports nesting views.
@@ -103,4 +105,4 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
   }
 }
 
-module.exports = ImageBackground;
+export default ImageBackground;

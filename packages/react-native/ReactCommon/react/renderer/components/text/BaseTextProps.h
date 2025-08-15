@@ -41,6 +41,12 @@ class BaseTextProps {
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
 #endif
+
+#ifdef RN_SERIALIZABLE_STATE
+  void appendTextAttributesProps(
+      folly::dynamic& result,
+      const BaseTextProps* prevProps) const;
+#endif
 };
 
 } // namespace facebook::react

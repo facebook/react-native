@@ -17,21 +17,7 @@
 
 using namespace facebook::react;
 
-class ShadowNodeTestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit ShadowNodeTestFeatureFlags(bool useRuntimeShadowNodeReferenceUpdate)
-      : useRuntimeShadowNodeReferenceUpdate_(
-            useRuntimeShadowNodeReferenceUpdate) {}
-
-  bool useRuntimeShadowNodeReferenceUpdate() override {
-    return useRuntimeShadowNodeReferenceUpdate_;
-  }
-
- private:
-  bool useRuntimeShadowNodeReferenceUpdate_;
-};
-
-class ShadowNodeTest : public testing::TestWithParam<bool> {
+class ShadowNodeTest : public testing::Test {
  protected:
   ShadowNodeTest()
       : eventDispatcher_(std::shared_ptr<const EventDispatcher>()),
@@ -46,7 +32,7 @@ class ShadowNodeTest : public testing::TestWithParam<bool> {
      *  </AB>
      *  <AC/>
      * </A>
-     * </Z>
+     * <Z/>
      */
 
     auto props = std::make_shared<const TestProps>();
@@ -92,8 +78,9 @@ class ShadowNodeTest : public testing::TestWithParam<bool> {
         familyABB,
         traits);
 
-    auto nodeABChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeABA_, nodeABB_});
+    auto nodeABChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{nodeABA_, nodeABB_});
 
     auto familyAB = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 15,
@@ -121,8 +108,10 @@ class ShadowNodeTest : public testing::TestWithParam<bool> {
         familyAC,
         traits);
 
-    auto nodeAChildren = std::make_shared<ShadowNode::ListOfShared>(
-        ShadowNode::ListOfShared{nodeAA_, nodeAB_, nodeAC_});
+    auto nodeAChildren =
+        std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>(
+            std::vector<std::shared_ptr<const ShadowNode>>{
+                nodeAA_, nodeAB_, nodeAC_});
 
     auto familyA = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
         /* .tag = */ 17,
@@ -155,9 +144,6 @@ class ShadowNodeTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
-
-    ReactNativeFeatureFlags::override(
-        std::make_unique<ShadowNodeTestFeatureFlags>(GetParam()));
   }
 
   void TearDown() override {
@@ -177,12 +163,7 @@ class ShadowNodeTest : public testing::TestWithParam<bool> {
   SurfaceId surfaceId_ = 1;
 };
 
-INSTANTIATE_TEST_CASE_P(
-    ShadowNodeTestTogglingRuntimeShadowNodeReferenceUpdate,
-    ShadowNodeTest,
-    ::testing::Values(true, false));
-
-TEST_P(ShadowNodeTest, handleShadowNodeCreation) {
+TEST_F(ShadowNodeTest, handleShadowNodeCreation) {
   EXPECT_FALSE(nodeZ_->getSealed());
   EXPECT_STREQ(nodeZ_->getComponentName(), "Test");
   EXPECT_EQ(nodeZ_->getTag(), 18);
@@ -191,13 +172,13 @@ TEST_P(ShadowNodeTest, handleShadowNodeCreation) {
   EXPECT_EQ(nodeZ_->getChildren().size(), 0);
 }
 
-TEST_P(ShadowNodeTest, handleSealRecusive) {
+TEST_F(ShadowNodeTest, handleSealRecusive) {
   nodeZ_->sealRecursive();
   EXPECT_TRUE(nodeZ_->getSealed());
   EXPECT_TRUE(nodeZ_->getProps()->getSealed());
 }
 
-TEST_P(ShadowNodeTest, handleShadowNodeSimpleCloning) {
+TEST_F(ShadowNodeTest, handleShadowNodeSimpleCloning) {
   auto nodeARevision2 =
       std::make_shared<TestShadowNode>(*nodeA_, ShadowNodeFragment{});
 
@@ -207,7 +188,7 @@ TEST_P(ShadowNodeTest, handleShadowNodeSimpleCloning) {
   EXPECT_EQ(nodeA_->getEventEmitter(), nodeARevision2->getEventEmitter());
 }
 
-TEST_P(ShadowNodeTest, handleShadowNodeMutation) {
+TEST_F(ShadowNodeTest, handleShadowNodeMutation) {
   auto nodeABChildren = nodeAB_->getChildren();
   EXPECT_EQ(nodeABChildren.size(), 2);
   EXPECT_EQ(nodeABChildren.at(0), nodeABA_);
@@ -228,7 +209,7 @@ TEST_P(ShadowNodeTest, handleShadowNodeMutation) {
   EXPECT_TRUE(nodeABB_->getSealed());
 }
 
-TEST_P(ShadowNodeTest, handleCloneFunction) {
+TEST_F(ShadowNodeTest, handleCloneFunction) {
   auto nodeABClone = nodeAB_->clone({});
 
   // Those two nodes are *not* same.
@@ -246,7 +227,7 @@ TEST_P(ShadowNodeTest, handleCloneFunction) {
   EXPECT_EQ(nodeAB_->getProps(), nodeABClone->getProps());
 }
 
-TEST_P(ShadowNodeTest, handleState) {
+TEST_F(ShadowNodeTest, handleState) {
   auto family = componentDescriptor_.createFamily(ShadowNodeFamilyFragment{
       /* .tag = */ 9,
       /* .surfaceId = */ surfaceId_,
@@ -301,29 +282,49 @@ TEST_P(ShadowNodeTest, handleState) {
       "Attempt to mutate a sealed object.");
 }
 
-TEST_P(ShadowNodeTest, handleRuntimeReferenceTransferOnClone) {
+TEST_F(ShadowNodeTest, handleRuntimeReferenceTransferOnClone) {
   auto nodeABRev1 = nodeAB_->clone({});
   auto wrappedShadowNode = std::make_shared<ShadowNodeWrapper>(nodeABRev1);
   nodeABRev1->setRuntimeShadowNodeReference(wrappedShadowNode);
 
   auto nodeABRev2 = nodeABRev1->clone({});
 
-  if (GetParam()) {
-    // The wrappedShadowNode should reference the new latest clone
-    EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev2);
-  } else {
-    // The wrappedShadowNode is still referencing the original shadow node
-    EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev1);
-  }
+  // The wrappedShadowNode should reference the new latest clone
+  EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev2);
 
   auto nodeABRev3 = componentDescriptor_.cloneShadowNode(
       *nodeABRev2, {.runtimeShadowNodeReference = false});
 
-  if (GetParam()) {
-    // The wrappedShadowNode should still reference nodeABRev2
-    EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev2);
-  } else {
-    // The wrappedShadowNode is still referencing the original shadow node
-    EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev1);
-  }
+  // The wrappedShadowNode should still reference nodeABRev2
+  EXPECT_EQ(wrappedShadowNode->shadowNode, nodeABRev2);
+}
+
+TEST_F(ShadowNodeTest, cloneMultiple) {
+  auto newProps = std::make_shared<const TestProps>();
+  auto newRoot = nodeA_->cloneMultiple(
+      {&nodeA_->getFamily(), &nodeAB_->getFamily()},
+      [&](const ShadowNode& oldShadowNode, const ShadowNodeFragment& fragment) {
+        return oldShadowNode.clone({
+            .props = newProps,
+            .children = fragment.children,
+            .state = fragment.state,
+        });
+      });
+
+  EXPECT_EQ(newRoot->getTag(), nodeA_->getTag());
+  EXPECT_EQ(newRoot->getProps(), newProps);
+
+  auto newNodeAA = newRoot->getChildren()[0];
+  EXPECT_EQ(newNodeAA->getTag(), nodeAA_->getTag());
+  EXPECT_EQ(newNodeAA->getProps(), nodeAA_->getProps());
+  // AA was cloned when its parent was cloned as it was shared
+  EXPECT_NE(newNodeAA.get(), nodeAA_.get());
+
+  auto newNodeAB = newRoot->getChildren()[1];
+  EXPECT_EQ(newNodeAB->getTag(), nodeAB_->getTag());
+  EXPECT_EQ(newNodeAB->getProps(), newProps);
+
+  auto newNodeABA = newNodeAB->getChildren()[0];
+  EXPECT_EQ(newNodeABA->getTag(), nodeABA_->getTag());
+  EXPECT_EQ(newNodeABA.get(), nodeABA_.get());
 }

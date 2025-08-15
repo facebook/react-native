@@ -6,12 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wno-unused-lambda-capture
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_cxxreact_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_cxxreact OBJECT ${react_cxxreact_SRC})
@@ -29,3 +24,6 @@ target_link_libraries(react_cxxreact
         reactperflogger
         runtimeexecutor
         react_debug)
+
+target_compile_reactnative_options(react_cxxreact PRIVATE)
+target_compile_options(react_cxxreact PRIVATE -Wno-unused-lambda-capture)

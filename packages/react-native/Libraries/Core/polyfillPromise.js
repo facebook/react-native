@@ -34,5 +34,5 @@ if (global?.HermesInternal?.hasPromise?.()) {
     );
   }
 } else {
-  polyfillGlobal('Promise', () => require('../Promise'));
+  polyfillGlobal('Promise', () => require('../Promise').default);
 }

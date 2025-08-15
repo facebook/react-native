@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -29,6 +28,11 @@ const argv = yargs
     alias: 'exclude',
     default: null,
   })
+  .option('l', {
+    describe: 'Library name to use for schema generation',
+    alias: 'libraryName',
+    default: null,
+  })
   .parseSync();
 
 const [outfile, ...fileList] = argv._;
@@ -36,10 +40,12 @@ const platform: ?string = argv.platform;
 const exclude: string = argv.exclude;
 const excludeRegExp: ?RegExp =
   exclude != null && exclude !== '' ? new RegExp(exclude) : null;
+const libraryName: ?string = argv.libraryName;
 
 combineSchemasInFileListAndWriteToFile(
   fileList,
   platform != null ? platform.toLowerCase() : platform,
   outfile,
   excludeRegExp,
+  libraryName,
 );

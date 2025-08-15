@@ -10,8 +10,6 @@
 #import <React/RCTInitializing.h>
 #import <React/RCTURLRequestHandler.h>
 
-RCT_EXTERN void RCTEnableBlobManagerProcessingQueue(BOOL enabled);
-
 @interface RCTBlobManager : NSObject <RCTBridgeModule, RCTURLRequestHandler, RCTInitializing>
 
 - (NSString *)store:(NSData *)data;
@@ -29,7 +27,5 @@ RCT_EXTERN void RCTEnableBlobManagerProcessingQueue(BOOL enabled);
 - (void)remove:(NSString *)blobId;
 
 - (void)createFromParts:(NSArray<NSDictionary<NSString *, id> *> *)parts withId:(NSString *)blobId;
-
-- (dispatch_queue_t)executionQueue;
 
 @end

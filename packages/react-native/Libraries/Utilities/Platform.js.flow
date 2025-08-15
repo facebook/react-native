@@ -8,6 +8,6 @@
  * @format
  */
 
-import type {Platform} from './Platform.flow';
+import type {PlatformType} from './PlatformTypes';
 
-declare module.exports: Platform;
+declare export default PlatformType;

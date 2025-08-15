@@ -7,8 +7,6 @@
 
 package com.facebook.react.uimanager.events
 
-import com.facebook.react.uimanager.common.UIManagerType
-
 public interface EventDispatcher {
   /** Sends the given Event to JS, coalescing eligible events if JS is backed up. */
   public fun dispatchEvent(event: Event<*>)
@@ -25,16 +23,6 @@ public interface EventDispatcher {
 
   public fun removeBatchEventDispatchedListener(listener: BatchEventDispatchedListener)
 
-  @Deprecated("Use the modern version with RCTModernEventEmitter")
-  @Suppress("DEPRECATION")
-  public fun registerEventEmitter(@UIManagerType uiManagerType: Int, eventEmitter: RCTEventEmitter)
-
-  public fun registerEventEmitter(
-      @UIManagerType uiManagerType: Int,
-      eventEmitter: RCTModernEventEmitter
-  )
-
-  public fun unregisterEventEmitter(@UIManagerType uiManagerType: Int)
-
+  @Deprecated("Private API, should only be used when the concrete implementation is known.")
   public fun onCatalystInstanceDestroyed()
 }

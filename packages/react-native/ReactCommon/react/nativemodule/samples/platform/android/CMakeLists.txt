@@ -6,14 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DFOLLY_NO_CONFIG=1
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB sampleturbomodule_SRC CONFIGURE_DEPENDS ReactCommon/*.cpp)
 add_library(sampleturbomodule STATIC ${sampleturbomodule_SRC})
@@ -25,3 +18,6 @@ target_link_libraries(sampleturbomodule
         jsi
         reactnative
 )
+
+target_compile_reactnative_options(sampleturbomodule PRIVATE)
+target_compile_options(sampleturbomodule PRIVATE -Wpedantic)

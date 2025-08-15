@@ -4,32 +4,44 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 import Platform from '../Utilities/Platform';
-import RCTAlertManager from './RCTAlertManager';
+import {alertWithArgs} from './RCTAlertManager';
 
+/**
+ * @platform ios
+ */
 export type AlertType =
   | 'default'
   | 'plain-text'
   | 'secure-text'
   | 'login-password';
+
+/**
+ * @platform ios
+ */
 export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
-export type Buttons = Array<{
+
+export type AlertButton = {
   text?: string,
-  onPress?: ?Function,
+  onPress?: ?((value?: string) => any) | ?Function,
   isPreferred?: boolean,
   style?: AlertButtonStyle,
   ...
-}>;
+};
 
-type Options = {
+export type AlertButtons = Array<AlertButton>;
+
+export type AlertOptions = {
+  /** @platform android */
   cancelable?: ?boolean,
   userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
+  /** @platform android */
   onDismiss?: ?() => void,
   ...
 };
@@ -37,14 +49,22 @@ type Options = {
 /**
  * Launches an alert dialog with the specified title and message.
  *
+ * Optionally provide a list of buttons. Tapping any button will fire the
+ * respective onPress callback and dismiss the alert. By default, the only
+ * button will be an 'OK' button.
+ *
+ * This is an API that works both on iOS and Android and can show static
+ * alerts. On iOS, you can show an alert that prompts the user to enter
+ * some information.
+ *
  * See https://reactnative.dev/docs/alert
  */
 class Alert {
   static alert(
     title: ?string,
     message?: ?string,
-    buttons?: Buttons,
-    options?: Options,
+    buttons?: AlertButtons,
+    options?: AlertOptions,
   ): void {
     if (Platform.OS === 'ios') {
       Alert.prompt(
@@ -76,7 +96,7 @@ class Alert {
       // At most three buttons (neutral, negative, positive). Ignore rest.
       // The text 'OK' should be probably localized. iOS Alert does that in native.
       const defaultPositiveText = 'OK';
-      const validButtons: Buttons = buttons
+      const validButtons: AlertButtons = buttons
         ? buttons.slice(0, 3)
         : [{text: defaultPositiveText}];
       const buttonPositive = validButtons.pop();
@@ -99,12 +119,15 @@ class Alert {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonNeutral.onPress && buttonNeutral.onPress();
           } else if (buttonKey === constants.buttonNegative) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonNegative.onPress && buttonNegative.onPress();
           } else if (buttonKey === constants.buttonPositive) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonPositive.onPress && buttonPositive.onPress();
           }
         } else if (action === constants.dismissed) {
@@ -116,14 +139,17 @@ class Alert {
     }
   }
 
+  /**
+   * @platform ios
+   */
   static prompt(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    callbackOrButtons?: ?(((text: string) => void) | AlertButtons),
     type?: ?AlertType = 'plain-text',
     defaultValue?: string,
     keyboardType?: string,
-    options?: Options,
+    options?: AlertOptions,
   ): void {
     if (Platform.OS === 'ios') {
       let callbacks: Array<?any> = [];
@@ -152,7 +178,7 @@ class Alert {
         });
       }
 
-      RCTAlertManager.alertWithArgs(
+      alertWithArgs(
         {
           title: title || '',
           message: message || undefined,
@@ -174,4 +200,4 @@ class Alert {
   }
 }
 
-module.exports = Alert;
+export default Alert;

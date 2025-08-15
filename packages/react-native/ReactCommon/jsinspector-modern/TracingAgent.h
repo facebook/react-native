@@ -7,8 +7,12 @@
 
 #pragma once
 
-#include "CdpJson.h"
+#include "HostTarget.h"
 #include "InspectorInterfaces.h"
+
+#include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/Timing.h>
+#include <react/timing/primitives.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -21,8 +25,12 @@ class TracingAgent {
    * \param frontendChannel A channel used to send responses to the
    * frontend.
    */
-  explicit TracingAgent(FrontendChannel frontendChannel)
-      : frontendChannel_(std::move(frontendChannel)) {}
+  TracingAgent(
+      FrontendChannel frontendChannel,
+      SessionState& sessionState,
+      HostTargetController& hostTargetController);
+
+  ~TracingAgent();
 
   /**
    * Handle a CDP request. The response will be sent over the provided
@@ -36,6 +44,10 @@ class TracingAgent {
    * A channel used to send responses and events to the frontend.
    */
   FrontendChannel frontendChannel_;
+
+  SessionState& sessionState_;
+
+  HostTargetController& hostTargetController_;
 };
 
 } // namespace facebook::react::jsinspector_modern

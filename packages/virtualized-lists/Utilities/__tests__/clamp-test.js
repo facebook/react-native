@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
 describe('clamp', () => {
-  const clamp = require('../clamp');
+  const clamp = require('../clamp').default;
 
   it('should return the value if the value does not exceed boundaries', () => {
     expect(clamp(0, 5, 10)).toEqual(5);

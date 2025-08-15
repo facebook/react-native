@@ -4,15 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict
  * @format
- * @oncall react_native
  */
 
-'use strict';
+import mapWithSeparator from '../mapWithSeparator';
 
 describe('mapWithSeparator', () => {
-  const mapWithSeparator = require('../mapWithSeparator');
-
   it('mapWithSeparator returns expected results', () => {
     const array = [1, 2, 3];
     const result = mapWithSeparator(
@@ -56,7 +54,7 @@ describe('mapWithSeparator', () => {
   });
 
   it('mapWithSeparator returns empty array when empty array is given as input', () => {
-    const array = [];
+    const array: Array<number> = [];
     const result = mapWithSeparator(
       array,
       function (value) {

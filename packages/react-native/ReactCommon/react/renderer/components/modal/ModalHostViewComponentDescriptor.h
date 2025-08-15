@@ -30,12 +30,23 @@ class ModalHostViewComponentDescriptor final
             *shadowNode.getState())
             .getData();
 
-    layoutableShadowNode.setSize(
-        Size{stateData.screenSize.width, stateData.screenSize.height});
+    layoutableShadowNode.setSize(Size{
+        .width = stateData.screenSize.width,
+        .height = stateData.screenSize.height});
     layoutableShadowNode.setPositionType(YGPositionTypeAbsolute);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
+
+#ifdef ANDROID
+  State::Shared createInitialState(
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family) const override;
+#endif // ANDROID
+
+ private:
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
 };
 
 } // namespace facebook::react

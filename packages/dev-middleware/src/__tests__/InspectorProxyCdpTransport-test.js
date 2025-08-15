@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -61,7 +60,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -120,7 +119,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -188,7 +187,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -289,7 +288,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });
@@ -339,7 +338,7 @@ describe.each(['HTTP', 'HTTPS'])(
         await until(async () => {
           pageList = (await fetchJson(
             `${serverRef.serverBaseUrl}/json`,
-            // $FlowIgnore[unclear-type]
+            // $FlowFixMe[unclear-type]
           ): any);
           expect(pageList).toHaveLength(1);
         });

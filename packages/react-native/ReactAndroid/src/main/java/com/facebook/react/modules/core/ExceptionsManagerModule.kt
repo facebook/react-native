@@ -65,4 +65,8 @@ public open class ExceptionsManagerModule(private val devSupportManager: DevSupp
       devSupportManager.hideRedboxDialog()
     }
   }
+
+  public companion object {
+    public const val NAME: String = NativeExceptionsManagerSpec.NAME
+  }
 }

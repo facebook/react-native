@@ -8,9 +8,9 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
 import {createViewConfig} from '../NativeComponent/ViewConfig';
@@ -21,7 +21,7 @@ export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: PressEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => mixed,
   // This is only needed for platforms that optimize text hit testing, e.g.,
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.
@@ -44,7 +44,6 @@ const textViewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
-    onInlineViewLayout: true,
     dataDetectorType: true,
     android_hyphenationFrequency: true,
     lineBreakStrategyIOS: true,
@@ -52,9 +51,6 @@ const textViewConfig = {
   directEventTypes: {
     topTextLayout: {
       registrationName: 'onTextLayout',
-    },
-    topInlineViewLayout: {
-      registrationName: 'onInlineViewLayout',
     },
   },
   uiViewClassName: 'RCTText',
@@ -71,6 +67,8 @@ const virtualTextViewConfig = {
 
 export const NativeText: HostComponent<NativeTextProps> =
   (createReactNativeComponentClass('RCTText', () =>
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     createViewConfig(textViewConfig),
   ): any);
 
@@ -78,5 +76,7 @@ export const NativeVirtualText: HostComponent<NativeTextProps> =
   !global.RN$Bridgeless && !UIManager.hasViewManagerConfig('RCTVirtualText')
     ? NativeText
     : (createReactNativeComponentClass('RCTVirtualText', () =>
+        /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+         * https://fburl.com/workplace/6291gfvu */
         createViewConfig(virtualTextViewConfig),
       ): any);

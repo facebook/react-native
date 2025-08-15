@@ -7,7 +7,9 @@
 
 #pragma once
 
+#include <react/renderer/graphics/ColorStop.h>
 #include <react/renderer/graphics/Float.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <string>
 #include <variant>
 #include <vector>
@@ -30,12 +32,6 @@ struct GradientDirection {
   bool operator==(const GradientDirection& other) const {
     return type == other.type && value == other.value;
   }
-};
-
-struct ColorStop {
-  bool operator==(const ColorStop& other) const = default;
-  SharedColor color;
-  Float position = 0.0f;
 };
 
 struct LinearGradient {

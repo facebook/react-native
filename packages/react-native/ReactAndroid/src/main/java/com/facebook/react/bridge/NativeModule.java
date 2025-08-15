@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import javax.annotation.Nonnull;
 
@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
  * not provide any Java code (so they can be reused on other platforms), and instead should register
  * themselves using {@link CxxModuleWrapper}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @StableReactNativeAPI
 @DoNotStrip
 public interface NativeModule {
@@ -48,8 +49,11 @@ public interface NativeModule {
    * of a different package (such as the core one). Trying to override without returning true from
    * this method is considered an error and will throw an exception during initialization. By
    * default all modules return false.
+   *
+   * @deprecated The method canOverrideExistingModule is not used in the New Architecture and will
+   *     be removed in a future release.
    */
-  @DeprecatedInNewArchitecture()
+  @Deprecated
   default boolean canOverrideExistingModule() {
     return false;
   }

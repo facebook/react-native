@@ -26,7 +26,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
   public enum class CallbackType(internal val order: Int) {
     /** For use by perf markers that need to happen immediately after draw */
     PERF_MARKERS(0),
-    /** For use by [com.facebook.react.uimanager.UIManagerModule] */
+    /** For use by [com.facebook.react.bridge.UIManager] */
     DISPATCH_UI(1),
     /** For use by [com.facebook.react.animated.NativeAnimatedModule] */
     NATIVE_ANIMATED_MODULE(2),
@@ -35,7 +35,7 @@ public class ReactChoreographer private constructor(choreographerProvider: Chore
     /**
      * Event used to trigger the idle callback. Called after all UI work has been dispatched to JS.
      */
-    IDLE_EVENT(4)
+    IDLE_EVENT(4),
   }
 
   private var choreographer: ChoreographerProvider.Choreographer? = null

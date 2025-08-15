@@ -31,7 +31,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (void)setSurfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
@@ -58,7 +58,9 @@ RCT_EXPORT_METHOD(show)
         strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                  surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
         [strongSelf->_view show];
-      } else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
+      }
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+      else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter) {
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                    surfacePresenter:strongSelf->_bridge.surfacePresenter];
@@ -67,6 +69,7 @@ RCT_EXPORT_METHOD(show)
         }
         [strongSelf->_view show];
       }
+#endif // RCT_FIT_RM_OLD_RUNTIME
     });
   }
 }

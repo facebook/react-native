@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @noflow
  */
 
 'use strict';
@@ -26,7 +27,6 @@ module.exports = {
       manifestPath:
         'packages/rn-tester/android/app/src/main/AndroidManifest.xml',
       packageName: 'com.facebook.react.uiapp',
-      watchModeCommandParams: ['--mode HermesDebug'],
     },
   },
 };

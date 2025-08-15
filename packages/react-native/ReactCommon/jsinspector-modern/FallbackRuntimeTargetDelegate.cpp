@@ -44,4 +44,18 @@ std::unique_ptr<StackTrace> FallbackRuntimeTargetDelegate::captureStackTrace(
   return std::make_unique<StackTrace>();
 }
 
+void FallbackRuntimeTargetDelegate::enableSamplingProfiler() {
+  // no-op
+};
+
+void FallbackRuntimeTargetDelegate::disableSamplingProfiler() {
+  // no-op
+};
+
+tracing::RuntimeSamplingProfile
+FallbackRuntimeTargetDelegate::collectSamplingProfile() {
+  throw std::logic_error(
+      "Sampling Profiler capabilities are not supported for Runtime fallback");
+}
+
 } // namespace facebook::react::jsinspector_modern

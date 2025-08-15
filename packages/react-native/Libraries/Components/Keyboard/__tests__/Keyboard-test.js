@@ -6,12 +6,12 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
-const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
-const Keyboard = require('../Keyboard');
+const LayoutAnimation =
+  require('../../../LayoutAnimation/LayoutAnimation').default;
+const dismissKeyboard = require('../../../Utilities/dismissKeyboard').default;
+const Keyboard = require('../Keyboard').default;
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
 jest.mock('../../../Utilities/dismissKeyboard');

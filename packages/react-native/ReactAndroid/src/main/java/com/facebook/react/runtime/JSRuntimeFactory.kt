@@ -8,9 +8,14 @@
 package com.facebook.react.runtime
 
 import com.facebook.jni.HybridData
+import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.soloader.SoLoader
 
-public abstract class JSRuntimeFactory(private val mHybridData: HybridData) {
+public abstract class JSRuntimeFactory(
+    @Suppress("unused", "NoHungarianNotation", "NotAccessedPrivateField")
+    @DoNotStrip
+    private val mHybridData: HybridData
+) {
   private companion object {
     init {
       SoLoader.loadLibrary("rninstance")

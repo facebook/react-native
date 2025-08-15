@@ -7,11 +7,15 @@
 
 package com.facebook.react.uimanager
 
+import android.app.Activity
 import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 
 /**
  * Holds an instance of the current DisplayMetrics so we don't have to thread it through all the
@@ -27,7 +31,7 @@ public object DisplayMetricsHolder {
   /** The metrics of the window associated to the Context used to initialize ReactNative */
   @JvmStatic
   public fun getWindowDisplayMetrics(): DisplayMetrics {
-    checkNotNull(windowDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
     return windowDisplayMetrics as DisplayMetrics
   }
 
@@ -39,7 +43,7 @@ public object DisplayMetricsHolder {
   /** Screen metrics returns the metrics of the default screen on the device. */
   @JvmStatic
   public fun getScreenDisplayMetrics(): DisplayMetrics {
-    checkNotNull(screenDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
     return screenDisplayMetrics as DisplayMetrics
   }
 
@@ -63,7 +67,6 @@ public object DisplayMetricsHolder {
     val screenDisplayMetrics = DisplayMetrics()
     screenDisplayMetrics.setTo(displayMetrics)
     val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    checkNotNull(wm) { "WindowManager is null!" }
     // Get the real display metrics if we are using API level 17 or higher.
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
@@ -75,22 +78,24 @@ public object DisplayMetricsHolder {
 
   @JvmStatic
   public fun getDisplayMetricsWritableMap(fontScale: Double): WritableMap {
-    checkNotNull(windowDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
-    checkNotNull(screenDisplayMetrics) { DisplayMetricsHolder.INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(windowDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
+    checkNotNull(screenDisplayMetrics) { INITIALIZATION_MISSING_MESSAGE }
 
     return WritableNativeMap().apply {
       putMap(
           "windowPhysicalPixels",
-          getPhysicalPixelsWritableMap(windowDisplayMetrics as DisplayMetrics, fontScale))
+          getPhysicalPixelsWritableMap(windowDisplayMetrics as DisplayMetrics, fontScale),
+      )
       putMap(
           "screenPhysicalPixels",
-          getPhysicalPixelsWritableMap(screenDisplayMetrics as DisplayMetrics, fontScale))
+          getPhysicalPixelsWritableMap(screenDisplayMetrics as DisplayMetrics, fontScale),
+      )
     }
   }
 
   private fun getPhysicalPixelsWritableMap(
       displayMetrics: DisplayMetrics,
-      fontScale: Double
+      fontScale: Double,
   ): WritableMap =
       WritableNativeMap().apply {
         putInt("width", displayMetrics.widthPixels)
@@ -99,4 +104,44 @@ public object DisplayMetricsHolder {
         putDouble("fontScale", fontScale)
         putDouble("densityDpi", displayMetrics.densityDpi.toDouble())
       }
+
+  internal fun getStatusBarHeightPx(activity: Activity?): Int {
+    val windowInsets = activity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0
+    return windowInsets
+        .getInsets(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.navigationBars() or
+                WindowInsetsCompat.Type.displayCutout())
+        .top
+  }
+
+  /**
+   * Returns the encoded screen size without vertical insets.
+   *
+   * This is needed to render components that needs to be correctly positioned on the screen on
+   * their first frame. Modal is one of such components.
+   *
+   * @param activity the [Activity] to get the insets from.
+   * @return the encoded screen size as a [Long] value, where the first 32 bits represent the width
+   *   and the last 32 bits represent the height in dp (density-independent pixels).
+   */
+  // This annotation can be removed once FabricUIManager is migrated to Kotlin
+  @JvmName("getEncodedScreenSizeWithoutVerticalInsets")
+  @JvmStatic
+  internal fun getEncodedScreenSizeWithoutVerticalInsets(activity: Activity?): Long {
+    val windowInsets = activity?.window?.decorView?.let(ViewCompat::getRootWindowInsets) ?: return 0
+    val insets =
+        windowInsets.getInsets(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.navigationBars() or
+                WindowInsetsCompat.Type.displayCutout())
+    val verticalInsets = insets.top + insets.bottom
+    return encodeFloatsToLong(
+        (checkNotNull(screenDisplayMetrics).widthPixels).toFloat().pxToDp(),
+        (checkNotNull(screenDisplayMetrics).heightPixels - verticalInsets).toFloat().pxToDp(),
+    )
+  }
+
+  internal fun encodeFloatsToLong(width: Float, height: Float): Long =
+      (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
 }

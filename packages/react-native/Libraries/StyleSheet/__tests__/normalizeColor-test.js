@@ -4,27 +4,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
 
-const {OS} = require('../../Utilities/Platform');
-const normalizeColor = require('../normalizeColor');
+const {OS} = require('../../Utilities/Platform').default;
+const normalizeColor = require('../normalizeColor').default;
 
 it('forwards calls to @react-native/normalize-colors', () => {
   jest.resetModules().mock('@react-native/normalize-colors', () => jest.fn());
 
-  expect(require('../normalizeColor')('#abc')).not.toBe(null);
+  expect(require('../normalizeColor').default('#abc')).not.toBe(null);
   expect(require('@react-native/normalize-colors')).toBeCalled();
 });
 
 describe('iOS', () => {
   if (OS === 'ios') {
     const PlatformColor =
+      // $FlowFixMe[missing-platform-support]
       require('../PlatformColorValueTypes.ios').PlatformColor;
     const DynamicColorIOS =
+      // $FlowFixMe[missing-platform-support]
       require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
 
     it('should normalize iOS PlatformColor colors', () => {
@@ -85,6 +87,7 @@ describe('iOS', () => {
 describe('Android', () => {
   if (OS === 'android') {
     const PlatformColor =
+      // $FlowFixMe[missing-platform-support]
       require('../PlatformColorValueTypes.android').PlatformColor;
 
     it('should normalize Android PlatformColor colors', () => {

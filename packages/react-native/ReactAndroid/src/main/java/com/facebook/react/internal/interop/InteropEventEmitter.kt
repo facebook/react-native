@@ -13,6 +13,8 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.annotations.internal.InteropLegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
@@ -27,7 +29,9 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * is providing support for the `receiveEvent` method, so that non-Fabric ViewManagers can continue
  * to deliver events also when Fabric is turned on.
  */
-public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+@InteropLegacyArchitecture
+internal class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+
   private var eventDispatcherOverride: EventDispatcher? = null
 
   @Deprecated("Deprecated in Java")
@@ -43,14 +47,20 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ) {
     throw UnsupportedOperationException(
         "EventEmitter#receiveTouches is not supported by the Fabric Interop Layer")
   }
 
   @VisibleForTesting
-  public fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
+  fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
     this.eventDispatcherOverride = eventDispatcherOverride
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture("InteropEventEmitter")
+    }
   }
 }

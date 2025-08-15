@@ -20,18 +20,18 @@ public interface StackFrame {
   public val file: String?
 
   /** Get the name of the method this frame points to. */
-  public val method: String?
+  public val method: String
 
-  /** Get the line number this frame points to in the file returned by [.getFile]. */
+  /** Get the line number this frame points to in the file returned by [getFile]. */
   public val line: Int
 
-  /** Get the column this frame points to in the file returned by [.getFile]. */
+  /** Get the column this frame points to in the file returned by [getFile]. */
   public val column: Int
 
   /**
    * Get just the name of the file this frame points to.
    *
-   * For JS traces this is different from [.getFile] in that it only returns the file name, not the
+   * For JS traces this is different from [getFile] in that it only returns the file name, not the
    * full path. For Java traces there is no difference.
    */
   public val fileName: String?
@@ -40,5 +40,5 @@ public interface StackFrame {
   public val isCollapsed: Boolean
 
   /** Convert the stack frame to a JSON representation. */
-  public fun toJSON(): JSONObject?
+  public fun toJSON(): JSONObject
 }

@@ -22,6 +22,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
 # We configured the REACT_COMMON_DIR variable as it's commonly used to reference
 # shared C++ code in other targets.
 set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
@@ -29,6 +30,13 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
+
+# If the user toolchain supports IPO, we enable it for the app build
+include(CheckIPOSupported)
+check_ipo_supported(RESULT IPO_SUPPORT)
+if (IPO_SUPPORT)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
 
 set(BUILD_DIR ${PROJECT_BUILD_DIR})
 file(TO_CMAKE_PATH "${BUILD_DIR}" BUILD_DIR)
@@ -60,21 +68,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME}
-        PRIVATE
-                -Wall
-                -Werror
-                # We suppress cpp #error and #warning to don't fail the build
-                # due to use migrating away from
-                # #include <react/renderer/graphics/conversions.h>
-                # This can be removed for React Native 0.73
-                -Wno-error=cpp
-                -fexceptions
-                -frtti
-                -std=c++20
-                -DLOG_TAG=\"ReactNative\"
-                -DFOLLY_NO_CONFIG=1
-)
+target_compile_reactnative_options(${CMAKE_PROJECT_NAME} PRIVATE)
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)

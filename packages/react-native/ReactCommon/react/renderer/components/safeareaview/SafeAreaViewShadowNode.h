@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include <react/renderer/components/rncore/EventEmitters.h>
-#include <react/renderer/components/rncore/Props.h>
+#include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
+#include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/components/safeareaview/SafeAreaViewState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook::react {
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 extern const char SafeAreaViewComponentName[];
 
 /*

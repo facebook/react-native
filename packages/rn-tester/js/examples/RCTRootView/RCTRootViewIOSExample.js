@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 const React = require('react');
 const {
@@ -95,4 +97,4 @@ exports.examples = [
       return <RootViewSizeFlexibilityExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

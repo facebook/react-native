@@ -17,6 +17,7 @@ import ReactNativeFeatureFlagsCxxAccessorKt from './templates/android/ReactNativ
 import ReactNativeFeatureFlagsCxxInteropKt from './templates/android/ReactNativeFeatureFlagsCxxInterop.kt-template';
 import ReactNativeFeatureFlagsDefaultsKt from './templates/android/ReactNativeFeatureFlagsDefaults.kt-template';
 import ReactNativeFeatureFlagsLocalAccessorKt from './templates/android/ReactNativeFeatureFlagsLocalAccessor.kt-template';
+import ReactNativeFeatureFlagsOverrides from './templates/android/ReactNativeFeatureFlagsOverrides_RNOSS__Stage__Android.kt-template.js';
 import ReactNativeFeatureFlagsProviderKt from './templates/android/ReactNativeFeatureFlagsProvider.kt-template';
 import path from 'path';
 
@@ -36,6 +37,17 @@ export default function generateAndroidModules(
       ReactNativeFeatureFlagsCxxInteropKt(featureFlagDefinitions),
     [path.join(androidPath, 'ReactNativeFeatureFlagsDefaults.kt')]:
       ReactNativeFeatureFlagsDefaultsKt(featureFlagDefinitions),
+    [path.join(
+      androidPath,
+      'ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android.kt',
+    )]: ReactNativeFeatureFlagsOverrides(
+      featureFlagDefinitions,
+      'experimental',
+    ),
+    [path.join(
+      androidPath,
+      'ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android.kt',
+    )]: ReactNativeFeatureFlagsOverrides(featureFlagDefinitions, 'canary'),
     [path.join(androidPath, 'ReactNativeFeatureFlagsProvider.kt')]:
       ReactNativeFeatureFlagsProviderKt(featureFlagDefinitions),
     [path.join(androidJniPath, 'JReactNativeFeatureFlagsCxxInterop.h')]:

@@ -27,11 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const facebook::react::ContextContainer>)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<facebook::react::RuntimeExecutor>)bridgelessBindingsExecutor;
 
-@property (nonatomic) facebook::react::ContextContainer::Shared contextContainer;
+@property (nonatomic) std::shared_ptr<const facebook::react::ContextContainer> contextContainer;
 @property (nonatomic) facebook::react::RuntimeExecutor runtimeExecutor;
 
 /*
@@ -65,7 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+- (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(ReactTag)tag props:(folly::dynamic)props;
 
 - (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler;
 

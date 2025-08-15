@@ -12,20 +12,20 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
-    <style name="SpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
+    <style name="SpinnerDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:datePickerStyle">@style/SpinnerDatePickerStyle</item>
     </style>
 
-    <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker" tools:targetApi="lollipop">
+    <style name="SpinnerDatePickerStyle" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:datePickerMode">spinner</item>
     </style>
 
-    <style name="CalendarDatePickerDialog" parent="android:Theme.Material.Dialog.Alert" tools:targetApi="lollipop">
+    <style name="CalendarDatePickerDialog" parent="android:Theme.Material.Dialog.Alert">
         <item name="android:datePickerStyle">@style/CalendarDatePickerStyle</item>
         <item name="android:windowIsFloating">true</item>
     </style>
 
-    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.DatePicker" tools:targetApi="lollipop">
+    <style name="CalendarDatePickerStyle" parent="android:Widget.Material.DatePicker">
         <item name="android:datePickerMode">calendar</item>
     </style>
 

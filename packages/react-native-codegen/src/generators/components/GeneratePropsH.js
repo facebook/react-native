@@ -65,14 +65,20 @@ const ClassTemplate = ({
   className,
   props,
   extendClasses,
+  includeGetDebugPropsImplementation,
 }: {
   enums: string,
   structs: string,
   className: string,
   props: string,
   extendClasses: string,
-}) =>
-  `
+  includeGetDebugPropsImplementation: boolean,
+}) => {
+  const getDebugPropsString = `#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+  #endif`;
+
+  return `
 ${enums}
 ${structs}
 class ${className} final${extendClasses} {
@@ -83,8 +89,17 @@ class ${className} final${extendClasses} {
 #pragma mark - Props
 
   ${props}
+
+  #ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+  #endif
+
+  ${includeGetDebugPropsImplementation ? getDebugPropsString : ''}
 };
 `.trim();
+};
 
 const EnumTemplate = ({
   enumName,
@@ -111,6 +126,12 @@ static inline std::string toString(const ${enumName} &value) {
     ${toCases}
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${enumName} &value) {
+  return toString(value);
+}
+#endif
 `.trim();
 
 const IntEnumTemplate = ({
@@ -118,11 +139,13 @@ const IntEnumTemplate = ({
   values,
   fromCases,
   toCases,
+  toDynamicCases,
 }: {
   enumName: string,
   values: string,
   fromCases: string,
   toCases: string,
+  toDynamicCases: string,
 }) =>
   `
 enum class ${enumName} { ${values} };
@@ -140,19 +163,40 @@ static inline std::string toString(const ${enumName} &value) {
     ${toCases}
   }
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${enumName} &value) {
+  switch (value) {
+    ${toDynamicCases}
+  }
+}
+#endif
 `.trim();
 
 const StructTemplate = ({
   structName,
   fields,
   fromCases,
+  toDynamicCases,
 }: {
   structName: string,
   fields: string,
   fromCases: string,
+  toDynamicCases: string,
 }) =>
   `struct ${structName} {
   ${fields}
+
+
+#ifdef RN_SERIALIZABLE_STATE
+  bool operator==(const ${structName}&) const = default;
+
+  folly::dynamic toDynamic() const {
+    folly::dynamic result = folly::dynamic::object();
+    ${toDynamicCases}
+    return result;
+  }
+#endif
 };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, ${structName} &result) {
@@ -164,6 +208,12 @@ static inline void fromRawValue(const PropsParserContext& context, const RawValu
 static inline std::string toString(const ${structName} &value) {
   return "[Object ${structName}]";
 }
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const ${structName} &value) {
+  return value.toDynamic();
+}
+#endif
 `.trim();
 
 const ArrayConversionFunctionTemplate = ({
@@ -397,6 +447,16 @@ function generateIntEnum(
       )
       .join('\n' + '    ');
 
+    const toDynamicCases = values
+      .map(
+        value =>
+          `case ${enumName}::${toIntEnumValueName(
+            prop.name,
+            value,
+          )}: return ${value};`,
+      )
+      .join('\n' + '    ');
+
     const valueVariables = values
       .map(val => `${toIntEnumValueName(prop.name, val)} = ${val}`)
       .join(', ');
@@ -406,6 +466,7 @@ function generateIntEnum(
       values: valueVariables,
       fromCases,
       toCases,
+      toDynamicCases,
     });
   }
 
@@ -485,6 +546,7 @@ function getExtendsImports(
   const imports: Set<string> = new Set();
 
   imports.add('#include <react/renderer/core/PropsParserContext.h>');
+  imports.add('#include <react/renderer/debug/DebugStringConvertible.h>');
 
   extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -697,12 +759,30 @@ function generateStruct(
     })
     .join('\n  ');
 
+  const toDynamicCases = properties
+    .map((property: NamedShape<PropTypeAnnotation>) => {
+      const name = property.name;
+      switch (property.typeAnnotation.type) {
+        case 'BooleanTypeAnnotation':
+        case 'StringTypeAnnotation':
+        case 'Int32TypeAnnotation':
+        case 'DoubleTypeAnnotation':
+        case 'FloatTypeAnnotation':
+        case 'MixedTypeAnnotation':
+          return `result["${name}"] = ${name};`;
+        default:
+          return `result["${name}"] = ::facebook::react::toDynamic(${name});`;
+      }
+    })
+    .join('\n    ');
+
   structs.set(
     structName,
     StructTemplate({
       structName,
       fields,
       fromCases,
+      toDynamicCases,
     }),
   );
 }
@@ -714,6 +794,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     const fileName = 'Props.h';
 
@@ -762,6 +843,7 @@ module.exports = {
               className: newName,
               extendClasses: extendString,
               props: propsString,
+              includeGetDebugPropsImplementation,
             });
 
             return replacedTemplate;

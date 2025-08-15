@@ -25,25 +25,27 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
 
   override fun onInitializeAccessibilityEvent(host: View, event: AccessibilityEvent) {
     super.onInitializeAccessibilityEvent(host, event)
-    if (host is ReactScrollView || host is ReactHorizontalScrollView) {
+    if (host is ReactAccessibleScrollView) {
       onInitializeAccessibilityEventInternal(host, event)
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: ${host.javaClass.simpleName}"))
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+      )
     }
   }
 
   override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
     super.onInitializeAccessibilityNodeInfo(host, info)
-    if (host is ReactScrollView || host is ReactHorizontalScrollView) {
+    if (host is ReactAccessibleScrollView) {
       onInitializeAccessibilityNodeInfoInternal(host, info)
     } else {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactScrollView or ReactHorizontalScrollView, not with class: ${host.javaClass.simpleName}"))
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+      )
     }
   }
 
@@ -61,9 +63,7 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
     for (index in 0..<contentView.childCount) {
       val nextChild = contentView.getChildAt(index)
       val isVisible: Boolean =
-          if (view is ReactScrollView) {
-            view.isPartiallyScrolledInView(nextChild)
-          } else if (view is ReactHorizontalScrollView) {
+          if (view is ReactAccessibleScrollView) {
             view.isPartiallyScrolledInView(nextChild)
           } else {
             return
@@ -106,7 +106,7 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
 
   private fun onInitializeAccessibilityNodeInfoInternal(
       view: View,
-      info: AccessibilityNodeInfoCompat
+      info: AccessibilityNodeInfoCompat,
   ) {
     val accessibilityRole = AccessibilityRole.fromViewTag(view)
 
@@ -123,13 +123,14 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
 
       val collectionInfoCompat =
           AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
-              rowCount, columnCount, hierarchical)
+              rowCount,
+              columnCount,
+              hierarchical,
+          )
       info.setCollectionInfo(collectionInfoCompat)
     }
 
-    if (view is ReactScrollView) {
-      info.isScrollable = view.scrollEnabled
-    } else if (view is ReactHorizontalScrollView) {
+    if (view is ReactAccessibleScrollView) {
       info.isScrollable = view.scrollEnabled
     }
   }

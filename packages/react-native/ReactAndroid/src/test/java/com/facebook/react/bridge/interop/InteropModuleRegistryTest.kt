@@ -38,36 +38,6 @@ class InteropModuleRegistryTest {
   }
 
   @Test
-  fun shouldReturnInteropModule_withFabricDisabled_returnsFalse() {
-    overrideFeatureFlags(false, false)
-
-    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
-  }
-
-  @Test
-  fun shouldReturnInteropModule_withFabricInteropDisabled_returnsFalse() {
-    overrideFeatureFlags(false, true)
-
-    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isFalse()
-  }
-
-  @Test
-  fun shouldReturnInteropModule_withUnregisteredClass_returnsFalse() {
-    overrideFeatureFlags(true, true)
-
-    assertThat(underTest.shouldReturnInteropModule(JSTimers::class.java)).isFalse()
-  }
-
-  @Test
-  fun shouldReturnInteropModule_withRegisteredClass_returnsTrue() {
-    overrideFeatureFlags(true, true)
-
-    underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())
-
-    assertThat(underTest.shouldReturnInteropModule(RCTEventEmitter::class.java)).isTrue()
-  }
-
-  @Test
   fun getInteropModule_withRegisteredClassAndInvalidFlags_returnsNull() {
     overrideFeatureFlags(false, false)
     underTest.registerInteropModule(RCTEventEmitter::class.java, FakeRCTEventEmitter())

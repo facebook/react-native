@@ -12,6 +12,10 @@
 #include <cstdint>
 #include <string_view>
 
+#define REACT_NATIVE_VERSION_MAJOR 1000
+#define REACT_NATIVE_VERSION_MINOR 0
+#define REACT_NATIVE_VERSION_PATCH 0
+
 namespace facebook::react {
 
 constexpr struct {

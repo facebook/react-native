@@ -11,6 +11,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 
 /** Interface to the JavaScript Systrace Module */
 @DoNotStrip
-public interface Systrace : JavaScriptModule {
-  @DoNotStrip public fun setEnabled(enabled: Boolean)
+internal interface Systrace : JavaScriptModule {
+  @DoNotStrip fun setEnabled(enabled: Boolean)
 }

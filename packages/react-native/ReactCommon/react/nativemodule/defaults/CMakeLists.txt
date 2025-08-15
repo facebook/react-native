@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_nativemodule_defaults_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_nativemodule_defaults OBJECT ${react_nativemodule_defaults_SRC})
@@ -20,9 +14,13 @@ add_library(react_nativemodule_defaults OBJECT ${react_nativemodule_defaults_SRC
 target_include_directories(react_nativemodule_defaults PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(react_nativemodule_defaults
+        react_codegen_rncore
+        react_nativemodule_core
         react_nativemodule_dom
         react_nativemodule_devtoolsruntimesettings
         react_nativemodule_featureflags
         react_nativemodule_microtasks
         react_nativemodule_idlecallbacks
 )
+target_compile_reactnative_options(react_nativemodule_defaults PRIVATE)
+target_compile_options(react_nativemodule_defaults PRIVATE -Wpedantic)

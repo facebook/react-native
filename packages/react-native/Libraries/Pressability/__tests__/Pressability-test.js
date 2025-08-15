@@ -6,17 +6,16 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // TODO(legacy-fake-timers): Fix these tests to work with modern timers.
 jest.useFakeTimers({legacyFakeTimers: true});
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 import type {PressabilityConfig} from '../Pressability';
 
-const UIManager = require('../../ReactNative/UIManager');
-const Platform = require('../../Utilities/Platform');
+const UIManager = require('../../ReactNative/UIManager').default;
+const Platform = require('../../Utilities/Platform').default;
 const HoverState = require('../HoverState');
 const Pressability = require('../Pressability').default;
 const invariant = require('invariant');
@@ -82,7 +81,7 @@ const mockSlop = {
   right: 10,
 };
 
-const mockUIManagerMeasure = (options?: {|delay: number|}) => {
+const mockUIManagerMeasure = (options?: {delay: number}) => {
   getMock(UIManager.measure).mockImplementation((id, fn) => {
     if (options && options.delay) {
       setTimeout(
@@ -171,12 +170,12 @@ const createMockMouseEvent = (registrationName: string) => {
 const createMockPressEvent = (
   nameOrOverrides:
     | string
-    | $ReadOnly<{|
+    | $ReadOnly<{
         registrationName: string,
         pageX: number,
         pageY: number,
-      |}>,
-): PressEvent => {
+      }>,
+): GestureResponderEvent => {
   let registrationName = '';
   let pageX = 0;
   let pageY = 0;
@@ -190,7 +189,7 @@ const createMockPressEvent = (
   }
 
   const nativeEvent = {
-    changedTouches: ([]: Array<PressEvent['nativeEvent']>),
+    changedTouches: ([]: Array<GestureResponderEvent['nativeEvent']>),
     force: 1,
     identifier: 42,
     locationX: pageX,
@@ -199,7 +198,7 @@ const createMockPressEvent = (
     pageY,
     target: 42,
     timestamp: 1075881600000,
-    touches: ([]: Array<PressEvent['nativeEvent']>),
+    touches: ([]: Array<GestureResponderEvent['nativeEvent']>),
   };
 
   nativeEvent.changedTouches.push(nativeEvent);

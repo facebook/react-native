@@ -7,64 +7,22 @@
 
 #pragma once
 
-#include "CdpTracing.h"
+#include "ConsoleTimeStamp.h"
+#include "TraceEvent.h"
+#include "TraceEventProfile.h"
+
+#include <react/timing/primitives.h>
 
 #include <folly/dynamic.h>
-
-#include <functional>
+#include <atomic>
+#include <mutex>
 #include <optional>
-#include <unordered_map>
 #include <vector>
 
-namespace facebook::react::jsinspector_modern {
+namespace facebook::react::jsinspector_modern::tracing {
 
 // TODO: Review how this API is integrated into jsinspector_modern (singleton
 // design is copied from earlier FuseboxTracer prototype).
-
-namespace {
-
-/**
- * A trace event to send to the debugger frontend, as defined by the Trace Event
- * Format.
- * https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview?pli=1&tab=t.0#heading=h.yr4qxyxotyw
- */
-struct TraceEvent {
-  /** The name of the event, as displayed in the Trace Viewer. */
-  std::string name;
-
-  /**
-   * A comma separated list of categories for the event, configuring how
-   * events are shown in the Trace Viewer UI.
-   */
-  std::string cat;
-
-  /**
-   * The event type. This is a single character which changes depending on the
-   * type of event being output. See
-   * https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview?pli=1&tab=t.0#heading=h.puwqg050lyuy
-   */
-  char ph;
-
-  /** The tracing clock timestamp of the event, in microseconds (µs). */
-  uint64_t ts;
-
-  /** The process ID for the process that output this event. */
-  uint64_t pid;
-
-  /** The thread ID for the process that output this event. */
-  uint64_t tid;
-
-  /** Any arguments provided for the event. */
-  folly::dynamic args = folly::dynamic::object();
-
-  /**
-   * The duration of the event, in microseconds (µs). Only applicable to
-   * complete events ("ph": "X").
-   */
-  std::optional<uint64_t> dur;
-};
-
-} // namespace
 
 /**
  * [Experimental] An interface for logging performance trace events to the
@@ -75,19 +33,30 @@ class PerformanceTracer {
   static PerformanceTracer& getInstance();
 
   /**
-   * Mark trace session as started. Returns `false` if already tracing.
+   * Starts a tracing session. Returns `false` if already tracing.
    */
   bool startTracing();
 
   /**
-   * End tracing, and output chunked CDP trace events using the given
-   * callback.
-   *
-   * Returns `false` if tracing was not started.
+   * Starts a tracing session with a maximum duration (events older than this
+   * duration are dropped). Returns `false` if already tracing.
    */
-  bool stopTracingAndCollectEvents(
-      const std::function<void(const folly::dynamic& eventsChunk)>&
-          resultCallback);
+  bool startTracing(HighResDuration maxDuration);
+
+  /**
+   * If there is a current tracing session, it stops tracing and returns all
+   * collected events. Otherwise, it returns empty.
+   */
+  std::optional<std::vector<TraceEvent>> stopTracing();
+
+  /**
+   * Returns whether the tracer is currently tracing. This can be useful to
+   * avoid doing expensive work (like formatting strings) if tracing is not
+   * enabled.
+   */
+  inline bool isTracing() const {
+    return tracingAtomic_;
+  }
 
   /**
    * Record a `Performance.mark()` event - a labelled timestamp. If not
@@ -95,7 +64,10 @@ class PerformanceTracer {
    *
    * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void reportMark(const std::string_view& name, uint64_t start);
+  void reportMark(
+      const std::string_view& name,
+      HighResTimeStamp start,
+      folly::dynamic&& detail = nullptr);
 
   /**
    * Record a `Performance.measure()` event - a labelled duration. If not
@@ -105,22 +77,115 @@ class PerformanceTracer {
    */
   void reportMeasure(
       const std::string_view& name,
-      uint64_t start,
-      uint64_t duration,
-      const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+      HighResTimeStamp start,
+      HighResDuration duration,
+      folly::dynamic&& detail = nullptr);
+
+  /**
+   * Record a "TimeStamp" Trace Event - a labelled entry on Performance
+   * timeline. The only required argument is `name`. Optional arguments, if not
+   * provided, won't be recorded in the serialized Trace Event.
+   * @see
+   https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
+   */
+  void reportTimeStamp(
+      std::string name,
+      std::optional<ConsoleTimeStampEntry> start = std::nullopt,
+      std::optional<ConsoleTimeStampEntry> end = std::nullopt,
+      std::optional<std::string> trackName = std::nullopt,
+      std::optional<std::string> trackGroup = std::nullopt,
+      std::optional<ConsoleTimeStampColor> color = std::nullopt);
+
+  /**
+   * Record an Event Loop tick, which will be represented as an Event Loop task
+   * on a timeline view and grouped with JavaScript samples.
+   */
+  void reportEventLoopTask(HighResTimeStamp start, HighResTimeStamp end);
+
+  /**
+   * Record Microtasks phase of the Event Loop tick. Will be represented as a
+   * "Run Microtasks" block under a task.
+   */
+  void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
+
+  /**
+   * Creates "Profile" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
+   */
+  static TraceEvent constructRuntimeProfileTraceEvent(
+      RuntimeProfileId profileId,
+      ProcessId processId,
+      ThreadId threadId,
+      HighResTimeStamp profileTimestamp);
+
+  /**
+   * Creates "ProfileChunk" Trace Event.
+   *
+   * Can be serialized to JSON with TraceEventSerializer::serialize.
+   */
+  static TraceEvent constructRuntimeProfileChunkTraceEvent(
+      RuntimeProfileId profileId,
+      ProcessId processId,
+      ProcessId threadId,
+      HighResTimeStamp chunkTimestamp,
+      TraceEventProfileChunk&& traceEventProfileChunk);
 
  private:
-  PerformanceTracer() = default;
+  PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  folly::dynamic serializeTraceEvent(TraceEvent event) const;
+  const ProcessId processId_;
 
-  bool tracing_{false};
-  std::unordered_map<std::string, uint64_t> customTrackIdMap_;
+  /**
+   * The flag is atomic in order to enable any thread to read it (via
+   * isTracing()) without holding the mutex.
+   * Within this class, both reads and writes MUST be protected by the mutex to
+   * avoid false positives and data races.
+   */
+  std::atomic<bool> tracingAtomic_{false};
+  /**
+   * The counter for recorded User Timing "measure" events.
+   * Used for generating unique IDs for each measure event inside a specific
+   * Trace.
+   * Does not need to be atomic, because it is always accessed within the mutex
+   * lock.
+   */
+  uint32_t performanceMeasureCount_{0};
+
+  HighResTimeStamp currentTraceStartTime_;
+
+  std::optional<HighResDuration> currentTraceMaxDuration_;
+
   std::vector<TraceEvent> buffer_;
+
+  // These fields are only used when setting a max duration on the trace.
+  std::vector<TraceEvent> altBuffer_;
+  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
+  std::vector<TraceEvent>* previousBuffer_{};
+  HighResTimeStamp currentBufferStartTime_;
+
+  /**
+   * Protects data members of this class for concurrent access, including
+   * the tracingAtomic_, in order to eliminate potential "logic" races.
+   */
   std::mutex mutex_;
+
+  bool startTracingImpl(
+      std::optional<HighResDuration> maxDuration = std::nullopt);
+
+  std::vector<TraceEvent> collectEventsAndClearBuffers(
+      HighResTimeStamp currentTraceEndTime);
+  void collectEventsAndClearBuffer(
+      std::vector<TraceEvent>& events,
+      std::vector<TraceEvent>& buffer,
+      HighResTimeStamp currentTraceEndTime);
+  bool isInTracingWindow(
+      HighResTimeStamp now,
+      HighResTimeStamp timeStampToCheck) const;
+  void enqueueEvent(TraceEvent&& event);
 };
 
-} // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react::jsinspector_modern::tracing

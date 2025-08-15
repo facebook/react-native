@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeImageStoreAndroid';
-import NativeImageStoreAndroid from '../../src/private/specs/modules/NativeImageStoreAndroid';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeImageStoreAndroid';
+import NativeImageStoreAndroid from '../../src/private/specs_DEPRECATED/modules/NativeImageStoreAndroid';
+
 export default NativeImageStoreAndroid;

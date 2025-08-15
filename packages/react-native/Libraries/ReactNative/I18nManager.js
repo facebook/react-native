@@ -27,7 +27,7 @@ function getI18nManagerConstants(): I18nManagerConstants {
   };
 }
 
-module.exports = {
+export default {
   getConstants: (): I18nManagerConstants => {
     return i18nConstants;
   },
@@ -56,6 +56,7 @@ module.exports = {
     NativeI18nManager.swapLeftAndRightInRTL(flipStyles);
   },
 
-  isRTL: i18nConstants.isRTL,
-  doLeftAndRightSwapInRTL: i18nConstants.doLeftAndRightSwapInRTL,
+  isRTL: i18nConstants.isRTL as I18nManagerConstants['isRTL'],
+  doLeftAndRightSwapInRTL:
+    i18nConstants.doLeftAndRightSwapInRTL as I18nManagerConstants['doLeftAndRightSwapInRTL'],
 };

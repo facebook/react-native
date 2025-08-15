@@ -4,21 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
 
-import {
+import ExceptionsManager, {
   SyntheticError,
-  handleException,
 } from '../../../../Libraries/Core/ExceptionsManager';
+import * as React from 'react';
 
 type ErrorInfo = {
   +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  +errorBoundary?: ?React$Component<any, any>,
+  +errorBoundary?: ?React.Component<any, any>,
 };
 
 function getExtendedError(
@@ -60,14 +60,14 @@ export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Uncaught errors are fatal.
-  handleException(error, true);
+  ExceptionsManager.handleException(error, true);
 }
 
 export function onCaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Caught errors are not fatal.
-  handleException(error, false);
+  ExceptionsManager.handleException(error, false);
 }
 
 export function onRecoverableError(

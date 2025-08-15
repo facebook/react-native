@@ -4,31 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
 
-import type {
-  InternalInstanceHandle,
-  Node as ShadowNode,
-} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type NodeList from '../oldstylecollections/NodeList';
+import type {InstanceHandle} from './internals/NodeInternals';
+import type ReactNativeDocument from './ReactNativeDocument';
 import type ReadOnlyElement from './ReadOnlyElement';
 
+import {setPlatformObject} from '../../webidl/PlatformObjects';
 import {createNodeList} from '../oldstylecollections/NodeList';
+import {
+  getNativeNodeReference,
+  getOwnerDocument,
+  getPublicInstanceFromInstanceHandle,
+  setInstanceHandle,
+  setOwnerDocument,
+} from './internals/NodeInternals';
 import NativeDOM from './specs/NativeDOM';
 
-// We initialize this lazily to avoid a require cycle
-// (`ReadOnlyElement` also depends on `ReadOnlyNode`).
-let ReadOnlyElementClass: Class<ReadOnlyElement>;
-
 export default class ReadOnlyNode {
-  constructor(internalInstanceHandle: InternalInstanceHandle) {
+  constructor(
+    instanceHandle: InstanceHandle,
+    // This will be null for the document node itself.
+    ownerDocument: ReactNativeDocument | null,
+  ) {
     // This constructor is inlined in `ReactNativeElement` so if you modify
     // this make sure that their implementation stays in sync.
-    setInstanceHandle(this, internalInstanceHandle);
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, instanceHandle);
   }
 
   get childNodes(): NodeList<ReadOnlyNode> {
@@ -47,7 +54,7 @@ export default class ReadOnlyNode {
   }
 
   get isConnected(): boolean {
-    const shadowNode = getShadowNode(this);
+    const shadowNode = getNativeNodeReference(this);
 
     if (shadowNode == null) {
       return false;
@@ -104,15 +111,14 @@ export default class ReadOnlyNode {
     );
   }
 
+  get ownerDocument(): ReactNativeDocument | null {
+    return getOwnerDocument(this);
+  }
+
   get parentElement(): ReadOnlyElement | null {
     const parentNode = this.parentNode;
 
-    if (ReadOnlyElementClass == null) {
-      // We initialize this lazily to avoid a require cycle.
-      ReadOnlyElementClass = require('./ReadOnlyElement').default;
-    }
-
-    if (parentNode instanceof ReadOnlyElementClass) {
+    if (parentNode instanceof getReadOnlyElementClass()) {
       return parentNode;
     }
 
@@ -120,7 +126,7 @@ export default class ReadOnlyNode {
   }
 
   get parentNode(): ReadOnlyNode | null {
-    const shadowNode = getShadowNode(this);
+    const shadowNode = getNativeNodeReference(this);
 
     if (shadowNode == null) {
       return null;
@@ -132,9 +138,7 @@ export default class ReadOnlyNode {
       return null;
     }
 
-    return (
-      getPublicInstanceFromInternalInstanceHandle(parentInstanceHandle) ?? null
-    );
+    return getPublicInstanceFromInstanceHandle(parentInstanceHandle) ?? null;
   }
 
   get previousSibling(): ReadOnlyNode | null {
@@ -151,7 +155,7 @@ export default class ReadOnlyNode {
   /**
    * @abstract
    */
-  get textContent(): string | null {
+  get textContent(): string {
     throw new TypeError(
       '`textContent` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
     );
@@ -163,8 +167,8 @@ export default class ReadOnlyNode {
       return 0;
     }
 
-    const shadowNode = getShadowNode(this);
-    const otherShadowNode = getShadowNode(otherNode);
+    const shadowNode = getNativeNodeReference(this);
+    const otherShadowNode = getNativeNodeReference(otherNode);
 
     if (shadowNode == null || otherShadowNode == null) {
       return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
@@ -184,16 +188,12 @@ export default class ReadOnlyNode {
   }
 
   getRootNode(): ReadOnlyNode {
-    // eslint-disable-next-line consistent-this
-    let lastKnownParent: ReadOnlyNode = this;
-    let nextPossibleParent: ?ReadOnlyNode = this.parentNode;
-
-    while (nextPossibleParent != null) {
-      lastKnownParent = nextPossibleParent;
-      nextPossibleParent = nextPossibleParent.parentNode;
+    if (this.isConnected) {
+      // If this is the document node, then the root node is itself.
+      return this.ownerDocument ?? this;
     }
 
-    return lastKnownParent;
+    return this;
   }
 
   hasChildNodes(): boolean {
@@ -237,7 +237,7 @@ export default class ReadOnlyNode {
    */
   static COMMENT_NODE: number = 8;
   /**
-   * @deprecated Unused in React Native.
+   * Document nodes.
    */
   static DOCUMENT_NODE: number = 9;
   /**
@@ -288,41 +288,12 @@ export default class ReadOnlyNode {
   static DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number = 32;
 }
 
-const INSTANCE_HANDLE_KEY = Symbol('internalInstanceHandle');
-
-export function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
-  // $FlowExpectedError[prop-missing]
-  return node[INSTANCE_HANDLE_KEY];
-}
-
-export function setInstanceHandle(
-  node: ReadOnlyNode,
-  instanceHandle: InternalInstanceHandle,
-): void {
-  // $FlowExpectedError[prop-missing]
-  node[INSTANCE_HANDLE_KEY] = instanceHandle;
-}
-
-let RendererProxy;
-function getRendererProxy() {
-  if (RendererProxy == null) {
-    // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
-    // With a static import we can't use these classes for Paper-only variants.
-    RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
-  }
-  return RendererProxy;
-}
-
-export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
-  return getRendererProxy().getNodeFromInternalInstanceHandle(
-    getInstanceHandle(node),
-  );
-}
+setPlatformObject(ReadOnlyNode);
 
 export function getChildNodes(
   node: ReadOnlyNode,
 ): $ReadOnlyArray<ReadOnlyNode> {
-  const shadowNode = getShadowNode(node);
+  const shadowNode = getNativeNodeReference(node);
 
   if (shadowNode == null) {
     return [];
@@ -330,9 +301,7 @@ export function getChildNodes(
 
   const childNodeInstanceHandles = NativeDOM.getChildNodes(shadowNode);
   return childNodeInstanceHandles
-    .map(instanceHandle =>
-      getPublicInstanceFromInternalInstanceHandle(instanceHandle),
-    )
+    .map(instanceHandle => getPublicInstanceFromInstanceHandle(instanceHandle))
     .filter(Boolean);
 }
 
@@ -355,13 +324,11 @@ function getNodeSiblingsAndPosition(
   return [siblings, position];
 }
 
-export function getPublicInstanceFromInternalInstanceHandle(
-  instanceHandle: InternalInstanceHandle,
-): ?ReadOnlyNode {
-  const mixedPublicInstance =
-    getRendererProxy().getPublicInstanceFromInternalInstanceHandle(
-      instanceHandle,
-    );
-  // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
-  return mixedPublicInstance;
+let ReadOnlyElementClass;
+function getReadOnlyElementClass(): Class<ReadOnlyElement> {
+  if (ReadOnlyElementClass == null) {
+    // We initialize this lazily to avoid a require cycle.
+    ReadOnlyElementClass = require('./ReadOnlyElement').default;
+  }
+  return ReadOnlyElementClass;
 }

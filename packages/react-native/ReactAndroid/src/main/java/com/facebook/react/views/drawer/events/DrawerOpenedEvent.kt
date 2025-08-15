@@ -12,18 +12,18 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.uimanager.events.Event
 
-public class DrawerOpenedEvent : Event<DrawerOpenedEvent> {
+internal class DrawerOpenedEvent : Event<DrawerOpenedEvent> {
 
   @Deprecated("Use constructor with surfaceId", ReplaceWith("DrawerOpenedEvent(surfaceId, viewId)"))
-  public constructor(viewId: Int) : this(ViewUtil.NO_SURFACE_ID, viewId)
+  constructor(viewId: Int) : this(ViewUtil.NO_SURFACE_ID, viewId)
 
-  public constructor(surfaceId: Int, viewId: Int) : super(surfaceId, viewId)
+  constructor(surfaceId: Int, viewId: Int) : super(surfaceId, viewId)
 
-  override public fun getEventName(): String = EVENT_NAME
+  override fun getEventName(): String = EVENT_NAME
 
-  override protected fun getEventData(): WritableMap? = Arguments.createMap()
+  override fun getEventData(): WritableMap = Arguments.createMap()
 
-  public companion object {
-    public const val EVENT_NAME: String = "topDrawerOpen"
+  companion object {
+    const val EVENT_NAME: String = "topDrawerOpen"
   }
 }

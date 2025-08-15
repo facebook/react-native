@@ -10,7 +10,7 @@
 
 const registry: Map<string, number> = new Map();
 
-const register = (id: string) => {
+export const register = (id: string) => {
   const used = registry.get(id);
 
   if (used != null) {
@@ -20,7 +20,7 @@ const register = (id: string) => {
   }
 };
 
-const unregister = (id: string) => {
+export const unregister = (id: string) => {
   const used = registry.get(id);
 
   if (used != null) {
@@ -32,12 +32,6 @@ const unregister = (id: string) => {
   }
 };
 
-const has = (id: string): number | boolean => {
+export const has = (id: string): number | boolean => {
   return registry.get(id) || false;
-};
-
-module.exports = {
-  register,
-  unregister,
-  has,
 };

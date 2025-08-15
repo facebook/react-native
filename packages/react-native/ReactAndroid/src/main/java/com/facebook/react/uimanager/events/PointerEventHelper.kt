@@ -13,24 +13,24 @@ import android.view.View
 import com.facebook.react.R
 
 /** Class responsible for generating catalyst touch events based on android [MotionEvent]. */
-public object PointerEventHelper {
-  public const val POINTER_TYPE_TOUCH: String = "touch"
-  public const val POINTER_TYPE_PEN: String = "pen"
-  public const val POINTER_TYPE_MOUSE: String = "mouse"
-  public const val POINTER_TYPE_UNKNOWN: String = ""
-  internal const val X_FLAG_SUPPORTS_HOVER = 0x01000000
+internal object PointerEventHelper {
+  const val POINTER_TYPE_TOUCH: String = "touch"
+  const val POINTER_TYPE_PEN: String = "pen"
+  const val POINTER_TYPE_MOUSE: String = "mouse"
+  const val POINTER_TYPE_UNKNOWN: String = ""
+  const val X_FLAG_SUPPORTS_HOVER = 0x01000000
 
-  public const val POINTER_CANCEL: String = "topPointerCancel"
-  public const val POINTER_DOWN: String = "topPointerDown"
-  public const val POINTER_ENTER: String = "topPointerEnter"
-  public const val POINTER_LEAVE: String = "topPointerLeave"
-  public const val POINTER_MOVE: String = "topPointerMove"
-  public const val POINTER_UP: String = "topPointerUp"
-  public const val POINTER_OVER: String = "topPointerOver"
-  public const val POINTER_OUT: String = "topPointerOut"
-  public const val CLICK: String = "topClick"
+  const val POINTER_CANCEL: String = "topPointerCancel"
+  const val POINTER_DOWN: String = "topPointerDown"
+  const val POINTER_ENTER: String = "topPointerEnter"
+  const val POINTER_LEAVE: String = "topPointerLeave"
+  const val POINTER_MOVE: String = "topPointerMove"
+  const val POINTER_UP: String = "topPointerUp"
+  const val POINTER_OVER: String = "topPointerOver"
+  const val POINTER_OUT: String = "topPointerOut"
+  const val CLICK: String = "topClick"
 
-  public enum class EVENT {
+  enum class EVENT {
     CANCEL,
     CANCEL_CAPTURE,
     CLICK,
@@ -53,7 +53,7 @@ public object PointerEventHelper {
 
   // https://w3c.github.io/pointerevents/#the-buttons-property
   @JvmStatic
-  public fun getButtons(eventName: String?, pointerType: String, buttonState: Int): Int {
+  fun getButtons(eventName: String?, pointerType: String, buttonState: Int): Int {
     if (isExitEvent(eventName)) {
       return 0
     }
@@ -65,11 +65,7 @@ public object PointerEventHelper {
 
   // https://w3c.github.io/pointerevents/#the-button-property
   @JvmStatic
-  public fun getButtonChange(
-      pointerType: String,
-      lastButtonState: Int,
-      currentButtonState: Int
-  ): Int {
+  fun getButtonChange(pointerType: String, lastButtonState: Int, currentButtonState: Int): Int {
     // Always return 0 for touch
     if (POINTER_TYPE_TOUCH == pointerType) {
       return 0
@@ -91,7 +87,7 @@ public object PointerEventHelper {
   }
 
   @JvmStatic
-  public fun getW3CPointerType(toolType: Int): String {
+  fun getW3CPointerType(toolType: Int): String {
     // https://www.w3.org/TR/pointerevents3/#dom-pointerevent-pointertype
     return when (toolType) {
       MotionEvent.TOOL_TYPE_FINGER -> POINTER_TYPE_TOUCH
@@ -102,7 +98,7 @@ public object PointerEventHelper {
   }
 
   @JvmStatic
-  public fun isListening(view: View?, event: EVENT): Boolean {
+  fun isListening(view: View?, event: EVENT): Boolean {
     if (view == null) {
       return true
     }
@@ -124,7 +120,7 @@ public object PointerEventHelper {
   }
 
   @JvmStatic
-  public fun getEventCategory(pointerEventType: String?): Int {
+  fun getEventCategory(pointerEventType: String?): Int {
     if (pointerEventType == null) {
       return EventCategoryDef.UNSPECIFIED
     }
@@ -141,7 +137,7 @@ public object PointerEventHelper {
     }
   }
 
-  public fun supportsHover(motionEvent: MotionEvent): Boolean {
+  fun supportsHover(motionEvent: MotionEvent): Boolean {
     // A flag has been set on the MotionEvent to indicate it supports hover
     // See D36958947 on justifications for this.
     // TODO(luwe): Leverage previous events to determine if MotionEvent
@@ -154,7 +150,7 @@ public object PointerEventHelper {
     return motionEvent.isFromSource(InputDevice.SOURCE_MOUSE)
   }
 
-  public fun isExitEvent(eventName: String?): Boolean {
+  fun isExitEvent(eventName: String?): Boolean {
     return when (eventName) {
       POINTER_UP,
       POINTER_LEAVE,
@@ -165,7 +161,7 @@ public object PointerEventHelper {
 
   // https://w3c.github.io/pointerevents/#dom-pointerevent-pressure
   @JvmStatic
-  public fun getPressure(buttonState: Int, eventName: String?): Double {
+  fun getPressure(buttonState: Int, eventName: String?): Double {
     if (isExitEvent(eventName)) {
       return 0.0
     }
@@ -179,7 +175,7 @@ public object PointerEventHelper {
   }
 
   @JvmStatic
-  public fun isBubblingEvent(eventName: String?): Boolean {
+  fun isBubblingEvent(eventName: String?): Boolean {
     return when (eventName) {
       POINTER_UP,
       POINTER_DOWN,

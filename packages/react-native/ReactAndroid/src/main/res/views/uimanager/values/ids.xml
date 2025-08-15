@@ -6,6 +6,15 @@
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_native_id"/>
 
+  <!-- tag is used to store the accessibleElements tag -->
+  <item type="id" name="accessibility_order"/>
+
+  <!-- tag is used to store whether the view is coopted by an accessibilityOrder-->
+  <item type="id" name="accessibility_order_parent"/>
+
+  <!-- tag is used to store the original focusability value of a view -->
+  <item type="id" name="original_focusability"/>
+
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_instance_handle"/>
 

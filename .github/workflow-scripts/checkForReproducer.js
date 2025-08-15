@@ -41,6 +41,11 @@ module.exports = async (github, context) => {
 
   // Look for Snack or a GH repo associated with the user that added an issue or comment
   const hasValidReproducer = entities.some(entity => {
+    const hasPullRequestRepoLink = containsPattern(
+      entity.body,
+      `https?:\/\/github\.com\/facebook\/react-native\/pull\/\d+\/?`,
+    );
+
     const hasExpoSnackLink = containsPattern(
       entity.body,
       `https?:\\/\\/snack\\.expo\\.dev\\/[^\\s)\\]]+`,
@@ -50,7 +55,7 @@ module.exports = async (github, context) => {
       entity.body,
       `https?:\\/\\/github\\.com\\/(${entity.user.login})\\/[^/]+\\/?\\s?`,
     );
-    return hasExpoSnackLink || hasGithubRepoLink;
+    return hasPullRequestRepoLink || hasExpoSnackLink || hasGithubRepoLink;
   });
 
   if (hasValidReproducer) {

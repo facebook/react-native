@@ -10,6 +10,7 @@
 #include <memory>
 #include <shared_mutex>
 
+#include <folly/dynamic.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/renderer/core/LayoutContext.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -79,7 +80,7 @@ class SurfaceHandler {
    * Must be called before surface is started.
    */
   void setContextContainer(
-      ContextContainer::Shared contextContainer) const noexcept;
+      std::shared_ptr<const ContextContainer> contextContainer) const noexcept;
 
   /*
    * Returns a momentum value of the status.
@@ -131,14 +132,14 @@ class SurfaceHandler {
    */
   Size measure(
       const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext) const noexcept;
+      const LayoutContext& layoutContext) const;
 
   /*
    * Sets layout constraints and layout context for the surface.
    */
   void constraintLayout(
       const LayoutConstraints& layoutConstraints,
-      const LayoutContext& layoutContext) const noexcept;
+      const LayoutContext& layoutContext) const;
 
   /*
    * Returns layout constraints and layout context associated with the surface.
@@ -154,7 +155,14 @@ class SurfaceHandler {
    */
   void setUIManager(const UIManager* uiManager) const noexcept;
 
-  void applyDisplayMode(DisplayMode displayMode) const noexcept;
+  void applyDisplayMode(DisplayMode displayMode) const;
+
+  /*
+   * An utility for dirtying all measurable shadow nodes present in the tree.
+   */
+  void dirtyMeasurableNodes(ShadowNode& root) const;
+  std::shared_ptr<const ShadowNode> dirtyMeasurableNodesRecursive(
+      std::shared_ptr<const ShadowNode> node) const;
 
 #pragma mark - Link & Parameters
 
@@ -179,7 +187,7 @@ class SurfaceHandler {
     folly::dynamic props{};
     LayoutConstraints layoutConstraints{};
     LayoutContext layoutContext{};
-    ContextContainer::Shared contextContainer{};
+    std::shared_ptr<const ContextContainer> contextContainer{};
   };
 
   /*

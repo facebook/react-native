@@ -11,10 +11,7 @@ import android.text.Layout
 import android.text.Spannable
 import com.facebook.react.common.ReactConstants
 
-/**
- * Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>
- * VisibleForTesting from [TextInputEventsTestCase].
- */
+/** Class that contains the data needed for a text update. Used by both <Text/> and <TextInput/>. */
 public class ReactTextUpdate(
     public val text: Spannable,
     public val jsEventCounter: Int,
@@ -25,7 +22,7 @@ public class ReactTextUpdate(
     public val paddingBottom: Float,
     public val textAlign: Int,
     public val textBreakStrategy: Int,
-    public val justificationMode: Int
+    public val justificationMode: Int,
 ) {
 
   /**
@@ -40,7 +37,7 @@ public class ReactTextUpdate(
       paddingTop: Float,
       paddingEnd: Float,
       paddingBottom: Float,
-      textAlign: Int
+      textAlign: Int,
   ) : this(
       text,
       jsEventCounter,
@@ -51,7 +48,8 @@ public class ReactTextUpdate(
       paddingBottom,
       textAlign,
       Layout.BREAK_STRATEGY_HIGH_QUALITY,
-      Layout.JUSTIFICATION_MODE_NONE)
+      Layout.JUSTIFICATION_MODE_NONE,
+  )
 
   public constructor(
       text: Spannable,
@@ -59,7 +57,7 @@ public class ReactTextUpdate(
       containsImages: Boolean,
       textAlign: Int,
       textBreakStrategy: Int,
-      justificationMode: Int
+      justificationMode: Int,
   ) : this(
       text,
       jsEventCounter,
@@ -70,11 +68,13 @@ public class ReactTextUpdate(
       ReactConstants.UNSET.toFloat(),
       textAlign,
       textBreakStrategy,
-      justificationMode)
+      justificationMode,
+  )
 
   @Deprecated(
       "This is just for backwards compatibility and will be removed some time in the future",
-      ReplaceWith("containsImages"))
+      ReplaceWith("containsImages"),
+  )
   public fun containsImages(): Boolean = containsImages
 
   public companion object {
@@ -84,9 +84,15 @@ public class ReactTextUpdate(
         jsEventCounter: Int,
         textAlign: Int,
         textBreakStrategy: Int,
-        justificationMode: Int
+        justificationMode: Int,
     ): ReactTextUpdate =
         ReactTextUpdate(
-            text, jsEventCounter, false, textAlign, textBreakStrategy, justificationMode)
+            text,
+            jsEventCounter,
+            false,
+            textAlign,
+            textBreakStrategy,
+            justificationMode,
+        )
   }
 }

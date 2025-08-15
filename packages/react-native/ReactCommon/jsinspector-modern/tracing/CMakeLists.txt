@@ -7,12 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
-
-add_compile_options(
-        -fexceptions
-        -std=c++20
-        -Wall
-        -Wpedantic)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB jsinspector_tracing_SRC CONFIGURE_DEPENDS *.cpp)
 
@@ -23,4 +18,8 @@ target_include_directories(jsinspector_tracing PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(jsinspector_tracing
         folly_runtime
+        oscompat
+        react_timing
 )
+target_compile_reactnative_options(jsinspector_tracing PRIVATE)
+target_compile_options(jsinspector_tracing PRIVATE -Wpedantic)

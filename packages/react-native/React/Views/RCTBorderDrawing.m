@@ -10,6 +10,11 @@
 
 static const CGFloat RCTViewBorderThreshold = 0.001;
 
+CGFloat RCTMaxBorderInset(UIEdgeInsets borderInsets)
+{
+  return MAX(MAX(borderInsets.top, borderInsets.left), MAX(borderInsets.bottom, borderInsets.right));
+}
+
 BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets)
 {
   return ABS(borderInsets.left - borderInsets.right) < RCTViewBorderThreshold &&
@@ -95,7 +100,11 @@ static void RCTPathAddEllipticArc(
   CGPathAddArc(path, &t, 0, 0, radius, startAngle, endAngle, clockwise);
 }
 
-CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds, RCTCornerInsets cornerInsets, const CGAffineTransform *transform)
+CGPathRef RCTPathCreateWithRoundedRect(
+    CGRect bounds,
+    RCTCornerInsets cornerInsets,
+    const CGAffineTransform *transform,
+    const BOOL inverted)
 {
   const CGFloat minX = CGRectGetMinX(bounds);
   const CGFloat minY = CGRectGetMinY(bounds);
@@ -120,14 +129,25 @@ CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds, RCTCornerInsets cornerInse
   };
 
   CGMutablePathRef path = CGPathCreateMutable();
-  RCTPathAddEllipticArc(
-      path, transform, (CGPoint){minX + topLeft.width, minY + topLeft.height}, topLeft, M_PI, 3 * M_PI_2, NO);
-  RCTPathAddEllipticArc(
-      path, transform, (CGPoint){maxX - topRight.width, minY + topRight.height}, topRight, 3 * M_PI_2, 0, NO);
-  RCTPathAddEllipticArc(
-      path, transform, (CGPoint){maxX - bottomRight.width, maxY - bottomRight.height}, bottomRight, 0, M_PI_2, NO);
-  RCTPathAddEllipticArc(
-      path, transform, (CGPoint){minX + bottomLeft.width, maxY - bottomLeft.height}, bottomLeft, M_PI_2, M_PI, NO);
+  if (inverted) {
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){minX + bottomLeft.width, maxY - bottomLeft.height}, bottomLeft, M_PI, M_PI_2, YES);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){maxX - bottomRight.width, maxY - bottomRight.height}, bottomRight, M_PI_2, 0, YES);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){maxX - topRight.width, minY + topRight.height}, topRight, 0, 3 * M_PI_2, YES);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){minX + topLeft.width, minY + topLeft.height}, topLeft, 3 * M_PI_2, M_PI, YES);
+  } else {
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){minX + topLeft.width, minY + topLeft.height}, topLeft, M_PI, 3 * M_PI_2, NO);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){maxX - topRight.width, minY + topRight.height}, topRight, 3 * M_PI_2, 0, NO);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){maxX - bottomRight.width, maxY - bottomRight.height}, bottomRight, 0, M_PI_2, NO);
+    RCTPathAddEllipticArc(
+        path, transform, (CGPoint){minX + bottomLeft.width, maxY - bottomLeft.height}, bottomLeft, M_PI_2, M_PI, NO);
+  }
   CGPathCloseSubpath(path);
   return path;
 }
@@ -178,7 +198,7 @@ static CGPathRef RCTPathCreateOuterOutline(BOOL drawToEdge, CGRect rect, RCTCorn
     return CGPathCreateWithRect(rect, NULL);
   }
 
-  return RCTPathCreateWithRoundedRect(rect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+  return RCTPathCreateWithRoundedRect(rect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL, NO);
 }
 
 static UIGraphicsImageRenderer *
@@ -247,7 +267,8 @@ static UIImage *RCTGetSolidBorderImage(
     CGContextAddPath(context, path);
     CGPathRelease(path);
 
-    CGPathRef insetPath = RCTPathCreateWithRoundedRect(UIEdgeInsetsInsetRect(rect, borderInsets), cornerInsets, NULL);
+    CGPathRef insetPath =
+        RCTPathCreateWithRoundedRect(UIEdgeInsetsInsetRect(rect, borderInsets), cornerInsets, NULL, NO);
 
     CGContextAddPath(context, insetPath);
     CGContextEOClip(context);
@@ -399,8 +420,8 @@ static UIImage *RCTGetSolidBorderImage(
   return image;
 }
 
-// Currently, the dashed / dotted implementation only supports a single colour +
-// single width, as that's currently required and supported on Android.
+// Currently, the dashed / dotted implementation only supports a single colour,
+// as that's currently required and supported on Android.
 //
 // Supporting individual widths + colours on each side is possible by modifying
 // the current implementation. The idea is that we will draw four different lines
@@ -470,12 +491,12 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
 {
   NSCParameterAssert(borderStyle == RCTBorderStyleDashed || borderStyle == RCTBorderStyleDotted);
 
-  if (!RCTBorderColorsAreEqual(borderColors) || !RCTBorderInsetsAreEqual(borderInsets)) {
+  if (!RCTBorderColorsAreEqual(borderColors)) {
     RCTLogWarn(@"Unsupported dashed / dotted border style");
     return nil;
   }
 
-  const CGFloat lineWidth = borderInsets.top;
+  const CGFloat lineWidth = RCTMaxBorderInset(borderInsets);
   if (lineWidth <= 0.0) {
     return nil;
   }
@@ -500,7 +521,36 @@ static UIImage *RCTGetDashedOrDottedBorderImage(
     // perpendicular to the path, that's why we inset by half the width, so that it
     // reaches the edge of the rect.
     CGRect pathRect = CGRectInset(rect, lineWidth / 2.0, lineWidth / 2.0);
-    CGPathRef path = RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL);
+    CGPathRef path =
+        RCTPathCreateWithRoundedRect(pathRect, RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero), NULL, NO);
+
+    if (!RCTBorderInsetsAreEqual(borderInsets)) {
+      CGContextSaveGState(context);
+      {
+        // Create a path representing the full rect
+        CGMutablePathRef outerPath = CGPathCreateMutable();
+        CGPathAddRect(outerPath, NULL, rect);
+
+        CGRect insetRect = CGRectMake(
+            rect.origin.x + borderInsets.left,
+            rect.origin.y + borderInsets.top,
+            rect.size.width - borderInsets.left - borderInsets.right,
+            rect.size.height - borderInsets.top - borderInsets.bottom);
+
+        // The padding edge (inner border) radius is the outer border radius minus the corresponding border thickness
+        CGPathRef innerRoundedRect =
+            RCTPathCreateWithRoundedRect(insetRect, RCTGetCornerInsets(cornerRadii, borderInsets), NULL, NO);
+
+        // Add both paths to outerPath
+        CGPathAddPath(outerPath, NULL, innerRoundedRect);
+
+        // Clip using even-odd
+        CGContextAddPath(context, outerPath);
+        CGContextEOClip(context);
+        CGPathRelease(outerPath);
+        CGPathRelease(innerRoundedRect);
+      }
+    }
 
     CGFloat dashLengths[2];
     dashLengths[0] = dashLengths[1] = (borderStyle == RCTBorderStyleDashed ? 3 : 1) * lineWidth;

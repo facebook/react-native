@@ -54,8 +54,8 @@ struct TraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit TraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {
     TRACE_EVENT_BEGIN("react-native", perfetto::DynamicString{name}, args...);
   }
 
@@ -71,7 +71,7 @@ struct ConcreteTraceSection {
   explicit ConcreteTraceSection(
       const char* name,
       ConvertsToStringPiece&&... args)
-      : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
+      : m_section(TRACE_TAG_REACT, name, args...) {}
 
  private:
   fbsystrace::FbSystraceSection m_section;
@@ -82,8 +82,8 @@ struct DummyTraceSection {
  public:
   template <typename... ConvertsToStringPiece>
   explicit DummyTraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {}
+      [[maybe_unused]] const char* name,
+      [[maybe_unused]] ConvertsToStringPiece&&... args) {}
 };
 using TraceSectionUnwrapped = DummyTraceSection;
 #endif
@@ -117,10 +117,13 @@ static auto render(const T& t)
 inline os_log_t instrumentsLogHandle = nullptr;
 
 static inline os_log_t getOrCreateInstrumentsLogHandle() {
-  if (!instrumentsLogHandle) {
-    instrumentsLogHandle = os_log_create(
-        "dev.reactnative.instruments", OS_LOG_CATEGORY_DYNAMIC_TRACING);
-  }
+  static std::once_flag flag{};
+  std::call_once(flag, []() {
+    if (!instrumentsLogHandle) {
+      instrumentsLogHandle = os_log_create(
+          "dev.reactnative.instruments", OS_LOG_CATEGORY_DYNAMIC_TRACING);
+    }
+  });
   return instrumentsLogHandle;
 }
 

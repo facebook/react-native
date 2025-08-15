@@ -1,0 +1,218 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+/* eslint-disable no-unused-vars */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
+
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+type StringLiteral0 = 'foo';
+type StringLiteral1 = 'bar';
+
+type NumericLiteral0 = 1;
+type NumericLiteral1 = 2;
+
+type StringLiteralUnion0 = 'a' | 'b' | 'c';
+type StringLiteralUnion1 = 'a' | 'b' | 'c' | 'd';
+type StringLiteralUnion2 = 'a' | 'x' | 'c';
+
+type Tuple0 = [string, number];
+type Tuple1 = [string, number, number];
+type Tuple2 = [number, number];
+
+type ReferencedType = {...};
+type ReferencedType2 = {...};
+type ReferencedType3 = {prop0: string, ...};
+
+type ReferenceType = ReferencedType;
+type ReferenceType2 = ReferencedType2;
+type ReferenceType3 = ReferencedType3;
+type ReferenceGeneric<T> = ReferencedType;
+type ReferenceGeneric2<T, X> = ReferencedType;
+
+type ObjectTypeWithProps = {
+  prop1: string,
+  prop2: number,
+  prop3: boolean,
+  ...
+};
+type ObjectTypeLessProps = {
+  prop1: string,
+  prop3: boolean,
+  ...
+};
+
+type ObjectTypeWithDifferentProps = {
+  prop0: string,
+  prop4: number,
+  prop5: boolean,
+  ...
+};
+
+type ObjectTypeWithNesting = {
+  prop1: {
+    subprop1: string,
+    subprop2: number,
+    ...
+  },
+  prop2: number,
+  ...
+};
+type ObjectTypeWithChanges = {
+  prop1: number,
+  prop2: {
+    subprop1: string,
+    subprp2: number,
+    ...
+  },
+  ...
+};
+type ObjectTypeWithNestedChanges = {
+  prop1: {
+    subprop1: string,
+    subprop2: string,
+    ...
+  },
+  prop2: number,
+  ...
+};
+type ObjectTypeWithTwoOptionals = {
+  prop1?: string,
+  prop2: number,
+  prop3?: boolean,
+  ...
+};
+type ObjectTypeWithOptionalNestedChange = {
+  prop1?: {
+    subprop1: string,
+    subprop2: number,
+    subprop3: string,
+    ...
+  },
+  prop2: number,
+  ...
+};
+
+type NonNullableType = Object;
+type NullableType = ?Object;
+
+type GenericObjectType = Object;
+type UnsafeObjectType = UnsafeObject;
+
+type OptionalTypeLessProps = ?{
+  prop1: string,
+  prop3: boolean,
+  ...
+};
+
+type ObjectTypeLiteral1 = {
+  prop1: number,
+  prop2: {
+    subprop1: string,
+    subprp2: number,
+  },
+};
+
+type ObjectTypeLiteral2 = {
+  prop1: number,
+  prop2: {
+    subprop1: string,
+    subprp2: number,
+  },
+};
+
+type ObjectTypeLiteral1TypeAlias = ObjectTypeLiteral1;
+type ObjectTypeLiteral2TypeAlias = ObjectTypeLiteral2;
+
+type MapWithKey = {[a: string]: ?number};
+type MapWithKey2 = {[a: string]: ?string};
+
+enum Enum {
+  A = 1,
+  B = 2,
+  C = 3,
+  D = 4,
+}
+enum EnumWithTypeChange {
+  A = '1',
+  B = '2',
+  C = '3',
+  D = '4',
+}
+enum EnumWithRemoval {
+  A = 1,
+  B = 2,
+  C = 3,
+}
+enum EnumWithValueChange {
+  A = 1,
+  B = 2,
+  C = 3,
+  D = 14,
+}
+
+enum EnumUnsorted {
+  C = 3,
+  D = 4,
+  B = 2,
+  A = 1,
+}
+
+export interface Spec extends TurboModule {
+  +stringLiteral0: (a: StringLiteral0) => void;
+  +stringLiteral1: (a: StringLiteral1) => void;
+
+  +numericLiteral0: (a: NumericLiteral0) => void;
+  +numericLiteral1: (a: NumericLiteral1) => void;
+
+  +stringLiteralUnion0: (a: StringLiteralUnion0) => void;
+  +stringLiteralUnion1: (a: StringLiteralUnion1) => void;
+  +stringLiteralUnion2: (a: StringLiteralUnion2) => void;
+
+  +referenceType: (a: ReferenceType) => void;
+  +referenceType2: (a: ReferenceType2) => void;
+  +referenceType3: (a: ReferenceType3) => void;
+
+  +referenceGeneric: <T>(a: ReferenceGeneric<T>) => void;
+  +referenceGeneric2: <T, X>(a: ReferenceGeneric2<T, X>) => void;
+
+  +objectTypeWithProps: (a: ObjectTypeWithProps) => void;
+  +objectTypeLessProps: (a: ObjectTypeLessProps) => void;
+  +objectTypeWithDifferentProps: (a: ObjectTypeWithDifferentProps) => void;
+  +objectTypeWithNesting: (a: ObjectTypeWithNesting) => void;
+  +objectTypeWithChanges: (a: ObjectTypeWithChanges) => void;
+  +objectTypeWithNestedChanges: (a: ObjectTypeWithNestedChanges) => void;
+  +objectTypeWithTwoOptionals: (a: ObjectTypeWithTwoOptionals) => void;
+  +objectTypeWithOptionalNestedChange: (a: ObjectTypeWithOptionalNestedChange) => void;
+  +nonNullableType: (a: NonNullableType) => void;
+  +nullableType: (a: NullableType) => void;
+  +genericObjectType: (a: GenericObjectType) => void;
+  +unsafeObjectType: (a: UnsafeObjectType) => void;
+  +optionalTypeLessProps: (a: OptionalTypeLessProps) => void;
+  +objectTypeLiteral1: (a: ObjectTypeLiteral1) => void;
+  +objectTypeLiteral2: (a: ObjectTypeLiteral2) => void;
+  +objectTypeLiteral1TypeAlias: (a: ObjectTypeLiteral1TypeAlias) => void;
+  +objectTypeLiteral2TypeAlias: (a: ObjectTypeLiteral2TypeAlias) => void;
+  +genericObjectType: (a: Object) => void;
+
+  +mapWithKey: (a: MapWithKey) => void;
+  +mapWithKey2: (a: MapWithKey2) => void;
+
+  +enum: (a: Enum) => void;
+  +enumWithTypeChange: (a: EnumWithTypeChange) => void;
+  +enumWithRemoval: (a: EnumWithRemoval) => void;
+  +enumWithValueChange: (a: EnumWithValueChange) => void;
+  +enumUnsorted: (a: EnumUnsorted) => void;
+}
+
+(TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeModuleTest',
+): Spec);

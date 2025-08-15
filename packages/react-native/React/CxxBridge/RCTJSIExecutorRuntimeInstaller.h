@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <jsireact/JSIExecutor.h>
 
 namespace facebook::react {
@@ -19,3 +21,5 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap);
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

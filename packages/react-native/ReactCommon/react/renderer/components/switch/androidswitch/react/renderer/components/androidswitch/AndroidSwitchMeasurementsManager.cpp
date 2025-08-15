@@ -19,48 +19,39 @@ Size AndroidSwitchMeasurementsManager::measure(
     SurfaceId surfaceId,
     LayoutConstraints layoutConstraints) const {
   {
-    std::scoped_lock lock(mutex_);
-    if (hasBeenMeasured_) {
-      return cachedMeasurement_;
-    }
+    const jni::global_ref<jobject>& fabricUIManager =
+        contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
+
+    static auto measure =
+        jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+            ->getMethod<jlong(
+                jint,
+                jstring,
+                ReadableMap::javaobject,
+                ReadableMap::javaobject,
+                ReadableMap::javaobject,
+                jfloat,
+                jfloat,
+                jfloat,
+                jfloat)>("measure");
+
+    auto minimumSize = layoutConstraints.minimumSize;
+    auto maximumSize = layoutConstraints.maximumSize;
+
+    local_ref<JString> componentName = make_jstring("AndroidSwitch");
+
+    return yogaMeassureToSize(measure(
+        fabricUIManager,
+        surfaceId,
+        componentName.get(),
+        nullptr,
+        nullptr,
+        nullptr,
+        minimumSize.width,
+        maximumSize.width,
+        minimumSize.height,
+        maximumSize.height));
   }
-
-  const jni::global_ref<jobject>& fabricUIManager =
-      contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-
-  static auto measure =
-      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
-          ->getMethod<jlong(
-              jint,
-              jstring,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              ReadableMap::javaobject,
-              jfloat,
-              jfloat,
-              jfloat,
-              jfloat)>("measure");
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
-  local_ref<JString> componentName = make_jstring("AndroidSwitch");
-
-  auto measurement = yogaMeassureToSize(measure(
-      fabricUIManager,
-      surfaceId,
-      componentName.get(),
-      nullptr,
-      nullptr,
-      nullptr,
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height));
-
-  std::scoped_lock lock(mutex_);
-  cachedMeasurement_ = measurement;
-  return measurement;
 }
 
 } // namespace facebook::react

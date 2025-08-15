@@ -21,7 +21,6 @@
 #include <react/renderer/uimanager/LayoutAnimationStatusDelegate.h>
 #include <react/renderer/uimanager/primitives.h>
 
-#include "EventEmitterWrapper.h"
 #include "JFabricUIManager.h"
 #include "SurfaceHandlerBinding.h"
 
@@ -43,6 +42,9 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   static void registerNatives();
 
+  // Must be kept public even though it is not used by any other class in React
+  // Native. Used by 3rd party libraries, for example Reanimated:
+  // https://github.com/software-mansion/react-native-reanimated/
   std::shared_ptr<Scheduler> getScheduler();
 
  private:
@@ -120,6 +122,13 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       bool isJSResponder,
       bool blockNativeResponder) override;
 
+  void schedulerShouldSynchronouslyUpdateViewOnUIThread(
+      Tag tag,
+      const folly::dynamic& props) override;
+
+  void schedulerDidUpdateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps) override;
+
   void setPixelDensity(float pointScaleFactor);
 
   void driveCxxAnimations();
@@ -127,6 +136,11 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
   void drainPreallocateViewsQueue();
 
   void reportMount(SurfaceId surfaceId);
+
+  jint
+  findNextFocusableElement(jint parentTag, jint focusedTag, jint direction);
+
+  jintArray getRelativeAncestorList(jint rootTag, jint childTag);
 
   void uninstallFabricUIManager();
 

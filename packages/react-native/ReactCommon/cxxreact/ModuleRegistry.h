@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -56,12 +58,12 @@ class RN_EXPORT ModuleRegistry {
   MethodCallResult callSerializableNativeHook(
       unsigned int moduleId,
       unsigned int methodId,
-      folly::dynamic&& args);
+      folly::dynamic&& params);
 
   std::string getModuleName(unsigned int moduleId);
   std::string getModuleSyncMethodName(
       unsigned int moduleId,
-      unsigned int methodName);
+      unsigned int methodId);
 
  private:
   // This is always populated
@@ -69,7 +71,7 @@ class RN_EXPORT ModuleRegistry {
 
   // This is used to extend the population of modulesByName_ if registerModules
   // is called after moduleNames
-  void updateModuleNamesFromIndex(size_t size);
+  void updateModuleNamesFromIndex(size_t index);
 
   // This is only populated if moduleNames() is called.  Values are indices into
   // modules_.
@@ -88,3 +90,5 @@ class RN_EXPORT ModuleRegistry {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

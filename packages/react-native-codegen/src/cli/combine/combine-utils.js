@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 'use strict';
@@ -14,23 +13,28 @@
 const path = require('path');
 
 /**
- * This function is used by the CLI to decide whether a JS/TS file has to be processed or not by the Codegen.
- * Parameters:
- *   - file: the path to the file
- *   - currentPlatform: the current platform for which we are creating the specs
- * Returns: `true` if the file can be used to generate some code; `false` otherwise
+ * This function is used by the CLI to decide whether a JS/TS file has to be
+ * processed or not by the Codegen.
  *
+ * Parameters:
+ *   - originalFilePath: the path to the file
+ *   - currentPlatform: the platform for which we are creating the specs
+ * Returns: `true` if the file can be used to generate code; `false` otherwise
  */
 function filterJSFile(
-  file: string,
+  originalFilePath: string,
   currentPlatform: ?string,
   excludeRegExp: ?RegExp,
 ): boolean {
-  const isSpecFile = /^(Native.+|.+NativeComponent)/.test(path.basename(file));
-  const isNotNativeUIManager = !file.endsWith('NativeUIManager.js');
-  const isNotTest = !file.includes('__tests');
-  const isNotExcluded = excludeRegExp == null || !excludeRegExp.test(file);
-  const isNotTSTypeDefinition = !file.endsWith('.d.ts');
+  // Remove `.fb` if it exists (see `react-native.cconf`).
+  const filePath = originalFilePath.replace(/\.fb(\.|$)/, '$1');
+  const basename = path.basename(filePath);
+
+  const isSpecFile = /^(Native.+|.+NativeComponent)/.test(basename);
+  const isNotNativeUIManager = !filePath.endsWith('NativeUIManager.js');
+  const isNotTest = !filePath.includes('__tests');
+  const isNotExcluded = excludeRegExp == null || !excludeRegExp.test(filePath);
+  const isNotTSTypeDefinition = !filePath.endsWith('.d.ts');
 
   const isValidCandidate =
     isSpecFile &&
@@ -39,7 +43,7 @@ function filterJSFile(
     isNotTest &&
     isNotTSTypeDefinition;
 
-  const filenameComponents = path.basename(file).split('.');
+  const filenameComponents = basename.split('.');
   const isPlatformAgnostic = filenameComponents.length === 2;
 
   if (currentPlatform == null) {

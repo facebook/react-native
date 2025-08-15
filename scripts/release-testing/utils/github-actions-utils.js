@@ -11,9 +11,9 @@
 
 'use strict';
 
-const chalk = require('chalk');
 const {execSync: exec} = require('child_process');
 const fetch = require('node-fetch');
+const {styleText} = require('util');
 
 /*::
 type CIHeaders = {
@@ -80,15 +80,14 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-call]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
   }
 
   const body = await response
-    // eslint-disable-next-line func-call-spacing
     .json /*::<WorkflowRuns>*/
     ();
   return body;
@@ -101,15 +100,14 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
     headers: ciHeaders,
   };
 
-  // $FlowIgnore[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowIgnore[incompatible-call]
+  // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
+  // $FlowFixMe[incompatible-call]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
   }
 
   const body = await response
-    // eslint-disable-next-line func-call-spacing
     .json /*::<Artifacts>*/
     ();
   return body;
@@ -176,12 +174,15 @@ async function initialize(
   const started_by = workflow.triggering_actor.login;
 
   console.log(
-    chalk.green(`The artifact being used is from a workflow started ${chalk.bold.magentaBright(hours.toFixed(0))} hours ago by ${chalk.bold.magentaBright(started_by)}:
+    styleText(
+      'green',
+      `The artifact being used is from a workflow started ${styleText(['bold', 'magentaBright'], hours.toFixed(0))} hours ago by ${styleText(['bold', 'magentaBright'], started_by)}:
 
-Author: ${chalk.bold(commit.author.name)}
+Author: ${styleText('bold', commit.author.name)}
 Message:
-${chalk.magentaBright(quote(commit.message))}
-  `),
+${styleText('magentaBright', quote(commit.message))}
+  `,
+    ),
   );
 
   artifacts = await _getArtifacts(workflow.id);
@@ -202,16 +203,14 @@ function downloadArtifact(
   exec(command, {stdio: 'inherit'});
 }
 
-async function artifactURLForJSCRNTesterAPK(
+async function artifactURLForRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  return getArtifactURL('rntester-jsc-debug');
+  return getArtifactURL('rntester-debug');
 }
 
-async function artifactURLForHermesRNTesterAPK(
-  emulatorArch /*: string */,
-) /*: Promise<string> */ {
-  return getArtifactURL('rntester-hermes-debug');
+async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
+  return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
 }
 
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
@@ -245,8 +244,8 @@ function baseTmpPath() /*: string */ {
 module.exports = {
   initialize,
   downloadArtifact,
-  artifactURLForJSCRNTesterAPK,
-  artifactURLForHermesRNTesterAPK,
+  artifactURLForRNTesterAPK,
+  artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,
   artifactURLHermesDebug,
   artifactURLForReactNative,

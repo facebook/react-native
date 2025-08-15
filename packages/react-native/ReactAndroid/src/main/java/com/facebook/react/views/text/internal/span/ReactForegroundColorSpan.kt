@@ -10,4 +10,4 @@ package com.facebook.react.views.text.internal.span
 import android.text.style.ForegroundColorSpan
 
 /** Wraps [ForegroundColorSpan] as a [ReactSpan]. */
-public class ReactForegroundColorSpan(color: Int) : ForegroundColorSpan(color), ReactSpan
+internal class ReactForegroundColorSpan(color: Int) : ForegroundColorSpan(color), ReactSpan

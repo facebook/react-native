@@ -4,24 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-'use strict';
+import failures from '../__test_fixtures__/failures.js';
+import fixtures from '../__test_fixtures__/fixtures.js';
+import {transformSync} from '@babel/core';
 
-const failures = require('../__test_fixtures__/failures.js');
-const fixtures = require('../__test_fixtures__/fixtures.js');
-const {transform: babelTransform} = require('@babel/core');
-
-const transform = (fixture, filename) =>
-  babelTransform(fixture, {
+const transform = (fixture /*: string */, filename /*: string */) =>
+  transformSync(fixture, {
     babelrc: false,
     browserslistConfigFile: false,
     cwd: '/',
-    filename: filename,
+    filename,
     highlightCode: false,
-    plugins: [require('@babel/plugin-syntax-flow'), require('../index')],
+    plugins: [
+      // $FlowFixMe[untyped-import]
+      require('@babel/plugin-syntax-flow'),
+      // $FlowFixMe[untyped-import]
+      require('../index'),
+    ],
   }).code;
 
 describe('Babel plugin inline view configs', () => {

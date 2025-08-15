@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 // flowlint unsafe-getters-setters:off
@@ -16,8 +16,10 @@ import type {
 } from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
-import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
+import MaybeNativePerformance from './specs/NativePerformance';
+import nullthrows from 'nullthrows';
+
+const NativePerformance = nullthrows(MaybeNativePerformance);
 
 export type PerformanceEventTimingJSON = {
   ...PerformanceEntryJSON,
@@ -86,14 +88,8 @@ function getCachedEventCounts(): Map<string, number> {
     return cachedEventCounts;
   }
 
-  if (!NativePerformance || !NativePerformance?.getEventCounts) {
-    warnNoNativePerformance();
-    cachedEventCounts = new Map();
-    return cachedEventCounts;
-  }
-
   const eventCounts = new Map<string, number>(
-    NativePerformance.getEventCounts?.() ?? [],
+    NativePerformance.getEventCounts() ?? [],
   );
   cachedEventCounts = eventCounts;
 

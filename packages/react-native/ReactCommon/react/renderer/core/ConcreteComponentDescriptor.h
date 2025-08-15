@@ -76,10 +76,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     return shadowNode;
   }
 
-  ShadowNode::Unshared cloneShadowNode(
+  std::shared_ptr<ShadowNode> cloneShadowNode(
       const ShadowNode& sourceShadowNode,
       const ShadowNodeFragment& fragment) const override {
     auto shadowNode = std::make_shared<ShadowNodeT>(sourceShadowNode, fragment);
+    shadowNode->completeClone(sourceShadowNode, fragment);
     sourceShadowNode.transferRuntimeShadowNodeReference(shadowNode, fragment);
 
     adopt(*shadowNode);
@@ -87,8 +88,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   void appendChild(
-      const ShadowNode::Shared& parentShadowNode,
-      const ShadowNode::Shared& childShadowNode) const override {
+      const std::shared_ptr<const ShadowNode>& parentShadowNode,
+      const std::shared_ptr<const ShadowNode>& childShadowNode) const override {
     auto& concreteParentShadowNode =
         static_cast<const ShadowNodeT&>(*parentShadowNode);
     const_cast<ShadowNodeT&>(concreteParentShadowNode)
@@ -114,12 +115,12 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_);
 
+    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-      auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
-#ifdef ANDROID
+#ifdef RN_SERIALIZABLE_STATE
       const auto& dynamic = shadowNodeProps->rawProps;
 #else
       const auto& dynamic = static_cast<folly::dynamic>(rawProps);
@@ -132,11 +133,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
             name.c_str(),
             RawValue(pair.second));
       }
-      return shadowNodeProps;
-    } else {
-      // Call old-style constructor
-      return ShadowNodeT::Props(context, rawProps, props);
     }
+    return shadowNodeProps;
   };
 
   virtual State::Shared createInitialState(
@@ -174,8 +172,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::make_shared<EventTarget>(
             fragment.instanceHandle, fragment.surfaceId),
         eventDispatcher_);
-    return std::make_shared<ShadowNodeFamily>(
-        fragment, std::move(eventEmitter), eventDispatcher_, *this);
+    auto family = std::make_shared<ShadowNodeFamily>(
+        fragment, eventEmitter, eventDispatcher_, *this);
+    eventEmitter->setShadowNodeFamily(family);
+    return family;
   }
 
  protected:

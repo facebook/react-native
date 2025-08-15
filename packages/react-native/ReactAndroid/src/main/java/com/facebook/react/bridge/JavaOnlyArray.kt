@@ -134,15 +134,14 @@ public class JavaOnlyArray : ReadableArray, WritableArray {
 
   override fun toString(): String = backingList.toString()
 
-  override fun equals(other: Any?): Boolean {
-    if (this === other) {
-      return true
-    } else if (other == null || javaClass != other.javaClass) {
-      return false
-    } else {
-      return backingList == (other as JavaOnlyArray).backingList
-    }
-  }
+  override fun equals(other: Any?): Boolean =
+      if (this === other) {
+        true
+      } else if (other == null || javaClass != other.javaClass) {
+        false
+      } else {
+        backingList == (other as JavaOnlyArray).backingList
+      }
 
   override fun hashCode(): Int = backingList.hashCode()
 }

@@ -22,40 +22,27 @@ import com.facebook.react.viewmanagers.DebuggingOverlayManagerDelegate
 import com.facebook.react.viewmanagers.DebuggingOverlayManagerInterface
 
 @ReactModule(name = DebuggingOverlayManager.REACT_CLASS)
-public class DebuggingOverlayManager :
+internal class DebuggingOverlayManager :
     SimpleViewManager<DebuggingOverlay>(), DebuggingOverlayManagerInterface<DebuggingOverlay> {
 
   private val delegate: ViewManagerDelegate<DebuggingOverlay> =
       DebuggingOverlayManagerDelegate(this)
 
-  public override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
+  override fun getDelegate(): ViewManagerDelegate<DebuggingOverlay> = delegate
 
-  override fun receiveCommand(view: DebuggingOverlay, commandId: String, args: ReadableArray?) {
-    when (commandId) {
-      "highlightTraceUpdates" -> highlightTraceUpdates(view, args)
-      "highlightElements" -> highlightElements(view, args)
-      "clearElementsHighlights" -> clearElementsHighlights(view)
-      else -> {
-        ReactSoftExceptionLogger.logSoftException(
-            REACT_CLASS,
-            ReactNoCrashSoftException("Received unexpected command in DebuggingOverlayManager"))
-      }
-    }
-  }
-
-  public override fun highlightTraceUpdates(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedTraceUpdates = args?.getArray(0) ?: return
+  override fun highlightTraceUpdates(view: DebuggingOverlay, updates: ReadableArray): Unit {
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedTraceUpdates.size()) {
-      val traceUpdate = providedTraceUpdates.getMap(i) ?: continue
+    for (i in 0 until updates.size()) {
+      val traceUpdate = updates.getMap(i) ?: continue
       val serializedRectangle = traceUpdate.getMap("rectangle")
       if (serializedRectangle == null) {
         ReactSoftExceptionLogger.logSoftException(
             REACT_CLASS,
             ReactNoCrashSoftException(
-                "Unexpected payload for highlighting trace updates: rectangle field is null"))
+                "Unexpected payload for highlighting trace updates: rectangle field is null"),
+        )
         successfullyParsedPayload = false
         break
       }
@@ -80,7 +67,8 @@ public class DebuggingOverlayManager :
                 REACT_CLASS,
                 ReactNoCrashSoftException(
                     "Unexpected payload for highlighting trace updates: rectangle field should" +
-                        " have x, y, width, height fields"))
+                        " have x, y, width, height fields"),
+            )
             successfullyParsedPayload = false
           }
           else -> throw ex
@@ -93,13 +81,12 @@ public class DebuggingOverlayManager :
     }
   }
 
-  public override fun highlightElements(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    val providedElements = args?.getArray(0) ?: return
+  override fun highlightElements(view: DebuggingOverlay, elements: ReadableArray): Unit {
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true
-    for (i in 0 until providedElements.size()) {
-      val element = providedElements.getMap(i) ?: continue
+    for (i in 0 until elements.size()) {
+      val element = elements.getMap(i) ?: continue
       try {
         val left = element.getDouble("x").toFloat()
         val top = element.getDouble("y").toFloat()
@@ -116,7 +103,8 @@ public class DebuggingOverlayManager :
                 REACT_CLASS,
                 ReactNoCrashSoftException(
                     "Unexpected payload for highlighting elements: every element should have x," +
-                        " y, width, height fields"))
+                        " y, width, height fields"),
+            )
             successfullyParsedPayload = false
           }
           else -> throw ex
@@ -129,19 +117,19 @@ public class DebuggingOverlayManager :
     }
   }
 
-  public override fun clearElementsHighlights(view: DebuggingOverlay): Unit {
+  override fun clearElementsHighlights(view: DebuggingOverlay): Unit {
     view.clearElementsHighlights()
   }
 
-  public override fun createViewInstance(context: ThemedReactContext): DebuggingOverlay {
+  override fun createViewInstance(context: ThemedReactContext): DebuggingOverlay {
     return DebuggingOverlay(context)
   }
 
-  public override fun getName(): String {
+  override fun getName(): String {
     return REACT_CLASS
   }
 
-  public companion object {
-    public const val REACT_CLASS: String = "DebuggingOverlay"
+  companion object {
+    const val REACT_CLASS: String = "DebuggingOverlay"
   }
 }

@@ -19,6 +19,7 @@ import EasingExample from './EasingExample';
 import FadeInViewExample from './FadeInViewExample';
 import LoopingExample from './LoopingExample';
 import MovingBoxExample from './MovingBoxExample';
+import PanGestureExample from './PanGestureExample';
 import PressabilityWithNativeDrivers from './PressabilityWithNativeDrivers';
 import RotatingImagesExample from './RotatingImagesExample';
 import TransformBounceExample from './TransformBounceExample';
@@ -47,5 +48,6 @@ export default ({
     ContinuousInteractionsExample,
     CombineExample,
     PressabilityWithNativeDrivers,
+    PanGestureExample,
   ],
 }: RNTesterModule);

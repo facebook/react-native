@@ -20,7 +20,10 @@ public object PixelUtil {
     }
 
     return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP, value, DisplayMetricsHolder.getWindowDisplayMetrics())
+        TypedValue.COMPLEX_UNIT_DIP,
+        value,
+        DisplayMetricsHolder.getWindowDisplayMetrics(),
+    )
   }
 
   /** Convert from DIP to PX */
@@ -63,7 +66,7 @@ public object PixelUtil {
     return value / DisplayMetricsHolder.getWindowDisplayMetrics().density
   }
 
-  /** @return [float] that represents the density of the display metrics for device screen. */
+  /** @return [Float] that represents the density of the display metrics for device screen. */
   @JvmStatic
   public fun getDisplayMetricDensity(): Float =
       DisplayMetricsHolder.getWindowDisplayMetrics().density

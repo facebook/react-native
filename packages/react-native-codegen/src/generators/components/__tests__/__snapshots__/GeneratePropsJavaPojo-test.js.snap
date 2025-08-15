@@ -106,6 +106,7 @@ public class ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement {
 package com.facebook.react.viewmanagers.Slider;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.yoga.YogaValue;
 import java.util.ArrayList;
@@ -124,6 +125,7 @@ public class ArrayPropsNativeComponentProps {
   private ArrayList<ArrayPropsNativeComponentPropsObjectElement> mObject;
   private ArrayList<ArrayPropsNativeComponentPropsArrayElement> mArray;
   private ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> mArrayOfArrayOfObject;
+  private ArrayList<Dynamic> mArrayOfMixed;
   @DoNotStrip
   public ArrayList<String> getNames() {
     return mNames;
@@ -171,6 +173,10 @@ public class ArrayPropsNativeComponentProps {
   @DoNotStrip
   public ArrayList<ArrayList<ArrayPropsNativeComponentPropsArrayOfArrayOfObjectElementElement>> getArrayOfArrayOfObject() {
     return mArrayOfArrayOfObject;
+  }
+  @DoNotStrip
+  public ArrayList<Dynamic> getArrayOfMixed() {
+    return mArrayOfMixed;
   }
 }
 ",

@@ -9,9 +9,10 @@
 
 #include "PerformanceEntryCircularBuffer.h"
 #include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceEntryReporterListeners.h"
 #include "PerformanceObserverRegistry.h"
 
-#include <jsinspector-modern/tracing/CdpTracing.h>
+#include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
 #include <memory>
@@ -21,10 +22,14 @@
 
 namespace facebook::react {
 
+// Aligned with maxBufferSize implemented by browsers
+// https://w3c.github.io/timing-entrytypes-registry/#registry
 constexpr size_t EVENT_BUFFER_SIZE = 150;
 constexpr size_t LONG_TASK_BUFFER_SIZE = 200;
+constexpr size_t RESOURCE_TIMING_BUFFER_SIZE = 250;
 
-constexpr DOMHighResTimeStamp LONG_TASK_DURATION_THRESHOLD_MS = 50.0;
+constexpr HighResDuration LONG_TASK_DURATION_THRESHOLD =
+    HighResDuration::fromMilliseconds(50);
 
 class PerformanceEntryReporter {
  public:
@@ -63,11 +68,10 @@ class PerformanceEntryReporter {
       PerformanceEntryType entryType,
       const std::string& entryName);
 
-  DOMHighResTimeStamp getCurrentTimeStamp() const;
-
-  void setTimeStampProvider(std::function<DOMHighResTimeStamp()> provider) {
-    timeStampProvider_ = std::move(provider);
-  }
+  void addEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
+  void removeEventTimingListener(
+      PerformanceEntryReporterEventTimingListener* listener);
 
   static std::vector<PerformanceEntryType> getSupportedEntryTypes();
 
@@ -77,29 +81,44 @@ class PerformanceEntryReporter {
     return eventCounts_;
   }
 
-  PerformanceEntry reportMark(
-      const std::string& name,
-      const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
+  void clearEventCounts();
 
-  PerformanceEntry reportMeasure(
-      const std::string_view& name,
-      double startTime,
-      double endTime,
-      const std::optional<double>& duration = std::nullopt,
-      const std::optional<std::string>& startMark = std::nullopt,
-      const std::optional<std::string>& endMark = std::nullopt,
-      const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-          trackMetadata = std::nullopt);
+  std::optional<HighResTimeStamp> getMarkTime(
+      const std::string& markName) const;
+
+  using UserTimingDetailProvider = std::function<folly::dynamic()>;
+
+  void reportMark(
+      const std::string& name,
+      HighResTimeStamp startTime,
+      UserTimingDetailProvider&& detailProvider = nullptr);
+
+  void reportMeasure(
+      const std::string& name,
+      HighResTimeStamp startTime,
+      HighResDuration duration,
+      UserTimingDetailProvider&& detailProvider = nullptr);
 
   void reportEvent(
-      std::string name,
-      double startTime,
-      double duration,
-      double processingStart,
-      double processingEnd,
+      const std::string& name,
+      HighResTimeStamp startTime,
+      HighResDuration duration,
+      HighResTimeStamp processingStart,
+      HighResTimeStamp processingEnd,
+      HighResTimeStamp taskEndTime,
       uint32_t interactionId);
 
-  void reportLongTask(double startTime, double duration);
+  void reportLongTask(HighResTimeStamp startTime, HighResDuration duration);
+
+  void reportResourceTiming(
+      const std::string& url,
+      HighResTimeStamp fetchStart,
+      HighResTimeStamp requestStart,
+      std::optional<HighResTimeStamp> connectStart,
+      std::optional<HighResTimeStamp> connectEnd,
+      HighResTimeStamp responseStart,
+      HighResTimeStamp responseEnd,
+      const std::optional<int>& responseStatus);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
@@ -107,14 +126,16 @@ class PerformanceEntryReporter {
   mutable std::shared_mutex buffersMutex_;
   PerformanceEntryCircularBuffer eventBuffer_{EVENT_BUFFER_SIZE};
   PerformanceEntryCircularBuffer longTaskBuffer_{LONG_TASK_BUFFER_SIZE};
+  PerformanceEntryCircularBuffer resourceTimingBuffer_{
+      RESOURCE_TIMING_BUFFER_SIZE};
   PerformanceEntryKeyedBuffer markBuffer_;
   PerformanceEntryKeyedBuffer measureBuffer_;
 
   std::unordered_map<std::string, uint32_t> eventCounts_;
 
-  std::function<double()> timeStampProvider_ = nullptr;
-
-  double getMarkTime(const std::string& markName) const;
+  mutable std::shared_mutex listenersMutex_;
+  std::vector<PerformanceEntryReporterEventTimingListener*>
+      eventTimingListeners_{};
 
   const inline PerformanceEntryBuffer& getBuffer(
       PerformanceEntryType entryType) const {
@@ -127,10 +148,13 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
 
   inline PerformanceEntryBuffer& getBufferRef(PerformanceEntryType entryType) {
@@ -143,11 +167,21 @@ class PerformanceEntryReporter {
         return measureBuffer_;
       case PerformanceEntryType::LONGTASK:
         return longTaskBuffer_;
+      case PerformanceEntryType::RESOURCE:
+        return resourceTimingBuffer_;
       case PerformanceEntryType::_NEXT:
         throw std::logic_error("Cannot get buffer for _NEXT entry type");
+      default:
+        throw std::logic_error("Unhandled PerformanceEntryType");
     }
-    throw std::logic_error("Unhandled PerformanceEntryType");
   }
+
+  void traceMark(
+      const PerformanceMark& entry,
+      UserTimingDetailProvider&& detailProvider) const;
+  void traceMeasure(
+      const PerformanceMeasure& entry,
+      UserTimingDetailProvider&& detailProvider) const;
 };
 
 } // namespace facebook::react

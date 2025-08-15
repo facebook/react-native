@@ -14,9 +14,17 @@ object PropertyUtils {
   const val NEW_ARCH_ENABLED = "newArchEnabled"
   const val SCOPED_NEW_ARCH_ENABLED = "react.newArchEnabled"
 
-  /** Public property that toggles the New Architecture */
+  /** Public property that toggles Hermes */
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
+
+  /** Public property that toggles edge-to-edge */
+  const val EDGE_TO_EDGE_ENABLED = "edgeToEdgeEnabled"
+  const val SCOPED_EDGE_TO_EDGE_ENABLED = "react.edgeToEdgeEnabled"
+
+  /** Public property that excludes jsctooling from core */
+  const val USE_THIRD_PARTY_JSC = "useThirdPartyJSC"
+  const val SCOPED_USE_THIRD_PARTY_JSC = "react.useThirdPartyJSC"
 
   /** Public property that allows to control which architectures to build for React Native. */
   const val REACT_NATIVE_ARCHITECTURES = "reactNativeArchitectures"
@@ -26,7 +34,13 @@ object PropertyUtils {
   const val INCLUDE_JITPACK_REPOSITORY = "includeJitpackRepository"
   const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
 
-  /** By default we include JitPack till React Native 0.80 where this is going to become false */
+  /**
+   * Public property that allows to configure an enterprise repository proxy as exclusive repository
+   */
+  const val EXCLUSIVE_ENTEPRISE_REPOSITORY = "exclusiveEnterpriseRepository"
+  const val SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY = "react.exclusiveEnterpriseRepository"
+
+  /** By default we include JitPack to avoid breaking user builds */
   internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
 
   /**

@@ -21,7 +21,7 @@
 
 @implementation RCTDisplayLink {
   CADisplayLink *_jsDisplayLink;
-  NSMutableSet<RCTModuleData *> *_frameUpdateObservers;
+  NSMutableSet<id<RCTDisplayLinkModuleHolder>> *_frameUpdateObservers;
   NSRunLoop *_runLoop;
 }
 
@@ -35,16 +35,17 @@
   return self;
 }
 
-- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module withModuleData:(RCTModuleData *)moduleData
+- (void)registerModuleForFrameUpdates:(id<RCTBridgeModule>)module
+                     withModuleHolder:(id<RCTDisplayLinkModuleHolder>)moduleHolder
 {
-  if (![moduleData.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)] ||
-      [_frameUpdateObservers containsObject:moduleData]) {
+  if (![moduleHolder.moduleClass conformsToProtocol:@protocol(RCTFrameUpdateObserver)] ||
+      [_frameUpdateObservers containsObject:moduleHolder]) {
     return;
   }
 
-  [_frameUpdateObservers addObject:moduleData];
+  [_frameUpdateObservers addObject:moduleHolder];
 
-  // Don't access the module instance via moduleData, as this will cause deadlock
+  // Don't access the module instance via moduleHolder, as this will cause deadlock
   id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)module;
   __weak typeof(self) weakSelf = self;
   observer.pauseCallback = ^{
@@ -96,8 +97,8 @@
 - (void)invalidate
 {
   // ensure observer callbacks do not hold a reference to weak self via pauseCallback
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
+  for (id<RCTDisplayLinkModuleHolder> moduleHolder in _frameUpdateObservers) {
+    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleHolder.instance;
     [observer setPauseCallback:nil];
   }
   [_frameUpdateObservers removeAllObjects]; // just to be explicit
@@ -121,17 +122,17 @@
   RCT_PROFILE_BEGIN_EVENT(RCTProfileTagAlways, @"-[RCTDisplayLink _jsThreadUpdate:]", nil);
 
   RCTFrameUpdate *frameUpdate = [[RCTFrameUpdate alloc] initWithDisplayLink:displayLink];
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
+  for (id<RCTDisplayLinkModuleHolder> moduleHolder in _frameUpdateObservers) {
+    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleHolder.instance;
     if (!observer.paused) {
-      if (moduleData.methodQueue) {
+      if (moduleHolder.methodQueue) {
         RCTProfileBeginFlowEvent();
         [self
             dispatchBlock:^{
               RCTProfileEndFlowEvent();
               [observer didUpdateFrame:frameUpdate];
             }
-                    queue:moduleData.methodQueue];
+                    queue:moduleHolder.methodQueue];
       } else {
         [observer didUpdateFrame:frameUpdate];
       }
@@ -150,8 +151,8 @@
   RCTAssertRunLoop();
 
   BOOL pauseDisplayLink = YES;
-  for (RCTModuleData *moduleData in _frameUpdateObservers) {
-    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleData.instance;
+  for (id<RCTDisplayLinkModuleHolder> moduleHolder in _frameUpdateObservers) {
+    id<RCTFrameUpdateObserver> observer = (id<RCTFrameUpdateObserver>)moduleHolder.instance;
     if (!observer.paused) {
       pauseDisplayLink = NO;
       break;

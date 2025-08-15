@@ -1,3 +1,0 @@
-# Make sure we never publish the build folders to npm.
-build/
-.cxx/

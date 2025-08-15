@@ -47,7 +47,8 @@ class BundleHermesCTaskTest {
             File(rootDir, "file.js"),
             File(rootDir, "file.jsx"),
             File(rootDir, "file.ts"),
-            File(rootDir, "file.tsx"))
+            File(rootDir, "file.tsx"),
+        )
   }
 
   @Test
@@ -71,7 +72,11 @@ class BundleHermesCTaskTest {
 
     assertThat(task.sources.excludes)
         .containsExactlyInAnyOrder(
-            "**/android/**/*", "**/ios/**/*", "**/build/**/*", "**/node_modules/**/*")
+            "**/android/**/*",
+            "**/ios/**/*",
+            "**/build/**/*",
+            "**/node_modules/**/*",
+        )
     assertThat(task.sources.files.size).isEqualTo(1)
     assertThat(task.sources.files).containsExactly(File(rootDir, "afolder/includedfile.js"))
   }
@@ -236,7 +241,8 @@ class BundleHermesCTaskTest {
             "--minify",
             "true",
             "--read-global-cache",
-            "--verbose")
+            "--verbose",
+        )
   }
 
   @Test
@@ -291,7 +297,8 @@ class BundleHermesCTaskTest {
             "--minify",
             "true",
             "--read-global-cache",
-            "--verbose")
+            "--verbose",
+        )
   }
 
   @Test
@@ -335,12 +342,14 @@ class BundleHermesCTaskTest {
     assertThat(hermesCommand)
         .containsExactly(
             customHermesc,
+            "-w",
             "-emit-binary",
             "-max-diagnostic-width=80",
             "-out",
             bytecodeFile.absolutePath,
             bundleFile.absolutePath,
-            "my-custom-hermes-flag")
+            "my-custom-hermes-flag",
+        )
   }
 
   @Test
@@ -362,12 +371,14 @@ class BundleHermesCTaskTest {
             "cmd",
             "/c",
             customHermesc,
+            "-w",
             "-emit-binary",
             "-max-diagnostic-width=80",
             "-out",
             bytecodeFile.relativeTo(tempFolder.root).path,
             bundleFile.relativeTo(tempFolder.root).path,
-            "my-custom-hermes-flag")
+            "my-custom-hermes-flag",
+        )
   }
 
   @Test
@@ -395,7 +406,8 @@ class BundleHermesCTaskTest {
             packagerMap.absolutePath,
             compilerMap.absolutePath,
             "-o",
-            outputMap.absolutePath)
+            outputMap.absolutePath,
+        )
   }
 
   @Test
@@ -426,6 +438,7 @@ class BundleHermesCTaskTest {
             packagerMap.relativeTo(tempFolder.root).path,
             compilerMap.relativeTo(tempFolder.root).path,
             "-o",
-            outputMap.relativeTo(tempFolder.root).path)
+            outputMap.relativeTo(tempFolder.root).path,
+        )
   }
 }

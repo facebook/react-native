@@ -200,12 +200,12 @@ jni::local_ref<jstring> getPlatformComponentName(const ShadowView& shadowView) {
 inline float scale(Float value, Float pointScaleFactor) {
   std::feclearexcept(FE_ALL_EXCEPT);
   float result = value * pointScaleFactor;
-  if (std::fetestexcept(FE_OVERFLOW)) {
+  if (std::fetestexcept(FE_OVERFLOW) != 0) {
     LOG(ERROR) << "Binding::scale - FE_OVERFLOW - value: " << value
                << " pointScaleFactor: " << pointScaleFactor
                << " result: " << result;
   }
-  if (std::fetestexcept(FE_UNDERFLOW)) {
+  if (std::fetestexcept(FE_UNDERFLOW) != 0) {
     LOG(ERROR) << "Binding::scale - FE_UNDERFLOW - value: " << value
                << " pointScaleFactor: " << pointScaleFactor
                << " result: " << result;
@@ -222,8 +222,10 @@ jni::local_ref<jobject> getProps(
   // is enabled.
   auto* oldProps = oldShadowView.props.get();
   auto* newProps = newShadowView.props.get();
-  if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
-      strcmp(newShadowView.componentName, "View") == 0) {
+  if ((ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid()) &&
+      strcmp(
+          newShadowView.componentName,
+          newProps->getDiffPropsImplementationTarget()) == 0) {
     return ReadableNativeMap::newObjectCxxArgs(
         newProps->getDiffProps(oldProps));
   }
@@ -453,7 +455,7 @@ void FabricMountingManager::executeMount(
 
   auto env = jni::Environment::current();
 
-  auto telemetry = transaction.getTelemetry();
+  const auto& telemetry = transaction.getTelemetry();
   auto surfaceId = transaction.getSurfaceId();
   auto& mutations = transaction.getMutations();
 
@@ -718,9 +720,9 @@ void FabricMountingManager::executeMount(
   // Allocate the intBuffer and object array, now that we know exact sizes
   // necessary
   InstructionBuffer buffer = {
-      env,
-      env->NewIntArray(batchMountItemIntsSize),
-      jni::JArrayClass<jobject>::newArray(batchMountItemObjectsSize),
+      .env = env,
+      .ints = env->NewIntArray(batchMountItemIntsSize),
+      .objects = jni::JArrayClass<jobject>::newArray(batchMountItemObjectsSize),
   };
 
   // Fill in arrays
@@ -925,15 +927,9 @@ void FabricMountingManager::maybePreallocateShadowNode(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid()) {
-    // Optimised implementation where FabricUIManager.preallocateView is called
-    // from the main thread.
+  {
     std::lock_guard lock(preallocateMutex_);
     preallocatedViewsQueue_.push_back(std::move(shadowView));
-  } else {
-    // Old implementation where FabricUIManager.preallocateView is called
-    // immediately.
-    preallocateShadowView(shadowView);
   }
 }
 
@@ -989,14 +985,14 @@ void FabricMountingManager::preallocateShadowView(
       component.get(),
       props.get(),
       (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr),
-      isLayoutableShadowNode);
+      static_cast<unsigned char>(isLayoutableShadowNode));
 }
 
 bool FabricMountingManager::isOnMainThread() {
   static auto isOnMainThread =
       JFabricUIManager::javaClassStatic()->getMethod<jboolean()>(
           "isOnMainThread");
-  return isOnMainThread(javaUIManager_);
+  return isOnMainThread(javaUIManager_) != 0u;
 }
 
 void FabricMountingManager::dispatchCommand(
@@ -1072,6 +1068,18 @@ void FabricMountingManager::onAllAnimationsComplete() {
           "onAllAnimationsComplete");
 
   allAnimationsCompleteJNI(javaUIManager_);
+}
+
+void FabricMountingManager::synchronouslyUpdateViewOnUIThread(
+    Tag viewTag,
+    const folly::dynamic& props) {
+  static auto synchronouslyUpdateViewOnUIThreadJNI =
+      JFabricUIManager::javaClassStatic()
+          ->getMethod<void(jint, ReadableMap::javaobject)>(
+              "synchronouslyUpdateViewOnUIThread");
+  auto propsMap = reinterpret_cast<ReadableMap::javaobject>(
+      ReadableNativeMap::newObjectCxxArgs(props).release());
+  synchronouslyUpdateViewOnUIThreadJNI(javaUIManager_, viewTag, propsMap);
 }
 
 } // namespace facebook::react

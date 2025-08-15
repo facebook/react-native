@@ -11,16 +11,20 @@
 #import "RCTBridge.h"
 
 @implementation RCTBundleManager {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   __weak RCTBridge *_bridge;
+#endif // RCT_FIT_RM_OLD_RUNTIME
   RCTBridgelessBundleURLGetter _bridgelessBundleURLGetter;
   RCTBridgelessBundleURLSetter _bridgelessBundleURLSetter;
   RCTBridgelessBundleURLGetter _bridgelessBundleURLDefaultGetter;
 }
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
 }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 - (void)setBridgelessBundleURLGetter:(RCTBridgelessBundleURLGetter)getter
                            andSetter:(RCTBridgelessBundleURLSetter)setter
@@ -33,10 +37,12 @@
 
 - (void)setBundleURL:(NSURL *)bundleURL
 {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   if (_bridge) {
     _bridge.bundleURL = bundleURL;
     return;
   }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   RCTAssert(
       _bridgelessBundleURLSetter != nil,
@@ -46,9 +52,11 @@
 
 - (NSURL *)bundleURL
 {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   if (_bridge) {
     return _bridge.bundleURL;
   }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   RCTAssert(
       _bridgelessBundleURLGetter != nil,
@@ -59,11 +67,13 @@
 
 - (void)resetBundleURL
 {
+#ifndef RCT_FIT_RM_OLD_RUNTIME
   RCTBridge *strongBridge = _bridge;
   if (strongBridge) {
     strongBridge.bundleURL = [strongBridge.delegate sourceURLForBridge:strongBridge];
     return;
   }
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
   RCTAssert(
       _bridgelessBundleURLDefaultGetter != nil,

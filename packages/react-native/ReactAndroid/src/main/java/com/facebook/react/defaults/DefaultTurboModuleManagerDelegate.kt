@@ -57,10 +57,13 @@ private constructor(
 
     override fun build(
         context: ReactApplicationContext,
-        packages: List<ReactPackage>
+        packages: List<ReactPackage>,
     ): DefaultTurboModuleManagerDelegate =
         DefaultTurboModuleManagerDelegate(
-            context, packages, cxxReactPackageProviders.flatMap { provider -> provider(context) })
+            context,
+            packages,
+            cxxReactPackageProviders.flatMap { provider -> provider(context) },
+        )
   }
 
   private companion object {

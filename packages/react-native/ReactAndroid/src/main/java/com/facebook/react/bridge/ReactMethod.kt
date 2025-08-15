@@ -6,6 +6,7 @@
  */
 
 package com.facebook.react.bridge
+
 /**
  * Annotation which is used to mark methods that are exposed to React Native.
  *

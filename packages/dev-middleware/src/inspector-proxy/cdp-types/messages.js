@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {JSONSerializable} from '../types';
@@ -49,6 +48,7 @@ export type CDPClientMessage =
 
 export type CDPServerMessage =
   | CDPEvent<'Debugger.scriptParsed'>
+  | CDPEvent<'Runtime.consoleAPICalled'>
   | CDPEvent<>
   | CDPResponse<'Debugger.getScriptSource'>
   | CDPResponse<>;

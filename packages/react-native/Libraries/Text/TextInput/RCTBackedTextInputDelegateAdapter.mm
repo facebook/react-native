@@ -11,7 +11,7 @@
 
 static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingContext;
 
-@interface RCTBackedTextFieldDelegateAdapter () <UITextFieldDelegate>
+@interface RCTBackedTextFieldDelegateAdapter () <UITextFieldDelegate, UITextDropDelegate>
 @end
 
 @implementation RCTBackedTextFieldDelegateAdapter {
@@ -25,6 +25,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (self = [super init]) {
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
+    backedTextInputView.textDropDelegate = self;
 
     [_backedTextInputView addTarget:self
                              action:@selector(textFieldDidChange)
@@ -159,11 +160,47 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
 }
 
+#pragma mark - UITextDropDelegate
+
+- (UITextDropEditability)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
+                 willBecomeEditableForDrop:(id<UITextDropRequest>)drop
+{
+  if (!_backedTextInputView.enabled) {
+    return UITextDropEditabilityNo;
+  }
+  if ([self _shouldAcceptDrop:drop]) {
+    return UITextDropEditabilityYes;
+  } else {
+    return UITextDropEditabilityNo;
+  }
+}
+
+- (UITextDropProposal *)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
+                          proposalForDrop:(id<UITextDropRequest>)drop
+{
+  if ([self _shouldAcceptDrop:drop]) {
+    return drop.suggestedProposal;
+  } else {
+    return [[UITextDropProposal alloc] initWithDropOperation:UIDropOperationCancel];
+  }
+}
+
+- (bool)_shouldAcceptDrop:(id<UITextDropRequest>)drop
+{
+  if (_backedTextInputView.acceptDragAndDropTypes) {
+    // If we have accepted types, we should only accept drops that match one of them
+    return [drop.dropSession hasItemsConformingToTypeIdentifiers:_backedTextInputView.acceptDragAndDropTypes];
+  } else {
+    // If we don't have any accepted types, we should accept any drop
+    return true;
+  }
+}
+
 @end
 
 #pragma mark - RCTBackedTextViewDelegateAdapter (for UITextView)
 
-@interface RCTBackedTextViewDelegateAdapter () <UITextViewDelegate>
+@interface RCTBackedTextViewDelegateAdapter () <UITextViewDelegate, UITextDropDelegate>
 @end
 
 @implementation RCTBackedTextViewDelegateAdapter {
@@ -179,6 +216,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (self = [super init]) {
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
+    backedTextInputView.textDropDelegate = self;
   }
 
   return self;
@@ -302,6 +340,42 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
   _previousSelectedTextRange = _backedTextInputView.selectedTextRange;
   [_backedTextInputView.textInputDelegate textInputDidChangeSelection];
+}
+
+#pragma mark - UITextDropDelegate
+
+- (UITextDropEditability)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
+                 willBecomeEditableForDrop:(id<UITextDropRequest>)drop
+{
+  if (!_backedTextInputView.isEditable) {
+    return UITextDropEditabilityNo;
+  }
+  if ([self _shouldAcceptDrop:drop]) {
+    return UITextDropEditabilityYes;
+  } else {
+    return UITextDropEditabilityNo;
+  }
+}
+
+- (UITextDropProposal *)textDroppableView:(UIView<UITextDroppable> *)textDroppableView
+                          proposalForDrop:(id<UITextDropRequest>)drop
+{
+  if ([self _shouldAcceptDrop:drop]) {
+    return drop.suggestedProposal;
+  } else {
+    return [[UITextDropProposal alloc] initWithDropOperation:UIDropOperationCancel];
+  }
+}
+
+- (bool)_shouldAcceptDrop:(id<UITextDropRequest>)drop
+{
+  if (_backedTextInputView.acceptDragAndDropTypes) {
+    // If we have accepted types, we should only accept drops that match one of them
+    return [drop.dropSession hasItemsConformingToTypeIdentifiers:(_backedTextInputView.acceptDragAndDropTypes)];
+  } else {
+    // If we don't have any accepted types, we should accept any drop
+    return true;
+  }
 }
 
 @end

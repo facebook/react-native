@@ -4,23 +4,24 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import BaseFlatListExample from './BaseFlatListExample';
 import * as React from 'react';
+import {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
 export function FlatList_contentInset(): React.Node {
   const [initialContentInset, toggledContentInset] = [44, 88];
 
-  const [output, setOutput] = React.useState(
+  const [output, setOutput] = useState(
     `contentInset top: ${initialContentInset.toString()}`,
   );
-  const [exampleProps, setExampleProps] = React.useState({
+  const [exampleProps, setExampleProps] = useState({
     automaticallyAdjustContentInsets: false,
     contentInset: {top: initialContentInset},
     contentOffset: {y: -initialContentInset, x: 0},

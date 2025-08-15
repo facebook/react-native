@@ -15,7 +15,7 @@
  * Note that a polyfill can technically fake this behavior but few does it.
  * Therefore, this is usually good enough for our purpose.
  */
-function isNativeFunction(f: Function): boolean {
+export function isNativeFunction(f: Function): boolean {
   return typeof f === 'function' && f.toString().indexOf('[native code]') > -1;
 }
 
@@ -23,9 +23,7 @@ function isNativeFunction(f: Function): boolean {
  * @return whether or not the constructor of @param {object} o is an native
  * function named with @param {string} expectedName.
  */
-function hasNativeConstructor(o: Object, expectedName: string): boolean {
+export function hasNativeConstructor(o: Object, expectedName: string): boolean {
   const con = Object.getPrototypeOf(o).constructor;
   return con.name === expectedName && isNativeFunction(con);
 }
-
-module.exports = {isNativeFunction, hasNativeConstructor};

@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import ContentInset from './SectionList-contentInset';
 import inverted from './SectionList-inverted';
@@ -43,4 +45,4 @@ exports.examples = [
   onViewableItemsChanged_horizontal_waitForInteraction,
   onViewableItemsChanged_horizontal_offScreen_noWaitForInteraction,
   onViewableItemsChanged_offScreen_noWaitForInteraction,
-];
+] as Array<RNTesterModuleExample>;

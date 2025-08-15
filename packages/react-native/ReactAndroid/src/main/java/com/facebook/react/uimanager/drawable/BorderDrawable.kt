@@ -142,7 +142,8 @@ internal class BorderDrawable(
             (Color.alpha(multiplyColorAlpha(computedBorderColors.left, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.top, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.right, borderAlpha))),
-            (Color.alpha(multiplyColorAlpha(computedBorderColors.bottom, borderAlpha))))
+            (Color.alpha(multiplyColorAlpha(computedBorderColors.bottom, borderAlpha))),
+        )
 
     // If the highest alpha value of all border edges is 0, then the drawable is TRANSPARENT.
     if (maxBorderAlpha == 0) {
@@ -154,7 +155,8 @@ internal class BorderDrawable(
             (Color.alpha(multiplyColorAlpha(computedBorderColors.left, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.top, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.right, borderAlpha))),
-            (Color.alpha(multiplyColorAlpha(computedBorderColors.bottom, borderAlpha))))
+            (Color.alpha(multiplyColorAlpha(computedBorderColors.bottom, borderAlpha))),
+        )
 
     /*
      * If the lowest alpha value of all border edges is 255, then the drawable is OPAQUE.
@@ -227,11 +229,6 @@ internal class BorderDrawable(
     return borderColors?.edgeColors?.get(position.ordinal) ?: Color.BLACK
   }
 
-  public fun invalidateSelfAndUpdatePath() {
-    needUpdatePath = true
-    invalidateSelf()
-  }
-
   private fun drawRectangularBorders(canvas: Canvas) {
     val borderWidth = computeBorderInsets()
     val borderLeft = borderWidth.left.roundToInt()
@@ -255,7 +252,8 @@ internal class BorderDrawable(
               computedBorderColors.left,
               computedBorderColors.top,
               computedBorderColors.right,
-              computedBorderColors.bottom)
+              computedBorderColors.bottom,
+          )
       if (fastBorderColor != 0) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
@@ -398,7 +396,8 @@ internal class BorderDrawable(
                       borderWidth.left * 0.5f),
                   ((computedBorderRadius?.topLeft?.toPixelFromDIP()?.vertical ?: 0f) -
                       borderWidth.top * 0.5f),
-                  borderPaint)
+                  borderPaint,
+              )
             }
           } else {
             canvas.drawPath(checkNotNull(centerDrawPath), borderPaint)
@@ -488,8 +487,16 @@ internal class BorderDrawable(
       colorLeft: Int,
       colorTop: Int,
       colorRight: Int,
-      colorBottom: Int
+      colorBottom: Int,
   ): Int {
+    // If any of the border colors are translucent then we can't use the fast path.
+    if (Color.alpha(colorLeft) < 255 ||
+        Color.alpha(colorTop) < 255 ||
+        Color.alpha(colorRight) < 255 ||
+        Color.alpha(colorBottom) < 255) {
+      return 0
+    }
+
     val andSmear =
         ((if (borderLeft > 0) colorLeft else ALL_BITS_SET) and
             (if (borderTop > 0) colorTop else ALL_BITS_SET) and
@@ -513,7 +520,7 @@ internal class BorderDrawable(
       x3: Float,
       y3: Float,
       x4: Float,
-      y4: Float
+      y4: Float,
   ) {
     if (fillColor == Color.TRANSPARENT) {
       return
@@ -573,7 +580,9 @@ internal class BorderDrawable(
       BorderStyle.SOLID -> null
       BorderStyle.DASHED ->
           DashPathEffect(
-              floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0f)
+              floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3),
+              0f,
+          )
       BorderStyle.DOTTED ->
           DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0f)
     }
@@ -588,7 +597,7 @@ internal class BorderDrawable(
       lineStartY: Double,
       lineEndX: Double,
       lineEndY: Double,
-      result: PointF
+      result: PointF,
   ) {
     var _lineStartX = lineStartX
     var _lineStartY = lineStartY
@@ -739,8 +748,10 @@ internal class BorderDrawable(
               innerBottomRightRadiusX,
               innerBottomRightRadiusY,
               innerBottomLeftRadiusX,
-              innerBottomLeftRadiusY),
-          Path.Direction.CW)
+              innerBottomLeftRadiusY,
+          ),
+          Path.Direction.CW,
+      )
     }
 
     outerClipTempRectForBorderRadius?.let {
@@ -754,8 +765,10 @@ internal class BorderDrawable(
               bottomRightRadius.horizontal,
               bottomRightRadius.vertical,
               bottomLeftRadius.horizontal,
-              bottomLeftRadius.vertical),
-          Path.Direction.CW)
+              bottomLeftRadius.vertical,
+          ),
+          Path.Direction.CW,
+      )
     }
 
     var extraRadiusForOutline = 0f
@@ -774,8 +787,10 @@ internal class BorderDrawable(
             bottomRightRadius.horizontal + extraRadiusForOutline,
             bottomRightRadius.vertical + extraRadiusForOutline,
             bottomLeftRadius.horizontal + extraRadiusForOutline,
-            bottomLeftRadius.vertical + extraRadiusForOutline),
-        Path.Direction.CW)
+            bottomLeftRadius.vertical + extraRadiusForOutline,
+        ),
+        Path.Direction.CW,
+    )
 
     if (computedBorderRadius?.isUniform() != true) {
       centerDrawPath = centerDrawPath ?: Path()
@@ -791,8 +806,10 @@ internal class BorderDrawable(
                 bottomRightRadius.horizontal - borderWidth.right * 0.5f,
                 bottomRightRadius.vertical - borderWidth.bottom * 0.5f,
                 bottomLeftRadius.horizontal - borderWidth.left * 0.5f,
-                bottomLeftRadius.vertical - borderWidth.bottom * 0.5f),
-            Path.Direction.CW)
+                bottomLeftRadius.vertical - borderWidth.bottom * 0.5f,
+            ),
+            Path.Direction.CW,
+        )
       }
     }
 
@@ -988,7 +1005,8 @@ internal class BorderDrawable(
             outerRect.top.toDouble(), // Line End
             innerRect.left.toDouble(),
             innerRect.top.toDouble(), // Result
-            it)
+            it,
+        )
       }
 
       /** Compute innerBottomLeftCorner */
@@ -1006,7 +1024,8 @@ internal class BorderDrawable(
             outerRect.bottom.toDouble(), // Line End
             innerRect.left.toDouble(),
             innerRect.bottom.toDouble(), // Result
-            it)
+            it,
+        )
       }
 
       /** Compute innerTopRightCorner */
@@ -1025,7 +1044,8 @@ internal class BorderDrawable(
             outerRect.top.toDouble(), // Line End
             innerRect.right.toDouble(),
             innerRect.top.toDouble(), // Result
-            it)
+            it,
+        )
       }
 
       /** Compute innerBottomRightCorner */
@@ -1044,7 +1064,8 @@ internal class BorderDrawable(
             outerRect.bottom.toDouble(), // Line End
             innerRect.right.toDouble(),
             innerRect.bottom.toDouble(), // Result
-            it)
+            it,
+        )
       }
     }
   }
@@ -1053,7 +1074,7 @@ internal class BorderDrawable(
    * Multiplies the color with the given alpha.
    *
    * @param color color to be multiplied
-   * @param alpha value between 0 and 255
+   * @param rawAlpha value between 0 and 255
    * @return multiplied color
    */
   private fun multiplyColorAlpha(color: Int, rawAlpha: Int): Int {

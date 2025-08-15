@@ -132,6 +132,7 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  | MixedTypeAnnotation
   | {
     readonly type: 'StringEnumTypeAnnotation';
     readonly default: string;

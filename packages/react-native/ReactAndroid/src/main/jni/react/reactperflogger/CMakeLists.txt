@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++20 -Wall)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(reactperfloggerjni INTERFACE)
 
@@ -20,3 +20,5 @@ target_link_libraries(reactperfloggerjni
         fbjni
         android
         reactperflogger)
+
+target_compile_reactnative_options(reactperfloggerjni INTERFACE)

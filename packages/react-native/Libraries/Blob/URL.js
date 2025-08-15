@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 import type Blob from './Blob';
@@ -77,11 +77,23 @@ export class URL {
   }
 
   // $FlowFixMe[missing-local-annot]
-  constructor(url: string, base: string | URL) {
+  constructor(url: string, base?: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
       this._url = url;
-      if (!this._url.endsWith('/')) {
+      if (this._url.includes('#')) {
+        const split = this._url.split('#');
+        const beforeHash = split[0];
+        const website = beforeHash.split('://')[1];
+        if (!website.includes('/')) {
+          this._url = split.join('/#');
+        }
+      }
+
+      if (
+        !this._url.endsWith('/') &&
+        !(this._url.includes('?') || this._url.includes('#'))
+      ) {
         this._url += '/';
       }
     } else {
@@ -107,15 +119,21 @@ export class URL {
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    const hashMatch = this._url.match(/#([^/]*)/);
+    return hashMatch ? `#${hashMatch[1]}` : '';
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    const hostMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
+    const portMatch = this._url.match(/:(\d+)(?=[/?#]|$)/);
+    return hostMatch
+      ? hostMatch[1] + (portMatch ? `:${portMatch[1]}` : '')
+      : '';
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    const hostnameMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
+    return hostnameMatch ? hostnameMatch[1] : '';
   }
 
   get href(): string {
@@ -123,32 +141,38 @@ export class URL {
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    const matches = this._url.match(/^(https?:\/\/[^/]+)/);
+    return matches ? matches[1] : '';
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    const passwordMatch = this._url.match(/https?:\/\/.*:(.*)@/);
+    return passwordMatch ? passwordMatch[1] : '';
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    const pathMatch = this._url.match(/https?:\/\/[^/]+(\/[^?#]*)?/);
+    return pathMatch ? pathMatch[1] || '/' : '/';
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    const portMatch = this._url.match(/:(\d+)(?=[/?#]|$)/);
+    return portMatch ? portMatch[1] : '';
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    const protocolMatch = this._url.match(/^([a-zA-Z][a-zA-Z\d+\-.]*):/);
+    return protocolMatch ? protocolMatch[1] + ':' : '';
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    const searchMatch = this._url.match(/\?([^#]*)/);
+    return searchMatch ? `?${searchMatch[1]}` : '';
   }
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+      this._searchParamsInstance = new URLSearchParams(this.search);
     }
     return this._searchParamsInstance;
   }
@@ -168,6 +192,7 @@ export class URL {
   }
 
   get username(): string {
-    throw new Error('URL.username is not implemented');
+    const usernameMatch = this._url.match(/^https?:\/\/([^:@]+)(?::[^@]*)?@/);
+    return usernameMatch ? usernameMatch[1] : '';
   }
 }

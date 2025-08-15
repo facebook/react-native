@@ -7,6 +7,8 @@
 
 #pragma once
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/NativeModule.h>
 
@@ -66,3 +68,5 @@ class RN_EXPORT CxxNativeModule : public NativeModule {
 };
 
 } // namespace facebook::react
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

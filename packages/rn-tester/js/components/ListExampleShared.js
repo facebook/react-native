@@ -4,14 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
 
 import RNTesterText from './RNTesterText';
 import React from 'react';
+import {memo} from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -162,13 +163,13 @@ class SeparatorComponent extends React.PureComponent<{...}> {
   }
 }
 
-const LoadingComponent: React.ComponentType<{}> = React.memo(() => (
+const LoadingComponent: React.ComponentType<{}> = memo(() => (
   <View style={styles.loadingContainer}>
     <ActivityIndicator />
   </View>
 ));
 
-class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
+class ItemSeparatorComponent extends React.PureComponent<$FlowFixMe> {
   render(): React.Node {
     const style = this.props.highlighted
       ? [
@@ -180,7 +181,7 @@ class ItemSeparatorComponent extends React.PureComponent<$FlowFixMeProps> {
   }
 }
 
-class Spindicator extends React.PureComponent<$FlowFixMeProps> {
+class Spindicator extends React.PureComponent<$FlowFixMe> {
   render(): React.Node {
     return (
       <Animated.View
@@ -241,7 +242,7 @@ function getItemLayout(
   data: any,
   index: number,
   horizontal?: boolean,
-): {|index: number, length: number, offset: number|} {
+): {index: number, length: number, offset: number} {
   const [length, separator, header] = horizontal
     ? [HORIZ_WIDTH, 0, HEADER.width]
     : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];

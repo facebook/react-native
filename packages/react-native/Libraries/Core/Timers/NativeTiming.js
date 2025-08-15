@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeTiming';
-import NativeTiming from '../../../src/private/specs/modules/NativeTiming';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeTiming';
+import NativeTiming from '../../../src/private/specs_DEPRECATED/modules/NativeTiming';
+
 export default NativeTiming;

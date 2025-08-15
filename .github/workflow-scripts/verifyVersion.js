@@ -45,18 +45,6 @@ module.exports = async (github, context) => {
   if (!isVersionSupported(issueVersion, latestVersion)) {
     return {label: 'Type: Unsupported Version'};
   }
-
-  // We want to encourage users to repro the issue on the highest available patch for the given minor.
-  const latestPatchForVersion = getLatestPatchForVersion(
-    issueVersion,
-    recentReleases,
-  );
-  if (latestPatchForVersion > issueVersion.patch) {
-    return {
-      label: 'Newer Patch Available',
-      newestPatch: `${issueVersion.major}.${issueVersion.minor}.${latestPatchForVersion}`,
-    };
-  }
 };
 
 /**
@@ -85,22 +73,6 @@ function isVersionTooOld(actualVersion, latestVersion) {
     latestVersion.major - actualVersion.major >= 1 ||
     latestVersion.minor - actualVersion.minor >= 5
   );
-}
-
-// Assumes that releases are sorted in the order of recency (i.e. most recent releases are earlier in the list)
-// This enables us to stop looking as soon as we find the first release with a matching major/minor version, since
-// we know it's the most recent release, therefore the highest patch available.
-function getLatestPatchForVersion(version, releases) {
-  for (releaseName of releases) {
-    const release = parseVersionFromString(releaseName);
-    if (
-      release &&
-      release.major == version.major &&
-      release.minor == version.minor
-    ) {
-      return release.patch;
-    }
-  }
 }
 
 function getReactNativeVersionFromIssueBodyIfExists(issue) {

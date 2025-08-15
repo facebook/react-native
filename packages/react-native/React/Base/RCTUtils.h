@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <tgmath.h>
-
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -18,7 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Whether the New Architecture is enabled or not
 RCT_EXTERN BOOL RCTIsNewArchEnabled(void);
-RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled);
+RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled) __attribute__((deprecated(
+    "This function is now no-op. You need to modify the Info.plist adding a RCTNewArchEnabled bool property to control whether the New Arch is enabled or not")));
+;
+
+// Whether React native should output logs for modules and components used
+// through the interop layers
+RCT_EXTERN BOOL RCTAreLegacyLogsEnabled(void);
 
 // JSON serialization/deserialization
 RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error);
@@ -44,9 +48,6 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
 
-// Get screen scale, can be only used on main
-RCT_EXTERN void RCTComputeScreenScale(void);
-
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
@@ -56,7 +57,6 @@ RCT_EXTERN CGSize RCTViewportSize(void);
 // Round float coordinates to nearest whole screen pixel (not point)
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);
 RCT_EXTERN CGFloat RCTCeilPixelValue(CGFloat value);
-RCT_EXTERN CGFloat RCTFloorPixelValue(CGFloat value);
 
 // Convert a size in points to pixels, rounded up to the nearest integral size
 RCT_EXTERN CGSize RCTSizeInPixels(CGSize pointSize, CGFloat scale);

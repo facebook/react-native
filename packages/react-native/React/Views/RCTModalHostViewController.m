@@ -7,6 +7,8 @@
 
 #import "RCTModalHostViewController.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTLog.h"
 #import "RCTModalHostView.h"
 
@@ -21,8 +23,6 @@
   if (!(self = [super init])) {
     return nil;
   }
-
-  self.modalInPresentation = YES;
 
   _preferredStatusBarStyle = [RCTUIStatusBarManager() statusBarStyle];
   _preferredStatusBarHidden = [RCTUIStatusBarManager() isStatusBarHidden];
@@ -70,3 +70,5 @@
 #endif // RCT_DEV
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

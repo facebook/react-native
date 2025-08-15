@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
@@ -17,19 +17,20 @@ import Text from '../../Text/Text';
 import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 
-type Props = $ReadOnly<{|
-  onPress?: ?(event: PressEvent) => void,
+type Props = $ReadOnly<{
+  onPress?: ?(event: GestureResponderEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
-|}>;
+}>;
 
 function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     animation: null,
     rotate: null,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.status === 'PENDING') {
       if (state.animation == null) {
         const animated = new Animated.Value(0);

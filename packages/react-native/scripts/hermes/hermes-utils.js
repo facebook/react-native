@@ -16,7 +16,7 @@ const os = require('os');
 const path = require('path');
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 */
 
 const SDKS_DIR = path.normalize(path.join(__dirname, '..', '..', 'sdks'));
@@ -224,9 +224,9 @@ set_target_properties(native-hermesc PROPERTIES
 }
 
 function getHermesPrebuiltArtifactsTarballName(
-  buildType /*: string */,
+  buildType /*:: ?: string */,
 ) /*: string */ {
-  if (!buildType) {
+  if (buildType == null) {
     throw Error('Did not specify build type.');
   }
   return `hermes-ios-${buildType.toLowerCase()}.tar.gz`;

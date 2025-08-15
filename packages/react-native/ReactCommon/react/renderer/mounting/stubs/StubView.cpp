@@ -23,6 +23,7 @@ StubView::operator ShadowView() const {
   shadowView.eventEmitter = eventEmitter;
   shadowView.layoutMetrics = layoutMetrics;
   shadowView.state = state;
+  shadowView.traits = traits;
   return shadowView;
 }
 
@@ -35,6 +36,7 @@ void StubView::update(const ShadowView& shadowView) {
   eventEmitter = shadowView.eventEmitter;
   layoutMetrics = shadowView.layoutMetrics;
   state = shadowView.state;
+  traits = shadowView.traits;
 }
 
 bool operator==(const StubView& lhs, const StubView& rhs) {
@@ -86,6 +88,7 @@ std::vector<StubView> getDebugChildren(
     const StubView& stubView,
     DebugStringConvertibleOptions /*options*/) {
   std::vector<StubView> result;
+  result.reserve(stubView.children.size());
   for (const auto& child : stubView.children) {
     result.push_back(*child);
   }

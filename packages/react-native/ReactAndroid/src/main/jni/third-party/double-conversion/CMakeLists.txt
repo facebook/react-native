@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-Wno-unused-variable -Wno-unused-local-typedefs)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(double-conversion
         STATIC
@@ -20,4 +20,7 @@ add_library(double-conversion
         double-conversion/strtod.cc)
 
 target_include_directories(double-conversion PUBLIC .)
+
+target_compile_reactnative_options(double-conversion PRIVATE)
+target_compile_options(double-conversion PRIVATE -Wno-unused-variable -Wno-unused-local-typedefs)
 

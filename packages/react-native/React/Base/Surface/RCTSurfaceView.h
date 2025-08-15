@@ -9,16 +9,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTSurface;
+@protocol RCTSurfaceProtocol;
 
 /**
  * UIView instance which represents the Surface
  */
 @interface RCTSurfaceView : UIView
 
-- (instancetype)initWithSurface:(RCTSurface *)surface NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSurface:(id<RCTSurfaceProtocol>)surface NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, weak, readonly, nullable) RCTSurface *surface;
+@property (nonatomic, weak, readonly, nullable) id<RCTSurfaceProtocol> surface;
 
 @end
 

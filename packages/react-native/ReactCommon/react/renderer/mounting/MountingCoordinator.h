@@ -62,7 +62,6 @@ class MountingCoordinator final {
    * `true` until `didPerformAsyncTransactions` is called.
    */
   std::optional<MountingTransaction> pullTransaction(
-      // TODO: Clean up this parameter when Android migrates to a pull model.
       bool willPerformAsynchronously = false) const;
 
   /*

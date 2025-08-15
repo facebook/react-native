@@ -45,6 +45,15 @@ class ImageProps final : public ViewProps {
   SharedColor overlayColor{};
   Float fadeDuration{};
   bool progressiveRenderingEnabled{};
+
+#ifdef RN_SERIALIZABLE_STATE
+  ComponentName getDiffPropsImplementationTarget() const override;
+  folly::dynamic getDiffProps(const Props* prevProps) const override;
+#endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace facebook::react

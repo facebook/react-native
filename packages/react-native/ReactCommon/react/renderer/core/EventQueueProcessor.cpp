@@ -55,6 +55,8 @@ void EventQueueProcessor::flushEvents(
             return ReactEventPriority::Discrete;
           case RawEvent::Category::Continuous:
             return ReactEventPriority::Continuous;
+          case RawEvent::Category::Idle:
+            return ReactEventPriority::Idle;
           case RawEvent::Category::Unspecified:
             return hasContinuousEventStarted_ ? ReactEventPriority::Continuous
                                               : ReactEventPriority::Default;

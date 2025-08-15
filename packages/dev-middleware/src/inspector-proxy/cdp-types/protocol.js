@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 // Adapted from https://github.com/ChromeDevTools/devtools-protocol/blob/master/types/protocol.d.ts
@@ -85,10 +84,27 @@ export interface Debugger {
      */
     sourceMapURL: string,
   };
+
+  ConsoleAPICalled: {
+    args: Array<{type: string, value: string}>,
+    executionContextId: number,
+    stackTrace: {
+      timestamp: number,
+      type: string,
+      callFrames: Array<{
+        columnNumber: number,
+        lineNumber: number,
+        functionName: string,
+        scriptId: string,
+        url: string,
+      }>,
+    },
+  };
 }
 
 export type Events = {
   'Debugger.scriptParsed': Debugger['ScriptParsedEvent'],
+  'Runtime.consoleAPICalled': Debugger['ConsoleAPICalled'],
   [method: string]: JSONSerializable,
 };
 

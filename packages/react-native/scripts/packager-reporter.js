@@ -4,17 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
 'use strict';
 
+let reporter /*: $FlowFixMe */;
+
 const logPath = process.env.RCT_PACKAGER_LOG_PATH;
 if (logPath != null && logPath !== '') {
-  const JsonReporter = require('metro/src/lib/JsonReporter');
+  const {JsonReporter} = require('metro');
   const fs = require('fs');
   const path = require('path');
-  module.exports = class extends JsonReporter {
+  // $FlowFixMe[missing-type-arg]
+  reporter = class extends JsonReporter {
     constructor() {
       fs.mkdirSync(path.dirname(logPath), {
         recursive: true,
@@ -23,5 +27,7 @@ if (logPath != null && logPath !== '') {
     }
   };
 } else {
-  module.exports = require('metro/src/lib/TerminalReporter');
+  reporter = require('metro').TerminalReporter;
 }
+
+module.exports = reporter;

@@ -10,7 +10,11 @@
 
 import type {FeatureFlagDefinitions} from '../../types';
 
-import {DO_NOT_MODIFY_COMMENT, getCxxTypeFromDefaultValue} from '../../utils';
+import {
+  DO_NOT_MODIFY_COMMENT,
+  getCxxTypeFromDefaultValue,
+  getCxxValueFromDefaultValue,
+} from '../../utils';
 import signedsource from 'signedsource';
 
 export default function (definitions: FeatureFlagDefinitions): string {
@@ -41,7 +45,7 @@ ${Object.entries(definitions.common)
       `  ${getCxxTypeFromDefaultValue(
         flagConfig.defaultValue,
       )} ${flagName}() override {
-    return ${JSON.stringify(flagConfig.defaultValue)};
+    return ${getCxxValueFromDefaultValue(flagConfig.defaultValue)};
   }`,
   )
   .join('\n\n')}

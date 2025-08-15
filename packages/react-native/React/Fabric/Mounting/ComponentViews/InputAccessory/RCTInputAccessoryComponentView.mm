@@ -12,8 +12,8 @@
 #import <React/RCTSurfaceTouchHandler.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
+#import <react/renderer/components/FBReactNativeSpec/Props.h>
 #import <react/renderer/components/inputaccessory/InputAccessoryComponentDescriptor.h>
-#import <react/renderer/components/rncore/Props.h>
 #import "RCTInputAccessoryContentView.h"
 
 #import "RCTFabricComponentsPlugins.h"

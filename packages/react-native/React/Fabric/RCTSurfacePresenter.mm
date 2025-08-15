@@ -16,7 +16,6 @@
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTConstants.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
@@ -25,6 +24,7 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+#import <react/utils/FollyConvert.h>
 
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -51,7 +51,7 @@ using namespace facebook::react;
   std::mutex _schedulerAccessMutex;
   std::mutex _schedulerLifeCycleMutex;
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Pointer is protected by `_schedulerAccessMutex`.
-  ContextContainer::Shared _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
+  std::shared_ptr<const ContextContainer> _contextContainer; // Protected by `_schedulerLifeCycleMutex`.
   RuntimeExecutor _runtimeExecutor; // Protected by `_schedulerLifeCycleMutex`.
   std::optional<RuntimeExecutor> _bridgelessBindingsExecutor; // Only used for installing bindings.
 
@@ -59,7 +59,7 @@ using namespace facebook::react;
   std::vector<__weak id<RCTSurfacePresenterObserver>> _observers; // Protected by `_observerListMutex`.
 }
 
-- (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
+- (instancetype)initWithContextContainer:(std::shared_ptr<const ContextContainer>)contextContainer
                          runtimeExecutor:(RuntimeExecutor)runtimeExecutor
               bridgelessBindingsExecutor:(std::optional<RuntimeExecutor>)bridgelessBindingsExecutor
 {
@@ -96,7 +96,7 @@ using namespace facebook::react;
   return _scheduler;
 }
 
-- (ContextContainer::Shared)contextContainer
+- (std::shared_ptr<const ContextContainer>)contextContainer
 {
   std::lock_guard<std::mutex> lock(_schedulerLifeCycleMutex);
   return _contextContainer;
@@ -148,28 +148,34 @@ using namespace facebook::react;
   return componentView;
 }
 
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
+- (void)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
+{
+  ReactTag tag = [reactTag integerValue];
+  [self schedulerDidSynchronouslyUpdateViewOnUIThread:tag props:convertIdToFollyDynamic(props)];
+}
+
+- (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(ReactTag)tag props:(folly::dynamic)props
 {
   RCTScheduler *scheduler = [self scheduler];
   if (!scheduler) {
-    return NO;
+    return;
   }
 
-  ReactTag tag = [reactTag integerValue];
   UIView<RCTComponentViewProtocol> *componentView =
       [_mountingManager.componentViewRegistry findComponentViewWithTag:tag];
   if (componentView == nil) {
-    return NO; // This view probably isn't managed by Fabric
+    return; // This view probably isn't managed by Fabric
   }
   ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
   auto *componentDescriptor = [scheduler findComponentDescriptorByHandle_DO_NOT_USE_THIS_IS_BROKEN:handle];
 
   if (!componentDescriptor) {
-    return YES;
+    return;
   }
 
-  [_mountingManager synchronouslyUpdateViewOnUIThread:tag changedProps:props componentDescriptor:*componentDescriptor];
-  return YES;
+  [_mountingManager synchronouslyUpdateViewOnUIThread:tag
+                                         changedProps:std::move(props)
+                                  componentDescriptor:*componentDescriptor];
 }
 
 - (void)setupAnimationDriverWithSurfaceHandler:(const facebook::react::SurfaceHandler &)surfaceHandler
@@ -225,12 +231,14 @@ using namespace facebook::react;
 
 - (RCTScheduler *)_createScheduler
 {
-  auto componentRegistryFactory =
-      [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
-          const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
-        return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
-            createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
-      };
+  auto componentRegistryFactory = [factory =
+                                       wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
+                                      const EventDispatcher::Weak &eventDispatcher,
+                                      const std::shared_ptr<const ContextContainer> &contextContainer) {
+    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+        createComponentDescriptorRegistryWithParameters:{.eventDispatcher = eventDispatcher,
+                                                         .contextContainer = contextContainer}];
+  };
 
   auto runtimeExecutor = _runtimeExecutor;
 

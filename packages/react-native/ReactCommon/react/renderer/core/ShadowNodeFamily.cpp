@@ -31,9 +31,7 @@ ShadowNodeFamily::ShadowNodeFamily(
       eventEmitter_(std::move(eventEmitter)),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),
-      componentName_(componentDescriptor.getComponentName()),
-      isDeletionOfUnmountedViewsEnabled_(
-          ReactNativeFeatureFlags::enableDeletionOfUnmountedViews()) {}
+      componentName_(componentDescriptor.getComponentName()) {}
 
 void ShadowNodeFamily::setParent(const ShadowNodeFamily::Shared& parent) const {
   react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
@@ -78,9 +76,25 @@ Tag ShadowNodeFamily::getTag() const {
   return tag_;
 }
 
+jsi::Value ShadowNodeFamily::getInstanceHandle(jsi::Runtime& runtime) const {
+  if (instanceHandle_ == nullptr) {
+    return jsi::Value::null();
+  }
+
+  return instanceHandle_->getInstanceHandle(runtime);
+}
+
+InstanceHandle::Shared ShadowNodeFamily::getInstanceHandle() const {
+  return instanceHandle_;
+}
+
+void ShadowNodeFamily::setInstanceHandle(
+    InstanceHandle::Shared& instanceHandle) const {
+  instanceHandle_ = instanceHandle;
+}
+
 ShadowNodeFamily::~ShadowNodeFamily() {
-  if (isDeletionOfUnmountedViewsEnabled_ && !hasBeenMounted_ &&
-      onUnmountedFamilyDestroyedCallback_ != nullptr) {
+  if (!hasBeenMounted_ && onUnmountedFamilyDestroyedCallback_ != nullptr) {
     onUnmountedFamilyDestroyedCallback_(*this);
   }
 }
@@ -159,13 +173,15 @@ std::shared_ptr<const State> ShadowNodeFamily::getMostRecentStateIfObsolete(
   return mostRecentState_;
 }
 
-void ShadowNodeFamily::dispatchRawState(StateUpdate&& stateUpdate) const {
+void ShadowNodeFamily::dispatchRawState(
+    StateUpdate&& stateUpdate,
+    EventQueue::UpdateMode updateMode) const {
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate));
+  eventDispatcher->dispatchStateUpdate(std::move(stateUpdate), updateMode);
 }
 
 } // namespace facebook::react

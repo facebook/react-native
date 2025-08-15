@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format strict-local
  * @flow strict-local
+ * @format strict-local
  */
 
 import type {AnyAttributeType} from '../../Renderer/shims/ReactNativeTypes';
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import processAspectRatio from '../../StyleSheet/processAspectRatio';
 import processBackgroundImage from '../../StyleSheet/processBackgroundImage';
 import processBoxShadow from '../../StyleSheet/processBoxShadow';
@@ -121,7 +122,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  filter: {process: processFilter},
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processFilter},
 
   /**
    * MixBlendMode
@@ -136,7 +139,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /*
    * BoxShadow
    */
-  boxShadow: {process: processBoxShadow},
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processBoxShadow},
 
   /**
    * Linear Gradient
@@ -215,4 +220,4 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   objectFit: true,
 };
 
-module.exports = ReactNativeStyleAttributes;
+export default ReactNativeStyleAttributes;

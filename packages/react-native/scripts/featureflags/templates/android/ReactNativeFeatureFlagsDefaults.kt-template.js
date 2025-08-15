@@ -13,6 +13,7 @@ import type {FeatureFlagDefinitions} from '../../types';
 import {
   DO_NOT_MODIFY_COMMENT,
   getKotlinTypeFromDefaultValue,
+  getKotlinValueFromDefaultValue,
 } from '../../utils';
 import signedsource from 'signedsource';
 
@@ -39,7 +40,7 @@ ${Object.entries(definitions.common)
     ([flagName, flagConfig]) =>
       `  override fun ${flagName}(): ${getKotlinTypeFromDefaultValue(
         flagConfig.defaultValue,
-      )} = ${JSON.stringify(flagConfig.defaultValue)}`,
+      )} = ${getKotlinValueFromDefaultValue(flagConfig.defaultValue)}`,
   )
   .join('\n\n')}
 }

@@ -4,37 +4,34 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
-'use strict';
-
-const invariant = require('invariant');
-const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+import invariant from 'invariant';
+import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
 
 const LoggingTestModule = {
-  logToConsole: function (str) {
-    console.log(str);
+  logToConsole(message: string): void {
+    console.log(message);
   },
-  logToConsoleAfterWait: function (str, timeout_ms) {
+  logToConsoleAfterWait(message: string, delay: number): void {
     setTimeout(function () {
-      console.log(str);
-    }, timeout_ms);
+      console.log(message);
+    }, delay);
   },
-  warning: function (str) {
-    console.warn(str);
+  warning(message: string): void {
+    console.warn(message);
   },
-  invariant: function (str) {
-    invariant(false, str);
+  invariant(message: string): void {
+    invariant(false, message);
   },
-  logErrorToConsole: function (str) {
-    console.error(str);
+  logErrorToConsole(message: string): void {
+    console.error(message);
   },
-  throwError: function (str) {
-    throw new Error(str);
+  throwError(message: string): void {
+    throw new Error(message);
   },
 };
 
 BatchedBridge.registerCallableModule('LoggingTestModule', LoggingTestModule);
-
-module.exports = LoggingTestModule;

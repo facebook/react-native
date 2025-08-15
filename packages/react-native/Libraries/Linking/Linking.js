@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -21,13 +21,7 @@ type LinkingEventDefinitions = {
   url: [{url: string}],
 };
 
-/**
- * `Linking` gives you a general interface to interact with both incoming
- * and outgoing app links.
- *
- * See https://reactnative.dev/docs/linking
- */
-class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
+class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor() {
     super(Platform.OS === 'ios' ? nullthrows(NativeLinkingManager) : undefined);
   }
@@ -40,8 +34,7 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
    */
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
+    listener: (...LinkingEventDefinitions[K]) => mixed,
   ): EventSubscription {
     return this.addListener(eventType, listener);
   }
@@ -130,4 +123,12 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   }
 }
 
-module.exports = (new Linking(): Linking);
+const Linking: LinkingImpl = new LinkingImpl();
+
+/**
+ * `Linking` gives you a general interface to interact with both incoming
+ * and outgoing app links.
+ *
+ * See https://reactnative.dev/docs/linking
+ */
+export default Linking;

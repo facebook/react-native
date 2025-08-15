@@ -54,13 +54,13 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function () {
  * });
  * ```
  */
-type TBackHandler = {|
+type TBackHandler = {
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
     handler: BackPressHandler,
   ) => {remove: () => void, ...},
-|};
+};
 const BackHandler: TBackHandler = {
   exitApp: function (): void {
     if (!NativeDeviceEventManager) {
@@ -93,4 +93,4 @@ const BackHandler: TBackHandler = {
   },
 };
 
-module.exports = BackHandler;
+export default BackHandler;

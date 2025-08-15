@@ -60,4 +60,4 @@ const UIManagerProperties: $ReadOnlyArray<string> = [
   'lazilyLoadView',
 ];
 
-module.exports = UIManagerProperties;
+export default UIManagerProperties;

@@ -50,7 +50,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.fresco.ImageCacheControl
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -73,7 +73,7 @@ import com.facebook.react.views.image.MultiPostprocessor.Companion.from
 import com.facebook.react.views.imagehelper.ImageSource
 import com.facebook.react.views.imagehelper.ImageSource.Companion.getTransparentBitmapImageSource
 import com.facebook.react.views.imagehelper.MultiSourceHelper.getBestSourceForSize
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper.Companion.instance
+import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import kotlin.math.abs
 
 /**
@@ -85,7 +85,7 @@ public class ReactImageView(
     context: Context,
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, *, *, *>,
     private val globalImageLoadListener: GlobalImageLoadListener?,
-    private var callerContext: Any?
+    private var callerContext: Any?,
 ) : GenericDraweeView(context, buildHierarchy(context)) {
 
   private val sources: MutableList<ImageSource> = mutableListOf()
@@ -146,7 +146,8 @@ public class ReactImageView(
                       id,
                       imageSource?.source,
                       loaded,
-                      total))
+                      total,
+                  ))
             }
 
             override fun onSubmit(id: String, callerContext: Any?) {
@@ -160,7 +161,7 @@ public class ReactImageView(
             override fun onFinalImageSet(
                 id: String,
                 imageInfo: ImageInfo?,
-                animatable: Animatable?
+                animatable: Animatable?,
             ) {
               if (imageInfo != null && imageSource != null && eventDispatcher != null) {
                 eventDispatcher.dispatchEvent(
@@ -169,7 +170,8 @@ public class ReactImageView(
                         getId(),
                         imageSource?.source,
                         imageInfo.width,
-                        imageInfo.height))
+                        imageInfo.height,
+                    ))
                 eventDispatcher.dispatchEvent(
                     createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId()))
               }
@@ -181,7 +183,10 @@ public class ReactImageView(
               }
               eventDispatcher.dispatchEvent(
                   createErrorEvent(
-                      UIManagerHelper.getSurfaceId(this@ReactImageView), getId(), throwable))
+                      UIManagerHelper.getSurfaceId(this@ReactImageView),
+                      getId(),
+                      throwable,
+                  ))
             }
           }
     }
@@ -288,7 +293,8 @@ public class ReactImageView(
                 source.getString("uri"),
                 source.getDouble("width"),
                 source.getDouble("height"),
-                cacheControl)
+                cacheControl,
+            )
         if (Uri.EMPTY == imageSource.uri) {
           warnImageSource(source.getString("uri"))
           imageSource = getTransparentBitmapImageSource(context)
@@ -326,7 +332,7 @@ public class ReactImageView(
   }
 
   public fun setDefaultSource(name: String?) {
-    val newDefaultDrawable = instance.getResourceDrawable(context, name)
+    val newDefaultDrawable = ResourceDrawableIdHelper.getResourceDrawable(context, name)
     if (defaultImageDrawable != newDefaultDrawable) {
       defaultImageDrawable = newDefaultDrawable
       isDirty = true
@@ -334,7 +340,7 @@ public class ReactImageView(
   }
 
   public fun setLoadingIndicatorSource(name: String?) {
-    val drawable = instance.getResourceDrawable(context, name)
+    val drawable = ResourceDrawableIdHelper.getResourceDrawable(context, name)
     val newLoadingIndicatorSource = drawable?.let { AutoRotateDrawable(it, 1000) }
     if (loadingImageDrawable != newLoadingIndicatorSource) {
       loadingImageDrawable = newLoadingIndicatorSource
@@ -472,7 +478,11 @@ public class ReactImageView(
         draweeControllerBuilder
             as
             AbstractDraweeControllerBuilder<
-                *, ImageRequest, CloseableReference<CloseableImage>, ImageInfo>
+                *,
+                ImageRequest,
+                CloseableReference<CloseableImage>,
+                ImageInfo,
+            >
 
     // This builder is reused
     builder.reset()
@@ -581,7 +591,8 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG && !ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactBuildConfig.DEBUG &&
+        !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
     }
   }
@@ -589,7 +600,7 @@ public class ReactImageView(
   private inner class TilePostprocessor : BasePostprocessor() {
     override fun process(
         source: Bitmap,
-        bitmapFactory: PlatformBitmapFactory
+        bitmapFactory: PlatformBitmapFactory,
     ): CloseableReference<Bitmap> {
       val destRect = Rect(0, 0, width, height)
       scaleType.getTransform(tileMatrix, destRect, source.width, source.height, 0.0f, 0.0f)

@@ -16,13 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
-
 Pod::Spec.new do |s|
   s.name                   = "ReactCommon"
   s.module_name            = "ReactCommon"
@@ -34,15 +27,17 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "GCC_WARN_PEDANTIC" => "YES" }
-  if ENV['USE_FRAMEWORKS']
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
     s.header_mappings_dir     = './'
   end
+
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
@@ -51,29 +46,24 @@ Pod::Spec.new do |s|
     ss.dependency "React-perflogger", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
-    ss.dependency "RCT-Folly", folly_version
     ss.dependency "React-logger", version
-    ss.dependency "DoubleConversion"
-    ss.dependency "fast_float", "6.1.4"
-    ss.dependency "fmt", "11.0.2"
-    ss.dependency "glog"
-    if using_hermes
+    if use_hermes()
       ss.dependency "hermes-engine"
     end
 
     ss.subspec "bridging" do |sss|
       sss.dependency           "React-jsi", version
-      sss.source_files         = "react/bridging/**/*.{cpp,h}"
+      sss.source_files         = podspec_sources("react/bridging/**/*.{cpp,h}", "react/bridging/**/*.h")
       sss.exclude_files        = "react/bridging/tests"
       sss.header_dir           = "react/bridging"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
-      if using_hermes
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+      if use_hermes()
         sss.dependency "hermes-engine"
       end
     end
 
     ss.subspec "core" do |sss|
-      sss.source_files = "react/nativemodule/core/ReactCommon/**/*.{cpp,h}"
+      sss.source_files = podspec_sources("react/nativemodule/core/ReactCommon/**/*.{cpp,h}", "react/nativemodule/core/ReactCommon/**/*.h")
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_debug.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-utils/React_utils.framework/Headers\"" }
       sss.dependency "React-debug", version
       sss.dependency "React-featureflags", version

@@ -35,6 +35,8 @@ export interface StatusBarPropsAndroid {
   /**
    * The background color of the status bar.
    *
+   * Please note that this prop has no effect on Android 15+
+   *
    * @platform android
    */
   backgroundColor?: ColorValue | undefined;
@@ -43,6 +45,8 @@ export interface StatusBarPropsAndroid {
    * If the status bar is translucent. When translucent is set to true,
    * the app will draw under the status bar. This is useful when using a
    * semi transparent status bar color.
+   *
+   * Please note that this prop has no effect on Android 15+
    *
    * @platform android
    */

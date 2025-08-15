@@ -20,18 +20,16 @@ class JReadableMapBuffer : public jni::HybridClass<JReadableMapBuffer> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer;";
 
-  static void registerNatives();
-
   static jni::local_ref<JReadableMapBuffer::jhybridobject> createWithContents(
       MapBuffer&& map);
 
   explicit JReadableMapBuffer(MapBuffer&& map);
 
-  jni::local_ref<jni::JByteBuffer> importByteBuffer();
-
   std::vector<uint8_t> data() const;
 
  private:
+  jni::local_ref<jni::JByteBuffer> importByteBuffer();
+
   std::vector<uint8_t> serializedData_;
 };
 

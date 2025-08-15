@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -20,7 +19,6 @@ import type {DeviceMock} from './InspectorDeviceUtils';
 import {fetchJson} from './FetchUtils';
 import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
-import {dataUriToBuffer} from 'data-uri-to-buffer';
 import until from 'wait-for-expect';
 
 export type CdpMessageFromTarget = $ReadOnly<{
@@ -66,9 +64,9 @@ export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
     originalHandleCallsArray === debugger_.handle.mock.calls
       ? debugger_.handle.mock.calls.slice(originalHandleCallCount)
       : debugger_.handle.mock.calls;
-  // $FlowIgnore[incompatible-type]
+  // $FlowFixMe[incompatible-type]
   const [receivedMessage]: [Message] = newHandleCalls.find(
-    // $FlowIgnore[incompatible-call]
+    // $FlowFixMe[incompatible-call]
     (call: [Message]) => call[0].method === message.method,
   );
   return receivedMessage;
@@ -99,23 +97,14 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
     originalEventCallsArray === device.wrappedEventParsed.mock.calls
       ? device.wrappedEventParsed.mock.calls.slice(originalEventCallCount)
       : device.wrappedEventParsed.mock.calls;
-  // $FlowIgnore[incompatible-use]
+  // $FlowFixMe[incompatible-use]
   const [receivedMessage] = newEventCalls.find(
-    // $FlowIgnore[prop-missing]
-    // $FlowIgnore[incompatible-use]
+    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-use]
     call => call[0].wrappedEvent.id === message.id,
   );
-  // $FlowIgnore[incompatible-return]
+  // $FlowFixMe[incompatible-return]
   return receivedMessage.wrappedEvent;
-}
-
-export function parseJsonFromDataUri<T: JSONSerializable>(uri: string): T {
-  expect(uri).toMatch(/^data:/);
-  const parsedUri = dataUriToBuffer(uri);
-  expect(parsedUri.type).toBe('application/json');
-  return JSON.parse(
-    new TextDecoder(parsedUri.charset).decode(parsedUri.buffer),
-  );
 }
 
 export async function createAndConnectTarget(
@@ -152,7 +141,7 @@ export async function createAndConnectTarget(
     await until(async () => {
       pageList = (await fetchJson(
         `${serverRef.serverBaseUrl}/json`,
-        // $FlowIgnore[unclear-type]
+        // $FlowFixMe[unclear-type]
       ): any);
       expect(pageList).toHaveLength(1);
     });

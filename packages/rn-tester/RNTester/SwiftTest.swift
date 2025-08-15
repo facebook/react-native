@@ -11,8 +11,9 @@ import React
 func getReactNativeVersion() -> String {
   let version = RCTGetReactNativeVersion()
   guard let major = version?[RCTVersionMajor],
-        let minor = version?[RCTVersionMinor],
-        let patch = version?[RCTVersionPatch] else {
+    let minor = version?[RCTVersionMinor],
+    let patch = version?[RCTVersionPatch]
+  else {
     fatalError()
   }
   var result = "\(major).\(minor).\(patch)"

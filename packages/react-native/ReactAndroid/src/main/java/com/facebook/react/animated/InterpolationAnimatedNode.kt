@@ -19,11 +19,11 @@ import java.util.regex.Pattern
  *
  * Currently only a linear interpolation is supported on an input range of an arbitrary size.
  */
-public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode() {
+internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode() {
   private enum class OutputType {
     Number,
     Color,
-    String
+    String,
   }
 
   private val inputRange: DoubleArray = fromDoubleArray(config.getArray("inputRange"))
@@ -72,7 +72,8 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
                   inputRange,
                   outputRange as DoubleArray,
                   extrapolateLeft,
-                  extrapolateRight)
+                  extrapolateRight,
+              )
       OutputType.Color ->
           objectValue =
               Integer.valueOf(interpolateColor(parentValue, inputRange, outputRange as IntArray))
@@ -86,7 +87,8 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
                     inputRange,
                     outputRange as Array<DoubleArray>,
                     extrapolateLeft,
-                    extrapolateRight)
+                    extrapolateRight,
+                )
           }
 
       else -> {}
@@ -96,12 +98,12 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
   override fun getAnimatedObject(): Any? = objectValue
 
   override fun prettyPrint(): String =
-      "InterpolationAnimatedNode[$tag] super: {super.prettyPrint()}"
+      "InterpolationAnimatedNode[$tag] super: ${super.prettyPrint()}"
 
-  public companion object {
-    public const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
-    public const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
-    public const val EXTRAPOLATE_TYPE_EXTEND: String = "extend"
+  companion object {
+    const val EXTRAPOLATE_TYPE_IDENTITY: String = "identity"
+    const val EXTRAPOLATE_TYPE_CLAMP: String = "clamp"
+    const val EXTRAPOLATE_TYPE_EXTEND: String = "extend"
 
     private val numericPattern: Pattern =
         Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?")
@@ -152,14 +154,14 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       return outputRange
     }
 
-    public fun interpolate(
+    fun interpolate(
         value: Double,
         inputMin: Double,
         inputMax: Double,
         outputMin: Double,
         outputMax: Double,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): Double {
       var result = value
 
@@ -194,12 +196,12 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       } else outputMin + (outputMax - outputMin) * (result - inputMin) / (inputMax - inputMin)
     }
 
-    public fun interpolate(
+    fun interpolate(
         value: Double,
         inputRange: DoubleArray,
         outputRange: DoubleArray,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): Double {
       val rangeIndex = findRangeIndex(value, inputRange)
       return interpolate(
@@ -209,14 +211,11 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
           outputRange[rangeIndex],
           outputRange[rangeIndex + 1],
           extrapolateLeft,
-          extrapolateRight)
+          extrapolateRight,
+      )
     }
 
-    public fun interpolateColor(
-        value: Double,
-        inputRange: DoubleArray,
-        outputRange: IntArray
-    ): Int {
+    fun interpolateColor(value: Double, inputRange: DoubleArray, outputRange: IntArray): Int {
       val rangeIndex = findRangeIndex(value, inputRange)
       val outputMin = outputRange[rangeIndex]
       val outputMax = outputRange[rangeIndex + 1]
@@ -234,13 +233,13 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       return ColorUtils.blendARGB(outputMin, outputMax, ratio.toFloat())
     }
 
-    public fun interpolateString(
+    fun interpolateString(
         pattern: String,
         value: Double,
         inputRange: DoubleArray,
         outputRange: Array<DoubleArray>,
         extrapolateLeft: String?,
-        extrapolateRight: String?
+        extrapolateRight: String?,
     ): String {
       val rangeIndex = findRangeIndex(value, inputRange)
       val sb = StringBuffer(pattern.length)
@@ -255,7 +254,8 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
                 outputRange[rangeIndex][i],
                 outputRange[rangeIndex + 1][i],
                 extrapolateLeft,
-                extrapolateRight)
+                extrapolateRight,
+            )
         val intVal = v.toInt()
         m.appendReplacement(sb, if (intVal.toDouble() != v) v.toString() else intVal.toString())
         i++
@@ -265,7 +265,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
     }
 
     private fun findRangeIndex(value: Double, ranges: DoubleArray): Int {
-      var index: Int = 1
+      var index = 1
       while (index < ranges.size - 1) {
         if (ranges[index] >= value) {
           break

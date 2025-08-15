@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol RCTComponentViewProtocol;
+@protocol RCTModuleProvider;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSString *> *)URLRequestHandlerClassNames;
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup;
+
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents;
+
+- (nonnull NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders;
 
 @end
 

@@ -25,6 +25,7 @@ function parseFlowAndThrowErrors(
       babel: false,
       // Parse Flow without a pragma
       flow: 'all',
+      reactRuntimeTarget: '19',
       ...(options.filename != null ? {sourceFilename: options.filename} : {}),
     });
   } catch (e) {

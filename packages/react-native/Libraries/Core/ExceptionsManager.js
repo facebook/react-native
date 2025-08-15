@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -13,7 +13,7 @@
 import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
-class SyntheticError extends Error {
+export class SyntheticError extends Error {
   name: string = '';
 }
 
@@ -62,7 +62,7 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
-  const parseErrorStack = require('./Devtools/parseErrorStack');
+  const parseErrorStack = require('./Devtools/parseErrorStack').default;
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
   const originalMessage = e.message || '';
@@ -75,9 +75,6 @@ function reportException(
   if (!message.startsWith(namePrefix)) {
     message = namePrefix + message;
   }
-
-  message =
-    e.jsEngine == null ? message : `${message}, js engine: ${e.jsEngine}`;
 
   // $FlowFixMe[unclear-type]
   const extraData: Object = {
@@ -108,15 +105,20 @@ function reportException(
     // we feed back into console.error, to make sure any methods that are
     // monkey patched on top of console.error are called when coming from
     // handleException
-    console.error(data.message);
+    console.error(e);
   }
 
   if (__DEV__) {
-    const LogBox = require('../LogBox/LogBox').default;
-    LogBox.addException({
-      ...data,
-      isComponentError: !!e.isComponentError,
-    });
+    // reportToConsole is only true when coming from handleException,
+    // and the error has not yet been logged. If it's false, then it was
+    // reported to LogBox in reactConsoleErrorHandler, and we don't need to.
+    if (reportToConsole) {
+      const LogBox = require('../LogBox/LogBox').default;
+      LogBox.addException({
+        ...data,
+        isComponentError: !!e.isComponentError,
+      });
+    }
   } else if (isFatal || e.type !== 'warn') {
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
@@ -223,12 +225,6 @@ function reactConsoleErrorHandler(...args) {
     error = firstArg;
   } else {
     const stringifySafe = require('../Utilities/stringifySafe').default;
-    if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
-      // React warnings use console.error so that a stack trace is shown, but
-      // we don't (currently) want these to show a redbox
-      // (Note: Logic duplicated in polyfills/console.js.)
-      return;
-    }
     const message = args
       .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
       .join(' ');
@@ -243,6 +239,23 @@ function reactConsoleErrorHandler(...args) {
     !global.RN$handleException ||
     !global.RN$handleException(error, isFatal, reportToConsole)
   ) {
+    if (__DEV__) {
+      // If we're not reporting to the console in reportException,
+      // we need to report it as a console.error here.
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
+      if (!reportToConsole) {
+        require('../LogBox/LogBox').default.addConsoleLog('error', ...args);
+      }
+    }
+    if (error.message.startsWith('Warning: ')) {
+      // React warnings use console.error so that a stack trace is shown, but
+      // we don't (currently) want these to report to native.
+      // Note: We can probably remove this, but would be a breaking change
+      // if the warning module is still used somewhere.
+      // Logic duplicated in polyfills/console.js
+      return;
+    }
     reportException(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
@@ -273,10 +286,12 @@ function installConsoleErrorReporter() {
   }
 }
 
-module.exports = {
+const ExceptionsManager = {
   decoratedExtraDataKey,
   handleException,
   installConsoleErrorReporter,
-  SyntheticError,
+  SyntheticError, // <- for backwards compatibility
   unstable_setExceptionDecorator,
 };
+
+export default ExceptionsManager;

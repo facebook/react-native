@@ -25,14 +25,22 @@ export type NativeIntersectionObserverEntry = {
 
 export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
+  rootShadowNode?: ?mixed,
   targetShadowNode: mixed,
   thresholds: $ReadOnlyArray<number>,
   rootThresholds?: ?$ReadOnlyArray<number>,
 };
 
+export opaque type NativeIntersectionObserverToken = mixed;
+
 export interface Spec extends TurboModule {
-  +observe: (options: NativeIntersectionObserverObserveOptions) => void;
-  +unobserve: (intersectionObserverId: number, targetShadowNode: mixed) => void;
+  +observeV2?: (
+    options: NativeIntersectionObserverObserveOptions,
+  ) => NativeIntersectionObserverToken;
+  +unobserveV2?: (
+    intersectionObserverId: number,
+    token: NativeIntersectionObserverToken,
+  ) => void;
   +connect: (notifyIntersectionObserversCallback: () => void) => void;
   +disconnect: () => void;
   +takeRecords: () => $ReadOnlyArray<NativeIntersectionObserverEntry>;

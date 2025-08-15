@@ -12,13 +12,9 @@ import org.junit.Test
 
 /** Tests for [JavaScriptModuleRegistry] */
 class JavaScriptModuleRegistryTest {
-  private interface TestJavaScriptModule : JavaScriptModule {
-    fun doSomething()
-  }
+  private interface TestJavaScriptModule : JavaScriptModule
 
-  private interface `OuterClass$NestedInnerClass` : JavaScriptModule {
-    fun doSomething()
-  }
+  private interface `OuterClass$NestedInnerClass` : JavaScriptModule
 
   @Test
   fun testGetJSModuleName() {

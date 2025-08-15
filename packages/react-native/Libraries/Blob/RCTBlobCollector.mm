@@ -21,7 +21,7 @@ RCTBlobCollector::~RCTBlobCollector()
 {
   RCTBlobManager *blobManager = blobManager_;
   NSString *blobId = [NSString stringWithUTF8String:blobId_.c_str()];
-  dispatch_async([blobManager_ executionQueue], ^{
+  dispatch_async(blobManager_.methodQueue, ^{
     [blobManager remove:blobId];
   });
 }

@@ -12,20 +12,34 @@
 
 import type {ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import type {
+  ListRenderItemInfo,
   ScrollToLocationParamsType,
   SectionBase as _SectionBase,
+  SectionData,
   VirtualizedSectionListProps,
 } from '@react-native/virtualized-lists';
 
 import Platform from '../Utilities/Platform';
-import {VirtualizedSectionList} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import * as React from 'react';
 
-type Item = any;
+const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
+type DefaultSectionT = {
+  [key: string]: any,
+};
 
-type RequiredProps<SectionT: SectionBase<any>> = {|
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+
+export type {
+  SectionData as SectionListData,
+  ScrollToLocationParamsType as SectionListScrollParams,
+};
+
+type RequiredSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * The actual data to render, akin to the `data` prop in [`<FlatList>`](https://reactnative.dev/docs/flatlist).
    *
@@ -37,25 +51,24 @@ type RequiredProps<SectionT: SectionBase<any>> = {|
    *       ItemSeparatorComponent?: ?ReactClass<{highlighted: boolean, ...}>,
    *     }>
    */
-  sections: $ReadOnlyArray<SectionT>,
-|};
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
 
-type OptionalProps<SectionT: SectionBase<any>> = {|
+export type SectionListRenderItemInfo<ItemT, SectionT = DefaultSectionT> = {
+  ...ListRenderItemInfo<ItemT>,
+  section: SectionData<ItemT, SectionT>,
+  ...
+};
+
+export type SectionListRenderItem<ItemT, SectionT = DefaultSectionT> = (
+  info: SectionListRenderItemInfo<ItemT, SectionT>,
+) => React.Node | null;
+
+type OptionalSectionListProps<ItemT, SectionT = DefaultSectionT> = {
   /**
    * Default renderer for every item in every section. Can be over-ridden on a per-section basis.
    */
-  renderItem?: (info: {
-    item: Item,
-    index: number,
-    section: SectionT,
-    separators: {
-      highlight: () => void,
-      unhighlight: () => void,
-      updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-      ...
-    },
-    ...
-  }) => null | React.Node,
+  renderItem?: SectionListRenderItem<ItemT, SectionT>,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -78,7 +91,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * falls back to using the index, like react does. Note that this sets keys for each item, but
    * each overall section still needs its own key.
    */
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   /**
    * Called once when the scroll position gets within `onEndReachedThreshold` of the rendered
    * content.
@@ -90,31 +103,16 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    * This may improve scroll performance for large lists.
    */
   removeClippedSubviews?: boolean,
-|};
+};
 
-export type Props<SectionT> = {|
-  ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
-    {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, 'getItem'>,
-      getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'getItemCount',
-      >,
-      renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'renderItem',
-      >,
-      keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
-        'keyExtractor',
-      >,
-      ...
-    },
+export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
+  ...Omit<
+    VirtualizedSectionListProps<ItemT, SectionT>,
+    'getItem' | 'getItemCount' | 'renderItem' | 'keyExtractor',
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
-|};
+  ...RequiredSectionListProps<ItemT, SectionT>,
+  ...OptionalSectionListProps<ItemT, SectionT>,
+};
 
 /**
  * A performant interface for rendering sectioned lists, supporting the most handy features:
@@ -172,9 +170,10 @@ export type Props<SectionT> = {|
  *
  */
 export default class SectionList<
-  SectionT: SectionBase<any>,
-> extends React.PureComponent<Props<SectionT>, void> {
-  props: Props<SectionT>;
+  ItemT = any,
+  SectionT = DefaultSectionT,
+> extends React.PureComponent<SectionListProps<ItemT, SectionT>> {
+  props: SectionListProps<ItemT, SectionT>;
 
   /**
    * Scrolls to the item at the specified `sectionIndex` and `itemIndex` (within the section)
@@ -261,9 +260,7 @@ export default class SectionList<
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  _captureRef = ref => {
+  _captureRef = (ref: ?React.RefOf<VirtualizedSectionList>) => {
     this._wrapperListRef = ref;
   };
 }

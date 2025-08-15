@@ -72,3 +72,8 @@ export interface ImageURISource {
 }
 
 export type ImageRequireSource = number;
+
+export type ImageSource =
+  | ImageRequireSource
+  | ImageURISource
+  | ReadonlyArray<ImageURISource>;

@@ -9,17 +9,11 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB_RECURSE hermes_executor_SRC CONFIGURE_DEPENDS *.cpp)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(hermes_executor
         OBJECT
         ${hermes_executor_SRC}
-)
-target_compile_options(
-        hermes_executor
-        PRIVATE
-        $<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>
-        -std=c++20
-        -fexceptions
 )
 target_merge_so(hermes_executor)
 target_include_directories(hermes_executor PRIVATE .)
@@ -30,3 +24,7 @@ target_link_libraries(
         jsi
         reactnative
 )
+target_compile_reactnative_options(hermes_executor PRIVATE)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
+  target_compile_options(hermes_executor PRIVATE -DHERMES_ENABLE_DEBUGGER=1)
+endif()

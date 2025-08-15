@@ -48,7 +48,8 @@ class ComponentBuilder final {
   /*
    * Internal, type-erased version of `build`.
    */
-  ShadowNode::Unshared build(const ElementFragment& elementFragment) const;
+  std::shared_ptr<ShadowNode> build(
+      const ElementFragment& elementFragment) const;
 
   ComponentDescriptorRegistry::Shared componentDescriptorRegistry_;
 };

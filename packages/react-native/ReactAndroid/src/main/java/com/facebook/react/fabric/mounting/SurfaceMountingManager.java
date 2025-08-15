@@ -21,6 +21,8 @@ import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.GuardedRunnable;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -188,57 +190,55 @@ public class SurfaceMountingManager {
     mTagToViewState.put(mSurfaceId, new ViewState(mSurfaceId, rootView, mRootViewManager, true));
 
     Runnable runnable =
-        () -> {
-          // The CPU has ticked since `addRootView` was called, so the surface could technically
-          // have already stopped here.
-          if (isStopped()) {
-            return;
+        new GuardedRunnable(Assertions.assertNotNull(mThemedReactContext)) {
+          @Override
+          public void runGuarded() {
+            // The CPU has ticked since `addRootView` was called, so the surface could technically
+            // have already stopped here.
+            if (isStopped()) {
+              return;
+            }
+
+            if (rootView.getId() == mSurfaceId) {
+              ReactSoftExceptionLogger.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Race condition in addRootView detected. Trying to set an id of ["
+                          + mSurfaceId
+                          + "] on the RootView, but that id has already been set. "));
+            } else if (rootView.getId() != View.NO_ID) {
+              FLog.e(
+                  TAG,
+                  "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
+                      + " tag: [%d]",
+                  rootView.getId(),
+                  mSurfaceId);
+              // This behavior can not be guaranteed in hybrid apps that have a native android layer
+              // over which reactRootViews are added and the native views need to have ids on them
+              // in order to work. Hence this can cause unnecessary crashes at runtime for hybrid
+              // apps. So converting this to a soft exception such that pure react-native devs can
+              // still see the warning while hybrid apps continue to run without crashes
+              ReactSoftExceptionLogger.logSoftException(
+                  TAG,
+                  new IllegalViewOperationException(
+                      "Trying to add a root view with an explicit id already set. React Native uses"
+                          + " the id field to track react tags and will overwrite this field. If"
+                          + " that is fine, explicitly overwrite the id field to View.NO_ID before"
+                          + " calling addRootView."));
+            }
+            rootView.setId(mSurfaceId);
+
+            if (rootView instanceof ReactRoot) {
+              ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
+            }
+
+            executeMountItemsOnViewAttach();
+
+            // By doing this after `executeMountItemsOnViewAttach`, we ensure that any operations
+            // scheduled while processing this queue are also added to the queue, instead of being
+            // processed immediately through the queue in `MountItemDispatcher`.
+            mRootViewAttached = true;
           }
-
-          if (rootView.getId() == mSurfaceId) {
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new IllegalViewOperationException(
-                    "Race condition in addRootView detected. Trying to set an id of ["
-                        + mSurfaceId
-                        + "] on the RootView, but that id has already been set. "));
-          } else if (rootView.getId() != View.NO_ID) {
-            FLog.e(
-                TAG,
-                "Trying to add RootTag to RootView that already has a tag: existing tag: [%d] new"
-                    + " tag: [%d]",
-                rootView.getId(),
-                mSurfaceId);
-            // This behavior can not be guaranteed in hybrid apps that have a native android layer
-            // over
-            // which reactRootViews are added and the native views need to have ids on them in order
-            // to
-            // work.
-            // Hence this can cause unnecessary crashes at runtime for hybrid apps.
-            // So converting this to a soft exception such that pure react-native devs can still see
-            // the
-            // warning while hybrid apps continue to run without crashes
-            ReactSoftExceptionLogger.logSoftException(
-                TAG,
-                new IllegalViewOperationException(
-                    "Trying to add a root view with an explicit id already set. React Native uses"
-                        + " the id field to track react tags and will overwrite this field. If that"
-                        + " is fine, explicitly overwrite the id field to View.NO_ID before calling"
-                        + " addRootView."));
-          }
-          rootView.setId(mSurfaceId);
-
-          if (rootView instanceof ReactRoot) {
-            ((ReactRoot) rootView).setRootViewTag(mSurfaceId);
-          }
-
-          executeMountItemsOnViewAttach();
-
-          // By doing this after `executeMountItemsOnViewAttach`, we ensure
-          // that any operations scheduled while processing this queue are
-          // also added to the queue, instead of being processed immediately
-          // through the queue in `MountItemDispatcher`.
-          mRootViewAttached = true;
         };
 
     if (UiThreadUtil.isOnUiThread()) {
@@ -461,7 +461,7 @@ public class SurfaceMountingManager {
     // TODO: throw exception here?
     if (parentViewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
           new IllegalStateException(
               "Unable to find viewState for tag: [" + parentTag + "] for removeViewAt"));
       return;
@@ -655,7 +655,7 @@ public class SurfaceMountingManager {
       @Nullable EventEmitterWrapper eventEmitterWrapper,
       boolean isLayoutable) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        Systrace.TRACE_TAG_REACT,
         "SurfaceMountingManager::createViewUnsafe(" + componentName + ")");
     try {
       ReactStylesDiffMap propMap = new ReactStylesDiffMap(props);
@@ -675,7 +675,7 @@ public class SurfaceMountingManager {
         viewState.mViewManager = viewManager;
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -697,7 +697,7 @@ public class SurfaceMountingManager {
   }
 
   @Deprecated
-  public void receiveCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
+  public void receiveCommand(int reactTag, int commandId, ReadableArray commandArgs) {
     if (isStopped()) {
       return;
     }
@@ -725,8 +725,7 @@ public class SurfaceMountingManager {
     viewState.mViewManager.receiveCommand(viewState.mView, commandId, commandArgs);
   }
 
-  public void receiveCommand(
-      int reactTag, @NonNull String commandId, @Nullable ReadableArray commandArgs) {
+  public void receiveCommand(int reactTag, @NonNull String commandId, ReadableArray commandArgs) {
     if (isStopped()) {
       return;
     }
@@ -832,9 +831,16 @@ public class SurfaceMountingManager {
       parent.requestLayout();
     }
 
-    ViewState parentViewState = getViewState(parentTag);
+    // TODO T212247085: Make this non-nullable again after rolling out
+    // disableMountItemReorderingAndroid
+    ViewState parentViewState = getNullableViewState(parentTag);
     IViewGroupManager<?> parentViewManager = null;
-    if (parentViewState.mViewManager != null) {
+    if (parentViewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
+              "Unable to find viewState for tag: " + parentTag + " for updateLayout"));
+    } else if (parentViewState.mViewManager != null) {
       parentViewManager = (IViewGroupManager) parentViewState.mViewManager;
     }
     if (parentViewManager == null || !parentViewManager.needsCustomLayoutForChildren()) {
@@ -1033,14 +1039,13 @@ public class SurfaceMountingManager {
 
     if (viewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
-          new IllegalStateException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
               "Unable to find viewState for tag: " + reactTag + " for deleteView"));
       return;
     }
 
-    if (ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()
-        && mViewsWithActiveTouches.contains(reactTag)) {
+    if (mViewsWithActiveTouches.contains(reactTag)) {
       // If the view that went offscreen is still being touched, we can't delete it yet.
       // We have to delay the deletion till the touch is completed.
       // This is causing bugs like those otherwise:
@@ -1179,16 +1184,10 @@ public class SurfaceMountingManager {
   }
 
   public void markActiveTouchForTag(int reactTag) {
-    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
-      return;
-    }
     mViewsWithActiveTouches.add(reactTag);
   }
 
   public void sweepActiveTouchForTag(int reactTag) {
-    if (!ReactNativeFeatureFlags.enableEventEmitterRetentionDuringGesturesOnAndroid()) {
-      return;
-    }
     mViewsWithActiveTouches.remove(reactTag);
     if (mViewsToDeleteAfterTouchFinishes.contains(reactTag)) {
       mViewsToDeleteAfterTouchFinishes.remove(reactTag);

@@ -22,7 +22,10 @@ export default function LogBoxNotificationMessage(props: {
 }): React.Node {
   return (
     <View style={styles.container}>
-      <Text numberOfLines={1} style={styles.text}>
+      <Text
+        id="logbox_notification_message_text"
+        numberOfLines={1}
+        style={styles.text}>
         {props.message && (
           <LogBoxMessage
             plaintext

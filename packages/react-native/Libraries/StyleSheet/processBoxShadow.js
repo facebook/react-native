@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react-native
  */
 
 import type {ProcessedColorValue} from './processColor';
@@ -202,6 +201,10 @@ function parseLength(length: string): ?number {
   }
 
   if (match[3] != null && match[3] !== 'px') {
+    return null;
+  }
+
+  if (match[3] == null && match[1] !== '0') {
     return null;
   }
 

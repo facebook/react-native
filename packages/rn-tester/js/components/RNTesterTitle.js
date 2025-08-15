@@ -4,38 +4,39 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import {RNTesterThemeContext} from './RNTesterTheme';
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+type Props = $ReadOnly<{
+  title: string,
+}>;
 
-class RNTesterTitle extends React.Component<$FlowFixMeProps> {
-  render(): React.Node {
-    return (
-      <RNTesterThemeContext.Consumer>
-        {theme => {
-          return (
-            <View
-              style={[
-                styles.container,
-                {
-                  borderColor: theme.SeparatorColor,
-                  backgroundColor: theme.TertiaryGroupedBackgroundColor,
-                },
-              ]}>
-              <Text style={[styles.text, {color: theme.LabelColor}]}>
-                {this.props.title}
-              </Text>
-            </View>
-          );
-        }}
-      </RNTesterThemeContext.Consumer>
-    );
-  }
+function RNTesterTitle({title}: Props): React.Node {
+  return (
+    <RNTesterThemeContext.Consumer>
+      {theme => {
+        return (
+          <View
+            style={[
+              styles.container,
+              {
+                borderColor: theme.SeparatorColor,
+                backgroundColor: theme.TertiaryGroupedBackgroundColor,
+              },
+            ]}>
+            <Text style={[styles.text, {color: theme.LabelColor}]}>
+              {title}
+            </Text>
+          </View>
+        );
+      }}
+    </RNTesterThemeContext.Consumer>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -53,4 +54,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RNTesterTitle;
+export default RNTesterTitle;

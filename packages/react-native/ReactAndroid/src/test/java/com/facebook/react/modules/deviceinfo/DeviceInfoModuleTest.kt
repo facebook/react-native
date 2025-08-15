@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.modules.deviceinfo
 
 import com.facebook.react.bridge.BridgeReactContext
@@ -23,7 +25,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
-import org.mockito.Mockito.*
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -101,7 +106,8 @@ class DeviceInfoModuleTest : TestCase() {
         reactContext,
         fakeLandscapeDisplayMetrics,
         fakePortraitDisplayMetrics,
-        fakeLandscapeDisplayMetrics)
+        fakeLandscapeDisplayMetrics,
+    )
   }
 
   private fun givenDisplayMetricsHolderContains(fakeDisplayMetrics: WritableMap?) {
@@ -113,7 +119,7 @@ class DeviceInfoModuleTest : TestCase() {
   companion object {
     private fun verifyUpdateDimensionsEventsEmitted(
         context: ReactContext?,
-        vararg expectedEvents: WritableMap
+        vararg expectedEvents: WritableMap,
     ) {
       val expectedEventList = listOf(*expectedEvents)
       val captor = ArgumentCaptor.forClass(WritableMap::class.java)

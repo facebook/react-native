@@ -44,7 +44,8 @@ internal open class ReactImageDownloadListener<INFO> :
 
     override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
-    @Deprecated("Deprecated in Java") override fun getOpacity(): Int = PixelFormat.OPAQUE
+    @Deprecated("Deprecated in Java", ReplaceWith("PixelFormat.OPAQUE"))
+    override fun getOpacity(): Int = PixelFormat.OPAQUE
   }
 
   companion object {

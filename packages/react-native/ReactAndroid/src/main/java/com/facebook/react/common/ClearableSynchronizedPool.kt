@@ -13,7 +13,7 @@ import androidx.core.util.Pools.Pool
  * Like [androidx.core.util.Pools.SynchronizedPool] with the option to clear the pool (e.g. on
  * memory pressure).
  */
-public class ClearableSynchronizedPool<T : Any>(maxSize: Int) : Pool<T> {
+internal class ClearableSynchronizedPool<T : Any>(maxSize: Int) : Pool<T> {
 
   private val pool: Array<Any?> = arrayOfNulls(maxSize)
   private var size = 0
@@ -42,7 +42,7 @@ public class ClearableSynchronizedPool<T : Any>(maxSize: Int) : Pool<T> {
   }
 
   @Synchronized
-  public fun clear(): Unit {
+  fun clear(): Unit {
     for (i in 0 until size) {
       pool[i] = null
     }

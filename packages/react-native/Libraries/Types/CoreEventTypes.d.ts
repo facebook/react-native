@@ -33,11 +33,16 @@ interface TextLayoutLine {
 }
 
 /**
- * @see TextProps.onTextLayout
+ * @deprecated Use `TextLayoutEvent` instead.
  */
 export interface TextLayoutEventData extends TargetedEvent {
   lines: TextLayoutLine[];
 }
+
+/**
+ * @see TextProps.onTextLayout
+ */
+export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
 
 // Similar to React.SyntheticEvent except for nativeEvent
 export interface NativeSyntheticEvent<T>
@@ -242,6 +247,10 @@ export interface MouseEvent extends NativeSyntheticEvent<NativeMouseEvent> {}
 export interface TargetedEvent {
   target: number;
 }
+
+export type BlurEvent = NativeSyntheticEvent<TargetedEvent>;
+
+export type FocusEvent = NativeSyntheticEvent<TargetedEvent>;
 
 export interface PointerEvents {
   onPointerEnter?: ((event: PointerEvent) => void) | undefined;

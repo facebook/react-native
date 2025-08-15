@@ -7,6 +7,8 @@
 
 #import "RCTScrollContentShadowView.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <yoga/Yoga.h>
 
 #import "RCTUtils.h"
@@ -29,3 +31,5 @@
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -12,10 +12,10 @@ import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.bridge.WritableArray
 
 @DoNotStrip
-public interface JSTimers : JavaScriptModule {
-  public fun callTimers(timerIDs: WritableArray)
+internal interface JSTimers : JavaScriptModule {
+  fun callTimers(timerIDs: WritableArray)
 
-  public fun callIdleCallbacks(frameTime: Double)
+  fun callIdleCallbacks(frameTime: Double)
 
-  public fun emitTimeDriftWarning(warningMessage: String)
+  fun emitTimeDriftWarning(warningMessage: String)
 }

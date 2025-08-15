@@ -16,11 +16,11 @@ import com.facebook.react.modules.i18nmanager.I18nUtil
 internal class BorderInsets {
   private val edgeInsets = arrayOfNulls<Float?>(LogicalEdge.values().size)
 
-  public fun setBorderWidth(edge: LogicalEdge, width: Float?) {
+  fun setBorderWidth(edge: LogicalEdge, width: Float?) {
     edgeInsets[edge.ordinal] = width
   }
 
-  public fun resolve(
+  fun resolve(
       layoutDirection: Int,
       context: Context,
   ): RectF {
@@ -48,7 +48,8 @@ internal class BorderInsets {
                   ?: edgeInsets[LogicalEdge.BLOCK.ordinal]
                   ?: edgeInsets[LogicalEdge.VERTICAL.ordinal]
                   ?: edgeInsets[LogicalEdge.ALL.ordinal]
-                  ?: 0f)
+                  ?: 0f,
+          )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             RectF(
@@ -73,7 +74,8 @@ internal class BorderInsets {
                     ?: edgeInsets[LogicalEdge.BLOCK.ordinal]
                     ?: edgeInsets[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeInsets[LogicalEdge.ALL.ordinal]
-                    ?: 0f)
+                    ?: 0f,
+            )
           } else {
             RectF(
                 edgeInsets[LogicalEdge.END.ordinal]
@@ -97,7 +99,8 @@ internal class BorderInsets {
                     ?: edgeInsets[LogicalEdge.BLOCK.ordinal]
                     ?: edgeInsets[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeInsets[LogicalEdge.ALL.ordinal]
-                    ?: 0f)
+                    ?: 0f,
+            )
           }
       else -> throw IllegalArgumentException("Expected resolved layout direction")
     }

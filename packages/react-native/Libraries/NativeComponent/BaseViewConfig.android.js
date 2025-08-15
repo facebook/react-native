@@ -4,12 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
@@ -109,6 +110,18 @@ const bubblingEventTypes = {
       bubbled: 'onClick',
     },
   },
+  topBlur: {
+    phasedRegistrationNames: {
+      captured: 'onBlurCapture',
+      bubbled: 'onBlur',
+    },
+  },
+  topFocus: {
+    phasedRegistrationNames: {
+      captured: 'onFocusCapture',
+      bubbled: 'onFocus',
+    },
+  },
 };
 
 const directEventTypes = {
@@ -169,12 +182,12 @@ const validAttributesForNonEventProps = {
   experimental_backgroundImage: {
     process: require('../StyleSheet/processBackgroundImage').default,
   },
-  boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
-  },
-  filter: {
-    process: require('../StyleSheet/processFilter').default,
-  },
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processBoxShadow').default},
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processFilter').default},
   mixBlendMode: true,
   isolation: true,
   opacity: true,
@@ -193,7 +206,9 @@ const validAttributesForNonEventProps = {
   accessibilityState: true,
   accessibilityActions: true,
   accessibilityValue: true,
+  experimental_accessibilityOrder: true,
   importantForAccessibility: true,
+  screenReaderFocusable: true,
   role: true,
   rotation: true,
   scaleX: true,
@@ -357,7 +372,7 @@ const validAttributesForNonEventProps = {
   },
   focusable: true,
   backfaceVisibility: true,
-};
+} as const;
 
 // Props for bubbling and direct events
 const validAttributesForEventProps = {
@@ -397,7 +412,7 @@ const validAttributesForEventProps = {
   onPointerOutCapture: true,
   onPointerOver: true,
   onPointerOverCapture: true,
-};
+} as const;
 
 /**
  * On Android, Props are derived from a ViewManager and its ShadowNode.

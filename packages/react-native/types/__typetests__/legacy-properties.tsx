@@ -8,6 +8,7 @@
  */
 
 import * as React from 'react';
+// @ts-ignore
 import {TextInputProperties} from 'react-native';
 
 class Test extends React.Component<TextInputProperties> {}

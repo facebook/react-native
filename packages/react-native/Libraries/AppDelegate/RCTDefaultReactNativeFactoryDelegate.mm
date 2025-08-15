@@ -9,6 +9,9 @@
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
+#if USE_THIRD_PARTY_JSC != 1
+#import <React/RCTHermesInstanceFactory.h>
+#endif
 
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
@@ -38,6 +41,13 @@
   rootViewController.view = rootView;
 }
 
+- (JSRuntimeFactoryRef)createJSRuntimeFactory
+{
+#if USE_THIRD_PARTY_JSC != 1
+  return jsrt_create_hermes_factory();
+#endif
+}
+
 - (void)customizeRootView:(RCTRootView *)rootView
 {
   // Override point for customization after application launch.
@@ -47,8 +57,7 @@
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = self.fabricEnabled;
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, YES);
 
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
@@ -76,6 +85,17 @@
 {
 }
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  return self.dependencyProvider ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.dependencyProvider) : @[];
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
@@ -86,26 +106,22 @@
 
 - (BOOL)newArchEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
   return YES;
-#else
-  return NO;
-#endif
 }
 
 - (BOOL)bridgelessEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (BOOL)fabricEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (BOOL)turboModuleEnabled
 {
-  return self.newArchEnabled;
+  return YES;
 }
 
 - (Class)getModuleClassFromName:(const char *)name
@@ -116,6 +132,13 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
 }
 
 @end

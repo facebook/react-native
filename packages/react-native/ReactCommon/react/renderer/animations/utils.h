@@ -37,7 +37,7 @@ static inline void handleShouldFirstComeBeforeSecondRemovesOnly(
     }
   }
 
-  if (removeMutationsByTag.size() == 0) {
+  if (removeMutationsByTag.empty()) {
     return;
   }
 
@@ -104,15 +104,11 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     // must come first.
     if (lhs.type == ShadowViewMutation::Type::Remove &&
         lhs.parentTag == rhs.parentTag) {
-      if (lhs.index > rhs.index) {
-        return true;
-      } else {
-        return false;
-      }
+      return lhs.index > rhs.index;
     }
   }
 
-  return false;
+  return &lhs < &rhs;
 }
 
 std::pair<Float, Float> calculateAnimationProgress(

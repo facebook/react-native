@@ -9,8 +9,9 @@
 
 #include <ReactCommon/SchedulerPriority.h>
 #include <jsi/jsi.h>
-#include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
+#include <react/timing/primitives.h>
 
+#include <cstdint>
 #include <optional>
 #include <variant>
 
@@ -26,12 +27,12 @@ struct Task final : public jsi::NativeState {
   Task(
       SchedulerPriority priority,
       jsi::Function&& callback,
-      std::chrono::steady_clock::time_point expirationTime);
+      HighResTimeStamp expirationTime);
 
   Task(
       SchedulerPriority priority,
       RawCallback&& callback,
-      std::chrono::steady_clock::time_point expirationTime);
+      HighResTimeStamp expirationTime);
 
  private:
   friend RuntimeScheduler_Legacy;
@@ -40,7 +41,8 @@ struct Task final : public jsi::NativeState {
 
   SchedulerPriority priority;
   std::optional<std::variant<jsi::Function, RawCallback>> callback;
-  RuntimeSchedulerClock::time_point expirationTime;
+  HighResTimeStamp expirationTime;
+  uint64_t id;
 
   jsi::Value execute(jsi::Runtime& runtime, bool didUserCallbackTimeout);
 };

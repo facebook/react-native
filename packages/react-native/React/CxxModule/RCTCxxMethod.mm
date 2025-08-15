@@ -10,8 +10,8 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
-#import <React/RCTFollyConvert.h>
 #import <cxxreact/JsArgumentHelpers.h>
+#import <react/utils/FollyConvert.h>
 
 #import "RCTCxxUtils.h"
 

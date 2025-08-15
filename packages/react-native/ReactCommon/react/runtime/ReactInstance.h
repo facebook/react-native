@@ -8,6 +8,7 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <cxxreact/JSBigString.h>
 #include <cxxreact/MessageQueueThread.h>
 #include <jserrorhandler/JsErrorHandler.h>
 #include <jsi/jsi.h>
@@ -17,7 +18,6 @@
 #include <react/runtime/BufferedRuntimeExecutor.h>
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/TimerManager.h>
-#include <vector>
 
 namespace facebook::react {
 
@@ -40,7 +40,7 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   struct JSRuntimeFlags {
     bool isProfiling = false;
-    const std::string runtimeDiagnosticFlags = "";
+    const std::string runtimeDiagnosticFlags;
   };
 
   void initializeRuntime(
@@ -50,7 +50,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
   void loadScript(
       std::unique_ptr<const JSBigString> script,
       const std::string& sourceURL,
-      std::function<void(jsi::Runtime& runtime)>&& completion = nullptr);
+      std::function<void(jsi::Runtime& runtime)>&& beforeLoad = nullptr,
+      std::function<void(jsi::Runtime& runtime)>&& afterLoad = nullptr);
 
   void registerSegment(uint32_t segmentId, const std::string& segmentPath);
 

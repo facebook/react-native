@@ -1,0 +1,53 @@
+{
+    "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+    "projectFolder": "${typegen_directory}/react-native",
+    "mainEntryPointFilePath": "${typegen_directory}/react-native/index.d.ts",
+    "compiler": {
+      "overrideTsconfig": {
+        "$schema": "http://json.schemastore.org/tsconfig",
+        "compilerOptions": {
+          "lib": ["es2020"],
+          "types": [],
+          "moduleResolution": "bundler",
+          "customConditions": ["react-native-strict-api"]
+        }
+      }
+    },
+    "apiReport": {
+      "enabled": false
+    },
+    "docModel": {
+      "enabled": false
+    },
+    "dtsRollup": {
+      "enabled": true,
+      "untrimmedFilePath": "",
+      "alphaTrimmedFilePath": "<projectFolder>/dist/ReactNativeApi.d.ts"
+    },
+    "tsdocMetadata": {
+      "enabled": false
+    },
+    "messages": {
+      "compilerMessageReporting": {
+        "default": {
+          "logLevel": "none"
+        }
+      },
+      "extractorMessageReporting": {
+        "default": {
+          "logLevel": "none"
+        },
+        "ae-forgotten-export": {
+          "logLevel": "none"
+        },
+        "ae-internal-missing-underscore": {
+          "logLevel": "none"
+        }
+      },
+      "tsdocMessageReporting": {
+        "default": {
+          "logLevel": "none"
+        }
+      }
+    }
+  }

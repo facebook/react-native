@@ -8,6 +8,8 @@
 #import <React/RCTDataRequestHandler.h>
 #import <ReactCommon/RCTTurboModule.h>
 
+#import <mutex>
+
 #import "RCTNetworkPlugins.h"
 
 @interface RCTDataRequestHandler () <RCTTurboModule>
@@ -15,14 +17,22 @@
 
 @implementation RCTDataRequestHandler {
   NSOperationQueue *_queue;
+  std::mutex _operationHandlerMutexLock;
 }
 
 RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_queue cancelAllOperations];
-  _queue = nil;
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
+  if (_queue) {
+    for (NSOperation *operation in _queue.operations) {
+      if (!operation.isCancelled && !operation.isFinished) {
+        [operation cancel];
+      }
+    }
+    _queue = nil;
+  }
 }
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
@@ -32,14 +42,20 @@ RCT_EXPORT_MODULE()
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
   // Lazy setup
   if (!_queue) {
     _queue = [NSOperationQueue new];
     _queue.maxConcurrentOperationCount = 2;
   }
 
-  __weak __block NSBlockOperation *weakOp;
-  __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+  NSBlockOperation *op = [NSBlockOperation new];
+  __weak NSBlockOperation *weakOp = op;
+  [op addExecutionBlock:^{
+    NSBlockOperation *strongOp = weakOp; // Strong reference to avoid deallocation during execution
+    if (strongOp == nil || [strongOp isCancelled]) {
+      return;
+    }
     // Get mime type
     NSRange firstSemicolon = [request.URL.resourceSpecifier rangeOfString:@";"];
     NSString *mimeType =
@@ -51,25 +67,27 @@ RCT_EXPORT_MODULE()
                                            expectedContentLength:-1
                                                 textEncodingName:nil];
 
-    [delegate URLRequest:weakOp didReceiveResponse:response];
+    [delegate URLRequest:strongOp didReceiveResponse:response];
 
     // Load data
     NSError *error;
     NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
     if (data) {
-      [delegate URLRequest:weakOp didReceiveData:data];
+      [delegate URLRequest:strongOp didReceiveData:data];
     }
-    [delegate URLRequest:weakOp didCompleteWithError:error];
+    [delegate URLRequest:strongOp didCompleteWithError:error];
   }];
 
-  weakOp = op;
   [_queue addOperation:op];
   return op;
 }
 
 - (void)cancelRequest:(NSOperation *)op
 {
-  [op cancel];
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
+  if (!op.isCancelled && !op.isFinished) {
+    [op cancel];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

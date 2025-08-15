@@ -11,11 +11,6 @@
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
-#ifdef ANDROID
-#include <folly/dynamic.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#endif
-
 namespace facebook::react {
 
 /*
@@ -29,15 +24,11 @@ class TextInputState final {
       AttributedStringBox attributedStringBox,
       AttributedString reactTreeAttributedString,
       ParagraphAttributes paragraphAttributes,
-      int64_t mostRecentEventCount);
-
-#ifdef ANDROID
-  TextInputState(
-      const TextInputState& previousState,
-      const folly::dynamic& data);
-  folly::dynamic getDynamic() const;
-  MapBuffer getMapBuffer() const;
-#endif
+      int64_t mostRecentEventCount)
+      : attributedStringBox(std::move(attributedStringBox)),
+        reactTreeAttributedString(std::move(reactTreeAttributedString)),
+        paragraphAttributes(std::move(paragraphAttributes)),
+        mostRecentEventCount(mostRecentEventCount) {}
 
   /*
    * All content of <TextInput> component.
@@ -60,14 +51,6 @@ class TextInputState final {
   ParagraphAttributes paragraphAttributes;
 
   int64_t mostRecentEventCount{0};
-
-#ifdef ANDROID
-  /**
-   * Stores an opaque cache ID used on the Java side to refer to a specific
-   * AttributedString for measurement purposes only.
-   */
-  int64_t cachedAttributedStringId{0};
-#endif
 };
 
 } // namespace facebook::react

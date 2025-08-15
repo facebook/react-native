@@ -6,10 +6,15 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import * as StaticViewConfigValidator from '../StaticViewConfigValidator';
+
+beforeAll(() => {
+  // $FlowExpectedError[cannot-write]
+  ReactNativeFeatureFlags.enableNativeCSSParsing = () => false;
+});
 
 test('passes for identical configs', () => {
   const name = 'RCTView';
@@ -76,7 +81,11 @@ test('passes for identical configs', () => {
 
   const validationResult = StaticViewConfigValidator.validate(
     name,
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     nativeViewConfig,
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     staticViewConfig,
   );
 
@@ -197,6 +206,8 @@ test('allows static viewconfigs to have more properties than native viewconfigs'
   const validationResult = StaticViewConfigValidator.validate(
     name,
     nativeViewConfig,
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
     staticViewConfig,
   );
 

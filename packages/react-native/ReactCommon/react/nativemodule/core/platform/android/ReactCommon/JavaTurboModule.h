@@ -50,7 +50,12 @@ class JSI_EXPORT JavaTurboModule : public TurboModule {
       size_t argCount,
       jmethodID& cachedMethodID);
 
-  void setEventEmitterCallback(jni::alias_ref<jobject> instance);
+ protected:
+  void configureEventEmitterCallback();
+
+  [[deprecated]] void setEventEmitterCallback(jni::alias_ref<jobject>) {
+    configureEventEmitterCallback();
+  }
 
  private:
   // instance_ can be of type JTurboModule, or JNativeModule

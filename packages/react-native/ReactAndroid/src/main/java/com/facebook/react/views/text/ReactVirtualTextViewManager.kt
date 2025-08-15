@@ -8,6 +8,9 @@
 package com.facebook.react.views.text
 
 import android.view.View
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BaseViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -16,23 +19,36 @@ import com.facebook.react.uimanager.ThemedReactContext
  * Manages raw text nodes. Since they are used only as a virtual nodes any type of native view
  * operation will throw an [IllegalStateException]
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactVirtualTextViewManager.REACT_CLASS)
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class ReactVirtualTextViewManager : BaseViewManager<View, ReactVirtualTextShadowNode>() {
 
-  public override fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
-  protected override fun createViewInstance(context: ThemedReactContext): View {
+  override fun createViewInstance(context: ThemedReactContext): View {
     throw IllegalStateException("Attempt to create a native view for RCTVirtualText")
   }
 
-  public override fun updateExtraData(view: View, extraData: Any): Unit {}
+  override fun updateExtraData(view: View, extraData: Any): Unit = Unit
 
-  public override fun getShadowNodeClass(): Class<ReactVirtualTextShadowNode> =
+  override fun getShadowNodeClass(): Class<ReactVirtualTextShadowNode> =
       ReactVirtualTextShadowNode::class.java
 
   override fun createShadowNodeInstance(): ReactVirtualTextShadowNode = ReactVirtualTextShadowNode()
 
   internal companion object {
-    public const val REACT_CLASS: String = "RCTVirtualText"
+    const val REACT_CLASS: String = "RCTVirtualText"
+
+    init {
+      LegacyArchitectureLogger.assertLegacyArchitecture(
+          "ReactVirtualTextViewManager",
+          LegacyArchitectureLogLevel.ERROR,
+      )
+    }
   }
 }

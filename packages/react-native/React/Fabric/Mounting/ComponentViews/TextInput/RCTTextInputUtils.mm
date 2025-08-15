@@ -46,6 +46,7 @@ void RCTCopyBackedTextInput(
   toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
   toTextInput.passwordRules = fromTextInput.passwordRules;
   toTextInput.disableKeyboardShortcuts = fromTextInput.disableKeyboardShortcuts;
+  toTextInput.acceptDragAndDropTypes = fromTextInput.acceptDragAndDropTypes;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
@@ -268,4 +269,32 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
   return smartInsertDelete.has_value()
       ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
       : UITextSmartInsertDeleteTypeDefault;
+}
+
+UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes)
+{
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSNumber *> *dataDetectorTypesMap = nil;
+
+  dispatch_once(&onceToken, ^{
+    dataDetectorTypesMap = @{
+      @"link" : @(UIDataDetectorTypeLink),
+      @"phoneNumber" : @(UIDataDetectorTypePhoneNumber),
+      @"address" : @(UIDataDetectorTypeAddress),
+      @"calendarEvent" : @(UIDataDetectorTypeCalendarEvent),
+      @"trackingNumber" : @(UIDataDetectorTypeShipmentTrackingNumber),
+      @"flightNumber" : @(UIDataDetectorTypeFlightNumber),
+      @"lookupSuggestion" : @(UIDataDetectorTypeLookupSuggestion),
+      @"all" : @(UIDataDetectorTypeAll)
+    };
+  });
+
+  UIDataDetectorTypes ret = UIDataDetectorTypeNone;
+  for (const auto &dataType : dataDetectorTypes) {
+    NSNumber *val = dataDetectorTypesMap[RCTNSStringFromString(dataType)];
+    if (val) {
+      ret |= (UIDataDetectorTypes)val.unsignedIntValue;
+    }
+  }
+  return ret;
 }

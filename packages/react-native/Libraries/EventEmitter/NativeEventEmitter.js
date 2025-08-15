@@ -24,7 +24,15 @@ interface NativeModule {
   removeListeners(count: number): void;
 }
 
-export type {EventSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+type EmitterSubscription = EventSubscription;
+
+export type {EventSubscription, EmitterSubscription};
+/** @deprecated Use `EventSubscription` instead. */
+export type NativeEventSubscription = EventSubscription;
+
+// $FlowFixMe[unclear-type] unclear type of events
+type UnsafeNativeEventObject = Object;
 
 /**
  * `NativeEventEmitter` is intended for use by Native Modules to emit events to
@@ -36,12 +44,15 @@ export type {EventSubscription};
  * This means event names must be globally unique, and it means that call sites
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
-export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeNativeEventObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;
 
-  constructor(nativeModule: ?NativeModule) {
+  constructor(nativeModule?: ?NativeModule) {
     if (Platform.OS === 'ios') {
       invariant(
         nativeModule != null,
@@ -74,7 +85,7 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
 
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
+    listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed,
   ): EventSubscription {
     this._nativeModule?.addListener(eventType);
@@ -98,7 +109,7 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
-    ...args: $ElementType<TEventToArgsMap, TEvent>
+    ...args: TEventToArgsMap[TEvent]
   ): void {
     // Generally, `RCTDeviceEventEmitter` is directly invoked. But this is
     // included for completeness.

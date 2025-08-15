@@ -7,11 +7,10 @@
 
 package com.facebook.react.utils
 
-import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
-import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
 import org.gradle.api.Project
 
@@ -19,11 +18,8 @@ internal object NdkConfiguratorUtils {
   @Suppress("UnstableApiUsage")
   fun configureReactNativeNdk(project: Project, extension: ReactExtension) {
     project.pluginManager.withPlugin("com.android.application") {
-      project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
-        if (!project.isNewArchEnabled(extension)) {
-          // For Old Arch, we don't need to setup the NDK
-          return@finalizeDsl
-        }
+      project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).finalizeDsl {
+          ext ->
         // We enable prefab so users can consume .so/headers from ReactAndroid and hermes-engine
         // .aar
         ext.buildFeatures.prefab = true
@@ -34,7 +30,8 @@ internal object NdkConfiguratorUtils {
           ext.externalNativeBuild.cmake.path =
               File(
                   extension.reactNativeDir.get().asFile,
-                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt")
+                  "ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt",
+              )
         }
 
         // Parameters should be provided in an additive manner (do not override what
@@ -75,31 +72,21 @@ internal object NdkConfiguratorUtils {
   fun configureNewArchPackagingOptions(
       project: Project,
       extension: ReactExtension,
-      variant: Variant
+      variant: Variant,
   ) {
-    if (!project.isNewArchEnabled(extension)) {
-      // For Old Arch, we set a pickFirst only on libraries that we know are
-      // clashing with our direct dependencies (mainly FBJNI and Hermes).
-      variant.packaging.jniLibs.pickFirsts.addAll(
-          listOf(
-              "**/libfbjni.so",
-              "**/libc++_shared.so",
-          ))
-    } else {
-      // We set some packagingOptions { pickFirst ... } for our users for libraries we own.
-      variant.packaging.jniLibs.pickFirsts.addAll(
-          listOf(
-              // This is the .so provided by FBJNI via prefab
-              "**/libfbjni.so",
-              // Those are prefab libraries we distribute via ReactAndroid
-              // Due to a bug in AGP, they fire a warning on console as both the JNI
-              // and the prefab .so files gets considered.
-              "**/libreactnative.so",
-              "**/libjsi.so",
-              // AGP will give priority of libc++_shared coming from App modules.
-              "**/libc++_shared.so",
-          ))
-    }
+    // We set some packagingOptions { pickFirst ... } for our users for libraries we own.
+    variant.packaging.jniLibs.pickFirsts.addAll(
+        listOf(
+            // This is the .so provided by FBJNI via prefab
+            "**/libfbjni.so",
+            // Those are prefab libraries we distribute via ReactAndroid
+            // Due to a bug in AGP, they fire a warning on console as both the JNI
+            // and the prefab .so files gets considered.
+            "**/libreactnative.so",
+            "**/libjsi.so",
+            // AGP will give priority of libc++_shared coming from App modules.
+            "**/libc++_shared.so",
+        ))
   }
 
   /**
@@ -110,27 +97,42 @@ internal object NdkConfiguratorUtils {
       config: ReactExtension,
       variant: Variant,
       hermesEnabled: Boolean,
+      useThirdPartyJSC: Boolean,
   ) {
     if (config.enableSoCleanup.get()) {
-      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled)
+      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled, useThirdPartyJSC)
       variant.packaging.jniLibs.excludes.addAll(excludes)
       variant.packaging.jniLibs.pickFirsts.addAll(includes)
     }
   }
 
-  fun getPackagingOptionsForVariant(hermesEnabled: Boolean): Pair<List<String>, List<String>> {
+  fun getPackagingOptionsForVariant(
+      hermesEnabled: Boolean,
+      useThirdPartyJSC: Boolean,
+  ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
-    if (hermesEnabled) {
-      excludes.add("**/libjsc.so")
-      excludes.add("**/libjsctooling.so")
-      includes.add("**/libhermes.so")
-      includes.add("**/libhermestooling.so")
-    } else {
-      excludes.add("**/libhermes.so")
-      excludes.add("**/libhermestooling.so")
-      includes.add("**/libjsc.so")
-      includes.add("**/libjsctooling.so")
+
+    // note: libjsctooling.so is kept here for backward compatibility.
+    when {
+      hermesEnabled -> {
+        excludes.add("**/libjsc.so")
+        excludes.add("**/libjsctooling.so")
+        includes.add("**/libhermes.so")
+        includes.add("**/libhermestooling.so")
+      }
+      useThirdPartyJSC -> {
+        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermestooling.so")
+        excludes.add("**/libjsctooling.so")
+        includes.add("**/libjsc.so")
+      }
+      else -> {
+        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermestooling.so")
+        includes.add("**/libjsc.so")
+        includes.add("**/libjsctooling.so")
+      }
     }
     return excludes to includes
   }

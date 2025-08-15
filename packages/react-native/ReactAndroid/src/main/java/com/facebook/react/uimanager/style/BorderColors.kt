@@ -25,7 +25,7 @@ internal value class BorderColors(
     @ColorInt val edgeColors: Array<Int?> = arrayOfNulls<Int?>(LogicalEdge.values().size)
 ) {
 
-  public fun resolve(layoutDirection: Int, context: Context): ColorEdges {
+  fun resolve(layoutDirection: Int, context: Context): ColorEdges {
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ColorEdges(
@@ -50,7 +50,8 @@ internal value class BorderColors(
                   ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                   ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                   ?: edgeColors[LogicalEdge.ALL.ordinal]
-                  ?: Color.BLACK)
+                  ?: Color.BLACK,
+          )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
             ColorEdges(
@@ -75,7 +76,8 @@ internal value class BorderColors(
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
-                    ?: Color.BLACK)
+                    ?: Color.BLACK,
+            )
           } else {
             ColorEdges(
                 edgeColors[LogicalEdge.END.ordinal]
@@ -99,7 +101,8 @@ internal value class BorderColors(
                     ?: edgeColors[LogicalEdge.BLOCK.ordinal]
                     ?: edgeColors[LogicalEdge.VERTICAL.ordinal]
                     ?: edgeColors[LogicalEdge.ALL.ordinal]
-                    ?: Color.BLACK)
+                    ?: Color.BLACK,
+            )
           }
       else -> throw IllegalArgumentException("Expected resolved layout direction")
     }

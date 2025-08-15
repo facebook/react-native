@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 const {getImageSourcesFromImageProps} = require('../ImageSourceUtils');
@@ -29,6 +29,9 @@ describe('ImageSourceUtils', () => {
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(1);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0].uri).toBe(uri);
   });
 
@@ -50,6 +53,9 @@ describe('ImageSourceUtils', () => {
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(2);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0]).toEqual(expect.objectContaining({uri: uri1, scale: 1}));
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 2}));
   });
@@ -71,6 +77,9 @@ describe('ImageSourceUtils', () => {
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(3);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0]).toEqual(expect.objectContaining({uri: uri1, scale: 3}));
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 2}));
     expect(sources[2]).toEqual(expect.objectContaining({uri: uri, scale: 1}));
@@ -89,6 +98,9 @@ describe('ImageSourceUtils', () => {
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(2);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0]).toEqual(expect.objectContaining({uri: uri1, scale: 2}));
     expect(sources[1]).toEqual(expect.objectContaining({uri: uri2, scale: 1}));
   });
@@ -115,12 +127,15 @@ describe('ImageSourceUtils', () => {
 
     const imageProps = {
       src: uri,
-      crossOrigin: 'use-credentials',
+      crossOrigin: 'use-credentials' as const,
     };
     const sources = getImageSourcesFromImageProps(imageProps);
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(1);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0]).toHaveProperty('headers', {
       ['Access-Control-Allow-Credentials']: 'true',
     });
@@ -129,15 +144,18 @@ describe('ImageSourceUtils', () => {
   it('should contain referrerPolicy headers when provided with src', () => {
     let uri = 'imageURI';
 
-    let referrerPolicy = 'origin-when-cross-origin';
+    let referrerPolicy = 'origin-when-cross-origin' as const;
     const imageProps = {
       src: uri,
-      referrerPolicy: referrerPolicy,
+      referrerPolicy,
     };
     const sources = getImageSourcesFromImageProps(imageProps);
 
     expect(sources).toBeDefined();
     expect(sources).toHaveLength(1);
+    if (!Array.isArray(sources)) {
+      throw new Error('Expected `sources` to be an array');
+    }
     expect(sources[0]).toHaveProperty('headers', {
       ['Referrer-Policy']: referrerPolicy,
     });

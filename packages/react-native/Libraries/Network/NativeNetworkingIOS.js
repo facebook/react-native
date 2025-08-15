@@ -8,6 +8,7 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeNetworkingIOS';
-import NativeNetworkingIOS from '../../src/private/specs/modules/NativeNetworkingIOS';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS';
+import NativeNetworkingIOS from '../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS';
+
 export default NativeNetworkingIOS;

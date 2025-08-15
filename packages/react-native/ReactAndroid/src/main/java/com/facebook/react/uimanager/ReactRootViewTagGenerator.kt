@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager
 
 /** Incremental counter for React Root View tag. */
-public object ReactRootViewTagGenerator {
+internal object ReactRootViewTagGenerator {
 
   // Keep in sync with ReactRootViewTagGenerator.h - see that file for an explanation on why the
   // increment here is 10.
@@ -17,6 +17,6 @@ public object ReactRootViewTagGenerator {
 
   @JvmStatic
   @Synchronized
-  public fun getNextRootViewTag(): Int =
+  fun getNextRootViewTag(): Int =
       nextRootViewTag.also { nextRootViewTag += ROOT_VIEW_TAG_INCREMENT }
 }

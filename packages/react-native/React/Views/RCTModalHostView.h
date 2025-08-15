@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import <React/RCTInvalidating.h>
 #import <React/RCTModalHostViewManager.h>
 #import <React/RCTView.h>
@@ -24,6 +26,7 @@
 
 @property (nonatomic, copy) RCTDirectEventBlock onShow;
 @property (nonatomic, assign) BOOL visible;
+@property (nonatomic, assign) BOOL allowSwipeDismissal;
 
 // Android only
 @property (nonatomic, assign) BOOL statusBarTranslucent;
@@ -54,3 +57,5 @@
                     animated:(BOOL)animated;
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

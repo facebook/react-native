@@ -8,14 +8,12 @@
  * @format
  */
 
-import type {AnimatedValueConfig} from './nodes/AnimatedValue';
-
 import Animated from './Animated';
 import {useRef} from 'react';
 
 export default function useAnimatedValue(
   initialValue: number,
-  config?: ?AnimatedValueConfig,
+  config?: ?Animated.AnimatedConfig,
 ): Animated.Value {
   const ref = useRef<null | Animated.Value>(null);
   if (ref.current == null) {

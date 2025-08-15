@@ -15,12 +15,12 @@ ComponentBuilder::ComponentBuilder(
     ComponentDescriptorRegistry::Shared componentDescriptorRegistry)
     : componentDescriptorRegistry_(std::move(componentDescriptorRegistry)){};
 
-ShadowNode::Unshared ComponentBuilder::build(
+std::shared_ptr<ShadowNode> ComponentBuilder::build(
     const ElementFragment& elementFragment) const {
   auto& componentDescriptor =
       componentDescriptorRegistry_->at(elementFragment.componentHandle);
 
-  auto children = ShadowNode::ListOfShared{};
+  auto children = std::vector<std::shared_ptr<const ShadowNode>>{};
   children.reserve(elementFragment.children.size());
   for (const auto& childFragment : elementFragment.children) {
     children.push_back(build(childFragment));
@@ -35,7 +35,8 @@ ShadowNode::Unshared ComponentBuilder::build(
   auto constShadowNode = componentDescriptor.createShadowNode(
       ShadowNodeFragment{
           elementFragment.props,
-          std::make_shared<const ShadowNode::ListOfShared>(children),
+          std::make_shared<
+              const std::vector<std::shared_ptr<const ShadowNode>>>(children),
           initialState},
       family);
 

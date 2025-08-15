@@ -55,11 +55,9 @@ internal class InsetBoxShadowDrawable(
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
-        if (blurRadius > 0) {
-          maskFilter =
-              BlurMaskFilter(
-                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
-                  BlurMaskFilter.Blur.NORMAL)
+        val convertedBlurRadius = FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE)
+        if (convertedBlurRadius > 0) {
+          maskFilter = BlurMaskFilter(convertedBlurRadius, BlurMaskFilter.Blur.NORMAL)
         }
       }
 
@@ -92,7 +90,8 @@ internal class InsetBoxShadowDrawable(
             bounds.left + (computedBorderInsets?.left ?: 0f),
             bounds.top + (computedBorderInsets?.top ?: 0f),
             bounds.right - (computedBorderInsets?.right ?: 0f),
-            bounds.bottom - (computedBorderInsets?.bottom ?: 0f))
+            bounds.bottom - (computedBorderInsets?.bottom ?: 0f),
+        )
     val paddingBoxRadii =
         computedBorderRadii?.let {
           floatArrayOf(
@@ -103,7 +102,8 @@ internal class InsetBoxShadowDrawable(
               innerRadius(it.bottomRight.horizontal, computedBorderInsets?.right),
               innerRadius(it.bottomRight.vertical, computedBorderInsets?.bottom),
               innerRadius(it.bottomLeft.horizontal, computedBorderInsets?.left),
-              innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom))
+              innerRadius(it.bottomLeft.vertical, computedBorderInsets?.bottom),
+          )
         }
 
     val x = offsetX.dpToPx()
@@ -111,7 +111,11 @@ internal class InsetBoxShadowDrawable(
     val spreadExtent = spread.dpToPx()
     val innerRect =
         RectF(paddingBoxRect).apply {
-          inset(spreadExtent, spreadExtent)
+          if (2 * spreadExtent > paddingBoxRect.width()) {
+            setEmpty()
+          } else {
+            inset(spreadExtent, spreadExtent)
+          }
           offset(x, y)
         }
 
@@ -120,11 +124,9 @@ internal class InsetBoxShadowDrawable(
     val blurExtent = FilterHelper.sigmaToRadius(blurRadius)
     val outerRect =
         RectF(innerRect).apply {
+          set(paddingBoxRect)
           inset(-blurExtent, -blurExtent)
-          if (spreadExtent < 0) {
-            inset(spreadExtent, spreadExtent)
-          }
-          union(RectF(this).apply { offset(-x, -y) })
+          union(RectF(innerRect))
         }
 
     canvas.save().let { saveCount ->
@@ -151,26 +153,31 @@ internal class InsetBoxShadowDrawable(
             layoutDirection,
             context,
             bounds.width().toFloat().pxToDp(),
-            bounds.height().toFloat().pxToDp())
+            bounds.height().toFloat().pxToDp(),
+        )
 
     return if (resolvedBorderRadii?.hasRoundedBorders() == true) {
       ComputedBorderRadius(
           topLeft =
               CornerRadii(
                   resolvedBorderRadii.topLeft.horizontal.dpToPx(),
-                  resolvedBorderRadii.topLeft.vertical.dpToPx()),
+                  resolvedBorderRadii.topLeft.vertical.dpToPx(),
+              ),
           topRight =
               CornerRadii(
                   resolvedBorderRadii.topRight.horizontal.dpToPx(),
-                  resolvedBorderRadii.topRight.vertical.dpToPx()),
+                  resolvedBorderRadii.topRight.vertical.dpToPx(),
+              ),
           bottomLeft =
               CornerRadii(
                   resolvedBorderRadii.bottomLeft.horizontal.dpToPx(),
-                  resolvedBorderRadii.bottomLeft.vertical.dpToPx()),
+                  resolvedBorderRadii.bottomLeft.vertical.dpToPx(),
+              ),
           bottomRight =
               CornerRadii(
                   resolvedBorderRadii.bottomRight.horizontal.dpToPx(),
-                  resolvedBorderRadii.bottomRight.vertical.dpToPx()),
+                  resolvedBorderRadii.bottomRight.vertical.dpToPx(),
+              ),
       )
     } else {
       null

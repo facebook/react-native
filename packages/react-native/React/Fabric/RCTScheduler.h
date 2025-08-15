@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
                 blockNativeResponder:(BOOL)blockNativeResponder
                        forShadowView:(const facebook::react::ShadowView &)shadowView;
 
+- (void)schedulerDidSynchronouslyUpdateViewOnUIThread:(facebook::react::Tag)reactTag props:(folly::dynamic)props;
 @end
 
 /**

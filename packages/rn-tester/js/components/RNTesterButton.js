@@ -4,35 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
 
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native';
 
-const React = require('react');
-const {Pressable, StyleSheet, Text} = require('react-native');
+import React from 'react';
+import {Pressable, StyleSheet, Text} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   testID?: string,
   textTestID?: string,
   children?: React.Node,
-  onPress?: ?(event: PressEvent) => mixed,
-|}>;
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+}>;
 
-class RNTesterButton extends React.Component<Props> {
-  render(): React.Node {
-    return (
-      <Pressable
-        testID={this.props.testID}
-        onPress={this.props.onPress}
-        style={({pressed}) => [styles.button, pressed && styles.pressed]}>
-        <Text testID={this.props.textTestID}>{this.props.children}</Text>
-      </Pressable>
-    );
-  }
+function RNTesterButton(props: Props): React.Node {
+  return (
+    <Pressable
+      testID={props.testID}
+      onPress={props.onPress}
+      style={({pressed}) => [styles.button, pressed && styles.pressed]}>
+      <Text testID={props.textTestID}>{props.children}</Text>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -51,4 +49,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RNTesterButton;
+export default RNTesterButton;

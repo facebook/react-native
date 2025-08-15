@@ -4,7 +4,7 @@ inputs:
   node-version:
     description: "The node.js version to use"
     required: false
-    default: "18"
+    default: "22"
   github-token:
     description: "The GitHub token used by pull-bot"
     required: true
@@ -15,9 +15,8 @@ runs:
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
-    - name: Yarn install
-      shell: bash
-      run: yarn install --non-interactive --frozen-lockfile
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
     - name: Run linters against modified files (analysis-bot)
       shell: bash
       run: yarn lint-ci
@@ -26,13 +25,13 @@ runs:
         GITHUB_PR_NUMBER: ${{ github.event.number }}
     - name: Lint code
       shell: bash
-      run: ./scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
-    - name: Lint java
+      run: ./.github/workflow-scripts/exec_swallow_error.sh yarn lint --format junit -o ./reports/junit/eslint/results.xml
+    - name: Lint file structure
       shell: bash
-      run: ./scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+      run: ./.github/workflow-scripts/lint_files.sh
     - name: Verify not committing repo after running build
       shell: bash
-      run: yarn run build --check
+      run: yarn run build --validate
     - name: Run flowcheck
       shell: bash
       run: yarn flow-check
@@ -41,7 +40,16 @@ runs:
       run: yarn test-typescript
     - name: Check license
       shell: bash
-      run: ./scripts/circleci/check_license.sh
+      run: ./.github/workflow-scripts/check_license.sh
     - name: Check formatting
       shell: bash
       run: yarn run format-check
+    - name: Lint markdown
+      shell: bash
+      run: yarn run lint-markdown
+    - name: Build types
+      shell: bash
+      run: yarn build-types --skip-snapshot
+    - name: Run typescript check of generated types
+      shell: bash
+      run: yarn test-generated-typescript

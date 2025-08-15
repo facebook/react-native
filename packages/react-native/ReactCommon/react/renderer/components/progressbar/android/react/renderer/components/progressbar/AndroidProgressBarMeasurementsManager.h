@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <react/renderer/components/progressbar/conversions.h>
-#include <react/renderer/components/rncore/Props.h>
+#include <react/renderer/components/FBReactNativeSpec/Props.h>
 #include <react/renderer/core/ConcreteComponentDescriptor.h>
 #include <react/renderer/core/LayoutConstraints.h>
 #include <react/utils/ContextContainer.h>
@@ -18,7 +17,7 @@ namespace facebook::react {
 class AndroidProgressBarMeasurementsManager {
  public:
   AndroidProgressBarMeasurementsManager(
-      const ContextContainer::Shared& contextContainer)
+      const std::shared_ptr<const ContextContainer>& contextContainer)
       : contextContainer_(contextContainer) {}
 
   Size measure(
@@ -27,10 +26,7 @@ class AndroidProgressBarMeasurementsManager {
       LayoutConstraints layoutConstraints) const;
 
  private:
-  const ContextContainer::Shared contextContainer_;
-  mutable std::mutex mutex_;
-  mutable bool hasBeenMeasured_ = false;
-  mutable Size cachedMeasurement_{};
+  const std::shared_ptr<const ContextContainer> contextContainer_;
 };
 
 } // namespace facebook::react

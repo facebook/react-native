@@ -12,6 +12,8 @@ plugins {
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.binary.compatibility.validator) apply true
+  alias(libs.plugins.android.test) apply false
+  alias(libs.plugins.ktfmt) apply true
 }
 
 val reactAndroidProperties = java.util.Properties()
@@ -54,6 +56,8 @@ nexusPublishing {
     sonatype {
       username.set(sonatypeUsername)
       password.set(sonatypePassword)
+      nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+      snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
     }
   }
 }
@@ -92,7 +96,7 @@ tasks.register("build") {
 tasks.register("publishAllToMavenTempLocal") {
   description = "Publish all the artifacts to be available inside a Maven Local repository on /tmp."
   dependsOn(":packages:react-native:ReactAndroid:publishAllPublicationsToMavenTempLocalRepository")
-  // We don't publish the external-artifacts to Maven Local as CircleCI is using it via workspace.
+  // We don't publish the external-artifacts to Maven Local as ci is using it via workspace.
   dependsOn(
       ":packages:react-native:ReactAndroid:hermes-engine:publishAllPublicationsToMavenTempLocalRepository")
 }
@@ -121,9 +125,43 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            .using(module("com.facebook.react:hermes-android:0.0.0-+"))
+            .using(module("com.facebook.react:hermes-android:0.+"))
             .because("Users opted to use hermes from nightly")
       }
+    }
+  }
+}
+
+ktfmt {
+  blockIndent.set(2)
+  continuationIndent.set(4)
+  maxWidth.set(100)
+  removeUnusedImports.set(false)
+  manageTrailingCommas.set(false)
+}
+
+// Configure ktfmt tasks to include gradle-plugin
+listOf("ktfmtCheck", "ktfmtFormat").forEach { taskName ->
+  tasks.named(taskName) { dependsOn(gradle.includedBuild("gradle-plugin").task(":$taskName")) }
+}
+
+allprojects {
+  // Apply exclusions for specific files that should not be formatted
+  val excludePatterns =
+      listOf(
+          "**/build/**",
+          "**/hermes-engine/**",
+          "**/internal/featureflags/**",
+          "**/systeminfo/ReactNativeVersion.kt")
+  listOf(
+          com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask::class,
+          com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask::class)
+      .forEach { tasks.withType(it) { exclude(excludePatterns) } }
+
+  // Disable the problematic ktfmt script tasks due to symbolic link issues in subprojects
+  afterEvaluate {
+    listOf("ktfmtCheckScripts", "ktfmtFormatScripts").forEach {
+      tasks.findByName(it)?.enabled = false
     }
   }
 }

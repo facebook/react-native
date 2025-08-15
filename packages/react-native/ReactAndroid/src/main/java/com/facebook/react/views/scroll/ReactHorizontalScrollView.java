@@ -11,6 +11,7 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
+import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocusableView;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -31,14 +32,14 @@ import android.widget.HorizontalScrollView;
 import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewCompat.FocusDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.R;
-import com.facebook.react.animated.NativeAnimatedModule;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -64,6 +65,7 @@ import com.facebook.systrace.Systrace;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** Similar to {@link ReactScrollView} but only supports horizontal scrolling. */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -71,6 +73,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
+        ReactAccessibleScrollView,
         ReactOverflowViewWithInset,
         HasScrollState,
         HasStateWrapper,
@@ -125,6 +128,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private int mScrollEventThrottle = 0;
   private @Nullable View mContentView;
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
+  private int mFadingEdgeLengthStart = 0;
+  private int mFadingEdgeLengthEnd = 0;
 
   private final Rect mTempRect = new Rect();
 
@@ -277,6 +282,44 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public int getFadingEdgeLengthStart() {
+    return mFadingEdgeLengthStart;
+  }
+
+  public int getFadingEdgeLengthEnd() {
+    return mFadingEdgeLengthEnd;
+  }
+
+  public void setFadingEdgeLengthStart(int start) {
+    mFadingEdgeLengthStart = start;
+    invalidate();
+  }
+
+  public void setFadingEdgeLengthEnd(int end) {
+    mFadingEdgeLengthEnd = end;
+    invalidate();
+  }
+
+  @Override
+  protected float getLeftFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthEnd
+            : mFadingEdgeLengthStart;
+    return (value / max);
+  }
+
+  @Override
+  protected float getRightFadingEdgeStrength() {
+    float max = Math.max(mFadingEdgeLengthStart, mFadingEdgeLengthEnd);
+    int value =
+        getLayoutDirection() == LAYOUT_DIRECTION_RTL
+            ? mFadingEdgeLengthStart
+            : mFadingEdgeLengthEnd;
+    return (value / max);
   }
 
   public void setOverflow(@Nullable String overflow) {
@@ -456,6 +499,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
+  @Override
   public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
@@ -483,8 +527,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       FLog.i(TAG, "onScrollChanged[%d] x %d y %d oldx %d oldy %d", getId(), x, y, oldX, oldY);
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.onScrollChanged");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.onScrollChanged");
     try {
       super.onScrollChanged(x, y, oldX, oldY);
 
@@ -500,7 +543,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
             mOnScrollDispatchHelper.getYFlingVelocity());
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -771,23 +814,48 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   @Override
+  public @Nullable View focusSearch(View focused, @FocusDirection int direction) {
+    View nextFocus = super.focusSearch(focused, direction);
+
+    if (ReactNativeFeatureFlags.enableCustomFocusSearchOnClippedElementsAndroid()) {
+      // If we can find the next focus and it is a child of this view, return it, else it means we
+      // are leaving the scroll view and we should try to find a clipped element
+      if (nextFocus != null && this.findViewById(nextFocus.getId()) != null) {
+        return nextFocus;
+      }
+
+      @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction);
+
+      if (nextfocusableView != null) {
+        return nextfocusableView;
+      }
+    }
+
+    return nextFocus;
+  }
+
+  @Override
   public void updateClippingRect() {
+    updateClippingRect(null);
+  }
+
+  @Override
+  public void updateClippingRect(@Nullable Set<Integer> excludedViewId) {
     if (!mRemoveClippedSubviews) {
       return;
     }
 
-    Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "ReactHorizontalScrollView.updateClippingRect");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "ReactHorizontalScrollView.updateClippingRect");
     try {
       Assertions.assertNotNull(mClippingRect);
 
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
       View contentView = getContentView();
       if (contentView instanceof ReactClippingViewGroup) {
-        ((ReactClippingViewGroup) contentView).updateClippingRect();
+        ((ReactClippingViewGroup) contentView).updateClippingRect(excludedViewId);
       }
     } finally {
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+      Systrace.endSection(Systrace.TRACE_TAG_REACT);
     }
   }
 
@@ -958,16 +1026,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
                 if (mSendMomentumEvents) {
                   ReactScrollViewHelper.emitScrollMomentumEndEvent(ReactHorizontalScrollView.this);
                 }
-
-                ReactContext context = (ReactContext) getContext();
-                if (context != null) {
-                  NativeAnimatedModule nativeAnimated =
-                      context.getNativeModule(NativeAnimatedModule.class);
-                  if (nativeAnimated != null) {
-                    nativeAnimated.userDrivenScrollEnded(ReactHorizontalScrollView.this.getId());
-                  }
-                }
-                disableFpsListener();
+                ReactScrollViewHelper.notifyUserDrivenScrollEnded_internal(
+                    ReactHorizontalScrollView.this);
               } else {
                 if (mPagingEnabled && !mSnappingToPage) {
                   // If we have pagingEnabled and we have not snapped to the page

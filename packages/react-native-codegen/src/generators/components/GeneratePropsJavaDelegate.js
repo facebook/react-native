@@ -55,6 +55,7 @@ package ${packageName};
 
 ${imports}
 
+@SuppressWarnings("deprecation")
 public class ${className}<T extends ${extendClasses}, U extends BaseViewManager<T, ? extends LayoutShadowNode> & ${interfaceClassName}<T>> extends BaseViewManagerDelegate<T, U> {
   public ${className}(U viewManager) {
     super(viewManager);
@@ -74,7 +75,7 @@ const PropSetterTemplate = ({propCases}: {propCases: string}) =>
 const CommandsTemplate = ({commandCases}: {commandCases: string}) =>
   `
   @Override
-  public void receiveCommand(T view, String commandName, @Nullable ReadableArray args) {
+  public void receiveCommand(T view, String commandName, ReadableArray args) {
     switch (commandName) {
       ${commandCases}
     }
@@ -299,6 +300,7 @@ module.exports = {
     packageName?: string,
     assumeNonnull: boolean = false,
     headerPrefix?: string,
+    includeGetDebugPropsImplementation?: boolean = false,
   ): FilesOutput {
     // TODO: This doesn't support custom package name yet.
     const normalizedPackageName = 'com.facebook.react.viewmanagers';

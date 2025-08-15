@@ -12,14 +12,13 @@
 #include <jsi/jsi.h>
 #include <react/renderer/uimanager/PointerHoverTracker.h>
 #include <react/renderer/uimanager/UIManager.h>
-#include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
 // Helper struct to package a PointerEvent and SharedEventTarget together
 struct PointerEventTarget {
   PointerEvent event;
-  ShadowNode::Shared target;
+  std::shared_ptr<const ShadowNode> target;
 };
 
 // Helper struct to contain an active pointer's event data along with additional
@@ -42,7 +41,7 @@ using DispatchEvent = std::function<void(
 
 using PointerIdentifier = int32_t;
 using CaptureTargetOverrideRegistry =
-    std::unordered_map<PointerIdentifier, ShadowNode::Weak>;
+    std::unordered_map<PointerIdentifier, std::weak_ptr<const ShadowNode>>;
 
 using ActivePointerRegistry =
     std::unordered_map<PointerIdentifier, ActivePointer>;
@@ -51,12 +50,12 @@ using PointerHoverTrackerRegistry =
 
 class PointerEventsProcessor final {
  public:
-  static ShadowNode::Shared getShadowNodeFromEventTarget(
+  static std::shared_ptr<const ShadowNode> getShadowNodeFromEventTarget(
       jsi::Runtime& runtime,
       const EventTarget* target);
 
   void interceptPointerEvent(
-      const ShadowNode::Shared& target,
+      const std::shared_ptr<const ShadowNode>& target,
       const std::string& type,
       ReactEventPriority priority,
       const PointerEvent& event,
@@ -65,7 +64,7 @@ class PointerEventsProcessor final {
 
   void setPointerCapture(
       PointerIdentifier pointerId,
-      const ShadowNode::Shared& shadowNode);
+      const std::shared_ptr<const ShadowNode>& shadowNode);
   void releasePointerCapture(
       PointerIdentifier pointerId,
       const ShadowNode* shadowNode);
@@ -102,7 +101,7 @@ class PointerEventsProcessor final {
    */
   void handleIncomingPointerEventOnNode(
       const PointerEvent& event,
-      const ShadowNode::Shared& targetNode,
+      const std::shared_ptr<const ShadowNode>& targetNode,
       const DispatchEvent& eventDispatcher,
       const UIManager& uiManager);
 

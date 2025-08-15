@@ -12,6 +12,7 @@
 #import <React/RCTConstants.h>
 #import <React/RCTScrollEvent.h>
 
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/scrollview/RCTComponentViewHelpers.h>
 #import <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/renderer/components/scrollview/ScrollViewEventEmitter.h>
@@ -23,6 +24,7 @@
 #import "RCTCustomPullToRefreshViewProtocol.h"
 #import "RCTEnhancedScrollView.h"
 #import "RCTFabricComponentsPlugins.h"
+#import "RCTVirtualViewContainerState.h"
 
 using namespace facebook::react;
 
@@ -63,6 +65,9 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
 static void
 RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag, NSString *eventName)
 {
+  if (ReactNativeFeatureFlags::cxxNativeAnimatedEnabled()) {
+    return;
+  }
   static uint16_t coalescingKey = 0;
   RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:[NSNumber numberWithInt:tag]
@@ -108,6 +113,17 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
   __weak UIView *_firstVisibleView;
 
   CGFloat _endDraggingSensitivityMultiplier;
+
+  // A flag indicating that accessibility API is used.
+  // It is not restored to the default value in prepareForRecycle.
+  // Once an accessibility API is used, view culling will be disabled for the entire session.
+  BOOL _isAccessibilityAPIUsed;
+
+  // Flag to temporarily disable maintainVisibleContentPosition adjustments during immediate state updates
+  // to prevent conflicts between immediate content offset updates and visible content position logic
+  BOOL _avoidAdjustmentForMaintainVisibleContentPosition;
+
+  RCTVirtualViewContainerState *_virtualViewContainerState;
 }
 
 + (RCTScrollViewComponentView *_Nullable)findScrollViewComponentViewForView:(UIView *)view
@@ -130,6 +146,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
     _isUserTriggeredScrolling = NO;
     _shouldUpdateContentInsetAdjustmentBehavior = YES;
     _automaticallyAdjustKeyboardInsets = NO;
+    _isAccessibilityAPIUsed = NO;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -475,6 +492,37 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }];
 }
 
+- (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  // This is the same algorithm as in the RCTViewComponentView with the exception of
+  // skipping the immediate child (_containerView) and checking grandchildren instead.
+  // This prevents issues with touches outside of _containerView being ignored even
+  // if they are within the bounds of the _containerView's children.
+
+  if (!self.userInteractionEnabled || self.hidden || self.alpha < 0.01) {
+    return nil;
+  }
+
+  BOOL isPointInside = [self pointInside:point withEvent:event];
+
+  BOOL clipsToBounds = _containerView.clipsToBounds;
+
+  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+
+  if (clipsToBounds && !isPointInside) {
+    return nil;
+  }
+
+  for (UIView *subview in [_containerView.subviews reverseObjectEnumerator]) {
+    UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
+    if (hitView) {
+      return hitView;
+    }
+  }
+
+  return isPointInside ? self : nil;
+}
+
 /*
  * Disables programmatical changing of ScrollView's `contentOffset` if a touch gesture is in progress.
  */
@@ -558,24 +606,68 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return metrics;
 }
 
+/**
+ * When use of accessibility APIs is detected, view culling is disabled to make accessibility work correctly.
+ */
+- (void)_disableViewCullingIfNecessary
+{
+  if (!_isAccessibilityAPIUsed) {
+    _isAccessibilityAPIUsed = YES;
+    [self _updateStateWithContentOffset];
+  }
+}
+
+- (NSInteger)accessibilityElementCount
+{
+  // From empirical testing, method `accessibilityElementCount` is called lazily only
+  // when accessibility is used.
+  // Why we don't use UIAccessibilitySwitchControlStatusDidChangeNotification and
+  // UIAccessibilityVoiceOverStatusDidChangeNotification? The notifications are not called when using Accessibility
+  // Inspector. We anticipate developers will want to debug accessbility with Accessibility Inspector and don't want to
+  // break that developer workflow with view culling. Therefore, we are using API use detection to disable view culling
+  // instead of the notifications.
+  [self _disableViewCullingIfNecessary];
+  return [super accessibilityElementCount];
+}
+
+- (NSArray<id<UIFocusItem>> *)focusItemsInRect:(CGRect)rect
+{
+  // From empirical testing, method `focusItemsInRect:` is called lazily only
+  // when keyboard navigation is used.
+  [self _disableViewCullingIfNecessary];
+  return [super focusItemsInRect:rect];
+}
+
 - (void)_updateStateWithContentOffset
 {
   if (!_state) {
     return;
   }
 
+  BOOL enableImmediateUpdateModeForContentOffsetChanges =
+      ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
+
+  _avoidAdjustmentForMaintainVisibleContentPosition = enableImmediateUpdateModeForContentOffsetChanges;
+
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+  BOOL isAccessibilityAPIUsed = _isAccessibilityAPIUsed;
   _state->updateState(
-      [contentOffset](
+      [contentOffset, isAccessibilityAPIUsed](
           const ScrollViewShadowNode::ConcreteState::Data &oldData) -> ScrollViewShadowNode::ConcreteState::SharedData {
-        if (oldData.contentOffset == contentOffset) {
-          // avoid doing a state update if content offset didn't change.
+        if (oldData.contentOffset == contentOffset && oldData.disableViewCulling == isAccessibilityAPIUsed) {
+          // avoid doing a state update if content offset and use of accessibility didn't change.
           return nullptr;
         }
         auto newData = oldData;
         newData.contentOffset = contentOffset;
+        newData.disableViewCulling =
+            UIAccessibilityIsVoiceOverRunning() || UIAccessibilityIsSwitchControlRunning() || isAccessibilityAPIUsed;
         return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
-      });
+      },
+      enableImmediateUpdateModeForContentOffsetChanges ? EventQueue::UpdateMode::unstable_Immediate
+                                                       : EventQueue::UpdateMode::Asynchronous);
+
+  _avoidAdjustmentForMaintainVisibleContentPosition = NO;
 }
 
 - (void)prepareForRecycle
@@ -599,6 +691,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   _contentView = nil;
   _prevFirstVisibleFrame = CGRectZero;
   _firstVisibleView = nil;
+  _virtualViewContainerState = nil;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -868,6 +961,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_remountChildrenIfNeeded
 {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    return;
+  }
+
   CGPoint contentOffset = _scrollView.contentOffset;
 
   if (std::abs(_contentOffsetWhenClipped.x - contentOffset.x) < kClippingLeeway &&
@@ -882,6 +979,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
 - (void)_remountChildren
 {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    return;
+  }
+
   [_scrollView updateClippedSubviewsWithClipRect:CGRectInset(_scrollView.bounds, -kClippingLeeway, -kClippingLeeway)
                                   relativeToView:_scrollView];
 }
@@ -966,7 +1067,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 - (void)_adjustForMaintainVisibleContentPosition
 {
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
-  if (!props.maintainVisibleContentPosition) {
+  if (!props.maintainVisibleContentPosition || _avoidAdjustmentForMaintainVisibleContentPosition) {
     return;
   }
 
@@ -1001,6 +1102,16 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       }
     }
   }
+}
+
+#pragma mark - RCTVirtualViewContainerProtocol
+
+- (RCTVirtualViewContainerState *)virtualViewContainerState
+{
+  if (!_virtualViewContainerState) {
+    _virtualViewContainerState = [[RCTVirtualViewContainerState alloc] initWithScrollView:self];
+  }
+  return _virtualViewContainerState;
 }
 
 @end

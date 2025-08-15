@@ -8,6 +8,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
+#import "RCTJSRuntimeConfiguratorProtocol.h"
 
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
@@ -31,6 +32,11 @@ typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
 typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *moduleName);
+typedef void (^RCTLoadSourceForBridgeWithProgressBlock)(
+    RCTBridge *bridge,
+    RCTSourceLoadProgressBlock onProgress,
+    RCTSourceLoadBlock loadCallback);
+typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback);
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -105,6 +111,8 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  */
 @property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
 
+@property (nonatomic, weak, nullable) id<RCTJSRuntimeConfiguratorProtocol> jsRuntimeConfiguratorDelegate;
+
 #pragma mark - RCTBridgeDelegate blocks
 
 /**
@@ -144,6 +152,19 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  * If the module was not registered, return NO to prevent further searches.
  */
 @property (nonatomic, nullable) RCTBridgeDidNotFindModuleBlock bridgeDidNotFindModule;
+
+/**
+ * The bridge will automatically attempt to load the JS source code from the
+ * location specified by the `sourceURLForBridge:` method, however, if you want
+ * to handle loading the JS yourself, you can do so by setting this property.
+ */
+@property (nonatomic, nullable) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress;
+
+/**
+ * Similar to loadSourceForBridgeWithProgress but without progress
+ * reporting.
+ */
+@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridge;
 
 @end
 
@@ -190,6 +211,15 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName;
 
 #pragma mark - RCTRootViewFactory Helpers
+
+/**
+ * Initialize React Host/Bridge without creating a view.
+ *
+ * Use it to speed up later viewWithModuleName: calls.
+ *
+ * @parameter: launchOptions  - a dictionary with a set of options.
+ */
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 

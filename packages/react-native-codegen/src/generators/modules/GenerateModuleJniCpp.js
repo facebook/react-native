@@ -84,7 +84,7 @@ ${methods
   }${
     eventEmitters.length > 0
       ? `
-  setEventEmitterCallback(params.instance);`
+  configureEventEmitterCallback();`
       : ''
   }
 }`.trim();

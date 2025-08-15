@@ -20,11 +20,13 @@ import com.facebook.yoga.YogaConstants
  * every view should support, such as rotation, background color, etc.
  */
 public abstract class BaseViewManagerDelegate<
-    T : View, U : BaseViewManager<T, out LayoutShadowNode>>(
-    @Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U
-) : ViewManagerDelegate<T> {
-  @Suppress("DEPRECATION")
-  override public fun setProperty(view: T, propName: String?, value: Any?) {
+    T : View,
+    @Suppress("DEPRECATION")
+    U : BaseViewManager<T, out LayoutShadowNode>,
+>(@Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U) :
+    ViewManagerDelegate<T> {
+  @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+  public override fun setProperty(view: T, propName: String, value: Any?) {
     when (propName) {
       ViewProps.ACCESSIBILITY_ACTIONS ->
           mViewManager.setAccessibilityActions(view, value as ReadableArray?)
@@ -46,28 +48,37 @@ public abstract class BaseViewManagerDelegate<
           mViewManager.setAccessibilityValue(view, value as ReadableMap?)
 
       ViewProps.BACKGROUND_COLOR ->
-          mViewManager.setBackgroundColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setBackgroundColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.BORDER_RADIUS ->
           mViewManager.setBorderRadius(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.BORDER_BOTTOM_LEFT_RADIUS ->
           mViewManager.setBorderBottomLeftRadius(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.BORDER_BOTTOM_RIGHT_RADIUS ->
           mViewManager.setBorderBottomRightRadius(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.BORDER_TOP_LEFT_RADIUS ->
           mViewManager.setBorderTopLeftRadius(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.BORDER_TOP_RIGHT_RADIUS ->
           mViewManager.setBorderTopRightRadius(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.BOX_SHADOW -> mViewManager.setBoxShadow(view, value as ReadableArray?)
 
@@ -78,11 +89,13 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.MIX_BLEND_MODE -> mViewManager.setMixBlendMode(view, value as String?)
 
       ViewProps.SHADOW_COLOR ->
-          mViewManager.setShadowColor(
-              view, if (value == null) 0 else ColorPropConverter.getColor(value, view.context))
+          mViewManager.setShadowColor(view, ColorPropConverter.getColor(value, view.context, 0))
 
       ViewProps.IMPORTANT_FOR_ACCESSIBILITY ->
           mViewManager.setImportantForAccessibility(view, value as String?)
+
+      ViewProps.SCREEN_READER_FOCUSABLE ->
+          mViewManager.setScreenReaderFocusable(view, value as Boolean? ?: false)
 
       ViewProps.ROLE -> mViewManager.setRole(view, value as String?)
       ViewProps.NATIVE_ID -> mViewManager.setNativeId(view, value as String?)
@@ -90,20 +103,22 @@ public abstract class BaseViewManagerDelegate<
         val dynamicFromObject: Dynamic = DynamicFromObject(value)
         mViewManager.setAccessibilityLabelledBy(view, dynamicFromObject)
       }
-
       ViewProps.OPACITY -> mViewManager.setOpacity(view, (value as Double?)?.toFloat() ?: 1.0f)
-
       ViewProps.OUTLINE_COLOR -> mViewManager.setOutlineColor(view, value as Int?)
 
       ViewProps.OUTLINE_OFFSET ->
           mViewManager.setOutlineOffset(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.OUTLINE_STYLE -> mViewManager.setOutlineStyle(view, value as String?)
 
       ViewProps.OUTLINE_WIDTH ->
           mViewManager.setOutlineWidth(
-              view, (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED)
+              view,
+              (value as Double?)?.toFloat() ?: YogaConstants.UNDEFINED,
+          )
 
       ViewProps.RENDER_TO_HARDWARE_TEXTURE ->
           mViewManager.setRenderToHardwareTexture(view, value as Boolean? ?: false)
@@ -146,6 +161,6 @@ public abstract class BaseViewManagerDelegate<
     }
   }
 
-  override public fun receiveCommand(view: T, commandName: String?, args: ReadableArray?): Unit =
-      Unit
+  @Suppress("ACCIDENTAL_OVERRIDE")
+  public override fun receiveCommand(view: T, commandName: String, args: ReadableArray): Unit = Unit
 }

@@ -13,4 +13,4 @@ const BlobModule = {
   release() {},
 };
 
-module.exports = BlobModule;
+export default BlobModule;

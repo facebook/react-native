@@ -8,11 +8,13 @@
 package com.facebook.react.tasks.internal
 
 import java.io.File
+import javax.inject.Inject
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
@@ -23,16 +25,18 @@ import org.gradle.api.tasks.*
 abstract class PrepareGlogTask : DefaultTask() {
 
   @get:InputFiles abstract val glogPath: ConfigurableFileCollection
-
+  @get:InputDirectory abstract val glogThirdPartyJniPath: DirectoryProperty
   @get:Input abstract val glogVersion: Property<String>
 
   @get:OutputDirectory abstract val outputDir: DirectoryProperty
 
+  @get:Inject abstract val fs: FileSystemOperations
+
   @TaskAction
   fun taskAction() {
-    project.copy { action ->
+    fs.copy { action ->
       action.from(glogPath)
-      action.from(project.file("src/main/jni/third-party/glog/"))
+      action.from(glogThirdPartyJniPath)
       action.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
       action.duplicatesStrategy = DuplicatesStrategy.INCLUDE
       action.includeEmptyDirs = false
@@ -56,21 +60,24 @@ abstract class PrepareGlogTask : DefaultTask() {
                         "ac_cv___attribute___noinline" to "__attribute__ ((noinline))",
                         "ac_cv___attribute___noreturn" to "__attribute__ ((noreturn))",
                         "ac_cv___attribute___printf_4_5" to
-                            "__attribute__((__format__ (__printf__, 4, 5)))")),
-            ReplaceTokens::class.java)
+                            "__attribute__((__format__ (__printf__, 4, 5)))",
+                    )),
+            ReplaceTokens::class.java,
+        )
         matchedFile.path = (matchedFile.name.removeSuffix(".in"))
       }
       action.into(outputDir)
     }
     val exportedDir = File(outputDir.asFile.get(), "exported/glog/").apply { mkdirs() }
-    project.copy { action ->
+    fs.copy { action ->
       action.from(outputDir)
       action.include(
           "stl_logging.h",
           "logging.h",
           "raw_logging.h",
           "vlog_is_on.h",
-          "**/src/glog/log_severity.h")
+          "**/src/glog/log_severity.h",
+      )
       action.eachFile { file -> file.path = file.name }
       action.includeEmptyDirs = false
       action.into(exportedDir)

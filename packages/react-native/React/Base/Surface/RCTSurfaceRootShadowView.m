@@ -7,6 +7,8 @@
 
 #import "RCTSurfaceRootShadowView.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 #import "RCTI18nUtil.h"
 #import "RCTShadowView+Layout.h"
 #import "RCTUIManagerUtils.h"
@@ -89,3 +91,18 @@
 }
 
 @end
+
+#else // RCT_FIT_RM_OLD_RUNTIME
+
+@implementation RCTSurfaceRootShadowView
+- (void)setMinimumSize:(CGSize)size maximumSize:(CGSize)maximumSize
+{
+}
+
+- (void)layoutWithAffectedShadowViews:(NSPointerArray *)affectedShadowViews
+{
+}
+
+@end
+
+#endif // RCT_FIT_RM_OLD_RUNTIME

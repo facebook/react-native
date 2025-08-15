@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 @file:Suppress(
     "DEPRECATION") // Suppressing deprecation of NotThreadSafeViewHierarchyUpdateDebugListener
 
@@ -15,8 +16,9 @@ import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugL
 /**
  * Debug object that listens to bridge busy/idle events and UiManagerModule dispatches and uses it
  * to calculate whether JS was able to update the UI during a given frame. After being installed on
- * a [ReactBridge] and a [UIManagerModule], [.getDidJSHitFrameAndCleanup] should be called once per
- * frame via a [Choreographer.FrameCallback].
+ * a [ReactBridge] and a [com.facebook.react.uimanager.UIManagerModule],
+ * [getDidJSHitFrameAndCleanup] should be called once per frame via a
+ * [android.view.Choreographer.FrameCallback].
  */
 internal class DidJSUpdateUiDuringFrameDetector :
     NotThreadSafeBridgeIdleDebugListener, NotThreadSafeViewHierarchyUpdateDebugListener {
@@ -52,10 +54,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
   }
 
   /**
-   * Designed to be called from a [Choreographer.FrameCallback.doFrame] call.
+   * Designed to be called from a [android.view.Choreographer.FrameCallback.doFrame] call.
    *
-   * There are two 'success' cases that will cause [.getDidJSHitFrameAndCleanup] to return true for
-   * a given frame:
+   * There are two 'success' cases that will cause [getDidJSHitFrameAndCleanup] to return true for a
+   * given frame:
    * 1. UIManagerModule finished dispatching a batched UI update on the UI thread during the frame.
    *    This means that during the next hierarchy traversal, new UI will be drawn if needed (good).
    * 1. The bridge ended the frame idle (meaning there were no JS nor native module calls still in
@@ -66,10 +68,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
    * NB: This call can only be called once for a given frame time range because it cleans up events
    * it recorded for that frame.
    *
-   * NB2: This makes the assumption that onViewHierarchyUpdateEnqueued is called from the
-   * [ ][UIManagerModule.onBatchComplete], e.g. while the bridge is still considered busy, which
-   * means there is no race condition where the bridge has gone idle but a hierarchy update is
-   * waiting to be enqueued.
+   * NB2: This makes the assumption that [onViewHierarchyUpdateEnqueued] is called from the
+   * [com.facebook.react.uimanager.UIManagerModule.onBatchComplete], e.g. while the bridge is still
+   * considered busy, which means there is no race condition where the bridge has gone idle but a
+   * hierarchy update is waiting to be enqueued.
    *
    * @param frameStartTimeNanos the time in nanos that the last frame started
    * @param frameEndTimeNanos the time in nanos that the last frame ended
@@ -79,7 +81,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
     // Case 1: We dispatched a UI update
     val finishedUiUpdate =
         hasEventBetweenTimestamps(
-            viewHierarchyUpdateFinishedEvents, frameStartTimeNanos, frameEndTimeNanos)
+            viewHierarchyUpdateFinishedEvents,
+            frameStartTimeNanos,
+            frameEndTimeNanos,
+        )
     val didEndFrameIdle = didEndFrameIdle(frameStartTimeNanos, frameEndTimeNanos)
     val hitFrame =
         if (finishedUiUpdate) {
@@ -88,7 +93,10 @@ internal class DidJSUpdateUiDuringFrameDetector :
           // Case 2: Ended idle but no UI was enqueued during that frame
           (didEndFrameIdle &&
               !hasEventBetweenTimestamps(
-                  viewHierarchyUpdateEnqueuedEvents, frameStartTimeNanos, frameEndTimeNanos))
+                  viewHierarchyUpdateEnqueuedEvents,
+                  frameStartTimeNanos,
+                  frameEndTimeNanos,
+              ))
         }
     cleanUp(transitionToIdleEvents, frameEndTimeNanos)
     cleanUp(transitionToBusyEvents, frameEndTimeNanos)
@@ -112,13 +120,13 @@ internal class DidJSUpdateUiDuringFrameDetector :
 private fun hasEventBetweenTimestamps(
     eventArray: ArrayList<Long>,
     startTime: Long,
-    endTime: Long
+    endTime: Long,
 ): Boolean = eventArray.any { time -> time in startTime until endTime }
 
 private fun getLastEventBetweenTimestamps(
     eventArray: ArrayList<Long>,
     startTime: Long,
-    endTime: Long
+    endTime: Long,
 ): Long {
   var lastEvent: Long = -1
   for (time in eventArray) {

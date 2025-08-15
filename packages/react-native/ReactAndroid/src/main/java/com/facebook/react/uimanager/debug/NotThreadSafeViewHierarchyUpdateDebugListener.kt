@@ -7,6 +7,9 @@
 
 package com.facebook.react.uimanager.debug
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+
 /**
  * A listener that is notified about view hierarchy update events. This listener should only be used
  * for debug purposes and should not affect application state.
@@ -16,6 +19,7 @@ package com.facebook.react.uimanager.debug
  */
 @Deprecated(
     "NotThreadSafeViewHierarchyUpdateDebugListener will be deleted in the new architecture.")
+@LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 internal interface NotThreadSafeViewHierarchyUpdateDebugListener {
   /** Called when `UIManagerModule` enqueues a UI batch to be dispatched to the main thread. */
   fun onViewHierarchyUpdateEnqueued()

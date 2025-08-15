@@ -4,9 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
- * @oncall react_native
  * @flow strict-local
+ * @format
  */
 
 'use strict';
@@ -112,7 +111,7 @@ describe('processFilter', () => {
   });
   it('string multiple filters', () => {
     expect(
-      processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90deg)'),
+      processFilter('brightness(0.5) opacity(0.5) blur(5px) hue-rotate(90deg)'),
     ).toEqual([{brightness: 0.5}, {opacity: 0.5}, {blur: 5}, {hueRotate: 90}]);
   });
   it('string multiple filters with newlines', () => {
@@ -124,7 +123,7 @@ describe('processFilter', () => {
   });
   it('string multiple filters one invalid', () => {
     expect(
-      processFilter('brightness(0.5) opacity(0.5) blur(5) hue-rotate(90foo)'),
+      processFilter('brightness(0.5) opacity(0.5) blur(5px) hue-rotate(90foo)'),
     ).toEqual([]);
   });
   it('string multiple same filters', () => {
@@ -233,7 +232,7 @@ function createFilterPrimitive(
 
 function testDropShadow() {
   it('should parse string drop-shadow', () => {
-    expect(processFilter('drop-shadow(4px 4 10px red)')).toEqual([
+    expect(processFilter('drop-shadow(4px 4px 10px red)')).toEqual([
       {
         dropShadow: {
           offsetX: 4,
@@ -246,7 +245,7 @@ function testDropShadow() {
   });
 
   it('should parse string negative offsets drop-shadow', () => {
-    expect(processFilter('drop-shadow(-4 -4)')).toEqual([
+    expect(processFilter('drop-shadow(-4px -4px)')).toEqual([
       {
         dropShadow: {
           offsetX: -4,
@@ -258,7 +257,9 @@ function testDropShadow() {
 
   it('should parse string multiple drop-shadows', () => {
     expect(
-      processFilter('drop-shadow(4 4) drop-shadow(4 4) drop-shadow(4 4)'),
+      processFilter(
+        'drop-shadow(4px 4px) drop-shadow(4px 4px) drop-shadow(4px 4px)',
+      ),
     ).toEqual([
       {
         dropShadow: {
@@ -283,7 +284,7 @@ function testDropShadow() {
 
   it('should parse string drop-shadow with random whitespaces', () => {
     expect(
-      processFilter('    drop-shadow(4px  4   10px        red)    '),
+      processFilter('    drop-shadow(4px  4px   10px        red)    '),
     ).toEqual([
       {
         dropShadow: {
@@ -299,7 +300,7 @@ function testDropShadow() {
   it('should parse string drop-shadow with multiple filters', () => {
     expect(
       processFilter(
-        'drop-shadow(4px 4 10px red) brightness(0.5) brightness(0.5)',
+        'drop-shadow(4px 4px 10px red) brightness(0.5) brightness(0.5)',
       ),
     ).toEqual([
       {
@@ -316,7 +317,7 @@ function testDropShadow() {
   });
 
   it('should parse string drop-shadow with color', () => {
-    expect(processFilter('drop-shadow(50 50 purple)')).toEqual([
+    expect(processFilter('drop-shadow(50px 50px purple)')).toEqual([
       {
         dropShadow: {
           offsetX: 50,
@@ -328,7 +329,7 @@ function testDropShadow() {
   });
 
   it('should parse string drop-shadow with rgba color', () => {
-    expect(processFilter('drop-shadow(50 50 rgba(0, 0, 0, 1))')).toEqual([
+    expect(processFilter('drop-shadow(50px 50px rgba(0, 0, 0, 1))')).toEqual([
       {
         dropShadow: {
           offsetX: 50,
@@ -340,7 +341,7 @@ function testDropShadow() {
   });
 
   it('should parse string with mixed case drop-shadow', () => {
-    expect(processFilter('DroP-sHaDOw(50 50 purple)')).toEqual([
+    expect(processFilter('DroP-sHaDOw(50px 50px purple)')).toEqual([
       {
         dropShadow: {
           offsetX: 50,
@@ -359,7 +360,7 @@ function testDropShadow() {
             offsetX: 4,
             offsetY: 4,
             color: '#FFFFFF',
-            standardDeviation: '10',
+            standardDeviation: '10px',
           },
         },
       ]),
@@ -376,7 +377,7 @@ function testDropShadow() {
   });
 
   it('should fail to parse string comma separated drop-shadow', () => {
-    expect(processFilter('drop-shadow(4px, 4, 10px, red)')).toEqual([]);
+    expect(processFilter('drop-shadow(4px, 4px, 10px, red)')).toEqual([]);
   });
 
   it('should fail to parse other symbols after args comma separated drop-shadow', () => {
@@ -384,15 +385,15 @@ function testDropShadow() {
   });
 
   it('should fail on color between lengths string drop-shadow', () => {
-    expect(processFilter('drop-shadow(10 red 10 10')).toEqual([]);
+    expect(processFilter('drop-shadow(10px red 10px 10px')).toEqual([]);
   });
 
   it('should fail on color between offset & blur string drop-shadow', () => {
-    expect(processFilter('drop-shadow(10 10 red  10')).toEqual([]);
+    expect(processFilter('drop-shadow(10px 10px red  10px')).toEqual([]);
   });
 
   it('should fail on negative blue', () => {
-    expect(processFilter('drop-shadow(10 10 -10')).toEqual([]);
+    expect(processFilter('drop-shadow(10px 10px -10px')).toEqual([]);
   });
 
   it('should fail on invalid object drop-shadow', () => {

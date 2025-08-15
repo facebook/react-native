@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
@@ -15,4 +15,4 @@ import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
  * adding all event listeners directly to RCTNativeAppEventEmitter.
  */
 const RCTNativeAppEventEmitter = RCTDeviceEventEmitter;
-module.exports = RCTNativeAppEventEmitter;
+export default RCTNativeAppEventEmitter;

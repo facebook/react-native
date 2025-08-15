@@ -4,12 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {DimensionsPayload} from '../../Utilities/NativeDeviceInfo';
 import type {
   ViewLayout,
   ViewLayoutEvent,
@@ -19,15 +18,15 @@ import type {KeyboardEvent, KeyboardMetrics} from './Keyboard';
 
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
 import StyleSheet from '../../StyleSheet/StyleSheet';
-import Dimensions from '../../Utilities/Dimensions';
 import Platform from '../../Utilities/Platform';
 import {type EventSubscription} from '../../vendor/emitter/EventEmitter';
 import AccessibilityInfo from '../AccessibilityInfo/AccessibilityInfo';
 import View from '../View/View';
 import Keyboard from './Keyboard';
 import * as React from 'react';
+import {createRef} from 'react';
 
-type Props = $ReadOnly<{|
+export type KeyboardAvoidingViewProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -51,29 +50,31 @@ type Props = $ReadOnly<{|
    * may be non-zero in some cases. Defaults to 0.
    */
   keyboardVerticalOffset?: number,
-|}>;
+}>;
 
-type State = {|
+type KeyboardAvoidingViewState = {
   bottom: number,
-|};
+};
 
 /**
  * View that moves out of the way when the keyboard appears by automatically
  * adjusting its height, position, or bottom padding.
  */
-class KeyboardAvoidingView extends React.Component<Props, State> {
+class KeyboardAvoidingView extends React.Component<
+  KeyboardAvoidingViewProps,
+  KeyboardAvoidingViewState,
+> {
   _frame: ?ViewLayout = null;
   _keyboardEvent: ?KeyboardEvent = null;
   _subscriptions: Array<EventSubscription> = [];
   viewRef: {current: React.ElementRef<typeof View> | null, ...};
   _initialFrameHeight: number = 0;
   _bottom: number = 0;
-  _windowWidth: number = Dimensions.get('window').width;
 
-  constructor(props: Props) {
+  constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {bottom: 0};
-    this.viewRef = React.createRef();
+    this.viewRef = createRef();
   }
 
   async _relativeKeyboardHeight(
@@ -115,6 +116,12 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     this._updateBottomIfNecessary();
   };
 
+  _onKeyboardHide = (event: ?KeyboardEvent) => {
+    this._keyboardEvent = null;
+    // $FlowFixMe[unused-promise]
+    this._updateBottomIfNecessary();
+  };
+
   _onLayout = async (event: ViewLayoutEvent) => {
     event.persist();
 
@@ -135,10 +142,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  _onDimensionsChange = ({window}: DimensionsPayload) => {
-    this._windowWidth = window?.width ?? 0;
-  };
-
   // Avoid unnecessary renders if the KeyboardAvoidingView is disabled.
   _setBottom = (value: number) => {
     const enabled = this.props.enabled ?? true;
@@ -150,15 +153,6 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
-      this._setBottom(0);
-      return;
-    }
-
-    if (
-      Platform.OS === 'ios' &&
-      this._windowWidth !== this._keyboardEvent.endCoordinates.width
-    ) {
-      // The keyboard is not the standard bottom-of-the-screen keyboard. For example, floating keyboard on iPadOS.
       this._setBottom(0);
       return;
     }
@@ -185,7 +179,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  componentDidUpdate(_: Props, prevState: State): void {
+  componentDidUpdate(
+    _: KeyboardAvoidingViewProps,
+    prevState: KeyboardAvoidingViewState,
+  ): void {
     const enabled = this.props.enabled ?? true;
     if (enabled && this._bottom !== prevState.bottom) {
       this.setState({bottom: this._bottom});
@@ -200,8 +197,14 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     if (Platform.OS === 'ios') {
       this._subscriptions = [
-        Keyboard.addListener('keyboardWillChangeFrame', this._onKeyboardChange),
-        Dimensions.addEventListener('change', this._onDimensionsChange),
+        // When undocked, split or floating, iOS will emit
+        // UIKeyboardWillHideNotification notification.
+        // UIKeyboardWillChangeFrameNotification will be emitted before
+        // UIKeyboardWillHideNotification, so we need to listen to
+        // keyboardWillHide and keyboardWillShow instead of
+        // keyboardWillChangeFrame.
+        Keyboard.addListener('keyboardWillHide', this._onKeyboardHide),
+        Keyboard.addListener('keyboardWillShow', this._onKeyboardChange),
       ];
     } else {
       this._subscriptions = [

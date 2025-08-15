@@ -7,9 +7,16 @@
 
 #include "PerformanceEntryReporter.h"
 
-#include <cxxreact/JSExecutor.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/timing/primitives.h>
+#include <reactperflogger/ReactPerfettoLogger.h>
+
+#ifdef WITH_PERFETTO
+#include <reactperflogger/ReactPerfetto.h>
+#endif
+
+#include <variant>
 
 namespace facebook::react {
 
@@ -20,17 +27,50 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
       PerformanceEntryType::MARK,
       PerformanceEntryType::MEASURE,
       PerformanceEntryType::EVENT,
+      PerformanceEntryType::LONGTASK,
   };
 
-  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
-    supportedEntryTypes.emplace_back(PerformanceEntryType::LONGTASK);
+  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
+    supportedEntryTypes.emplace_back(PerformanceEntryType::RESOURCE);
   }
 
   return supportedEntryTypes;
 }
 
-uint64_t timestampToMicroseconds(DOMHighResTimeStamp timestamp) {
-  return static_cast<uint64_t>(timestamp * 1000);
+std::optional<std::string> getTrackFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrack = maybeDevtools["track"];
+  if (!maybeTrack.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrack.asString();
+}
+
+std::optional<std::string> getTrackGroupFromDetail(folly::dynamic& detail) {
+  if (!detail.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeDevtools = detail["devtools"];
+  if (!maybeDevtools.isObject()) {
+    return std::nullopt;
+  }
+
+  auto maybeTrackGroup = maybeDevtools["trackGroup"];
+  if (!maybeTrackGroup.isString()) {
+    return std::nullopt;
+  }
+
+  return maybeTrackGroup.asString();
 }
 
 } // namespace
@@ -42,11 +82,26 @@ PerformanceEntryReporter::getInstance() {
 }
 
 PerformanceEntryReporter::PerformanceEntryReporter()
-    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
+    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {
+#ifdef WITH_PERFETTO
+  initializePerfetto();
+#endif
+}
 
-DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
-  return timeStampProvider_ != nullptr ? timeStampProvider_()
-                                       : JSExecutor::performanceNow();
+void PerformanceEntryReporter::addEventTimingListener(
+    PerformanceEntryReporterEventTimingListener* listener) {
+  std::unique_lock lock(listenersMutex_);
+  eventTimingListeners_.push_back(listener);
+}
+
+void PerformanceEntryReporter::removeEventTimingListener(
+    PerformanceEntryReporterEventTimingListener* listener) {
+  std::unique_lock lock(listenersMutex_);
+  auto it = std::find(
+      eventTimingListeners_.begin(), eventTimingListeners_.end(), listener);
+  if (it != eventTimingListeners_.end()) {
+    eventTimingListeners_.erase(it);
+  }
 }
 
 std::vector<PerformanceEntryType>
@@ -132,87 +187,67 @@ void PerformanceEntryReporter::clearEntries(
   getBufferRef(entryType).clear(entryName);
 }
 
-PerformanceEntry PerformanceEntryReporter::reportMark(
+void PerformanceEntryReporter::reportMark(
     const std::string& name,
-    const std::optional<DOMHighResTimeStamp>& startTime) {
-  auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
-  const auto entry = PerformanceEntry{
-      .name = name,
-      .entryType = PerformanceEntryType::MARK,
-      .startTime = startTimeVal};
+    const HighResTimeStamp startTime,
+    UserTimingDetailProvider&& detailProvider) {
+  const auto entry = PerformanceMark{{.name = name, .startTime = startTime}};
 
+  traceMark(entry, std::move(detailProvider));
+
+  // Add to buffers & notify observers
   {
     std::unique_lock lock(buffersMutex_);
     markBuffer_.add(entry);
   }
 
-  jsinspector_modern::PerformanceTracer::getInstance().reportMark(
-      name, timestampToMicroseconds(startTimeVal));
-
   observerRegistry_->queuePerformanceEntry(entry);
-  return entry;
 }
 
-PerformanceEntry PerformanceEntryReporter::reportMeasure(
-    const std::string_view& name,
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp endTime,
-    const std::optional<DOMHighResTimeStamp>& duration,
-    const std::optional<std::string>& startMark,
-    const std::optional<std::string>& endMark,
-    const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
-        trackMetadata) {
-  DOMHighResTimeStamp startTimeVal =
-      startMark ? getMarkTime(*startMark) : startTime;
-  DOMHighResTimeStamp endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
+void PerformanceEntryReporter::reportMeasure(
+    const std::string& name,
+    HighResTimeStamp startTime,
+    HighResDuration duration,
+    UserTimingDetailProvider&& detailProvider) {
+  const auto entry = PerformanceMeasure{
+      {.name = std::string(name),
+       .startTime = startTime,
+       .duration = duration}};
 
-  if (!endMark && endTime < startTimeVal) {
-    // The end time is not specified, take the current time, according to the
-    // standard
-    endTimeVal = getCurrentTimeStamp();
-  }
+  traceMeasure(entry, std::move(detailProvider));
 
-  DOMHighResTimeStamp durationVal =
-      duration ? *duration : endTimeVal - startTimeVal;
-
-  const auto entry = PerformanceEntry{
-      .name = std::string(name),
-      .entryType = PerformanceEntryType::MEASURE,
-      .startTime = startTimeVal,
-      .duration = durationVal};
-
+  // Add to buffers & notify observers
   {
     std::unique_lock lock(buffersMutex_);
     measureBuffer_.add(entry);
   }
 
-  jsinspector_modern::PerformanceTracer::getInstance().reportMeasure(
-      name,
-      timestampToMicroseconds(startTimeVal),
-      timestampToMicroseconds(durationVal),
-      trackMetadata);
-
   observerRegistry_->queuePerformanceEntry(entry);
-  return entry;
 }
 
-DOMHighResTimeStamp PerformanceEntryReporter::getMarkTime(
+void PerformanceEntryReporter::clearEventCounts() {
+  eventCounts_.clear();
+}
+
+std::optional<HighResTimeStamp> PerformanceEntryReporter::getMarkTime(
     const std::string& markName) const {
   std::shared_lock lock(buffersMutex_);
 
   if (auto it = markBuffer_.find(markName); it) {
-    return it->startTime;
-  } else {
-    return 0.0;
+    return std::visit(
+        [](const auto& entryData) { return entryData.startTime; }, *it);
   }
+
+  return std::nullopt;
 }
 
 void PerformanceEntryReporter::reportEvent(
-    std::string name,
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp duration,
-    DOMHighResTimeStamp processingStart,
-    DOMHighResTimeStamp processingEnd,
+    const std::string& name,
+    HighResTimeStamp startTime,
+    HighResDuration duration,
+    HighResTimeStamp processingStart,
+    HighResTimeStamp processingEnd,
+    HighResTimeStamp taskEndTime,
     uint32_t interactionId) {
   eventCounts_[name]++;
 
@@ -222,14 +257,12 @@ void PerformanceEntryReporter::reportEvent(
     return;
   }
 
-  const auto entry = PerformanceEntry{
-      .name = std::move(name),
-      .entryType = PerformanceEntryType::EVENT,
-      .startTime = startTime,
-      .duration = duration,
-      .processingStart = processingStart,
-      .processingEnd = processingEnd,
-      .interactionId = interactionId};
+  const auto entry = PerformanceEventTiming{
+      {.name = name, .startTime = startTime, .duration = duration},
+      processingStart,
+      processingEnd,
+      taskEndTime,
+      interactionId};
 
   {
     std::unique_lock lock(buffersMutex_);
@@ -238,16 +271,25 @@ void PerformanceEntryReporter::reportEvent(
 
   // TODO(T198982346): Log interaction events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
+
+  std::vector<PerformanceEntryReporterEventTimingListener*> listenersCopy;
+  {
+    std::shared_lock lock(listenersMutex_);
+    listenersCopy = eventTimingListeners_;
+  }
+
+  for (auto* listener : listenersCopy) {
+    listener->onEventTimingEntry(entry);
+  }
 }
 
 void PerformanceEntryReporter::reportLongTask(
-    DOMHighResTimeStamp startTime,
-    DOMHighResTimeStamp duration) {
-  const auto entry = PerformanceEntry{
-      .name = std::string{"self"},
-      .entryType = PerformanceEntryType::LONGTASK,
-      .startTime = startTime,
-      .duration = duration};
+    HighResTimeStamp startTime,
+    HighResDuration duration) {
+  const auto entry = PerformanceLongTaskTiming{
+      {.name = std::string{"self"},
+       .startTime = startTime,
+       .duration = duration}};
 
   {
     std::unique_lock lock(buffersMutex_);
@@ -255,6 +297,77 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+}
+
+void PerformanceEntryReporter::reportResourceTiming(
+    const std::string& url,
+    HighResTimeStamp fetchStart,
+    HighResTimeStamp requestStart,
+    std::optional<HighResTimeStamp> connectStart,
+    std::optional<HighResTimeStamp> connectEnd,
+    HighResTimeStamp responseStart,
+    HighResTimeStamp responseEnd,
+    const std::optional<int>& responseStatus) {
+  const auto entry = PerformanceResourceTiming{
+      {.name = url, .startTime = fetchStart},
+      fetchStart,
+      requestStart,
+      connectStart,
+      connectEnd,
+      responseStart,
+      responseEnd,
+      responseStatus,
+  };
+
+  // Add to buffers & notify observers
+  {
+    std::unique_lock lock(buffersMutex_);
+    resourceTimingBuffer_.add(entry);
+  }
+
+  observerRegistry_->queuePerformanceEntry(entry);
+}
+
+void PerformanceEntryReporter::traceMark(
+    const PerformanceMark& entry,
+    UserTimingDetailProvider&& detailProvider) const {
+  auto& performanceTracer =
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
+
+  if (ReactPerfettoLogger::isTracing()) {
+    ReactPerfettoLogger::mark(entry.name, entry.startTime);
+  }
+
+  if (performanceTracer.isTracing()) {
+    performanceTracer.reportMark(
+        entry.name,
+        entry.startTime,
+        detailProvider != nullptr ? detailProvider() : nullptr);
+  }
+}
+
+void PerformanceEntryReporter::traceMeasure(
+    const PerformanceMeasure& entry,
+    UserTimingDetailProvider&& detailProvider) const {
+  auto& performanceTracer =
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
+  if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
+    auto detail = detailProvider != nullptr ? detailProvider() : nullptr;
+
+    if (ReactPerfettoLogger::isTracing()) {
+      ReactPerfettoLogger::measure(
+          entry.name,
+          entry.startTime,
+          entry.startTime + entry.duration,
+          detail != nullptr ? getTrackFromDetail(detail) : std::nullopt,
+          detail != nullptr ? getTrackGroupFromDetail(detail) : std::nullopt);
+    }
+
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMeasure(
+          entry.name, entry.startTime, entry.duration, std::move(detail));
+    }
+  }
 }
 
 } // namespace facebook::react

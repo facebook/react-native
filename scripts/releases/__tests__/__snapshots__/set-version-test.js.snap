@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`setVersion updates monorepo for nightly: ../../../../packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `"[omitted]"`;
+
 exports[`setVersion updates monorepo for nightly: set-version/package.json 1`] = `
 "{
   \\"name\\": \\"@react-native/monorepo\\",
@@ -35,8 +37,8 @@ exports[`setVersion updates monorepo for nightly: set-version/packages/monorepo-
   \\"description\\": \\"@monorepo/pkg-b\\",
   \\"dependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.81.0-nightly-29282302-abcd1234\\",
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -48,8 +50,8 @@ exports[`setVersion updates monorepo for nightly: set-version/packages/monorepo-
   \\"version\\": \\"0.81.0-nightly-29282302-abcd1234\\",
   \\"description\\": \\"@monorepo/pkg-c\\",
   \\"dependencies\\": {
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -61,7 +63,7 @@ exports[`setVersion updates monorepo for nightly: set-version/packages/react-nat
 
 exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 
@@ -80,6 +82,8 @@ exports[`setVersion updates monorepo for nightly: set-version/packages/react-nat
 }
 "
 `;
+
+exports[`setVersion updates monorepo for release-candidate: ../../../../packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for release-candidate: set-version/package.json 1`] = `
 "{
@@ -116,8 +120,8 @@ exports[`setVersion updates monorepo for release-candidate: set-version/packages
   \\"description\\": \\"@monorepo/pkg-b\\",
   \\"dependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.80.0-rc.3\\",
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -129,8 +133,8 @@ exports[`setVersion updates monorepo for release-candidate: set-version/packages
   \\"version\\": \\"0.80.0-rc.3\\",
   \\"description\\": \\"@monorepo/pkg-c\\",
   \\"dependencies\\": {
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -142,7 +146,7 @@ exports[`setVersion updates monorepo for release-candidate: set-version/packages
 
 exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 
@@ -161,6 +165,8 @@ exports[`setVersion updates monorepo for release-candidate: set-version/packages
 }
 "
 `;
+
+exports[`setVersion updates monorepo for stable version: ../../../../packages/react-native/scripts/codegen/__tests__/__snapshots__/generate-artifacts-executor-test.js.snap 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for stable version: set-version/package.json 1`] = `
 "{
@@ -197,8 +203,8 @@ exports[`setVersion updates monorepo for stable version: set-version/packages/mo
   \\"description\\": \\"@monorepo/pkg-b\\",
   \\"dependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.80.1\\",
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -210,8 +216,8 @@ exports[`setVersion updates monorepo for stable version: set-version/packages/mo
   \\"version\\": \\"0.80.1\\",
   \\"description\\": \\"@monorepo/pkg-c\\",
   \\"dependencies\\": {
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -223,7 +229,7 @@ exports[`setVersion updates monorepo for stable version: set-version/packages/re
 
 exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 
@@ -278,8 +284,8 @@ exports[`setVersion updates monorepo on main after release cut: set-version/pack
   \\"description\\": \\"@monorepo/pkg-b\\",
   \\"dependencies\\": {
     \\"@monorepo/pkg-c\\": \\"0.82.0-main\\",
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "
@@ -291,8 +297,8 @@ exports[`setVersion updates monorepo on main after release cut: set-version/pack
   \\"version\\": \\"0.82.0-main\\",
   \\"description\\": \\"@monorepo/pkg-c\\",
   \\"dependencies\\": {
-    \\"metro-config\\": \\"^0.80.10\\",
-    \\"metro-runtime\\": \\"^0.80.10\\"
+    \\"third-party-dep-a\\": \\"^1.2.3\\",
+    \\"third-party-dep-b\\": \\"^1.2.3\\"
   }
 }
 "

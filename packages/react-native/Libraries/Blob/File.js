@@ -12,7 +12,8 @@
 
 import type {BlobOptions} from './BlobTypes';
 
-const Blob = require('./Blob');
+import Blob from './Blob';
+
 const invariant = require('invariant');
 
 /**
@@ -52,4 +53,4 @@ class File extends Blob {
   }
 }
 
-module.exports = File;
+export default File;

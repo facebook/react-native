@@ -14,6 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import ToggleNativeDriver from './utils/ToggleNativeDriver';
 import * as React from 'react';
+import {useState} from 'react';
 import {Animated, StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -91,7 +92,7 @@ function TransformBounceView({useNativeDriver}: {useNativeDriver: boolean}) {
 }
 
 function TransformBounceExample(): React.Node {
-  const [useNativeDriver, setUseNativeDriver] = React.useState(false);
+  const [useNativeDriver, setUseNativeDriver] = useState(false);
 
   return (
     <View>

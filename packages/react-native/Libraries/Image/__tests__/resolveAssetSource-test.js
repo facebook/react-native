@@ -4,11 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-'use strict';
+import type {PackagerAsset} from '../../../../assets/registry';
+import type {ResolvedAssetSource} from '../AssetSourceResolver';
 
 describe('resolveAssetSource', () => {
   let AssetRegistry;
@@ -20,10 +21,10 @@ describe('resolveAssetSource', () => {
     jest.resetModules();
 
     AssetRegistry = require('@react-native/assets-registry/registry');
-    resolveAssetSource = require('../resolveAssetSource');
+    resolveAssetSource = require('../resolveAssetSource').default;
     NativeSourceCode =
       require('../../NativeModules/specs/NativeSourceCode').default;
-    Platform = require('../../Utilities/Platform');
+    Platform = require('../../Utilities/Platform').default;
   });
 
   it('returns same source for simple static and network images', () => {
@@ -53,14 +54,16 @@ describe('resolveAssetSource', () => {
   it('ignores any weird data', () => {
     expect(resolveAssetSource(null)).toBe(null);
     expect(resolveAssetSource(42)).toBe(null);
+    // $FlowExpectedError[incompatible-call]
     expect(resolveAssetSource('nonsense')).toBe(null);
   });
 
   describe('bundle was loaded from network (DEV)', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: 'http://10.0.0.1:8081/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'ios';
     });
 
@@ -136,9 +139,10 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on iOS', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: 'file:///Path/To/Sample.app/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'ios';
     });
 
@@ -191,9 +195,10 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from assets on Android', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: 'assets://Path/To/Simulator/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'android';
     });
 
@@ -246,9 +251,10 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from file on Android', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'android';
     });
 
@@ -278,9 +284,10 @@ describe('resolveAssetSource', () => {
 
   describe('bundle was loaded from raw file on Android', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: '/sdcard/Path/To/Simulator/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'android';
     });
 
@@ -310,9 +317,10 @@ describe('resolveAssetSource', () => {
 
   describe('source resolver can be customized', () => {
     beforeEach(() => {
-      NativeSourceCode.getConstants = () => ({
+      jest.spyOn(NativeSourceCode, 'getConstants').mockImplementation(() => ({
         scriptURL: 'file:///sdcard/Path/To/Simulator/main.bundle',
-      });
+      }));
+      // $FlowFixMe[incompatible-type] - Platform.OS needs to be read-only.
       Platform.OS = 'android';
     });
 
@@ -427,14 +435,17 @@ describe('resolveAssetSource', () => {
     });
   });
 
-  function expectResolvesAsset(input, expectedSource) {
+  function expectResolvesAsset(
+    input: PackagerAsset,
+    expectedSource: ?ResolvedAssetSource,
+  ) {
     const assetId = AssetRegistry.registerAsset(input);
     expect(resolveAssetSource(assetId)).toEqual(expectedSource);
   }
 });
 
 describe('resolveAssetSource.pickScale', () => {
-  const resolveAssetSource = require('../resolveAssetSource');
+  const resolveAssetSource = require('../resolveAssetSource').default;
 
   it('picks matching scale', () => {
     expect(resolveAssetSource.pickScale([1], 2)).toBe(1);

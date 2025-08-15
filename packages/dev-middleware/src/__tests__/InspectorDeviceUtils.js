@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -91,7 +90,7 @@ export class DeviceAgent {
     });
   }
 
-  // $FlowIgnore[unsafe-getters-setters]
+  // $FlowFixMe[unsafe-getters-setters]
   get socket(): WebSocket {
     return nullthrows(this.#ws);
   }
@@ -149,7 +148,6 @@ export class DeviceMock extends DeviceAgent {
       return;
     }
     if (maybePayload instanceof Promise) {
-      // eslint-disable-next-line no-void
       void maybePayload.then(payload => {
         if (!payload) {
           return;

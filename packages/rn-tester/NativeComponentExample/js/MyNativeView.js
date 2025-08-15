@@ -23,6 +23,7 @@ import RNTMyNativeView, {
 import * as React from 'react';
 import {useRef, useState} from 'react';
 import {Button, Platform, Text, UIManager, View} from 'react-native';
+
 const colors = [
   '#0000FF',
   '#FF0000',
@@ -169,84 +170,107 @@ export default function MyNativeView(props: {}): React.Node {
       <Text style={{color: 'green', textAlign: 'center'}}>
         Opacity: {opacity.toFixed(1)}
       </Text>
-      <Button
-        title="Change Background"
-        onPress={() => {
-          let nextBGColor =
-            currentBGColor + 1 >= colors.length ? 0 : currentBGColor + 1;
-          let newColor = colors[nextBGColor];
-          RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-            newColor,
-          );
-
-          callNativeMethodToChangeBackgroundColor(legacyRef.current, newColor);
-          setCurrentBGColor(nextBGColor);
-        }}
-      />
-      <Button
-        title="Add Overlays"
-        onPress={() => {
-          let randomColorId = Math.floor(Math.random() * 5);
-          let overlayColors = [
-            colors[randomColorId],
-            colors[(randomColorId + 1) % 5],
-          ];
-          RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-            overlayColors,
-          );
-          callNativeMethodToAddOverlays(legacyRef.current, overlayColors);
-        }}
-      />
-      <Button
-        title="Remove Overlays"
-        onPress={() => {
-          RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
-            // $FlowFixMe[incompatible-call]
-            ref.current,
-          );
-          callNativeMethodToRemoveOverlays(legacyRef.current);
-        }}
-      />
-      <Button
-        title="Set Opacity"
-        onPress={() => {
-          setOpacity(computeNextOpacity(opacity));
-          setArrayValues([
-            Math.floor(Math.random() * 100),
-            Math.floor(Math.random() * 100),
-            Math.floor(Math.random() * 100),
-          ]);
-        }}
-      />
-      <Button
-        title="Console.log Measure"
-        onPress={() => {
-          ref.current?.measure((x, y, width, height) => {
-            console.log(x, y, width, height);
-          });
-
-          legacyRef.current?.measure((x, y, width, height) => {
-            setLegacyMeasure({x, y, width, height});
-          });
-          legacyRef.current?.measureInWindow((x, y, width, height) => {
-            setLegacyMeasureInWindow({x, y, width, height});
-          });
-
-          if (containerRef.current) {
-            legacyRef.current?.measureLayout(
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+        }}>
+        <Button
+          title="Change Background"
+          onPress={() => {
+            let nextBGColor =
+              currentBGColor + 1 >= colors.length ? 0 : currentBGColor + 1;
+            let newColor = colors[nextBGColor];
+            RNTMyNativeViewCommands.callNativeMethodToChangeBackgroundColor(
               // $FlowFixMe[incompatible-call]
-              containerRef.current,
-              (x, y, width, height) => {
-                setLegacyMeasureLayout({x, y, width, height});
-              },
+              ref.current,
+              newColor,
             );
-          }
-        }}
-      />
+
+            callNativeMethodToChangeBackgroundColor(
+              legacyRef.current,
+              newColor,
+            );
+            setCurrentBGColor(nextBGColor);
+          }}
+        />
+        <Button
+          title="Set Opacity"
+          onPress={() => {
+            setOpacity(computeNextOpacity(opacity));
+            setArrayValues([
+              Math.floor(Math.random() * 100),
+              Math.floor(Math.random() * 100),
+              Math.floor(Math.random() * 100),
+            ]);
+          }}
+        />
+        <Button
+          title="Add Overlays"
+          onPress={() => {
+            let randomColorId = Math.floor(Math.random() * 5);
+            let overlayColors = [
+              colors[randomColorId],
+              colors[(randomColorId + 1) % 5],
+            ];
+            RNTMyNativeViewCommands.callNativeMethodToAddOverlays(
+              // $FlowFixMe[incompatible-call]
+              ref.current,
+              overlayColors,
+            );
+            callNativeMethodToAddOverlays(legacyRef.current, overlayColors);
+          }}
+        />
+        <Button
+          title="Remove Overlays"
+          onPress={() => {
+            RNTMyNativeViewCommands.callNativeMethodToRemoveOverlays(
+              // $FlowFixMe[incompatible-call]
+              ref.current,
+            );
+            callNativeMethodToRemoveOverlays(legacyRef.current);
+          }}
+        />
+        <Button
+          title="Console.log Measure"
+          onPress={() => {
+            ref.current?.measure((x, y, width, height) => {
+              console.log(x, y, width, height);
+            });
+
+            legacyRef.current?.measure((x, y, width, height) => {
+              setLegacyMeasure({x, y, width, height});
+            });
+            legacyRef.current?.measureInWindow((x, y, width, height) => {
+              setLegacyMeasureInWindow({x, y, width, height});
+            });
+
+            if (containerRef.current) {
+              legacyRef.current?.measureLayout(
+                // $FlowFixMe[incompatible-call]
+                containerRef.current,
+                (x, y, width, height) => {
+                  setLegacyMeasureLayout({x, y, width, height});
+                },
+              );
+            }
+          }}
+        />
+        <Button
+          title="Test setNativeProps"
+          onPress={() => {
+            const newCRIndex =
+              cornerRadiusIndex + 1 >= cornerRadiuses.length
+                ? 0
+                : cornerRadiusIndex + 1;
+            setCornerRadiusIndex(newCRIndex);
+            legacyRef.current?.setNativeProps({
+              cornerRadius: cornerRadiuses[newCRIndex],
+            });
+          }}
+        />
+      </View>
       <Text style={{color: 'green', textAlign: 'center'}}>
         &gt; Interop Layer Measurements &lt;
       </Text>
@@ -271,19 +295,6 @@ export default function MyNativeView(props: {}): React.Node {
       <Text style={{color: 'green', textAlign: 'center'}}>
         Legacy Style Event Fired {legacyStyleEventCount} times
       </Text>
-      <Button
-        title="Test setNativeProps"
-        onPress={() => {
-          const newCRIndex =
-            cornerRadiusIndex + 1 >= cornerRadiuses.length
-              ? 0
-              : cornerRadiusIndex + 1;
-          setCornerRadiusIndex(newCRIndex);
-          legacyRef.current?.setNativeProps({
-            cornerRadius: cornerRadiuses[newCRIndex],
-          });
-        }}
-      />
     </View>
   );
 }

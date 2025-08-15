@@ -15,16 +15,13 @@ import com.facebook.react.fabric.mounting.MountingManager
  */
 internal class DestroyUnmountedViewMountItem(
     private val _surfaceId: Int,
-    private val reactTag: Int
+    private val reactTag: Int,
 ) : MountItem {
 
-  public override fun execute(mountingManager: MountingManager) {
-    val surfaceMountingManager = mountingManager.getSurfaceManager(_surfaceId)
-    if (surfaceMountingManager == null) {
-      return
-    }
+  override fun execute(mountingManager: MountingManager) {
+    val surfaceMountingManager = mountingManager.getSurfaceManager(_surfaceId) ?: return
     surfaceMountingManager.deleteView(reactTag)
   }
 
-  public override fun getSurfaceId(): Int = _surfaceId
+  override fun getSurfaceId(): Int = _surfaceId
 }

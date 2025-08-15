@@ -12,23 +12,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ArrayPropsNativeComponentState {
-public:
-  ArrayPropsNativeComponentState() = default;
-
-#ifdef ANDROID
-  ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ArrayPropsNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -46,23 +37,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ArrayPropsNativeComponentState {
-public:
-  ArrayPropsNativeComponentState() = default;
-
-#ifdef ANDROID
-  ArrayPropsNativeComponentState(ArrayPropsNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ArrayPropsNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -80,23 +62,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class BooleanPropNativeComponentState {
-public:
-  BooleanPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  BooleanPropNativeComponentState(BooleanPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using BooleanPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -114,23 +87,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ColorPropNativeComponentState {
-public:
-  ColorPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  ColorPropNativeComponentState(ColorPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ColorPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -148,23 +112,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class CommandNativeComponentState {
-public:
-  CommandNativeComponentState() = default;
-
-#ifdef ANDROID
-  CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using CommandNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -182,23 +137,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class CommandNativeComponentState {
-public:
-  CommandNativeComponentState() = default;
-
-#ifdef ANDROID
-  CommandNativeComponentState(CommandNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using CommandNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -216,23 +162,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class DimensionPropNativeComponentState {
-public:
-  DimensionPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  DimensionPropNativeComponentState(DimensionPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using DimensionPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -250,23 +187,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class DoublePropNativeComponentState {
-public:
-  DoublePropNativeComponentState() = default;
-
-#ifdef ANDROID
-  DoublePropNativeComponentState(DoublePropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using DoublePropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -284,23 +212,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class EventsNestedObjectNativeComponentState {
-public:
-  EventsNestedObjectNativeComponentState() = default;
-
-#ifdef ANDROID
-  EventsNestedObjectNativeComponentState(EventsNestedObjectNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using EventsNestedObjectNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -318,23 +237,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class EventsNativeComponentState {
-public:
-  EventsNativeComponentState() = default;
-
-#ifdef ANDROID
-  EventsNativeComponentState(EventsNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using EventsNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -352,7 +262,8 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -376,23 +287,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ExcludedAndroidComponentState {
-public:
-  ExcludedAndroidComponentState() = default;
-
-#ifdef ANDROID
-  ExcludedAndroidComponentState(ExcludedAndroidComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ExcludedAndroidComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -410,23 +312,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ExcludedAndroidIosComponentState {
-public:
-  ExcludedAndroidIosComponentState() = default;
-
-#ifdef ANDROID
-  ExcludedAndroidIosComponentState(ExcludedAndroidIosComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ExcludedAndroidIosComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -444,35 +337,16 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ExcludedIosComponentState {
-public:
-  ExcludedIosComponentState() = default;
+using ExcludedIosComponentState = StateData;
 
-#ifdef ANDROID
-  ExcludedIosComponentState(ExcludedIosComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
-
-class MultiFileIncludedNativeComponentState {
-public:
-  MultiFileIncludedNativeComponentState() = default;
-
-#ifdef ANDROID
-  MultiFileIncludedNativeComponentState(MultiFileIncludedNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using MultiFileIncludedNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -490,23 +364,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class FloatPropNativeComponentState {
-public:
-  FloatPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  FloatPropNativeComponentState(FloatPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using FloatPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -524,23 +389,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ImagePropNativeComponentState {
-public:
-  ImagePropNativeComponentState() = default;
-
-#ifdef ANDROID
-  ImagePropNativeComponentState(ImagePropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ImagePropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -558,23 +414,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class InsetsPropNativeComponentState {
-public:
-  InsetsPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  InsetsPropNativeComponentState(InsetsPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using InsetsPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -592,23 +439,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class Int32EnumPropsNativeComponentState {
-public:
-  Int32EnumPropsNativeComponentState() = default;
-
-#ifdef ANDROID
-  Int32EnumPropsNativeComponentState(Int32EnumPropsNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using Int32EnumPropsNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -626,23 +464,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class IntegerPropNativeComponentState {
-public:
-  IntegerPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  IntegerPropNativeComponentState(IntegerPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using IntegerPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -660,7 +489,8 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
@@ -684,23 +514,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class MixedPropNativeComponentState {
-public:
-  MixedPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  MixedPropNativeComponentState(MixedPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using MixedPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -718,23 +539,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ImageColorPropNativeComponentState {
-public:
-  ImageColorPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  ImageColorPropNativeComponentState(ImageColorPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ImageColorPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -752,23 +564,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class NoPropsNoEventsComponentState {
-public:
-  NoPropsNoEventsComponentState() = default;
-
-#ifdef ANDROID
-  NoPropsNoEventsComponentState(NoPropsNoEventsComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using NoPropsNoEventsComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -786,23 +589,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class ObjectPropsState {
-public:
-  ObjectPropsState() = default;
-
-#ifdef ANDROID
-  ObjectPropsState(ObjectPropsState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using ObjectPropsState = StateData;
 
 } // namespace facebook::react",
 }
@@ -820,23 +614,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class PointPropNativeComponentState {
-public:
-  PointPropNativeComponentState() = default;
-
-#ifdef ANDROID
-  PointPropNativeComponentState(PointPropNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using PointPropNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -854,23 +639,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class StringEnumPropsNativeComponentState {
-public:
-  StringEnumPropsNativeComponentState() = default;
-
-#ifdef ANDROID
-  StringEnumPropsNativeComponentState(StringEnumPropsNativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using StringEnumPropsNativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -888,23 +664,14 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class StringPropComponentState {
-public:
-  StringPropComponentState() = default;
-
-#ifdef ANDROID
-  StringPropComponentState(StringPropComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using StringPropComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -922,35 +689,16 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class MultiFile1NativeComponentState {
-public:
-  MultiFile1NativeComponentState() = default;
+using MultiFile1NativeComponentState = StateData;
 
-#ifdef ANDROID
-  MultiFile1NativeComponentState(MultiFile1NativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
-
-class MultiFile2NativeComponentState {
-public:
-  MultiFile2NativeComponentState() = default;
-
-#ifdef ANDROID
-  MultiFile2NativeComponentState(MultiFile2NativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using MultiFile2NativeComponentState = StateData;
 
 } // namespace facebook::react",
 }
@@ -968,35 +716,16 @@ Map {
  */
 #pragma once
 
-#ifdef ANDROID
+#include <react/renderer/core/StateData.h>
+#ifdef RN_SERIALIZABLE_STATE
 #include <folly/dynamic.h>
 #endif
 
 namespace facebook::react {
 
-class MultiComponent1NativeComponentState {
-public:
-  MultiComponent1NativeComponentState() = default;
+using MultiComponent1NativeComponentState = StateData;
 
-#ifdef ANDROID
-  MultiComponent1NativeComponentState(MultiComponent1NativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
-
-class MultiComponent2NativeComponentState {
-public:
-  MultiComponent2NativeComponentState() = default;
-
-#ifdef ANDROID
-  MultiComponent2NativeComponentState(MultiComponent2NativeComponentState const &previousState, folly::dynamic data){};
-  folly::dynamic getDynamic() const {
-    return {};
-  };
-#endif
-};
+using MultiComponent2NativeComponentState = StateData;
 
 } // namespace facebook::react",
 }

@@ -10,7 +10,6 @@ package com.facebook.react.uimanager
 import android.graphics.Color
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
-import java.util.Arrays
 
 /** Keys for props that need to be shared across multiple classes. */
 public object ViewProps {
@@ -157,7 +156,9 @@ public object ViewProps {
   public const val ACCESSIBILITY_ACTIONS: String = "accessibilityActions"
   public const val ACCESSIBILITY_VALUE: String = "accessibilityValue"
   public const val ACCESSIBILITY_LABELLED_BY: String = "accessibilityLabelledBy"
+  public const val ACCESSIBILITY_ORDER: String = "experimental_accessibilityOrder"
   public const val IMPORTANT_FOR_ACCESSIBILITY: String = "importantForAccessibility"
+  public const val SCREEN_READER_FOCUSABLE: String = "screenReaderFocusable"
   public const val ROLE: String = "role"
   // DEPRECATED
   public const val ROTATION: String = "rotation"
@@ -189,7 +190,8 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   @JvmField
   public val PADDING_MARGIN_SPACING_TYPES: IntArray =
       intArrayOf(
@@ -201,10 +203,11 @@ public object ViewProps {
           Spacing.TOP,
           Spacing.BOTTOM,
           Spacing.LEFT,
-          Spacing.RIGHT)
+          Spacing.RIGHT,
+      )
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
-          Arrays.asList(
+          listOf(
               ALIGN_SELF,
               ALIGN_ITEMS,
               COLLAPSABLE,
@@ -250,7 +253,8 @@ public object ViewProps {
               PADDING_TOP,
               PADDING_BOTTOM,
               PADDING_START,
-              PADDING_END))
+              PADDING_END,
+          ))
 
   @JvmStatic
   public fun isLayoutOnly(map: ReadableMap, prop: String): Boolean {

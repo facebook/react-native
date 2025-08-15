@@ -14,7 +14,6 @@ import {
   View,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  StyleProp,
   SectionListData,
 } from 'react-native';
 
@@ -31,7 +30,10 @@ class Comp extends React.Component<CompProps> {
   }
 }
 
-const ForwardComp = React.forwardRef<View, CompProps>(({width}, ref) => {
+const ForwardComp = React.forwardRef<
+  React.ComponentRef<typeof View>,
+  CompProps
+>(({width}, ref) => {
   function f1(): boolean {
     return true;
   }
@@ -41,19 +43,13 @@ const ForwardComp = React.forwardRef<View, CompProps>(({width}, ref) => {
 
 type X = React.PropsWithoutRef<React.ComponentProps<typeof ForwardComp>>;
 
-type Props = React.ComponentPropsWithRef<typeof Animated.Text>;
-const AnimatedWrapperComponent: React.FunctionComponent<Props> = ({
-  key, // $ExpectType string | number | null | undefined || Key | null | undefined
-  ...props
-}) => <Animated.Text {...props} />;
-
 function TestAnimatedAPI() {
   // Value
   const v1 = new Animated.Value(0);
   const v2 = new Animated.Value(0);
 
   // Ref
-  const AnimatedViewRef = React.useRef<View>(null);
+  const AnimatedViewRef = React.useRef<React.ComponentRef<typeof View>>(null);
 
   AnimatedViewRef.current &&
     AnimatedViewRef.current.measure(() => {
@@ -62,15 +58,15 @@ function TestAnimatedAPI() {
 
   const AnimatedComp = Animated.createAnimatedComponent(Comp);
 
-  const AnimatedCompRef = React.useRef<Comp>(null);
+  const AnimatedCompRef = React.useRef<React.ComponentRef<typeof Comp>>(null);
 
   AnimatedCompRef.current && AnimatedCompRef.current.f1();
 
   const AnimatedForwardComp = Animated.createAnimatedComponent(ForwardComp);
 
   const AnimatedForwardCompRef =
-    React.useRef<React.ElementRef<typeof ForwardComp>>(null);
-  const ForwardCompRef = React.useRef<View>(null);
+    React.useRef<React.ComponentRef<typeof ForwardComp>>(null);
+  const ForwardCompRef = React.useRef<React.ComponentRef<typeof View>>(null);
 
   AnimatedForwardCompRef.current &&
     AnimatedForwardCompRef.current.measure(() => {
@@ -168,9 +164,7 @@ function TestAnimatedAPI() {
   });
 
   const AnimatedView = Animated.createAnimatedComponent(View);
-  const ref = React.useRef<View>(null);
-  const legacyRef = React.useRef<Animated.LegacyRef<View>>(null);
-
+  const ref = React.useRef<React.ComponentRef<typeof View>>(null);
   return (
     <View ref={ref}>
       <Animated.View
@@ -185,8 +179,6 @@ function TestAnimatedAPI() {
       <AnimatedView ref={ref} style={{top: 3}}>
         i has children
       </AnimatedView>
-      <Animated.View ref={legacyRef} />
-      <AnimatedView ref={legacyRef} />
       <AnimatedComp ref={AnimatedCompRef} width={v1} />
       <ForwardComp ref={ForwardCompRef} width={1} />
       <AnimatedForwardComp ref={AnimatedForwardCompRef} width={10} />

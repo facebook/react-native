@@ -31,7 +31,7 @@
 
 void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 {
-  RCTEnableTurboModule(turboModuleEnabled);
+  RCTEnableTurboModule(YES);
 
 #if DEBUG
   // Disable idle timer in dev builds to avoid putting application in background and complicating
@@ -43,15 +43,18 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 UIView *
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
-  if (fabricEnabled) {
-    id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
-                                                                   moduleName:moduleName
-                                                            initialProperties:initialProperties];
-    UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
-    [surface start];
-    return rootView;
-  }
-  return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
+                                                                 moduleName:moduleName
+                                                          initialProperties:initialProperties];
+  UIView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+  [surface start];
+  return rootView;
+}
+
+NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
+{
+  // For oss, insert core main queue setup modules here
+  return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
 }
 
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
@@ -130,38 +133,35 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
-#if USE_HERMES
+  auto runtimeInstallerLambda = [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge || !turboModuleManager) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+    [turboModuleManager installJSBindings:runtime];
+  };
+#if USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
-  return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller(
-          [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-            if (!bridge || !turboModuleManager) {
-              return;
-            }
-            if (runtimeScheduler) {
-              facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-            }
-            [turboModuleManager installJSBindings:runtime];
-          }));
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#endif
 }
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
-#if USE_HERMES
+  auto runtimeInstallerLambda = [bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+  };
+#if USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
-  return std::make_unique<facebook::react::JSCExecutorFactory>(
-#endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-        if (!bridge) {
-          return;
-        }
-        if (runtimeScheduler) {
-          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-        }
-      }));
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#endif
 }

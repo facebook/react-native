@@ -1,8 +1,0 @@
-{
-  "name": "@react-native/eslint",
-  "private": true,
-  "version": "0.0.0",
-  "dependencies": {
-    "jsonc-eslint-parser": "^2.3.0"
-  }
-}

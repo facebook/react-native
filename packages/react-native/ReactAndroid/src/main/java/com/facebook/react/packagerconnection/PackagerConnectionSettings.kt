@@ -26,20 +26,29 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       // Check host setting first. If empty try to detect emulator type and use default
       // hostname for those
       val hostFromSettings = preferences.getString(PREFS_DEBUG_SERVER_HOST_KEY, null)
-      if (hostFromSettings?.isNotEmpty() == true) {
+      if (!hostFromSettings.isNullOrEmpty()) {
         return hostFromSettings
       }
       val host = AndroidInfoHelpers.getServerHost(appContext)
       if (host == AndroidInfoHelpers.DEVICE_LOCALHOST) {
         FLog.w(
             TAG,
-            "You seem to be running on device. Run '${AndroidInfoHelpers.getAdbReverseTcpCommand(appContext)}' to forward the debug server's port to the device.")
+            "You seem to be running on device. Run '${AndroidInfoHelpers.getAdbReverseTcpCommand(appContext)}' to forward the debug server's port to the device.",
+        )
       }
       return host
     }
     set(host) {
-      preferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply()
+      if (host.isEmpty()) {
+        preferences.edit().remove(PREFS_DEBUG_SERVER_HOST_KEY).apply()
+      } else {
+        preferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply()
+      }
     }
+
+  public open fun resetDebugServerHost() {
+    preferences.edit().remove(PREFS_DEBUG_SERVER_HOST_KEY).apply()
+  }
 
   public fun setAdditionalOptionForPackager(key: String, value: String) {
     _additionalOptionsForPackager[key] = value

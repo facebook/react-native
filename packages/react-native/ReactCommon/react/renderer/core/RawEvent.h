@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include <react/renderer/core/EventLogger.h>
@@ -16,6 +17,8 @@
 #include <react/timing/primitives.h>
 
 namespace facebook::react {
+
+class ShadowNodeFamily;
 
 /*
  * Represents ready-to-dispatch event object.
@@ -56,25 +59,35 @@ struct RawEvent {
      * Forces continuous type for the event. Regardless if continuous event
      * isn't ongoing.
      */
-    Continuous = 4
+    Continuous = 4,
+
+    /*
+     * Priority for events that can be processed in idle times or in the
+     * background.
+     */
+    Idle = 5,
   };
 
   RawEvent(
       std::string type,
       SharedEventPayload eventPayload,
       SharedEventTarget eventTarget,
-      Category category = Category::Unspecified);
+      std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily,
+      Category category = Category::Unspecified,
+      bool isUnique = false);
 
   std::string type;
   SharedEventPayload eventPayload;
   SharedEventTarget eventTarget;
+  std::weak_ptr<const ShadowNodeFamily> shadowNodeFamily;
   Category category;
   EventTag loggingTag{0};
+  bool isUnique{false};
 
   // The client may specify a platform-specific timestamp for the event start
   // time, for example when MotionEvent was triggered on the Android native
   // side.
-  DOMHighResTimeStamp eventStartTimeStamp{DOM_HIGH_RES_TIME_STAMP_UNSET};
+  std::optional<HighResTimeStamp> eventStartTimeStamp = std::nullopt;
 };
 
 } // namespace facebook::react

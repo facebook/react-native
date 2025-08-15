@@ -7,9 +7,7 @@
 
 #pragma once
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
+#if __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
 #include "FBReactNativeSpecJSI.h"
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
@@ -20,7 +18,8 @@ namespace facebook::react {
 using CallbackHandle = jsi::Object;
 
 using NativeRequestIdleCallbackOptions =
-    NativeIdleCallbacksRequestIdleCallbackOptions<std::optional<double>>;
+    NativeIdleCallbacksRequestIdleCallbackOptions<
+        std::optional<HighResDuration>>;
 
 template <>
 struct Bridging<NativeRequestIdleCallbackOptions>

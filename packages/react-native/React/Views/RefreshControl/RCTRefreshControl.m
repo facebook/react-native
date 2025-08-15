@@ -8,6 +8,8 @@
 #import "RCTRefreshControl.h"
 #import "RCTRefreshableProtocol.h"
 
+#ifndef RCT_FIT_RM_OLD_COMPONENT
+
 #import "RCTUtils.h"
 
 @interface RCTRefreshControl () <RCTRefreshableProtocol>
@@ -71,8 +73,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)beginRefreshingProgrammatically
 {
-  if (!_hasMovedToWindow)
+  if (!_hasMovedToWindow) {
     return;
+  }
 
   UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;
   _refreshingProgrammatically = YES;
@@ -108,8 +111,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)endRefreshingProgrammatically
 {
-  if (!_hasMovedToWindow)
+  if (!_hasMovedToWindow) {
     return;
+  }
   // The contentOffset of the scrollview MUST be greater than the contentInset before calling
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = self.scrollView;
@@ -222,3 +226,5 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 }
 
 @end
+
+#endif // RCT_FIT_RM_OLD_COMPONENT

@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
 import {useMemo, useRef, useState} from 'react';
@@ -88,4 +90,4 @@ exports.examples = [
       return <PanResponderExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

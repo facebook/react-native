@@ -61,15 +61,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_SampleWithUppercaseName
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_SampleWithUppercaseName PRIVATE)
 ",
 }
 `;
@@ -135,15 +127,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_complex_objects
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_complex_objects PRIVATE)
 ",
 }
 `;
@@ -202,15 +186,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_cxx_only_native_modules
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_cxx_only_native_modules PRIVATE)
 ",
 }
 `;
@@ -276,15 +252,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_empty_native_modules
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_empty_native_modules PRIVATE)
 ",
 }
 `;
@@ -350,15 +318,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_event_emitter_module
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_event_emitter_module PRIVATE)
 ",
 }
 `;
@@ -424,15 +384,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_native_modules_with_type_aliases
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_native_modules_with_type_aliases PRIVATE)
 ",
 }
 `;
@@ -506,15 +458,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_real_module_example
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_real_module_example PRIVATE)
 ",
 }
 `;
@@ -580,15 +524,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_simple_native_modules
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_simple_native_modules PRIVATE)
 ",
 }
 `;
@@ -654,15 +590,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_string_literals
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_string_literals PRIVATE)
 ",
 }
 `;
@@ -736,15 +664,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_two_modules_different_files
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_two_modules_different_files PRIVATE)
 ",
 }
 `;
@@ -810,15 +730,7 @@ target_link_libraries(
   reactnative
 )
 
-target_compile_options(
-  react_codegen_union_module
-  PRIVATE
-  -DLOG_TAG=\\\\\\"ReactNative\\\\\\"
-  -fexceptions
-  -frtti
-  -std=c++20
-  -Wall
-)
+target_compile_reactnative_options(react_codegen_union_module PRIVATE)
 ",
 }
 `;

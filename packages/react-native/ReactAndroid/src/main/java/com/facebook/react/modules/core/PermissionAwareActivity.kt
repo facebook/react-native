@@ -7,6 +7,8 @@
 
 package com.facebook.react.modules.core
 
+import android.app.Activity
+
 /**
  * Interface used to denote activities that can forward permission requests and call
  * [PermissionListener] with the permission request results.
@@ -25,6 +27,6 @@ public interface PermissionAwareActivity {
   public fun requestPermissions(
       permissions: Array<String>,
       requestCode: Int,
-      listener: PermissionListener?
+      listener: PermissionListener?,
   )
 }

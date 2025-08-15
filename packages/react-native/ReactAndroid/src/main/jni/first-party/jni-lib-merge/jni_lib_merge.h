@@ -58,8 +58,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad_Weak(JavaVM* vm, void* reserved);
                                                                                \
   /* We rename the declared JNI_OnLoad to this so we can call it */            \
   /* from either our weak JNI_OnLoad or our merge-friendly init function. */   \
-  static jint pre_merge_original_JNI_OnLoad(                                   \
-      JavaVM* vm, void* _Nullable reserved);                                   \
+  static jint pre_merge_original_JNI_OnLoad(JavaVM* vm, void* reserved);       \
                                                                                \
   /* Merge-friendly wrapper for the original JNI_OnLoad, called by JNI. */     \
   /* Return non-zero to indicate failure. */                                   \

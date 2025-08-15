@@ -214,7 +214,9 @@ export default class AnimatedValueXY extends AnimatedWithChildren {
    *
    * See https://reactnative.dev/docs/animatedvaluexy#gettranslatetransform
    */
-  getTranslateTransform(): Array<{[key: string]: AnimatedValue, ...}> {
+  getTranslateTransform(): Array<
+    {translateX: AnimatedValue} | {translateY: AnimatedValue},
+  > {
     return [{translateX: this.x}, {translateY: this.y}];
   }
 

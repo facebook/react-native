@@ -21,6 +21,8 @@
 #include "ModuleRegistryBuilder.h"
 #include "ReactInstanceManagerInspectorTarget.h"
 
+#ifndef RCT_FIT_RM_OLD_RUNTIME
+
 namespace facebook::react {
 
 class Instance;
@@ -55,7 +57,7 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
       // This executor is actually a factory holder.
       JavaScriptExecutorHolder* jseh,
       jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue,
-      jni::alias_ref<JavaMessageQueueThread::javaobject> moduleQueue,
+      jni::alias_ref<JavaMessageQueueThread::javaobject> nativeModulesQueue,
       jni::alias_ref<
           jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
           javaModules,
@@ -125,3 +127,5 @@ class CatalystInstanceImpl : public jni::HybridClass<CatalystInstanceImpl> {
 };
 
 } // namespace facebook::react
+
+#endif

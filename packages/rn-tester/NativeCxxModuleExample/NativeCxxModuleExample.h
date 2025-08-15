@@ -62,7 +62,7 @@ struct Bridging<CustomEnumInt> {
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime& rt, CustomEnumInt value) {
+  static int32_t toJs(jsi::Runtime& rt, CustomEnumInt value) {
     return bridging::toJs(rt, static_cast<int32_t>(value));
   }
 };
@@ -134,7 +134,7 @@ class NativeCxxModuleExample
 
   void getValueWithCallback(
       jsi::Runtime& rt,
-      AsyncCallback<std::string> callback);
+      const AsyncCallback<std::string>& callback);
 
   std::function<void()> setValueCallbackWithSubscription(
       jsi::Runtime& rt,
@@ -180,7 +180,8 @@ class NativeCxxModuleExample
 
   std::string getString(jsi::Runtime& rt, std::string arg);
 
-  std::string getUnion(jsi::Runtime& rt, float x, std::string y, jsi::Object z);
+  std::string
+  getUnion(jsi::Runtime& rt, float x, const std::string& y, jsi::Object z);
 
   ValueStruct
   getValue(jsi::Runtime& rt, double x, std::string y, ObjectStruct z);
@@ -193,21 +194,23 @@ class NativeCxxModuleExample
 
   void voidFunc(jsi::Runtime& rt);
 
+  AsyncPromise<> voidPromise(jsi::Runtime& rt);
+
   void setMenu(jsi::Runtime& rt, MenuItem menuItem);
 
   void emitCustomDeviceEvent(jsi::Runtime& rt, const std::string& eventName);
 
   void voidFuncThrows(jsi::Runtime& rt);
 
-  ObjectStruct getObjectThrows(jsi::Runtime& rt, ObjectStruct arg);
+  ObjectStruct getObjectThrows(jsi::Runtime& rt, const ObjectStruct& arg);
 
-  AsyncPromise<jsi::Value> promiseThrows(jsi::Runtime& rt);
+  AsyncPromise<> promiseThrows(jsi::Runtime& rt);
 
   void voidFuncAssert(jsi::Runtime& rt);
 
-  ObjectStruct getObjectAssert(jsi::Runtime& rt, ObjectStruct arg);
+  ObjectStruct getObjectAssert(jsi::Runtime& rt, const ObjectStruct& arg);
 
-  AsyncPromise<jsi::Value> promiseAssert(jsi::Runtime& rt);
+  AsyncPromise<> promiseAssert(jsi::Runtime& rt);
 
  private:
   std::optional<AsyncCallback<std::string>> valueCallback_;

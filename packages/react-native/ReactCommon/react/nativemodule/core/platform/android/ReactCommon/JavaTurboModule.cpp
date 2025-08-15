@@ -16,7 +16,6 @@
 
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModulePerfLogger.h>
-#include <ReactCommon/TurboModuleUtils.h>
 #include <jsi/JSIDynamic.h>
 #include <react/bridging/Bridging.h>
 #include <react/debug/react_native_assert.h>
@@ -522,7 +521,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   const char* methodName = methodNameStr.c_str();
   const char* moduleName = name_.c_str();
 
-  bool isMethodSync = !(valueKind == VoidKind || valueKind == PromiseKind);
+  bool isMethodSync = valueKind != VoidKind && valueKind != PromiseKind;
 
   if (isMethodSync) {
     TMPL::syncMethodCallStart(moduleName, methodName);
@@ -583,7 +582,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     }
   };
 
-  if (!methodID) {
+  if (methodID == nullptr) {
     jclass cls = env->GetObjectClass(instance);
     methodID = env->GetMethodID(cls, methodName, methodSignature.c_str());
 
@@ -646,7 +645,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
         TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
 
         auto returnValue = jsi::Value::null();
-        if (returnObject) {
+        if (returnObject != nullptr) {
           auto booleanObj = jni::adopt_local(
               static_cast<jni::JBoolean::javaobject>(returnObject));
           returnValue = jsi::Value(static_cast<bool>(booleanObj->value()));
@@ -685,7 +684,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
         TMPL::syncMethodCallReturnConversionStart(moduleName, methodName);
 
         auto returnValue = jsi::Value::null();
-        if (returnObject) {
+        if (returnObject != nullptr) {
           if (returnType == "Ljava/lang/Double;") {
             auto doubleObj = jni::adopt_local(
                 static_cast<jni::JDouble::javaobject>(returnObject));
@@ -707,8 +706,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       } else if (returnType == "D" || returnType == "F" || returnType == "I") {
         jsi::Value returnValue = jsi::Value::undefined();
         if (returnType == "D") {
-          double returnDouble =
-              (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
+          auto returnDouble = static_cast<double>(
+              env->CallDoubleMethodA(instance, methodID, jargs.data()));
           checkJNIErrorForMethodCall();
 
           TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
@@ -716,8 +715,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
           returnValue = jsi::Value(returnDouble);
         } else if (returnType == "F") {
-          float returnFloat =
-              (float)env->CallFloatMethodA(instance, methodID, jargs.data());
+          auto returnFloat = static_cast<float>(
+              env->CallFloatMethodA(instance, methodID, jargs.data()));
           checkJNIErrorForMethodCall();
 
           TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
@@ -725,8 +724,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
           returnValue = jsi::Value((double)returnFloat);
         } else if (returnType == "I") {
-          int returnInt =
-              (int)env->CallIntMethodA(instance, methodID, jargs.data());
+          int returnInt = static_cast<int>(
+              env->CallIntMethodA(instance, methodID, jargs.data()));
           checkJNIErrorForMethodCall();
 
           TMPL::syncMethodCallExecutionEnd(moduleName, methodName);
@@ -859,7 +858,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       std::optional<AsyncCallback<>> nativeRejectCallback;
 
       // The promise constructor runs its arg immediately, so this is safe
-      jobject javaPromise;
+      jobject javaPromise = nullptr;
       jsi::Value jsPromise = Promise.callAsConstructor(
           runtime,
           jsi::Function::createFromHostFunction(
@@ -970,34 +969,32 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   }
 }
 
-void JavaTurboModule::setEventEmitterCallback(
-    jni::alias_ref<jobject> jinstance) {
+void JavaTurboModule::configureEventEmitterCallback() {
   JNIEnv* env = jni::Environment::current();
-  auto instance = jinstance.get();
   static jmethodID cachedMethodId = nullptr;
   if (cachedMethodId == nullptr) {
-    jclass cls = env->GetObjectClass(instance);
+    jclass cls = env->GetObjectClass(instance_.get());
     cachedMethodId = env->GetMethodID(
         cls,
         "setEventEmitterCallback",
         "(Lcom/facebook/react/bridge/CxxCallbackImpl;)V");
+    FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
   }
 
-  auto eventEmitterLookup =
-      [&](const std::string& eventName) -> AsyncEventEmitter<folly::dynamic>& {
-    return static_cast<AsyncEventEmitter<folly::dynamic>&>(
+  auto callback = JCxxCallbackImpl::newObjectCxxArgs([&](folly::dynamic args) {
+    auto eventName = args.at(0).asString();
+    auto& eventEmitter = static_cast<AsyncEventEmitter<folly::dynamic>&>(
         *eventEmitterMap_[eventName].get());
-  };
+    eventEmitter.emit(args.size() > 1 ? std::move(args).at(1) : nullptr);
+  });
 
-  jvalue arg;
-  arg.l = JCxxCallbackImpl::newObjectCxxArgs([eventEmitterLookup = std::move(
-                                                  eventEmitterLookup)](
-                                                 folly::dynamic args) {
-            auto eventName = args.at(0).asString();
-            auto eventArgs = args.size() > 1 ? args.at(1) : nullptr;
-            eventEmitterLookup(eventName).emit(std::move(eventArgs));
-          }).release();
-  env->CallVoidMethod(instance, cachedMethodId, arg);
+  jvalue args[1];
+  args[0].l = callback.release();
+
+  // CallVoidMethod is replaced with CallVoidMethodA as it's unsafe on 32bit and
+  // causes crashes https://github.com/facebook/react-native/issues/51628
+  env->CallVoidMethodA(instance_.get(), cachedMethodId, args);
+  FACEBOOK_JNI_THROW_PENDING_EXCEPTION();
 }
 
 } // namespace facebook::react

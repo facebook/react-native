@@ -67,10 +67,11 @@ class GenerateCodegenArtifactsTaskTest {
     val outputDir = tempFolder.newFolder("output")
 
     val task =
-        createTestTask<GenerateCodegenArtifactsTask> {
-          it.reactNativeDir.set(reactNativeDir)
-          it.generatedSrcDir.set(outputDir)
-          it.nodeExecutableAndArgs.set(listOf("--verbose"))
+        createTestTask<GenerateCodegenArtifactsTask> { task ->
+          task.reactNativeDir.set(reactNativeDir)
+          task.generatedSrcDir.set(outputDir)
+          task.nodeExecutableAndArgs.set(listOf("--verbose"))
+          task.nodeWorkingDir.set(tempFolder.root.absolutePath)
         }
 
     task.setupCommandLine("example-test", "com.example.test")
@@ -100,10 +101,11 @@ class GenerateCodegenArtifactsTaskTest {
 
     val project = createProject()
     val task =
-        createTestTask<GenerateCodegenArtifactsTask>(project) {
-          it.reactNativeDir.set(reactNativeDir)
-          it.generatedSrcDir.set(outputDir)
-          it.nodeExecutableAndArgs.set(listOf("--verbose"))
+        createTestTask<GenerateCodegenArtifactsTask>(project) { task ->
+          task.reactNativeDir.set(reactNativeDir)
+          task.generatedSrcDir.set(outputDir)
+          task.nodeExecutableAndArgs.set(listOf("--verbose"))
+          task.nodeWorkingDir.set(project.projectDir.absolutePath)
         }
 
     task.setupCommandLine("example-test", "com.example.test")

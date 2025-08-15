@@ -20,11 +20,7 @@ import com.facebook.react.bridge.WritableMap
  *   accidentally keeping the device awake for long periods of time because JS crashed or some
  *   request timed out. A value of 0 means no timeout (should only be used for long-running tasks
  *   such as music playback).
- * @property allowedInForeground whether to allow this task to run while the app is in the
- *   foreground (i.e. there is a host in resumed mode for the current ReactContext). Only set this
- *   to true if you really need it. Note that tasks run in the same JS thread as UI code, so doing
- *   expensive operations would degrade user experience.
- * @property allowedInForeground whether to allow this task to run while the app is in the
+ * @property isAllowedInForeground whether to allow this task to run while the app is in the
  *   foreground (i.e. there is a host in resumed mode for the current ReactContext). Only set this
  *   to true if you really need it. Note that tasks run in the same JS thread as UI code, so doing
  *   expensive operations would degrade user experience.
@@ -37,7 +33,7 @@ constructor(
     public val data: WritableMap,
     public val timeout: Long = 0,
     public val isAllowedInForeground: Boolean = false,
-    public val retryPolicy: HeadlessJsTaskRetryPolicy? = NoRetryPolicy.INSTANCE
+    public val retryPolicy: HeadlessJsTaskRetryPolicy? = NoRetryPolicy.INSTANCE,
 ) {
 
   /**
@@ -51,5 +47,6 @@ constructor(
       source.data.copy(),
       source.timeout,
       source.isAllowedInForeground,
-      source.retryPolicy?.copy())
+      source.retryPolicy?.copy(),
+  )
 }

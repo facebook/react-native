@@ -25,12 +25,12 @@ public object ViewUtil {
       if (viewTag % 2 == 0) {
         UIManagerType.FABRIC
       } else {
-        UIManagerType.DEFAULT
+        UIManagerType.LEGACY
       }
 
   /**
-   * Overload for {@link #getUIManagerType(int)} that uses the view's id to determine if it
-   * originated from Fabric
+   * Overload for [getUIManagerType] that uses the view's id to determine if it originated from
+   * Fabric
    */
   @JvmStatic @UIManagerType public fun getUIManagerType(view: View): Int = getUIManagerType(view.id)
 
@@ -55,8 +55,8 @@ public object ViewUtil {
     // by RN and is essentially a random number.
     // At some point it would be great to pass the SurfaceContext here instead.
     @UIManagerType
-    val uiManagerType = if (surfaceId == -1) UIManagerType.DEFAULT else UIManagerType.FABRIC
-    if (uiManagerType == UIManagerType.DEFAULT && !isRootTag(viewTag)) {
+    val uiManagerType = if (surfaceId == -1) UIManagerType.LEGACY else UIManagerType.FABRIC
+    if (uiManagerType == UIManagerType.LEGACY && !isRootTag(viewTag)) {
       // TODO (T123064648): Some events for Fabric still didn't have the surfaceId set, so if it's
       // not a React RootView, double check if the tag belongs to Fabric.
       if (viewTag % 2 == 0) {
@@ -73,7 +73,8 @@ public object ViewUtil {
   @Deprecated(
       "You should not check the tag of the view to inspect if it's the rootTag. " +
           "Relying on this logic could make your app/library break in the future.",
-      ReplaceWith(""))
+      ReplaceWith(""),
+  )
   @JvmStatic
   public fun isRootTag(viewTag: Int): Boolean = viewTag % 10 == 1
 }

@@ -29,9 +29,6 @@ public interface RCTModernEventEmitter : RCTEventEmitter {
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   )
-
-  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
-  public fun receiveTouches(event: TouchEvent)
 }

@@ -1,0 +1,202 @@
+name: Prebuild iOS Dependencies
+
+on:
+  workflow_call: # this directive allow us to call this workflow from other workflows
+
+
+jobs:
+  prepare_workspace:
+    name: Prepare workspace
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Restore cache if present
+        id: restore-ios-prebuilds
+        uses: actions/cache/restore@v4
+        with:
+          path: packages/react-native/third-party/
+          key: v2-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          enableCrossOsArchive: true
+      - name: Yarn Install
+        if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Prepare Dependencies
+        if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
+        run: |
+          node scripts/releases/prepare-ios-prebuilds.js -s
+      - name: Generate Package.swift
+        if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
+        run: |
+          node scripts/releases/prepare-ios-prebuilds.js -w
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ios-prebuilds-workspace
+          path: packages/react-native/third-party/
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        with:
+          key: v2-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          enableCrossOsArchive: true
+          path: packages/react-native/third-party/
+
+  build-apple-slices:
+    name: Build Apple Slice
+    runs-on: macos-14
+    needs: [prepare_workspace]
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ['Debug', 'Release']
+        slice: ['ios',
+                'ios-simulator',
+                'macos',
+                'mac-catalyst',
+                'tvos',
+                'tvos-simulator',
+                'xros',
+                'xros-simulator']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.1'
+      - name: Restore slice folder
+        id: restore-slice-folder
+        uses: actions/cache/restore@v4
+        with:
+          path: packages/react-native/third-party/.build/Build/Products
+          key: v2-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+      - name: Yarn Install
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Restore workspace
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-prebuilds-workspace
+          path: packages/react-native/third-party/
+      - name: Print third-party folder structure
+        run: ls -lR packages/react-native/third-party
+      - name: Install VisionOS
+        if: ${{ steps.restore-slice-folder.outputs.cache-hit != 'true' && (matrix.slice == 'xros' || matrix.slice == 'xros-simulator') }}
+        run: |
+          # https://github.com/actions/runner-images/issues/10559
+          sudo xcodebuild -runFirstLaunch
+          sudo xcrun simctl list
+          sudo xcodebuild -downloadPlatform visionOS
+          sudo xcodebuild -runFirstLaunch
+      - name: Build slice ${{ matrix.slice }} for ${{ matrix.flavor }}
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        run:  node scripts/releases/prepare-ios-prebuilds.js -b -p ${{ matrix.slice }} -r ${{ matrix.flavor }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: prebuild-slice-${{ matrix.flavor }}-${{ matrix.slice }}
+          path: |
+            packages/react-native/third-party/.build/Build/Products
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        with:
+          key: v2-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+          enableCrossOsArchive: true
+          path: |
+            packages/react-native/third-party/.build/Build/Products
+
+  create-xcframework:
+    name: Prepare XCFramework
+    runs-on: macos-14
+    needs: [build-apple-slices]
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [Debug, Release]
+    env:
+      REACT_ORG_CODE_SIGNING_P12_CERT: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT }}
+      REACT_ORG_CODE_SIGNING_P12_CERT_PWD: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT_PWD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.1'
+      - name: Restore XCFramework
+        id: restore-xcframework
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            packages/react-native/third-party/
+          key: v2-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}
+      # If cache hit, we already have our binary. We don't need to do anything.
+      - name: Yarn Install
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Restore workspace
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-prebuilds-workspace
+          path: packages/react-native/third-party/
+      - name: Download slices
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuild-slice-${{ matrix.flavor }}-*
+          path: packages/react-native/third-party/.build/Build/Products
+          merge-multiple: true
+      - name: Setup Keychain
+        if: ${{ steps.restore-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT != '' }}
+        uses: apple-actions/import-codesign-certs@v3 # https://github.com/marketplace/actions/import-code-signing-certificates
+        with:
+          p12-file-base64: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT }}
+          p12-password: ${{ secrets.REACT_ORG_CODE_SIGNING_P12_CERT_PWD }}
+      - name: Create XCFramework
+        if: ${{ steps.restore-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT == '' }}
+        run: node scripts/releases/prepare-ios-prebuilds.js -c
+      - name: Create and Sign XCFramework
+        if: ${{ steps.restore-xcframework.outputs.cache-hit != 'true' && env.REACT_ORG_CODE_SIGNING_P12_CERT != '' }}
+        run: node scripts/releases/prepare-ios-prebuilds.js -c -i "React Org"
+      - name: Compress and Rename XCFramework
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: |
+          tar -cz -f packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz \
+            packages/react-native/third-party/ReactNativeDependencies.xcframework
+      - name: Show Symbol folder content
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: ls -lR packages/react-native/third-party/Symbols
+      - name: Compress and Rename dSYM
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: |
+          tar -cz -f packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz \
+            packages/react-native/third-party/Symbols/ReactNativeDependencies.framework.dSYM
+      - name: Upload XCFramework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          path: packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+      - name: Upload dSYM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
+          path: |
+            packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
+      - name: Save XCFramework in Cache
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
+          key: v2-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuild/configuration.js') }}

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <queue>
+#include <utility>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -32,15 +33,15 @@ class MockTimerRegistry : public PlatformTimerRegistry {
 
 class MockMessageQueueThread : public MessageQueueThread {
  public:
-  void runOnQueue(std::function<void()>&& func) {
+  void runOnQueue(std::function<void()>&& func) override {
     callbackQueue_.push(func);
   }
 
   // Unused
-  void runOnQueueSync(std::function<void()>&&) {}
+  void runOnQueueSync(std::function<void()>&& /*unused*/) override {}
 
   // Unused
-  void quitSynchronous() {}
+  void quitSynchronous() override {}
 
   void tick() {
     if (!callbackQueue_.empty()) {
@@ -79,7 +80,7 @@ class ErrorUtils : public jsi::HostObject {
           1,
           [this](
               jsi::Runtime& runtime,
-              const jsi::Value& thisValue,
+              const jsi::Value& /*thisValue*/,
               const jsi::Value* arguments,
               size_t count) {
             if (count >= 1) {
@@ -114,7 +115,7 @@ class ErrorUtils : public jsi::HostObject {
 
 class ReactInstanceTest : public ::testing::Test {
  protected:
-  ReactInstanceTest() {}
+  ReactInstanceTest() = default;
 
   void SetUp() override {
     auto runtime =
@@ -152,7 +153,7 @@ class ReactInstanceTest : public ::testing::Test {
     step();
 
     // Run the main bundle, so that native -> JS calls no longer get buffered.
-    loadScript(script);
+    loadScript(std::move(script));
   }
 
   void initializeRuntimeWithScript(std::string script) {
@@ -161,16 +162,16 @@ class ReactInstanceTest : public ::testing::Test {
     step();
 
     // Run the main bundle, so that native -> JS calls no longer get buffered.
-    loadScript(script);
+    loadScript(std::move(script));
   }
 
-  jsi::Value tryEval(std::string js, std::string defaultVal) {
+  jsi::Value tryEval(const std::string& js, const std::string& defaultVal) {
     return eval(
         "(function() { try { return " + js + "; } catch { return " +
         defaultVal + "; } })()");
   }
 
-  jsi::Value eval(std::string js) {
+  jsi::Value eval(const std::string& js) {
     RuntimeExecutor runtimeExecutor = instance_->getUnbufferedRuntimeExecutor();
     jsi::Value ret = jsi::Value::undefined();
     runtimeExecutor([js, &ret](jsi::Runtime& runtime) {
@@ -214,11 +215,11 @@ class ReactInstanceTest : public ::testing::Test {
     messageQueueThread_->guardedTick();
   }
 
-  jsi::Runtime* runtime_;
+  jsi::Runtime* runtime_{};
   std::shared_ptr<MockMessageQueueThread> messageQueueThread_;
   std::unique_ptr<ReactInstance> instance_;
   std::shared_ptr<TimerManager> timerManager_;
-  MockTimerRegistry* mockRegistry_;
+  MockTimerRegistry* mockRegistry_{};
   std::shared_ptr<ErrorUtils> errorHandler_;
 };
 
@@ -267,7 +268,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithoutDelay) {
   EXPECT_CALL(
       *mockRegistry_,
       createTimer(_, 0)); // If delay is not provided, it should use 0
-  eval("setTimeout(() => {});");
+  auto val = eval("setTimeout(() => {});");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 1); // First timer id should start at 1
 }
 
 TEST_F(ReactInstanceTest, testSetTimeoutWithPassThroughArgs) {
@@ -299,8 +302,9 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
 
-  eval("setTimeout('invalid');");
+  auto val = eval("setTimeout('invalid')");
   expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 
   eval("setTimeout(() => {}, 'invalid');");
   expectNoError();
@@ -417,9 +421,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
       "setInterval must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval('invalid', 100);"),
-      "The first argument to setInterval must be a function.");
+
+  auto val = eval("setInterval('invalid', 100)");
+  expectNoError();
+  EXPECT_EQ(val.asNumber(), 0);
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {

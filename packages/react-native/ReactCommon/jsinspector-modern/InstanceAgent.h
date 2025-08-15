@@ -7,18 +7,19 @@
 
 #pragma once
 
-#include "CdpJson.h"
 #include "RuntimeTarget.h"
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/cdp/CdpJson.h>
+#include <jsinspector-modern/tracing/InstanceTracingProfile.h>
+#include <jsinspector-modern/tracing/TargetTracingAgent.h>
 
 #include <functional>
 
 namespace facebook::react::jsinspector_modern {
-
-class InstanceTarget;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
@@ -68,6 +69,29 @@ class InstanceAgent final {
   InstanceTarget& target_;
   std::shared_ptr<RuntimeAgent> runtimeAgent_;
   SessionState& sessionState_;
+};
+
+#pragma mark - Tracing
+
+/**
+ * An Agent that handles Tracing events for a particular InstanceTarget.
+ *
+ * Lifetime of this agent is bound to the lifetime of the Tracing session -
+ * HostTargetTraceRecording and to the lifetime of the InstanceTarget.
+ */
+class InstanceTracingAgent : tracing::TargetTracingAgent {
+ public:
+  explicit InstanceTracingAgent(tracing::TraceRecordingState& state);
+
+  ~InstanceTracingAgent();
+
+  /**
+   * Registers the RuntimeTarget with this tracing agent.
+   */
+  void setTracedRuntime(RuntimeTarget* runtimeTarget);
+
+ private:
+  std::shared_ptr<RuntimeTracingAgent> runtimeTracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

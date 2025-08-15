@@ -12,13 +12,13 @@ import com.facebook.react.bridge.ReadableMap
 
 internal class ModulusAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : ValueAnimatedNode() {
 
   private val inputNode: Int = config.getInt("input")
   private val modulus: Double = config.getDouble("modulus")
 
-  override public fun update() {
+  override fun update() {
     val animatedNode = nativeAnimatedNodesManager.getNodeById(inputNode)
     if (animatedNode is ValueAnimatedNode) {
       val animatedNodeValue = animatedNode.getValue()
@@ -29,7 +29,7 @@ internal class ModulusAnimatedNode(
     }
   }
 
-  override public fun prettyPrint(): String {
+  override fun prettyPrint(): String {
     return "NativeAnimatedNodesManager[$tag] inputNode: $inputNode modulus: $modulus super: ${super.prettyPrint()}"
   }
 }

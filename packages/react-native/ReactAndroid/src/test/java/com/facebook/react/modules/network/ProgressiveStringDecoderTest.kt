@@ -12,10 +12,7 @@ import java.nio.charset.StandardCharsets
 import kotlin.math.min
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class ProgressiveStringDecoderTest {
 
   private val TEST_DATA_1_BYTE =

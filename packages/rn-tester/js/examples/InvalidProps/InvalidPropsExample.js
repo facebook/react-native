@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
@@ -19,7 +21,7 @@ export const category = 'Other';
 export const description =
   'Examples of passing invalid prop values and how they fall back to expected defaults.';
 
-export const examples = [
+export const examples: Array<RNTesterModuleExample> = [
   {
     title: 'View flex',
     render(): React.Node {

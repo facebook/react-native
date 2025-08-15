@@ -6,7 +6,6 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import type {
@@ -20,8 +19,8 @@ import {createDeviceMock} from './InspectorDeviceUtils';
 import {withAbortSignalForEachTest} from './ResourceUtils';
 import {withServerForEachTest} from './ServerUtils';
 
-// Must be greater than or equal to PAGES_POLLING_INTERVAL in `InspectorProxy.js`.
-const PAGES_POLLING_DELAY = 1000;
+// Must be greater than PAGES_POLLING_INTERVAL in `Device.js`
+const PAGES_POLLING_DELAY = 2100;
 
 jest.useFakeTimers();
 

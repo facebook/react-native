@@ -93,6 +93,10 @@ class FlowParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    if (typeAnnotation?.id?.type === 'QualifiedTypeIdentifier') {
+      return typeAnnotation.id.id.name;
+    }
+
     return typeAnnotation?.id?.name;
   }
 
@@ -183,8 +187,8 @@ class FlowParser implements Parser {
       typeAnnotation.type === 'EnumStringBody'
         ? 'StringTypeAnnotation'
         : typeAnnotation.type === 'EnumNumberBody'
-        ? 'NumberTypeAnnotation'
-        : null;
+          ? 'NumberTypeAnnotation'
+          : null;
     if (!enumMembersType) {
       throw new Error(
         `Unknown enum type annotation type. Got: ${typeAnnotation.type}. Expected: EnumStringBody or EnumNumberBody.`,
@@ -238,14 +242,14 @@ class FlowParser implements Parser {
               value: member.init.value,
             }
           : typeof member.init?.value === 'string'
-          ? {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.init.value,
-            }
-          : {
-              type: 'StringLiteralTypeAnnotation',
-              value: member.id.name,
-            };
+            ? {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.init.value,
+              }
+            : {
+                type: 'StringLiteralTypeAnnotation',
+                value: member.id.name,
+              };
 
       return {
         name: member.id.name,
@@ -292,6 +296,7 @@ class FlowParser implements Parser {
         if (
           node.declaration != null &&
           (node.declaration.type === 'TypeAlias' ||
+            node.declaration.type === 'OpaqueType' ||
             node.declaration.type === 'InterfaceDeclaration')
         ) {
           types[node.declaration.id.name] = node.declaration;
@@ -305,6 +310,7 @@ class FlowParser implements Parser {
         types[node.declaration.id.name] = node.declaration;
       } else if (
         node.type === 'TypeAlias' ||
+        node.type === 'OpaqueType' ||
         node.type === 'InterfaceDeclaration' ||
         node.type === 'EnumDeclaration'
       ) {
@@ -443,7 +449,6 @@ class FlowParser implements Parser {
       if (resolvedTypeAnnotation == null) {
         break;
       }
-
       const {typeAnnotation: typeAnnotationNode, typeResolutionStatus: status} =
         handleGenericTypeAnnotation(node, resolvedTypeAnnotation, this);
       typeResolutionStatus = status;
@@ -540,6 +545,10 @@ class FlowParser implements Parser {
   }
 
   nextNodeForTypeAlias(typeAnnotation: $FlowFixMe): $FlowFixMe {
+    if (typeAnnotation.type === 'OpaqueType') {
+      return typeAnnotation.impltype;
+    }
+
     return typeAnnotation.right;
   }
 

@@ -6,14 +6,13 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import LayoutConformanceNativeComponent from './LayoutConformanceNativeComponent';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+export type LayoutConformanceProps = $ReadOnly<{
   /**
    * strict: Layout in accordance with W3C spec, even when breaking
    * compatibility: Layout with the same behavior as previous versions of React Native
@@ -29,15 +28,17 @@ type Props = $ReadOnly<{
 // degrade the error experience).
 const isFabricUIManagerInstalled = global?.nativeFabricUIManager != null;
 
-function LayoutConformance(props: Props): React.Node {
+function LayoutConformance(props: LayoutConformanceProps): React.Node {
   return (
     <LayoutConformanceNativeComponent {...props} style={styles.container} />
   );
 }
 
-function UnimplementedLayoutConformance(props: Props): React.Node {
+function UnimplementedLayoutConformance(
+  props: LayoutConformanceProps,
+): React.Node {
   if (__DEV__) {
-    const warnOnce = require('../../Utilities/warnOnce');
+    const warnOnce = require('../../Utilities/warnOnce').default;
 
     warnOnce(
       'layoutconformance-unsupported',
@@ -50,7 +51,7 @@ function UnimplementedLayoutConformance(props: Props): React.Node {
 
 export default (isFabricUIManagerInstalled
   ? LayoutConformance
-  : UnimplementedLayoutConformance) as component(...Props);
+  : UnimplementedLayoutConformance) as component(...LayoutConformanceProps);
 
 const styles = StyleSheet.create({
   container: {

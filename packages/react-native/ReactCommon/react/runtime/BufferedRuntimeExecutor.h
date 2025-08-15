@@ -10,6 +10,7 @@
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsi/jsi.h>
 #include <atomic>
+#include <mutex>
 #include <queue>
 
 namespace facebook::react {

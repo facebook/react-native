@@ -6,10 +6,9 @@
  *
  * @flow strict-local
  * @format
- * @oncall react_native
  */
 
-import type {ConfigT} from 'metro-config';
+import type {ConfigT, InputConfigT} from 'metro-config';
 
 import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
@@ -26,12 +25,10 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/Utilities/.+\\.js$',
     '/Libraries/vendor/.+\\.js$',
     '/Libraries/WebSocket/.+\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
     '/src/private/renderer/errorhandling/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/@react-native/js-polyfills/.+\\.js$',
-    '/node_modules/event-target-shim/.+\\.js$',
     '/node_modules/invariant/.+\\.js$',
     '/node_modules/react-devtools-core/.+\\.js$',
     '/node_modules/react-native/index.js$',
@@ -46,15 +43,20 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
 
 export {mergeConfig} from 'metro-config';
 
+let frameworkDefaults: InputConfigT = {};
+export function setFrameworkDefaults(config: InputConfigT) {
+  frameworkDefaults = config;
+}
+
 /**
  * Get the base Metro configuration for a React Native project.
  */
 export function getDefaultConfig(projectRoot: string): ConfigT {
-  const config = {
+  const reactNativeDefaults = {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionNames: ['react-native'],
     },
     serializer: {
       // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)
@@ -102,5 +104,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
   // Set global hook so that the CLI can detect when this config has been loaded
   global.__REACT_NATIVE_METRO_CONFIG_LOADED = true;
 
-  return mergeConfig(getBaseConfig.getDefaultValues(projectRoot), config);
+  const metroDefaults = getBaseConfig.getDefaultValues(projectRoot);
+
+  return mergeConfig(metroDefaults, reactNativeDefaults, frameworkDefaults);
 }

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -24,7 +25,8 @@ const {
   setHermesTag,
   shouldUsePrebuiltHermesC,
 } = require('../hermes-utils');
-const MemoryFs = require('metro-memory-fs');
+// $FlowFixMe[untyped-import] (OSS) memfs
+const {memfs} = require('memfs');
 const os = require('os');
 
 const hermesTag =
@@ -35,8 +37,9 @@ const hermesTagSha = '5244f819b2f3949ca94a3a1bf75d54a8ed59d94a';
 const ROOT_DIR = path.normalize(path.join(__dirname, '../../..'));
 const SDKS_DIR = path.join(ROOT_DIR, 'sdks');
 
-let execCalls, spawnCalls;
-let fs;
+let execCalls: $FlowFixMe;
+let spawnCalls: $FlowFixMe;
+let fs: $FlowFixMe;
 
 jest.mock('child_process', () => ({
   execSync: jest.fn((command, options) => {
@@ -145,15 +148,8 @@ describe('hermes-utils', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.mock(
-      'fs',
-      () =>
-        new MemoryFs({
-          platform: process.platform === 'win32' ? 'win32' : 'posix',
-        }),
-    );
+    jest.mock('fs', () => memfs().fs);
     fs = require('fs');
-    fs.reset();
 
     populateMockFilesystemWithHermesBuildScripts();
 

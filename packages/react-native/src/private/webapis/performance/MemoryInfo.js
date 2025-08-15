@@ -6,10 +6,11 @@
  *
  * @flow strict
  * @format
- * @oncall react_native
  */
 
 // flowlint unsafe-getters-setters:off
+
+import {setPlatformObject} from '../webidl/PlatformObjects';
 
 type MemoryInfoLike = {
   jsHeapSizeLimit: ?number,
@@ -52,3 +53,5 @@ export default class MemoryInfo {
     return this.#usedJSHeapSize;
   }
 }
+
+setPlatformObject(MemoryInfo);

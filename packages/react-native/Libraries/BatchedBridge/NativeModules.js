@@ -4,15 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
 import type {ExtendedError} from '../Core/ExtendedError';
 
-const BatchedBridge = require('./BatchedBridge');
+const BatchedBridge = require('./BatchedBridge').default;
 const invariant = require('invariant');
 
 export type ModuleConfig = [
@@ -65,6 +65,7 @@ function genModule(
       module[methodName] = genMethod(moduleID, methodID, methodType);
     });
 
+  // $FlowFixMe[unsafe-object-assign]
   Object.assign(module, constants);
 
   if (module.getConstants == null) {
@@ -173,10 +174,12 @@ function updateErrorWithErrorData(
   /* $FlowFixMe[class-object-subtyping] added when improving typing for this
    * parameters */
   // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[unsafe-object-assign]
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+/* $FlowFixMe[unclear-type] unclear type of NativeModules */
+let NativeModules: {[moduleName: string]: any, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else {
@@ -186,7 +189,8 @@ if (global.nativeModuleProxy) {
     '__fbBatchedBridgeConfig is not set, cannot invoke native modules',
   );
 
-  const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+  const defineLazyObjectProperty =
+    require('../Utilities/defineLazyObjectProperty').default;
   (bridgeConfig.remoteModuleConfig || []).forEach(
     (config: ModuleConfig, moduleID: number) => {
       // Initially this config will only contain the module name when running in JSC. The actual
@@ -209,4 +213,4 @@ if (global.nativeModuleProxy) {
   );
 }
 
-module.exports = NativeModules;
+export default NativeModules;

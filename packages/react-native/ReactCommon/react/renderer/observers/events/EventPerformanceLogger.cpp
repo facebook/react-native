@@ -7,8 +7,10 @@
 
 #include "EventPerformanceLogger.h"
 
+#include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/timing/primitives.h>
+
 #include <unordered_map>
 
 namespace facebook::react {
@@ -103,7 +105,7 @@ EventPerformanceLogger::EventPerformanceLogger(
 EventTag EventPerformanceLogger::onEventStart(
     std::string_view name,
     SharedEventTarget target,
-    DOMHighResTimeStamp eventStartTimeStamp) {
+    std::optional<HighResTimeStamp> eventStartTimeStamp) {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return EMPTY_EVENT_TAG;
@@ -121,13 +123,12 @@ EventTag EventPerformanceLogger::onEventStart(
 
   // The event start timestamp may be provided by the caller in order to
   // specify the platform specific event start time.
-  auto timeStamp = eventStartTimeStamp == DOM_HIGH_RES_TIME_STAMP_UNSET
-      ? performanceEntryReporter->getCurrentTimeStamp()
-      : eventStartTimeStamp;
+  HighResTimeStamp timeStamp =
+      eventStartTimeStamp ? *eventStartTimeStamp : HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     eventsInFlight_.emplace(
-        eventTag, EventEntry{reportedName, target, timeStamp, 0.0});
+        eventTag, EventEntry{reportedName, target, timeStamp});
   }
   return eventTag;
 }
@@ -138,7 +139,7 @@ void EventPerformanceLogger::onEventProcessingStart(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -154,7 +155,7 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     return;
   }
 
-  auto timeStamp = performanceEntryReporter->getCurrentTimeStamp();
+  auto timeStamp = HighResTimeStamp::now();
   {
     std::lock_guard lock(eventsInFlightMutex_);
     auto it = eventsInFlight_.find(tag);
@@ -163,34 +164,17 @@ void EventPerformanceLogger::onEventProcessingEnd(EventTag tag) {
     }
 
     auto& entry = it->second;
+    react_native_assert(
+        entry.processingStartTime.has_value() &&
+        "Attempting to set processingEndTime while processingStartTime is not set.");
     entry.processingEndTime = timeStamp;
-
-    if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-      // If reporting paint time, don't send the entry just yet and wait for the
-      // task to finish.
-      return;
-    }
-
-    const auto& name = entry.name;
-
-    performanceEntryReporter->reportEvent(
-        std::string(name),
-        entry.startTime,
-        timeStamp - entry.startTime,
-        entry.processingStartTime,
-        entry.processingEndTime,
-        entry.interactionId);
-    eventsInFlight_.erase(it);
   }
 }
 
 void EventPerformanceLogger::dispatchPendingEventTimingEntries(
+    HighResTimeStamp taskEndTime,
     const std::unordered_set<SurfaceId>&
         surfaceIdsWithPendingRenderingUpdates) {
-  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    return;
-  }
-
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;
@@ -207,14 +191,23 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
                    entry.target, surfaceIdsWithPendingRenderingUpdates)) {
       // We'll wait for mount to report the event
       entry.isWaitingForMount = true;
+      entry.taskEndTime = taskEndTime;
       ++it;
     } else {
+      react_native_assert(
+          entry.processingStartTime.has_value() &&
+          "Attempted to report PerformanceEventTiming, which did not have processingStartTime defined.");
+      react_native_assert(
+          entry.processingEndTime.has_value() &&
+          "Attempted to report PerformanceEventTiming, which did not have processingEndTime defined.");
+
       performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
-          performanceEntryReporter->getCurrentTimeStamp() - entry.startTime,
-          entry.processingStartTime,
-          entry.processingEndTime,
+          taskEndTime - entry.startTime,
+          entry.processingStartTime.value(),
+          entry.processingEndTime.value(),
+          taskEndTime,
           entry.interactionId);
       it = eventsInFlight_.erase(it);
     }
@@ -223,11 +216,7 @@ void EventPerformanceLogger::dispatchPendingEventTimingEntries(
 
 void EventPerformanceLogger::shadowTreeDidMount(
     const RootShadowNode::Shared& rootShadowNode,
-    double mountTime) noexcept {
-  if (!ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    return;
-  }
-
+    HighResTimeStamp mountTime) noexcept {
   auto performanceEntryReporter = performanceEntryReporter_.lock();
   if (performanceEntryReporter == nullptr) {
     return;
@@ -239,12 +228,19 @@ void EventPerformanceLogger::shadowTreeDidMount(
     const auto& entry = it->second;
     if (entry.isWaitingForMount &&
         isTargetInRootShadowNode(entry.target, rootShadowNode)) {
+      react_native_assert(
+          entry.processingStartTime.has_value() &&
+          "Attempted to report PerformanceEventTiming, which did not have processingStartTime defined.");
+      react_native_assert(
+          entry.processingEndTime.has_value() &&
+          "Attempted to report PerformanceEventTiming, which did not have processingEndTime defined.");
       performanceEntryReporter->reportEvent(
           std::string(entry.name),
           entry.startTime,
           mountTime - entry.startTime,
-          entry.processingStartTime,
-          entry.processingEndTime,
+          entry.processingStartTime.value(),
+          entry.processingEndTime.value(),
+          entry.taskEndTime.value(),
           entry.interactionId);
       it = eventsInFlight_.erase(it);
     } else {

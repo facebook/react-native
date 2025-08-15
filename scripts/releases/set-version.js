@@ -6,20 +6,19 @@
  *
  * @flow strict-local
  * @format
- * @oncall react-native
  */
 
 'use strict';
 
 /*::
-import type {PackageJson} from '../utils/monorepo';
+import type {PackageJson} from '../shared/monorepoUtils';
 */
 
 const {
   getPackages,
   getWorkspaceRoot,
   updatePackageJson,
-} = require('../utils/monorepo');
+} = require('../shared/monorepoUtils');
 const {updateReactNativeArtifacts} = require('./set-rn-artifacts-version');
 const {parseArgs} = require('util');
 
@@ -37,6 +36,8 @@ async function main() {
   const {
     positionals: [version],
     values: {help, skipReactNativeVersion},
+    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+     * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
   if (help) {
@@ -75,12 +76,15 @@ async function setVersion(
     includeReactNative: true,
   });
   const newPackageVersions = Object.fromEntries(
-    Object.keys(packages).map(packageName => [
-      packageName,
-      packageName === 'react-native' && skipReactNativeVersion
-        ? '1000.0.0'
-        : version,
-    ]),
+    Object.entries(packages).map(([packageName, {packageJson}]) => {
+      let packageVersion = version;
+      if (packageName === 'react-native' && skipReactNativeVersion) {
+        packageVersion = '1000.0.0';
+      } else if (packageJson.private === true) {
+        packageVersion = packageJson.version ?? '0.0.0';
+      }
+      return [packageName, packageVersion];
+    }),
   );
 
   const packagesToUpdate = [
@@ -104,6 +108,5 @@ module.exports = {
 };
 
 if (require.main === module) {
-  // eslint-disable-next-line no-void
   void main();
 }

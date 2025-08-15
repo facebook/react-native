@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.defaults
 
 import android.app.Application
 import android.content.Context
-import com.facebook.react.JSEngineResolutionAlgorithm
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
@@ -18,6 +19,8 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
+import com.facebook.react.runtime.JSRuntimeFactory
+import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 
@@ -39,7 +42,8 @@ protected constructor(
       if (isNewArchEnabled) {
         DefaultTurboModuleManagerDelegate.Builder()
       } else {
-        null
+        error(
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
       }
 
   override fun getUIManagerProvider(): UIManagerProvider? =
@@ -66,15 +70,14 @@ protected constructor(
               .createUIManager(reactApplicationContext)
         }
       } else {
-        null
+        error(
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
       }
 
-  override fun getJSEngineResolutionAlgorithm(): JSEngineResolutionAlgorithm? =
-      when (isHermesEnabled) {
-        true -> JSEngineResolutionAlgorithm.HERMES
-        false -> JSEngineResolutionAlgorithm.JSC
-        null -> null
-      }
+  override fun clear() {
+    super.clear()
+    DefaultReactHost.invalidate()
+  }
 
   /**
    * Returns whether the user wants to use the New Architecture or not.
@@ -85,17 +88,20 @@ protected constructor(
    * If false, the app will not attempt to load the New Architecture modules.
    */
   protected open val isNewArchEnabled: Boolean
-    get() = false
+    get() = true
 
   /**
    * Returns whether the user wants to use Hermes.
    *
    * If true, the app will load the Hermes engine, and fail if not found. If false, the app will
-   * load the JSC engine, and fail if not found. If null, the app will attempt to load JSC first and
-   * fallback to Hermes if not found.
+   * load the JSC engine, and fail if not found.
    */
-  protected open val isHermesEnabled: Boolean?
-    get() = null
+  @Deprecated(
+      "Setting isHermesEnabled inside `ReactNativeHost` is deprecated and this field will be ignored. If this field is set to true, you can safely remove it. If this field is set to false, please follow the setup on https://github.com/react-native-community/javascriptcore to continue using JSC",
+      ReplaceWith(""),
+  )
+  protected open val isHermesEnabled: Boolean
+    get() = true
 
   /**
    * Converts this [ReactNativeHost] (bridge-mode) to a [ReactHost] (bridgeless-mode).
@@ -103,14 +109,19 @@ protected constructor(
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
   @UnstableReactNativeAPI
-  internal fun toReactHost(context: Context): ReactHost =
-      DefaultReactHost.getDefaultReactHost(
-          context,
-          packages,
-          jsMainModuleName,
-          bundleAssetName ?: "index",
-          jsBundleFile,
-          isHermesEnabled ?: true,
-          useDeveloperSupport,
-      )
+  internal fun toReactHost(
+      context: Context,
+      jsRuntimeFactory: JSRuntimeFactory? = null,
+  ): ReactHost {
+    val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
+    return DefaultReactHost.getDefaultReactHost(
+        context,
+        packages,
+        jsMainModuleName,
+        bundleAssetName ?: "index",
+        jsBundleFile,
+        concreteJSRuntimeFactory,
+        useDeveloperSupport,
+    )
+  }
 }

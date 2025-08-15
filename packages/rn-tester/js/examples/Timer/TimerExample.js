@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
@@ -20,8 +22,8 @@ function burnCPU(milliseconds: number) {
   while (global.performance.now() < start + milliseconds) {}
 }
 
-type RequestIdleCallbackTesterProps = $ReadOnly<{||}>;
-type RequestIdleCallbackTesterState = {|message: string|};
+type RequestIdleCallbackTesterProps = $ReadOnly<{}>;
+type RequestIdleCallbackTesterState = {message: string};
 
 class RequestIdleCallbackTester extends React.Component<
   RequestIdleCallbackTesterProps,
@@ -144,10 +146,10 @@ class RequestIdleCallbackTester extends React.Component<
   };
 }
 
-type TimerTesterProps = $ReadOnly<{|
+type TimerTesterProps = $ReadOnly<{
   dt?: any,
   type: string,
-|}>;
+}>;
 
 class TimerTester extends React.Component<TimerTesterProps> {
   _ii = 0;
@@ -269,10 +271,10 @@ class TimerTester extends React.Component<TimerTesterProps> {
 }
 
 class IntervalExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     showTimer: boolean,
-  |},
+  },
 > {
   state: {showTimer: boolean} = {
     showTimer: true,
@@ -376,4 +378,4 @@ exports.examples = [
       return <IntervalExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -14,6 +14,10 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 # This function will take care of forcefully including the jni_lib_merge.h header that takes
 # care of redefining the JNI_OnLoad function to JNI_OnLoad_Weak.
 function(target_merge_so target_name)
+  if(NOT ANDROID)
+    return()
+  endif()
+
   target_compile_options(${target_name}
           PRIVATE
             -DORIGINAL_SONAME=\"lib${target_name}.so\"

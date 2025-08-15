@@ -14,6 +14,7 @@ import RNTConfigurationBlock from '../../components/RNTConfigurationBlock';
 import RNTesterButton from '../../components/RNTesterButton';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import * as React from 'react';
+import {useContext} from 'react';
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
 
 const styles = StyleSheet.create({
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
 
 function CompositeAnimationsWithEasingExample(): React.Node {
   const anims = [1, 2, 3].map(() => new Animated.Value(0));
-  const theme = React.useContext(RNTesterThemeContext);
+  const theme = useContext(RNTesterThemeContext);
 
   return (
     <View>

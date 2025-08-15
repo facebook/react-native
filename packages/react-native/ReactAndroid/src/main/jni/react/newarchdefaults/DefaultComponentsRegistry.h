@@ -27,6 +27,10 @@ class DefaultComponentsRegistry
       std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
       registerComponentDescriptorsFromEntryPoint;
 
+  static std::function<void(
+      std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
+      registerCodegenComponentDescriptorsFromEntryPoint;
+
  private:
   static void setRegistryRunction(
       jni::alias_ref<jclass>,

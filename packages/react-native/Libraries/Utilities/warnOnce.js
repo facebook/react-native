@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
@@ -29,4 +29,4 @@ function warnOnce(key: string, message: string) {
   warnedKeys[key] = true;
 }
 
-module.exports = warnOnce;
+export default warnOnce;

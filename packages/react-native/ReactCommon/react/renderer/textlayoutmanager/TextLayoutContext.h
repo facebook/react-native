@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/renderer/core/ReactPrimitives.h>
 #include <react/renderer/graphics/Float.h>
 
 namespace facebook::react {
@@ -23,18 +24,13 @@ struct TextLayoutContext {
    * to `pixel value`.
    */
   Float pointScaleFactor{1.0};
+
+  /**
+   * The ID of the surface being laid out
+   */
+  SurfaceId surfaceId{-1};
+
+  bool operator==(const TextLayoutContext& rhs) const = default;
 };
-
-inline bool operator==(
-    const TextLayoutContext& lhs,
-    const TextLayoutContext& rhs) {
-  return std::tie(lhs.pointScaleFactor) == std::tie(rhs.pointScaleFactor);
-}
-
-inline bool operator!=(
-    const TextLayoutContext& lhs,
-    const TextLayoutContext& rhs) {
-  return !(lhs == rhs);
-}
 
 } // namespace facebook::react

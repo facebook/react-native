@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @flow strict-local
- * @noformat
+ * @format
  */
 
 const path = require('path');
@@ -33,4 +33,4 @@ if (process.env.REACT_NATIVE_DEBUGGER_FRONTEND_PATH != null) {
   );
 }
 
-module.exports = (frontEndPath /*: string */);
+module.exports = frontEndPath /*:: as string */;
