@@ -128,7 +128,12 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
 }
 
 void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
-    const PerfMonitorUpdateRequest& /* unused */) {}
+    const PerfMonitorUpdateRequest& request) {
+  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
+    javaReactHostImplStrong->unstable_updatePerfMonitor(
+        request.interactionName, request.durationMs);
+  }
+}
 
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,

@@ -62,8 +62,12 @@ import com.facebook.react.devsupport.interfaces.ErrorCustomizer
 import com.facebook.react.devsupport.interfaces.ErrorType
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
+import com.facebook.react.devsupport.interfaces.PerfMonitorOverlayManager
+import com.facebook.react.devsupport.interfaces.PerfMonitorV2Handler
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
@@ -84,7 +88,7 @@ public abstract class DevSupportManagerBase(
     private val surfaceDelegateFactory: SurfaceDelegateFactory?,
     public var devLoadingViewManager: DevLoadingViewManager?,
     private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
-) : DevSupportManager {
+) : DevSupportManager, PerfMonitorV2Handler {
 
   public interface CallbackWithBundleLoader {
     public fun onSuccess(bundleLoader: JSBundleLoader)
@@ -176,6 +180,8 @@ public abstract class DevSupportManagerBase(
           null
         }
 
+  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
+
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
     // In case when someone schedule 2 subsequent reloads it may happen that JS thread will
@@ -201,6 +207,20 @@ public abstract class DevSupportManagerBase(
                 }
                 context
               })
+    }
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+        ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
+        perfMonitorOverlayManager == null) {
+      perfMonitorOverlayManager =
+          PerfMonitorOverlayViewManager(
+              Supplier {
+                val context = reactInstanceDevHelper.currentActivity
+                if (context == null || context.isFinishing) {
+                  return@Supplier null
+                }
+                context
+              },
+              { openDebugger() })
     }
   }
 
@@ -793,11 +813,14 @@ public abstract class DevSupportManagerBase(
         devLoadingViewManager?.showMessage("Reloading...")
       }
 
+      perfMonitorOverlayManager?.reset()
+
       devServerHelper.openPackagerConnection(
           javaClass.simpleName,
           object : PackagerCommandListener {
             override fun onPackagerConnected() {
               isPackagerConnected = true
+              perfMonitorOverlayManager?.enable()
             }
 
             override fun onPackagerDisconnected() {
@@ -837,14 +860,11 @@ public abstract class DevSupportManagerBase(
         isReceiverRegistered = false
       }
 
-      // hide redbox dialog
       hideRedboxDialog()
-
-      // hide dev options dialog
       hideDevOptionsDialog()
-
-      // hide loading view
       devLoadingViewManager?.hide()
+      perfMonitorOverlayManager?.reset()
+
       devServerHelper.closePackagerConnection()
     }
   }
@@ -900,6 +920,13 @@ public abstract class DevSupportManagerBase(
 
   override fun hidePausedInDebuggerOverlay() {
     pausedInDebuggerOverlayManager?.hidePausedInDebuggerOverlay()
+  }
+
+  override fun unstable_updatePerfMonitor(
+      interactionName: String,
+      durationMs: Int,
+  ) {
+    perfMonitorOverlayManager?.update(interactionName, durationMs)
   }
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {
