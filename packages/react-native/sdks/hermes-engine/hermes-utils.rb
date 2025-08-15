@@ -204,7 +204,7 @@ def hermestag_file(react_native_path)
 end
 
 def release_tarball_url(version, build_type)
-    ## You can use the `ENTERPRISE_REPOSITORY` ariable to customise the base url from which artifacts will be downloaded.
+    ## You can use the `ENTERPRISE_REPOSITORY` variable to customise the base url from which artifacts will be downloaded.
     ## The mirror's structure must be the same of the Maven repo the react-native core team publishes on Maven Central.
     maven_repo_url =
         ENV['ENTERPRISE_REPOSITORY'] != nil && ENV['ENTERPRISE_REPOSITORY'] != "" ?
