@@ -176,6 +176,14 @@ using namespace facebook::react;
   }
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  if (self.window) {
+    [self setNeedsLayout];
+  }
+}
+
 - (void)_attach
 {
   if (_scrollViewComponentView) {
@@ -212,7 +220,7 @@ using namespace facebook::react;
 
 - (void)beginRefreshingProgrammatically
 {
-  if (!_scrollViewComponentView) {
+  if (!_scrollViewComponentView || !_refreshControl.window) {
     return;
   }
 
