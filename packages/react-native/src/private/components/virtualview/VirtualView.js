@@ -10,7 +10,7 @@
 
 import type {ViewStyleProp} from '../../../../Libraries/StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../../../Libraries/Types/CoreEventTypes';
-import type ReadOnlyElement from '../../webapis/dom/nodes/ReadOnlyElement';
+import type {HostInstance} from '../../types/HostInstance';
 import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
@@ -44,7 +44,7 @@ export type Rect = $ReadOnly<{
 export type ModeChangeEvent = $ReadOnly<{
   ...Omit<NativeModeChangeEvent, 'mode'>,
   mode: VirtualViewMode,
-  target: ReadOnlyElement,
+  target: HostInstance,
 }>;
 
 type VirtualViewComponent = component(
@@ -92,8 +92,8 @@ function createVirtualView(
           ? null
           : onModeChange.bind(null, {
               mode,
-              // $FlowFixMe[incompatible-cast]
-              target: event.currentTarget as ReadOnlyElement,
+              // $FlowFixMe[incompatible-type] - we know this is a HostInstance
+              target: event.currentTarget as HostInstance,
               targetRect: event.nativeEvent.targetRect,
               thresholdRect: event.nativeEvent.thresholdRect,
             });
