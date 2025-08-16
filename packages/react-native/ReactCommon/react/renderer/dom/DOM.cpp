@@ -156,6 +156,23 @@ Rect getScrollableContentBounds(
 
 } // namespace
 
+std::shared_ptr<const ShadowNode> getElementById(
+    const std::shared_ptr<const ShadowNode>& shadowNode,
+    const std::string& id) {
+  if (shadowNode->getProps()->nativeId == id) {
+    return shadowNode;
+  }
+
+  for (const auto& childNode : shadowNode->getChildren()) {
+    auto result = getElementById(childNode, id);
+    if (result != nullptr) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
 std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
