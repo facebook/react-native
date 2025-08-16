@@ -45,6 +45,9 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       jsi::Runtime& rt,
       jsi::Value nativeNodeReference);
 
+  jsi::Value
+  getElementById(jsi::Runtime& rt, SurfaceId surfaceId, const std::string& id);
+
   jsi::Value getParentNode(jsi::Runtime& rt, jsi::Value nativeNodeReference);
 
   bool isConnected(jsi::Runtime& rt, jsi::Value nativeNodeReference);
