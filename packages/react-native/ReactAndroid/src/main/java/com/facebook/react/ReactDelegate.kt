@@ -247,7 +247,7 @@ public open class ReactDelegate {
   }
 
   public fun onKeyLongPress(keyCode: Int): Boolean {
-    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+    if (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD || keyCode == KeyEvent.KEYCODE_BACK) {
       if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
           reactHost != null) {
         val devSupportManager = reactHost?.devSupportManager
