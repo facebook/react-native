@@ -131,7 +131,9 @@ void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
     const PerfMonitorUpdateRequest& request) {
   if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
     javaReactHostImplStrong->unstable_updatePerfMonitor(
-        request.interactionName, request.durationMs);
+        request.activeInteraction.duration,
+        request.activeInteraction.responsivenessScore,
+        request.activeInteraction.ttl);
   }
 }
 
