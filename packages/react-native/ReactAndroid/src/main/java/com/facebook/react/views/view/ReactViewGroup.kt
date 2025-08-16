@@ -456,8 +456,10 @@ public open class ReactViewGroup public constructor(context: Context?) :
         clippedSoFar++
       }
       if (i - clippedSoFar > childCount) {
-        throw IllegalStateException(
-            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount  excludedViews=${excludedViewsSet?.size ?: 0}")
+        logSoftException(
+            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
+            ReactNoCrashSoftException(
+                "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount  excludedViews=${excludedViewsSet?.size ?: 0}"))
       }
     }
     inSubviewClippingLoop = false
