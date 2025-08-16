@@ -137,6 +137,59 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
+#pragma mark - Internal trace event types
+
+  struct PerformanceTracerEventEventLoopTask {
+    HighResTimeStamp start;
+    HighResTimeStamp end;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventEventLoopMicrotask {
+    HighResTimeStamp start;
+    HighResTimeStamp end;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventMark {
+    std::string name;
+    HighResTimeStamp start;
+    folly::dynamic detail;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventMeasure {
+    std::string name;
+    HighResTimeStamp start;
+    HighResDuration duration;
+    folly::dynamic detail;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerEventTimeStamp {
+    std::string name;
+    std::optional<ConsoleTimeStampEntry> start;
+    std::optional<ConsoleTimeStampEntry> end;
+    std::optional<std::string> trackName;
+    std::optional<std::string> trackGroup;
+    std::optional<ConsoleTimeStampColor> color;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  using PerformanceTracerEvent = std::variant<
+      PerformanceTracerEventTimeStamp,
+      PerformanceTracerEventEventLoopTask,
+      PerformanceTracerEventEventLoopMicrotask,
+      PerformanceTracerEventMark,
+      PerformanceTracerEventMeasure>;
+
+#pragma mark - Private fields and methods
+
   const ProcessId processId_;
 
   /**
@@ -159,12 +212,12 @@ class PerformanceTracer {
 
   std::optional<HighResDuration> currentTraceMaxDuration_;
 
-  std::vector<TraceEvent> buffer_;
+  std::vector<PerformanceTracerEvent> buffer_;
 
   // These fields are only used when setting a max duration on the trace.
-  std::vector<TraceEvent> altBuffer_;
-  std::vector<TraceEvent>* currentBuffer_ = &buffer_;
-  std::vector<TraceEvent>* previousBuffer_{};
+  std::vector<PerformanceTracerEvent> altBuffer_;
+  std::vector<PerformanceTracerEvent>* currentBuffer_ = &buffer_;
+  std::vector<PerformanceTracerEvent>* previousBuffer_{};
   HighResTimeStamp currentBufferStartTime_;
 
   /**
@@ -180,12 +233,18 @@ class PerformanceTracer {
       HighResTimeStamp currentTraceEndTime);
   void collectEventsAndClearBuffer(
       std::vector<TraceEvent>& events,
-      std::vector<TraceEvent>& buffer,
+      std::vector<PerformanceTracerEvent>& buffer,
       HighResTimeStamp currentTraceEndTime);
   bool isInTracingWindow(
       HighResTimeStamp now,
       HighResTimeStamp timeStampToCheck) const;
-  void enqueueEvent(TraceEvent&& event);
+  void enqueueEvent(PerformanceTracerEvent&& event);
+
+  HighResTimeStamp getCreatedAt(const PerformanceTracerEvent& event) const;
+
+  void enqueueTraceEventsFromPerformanceTracerEvent(
+      std::vector<TraceEvent>& events,
+      PerformanceTracerEvent&& event);
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
