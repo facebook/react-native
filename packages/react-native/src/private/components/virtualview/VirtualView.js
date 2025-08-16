@@ -53,6 +53,7 @@ type VirtualViewComponent = component(
   ref?: ?React.RefSetter<React.ElementRef<typeof VirtualViewNativeComponent>>,
   style?: ?ViewStyleProp,
   onModeChange?: (event: ModeChangeEvent) => void,
+  removeClippedSubviews?: boolean,
 );
 
 type HiddenHeight = number;
@@ -76,6 +77,7 @@ function createVirtualView(
     ref?: ?React.RefSetter<React.ElementRef<typeof VirtualViewNativeComponent>>,
     style?: ?ViewStyleProp,
     onModeChange?: (event: ModeChangeEvent) => void,
+    removeClippedSubviews?: boolean,
   ) {
     const [state, setState] = useState<State>(initialState);
     if (__DEV__) {
@@ -124,6 +126,7 @@ function createVirtualView(
         initialHidden={initialHidden}
         nativeID={nativeID}
         ref={ref}
+        removeClippedSubviews={removeClippedSubviews}
         renderState={
           (isHidden
             ? VirtualViewRenderState.None
