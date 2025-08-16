@@ -245,7 +245,7 @@ export default class Performance {
     }
 
     resolvedMeasureName =
-      measureName === 'string' ? measureName : String(measureName);
+      typeof measureName === 'string' ? measureName : String(measureName);
 
     if (startMarkOrOptions != null) {
       switch (typeof startMarkOrOptions) {
