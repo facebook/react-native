@@ -223,6 +223,10 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/performance/timeline/",
                           "react/performance/timeline/"),
+                      // react_performance_cdpmetrics
+                      Pair(
+                          "../ReactCommon/react/performance/cdpmetrics/",
+                          "react/performance/cdpmetrics/"),
                       // react_renderer_observers_events
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
