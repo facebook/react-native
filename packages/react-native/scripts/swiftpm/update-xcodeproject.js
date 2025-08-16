@@ -8,168 +8,23 @@
  * @format
  */
 
-const crypto = require('crypto');
-const {execSync} = require('child_process');
-
 /**
- * Generate a random string of 24 HEX characters (capital letters) for Xcode object IDs
- * @returns {string} A 24-character hexadecimal string in uppercase
+ * Script to update Xcode project settings for SwiftPM build from source
+ *
+ * This script handles updating Xcode project configurations, particularly:
+ * - REACT_NATIVE_PATH settings
+ * - Build settings for SwiftPM compatibility
+ * - Other project-specific configurations
  */
-function generateXcodeObjectId() {
-  return crypto.randomBytes(12).toString('hex').toUpperCase();
-}
 
-/**
- * Convert Xcode project.pbxproj file to JSON format
- * @param {string} projectPath - Path to the project.pbxproj file
- * @returns {Object} Parsed JSON object of the Xcode project
- */
-function convertXcodeProjectToJSON(projectPath) {
-  const command = `plutil -convert json -o - "${projectPath}"`;
-  const jsonOutput = execSync(command, { encoding: 'utf8' });
-  return JSON.parse(jsonOutput);
-}
-
-/**
- * Remove all existing SwiftPM package references and dependencies from Xcode project
- * @param {Object} xcodeProject - The xcode project converted in JSON format
- */
-function deintegrateSwiftPM(xcodeProject) {
-  const objects = xcodeProject.objects;
-  const objectsToRemove = [];
-
-  // Step 1: Find all PBXNativeTarget objects and clean up their SwiftPM dependencies
-  for (const objectId in objects) {
-    const object = objects[objectId];
-    if (object.isa !== "PBXNativeTarget") continue;
-
-    // Find PBXFrameworksBuildPhase
-    for (const buildPhaseId of object.buildPhases || []) {
-      const buildPhaseObject = objects[buildPhaseId];
-      if (!buildPhaseObject || buildPhaseObject.isa !== "PBXFrameworksBuildPhase") continue;
-
-      const filesToRemove = [];
-
-      // Check each file in the build phase
-      for (const fileId of buildPhaseObject.files || []) {
-        const buildFileObject = objects[fileId];
-        if (!buildFileObject || buildFileObject.isa !== "PBXBuildFile" || !buildFileObject.productRef) continue;
-
-        const productRefObject = objects[buildFileObject.productRef];
-        if (!productRefObject || productRefObject.isa !== "XCSwiftPackageProductDependency") continue;
-
-        // Mark for removal: the product dependency, the build file, and remove from files list
-        objectsToRemove.push(buildFileObject.productRef);
-        objectsToRemove.push(fileId);
-        filesToRemove.push(fileId);
-      }
-
-      // Remove files from the build phase
-      if (filesToRemove.length > 0) {
-        buildPhaseObject.files = (buildPhaseObject.files || []).filter(fileId => !filesToRemove.includes(fileId));
-      }
-    }
-  }
-
-  // Step 2: Find PBXProject and clean up packageReferences
-  for (const objectId in objects) {
-    const object = objects[objectId];
-    if (object.isa !== "PBXProject") continue;
-
-    const packageReferencesToRemove = [];
-
-    // Check each package reference
-    for (const packageRefId of object.packageReferences || []) {
-      const packageRefObject = objects[packageRefId];
-      if (!packageRefObject || packageRefObject.isa !== "XCLocalSwiftPackageReference") continue;
-
-      // Mark for removal
-      objectsToRemove.push(packageRefId);
-      packageReferencesToRemove.push(packageRefId);
-    }
-
-    // Remove package references from the project
-    if (packageReferencesToRemove.length > 0) {
-      object.packageReferences = (object.packageReferences || []).filter(refId => !packageReferencesToRemove.includes(refId));
-    }
-
-    break;
-  }
-
-  // Step 3: Remove all marked objects
-  for (const objectId of objectsToRemove) {
-    delete objects[objectId];
-  }
-
-  console.log(`✓ Removed ${objectsToRemove.length} SwiftPM-related objects from Xcode project`);
-}
-
-/**
- * Add local SwiftPM package references and product dependencies to Xcode project
- * @param {string} relativePath - The relative path of where the Package.swift is located
- * @param {Array<string>} productNames - List of product names exposed by the Package.swift files
- * @param {Object} xcodeProject - The xcode project converted in JSON format
- * @param {string} targetName - The name of the target to add dependencies to
- */
-function addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName) {
-  // For the relative path: create XCLocalSwiftPackageReference
-  const packageReferenceId = generateXcodeObjectId();
-  xcodeProject.objects[packageReferenceId] = {
-    "isa": "XCLocalSwiftPackageReference",
-    "relativePath": relativePath
-  };
-
-  // Find PBXProject object and update packageReferences
-  const objects = xcodeProject.objects;
-  for (const objectId in objects) {
-    const object = objects[objectId];
-    if (object.isa !== "PBXProject") continue;
-
-    if (!object.packageReferences) {
-      object.packageReferences = [];
-    }
-    object.packageReferences.push(packageReferenceId);
-    break;
-  }
-
-  // For each product: create XCSwiftPackageProductDependency and PBXBuildFile
-  for (const productName of productNames) {
-    // Generate XcodeID for XCSwiftPackageProductDependency
-    const productDependencyId = generateXcodeObjectId();
-    xcodeProject.objects[productDependencyId] = {
-      "isa": "XCSwiftPackageProductDependency",
-      "productName": productName
-    };
-
-    // Generate second XcodeID for PBXBuildFile
-    const buildFileId = generateXcodeObjectId();
-    xcodeProject.objects[buildFileId] = {
-      "isa": "PBXBuildFile",
-      "productRef": productDependencyId
-    };
-
-    // Find PBXNativeTarget with matching name
-    for (const objectId in objects) {
-      const object = objects[objectId];
-      if (object.isa !== "PBXNativeTarget" || object.name !== targetName) continue;
-
-      // Iterate over buildPhases to find PBXFrameworksBuildPhase
-      for (const buildPhaseId of object.buildPhases) {
-        const buildPhaseObject = objects[buildPhaseId];
-        if (!buildPhaseObject || buildPhaseObject.isa !== "PBXFrameworksBuildPhase") continue;
-
-        // Add buildFileId to the files array
-        if (!buildPhaseObject.files) {
-          buildPhaseObject.files = [];
-        }
-        buildPhaseObject.files.push(buildFileId);
-        break;
-      }
-      break;
-    }
-  }
-}
-
+const fs = require('fs');
+const path = require('path');
+const {
+  convertXcodeProjectToJSON,
+  convertJSONProjectToText,
+  deintegrateSwiftPM,
+  addLocalSwiftPM
+} = require('./xcodeproj-utils');
 /**
  * Integrate Swift packages into Xcode project
  * @param {string} xcodeProjectPath - Path to the app.xcodeproj file
@@ -177,9 +32,6 @@ function addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName) {
  * @param {string} appTargetName - Name of the app target
  */
 function integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, appTargetName) {
-  const fs = require('fs');
-  const path = require('path');
-
   // Construct path to project.pbxproj
   const projectPbxprojPath = path.join(xcodeProjectPath, 'project.pbxproj');
 
@@ -203,7 +55,8 @@ function integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, ap
     );
   }
 
-  // Write JSON directly to the project.pbxproj file
+  // Convert back to text format and write to project.pbxproj file
+  // fs.writeFileSync(projectPbxprojPath, convertJSONProjectToText(xcodeProject));
   fs.writeFileSync(projectPbxprojPath, JSON.stringify(xcodeProject));
 }
 
@@ -232,9 +85,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-  generateXcodeObjectId,
-  convertXcodeProjectToJSON,
-  deintegrateSwiftPM,
-  addLocalSwiftPM,
   integrateSwiftPackagesInXcode
 };
