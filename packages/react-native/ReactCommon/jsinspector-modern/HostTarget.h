@@ -12,6 +12,7 @@
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
 #include "NetworkIOAgent.h"
+#include "PerfMonitorV2.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
@@ -96,11 +97,6 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
         const OverlaySetPausedInDebuggerMessageRequest& rhs) const {
       return message == rhs.message;
     }
-  };
-
-  struct PerfMonitorUpdateRequest {
-    std::string interactionName;
-    uint16_t durationMs;
   };
 
   virtual ~HostTargetDelegate() override;
@@ -309,6 +305,7 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+  std::unique_ptr<PerfMonitorUpdateHandler> perfMonitorUpdateHandler_;
   std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
 
   /**
