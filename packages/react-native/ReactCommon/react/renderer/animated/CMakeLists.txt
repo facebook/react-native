@@ -8,17 +8,17 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-file(GLOB react_cxx_platform_react_renderer_animated_SRC CONFIGURE_DEPENDS
+file(GLOB react_renderer_animated_SRC CONFIGURE_DEPENDS
       *.cpp
       drivers/*.cpp
       event_drivers/*.cpp
       internal/*.cpp
       nodes/*.cpp)
-add_library(react_cxx_platform_react_renderer_animated OBJECT ${react_cxx_platform_react_renderer_animated_SRC})
+add_library(react_renderer_animated OBJECT ${react_renderer_animated_SRC})
 
-target_include_directories(react_cxx_platform_react_renderer_animated PUBLIC ${REACT_CXX_PLATFORM_DIR})
+target_include_directories(react_renderer_animated PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_cxx_platform_react_renderer_animated
+target_link_libraries(react_renderer_animated
       react_codegen_rncore
       react_debug
       react_renderer_core
@@ -29,5 +29,5 @@ target_link_libraries(react_cxx_platform_react_renderer_animated
       glog
       folly_runtime
 )
-target_compile_reactnative_options(react_cxx_platform_react_renderer_animated PRIVATE)
-target_compile_options(react_cxx_platform_react_renderer_animated PRIVATE -Wpedantic)
+target_compile_reactnative_options(react_renderer_animated PRIVATE)
+target_compile_options(react_renderer_animated PRIVATE -Wpedantic)

@@ -75,6 +75,7 @@ add_react_common_subdir(react/nativemodule/mutationobserver)
 add_react_common_subdir(react/nativemodule/webperformance)
 add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
+add_react_common_subdir(react/renderer/animated)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/bridging)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -123,7 +124,6 @@ add_react_cxx_platform_subdir(react/io)
 add_react_cxx_platform_subdir(react/logging)
 add_react_cxx_platform_subdir(react/nativemodule)
 add_react_cxx_platform_subdir(react/profiling)
-add_react_cxx_platform_subdir(react/renderer/animated)
 add_react_cxx_platform_subdir(react/renderer/scheduler)
 add_react_cxx_platform_subdir(react/renderer/uimanager)
 add_react_cxx_platform_subdir(react/runtime)
@@ -231,7 +231,7 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_io
     react_cxx_platform_react_logging
     react_cxx_platform_react_profiling
-    react_cxx_platform_react_renderer_animated
+    react_renderer_animated
     react_cxx_platform_react_renderer_scheduler
     react_cxx_platform_react_runtime
     react_cxx_platform_react_threading
