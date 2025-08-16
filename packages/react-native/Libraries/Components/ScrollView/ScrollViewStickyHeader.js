@@ -78,7 +78,7 @@ const ScrollViewStickyHeader: component(
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
   const ref: React.RefSetter<React.ElementRef<typeof Animated.View>> =
-    // $FlowFixMe[prop-missing] - Instance is mutated to have `setNextHeaderY`.
+    // $FlowFixMe[incompatible-type] - Instance is mutated to have `setNextHeaderY`.
     useMergeRefs<Instance>(callbackRef, forwardedRef);
 
   const offset = useMemo(

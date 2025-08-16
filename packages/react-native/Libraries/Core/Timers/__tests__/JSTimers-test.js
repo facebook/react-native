@@ -63,9 +63,9 @@ describe('JSTimers', () => {
       }, 0);
     }, 0);
     JSTimers.callTimers([id1]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id2]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id3]);
 
     expect(callCount).toBe(1);
@@ -87,9 +87,9 @@ describe('JSTimers', () => {
       }, 0);
     }, 0);
     JSTimers.callTimers([id1]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id2]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id3]);
 
     expect(callCount).toBe(1);
@@ -111,9 +111,9 @@ describe('JSTimers', () => {
       });
     });
     JSTimers.callTimers([id1]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id2]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id3]);
 
     expect(callCount).toBe(1);
@@ -135,9 +135,9 @@ describe('JSTimers', () => {
       }, 0);
     }, 0);
     JSTimers.callTimers([id1]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id2]);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     JSTimers.callTimers([id3]);
 
     expect(callCount).toBe(1);
@@ -423,7 +423,7 @@ describe('JSTimers', () => {
     JSTimers.clearTimeout(timerID);
     NativeTiming.deleteTimer = jest.fn();
 
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     JSTimers.clearTimeout(null);
     expect(NativeTiming.deleteTimer.mock.calls.length).toBe(0);
   });

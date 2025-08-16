@@ -97,7 +97,7 @@ class AppStateImpl {
         // It's possible that the state will have changed here & listeners need to be notified
         if (!eventUpdated && this.currentState !== appStateData.app_state) {
           this.currentState = appStateData.app_state;
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           emitter.emit('appStateDidChange', appStateData);
         }
       }, logError);

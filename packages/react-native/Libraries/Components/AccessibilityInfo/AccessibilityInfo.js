@@ -402,7 +402,7 @@ const AccessibilityInfo = {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}
-      : // $FlowFixMe[incompatible-call]
+      : // $FlowFixMe[incompatible-type]
         RCTDeviceEventEmitter.addListener(deviceEventName, handler);
   },
 

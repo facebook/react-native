@@ -445,14 +445,14 @@ const NativeDOM: RefinedSpec = {
   },
 
   getChildNodes(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getChildNodes(
       nativeNodeReference,
     ): $ReadOnlyArray<InstanceHandle>);
   },
 
   getParentNode(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getParentNode(
       nativeNodeReference,
     ): ?InstanceHandle);
@@ -467,7 +467,7 @@ const NativeDOM: RefinedSpec = {
    */
 
   getBorderWidth(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getBorderWidth(
       nativeNodeReference,
     ): $ReadOnly<
@@ -481,7 +481,7 @@ const NativeDOM: RefinedSpec = {
   },
 
   getBoundingClientRect(nativeNodeReference, includeTransform: boolean) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getBoundingClientRect(
       nativeNodeReference,
       includeTransform,
@@ -496,21 +496,21 @@ const NativeDOM: RefinedSpec = {
   },
 
   getInnerSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getInnerSize(
       nativeNodeReference,
     ): $ReadOnly<[/* width: */ number, /* height: */ number]>);
   },
 
   getScrollPosition(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getScrollPosition(
       nativeNodeReference,
     ): $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>);
   },
 
   getScrollSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getScrollSize(
       nativeNodeReference,
     ): $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>);
@@ -550,7 +550,7 @@ const NativeDOM: RefinedSpec = {
    */
 
   getOffset(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM).getOffset(nativeNodeReference): $ReadOnly<
       [
         /* offsetParent: */ ?InstanceHandle,
@@ -565,9 +565,9 @@ const NativeDOM: RefinedSpec = {
    */
 
   linkRootNode(rootTag, instanceHandle) {
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     return (nullthrows(RawNativeDOM?.linkRootNode)(
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       rootTag,
       instanceHandle,
     ): ?NativeElementReference);

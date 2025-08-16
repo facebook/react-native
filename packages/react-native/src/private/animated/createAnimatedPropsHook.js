@@ -188,7 +188,7 @@ export default function createAnimatedPropsHook(
 
         for (const [propName, propValue] of eventTuples) {
           propValue.__attach(target, propName);
-          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
+          // $FlowFixMe[incompatible-type] - the `addListenersToPropsValue` drills down the propValue.
           addListenersToPropsValue(propValue, animatedValueListeners);
         }
 

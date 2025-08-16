@@ -81,7 +81,7 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
   };
 
   // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));
@@ -101,7 +101,7 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
   };
 
   // $FlowFixMe[prop-missing] Conflicting .flowconfig in Meta's monorepo
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   const response = await fetch(url, options);
   if (!response.ok) {
     throw new Error(JSON.stringify(await response.json()));

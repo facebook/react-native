@@ -23,7 +23,7 @@ const RCTNetworking = {
     listener: (...RCTNetworkingEventDefinitions[K]) => mixed,
     context?: mixed,
   ): EventSubscription {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },
 

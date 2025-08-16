@@ -555,9 +555,9 @@ export function compareObjectTypes<T: CompleteTypeAnnotation>(
     return makeError(
       typeAnnotationComparisonError(
         'Object types do not match.',
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(newerPropertyTypes),
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         objectTypeAnnotation(olderPropertyTypes),
       ),
     );

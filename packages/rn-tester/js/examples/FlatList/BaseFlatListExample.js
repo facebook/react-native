@@ -97,7 +97,7 @@ const BaseFlatListExample: component(
         data={DATA}
         keyExtractor={(item, index) => item + index}
         style={styles.list}
-        // $FlowFixMe[incompatible-type-arg]
+        // $FlowFixMe[incompatible-type]
         renderItem={Item}
       />
     </View>

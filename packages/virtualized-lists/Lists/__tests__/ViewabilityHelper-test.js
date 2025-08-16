@@ -47,7 +47,7 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
     ).toEqual([0, 1, 2, 3]);
   });
@@ -64,7 +64,7 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
     ).toEqual([0, 1]);
   });
@@ -81,7 +81,7 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 25, 200, {getCellMetrics}),
     ).toEqual([1]);
   });
@@ -93,7 +93,7 @@ describe('computeViewableItems', function () {
     rowFrames = {};
     data = [];
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
     ).toEqual([]);
   });
@@ -108,48 +108,48 @@ describe('computeViewableItems', function () {
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
 
     let helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 0});
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     expect(helper.computeViewableItems(props, 0, 50, {getCellMetrics})).toEqual(
       [0],
     );
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     expect(helper.computeViewableItems(props, 1, 50, {getCellMetrics})).toEqual(
       [0, 1],
     );
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 199, 50, {getCellMetrics}),
     ).toEqual([1, 2]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 250, 50, {getCellMetrics}),
     ).toEqual([2]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 100});
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 0, 200, {getCellMetrics}),
     ).toEqual([0, 1]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 1, 200, {getCellMetrics}),
     ).toEqual([1]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 400, 200, {getCellMetrics}),
     ).toEqual([2]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 600, 200, {getCellMetrics}),
     ).toEqual([3]);
 
     helper = new ViewabilityHelper({viewAreaCoveragePercentThreshold: 10});
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 30, 200, {getCellMetrics}),
     ).toEqual([0, 1, 2]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 31, 200, {getCellMetrics}),
     ).toEqual([1, 2]);
   });
@@ -163,36 +163,36 @@ describe('computeViewableItems', function () {
     };
     data = [{key: 'a'}, {key: 'b'}, {key: 'c'}, {key: 'd'}];
     let helper = new ViewabilityHelper({itemVisiblePercentThreshold: 0});
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     expect(helper.computeViewableItems(props, 0, 50, {getCellMetrics})).toEqual(
       [0],
     );
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     expect(helper.computeViewableItems(props, 1, 50, {getCellMetrics})).toEqual(
       [0, 1],
     );
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 100});
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 0, 250, {getCellMetrics}),
     ).toEqual([0, 1, 2]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 1, 250, {getCellMetrics}),
     ).toEqual([1, 2]);
 
     helper = new ViewabilityHelper({itemVisiblePercentThreshold: 10});
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 184, 20, {getCellMetrics}),
     ).toEqual([1]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 185, 20, {getCellMetrics}),
     ).toEqual([1, 2]);
     expect(
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       helper.computeViewableItems(props, 186, 20, {getCellMetrics}),
     ).toEqual([2]);
   });
@@ -210,7 +210,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -225,7 +225,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -235,7 +235,7 @@ describe('onUpdate', function () {
       props,
       100,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -260,7 +260,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -275,7 +275,7 @@ describe('onUpdate', function () {
       props,
       100,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -294,7 +294,7 @@ describe('onUpdate', function () {
       props,
       200,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -322,7 +322,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -357,7 +357,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -366,7 +366,7 @@ describe('onUpdate', function () {
       props,
       300, // scroll past item 'a'
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -400,7 +400,7 @@ describe('onUpdate', function () {
       props,
       0,
       100,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -413,7 +413,7 @@ describe('onUpdate', function () {
       props,
       20,
       100,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -441,7 +441,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -467,7 +467,7 @@ describe('onUpdate', function () {
       props,
       0,
       200,
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       {getCellMetrics},
       createViewToken,
       onViewableItemsChanged,
@@ -507,7 +507,7 @@ describe('onUpdate', function () {
       testProps,
       1503.61901855, // scrollOffset
       411.4285583496094, // viewportHeight (viewportWidth depending on scrolling axis)
-      // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+      // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
       listMetrics,
     );
     expect(viewableIndices).toEqual([0]);

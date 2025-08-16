@@ -66,7 +66,7 @@ export async function sendFromTargetToDebugger<Message: CdpMessageFromTarget>(
       : debugger_.handle.mock.calls;
   // $FlowFixMe[incompatible-type]
   const [receivedMessage]: [Message] = newHandleCalls.find(
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     (call: [Message]) => call[0].method === message.method,
   );
   return receivedMessage;
@@ -103,7 +103,7 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
     // $FlowFixMe[incompatible-use]
     call => call[0].wrappedEvent.id === message.id,
   );
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return receivedMessage.wrappedEvent;
 }
 

@@ -18,7 +18,7 @@ function createInterpolation<T: number | string>(
 ): number => T {
   let parentValue = null;
   const interpolation = new AnimatedInterpolation(
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     {__getValue: () => parentValue},
     config,
   );
@@ -68,7 +68,7 @@ describe('Interpolation', () => {
   it('should throw for non monotonic input ranges', () => {
     expect(
       () =>
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         new AnimatedInterpolation(null, {
           inputRange: [0, 2, 1],
           outputRange: [0, 1, 2],
@@ -77,7 +77,7 @@ describe('Interpolation', () => {
 
     expect(
       () =>
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         new AnimatedInterpolation(null, {
           inputRange: [0, 1, 2],
           outputRange: [0, 3, 1],
@@ -189,7 +189,7 @@ describe('Interpolation', () => {
   it('should throw for an infinite input range', () => {
     expect(
       () =>
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         new AnimatedInterpolation(null, {
           inputRange: [-Infinity, Infinity],
           outputRange: [0, 1],
@@ -198,7 +198,7 @@ describe('Interpolation', () => {
 
     expect(
       () =>
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         new AnimatedInterpolation(null, {
           inputRange: [-Infinity, 0, Infinity],
           outputRange: [1, 2, 3],
@@ -304,7 +304,7 @@ describe('Interpolation', () => {
       outputRange: [0, 1],
     });
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       interpolation('45rad');
     }).toThrow();
   });
@@ -369,7 +369,7 @@ describe('Interpolation', () => {
     'should convert %s to numbers in the native config',
     (_, outputRange, expected) => {
       const config = new AnimatedInterpolation(
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         {},
         {inputRange: [0, 1], outputRange},
       ).__getNativeConfig();

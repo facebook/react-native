@@ -126,7 +126,7 @@ export default class EventEmitter<
       // Copy `registrations` to take a snapshot when we invoke `emit`, in case
       // registrations are added or removed when listeners are invoked.
       for (const registration of Array.from(registrations)) {
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         registration.listener.apply(registration.context, args);
       }
     }

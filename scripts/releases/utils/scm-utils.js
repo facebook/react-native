@@ -37,7 +37,7 @@ function exitIfNotOnGit /*::<T>*/(
   command /*: () => T */,
   errorMessage /*: string */,
   gracefulExit /*: boolean */ = false,
-  // $FlowFixMe[incompatible-return] Asserts return value
+  // $FlowFixMe[incompatible-type] Asserts return value
 ) /*: T */ {
   if (isGitRepo()) {
     return command();

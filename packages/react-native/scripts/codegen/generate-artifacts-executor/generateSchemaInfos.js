@@ -19,7 +19,7 @@ const path = require('path');
 function generateSchemaInfos(
   libraries /*: $ReadOnlyArray<$FlowFixMe> */,
 ) /*: Array<$FlowFixMe> */ {
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   return libraries.map(generateSchemaInfo);
 }
 

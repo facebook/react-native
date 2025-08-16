@@ -64,7 +64,7 @@ export function findHostInstance_DEPRECATED<TElementType: React.ElementType>(
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?HostInstance {
   return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     componentOrHandle,
   );
 }
@@ -74,7 +74,7 @@ export function findNodeHandle<TElementType: React.ElementType>(
   componentOrHandle: ?(React.ElementRef<TElementType> | number),
 ): ?number {
   return require('../Renderer/shims/ReactNative').default.findNodeHandle(
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     componentOrHandle,
   );
 }

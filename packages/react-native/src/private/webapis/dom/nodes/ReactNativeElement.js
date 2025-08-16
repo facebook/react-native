@@ -233,7 +233,7 @@ function replaceConstructorWithoutSuper(
 
   ReactNativeElement.prototype = ReactNativeElementClass.prototype;
 
-  // $FlowExpectedError[incompatible-return]
+  // $FlowExpectedError[incompatible-type]
   return ReactNativeElement;
 }
 

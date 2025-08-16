@@ -83,7 +83,7 @@ describe('Event', () => {
 
   it('should throw an error if type is not passed', () => {
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       return new Event();
     }).toThrow(
       "Failed to construct 'Event': 1 argument required, but only 0 present.",
@@ -186,13 +186,13 @@ describe('Event', () => {
   });
 
   it('should coerce values to the right types', () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     const eventWithAllOptionsSet = new Event(undefined, {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       bubbles: 1,
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       cancelable: 'true',
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       composed: {},
     });
 
