@@ -62,6 +62,11 @@ export interface Spec extends TurboModule {
     nativeNodeReference: mixed /* NativeNodeReference */,
   ) => $ReadOnlyArray<mixed> /* $ReadOnlyArray<InstanceHandle> */;
 
+  +getElementById?: (
+    nativeNodeReference: mixed /* NativeNodeReference */,
+    id: string,
+  ) => mixed /* ?InstanceHandle */;
+
   +getParentNode: (
     nativeNodeReference: mixed /* NativeNodeReference */,
   ) => mixed /* ?InstanceHandle */;
@@ -203,6 +208,15 @@ export interface RefinedSpec {
   +getChildNodes: (
     nativeNodeReference: NativeNodeReference,
   ) => $ReadOnlyArray<InstanceHandle>;
+
+  /**
+   * This is a React Native implementation of `Document.prototype.getElementById`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
+   *
+   * If the document is active and contains an element with the given ID, it
+   * returns the instance handle of that element. Otherwise, it returns `null`.
+   */
+  +getElementById: (rootTag: RootTag, id: string) => ?InstanceHandle;
 
   /**
    * This is a React Native implementation of `Node.prototype.parentNode`
@@ -449,6 +463,14 @@ const NativeDOM: RefinedSpec = {
     return (nullthrows(RawNativeDOM).getChildNodes(
       nativeNodeReference,
     ): $ReadOnlyArray<InstanceHandle>);
+  },
+
+  getElementById(rootTag, id) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM?.getElementById)(
+      rootTag,
+      id,
+    ): ?InstanceHandle);
   },
 
   getParentNode(nativeNodeReference) {
