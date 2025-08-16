@@ -49,7 +49,7 @@ describe('processAspectRatio', () => {
   it('should ignore non string falsy types', () => {
     const invalidThings = [undefined, null, false];
     for (const thing of invalidThings) {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(processAspectRatio(thing)).toBe(undefined);
     }
   });
@@ -57,7 +57,7 @@ describe('processAspectRatio', () => {
   it('should not accept non string truthy types', () => {
     const invalidThings = [() => {}, [1, 2, 3], {}];
     for (const thing of invalidThings) {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       expect(() => processAspectRatio(thing)).toThrowErrorMatchingSnapshot();
     }
   });

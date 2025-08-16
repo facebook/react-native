@@ -105,8 +105,9 @@ export class DebuggerMock extends DebuggerAgent {
         : this.handle.mock.calls;
     // $FlowFixMe[incompatible-use]
     // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     const [response] = newHandleCalls.find(args => args[0].id === message.id);
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     // $FlowFixMe[incompatible-indexer]
     return response;
   }

@@ -63,7 +63,7 @@ subscription.once;
 
 // $FlowExpectedError[invalid-tuple-arity]
 emitter.emit('void', undefined);
-// $FlowExpectedError[incompatible-call]
+// $FlowExpectedError[incompatible-type]
 emitter.emit('string', 123);
 // $FlowExpectedError[invalid-tuple-arity]
 emitter.emit('strings', 'foo');

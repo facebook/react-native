@@ -43,7 +43,7 @@ function createAnimatedStyle(
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
           ? AnimatedObject.from(value)
-          : // $FlowFixMe[incompatible-call] - `value` is mixed.
+          : // $FlowFixMe[incompatible-type] - `value` is mixed.
             AnimatedTransform.from(value);
       } else if (value instanceof AnimatedNode) {
         node = value;

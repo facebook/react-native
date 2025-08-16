@@ -262,13 +262,13 @@ class PermissionsAndroidImpl {
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               resolve(NativePermissionsAndroid.requestPermission(permission)),
           );
         });
       }
     }
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestPermission(permission);
   }
 
@@ -293,8 +293,7 @@ class PermissionsAndroidImpl {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-    // $FlowFixMe[incompatible-return]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }

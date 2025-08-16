@@ -370,13 +370,13 @@ const styles = StyleSheet.create({
   modal: {
     position: 'absolute',
   },
-  /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   container: {
     /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
      * comment suppresses an error found when Flow v0.111 was deployed. To see
      * the error, delete this comment and run Flow. */
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     [side]: 0,
     top: 0,
     flex: 1,

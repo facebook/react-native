@@ -98,7 +98,7 @@ export function getPublicInstanceFromInstanceHandle(
       instanceHandle,
     );
 
-  // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
+  // $FlowExpectedError[incompatible-type] React defines public instances as "mixed" because it can't access the definition from React Native.
   return mixedPublicInstance;
 }
 
@@ -119,14 +119,14 @@ export function getNativeNodeReference(
     );
   }
 
-  // $FlowExpectedError[incompatible-return]
+  // $FlowExpectedError[incompatible-type]
   return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
 }
 
 export function getNativeElementReference(
   node: ReadOnlyElement,
 ): ?NativeElementReference {
-  // $FlowExpectedError[incompatible-cast] We know ReadOnlyElement instances provide InternalInstanceHandle
+  // $FlowExpectedError[incompatible-type] We know ReadOnlyElement instances provide InternalInstanceHandle
   const instanceHandle = getInstanceHandle(node) as InternalInstanceHandle;
 
   if (isReactNativeDocumentElementInstanceHandle(instanceHandle)) {
@@ -135,16 +135,16 @@ export function getNativeElementReference(
     );
   }
 
-  // $FlowExpectedError[incompatible-return]
+  // $FlowExpectedError[incompatible-type]
   return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
 }
 
 export function getNativeTextReference(
   node: ReadOnlyCharacterData,
 ): ?NativeTextReference {
-  // $FlowExpectedError[incompatible-cast] We know ReadOnlyText instances provide InternalInstanceHandle
+  // $FlowExpectedError[incompatible-type] We know ReadOnlyText instances provide InternalInstanceHandle
   const instanceHandle = getInstanceHandle(node) as InternalInstanceHandle;
 
-  // $FlowExpectedError[incompatible-return]
+  // $FlowExpectedError[incompatible-type]
   return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
 }

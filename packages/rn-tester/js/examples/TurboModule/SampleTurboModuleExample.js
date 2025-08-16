@@ -250,7 +250,7 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
-                // $FlowFixMe[incompatible-call]
+                // $FlowFixMe[incompatible-type]
                 this._setResult(item, this._tests[item]()),
               )
             }>
@@ -267,7 +267,7 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (
@@ -287,7 +287,7 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
           </RNTesterText>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._errorTests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: ErrorExamples, ...}) => (

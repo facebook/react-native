@@ -488,10 +488,10 @@ function parseFeatureFlagValue<T: boolean | number | string>(
   switch (typeof defaultValue) {
     case 'boolean':
       if (value === 'true') {
-        // $FlowExpectedError[incompatible-return] at this point we know T is a boolean
+        // $FlowExpectedError[incompatible-type] at this point we know T is a boolean
         return true;
       } else if (value === 'false') {
-        // $FlowExpectedError[incompatible-return] at this point we know T is a boolean
+        // $FlowExpectedError[incompatible-type] at this point we know T is a boolean
         return false;
       } else {
         throw new Error(`Invalid value for boolean flag: ${value}`);
@@ -503,10 +503,10 @@ function parseFeatureFlagValue<T: boolean | number | string>(
         throw new Error(`Invalid value for number flag: ${value}`);
       }
 
-      // $FlowExpectedError[incompatible-return] at this point we know T is a number
+      // $FlowExpectedError[incompatible-type] at this point we know T is a number
       return parsed;
     case 'string':
-      // $FlowExpectedError[incompatible-return] at this point we know T is a string
+      // $FlowExpectedError[incompatible-type] at this point we know T is a string
       return value;
     default:
       throw new Error(`Unsupported feature flag type: ${typeof defaultValue}`);

@@ -120,7 +120,7 @@ function generateSpec(
   packageName /*: string */,
   libraryType /*: string */,
 ) {
-  // $FlowFixMe[incompatible-call]
+  // $FlowFixMe[incompatible-type]
   generateSpecFromInMemorySchema(
     platform,
     readAndParseSchema(schemaPath),

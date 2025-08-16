@@ -172,7 +172,9 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
       DeviceEventEmitter.addListener(CUSTOM_EVENT_TYPE, (...args) => {
         this._setResult(
           'emitDeviceEvent',
-          `${CUSTOM_EVENT_TYPE}(${args.map(s => (typeof s === 'object' ? JSON.stringify(s) : s)).join(', ')})`,
+          `${CUSTOM_EVENT_TYPE}(${args
+            .map(s => (typeof s === 'object' ? JSON.stringify(s) : s))
+            .join(', ')})`,
         );
       });
       NativeCxxModuleExample?.emitCustomDeviceEvent(CUSTOM_EVENT_TYPE);
@@ -328,7 +330,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
           </TouchableOpacity>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: Examples, ...}) => (
@@ -348,7 +350,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
           </RNTesterText>
         </View>
         <FlatList
-          // $FlowFixMe[incompatible-type-arg]
+          // $FlowFixMe[incompatible-type]
           data={Object.keys(this._errorTests)}
           keyExtractor={item => item}
           renderItem={({item}: {item: ErrorExamples, ...}) => (

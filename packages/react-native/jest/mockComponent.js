@@ -99,6 +99,6 @@ export default function mockComponent<
     Object.assign(Component.prototype, instanceMethods);
   }
 
-  // $FlowFixMe[incompatible-return]
+  // $FlowFixMe[incompatible-type]
   return Component;
 }

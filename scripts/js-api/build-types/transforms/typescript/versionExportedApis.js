@@ -79,7 +79,7 @@ function createVersionExportedApis(
           if (t.isTSModuleDeclaration(node) && node.body) {
             const namespaceName = node.id.name;
 
-            // $FlowFixMe[prop-missing]
+            // $FlowFixMe[incompatible-type]
             for (const item of node.body.body) {
               if (t.isExportNamedDeclaration(item) && item.specifiers) {
                 for (const specifier of item.specifiers) {

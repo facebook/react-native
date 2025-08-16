@@ -102,11 +102,11 @@ describe('processFilter', () => {
     expect(processFilter([])).toEqual([]);
   });
   it('Non filter', () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(processFilter([{foo: 5}])).toEqual([]);
   });
   it('Invalid amount type', () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(processFilter([{brightness: {}}])).toEqual([]);
   });
   it('string multiple filters', () => {
@@ -398,7 +398,7 @@ function testDropShadow() {
 
   it('should fail on invalid object drop-shadow', () => {
     expect(
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       processFilter([
         {dropShadow: {offsetX: 4, offsetY: 5, invalid: 'invalid arg'}},
       ]),
@@ -407,7 +407,7 @@ function testDropShadow() {
 
   it('should fail on invalid argument for drop-shadow object', () => {
     expect(
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       processFilter([{dropShadow: 8}]),
     ).toEqual([]);
   });

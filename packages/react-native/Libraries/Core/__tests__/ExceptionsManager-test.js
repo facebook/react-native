@@ -477,7 +477,7 @@ function runExceptionsManagerTests() {
           expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddConsoleLog).toBeCalledTimes(1);
           expect(logBoxAddConsoleLog.mock.calls[0][0]).toBe('error');
-          // $FlowFixMe[incompatible-call]
+          // $FlowFixMe[incompatible-type]
           expect(logBoxAddConsoleLog.mock.calls[0][1]).toBe(...args);
         } else {
           expect(logBoxAddException).not.toBeCalled();

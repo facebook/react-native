@@ -70,7 +70,7 @@ describe('computeBlankness', function () {
   });
 
   it('computes correct blankness of viewport', function () {
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -90,7 +90,7 @@ describe('computeBlankness', function () {
   });
 
   it('skips frames that are not in layout', function () {
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: false},
@@ -105,7 +105,7 @@ describe('computeBlankness', function () {
   });
 
   it('sampling rate can disable', function () {
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     let helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},
@@ -117,7 +117,7 @@ describe('computeBlankness', function () {
 
     FillRateHelper.setSampleRate(0);
 
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     helper = new FillRateHelper({getCellMetrics});
     blankness = computeResult({helper});
     expect(blankness).toBe(0);
@@ -129,7 +129,7 @@ describe('computeBlankness', function () {
       FillRateHelper.addListener(listener),
     );
     subscriptions[1].remove();
-    // $FlowFixMe[incompatible-call] - Invalid `ListMetricsAggregator`.
+    // $FlowFixMe[incompatible-type] - Invalid `ListMetricsAggregator`.
     const helper = new FillRateHelper({getCellMetrics});
     rowFramesGlobal = {
       header: {y: 0, height: 0, isMounted: true},

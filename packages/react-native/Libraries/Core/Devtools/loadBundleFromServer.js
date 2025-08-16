@@ -103,7 +103,7 @@ function asyncRequest(
                 ),
               );
             } else {
-              //$FlowFixMe[incompatible-call]
+              //$FlowFixMe[incompatible-type]
               resolve({body: responseText, headers});
             }
           }

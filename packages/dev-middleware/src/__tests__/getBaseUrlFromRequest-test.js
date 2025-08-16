@@ -40,7 +40,7 @@ function makeRequest(
   host: ?string,
   encrypted: boolean,
 ): http$IncomingMessage<> | http$IncomingMessage<tls$TLSSocket> {
-  // $FlowFixMe[incompatible-return] Partial mock of request
+  // $FlowFixMe[incompatible-type] Partial mock of request
   return {
     socket: encrypted ? {encrypted: true} : {},
     headers: host != null ? {host} : {},

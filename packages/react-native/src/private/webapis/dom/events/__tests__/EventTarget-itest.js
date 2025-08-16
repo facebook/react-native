@@ -35,7 +35,7 @@ type EventRecordingListener = JestMockFn<[Event], void> & {
 function createListener(
   implementation?: Event => void,
 ): EventRecordingListener {
-  // $FlowExpectedError[prop-missing]
+  // $FlowExpectedError[incompatible-type]
   const listener: EventRecordingListener = jest.fn((event: Event) => {
     listener.eventData = {
       callOrder: listenerCallOrder++,
@@ -59,14 +59,14 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener();
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only 0 present.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom');
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': 2 arguments required, but only 1 present.",
@@ -81,41 +81,41 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', 'foo');
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', Symbol('test'));
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', true);
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', 5);
       }).toThrow(
         "Failed to execute 'addEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', {});
       }).not.toThrow();
 
       // It should work even if the `handleEvent` property is not a function.
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', {
           handleEvent: 5,
         });
@@ -150,7 +150,7 @@ describe('EventTarget', () => {
       }).not.toThrow();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', () => {}, {
           signal: null,
         });
@@ -159,7 +159,7 @@ describe('EventTarget', () => {
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.addEventListener('custom', () => {}, {
           signal: {},
         });
@@ -174,14 +174,14 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener();
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': 2 arguments required, but only 0 present.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName');
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': 2 arguments required, but only 1 present.",
@@ -196,41 +196,41 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', 'foo');
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', Symbol('test'));
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', true);
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', 5);
       }).toThrow(
         "Failed to execute 'removeEventListener' on 'EventTarget': parameter 2 is not of type 'Object'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', {});
       }).not.toThrow();
 
       // It should work even if the `handleEvent` property is not a function.
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.removeEventListener('eventName', {
           handleEvent: 5,
         });
@@ -269,7 +269,7 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.dispatchEvent();
       }).toThrow(
         "Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'.",
@@ -284,14 +284,14 @@ describe('EventTarget', () => {
       const eventTarget = new EventTarget();
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.dispatchEvent('foo');
       }).toThrow(
         "Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'.",
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         eventTarget.dispatchEvent(true);
       }).toThrow(
         "Failed to execute 'dispatchEvent' on 'EventTarget': parameter 1 is not of type 'Event'.",
