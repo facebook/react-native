@@ -69,6 +69,10 @@ exports[`execute test-app "RCTAppDependencyProvider.mm" should match snapshot 1`
   return RCTModuleProviders.moduleProviders;
 }
 
+- (nonnull NSArray<NSString *> *)moduleNames {
+  return RCTModuleProviders.moduleNames;
+}
+
 @end
 "
 `;
@@ -88,6 +92,7 @@ exports[`execute test-app "RCTModuleProviders.h" should match snapshot 1`] = `
 @interface RCTModuleProviders: NSObject
 
 + (NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders;
++ (NSArray<NSString *> *)moduleNames;
 
 @end
 "
@@ -153,6 +158,23 @@ exports[`execute test-app "RCTModuleProviders.mm" should match snapshot 1`] = `
   });
 
   return providers;
+}
+
++ (nonnull NSArray<NSString *> *)moduleNames
+{
+  NSArray<NSString *> * moduleNames = @[@\\"RCTTestAppDeprecatedImageURLLoader\\",
+@\\"RCTTestAppDeprecatedURLRequestHandler\\",
+@\\"RCTTestAppDeprecatedImageDataDecoder\\",
+@\\"RCTTestAppImageURLLoader\\",
+@\\"RCTTestAppURLRequestHandler\\",
+@\\"RCTTestAppImageDataDecoder\\",
+@\\"RCTTestLibraryDeprecatedImageURLLoader\\",
+@\\"RCTTestLibraryDeprecatedURLRequestHandler\\",
+@\\"RCTTestLibraryDeprecatedImageDataDecoder\\",
+@\\"RCTTestLibraryImageURLLoader\\",
+@\\"RCTTestLibraryURLRequestHandler\\",
+@\\"RCTTestLibraryImageDataDecoder\\"];
+  return moduleNames;
 }
 
 @end
@@ -576,6 +598,10 @@ exports[`execute test-app-legacy "RCTAppDependencyProvider.mm" should match snap
   return RCTModuleProviders.moduleProviders;
 }
 
+- (nonnull NSArray<NSString *> *)moduleNames {
+  return RCTModuleProviders.moduleNames;
+}
+
 @end
 "
 `;
@@ -595,6 +621,7 @@ exports[`execute test-app-legacy "RCTModuleProviders.h" should match snapshot 1`
 @interface RCTModuleProviders: NSObject
 
 + (NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders;
++ (NSArray<NSString *> *)moduleNames;
 
 @end
 "
@@ -651,6 +678,14 @@ exports[`execute test-app-legacy "RCTModuleProviders.mm" should match snapshot 1
   });
 
   return providers;
+}
+
++ (nonnull NSArray<NSString *> *)moduleNames
+{
+  NSArray<NSString *> * moduleNames = @[@\\"RCTTestAppDeprecatedImageURLLoader\\",
+@\\"RCTTestAppDeprecatedURLRequestHandler\\",
+@\\"RCTTestAppDeprecatedImageDataDecoder\\"];
+  return moduleNames;
 }
 
 @end

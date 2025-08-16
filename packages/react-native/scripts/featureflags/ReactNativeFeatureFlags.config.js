@@ -559,6 +559,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    iosEarlyTurboModuleDiscovery: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-15',
+        description:
+          'Enables creating Module Holders for TurboModules before the JS Runtime is started, iOS only. Android already creates them early.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     perfMonitorV2Enabled: {
       defaultValue: false,
       metadata: {

@@ -37,4 +37,8 @@
   return RCTModuleProviders.moduleProviders;
 }
 
+- (nonnull NSArray<NSString *> *)moduleNames {
+  return RCTModuleProviders.moduleNames;
+}
+
 @end

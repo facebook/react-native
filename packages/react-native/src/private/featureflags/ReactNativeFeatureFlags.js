@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29d1ff8e6948e8c8cf286769d8c1ff81>>
+ * @generated SignedSource<<b9eed8565d7b82f0eded7d4d7c9e1a59>>
  * @flow strict
  * @noformat
  */
@@ -95,6 +95,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   hideOffscreenVirtualViewsOnIOS: Getter<boolean>,
+  iosEarlyTurboModuleDiscovery: Getter<boolean>,
   perfMonitorV2Enabled: Getter<boolean>,
   preparedTextCacheSize: Getter<number>,
   preventShadowTreeCommitExhaustion: Getter<boolean>,
@@ -373,6 +374,10 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
  */
 export const hideOffscreenVirtualViewsOnIOS: Getter<boolean> = createNativeFlagGetter('hideOffscreenVirtualViewsOnIOS', false);
+/**
+ * Enables creating Module Holders for TurboModules before the JS Runtime is started, iOS only. Android already creates them early.
+ */
+export const iosEarlyTurboModuleDiscovery: Getter<boolean> = createNativeFlagGetter('iosEarlyTurboModuleDiscovery', false);
 /**
  * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
  */

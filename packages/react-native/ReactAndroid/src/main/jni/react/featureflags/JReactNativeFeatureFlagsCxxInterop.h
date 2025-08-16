@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<90f0583b9d527a1291431a8318f10356>>
+ * @generated SignedSource<<8eb2ab1bec309868f89e24ad99ad14f0>>
  */
 
 /**
@@ -172,6 +172,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool hideOffscreenVirtualViewsOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool iosEarlyTurboModuleDiscovery(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool perfMonitorV2Enabled(

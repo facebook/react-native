@@ -12,5 +12,6 @@
 @interface RCTModuleProviders: NSObject
 
 + (NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders;
++ (NSArray<NSString *> *)moduleNames;
 
 @end
