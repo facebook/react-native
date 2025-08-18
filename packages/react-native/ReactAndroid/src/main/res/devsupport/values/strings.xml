@@ -29,6 +29,6 @@
   <string name="catalyst_report_button" project="catalyst" translatable="false">Report</string>
   <string name="catalyst_loading_from_url" project="catalyst" translatable="false">Loading from %1$s…</string>
   <string name="catalyst_sample_profiler_toggle" project="catalyst" translatable="false">Toggle Sampling Profiler</string>
-  <string name="catalyst_dev_menu_header" project="catalyst" translatable="false">React Native Dev Menu (%1$s)</string>
+  <string name="catalyst_dev_menu_header" project="catalyst" translatable="false">React Native Dev Menu</string>
   <string name="catalyst_dev_menu_sub_header" project="catalyst" translatable="false">Running %1$s</string>
 </resources>
