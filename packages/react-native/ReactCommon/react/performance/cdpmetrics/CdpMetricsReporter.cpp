@@ -35,12 +35,24 @@ void CdpMetricsReporter::onEventTimingEntry(
     auto inputDelay = entry.processingStart - entry.startTime;
     auto processingDuration = entry.processingEnd - entry.processingStart;
     auto nextPaintTime = entry.startTime + entry.duration;
-    auto presentationDelay = nextPaintTime - entry.processingEnd;
+    auto presentationDelay = nextPaintTime - entry.taskEndTime;
 
     folly::dynamic jsonPayload = folly::dynamic::object;
-    jsonPayload["name"] = "InteractionEntry";
-    jsonPayload["duration"] =
-        static_cast<int>(entry.duration.toDOMHighResTimeStamp());
+
+    if (presentationDelay.toNanoseconds() > 0) {
+      jsonPayload["name"] = "INP";
+      jsonPayload["value"] =
+          static_cast<int>(entry.duration.toDOMHighResTimeStamp());
+    } else {
+      jsonPayload["name"] = "InteractionEntry";
+      jsonPayload["duration"] =
+          static_cast<int>(entry.duration.toDOMHighResTimeStamp());
+      jsonPayload["nextPaintTime"] =
+          static_cast<int>(nextPaintTime.toDOMHighResTimeStamp());
+      jsonPayload["eventName"] = std::string(entry.name);
+      jsonPayload["longAnimationFrameEntries"] = folly::dynamic::array();
+    }
+
     jsonPayload["phases"] = folly::dynamic::object(
         "inputDelay", static_cast<int>(inputDelay.toDOMHighResTimeStamp()))(
         "processingDuration",
@@ -49,12 +61,8 @@ void CdpMetricsReporter::onEventTimingEntry(
         static_cast<int>(presentationDelay.toDOMHighResTimeStamp()));
     jsonPayload["startTime"] =
         static_cast<int>(entry.startTime.toDOMHighResTimeStamp());
-    jsonPayload["nextPaintTime"] =
-        static_cast<int>(nextPaintTime.toDOMHighResTimeStamp());
     jsonPayload["interactionType"] =
         std::string(getInteractionTypeForEvent(entry.name));
-    jsonPayload["eventName"] = std::string(entry.name);
-    jsonPayload["longAnimationFrameEntries"] = folly::dynamic::array();
 
     auto jsonString = folly::toJson(jsonPayload);
     auto jsiString = jsi::String::createFromUtf8(runtime, jsonString);
