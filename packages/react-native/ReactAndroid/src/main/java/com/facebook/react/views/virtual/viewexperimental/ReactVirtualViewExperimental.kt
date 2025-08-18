@@ -84,7 +84,7 @@ public class ReactVirtualViewExperimental(context: Context) :
       oldLeft: Int,
       oldTop: Int,
       oldRight: Int,
-      oldBottom: Int
+      oldBottom: Int,
   ) {
     if (oldLeft != left || oldTop != top) {
       updateParentOffset()
@@ -128,7 +128,11 @@ public class ReactVirtualViewExperimental(context: Context) :
         if (renderState == VirtualViewRenderState.Unknown) {
           // Feature flag is disabled, so use the former logic.
           modeChangeEmitter?.emitModeChange(
-              VirtualViewMode.Visible, containerRelativeRect, thresholdRect, synchronous = true)
+              VirtualViewMode.Visible,
+              containerRelativeRect,
+              thresholdRect,
+              synchronous = true,
+          )
         } else {
           // If the previous mode was prerender and the result of dispatching that event was
           // committed, we do not need to dispatch an event for visible.
@@ -136,19 +140,31 @@ public class ReactVirtualViewExperimental(context: Context) :
               oldMode == VirtualViewMode.Prerender && renderState == VirtualViewRenderState.Rendered
           if (!wasPrerenderCommitted) {
             modeChangeEmitter?.emitModeChange(
-                VirtualViewMode.Visible, containerRelativeRect, thresholdRect, synchronous = true)
+                VirtualViewMode.Visible,
+                containerRelativeRect,
+                thresholdRect,
+                synchronous = true,
+            )
           }
         }
       }
       VirtualViewMode.Prerender -> {
         if (oldMode != VirtualViewMode.Visible) {
           modeChangeEmitter?.emitModeChange(
-              VirtualViewMode.Prerender, containerRelativeRect, thresholdRect, synchronous = false)
+              VirtualViewMode.Prerender,
+              containerRelativeRect,
+              thresholdRect,
+              synchronous = false,
+          )
         }
       }
       VirtualViewMode.Hidden -> {
         modeChangeEmitter?.emitModeChange(
-            VirtualViewMode.Hidden, containerRelativeRect, thresholdRect, synchronous = false)
+            VirtualViewMode.Hidden,
+            containerRelativeRect,
+            thresholdRect,
+            synchronous = false,
+        )
       }
     }
   }

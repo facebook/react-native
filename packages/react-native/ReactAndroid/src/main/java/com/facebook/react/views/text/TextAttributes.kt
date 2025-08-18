@@ -114,20 +114,20 @@ public class TextAttributes {
 
   override fun toString(): String =
       """
-    TextAttributes {
-      getAllowFontScaling(): $allowFontScaling
-      getFontSize(): $fontSize
-      getEffectiveFontSize(): $effectiveFontSize
-      getHeightOfTallestInlineViewOrImage(): $heightOfTallestInlineViewOrImage
-      getLetterSpacing(): $letterSpacing
-      getEffectiveLetterSpacing(): $effectiveLetterSpacing
-      getLineHeight(): $lineHeight
-      getEffectiveLineHeight(): $effectiveLineHeight
-      getTextTransform(): $textTransform
-      getMaxFontSizeMultiplier(): $maxFontSizeMultiplier
-      getEffectiveMaxFontSizeMultiplier(): $effectiveMaxFontSizeMultiplier
-    }
-  """
+        TextAttributes {
+          getAllowFontScaling(): $allowFontScaling
+          getFontSize(): $fontSize
+          getEffectiveFontSize(): $effectiveFontSize
+          getHeightOfTallestInlineViewOrImage(): $heightOfTallestInlineViewOrImage
+          getLetterSpacing(): $letterSpacing
+          getEffectiveLetterSpacing(): $effectiveLetterSpacing
+          getLineHeight(): $lineHeight
+          getEffectiveLineHeight(): $effectiveLineHeight
+          getTextTransform(): $textTransform
+          getMaxFontSizeMultiplier(): $maxFontSizeMultiplier
+          getEffectiveMaxFontSizeMultiplier(): $effectiveMaxFontSizeMultiplier
+        }
+      """
           .trimIndent()
 
   internal companion object {
