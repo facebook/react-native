@@ -95,7 +95,7 @@ describe('User Timing', () => {
 
     it('throws if no name is provided', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         performance.mark();
       }).toThrow(
         `Failed to execute 'mark' on 'Performance': 1 argument required, but only 0 present.`,
@@ -103,7 +103,7 @@ describe('User Timing', () => {
     });
 
     it('casts mark name to a string', () => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       const mark = performance.mark(10);
 
       expect(mark.name).toBe('10');
@@ -111,14 +111,14 @@ describe('User Timing', () => {
 
     it('casts startTime to a number', () => {
       const mark = performance.mark('some-mark', {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         startTime: '10',
       });
 
       expect(mark.startTime).toBe(10);
 
       const mark2 = performance.mark('some-mark', {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         startTime: null,
       });
 
@@ -133,7 +133,7 @@ describe('User Timing', () => {
       );
 
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         performance.mark('some-mark', {startTime: {}});
       }).toThrow(
         `Failed to execute 'mark' on 'Performance': Failed to read the 'startTime' property from 'PerformanceMarkOptions': The provided double value is non-finite.`,
@@ -494,7 +494,7 @@ describe('User Timing', () => {
     });
 
     it('casts measure name to a string', () => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       const measure = performance.measure(10);
 
       expect(measure.name).toBe('10');
@@ -502,7 +502,7 @@ describe('User Timing', () => {
 
     it('throws if no name is provided', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         performance.measure();
       }).toThrow(
         `Failed to execute 'measure' on 'Performance': 1 argument required, but only 0 present.`,

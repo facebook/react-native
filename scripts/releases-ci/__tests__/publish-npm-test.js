@@ -82,7 +82,7 @@ describe('publish-npm', () => {
       getNpmInfoMock.mockImplementation(npmUtils.getNpmInfo);
 
       await expect(async () => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         await publishNpm('invalid');
       }).rejects.toThrow('Unsupported build type: invalid');
     });

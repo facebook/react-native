@@ -89,7 +89,7 @@ const AnimatedScrollViewWithInvertedRefreshControl =
     const {intermediatePropsForRefreshControl, intermediatePropsForScrollView} =
       useMemo(() => {
         // $FlowFixMe[underconstrained-implicit-instantiation]
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
         return {
           intermediatePropsForRefreshControl: {style: outer},

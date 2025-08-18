@@ -84,7 +84,7 @@ export function attachNativeEventImpl(
           NativeAnimatedHelper.API.removeAnimatedEventFromView(
             viewTag,
             eventName,
-            // $FlowFixMe[incompatible-call]
+            // $FlowFixMe[incompatible-type]
             mapping.animatedValueTag,
           );
         });

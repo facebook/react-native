@@ -34,7 +34,7 @@ describe('PixelRatio', () => {
 
   it('should give the pixel density instead of the font scale when the front scale is not present', () => {
     Dimensions.set({
-      // $FlowFixMe[prop-missing]
+      // $FlowFixMe[incompatible-type]
       windowPhysicalPixels: {
         scale: 2,
       },

@@ -108,7 +108,7 @@ export function get<Config: {...}>(
     return viewConfig;
   });
 
-  // $FlowFixMe[incompatible-return] `NativeComponent` is actually string!
+  // $FlowFixMe[incompatible-type] `NativeComponent` is actually string!
   return name;
 }
 

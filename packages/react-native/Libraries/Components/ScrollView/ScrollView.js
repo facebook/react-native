@@ -1169,6 +1169,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       // they are callable from the ref.
 
       // $FlowFixMe[prop-missing] - Known issue with appending custom methods.
+      // $FlowFixMe[incompatible-type]
       // $FlowFixMe[unsafe-object-assign]
       const publicInstance: PublicScrollViewInstance = Object.assign(
         nativeInstance,
@@ -1834,7 +1835,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         // Note: we should split props.style on the inner and outer props
         // however, the ScrollView still needs the baseStyle to be scrollable
         const {outer, inner} = splitLayoutProps(flattenStyle(props.style));
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         return cloneElement(
           refreshControl,
           {style: StyleSheet.compose(baseStyle, outer)},

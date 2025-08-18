@@ -94,7 +94,7 @@ class Root {
     const ReactFabric =
       require('react-native/Libraries/Renderer/shims/ReactFabric').default;
 
-    // $FlowExpectedError[incompatible-cast]
+    // $FlowExpectedError[incompatible-type]
     const surfaceIdIsNumber = this.#surfaceId as number;
     ReactFabric.render(element, surfaceIdIsNumber, null, true);
 

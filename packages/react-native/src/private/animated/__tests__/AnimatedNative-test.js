@@ -990,7 +990,7 @@ describe('Native Animated', () => {
 
       const propA = new Animated.Value(0);
       const propB = new Animated.Value(0);
-      // $FlowFixMe[prop-missing]
+      // $FlowFixMe[incompatible-type]
       await create(<Animated.View propA={propA} propB={propB} />);
 
       Animated.timing(propA, {

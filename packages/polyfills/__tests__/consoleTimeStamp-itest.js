@@ -31,10 +31,10 @@ describe('console.timeStamp()', () => {
   });
 
   it("doesn't throw when invalid arguments are specified", () => {
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(() => console.timeStamp({})).not.toThrow();
     expect(() =>
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       console.timeStamp('label', true, null, {}, [], () => {}),
     ).not.toThrow();
   });

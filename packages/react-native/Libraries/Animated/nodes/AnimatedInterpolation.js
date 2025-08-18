@@ -393,7 +393,7 @@ export default class AnimatedInterpolation<
     let outputRange = this._config.outputRange;
     let outputType = null;
     if (typeof outputRange[0] === 'string') {
-      // $FlowFixMe[incompatible-cast]
+      // $FlowFixMe[incompatible-type]
       outputRange = ((outputRange: $ReadOnlyArray<string>).map(value => {
         const processedColor = processColor(value);
         if (typeof processedColor === 'number') {

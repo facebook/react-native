@@ -170,7 +170,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       if (typeof processedStyle.fontWeight === 'number') {
         overrides = overrides || ({}: {...TextStyleInternal});
         overrides.fontWeight =
-          // $FlowFixMe[incompatible-cast]
+          // $FlowFixMe[incompatible-type]
           (String(processedStyle.fontWeight): TextStyleInternal['fontWeight']);
       }
 
@@ -409,7 +409,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       if (typeof processedStyle.fontWeight === 'number') {
         overrides = overrides || ({}: {...TextStyleInternal});
         overrides.fontWeight =
-          // $FlowFixMe[incompatible-cast]
+          // $FlowFixMe[incompatible-type]
           (processedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
       }
 

@@ -81,7 +81,7 @@ export default function createDevMiddleware({
   projectRoot,
   serverBaseUrl,
   logger,
-  // $FlowFixMe[prop-missing]
+  // $FlowFixMe[incompatible-type]
   unstable_browserLauncher = DefaultBrowserLauncher,
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},

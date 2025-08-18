@@ -121,11 +121,11 @@ const ActionSheetIOS = {
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         tintColor: processedTintColor,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         cancelButtonTintColor: processedCancelButtonTintColor,
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         disabledButtonTintColor: processedDisabledButtonTintColor,
         destructiveButtonIndices,
       },

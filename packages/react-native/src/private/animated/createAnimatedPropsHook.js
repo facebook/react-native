@@ -108,7 +108,7 @@ export default function createAnimatedPropsHook(
       (instance: TInstance) => {
         // NOTE: This may be called more often than necessary (e.g. when `props`
         // changes), but `setNativeView` already optimizes for that.
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         node.setNativeView(instance);
 
         // NOTE: When using the JS animation driver, this callback is called on
@@ -188,7 +188,7 @@ export default function createAnimatedPropsHook(
 
         for (const [propName, propValue] of eventTuples) {
           propValue.__attach(target, propName);
-          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
+          // $FlowFixMe[incompatible-type] - the `addListenersToPropsValue` drills down the propValue.
           addListenersToPropsValue(propValue, animatedValueListeners);
         }
 

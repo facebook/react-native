@@ -179,7 +179,7 @@ export default class Device {
       this.#deviceEventReporter?.logProfilingTargetRegistered();
     }
 
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     this.#deviceSocket.on('message', (message: string) => {
       try {
         const parsedMessage = JSON.parse(message);
@@ -408,7 +408,7 @@ export default class Device {
 
     this.#sendConnectEventToDevice(this.#mapToDevicePageId(pageId));
 
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     socket.on('message', (message: string) => {
       this.#cdpDebugLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);

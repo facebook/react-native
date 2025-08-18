@@ -112,7 +112,7 @@ class Circle extends React.Component<any, any> {
         },
         onResponderRelease: () => {
           if (!this.state.panResponder) {
-            /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb)
+            /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb)
              * This comment suppresses an error found when Flow v0.63 was
              * deployed. To see the error delete this comment and run Flow. */
             clearTimeout(this.longTimer);
