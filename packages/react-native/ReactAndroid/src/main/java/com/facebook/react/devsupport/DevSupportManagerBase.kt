@@ -448,7 +448,7 @@ public abstract class DevSupportManagerBase(
     header.orientation = LinearLayout.VERTICAL
 
     TextView(context).apply {
-      text = context.getString(R.string.catalyst_dev_menu_header, uniqueTag)
+      text = context.getString(R.string.catalyst_dev_menu_header)
       setPadding(0, 50, 0, 0)
       gravity = Gravity.CENTER
       textSize = 16f
