@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae55e689a40ace36cdf181b4f62c3d4d>>
+ * @generated SignedSource<<2ae7c2364611f461b16d67d48c626307>>
  */
 
 /**
@@ -112,7 +112,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFontScaleChangesUpdatingLayout() override {
-    return false;
+    return true;
   }
 
   bool enableIOSTextBaselineOffsetPerLine() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29d1ff8e6948e8c8cf286769d8c1ff81>>
+ * @generated SignedSource<<027a397de89cf169cfffceef2e685009>>
  * @flow strict
  * @noformat
  */
@@ -268,7 +268,7 @@ export const enableFixForParentTagDuringReparenting: Getter<boolean> = createNat
 /**
  * Enables font scale changes updating layout for measurable nodes.
  */
-export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', false);
+export const enableFontScaleChangesUpdatingLayout: Getter<boolean> = createNativeFlagGetter('enableFontScaleChangesUpdatingLayout', true);
 /**
  * Applies base offset for each line of text separately on iOS.
  */

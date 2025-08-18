@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9583365cd9d7786ee9be03ff34b0766f>>
+ * @generated SignedSource<<7a30bfda7c1989d5ed8cbdc2bbe63c34>>
  */
 
 /**
@@ -65,7 +65,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFixForParentTagDuringReparenting(): Boolean = false
 
-  override fun enableFontScaleChangesUpdatingLayout(): Boolean = false
+  override fun enableFontScaleChangesUpdatingLayout(): Boolean = true
 
   override fun enableIOSTextBaselineOffsetPerLine(): Boolean = false
 

@@ -272,7 +272,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableFontScaleChangesUpdatingLayout: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-07',
         description:
