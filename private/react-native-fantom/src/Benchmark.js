@@ -15,10 +15,12 @@ import NativeCPUTime from 'react-native/src/private/testing/fantom/specs/NativeC
 import {
   Bench,
   type BenchOptions,
-  type Fn,
   type FnOptions,
+  type FnReturnedObject,
   type TaskResult,
 } from 'tinybench';
+
+type SyncFn = () => FnReturnedObject | void;
 
 export type SuiteOptions = $ReadOnly<{
   minIterations?: number,
@@ -66,20 +68,20 @@ interface ParameterizedTestFunction {
   <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => ReturnType<Fn>,
+    fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI;
   only: <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => ReturnType<Fn>,
+    fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
   ) => SuiteAPI;
 }
 
 interface TestFunction {
-  (name: string, fn: Fn, options?: FnOptions): SuiteAPI;
-  only: (name: string, fn: Fn, options?: FnOptions) => SuiteAPI;
+  (name: string, fn: SyncFn, options?: FnOptions): SuiteAPI;
+  only: (name: string, fn: SyncFn, options?: FnOptions) => SuiteAPI;
   // `each` allows to run the same test multiple times with different arguments, provided as an array of values:
   each: ParameterizedTestFunction;
 }
@@ -91,7 +93,7 @@ interface SuiteAPI {
 
 interface TestTask {
   name: string;
-  fn: Fn;
+  fn: SyncFn;
   options: InternalTestOptions | void;
 }
 
@@ -208,12 +210,12 @@ export function suite(
     reportBenchmarkResult(createBenchmarkResultsObject(bench, tasks));
   });
 
-  const test = (name: string, fn: Fn, options?: FnOptions): SuiteAPI => {
+  const test = (name: string, fn: SyncFn, options?: FnOptions): SuiteAPI => {
     tasks.push({name, fn, options});
     return suiteAPI;
   };
 
-  test.only = (name: string, fn: Fn, options?: FnOptions): SuiteAPI => {
+  test.only = (name: string, fn: SyncFn, options?: FnOptions): SuiteAPI => {
     tasks.push({name, fn, options: {...options, only: true}});
     return suiteAPI;
   };
@@ -221,7 +223,7 @@ export function suite(
   const testWithArg = <TestArgType>(
     testArg: TestArgType,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => ReturnType<Fn>,
+    fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
     only?: boolean = false,
   ): TestTask => {
@@ -239,7 +241,7 @@ export function suite(
   const testEach: ParameterizedTestFunction = <TestArgType>(
     testArgs: $ReadOnlyArray<TestArgType>,
     name: TestWithArgName<TestArgType>,
-    fn: (testArg: TestArgType) => ReturnType<Fn>,
+    fn: (testArg: TestArgType) => ReturnType<SyncFn>,
     options?: TestWithArgOptions<TestArgType>,
   ): SuiteAPI => {
     for (const testArg of testArgs) {
