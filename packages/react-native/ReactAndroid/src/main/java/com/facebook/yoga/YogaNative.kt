@@ -26,7 +26,7 @@ public object YogaNative {
   public external fun jni_YGConfigSetExperimentalFeatureEnabledJNI(
       nativePointer: Long,
       feature: Int,
-      enabled: Boolean
+      enabled: Boolean,
   )
 
   @JvmStatic
@@ -59,7 +59,7 @@ public object YogaNative {
   @JvmStatic
   public external fun jni_YGNodeSetIsReferenceBaselineJNI(
       nativePointer: Long,
-      isReferenceBaseline: Boolean
+      isReferenceBaseline: Boolean,
   )
 
   @JvmStatic public external fun jni_YGNodeIsReferenceBaselineJNI(nativePointer: Long): Boolean
@@ -74,7 +74,7 @@ public object YogaNative {
       width: Float,
       height: Float,
       nativePointers: LongArray,
-      nodes: Array<YogaNodeJNIBase>
+      nodes: Array<YogaNodeJNIBase>,
   )
 
   @JvmStatic public external fun jni_YGNodeMarkDirtyJNI(nativePointer: Long)
@@ -171,7 +171,7 @@ public object YogaNative {
   public external fun jni_YGNodeStyleSetMarginPercentJNI(
       nativePointer: Long,
       edge: Int,
-      percent: Float
+      percent: Float,
   )
 
   @JvmStatic public external fun jni_YGNodeStyleSetMarginAutoJNI(nativePointer: Long, edge: Int)
@@ -185,7 +185,7 @@ public object YogaNative {
   public external fun jni_YGNodeStyleSetPaddingPercentJNI(
       nativePointer: Long,
       edge: Int,
-      percent: Float
+      percent: Float,
   )
 
   @JvmStatic public external fun jni_YGNodeStyleGetBorderJNI(nativePointer: Long, edge: Int): Float
@@ -202,7 +202,7 @@ public object YogaNative {
   public external fun jni_YGNodeStyleSetPositionPercentJNI(
       nativePointer: Long,
       edge: Int,
-      percent: Float
+      percent: Float,
   )
 
   @JvmStatic public external fun jni_YGNodeStyleSetPositionAutoJNI(nativePointer: Long, edge: Int)
@@ -305,7 +305,7 @@ public object YogaNative {
   public external fun jni_YGNodeStyleSetGapPercentJNI(
       nativePointer: Long,
       gutter: Int,
-      gapLength: Float
+      gapLength: Float,
   )
 
   @JvmStatic
@@ -318,7 +318,7 @@ public object YogaNative {
   public external fun jni_YGNodeSetStyleInputsJNI(
       nativePointer: Long,
       styleInputsArray: FloatArray,
-      size: Int
+      size: Int,
   )
 
   @JvmStatic public external fun jni_YGNodeCloneJNI(nativePointer: Long): Long
@@ -326,6 +326,6 @@ public object YogaNative {
   @JvmStatic
   public external fun jni_YGNodeSetAlwaysFormsContainingBlockJNI(
       nativePointer: Long,
-      alwaysFormContainingBlock: Boolean
+      alwaysFormContainingBlock: Boolean,
   )
 }

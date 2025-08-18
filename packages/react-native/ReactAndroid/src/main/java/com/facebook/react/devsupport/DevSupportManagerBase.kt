@@ -220,7 +220,8 @@ public abstract class DevSupportManagerBase(
                 }
                 context
               },
-              { openDebugger() })
+              { openDebugger() },
+          )
     }
   }
 

@@ -10,7 +10,7 @@ package com.facebook.yoga
 public abstract class YogaConfig {
   public abstract fun setExperimentalFeatureEnabled(
       feature: YogaExperimentalFeature,
-      enabled: Boolean
+      enabled: Boolean,
   )
 
   public abstract fun setUseWebDefaults(useWebDefaults: Boolean)

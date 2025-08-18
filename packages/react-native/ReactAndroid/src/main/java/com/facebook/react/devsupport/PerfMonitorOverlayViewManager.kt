@@ -30,7 +30,7 @@ import java.util.Locale
 
 internal class PerfMonitorOverlayViewManager(
     private val contextSupplier: Supplier<Context?>,
-    private val onRequestAnalyzeTrace: () -> Unit
+    private val onRequestAnalyzeTrace: () -> Unit,
 ) : PerfMonitorOverlayManager {
   private var initialized: Boolean = false
   private var enabled: Boolean = false
@@ -151,7 +151,11 @@ internal class PerfMonitorOverlayViewManager(
         LinearLayout(context).apply {
           orientation = LinearLayout.VERTICAL
           setPadding(
-              dpToPx(8f).toInt(), dpToPx(16f).toInt(), dpToPx(16f).toInt(), dpToPx(8f).toInt())
+              dpToPx(8f).toInt(),
+              dpToPx(16f).toInt(),
+              dpToPx(16f).toInt(),
+              dpToPx(8f).toInt(),
+          )
           addView(buttonInner)
           setOnClickListener { onRequestAnalyzeTrace() }
         }
@@ -205,7 +209,9 @@ internal class PerfMonitorOverlayViewManager(
       setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
       layoutParams =
           LinearLayout.LayoutParams(
-              LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+              LinearLayout.LayoutParams.WRAP_CONTENT,
+              LinearLayout.LayoutParams.WRAP_CONTENT,
+          )
       background =
           GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
