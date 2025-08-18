@@ -303,6 +303,14 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   tracing::TraceRecordingState stopTracing();
 
+  /**
+   * Uses the existence of traceRecording_ to determine if we are actively
+   * recording
+   */
+  bool isRecording() {
+    return traceRecording_ != nullptr;
+  }
+
  private:
   /**
    * Constructs a new HostTarget.

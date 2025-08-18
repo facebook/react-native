@@ -84,6 +84,7 @@ void JReactHostInspectorTarget::registerNatives() {
       makeNativeMethod(
           "sendDebuggerResumeCommand",
           JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod("isRecording", JReactHostInspectorTarget::isRecording),
   });
 }
 
@@ -182,6 +183,10 @@ JReactHostInspectorTarget::getStashedTraceRecordingStateForDisplaying() {
   auto state = std::move(stashedTraceRecordingState_);
   stashedTraceRecordingState_.reset();
   return state;
+}
+
+bool JReactHostInspectorTarget::isRecording() {
+  return inspectorTarget_->isRecording();
 }
 
 } // namespace facebook::react

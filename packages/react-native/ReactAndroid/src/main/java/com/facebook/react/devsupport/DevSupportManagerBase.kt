@@ -353,6 +353,22 @@ public abstract class DevSupportManagerBase(
       options[debuggerItemString] = DevOptionHandler { this.openDebugger() }
     }
 
+    if (devSettings.isDeviceDebugEnabled && ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+      val isRecording = reactInstanceDevHelper.isRecording()
+      val analyzePerformanceItemString =
+          if (isRecording) applicationContext.getString(R.string.catalyst_performance_analyze)
+          else applicationContext.getString(R.string.catalyst_performance_start)
+
+      if (!isConnected) {
+        disabledItemKeys.add(analyzePerformanceItemString)
+      }
+
+      options[analyzePerformanceItemString] =
+          if (isRecording) DevOptionHandler { openDebugger() }
+          else DevOptionHandler { openDebugger() }
+    }
+
     options[applicationContext.getString(R.string.catalyst_change_bundle_location)] =
         DevOptionHandler {
           val context = reactInstanceDevHelper.currentActivity

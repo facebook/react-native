@@ -387,6 +387,12 @@ public class ReactInstanceManager {
         // no-op not implemented for Bridge Mode
         return null;
       }
+
+      @Override
+      public boolean isRecording() {
+        // no-op not implemented for Bridge Mode
+        return false;
+      }
     };
   }
 
