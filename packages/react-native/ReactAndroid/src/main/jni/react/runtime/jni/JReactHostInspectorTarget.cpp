@@ -151,4 +151,37 @@ void JReactHostInspectorTarget::loadNetworkResource(
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }
+
+bool JReactHostInspectorTarget::startTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->startTracing(tracing::Mode::Background);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->stopTracing();
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+void JReactHostInspectorTarget::stashTraceRecordingState(
+    tracing::TraceRecordingState&& state) {
+  stashedTraceRecordingState_ = std::move(state);
+}
+
+std::optional<tracing::TraceRecordingState>
+JReactHostInspectorTarget::getStashedTraceRecordingStateForDisplaying() {
+  auto state = std::move(stashedTraceRecordingState_);
+  stashedTraceRecordingState_.reset();
+  return state;
+}
+
 } // namespace facebook::react
