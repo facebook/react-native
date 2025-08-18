@@ -21,7 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const {
   convertXcodeProjectToJSON,
-  convertJSONProjectToText,
+  updateXcodeProject,
   deintegrateSwiftPM,
   addLocalSwiftPM
 } = require('./xcodeproj-utils');
@@ -56,8 +56,7 @@ function integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, ap
   }
 
   // Convert back to text format and write to project.pbxproj file
-  // fs.writeFileSync(projectPbxprojPath, convertJSONProjectToText(xcodeProject));
-  fs.writeFileSync(projectPbxprojPath, JSON.stringify(xcodeProject));
+  fs.writeFileSync(projectPbxprojPath, updateXcodeProject(xcodeProject,projectPbxprojPath));
 }
 
 // CLI usage
