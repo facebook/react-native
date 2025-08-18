@@ -351,17 +351,27 @@ public open class DevServerHelper(
   }
 
   /** Attempt to open the JS debugger on the host machine (on-device CDP debugging). */
-  public fun openDebugger(context: ReactContext?, errorMessage: String?) {
+  public fun openDebugger(context: ReactContext?, errorMessage: String?, landingView: String?) {
     // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
-    val requestUrl =
+    val requestUrlBuilder = StringBuilder()
+
+    requestUrlBuilder.append(
         String.format(
             Locale.US,
             "http://%s/open-debugger?device=%s",
             packagerConnectionSettings.debugServerHost,
             Uri.encode(inspectorDeviceId),
-        )
+        ))
+
+    if (landingView != null) {
+      requestUrlBuilder.append("&landingView=" + Uri.encode(landingView))
+    }
+
     val request =
-        Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build()
+        Request.Builder()
+            .url(requestUrlBuilder.toString())
+            .method("POST", RequestBody.create(null, ""))
+            .build()
 
     client
         .newCall(request)

@@ -1925,6 +1925,14 @@ public final class com/facebook/react/devsupport/BundleDownloader$BundleInfo$Com
 public final class com/facebook/react/devsupport/BundleDownloader$Companion {
 }
 
+public final class com/facebook/react/devsupport/ChromeDevToolsViewKeys : java/lang/Enum {
+	public static final field Performance Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getValue ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
+	public static fun values ()[Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
+}
+
 public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation : com/facebook/react/devsupport/interfaces/DevLoadingViewManager {
 	public static final field Companion Lcom/facebook/react/devsupport/DefaultDevLoadingViewImplementation$Companion;
 	public fun <init> (Lcom/facebook/react/devsupport/ReactInstanceDevHelper;)V
@@ -1952,7 +1960,7 @@ public class com/facebook/react/devsupport/DevServerHelper {
 	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
 	public final fun getWebsocketProxyURL ()Ljava/lang/String;
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
+	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun openInspectorConnection ()V
 	public final fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
 }
