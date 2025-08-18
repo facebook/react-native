@@ -17,7 +17,7 @@ using namespace facebook::react;
 namespace {
 using RadiusVector = std::pair<CGFloat, CGFloat>;
 
-static RadiusVector RadiusToSide(
+RadiusVector RadiusToSide(
     CGFloat centerX,
     CGFloat centerY,
     CGFloat width,
@@ -53,7 +53,7 @@ static RadiusVector RadiusToSide(
   return {radiusX, radiusY};
 }
 
-static RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspectRatio)
+RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspectRatio)
 {
   if (aspectRatio == 0 || std::isinf(aspectRatio) || std::isnan(aspectRatio)) {
     return {0, 0};
@@ -67,7 +67,7 @@ static RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspe
   return {a, a / aspectRatio};
 }
 
-static RadiusVector RadiusToCorner(
+RadiusVector RadiusToCorner(
     CGFloat centerX,
     CGFloat centerY,
     CGFloat width,
@@ -113,7 +113,7 @@ static RadiusVector RadiusToCorner(
       corners[cornerIndex].x - centerX, corners[cornerIndex].y - centerY, sideRadius.first / sideRadius.second);
 }
 
-static RadiusVector GetRadialGradientRadius(
+RadiusVector GetRadialGradientRadius(
     bool isCircle,
     const RadialGradientSize &size,
     CGFloat centerX,
