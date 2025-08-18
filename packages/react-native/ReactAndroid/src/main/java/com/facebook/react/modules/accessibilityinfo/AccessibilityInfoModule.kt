@@ -246,7 +246,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
     val highTextContrastUri =
-        Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
+        Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
