@@ -24,9 +24,9 @@ type SyncFn = () => FnReturnedObject | void;
 
 export type SuiteOptions = $ReadOnly<{
   minIterations?: number,
-  minDuration?: number,
+  minTestExecutionTimeMs?: number,
   warmup?: boolean,
-  minWarmupDuration?: number,
+  minWarmupDurationMs?: number,
   minWarmupIterations?: number,
   disableOptimizedBuildCheck?: boolean,
   testOnly?: boolean,
@@ -141,16 +141,16 @@ export function suite(
         benchOptions.iterations = suiteOptions.minIterations;
       }
 
-      if (suiteOptions.minDuration != null) {
-        benchOptions.time = suiteOptions.minDuration;
+      if (suiteOptions.minTestExecutionTimeMs != null) {
+        benchOptions.time = suiteOptions.minTestExecutionTimeMs;
       }
 
       if (suiteOptions.warmup != null) {
         benchOptions.warmup = suiteOptions.warmup;
       }
 
-      if (suiteOptions.minWarmupDuration != null) {
-        benchOptions.warmupTime = suiteOptions.minWarmupDuration;
+      if (suiteOptions.minWarmupDurationMs != null) {
+        benchOptions.warmupTime = suiteOptions.minWarmupDurationMs;
       }
 
       if (suiteOptions.minWarmupIterations != null) {
