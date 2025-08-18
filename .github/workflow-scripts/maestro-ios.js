@@ -87,11 +87,11 @@ async function launchAppOnSimulator(appId, udid, isDebug) {
 
 function startVideoRecording(jsengine, currentAttempt) {
   console.log(
-    `Start video record using pid: video_record_${jsengine}_${currentAttempt}.pid`,
+    `Start video record using pid: video_record_${currentAttempt}.pid`,
   );
 
   const recordingArgs =
-    `simctl io booted recordVideo video_record_${jsengine}_${currentAttempt}.mov`.split(
+    `simctl io booted recordVideo video_record_${currentAttempt}.mov`.split(
       ' ',
     );
   const recordingProcess = childProcess.spawn('xcrun', recordingArgs, {
