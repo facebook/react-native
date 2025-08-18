@@ -264,6 +264,10 @@ typedef struct {
                                              selector:@selector(bridgeDidInvalidateModules:)
                                                  name:RCTBridgeDidInvalidateModulesNotification
                                                object:nil];
+
+    if(ReactNativeFeatureFlags::iosEarlyTurboModuleDiscovery()) {
+      [self _discoverModules];
+    }
   }
   return self;
 }
@@ -472,6 +476,16 @@ typedef struct {
 }
 
 #pragma mark - Private Methods
+
+- (void)_discoverModules{
+  if(![_delegate respondsToSelector:@selector(getModuleNames)]) {
+    return;
+  }
+  NSArray<NSString *> *moduleNames = [_delegate getModuleNames];
+  for (NSString *moduleName in moduleNames) {
+    [self _getOrCreateModuleHolder:[moduleName UTF8String]];
+  }
+}
 
 - (BOOL)_isTurboModule:(const char *)moduleName
 {

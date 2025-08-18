@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<757089d037ab0f7c6cda11b079dafa2c>>
+ * @generated SignedSource<<1fbecec0f27a2c8f601fd687c237ba30>>
  */
 
 /**
@@ -475,6 +475,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::hideOffscreenVirtualViewsOnIOS();
+  }
+
+  bool iosEarlyTurboModuleDiscovery() override {
+    auto value = values_["iosEarlyTurboModuleDiscovery"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::iosEarlyTurboModuleDiscovery();
   }
 
   bool perfMonitorV2Enabled() override {

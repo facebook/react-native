@@ -129,6 +129,13 @@
   return nullptr;
 }
 
+- (nonnull NSArray<NSString *> *)getModuleNames{
+  if([dependencyProvider respondsToSelector:@selector(moduleNames)]) {
+    return [dependencyProvider moduleNames];
+  }
+  return @[]; 
+}
+
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;

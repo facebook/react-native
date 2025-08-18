@@ -53,6 +53,9 @@
         "RNTMyNativeView": {
           "className": "RNTMyNativeViewComponentView"
         }
+      },
+      "modulesProvider": {
+        "SampleTurboModule": "RCTSampleTurboModule"
       }
     }
   },
