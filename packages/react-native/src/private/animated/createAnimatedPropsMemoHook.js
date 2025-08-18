@@ -264,9 +264,9 @@ export function areCompositeKeysEqual(
       // We know style components are objects with non-mixed values.
       if (
         !areCompositeKeyComponentsEqual(
-          // $FlowFixMe[incompatible-cast]
+          // $FlowFixMe[incompatible-type]
           prevComponent as $ReadOnlyCompositeKeyComponent,
-          // $FlowFixMe[incompatible-cast]
+          // $FlowFixMe[incompatible-type]
           nextComponent as $ReadOnlyCompositeKeyComponent,
         )
       ) {
@@ -289,9 +289,9 @@ export function areCompositeKeysEqual(
       } else {
         if (
           !areCompositeKeyComponentsEqual(
-            // $FlowFixMe[incompatible-cast]
+            // $FlowFixMe[incompatible-type]
             prevComponent as $ReadOnlyCompositeKeyComponent,
-            // $FlowFixMe[incompatible-cast]
+            // $FlowFixMe[incompatible-type]
             nextComponent as $ReadOnlyCompositeKeyComponent,
           )
         ) {

@@ -127,7 +127,7 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
       };
     }
   }
-  // $FlowExpectedError[incompatible-return] - Dynamism.
+  // $FlowExpectedError[incompatible-type] - Dynamism.
   return nativeOperations;
 }
 
@@ -145,7 +145,7 @@ const API = {
         if (saveValueCallback) {
           eventListenerGetValueCallbacks[tag] = saveValueCallback;
         }
-        /* $FlowExpectedError[incompatible-call] - `saveValueCallback` is handled
+        /* $FlowExpectedError[incompatible-type] - `saveValueCallback` is handled
             differently when `isSingleOpBatching` is enabled. */
         NativeOperations.getValue(tag);
       }
@@ -271,7 +271,7 @@ const API = {
         if (endCallback) {
           eventListenerAnimationFinishedCallbacks[animationId] = endCallback;
         }
-        /* $FlowExpectedError[incompatible-call] - `endCallback` is handled
+        /* $FlowExpectedError[incompatible-type] - `endCallback` is handled
             differently when `isSingleOpBatching` is enabled. */
         NativeOperations.startAnimatingNode(animationId, nodeTag, config);
       }

@@ -150,7 +150,7 @@ describe('flattenStyle', () => {
 
   it('should ignore invalid class names', () => {
     // $FlowExpectedError[extra-arg]
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     const invalid = flattenStyle(1234, null);
 
     expect(invalid).toEqual(undefined);

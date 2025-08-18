@@ -22,7 +22,7 @@ function codegenNativeCommands<T: interface {}>(
   options.supportedCommands.forEach(command => {
     // $FlowFixMe[missing-local-annot]
     commandObj[command] = (ref, ...args) => {
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       dispatchCommand(ref, command, args);
     };
   });

@@ -432,7 +432,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
         }));
     } else if (this.props.onViewableItemsChanged) {
       this._virtualizedListPairs.push({
-        /* $FlowFixMe[incompatible-call] (>=0.63.0 site=react_native_fb) This
+        /* $FlowFixMe[incompatible-type] (>=0.63.0 site=react_native_fb) This
          * comment suppresses an error found when Flow v0.63 was deployed. To
          * see the error delete this comment and run Flow. */
         viewabilityConfig: this.props.viewabilityConfig,
@@ -569,7 +569,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
         .join(':');
     }
 
-    // $FlowFixMe[incompatible-call] Can't call keyExtractor with an array
+    // $FlowFixMe[incompatible-type] Can't call keyExtractor with an array
     return keyExtractor(items, index);
   };
 
@@ -626,11 +626,10 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
     const render = (props: ListRenderItemInfo<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
-        // $FlowFixMe[incompatible-type-arg] Component isn't valid
-        // $FlowFixMe[incompatible-return] Component isn't valid
+        // $FlowFixMe[incompatible-type] Component isn't valid
         return <ListItemComponent {...props} />;
       } else if (renderItem) {
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         return renderItem(props);
       } else {
         return null;
@@ -648,7 +647,7 @@ class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
           <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
             {item.map((it, kk) => {
               const element = render({
-                // $FlowFixMe[incompatible-call]
+                // $FlowFixMe[incompatible-type]
                 item: it,
                 index: index * cols + kk,
                 separators: info.separators,

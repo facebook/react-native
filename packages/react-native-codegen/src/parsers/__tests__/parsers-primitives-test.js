@@ -379,10 +379,10 @@ describe('typeAliasResolution', () => {
       it('returns nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           typeResolution,
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           objectTypeAnnotation,
           aliasMap,
@@ -404,10 +404,10 @@ describe('typeAliasResolution', () => {
       it('returns non nullable TypeAliasTypeAnnotation and map it in aliasMap', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           typeResolution,
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           objectTypeAnnotation,
           aliasMap,
@@ -430,10 +430,10 @@ describe('typeAliasResolution', () => {
       it('returns nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           typeResolution,
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           objectTypeAnnotation,
           aliasMap,
@@ -452,10 +452,10 @@ describe('typeAliasResolution', () => {
       it('returns non nullable ObjectTypeAnnotation', () => {
         const aliasMap = {};
         const result = typeAliasResolution(
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           typeResolution,
-          /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+          /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
            * https://fburl.com/workplace/6291gfvu */
           objectTypeAnnotation,
           aliasMap,
@@ -1246,7 +1246,7 @@ describe('emitUnion', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
-            /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
              * https://fburl.com/workplace/6291gfvu */
             unionTypes,
           );
@@ -1262,7 +1262,7 @@ describe('emitUnion', () => {
           const expected = new UnsupportedUnionTypeAnnotationParserError(
             hasteModuleName,
             typeAnnotation,
-            /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+            /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
              * https://fburl.com/workplace/6291gfvu */
             unionTypes,
           );

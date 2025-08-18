@@ -148,7 +148,7 @@ export default class AnimatedTransform extends AnimatedWithChildren {
           transformsConfig.push({
             type: 'static',
             property: key,
-            /* $FlowFixMe[incompatible-call] - `value` can be an array or an
+            /* $FlowFixMe[incompatible-type] - `value` can be an array or an
                object. This is not currently handled by `transformDataType`.
                Migrating to `TransformObject` might solve this. */
             value: NativeAnimatedHelper.transformDataType(value),

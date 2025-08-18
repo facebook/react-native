@@ -111,7 +111,7 @@ function addCustomSourceTransformer(
 function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource {
   if (source == null || typeof source === 'object') {
     // $FlowFixMe[incompatible-exact] `source` doesn't exactly match `ResolvedAssetSource`
-    // $FlowFixMe[incompatible-return] `source` doesn't exactly match `ResolvedAssetSource`
+    // $FlowFixMe[incompatible-type] `source` doesn't exactly match `ResolvedAssetSource`
     return source;
   }
 

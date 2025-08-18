@@ -32,17 +32,17 @@ function getExtendedError(
   if (errorValue instanceof Error) {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
+    // $FlowFixMe[incompatible-type]
     error = (errorValue: ExtendedError);
   } else if (typeof errorValue === 'string') {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
+    // $FlowFixMe[incompatible-type]
     error = (new SyntheticError(errorValue): ExtendedError);
   } else {
     /* $FlowFixMe[class-object-subtyping] added when improving typing for
      * this parameters */
-    // $FlowFixMe[incompatible-cast]
+    // $FlowFixMe[incompatible-type]
     error = (new SyntheticError('Unspecified error'): ExtendedError);
   }
   try {

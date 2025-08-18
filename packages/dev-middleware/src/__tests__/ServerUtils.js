@@ -93,7 +93,7 @@ export async function createServer(options: CreateServerOptions): Promise<{
     );
     httpServer = https.createServer(
       {cert, key},
-      // $FlowFixMe[incompatible-call] The types for `connect` and `https` are subtly incompatible as written.
+      // $FlowFixMe[incompatible-type] The types for `connect` and `https` are subtly incompatible as written.
       app,
     );
   } else {
