@@ -174,10 +174,16 @@ export function suite(
       bench.add(task.name, task.fn, options);
     }
 
+    if (!isTestOnly) {
+      console.log(`Running benchmark: ${suiteName}. Please wait.`);
+    }
+
+    const runStartTime = performance.now();
+
     bench.runSync();
 
     if (!isTestOnly) {
-      printBenchmarkResults(bench);
+      printBenchmarkResults(bench, runStartTime);
     }
 
     for (const verify of verifyFns) {
@@ -262,15 +268,23 @@ export function suite(
   return suiteAPI;
 }
 
-function printBenchmarkResults(bench: Bench) {
+function printBenchmarkResults(bench: Bench, runStartTime: number) {
   const {fantomConfigSummary} = getConstants();
   const benchmarkName =
     (bench.name ?? 'Benchmark') +
     (fantomConfigSummary ? ` (${fantomConfigSummary})` : '');
 
+  const runDuration = performance.now() - runStartTime;
+  const durationStr =
+    runDuration < 1000
+      ? `${runDuration.toFixed(0)}ms`
+      : `${(runDuration / 1000).toFixed(0)}s`;
+
   console.log('');
   console.log(`### ${benchmarkName} ###`);
   console.table(nullthrows(bench.table()));
+  console.log('');
+  console.log(`Total benchmark duration: ${durationStr}`);
   console.log('');
 }
 
