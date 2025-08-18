@@ -22,7 +22,7 @@ const clearMarksAndMeasures = () => {
 };
 
 Fantom.unstable_benchmark
-  .suite('Performance API', {minIterations: 50000, minDuration: 0})
+  .suite('Performance API', {minIterations: 50000})
   .test(
     'mark (default)',
     () => {
