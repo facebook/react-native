@@ -72,4 +72,8 @@ internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
 
   override fun loadBundle(bundleLoader: JSBundleLoader): TaskInterface<Boolean> =
       delegate.loadBundle(bundleLoader)
+
+  override fun isRecording(): Boolean {
+    return delegate.getOrCreateReactHostInspectorTarget()?.isRecording() ?: false
+  }
 }

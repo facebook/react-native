@@ -85,6 +85,7 @@ class JReactHostInspectorTarget
 
   static void registerNatives();
   void sendDebuggerResumeCommand();
+  bool isRecording();
 
   /**
    * Starts a background trace recording for this HostTarget.

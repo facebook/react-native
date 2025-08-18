@@ -29,6 +29,8 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) : Closeabl
 
   external fun sendDebuggerResumeCommand()
 
+  external fun isRecording(): Boolean
+
   override fun close() {
     mHybridData.resetNative()
   }
