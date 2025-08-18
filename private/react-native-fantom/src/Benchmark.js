@@ -139,23 +139,27 @@ export function suite(
     if (!isTestOnly) {
       if (suiteOptions.minIterations != null) {
         benchOptions.iterations = suiteOptions.minIterations;
+      } else if (suiteOptions.minTestExecutionTimeMs != null) {
+        // If the suite specifies `minTestExecutionTimeMs`, we don't need a
+        // minimum number of iterations.
+        benchOptions.iterations = 0;
       }
 
       if (suiteOptions.minTestExecutionTimeMs != null) {
         benchOptions.time = suiteOptions.minTestExecutionTimeMs;
+      } else if (suiteOptions.minIterations != null) {
+        // If the suite specifies `minIterations`, we don't need a minimum test
+        // execution time.
+        benchOptions.time = 0;
       }
 
       if (suiteOptions.warmup != null) {
         benchOptions.warmup = suiteOptions.warmup;
       }
 
-      if (suiteOptions.minWarmupDurationMs != null) {
-        benchOptions.warmupTime = suiteOptions.minWarmupDurationMs;
-      }
-
-      if (suiteOptions.minWarmupIterations != null) {
-        benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
-      }
+      // Just 1 warmup execution for each test by default.
+      benchOptions.warmupTime = suiteOptions.minWarmupDurationMs ?? 0;
+      benchOptions.warmupIterations = suiteOptions.minWarmupIterations ?? 1;
     }
 
     const bench = new Bench(benchOptions);
