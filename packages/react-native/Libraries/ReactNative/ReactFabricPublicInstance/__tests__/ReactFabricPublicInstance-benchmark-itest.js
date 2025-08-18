@@ -33,17 +33,43 @@ const internalInstanceHandle: InternalInstanceHandle = {};
 // $FlowExpectedError[incompatible-type]
 const ownerDocument: ReactNativeDocument = {};
 
+const ITERATIONS = 100;
+
+const now = Fantom.unstable_benchmark.now;
+
 /* eslint-disable no-new */
 Fantom.unstable_benchmark
-  .suite('ReactNativeElement vs. ReactFabricHostComponent')
+  .suite('ReactNativeElement vs. ReactFabricHostComponent', {
+    minIterations: 50000,
+  })
   .test('ReactNativeElement', () => {
-    new ReactNativeElement(
-      tag,
-      viewConfig,
-      internalInstanceHandle,
-      ownerDocument,
-    );
+    // This logic is very fast and if we only run it once the cost of calling
+    // the benchmark function itself is significant. Calling it in a loop and
+    // computing the average is more accurate to account for that.
+    const start = now();
+    for (let i = 0; i < ITERATIONS; i++) {
+      new ReactNativeElement(
+        tag,
+        viewConfig,
+        internalInstanceHandle,
+        ownerDocument,
+      );
+    }
+    const end = now();
+    return {
+      overriddenDuration: (end - start) / ITERATIONS,
+    };
   })
   .test('ReactFabricHostComponent', () => {
-    new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
+    // This logic is very fast and if we only run it once the cost of calling
+    // the benchmark function itself is significant. Calling it in a loop and
+    // computing the average is more accurate to account for that.
+    const start = now();
+    for (let i = 0; i < ITERATIONS; i++) {
+      new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
+    }
+    const end = now();
+    return {
+      overriddenDuration: (end - start) / ITERATIONS,
+    };
   });
