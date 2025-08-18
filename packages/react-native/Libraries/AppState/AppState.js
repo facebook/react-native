@@ -134,9 +134,13 @@ class AppStateImpl {
         // $FlowFixMe[invalid-tuple-arity] Flow cannot refine handler based on the event type
         const focusOrBlurHandler: () => void = handler;
         return emitter.addListener('appStateFocusChange', hasFocus => {
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'blur' && !hasFocus) {
             focusOrBlurHandler();
           }
+          /* $FlowFixMe[invalid-compare] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
           if (type === 'focus' && hasFocus) {
             focusOrBlurHandler();
           }
