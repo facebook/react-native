@@ -25,6 +25,12 @@ namespace {
  */
 const HighResDuration MIN_VALUE_FOR_MAX_TRACE_DURATION_OPTION =
     HighResDuration::fromMilliseconds(1000); // 1 second
+
+ThreadId getCurrentThreadId() {
+  static thread_local const auto CURRENT_THREAD_ID =
+      oscompat::getCurrentThreadId();
+  return CURRENT_THREAD_ID;
+}
 } // namespace
 
 PerformanceTracer& PerformanceTracer::getInstance() {
@@ -100,7 +106,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       .ph = 'I',
       .ts = currentTraceStartTime,
       .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
+      .tid = getCurrentThreadId(),
       .args = folly::dynamic::object("data", folly::dynamic::object()),
   });
 
@@ -110,7 +116,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
       .ph = 'I',
       .ts = currentTraceEndTime,
       .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
+      .tid = getCurrentThreadId(),
   });
 
   currentTraceMaxDuration_ = std::nullopt;
@@ -130,20 +136,11 @@ void PerformanceTracer::reportMark(
     return;
   }
 
-  folly::dynamic eventArgs = folly::dynamic::object();
-  if (detail != nullptr) {
-    eventArgs = folly::dynamic::object(
-        "data", folly::dynamic::object("detail", folly::toJson(detail)));
-  }
-
-  enqueueEvent(TraceEvent{
+  enqueueEvent(PerformanceTracerEventMark{
       .name = std::string(name),
-      .cat = "blink.user_timing",
-      .ph = 'I',
-      .ts = start,
-      .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
-      .args = eventArgs,
+      .start = start,
+      .detail = std::move(detail),
+      .threadId = getCurrentThreadId(),
   });
 }
 
@@ -156,37 +153,17 @@ void PerformanceTracer::reportMeasure(
     return;
   }
 
-  folly::dynamic beginEventArgs = folly::dynamic::object();
-  if (detail != nullptr) {
-    beginEventArgs = folly::dynamic::object("detail", folly::toJson(detail));
-  }
-
-  auto currentThreadId = oscompat::getCurrentThreadId();
-
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracingAtomic_) {
     return;
   }
-  auto eventId = ++performanceMeasureCount_;
 
-  enqueueEvent(TraceEvent{
-      .id = eventId,
+  enqueueEvent(PerformanceTracerEventMeasure{
       .name = std::string(name),
-      .cat = "blink.user_timing",
-      .ph = 'b',
-      .ts = start,
-      .pid = processId_,
-      .tid = currentThreadId,
-      .args = beginEventArgs,
-  });
-  enqueueEvent(TraceEvent{
-      .id = eventId,
-      .name = std::string(name),
-      .cat = "blink.user_timing",
-      .ph = 'e',
-      .ts = start + duration,
-      .pid = processId_,
-      .tid = currentThreadId,
+      .start = start,
+      .duration = duration,
+      .detail = std::move(detail),
+      .threadId = getCurrentThreadId(),
   });
 }
 
@@ -201,47 +178,18 @@ void PerformanceTracer::reportTimeStamp(
     return;
   }
 
-  // `name` takes precedence over `message` in Chrome DevTools Frontend, no need
-  // to record both.
-  folly::dynamic data = folly::dynamic::object("name", std::move(name));
-  if (start) {
-    if (std::holds_alternative<HighResTimeStamp>(*start)) {
-      data["start"] = highResTimeStampToTracingClockTimeStamp(
-          std::get<HighResTimeStamp>(*start));
-    } else {
-      data["start"] = std::move(std::get<std::string>(*start));
-    }
-  }
-  if (end) {
-    if (std::holds_alternative<HighResTimeStamp>(*end)) {
-      data["end"] = highResTimeStampToTracingClockTimeStamp(
-          std::get<HighResTimeStamp>(*end));
-    } else {
-      data["end"] = std::move(std::get<std::string>(*end));
-    }
-  }
-  if (trackName) {
-    data["track"] = std::move(*trackName);
-  }
-  if (trackGroup) {
-    data["trackGroup"] = std::move(*trackGroup);
-  }
-  if (color) {
-    data["color"] = consoleTimeStampColorToString(*color);
-  }
-
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracingAtomic_) {
     return;
   }
-  enqueueEvent(TraceEvent{
-      .name = "TimeStamp",
-      .cat = "devtools.timeline",
-      .ph = 'I',
-      .ts = HighResTimeStamp::now(),
-      .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
-      .args = folly::dynamic::object("data", std::move(data)),
+
+  enqueueEvent(PerformanceTracerEventTimeStamp{
+      .name = std::move(name),
+      .start = std::move(start),
+      .end = std::move(end),
+      .trackName = std::move(trackName),
+      .trackGroup = std::move(trackGroup),
+      .color = std::move(color),
   });
 }
 
@@ -257,14 +205,10 @@ void PerformanceTracer::reportEventLoopTask(
     return;
   }
 
-  enqueueEvent(TraceEvent{
-      .name = "RunTask",
-      .cat = "disabled-by-default-devtools.timeline",
-      .ph = 'X',
-      .ts = start,
-      .pid = oscompat::getCurrentProcessId(),
-      .tid = oscompat::getCurrentThreadId(),
-      .dur = end - start,
+  enqueueEvent(PerformanceTracerEventEventLoopTask{
+      .start = start,
+      .end = end,
+      .threadId = getCurrentThreadId(),
   });
 }
 
@@ -280,14 +224,10 @@ void PerformanceTracer::reportEventLoopMicrotasks(
     return;
   }
 
-  enqueueEvent(TraceEvent{
-      .name = "RunMicrotasks",
-      .cat = "v8.execute",
-      .ph = 'X',
-      .ts = start,
-      .pid = oscompat::getCurrentProcessId(),
-      .tid = oscompat::getCurrentThreadId(),
-      .dur = end - start,
+  enqueueEvent(PerformanceTracerEventEventLoopMicrotask{
+      .start = start,
+      .end = end,
+      .threadId = getCurrentThreadId(),
   });
 }
 
@@ -381,7 +321,11 @@ std::vector<TraceEvent> PerformanceTracer::collectEventsAndClearBuffers(
     previousBuffer_ = nullptr;
   } else {
     // Trivial case.
-    currentBuffer_->swap(events);
+    events.reserve(currentBuffer_->size());
+    for (auto&& event : *currentBuffer_) {
+      enqueueTraceEventsFromPerformanceTracerEvent(events, std::move(event));
+    }
+    currentBuffer_->clear();
   }
 
   return events;
@@ -389,11 +333,11 @@ std::vector<TraceEvent> PerformanceTracer::collectEventsAndClearBuffers(
 
 void PerformanceTracer::collectEventsAndClearBuffer(
     std::vector<TraceEvent>& events,
-    std::vector<TraceEvent>& buffer,
+    std::vector<PerformanceTracerEvent>& buffer,
     HighResTimeStamp currentTraceEndTime) {
   for (auto&& event : buffer) {
-    if (isInTracingWindow(currentTraceEndTime, event.createdAt_)) {
-      events.emplace_back(std::move(event));
+    if (isInTracingWindow(currentTraceEndTime, getCreatedAt(event))) {
+      enqueueTraceEventsFromPerformanceTracerEvent(events, std::move(event));
     }
   }
 
@@ -411,21 +355,157 @@ bool PerformanceTracer::isInTracingWindow(
   return timeStampToCheck > now - *currentTraceMaxDuration_;
 }
 
-void PerformanceTracer::enqueueEvent(TraceEvent&& traceEvent) {
+void PerformanceTracer::enqueueEvent(PerformanceTracerEvent&& event) {
   if (currentTraceMaxDuration_) {
+    auto createdAt = getCreatedAt(event);
     // Check if the current buffer is "full"
-    if (traceEvent.createdAt_ >
-        currentBufferStartTime_ + *currentTraceMaxDuration_) {
+    if (createdAt > currentBufferStartTime_ + *currentTraceMaxDuration_) {
       // We moved past the current buffer. We need to switch the other buffer as
       // current.
       previousBuffer_ = currentBuffer_;
       currentBuffer_ = currentBuffer_ == &buffer_ ? &altBuffer_ : &buffer_;
       currentBuffer_->clear();
-      currentBufferStartTime_ = traceEvent.createdAt_;
+      currentBufferStartTime_ = createdAt;
     }
   }
 
-  currentBuffer_->emplace_back(std::move(traceEvent));
+  currentBuffer_->emplace_back(std::move(event));
+}
+
+HighResTimeStamp PerformanceTracer::getCreatedAt(
+    const PerformanceTracerEvent& event) const {
+  return std::visit(
+      [](const auto& variant) { return variant.createdAt; }, event);
+}
+
+namespace {
+template <class... Ts>
+struct overloaded : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+} // namespace
+
+void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
+    std::vector<TraceEvent>& events,
+    PerformanceTracerEvent&& event) {
+  std::visit(
+      overloaded{
+          [&](PerformanceTracerEventEventLoopTask&& event) {
+            events.emplace_back(TraceEvent{
+                .name = "RunTask",
+                .cat = "disabled-by-default-devtools.timeline",
+                .ph = 'X',
+                .ts = event.start,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+                .dur = event.end - event.start,
+            });
+          },
+          [&](PerformanceTracerEventEventLoopMicrotask&& event) {
+            events.emplace_back(TraceEvent{
+                .name = "RunMicrotasks",
+                .cat = "v8.execute",
+                .ph = 'X',
+                .ts = event.start,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+                .dur = event.end - event.start,
+            });
+          },
+          [&](PerformanceTracerEventMark&& event) {
+            folly::dynamic eventArgs = folly::dynamic::object();
+            if (event.detail != nullptr) {
+              eventArgs = folly::dynamic::object(
+                  "data",
+                  folly::dynamic::object(
+                      "detail", folly::toJson(event.detail)));
+            }
+
+            events.emplace_back(TraceEvent{
+                .name = std::move(event.name),
+                .cat = "blink.user_timing",
+                .ph = 'I',
+                .ts = event.start,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+                .args = std::move(eventArgs),
+            });
+          },
+          [&](PerformanceTracerEventMeasure&& event) {
+            folly::dynamic beginEventArgs = folly::dynamic::object();
+            if (event.detail != nullptr) {
+              beginEventArgs =
+                  folly::dynamic::object("detail", folly::toJson(event.detail));
+            }
+
+            auto eventId = ++performanceMeasureCount_;
+
+            events.emplace_back(TraceEvent{
+                .id = eventId,
+                .name = std::move(event.name),
+                .cat = "blink.user_timing",
+                .ph = 'b',
+                .ts = event.start,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+                .args = std::move(beginEventArgs),
+            });
+            events.emplace_back(TraceEvent{
+                .id = eventId,
+                .name = std::move(event.name),
+                .cat = "blink.user_timing",
+                .ph = 'e',
+                .ts = event.start + event.duration,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+            });
+          },
+          [&](PerformanceTracerEventTimeStamp&& event) {
+            // `name` takes precedence over `message` in Chrome DevTools
+            // Frontend, no need
+            // to record both.
+            folly::dynamic data =
+                folly::dynamic::object("name", std::move(event.name));
+            if (event.start) {
+              if (std::holds_alternative<HighResTimeStamp>(*event.start)) {
+                data["start"] = highResTimeStampToTracingClockTimeStamp(
+                    std::get<HighResTimeStamp>(*event.start));
+              } else {
+                data["start"] = std::move(std::get<std::string>(*event.start));
+              }
+            }
+            if (event.end) {
+              if (std::holds_alternative<HighResTimeStamp>(*event.end)) {
+                data["end"] = highResTimeStampToTracingClockTimeStamp(
+                    std::get<HighResTimeStamp>(*event.end));
+              } else {
+                data["end"] = std::move(std::get<std::string>(*event.end));
+              }
+            }
+            if (event.trackName) {
+              data["track"] = std::move(*event.trackName);
+            }
+            if (event.trackGroup) {
+              data["trackGroup"] = std::move(*event.trackGroup);
+            }
+            if (event.color) {
+              data["color"] = consoleTimeStampColorToString(*event.color);
+            }
+
+            events.emplace_back(TraceEvent{
+                .name = "TimeStamp",
+                .cat = "devtools.timeline",
+                .ph = 'I',
+                .ts = event.createdAt,
+                .pid = processId_,
+                .tid = getCurrentThreadId(),
+                .args = folly::dynamic::object("data", std::move(data)),
+            });
+          },
+      },
+      std::move(event));
 }
 
 } // namespace facebook::react::jsinspector_modern::tracing

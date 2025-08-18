@@ -66,11 +66,6 @@ struct TraceEvent {
    * complete events ("ph": "X").
    */
   std::optional<HighResDuration> dur;
-
-  /**
-   * This is not part of the Trace Event Format.
-   */
-  HighResTimeStamp createdAt_ = HighResTimeStamp::now();
 };
 
 } // namespace facebook::react::jsinspector_modern::tracing
