@@ -14,7 +14,6 @@ import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExpor
 import type {InstanceHandle} from '../internals/NodeInternals';
 
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
-import nullthrows from 'nullthrows';
 
 export opaque type NativeElementReference = ShadowNode;
 export opaque type NativeTextReference = ShadowNode;
@@ -168,12 +167,6 @@ export interface Spec extends TurboModule {
     nativeElementReference: mixed,
     updatePayload: mixed,
   ) => void;
-}
-
-const RawNativeDOM = (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): ?Spec);
-
-export function getRawNativeDOMForTests(): ?Spec {
-  return RawNativeDOM;
 }
 
 // This is the actual interface of this module, but the native module codegen
@@ -445,188 +438,14 @@ export interface RefinedSpec {
   ) => void;
 }
 
-const NativeDOM: RefinedSpec = {
-  /*
-   * Methods from the `Node` interface (for `ReadOnlyNode`).
-   */
-
-  compareDocumentPosition(nativeNodeReference, otherNativeNodeReference) {
-    return nullthrows(RawNativeDOM).compareDocumentPosition(
-      nativeNodeReference,
-      otherNativeNodeReference,
-    );
-  },
-
-  getChildNodes(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getChildNodes(
-      nativeNodeReference,
-    ): $ReadOnlyArray<InstanceHandle>);
-  },
-
-  getElementById(rootTag, id) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM?.getElementById)(
-      rootTag,
-      id,
-    ): ?InstanceHandle);
-  },
-
-  getParentNode(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getParentNode(
-      nativeNodeReference,
-    ): ?InstanceHandle);
-  },
-
-  isConnected(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).isConnected(nativeNodeReference);
-  },
-
-  /*
-   * Methods from the `Element` interface (for `ReactNativeElement`).
-   */
-
-  getBorderWidth(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getBorderWidth(
-      nativeNodeReference,
-    ): $ReadOnly<
-      [
-        /* topWidth: */ number,
-        /* rightWidth: */ number,
-        /* bottomWidth: */ number,
-        /* leftWidth: */ number,
-      ],
-    >);
-  },
-
-  getBoundingClientRect(nativeNodeReference, includeTransform: boolean) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getBoundingClientRect(
-      nativeNodeReference,
-      includeTransform,
-    ): $ReadOnly<
-      [
-        /* x: */ number,
-        /* y: */ number,
-        /* width: */ number,
-        /* height: */ number,
-      ],
-    >);
-  },
-
-  getInnerSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getInnerSize(
-      nativeNodeReference,
-    ): $ReadOnly<[/* width: */ number, /* height: */ number]>);
-  },
-
-  getScrollPosition(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getScrollPosition(
-      nativeNodeReference,
-    ): $ReadOnly<[/* scrollLeft: */ number, /* scrollTop: */ number]>);
-  },
-
-  getScrollSize(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getScrollSize(
-      nativeNodeReference,
-    ): $ReadOnly<[/* scrollWidth: */ number, /* scrollHeight: */ number]>);
-  },
-
-  getTagName(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).getTagName(nativeNodeReference);
-  },
-
-  getTextContent(nativeNodeReference) {
-    return nullthrows(RawNativeDOM).getTextContent(nativeNodeReference);
-  },
-
-  hasPointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).hasPointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  releasePointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).releasePointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  setPointerCapture(nativeNodeReference, pointerId) {
-    return nullthrows(RawNativeDOM).setPointerCapture(
-      nativeNodeReference,
-      pointerId,
-    );
-  },
-
-  /*
-   * Methods from the `HTMLElement` interface (for `ReactNativeElement`).
-   */
-
-  getOffset(nativeNodeReference) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM).getOffset(nativeNodeReference): $ReadOnly<
-      [
-        /* offsetParent: */ ?InstanceHandle,
-        /* top: */ number,
-        /* left: */ number,
-      ],
-    >);
-  },
-
-  /*
-   * Special methods to handle the root node.
-   */
-
-  linkRootNode(rootTag, instanceHandle) {
-    // $FlowExpectedError[incompatible-type]
-    return (nullthrows(RawNativeDOM?.linkRootNode)(
-      // $FlowExpectedError[incompatible-type]
-      rootTag,
-      instanceHandle,
-    ): ?NativeElementReference);
-  },
-
-  /**
-   * Legacy layout APIs
-   */
-
-  measure(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).measure(nativeNodeReference, callback);
-  },
-
-  measureInWindow(nativeNodeReference, callback) {
-    return nullthrows(RawNativeDOM).measureInWindow(
-      nativeNodeReference,
-      callback,
-    );
-  },
-
-  measureLayout(nativeNodeReference, relativeNode, onFail, onSuccess) {
-    return nullthrows(RawNativeDOM).measureLayout(
-      nativeNodeReference,
-      relativeNode,
-      onFail,
-      onSuccess,
-    );
-  },
-
-  /**
-   * Legacy direct manipulation APIs
-   */
-  setNativeProps(nativeNodeReference, updatePayload) {
-    return nullthrows(RawNativeDOM).setNativeProps(
-      nativeNodeReference,
-      updatePayload,
-    );
-  },
-};
-
-export default NativeDOM;
+// We used to implement all methods in RefineSpec, manually refining the types
+// for all methods. However, this is slower as every call to the native module
+// requires an additional call only to handle types. Instead, we do an unsafe
+// casting here. Keep in mind that:
+// 1. We use `get` and not `getEnforcing` because we don't want to fail when
+//    the module is evaluated, only when used. This is necessary because we
+//    don't use inline requires within the `react-native` package and some code
+//    might end up loading this but not using it.
+// 2. We lose automatic backwards compatibility checks because of this.
+// $FlowExpectedError[incompatible-type]
+export default (TurboModuleRegistry.get<Spec>('NativeDOMCxx'): RefinedSpec);

@@ -37,14 +37,30 @@ export type InstanceHandle =
   | ReactNativeDocumentElementInstanceHandle // root element managed by React Native
   | ReactNativeDocumentInstanceHandle; // document node managed by React Native
 
-let RendererProxy;
-function getRendererProxy() {
-  if (RendererProxy == null) {
+let cachedGetNodeFromInternalInstanceHandle;
+function getNodeFromInternalInstanceHandle(
+  instanceHandle: InternalInstanceHandle,
+) {
+  if (cachedGetNodeFromInternalInstanceHandle == null) {
     // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
     // With a static import we can't use these classes for Paper-only variants.
-    RendererProxy = require('../../../../../../Libraries/ReactNative/RendererProxy');
+    cachedGetNodeFromInternalInstanceHandle =
+      require('../../../../../../Libraries/ReactNative/RendererProxy').getNodeFromInternalInstanceHandle;
   }
-  return RendererProxy;
+  return cachedGetNodeFromInternalInstanceHandle(instanceHandle);
+}
+
+let cachedGetPublicInstanceFromInternalInstanceHandle;
+function getPublicInstanceFromInternalInstanceHandle(
+  instanceHandle: InternalInstanceHandle,
+) {
+  if (cachedGetPublicInstanceFromInternalInstanceHandle == null) {
+    // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
+    // With a static import we can't use these classes for Paper-only variants.
+    cachedGetPublicInstanceFromInternalInstanceHandle =
+      require('../../../../../../Libraries/ReactNative/RendererProxy').getPublicInstanceFromInternalInstanceHandle;
+  }
+  return cachedGetPublicInstanceFromInternalInstanceHandle(instanceHandle);
 }
 
 const INSTANCE_HANDLE_KEY = Symbol('internalInstanceHandle');
@@ -81,6 +97,15 @@ export function setOwnerDocument(
 export function getPublicInstanceFromInstanceHandle(
   instanceHandle: InstanceHandle,
 ): ?ReadOnlyNode {
+  const mixedPublicInstance =
+    // $FlowExpectedError[incompatible-type]
+    getPublicInstanceFromInternalInstanceHandle(instanceHandle);
+
+  if (mixedPublicInstance != null) {
+    // $FlowExpectedError[incompatible-type] React defines public instances as "mixed" because it can't access the definition from React Native.
+    return mixedPublicInstance;
+  }
+
   if (isReactNativeDocumentInstanceHandle(instanceHandle)) {
     return getPublicInstanceFromReactNativeDocumentInstanceHandle(
       instanceHandle,
@@ -92,20 +117,21 @@ export function getPublicInstanceFromInstanceHandle(
       instanceHandle,
     );
   }
-
-  const mixedPublicInstance =
-    getRendererProxy().getPublicInstanceFromInternalInstanceHandle(
-      instanceHandle,
-    );
-
-  // $FlowExpectedError[incompatible-type] React defines public instances as "mixed" because it can't access the definition from React Native.
-  return mixedPublicInstance;
 }
 
 export function getNativeNodeReference(
   node: ReadOnlyNode,
 ): ?NativeNodeReference {
   const instanceHandle = getInstanceHandle(node);
+
+  // Try React nodes first
+  const nativeReference =
+    // $FlowExpectedError[incompatible-type]
+    getNodeFromInternalInstanceHandle(instanceHandle);
+  if (nativeReference != null) {
+    // $FlowExpectedError[incompatible-type]
+    return nativeReference;
+  }
 
   if (isReactNativeDocumentInstanceHandle(instanceHandle)) {
     return getNativeNodeReferenceFromReactNativeDocumentInstanceHandle(
@@ -118,9 +144,6 @@ export function getNativeNodeReference(
       instanceHandle,
     );
   }
-
-  // $FlowExpectedError[incompatible-type]
-  return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
 }
 
 export function getNativeElementReference(
@@ -136,7 +159,7 @@ export function getNativeElementReference(
   }
 
   // $FlowExpectedError[incompatible-type]
-  return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
+  return getNodeFromInternalInstanceHandle(instanceHandle);
 }
 
 export function getNativeTextReference(
@@ -146,5 +169,5 @@ export function getNativeTextReference(
   const instanceHandle = getInstanceHandle(node) as InternalInstanceHandle;
 
   // $FlowExpectedError[incompatible-type]
-  return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
+  return getNodeFromInternalInstanceHandle(instanceHandle);
 }
