@@ -1503,7 +1503,7 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
         keyboardNeverPersistTaps &&
         this._keyboardIsDismissible() &&
         e.target != null &&
-        // $FlowFixMe[incompatible-type]
+        // $FlowFixMe Error supressed during the migration of HostInstance to ReactNativeElement
         !TextInputState.isTextInput(e.target)
       ) {
         return true;
