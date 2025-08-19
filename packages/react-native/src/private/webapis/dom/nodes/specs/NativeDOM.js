@@ -13,7 +13,6 @@ import type {Node as ShadowNode} from '../../../../../../Libraries/Renderer/shim
 import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExport';
 import type {InstanceHandle} from '../internals/NodeInternals';
 
-import {getFabricUIManager} from '../../../../../../Libraries/ReactNative/FabricUIManager';
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
 import nullthrows from 'nullthrows';
 
@@ -165,7 +164,7 @@ export interface Spec extends TurboModule {
    * Legacy direct manipulation APIs (for `ReactNativeElement`).
    */
 
-  +setNativeProps?: (
+  +setNativeProps: (
     nativeElementReference: mixed,
     updatePayload: mixed,
   ) => void;
@@ -623,16 +622,10 @@ const NativeDOM: RefinedSpec = {
    * Legacy direct manipulation APIs
    */
   setNativeProps(nativeNodeReference, updatePayload) {
-    // TODO: remove when RawNativeDOM.setNativeProps is NOT nullable.
-    if (RawNativeDOM?.setNativeProps == null) {
-      nullthrows(getFabricUIManager()).setNativeProps(
-        nativeNodeReference,
-        updatePayload,
-      );
-      return;
-    }
-
-    return RawNativeDOM.setNativeProps(nativeNodeReference, updatePayload);
+    return nullthrows(RawNativeDOM).setNativeProps(
+      nativeNodeReference,
+      updatePayload,
+    );
   },
 };
 
