@@ -2031,7 +2031,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun startInspector ()V
 	public fun stopInspector ()V
 	public fun toggleElementInspector ()V
-	public fun unstable_updatePerfMonitor (Ljava/lang/String;I)V
+	public fun unstable_updatePerfMonitor (Ljava/lang/String;III)V
 }
 
 public abstract interface class com/facebook/react/devsupport/DevSupportManagerBase$CallbackWithBundleLoader {
