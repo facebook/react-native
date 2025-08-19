@@ -221,8 +221,10 @@ export default class ReadOnlyElement extends ReadOnlyNode {
 
 function getChildElements(node: ReadOnlyNode): $ReadOnlyArray<ReadOnlyElement> {
   // $FlowFixMe[incompatible-type]
-  return getChildNodes(node).filter(
-    childNode => childNode instanceof ReadOnlyElement,
+  return getChildNodes(
+    node,
+    (childNode: ReadOnlyNode) =>
+      childNode.nodeType === ReadOnlyNode.ELEMENT_NODE,
   );
 }
 
