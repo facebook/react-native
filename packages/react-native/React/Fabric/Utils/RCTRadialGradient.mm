@@ -75,7 +75,8 @@ RadiusVector RadiusToCorner(
     bool isCircle,
     RadialGradientSize::SizeKeyword keyword)
 {
-  std::array<CGPoint, 4> corners = {{{0, 0}, {width, 0}, {width, height}, {0, height}}};
+  std::array<CGPoint, 4> corners = {
+      {{.x = 0, .y = 0}, {.x = width, .y = 0}, {.x = width, .y = height}, {.x = 0, .y = height}}};
 
   size_t cornerIndex = 0;
   CGFloat distance = hypot(centerX - corners[cornerIndex].x, centerY - corners[cornerIndex].y);

@@ -207,20 +207,20 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     // Position the new color stops
     if (leftDist > rightDist) {
       for (int y = 0; y < 7; ++y) {
-        ProcessedColorStop newStop{SharedColor(), offsetLeft + leftDist * ((7.0f + y) / 13.0f)};
+        ProcessedColorStop newStop{.color = SharedColor(), .position = offsetLeft + leftDist * ((7.0f + y) / 13.0f)};
         newStops.push_back(newStop);
       }
-      ProcessedColorStop stop1{SharedColor(), offset + rightDist * (1.0f / 3.0f)};
-      ProcessedColorStop stop2{SharedColor(), offset + rightDist * (2.0f / 3.0f)};
+      ProcessedColorStop stop1{.color = SharedColor(), .position = offset + rightDist * (1.0f / 3.0f)};
+      ProcessedColorStop stop2{.color = SharedColor(), .position = offset + rightDist * (2.0f / 3.0f)};
       newStops.push_back(stop1);
       newStops.push_back(stop2);
     } else {
-      ProcessedColorStop stop1{SharedColor(), offsetLeft + leftDist * (1.0f / 3.0f)};
-      ProcessedColorStop stop2{SharedColor(), offsetLeft + leftDist * (2.0f / 3.0f)};
+      ProcessedColorStop stop1{.color = SharedColor(), .position = offsetLeft + leftDist * (1.0f / 3.0f)};
+      ProcessedColorStop stop2{.color = SharedColor(), .position = offsetLeft + leftDist * (2.0f / 3.0f)};
       newStops.push_back(stop1);
       newStops.push_back(stop2);
       for (int y = 0; y < 7; ++y) {
-        ProcessedColorStop newStop{SharedColor(), offset + rightDist * (y / 13.0f)};
+        ProcessedColorStop newStop{.color = SharedColor(), .position = offset + rightDist * (y / 13.0f)};
         newStops.push_back(newStop);
       }
     }
@@ -297,7 +297,7 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
     // largest specified position of any color stop or transition hint before it.
     if (newPosition.has_value()) {
       newPosition = std::max(newPosition.value(), maxPositionSoFar.value());
-      fixedColorStops[i] = ProcessedColorStop{colorStop.color, newPosition};
+      fixedColorStops[i] = ProcessedColorStop{.color = colorStop.color, .position = newPosition};
       maxPositionSoFar = newPosition;
     } else {
       hasNullPositions = true;
@@ -320,8 +320,8 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
           if (startPosition.has_value()) {
             auto increment = (endPosition.value() - startPosition.value()) / (unpositionedStops + 1);
             for (size_t j = 1; j <= unpositionedStops; j++) {
-              fixedColorStops[lastDefinedIndex + j] =
-                  ProcessedColorStop{colorStops[lastDefinedIndex + j].color, startPosition.value() + increment * j};
+              fixedColorStops[lastDefinedIndex + j] = ProcessedColorStop{
+                  .color = colorStops[lastDefinedIndex + j].color, .position = startPosition.value() + increment * j};
             }
           }
         }

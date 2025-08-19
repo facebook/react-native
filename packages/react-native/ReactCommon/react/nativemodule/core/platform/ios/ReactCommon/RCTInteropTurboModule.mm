@@ -215,7 +215,8 @@ ObjCInteropTurboModule::ObjCInteropTurboModule(const ObjCTurboModule::InitParams
         : method.returnType == @encode(void)                      ? VoidKind
                                                                   : ObjectKind;
 
-    methodMap_[[method.methodName UTF8String]] = MethodMetadata{static_cast<size_t>(jsArgCount), nullptr};
+    methodMap_[[method.methodName UTF8String]] =
+        MethodMetadata{.argCount = static_cast<size_t>(jsArgCount), .invoker = nullptr};
 
     for (NSUInteger i = 0; i < numArgs; i += 1) {
       NSString *typeName = method.argumentTypes[i];

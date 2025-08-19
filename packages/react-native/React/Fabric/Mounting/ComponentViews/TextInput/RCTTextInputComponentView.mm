@@ -734,7 +734,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                   toPosition:selectedTextRange.start];
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
-  return AttributedString::Range{(int)start, (int)(end - start)};
+  return AttributedString::Range{.location = (int)start, .length = (int)(end - start)};
 }
 
 - (void)_restoreTextSelection
