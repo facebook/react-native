@@ -809,6 +809,8 @@ export default class Device {
     }
 
     if (
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       payload.method === 'Runtime.executionContextCreated' &&
       this.#isLegacyPageReloading
     ) {

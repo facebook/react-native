@@ -363,6 +363,8 @@ function createVersionExportedApis(
       const value = node[key];
       if (Array.isArray(value)) {
         value.forEach(item => getTypeReferencesForNode(item, refs));
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+         * roll out. See https://fburl.com/workplace/4oq3zi07. */
       } else if (typeof value === 'object' && value !== null) {
         getTypeReferencesForNode(value, refs);
       }

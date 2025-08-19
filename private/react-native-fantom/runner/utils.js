@@ -88,6 +88,8 @@ export function getBuckModesForPlatform(
       break;
     case 'darwin':
       osPlatform =
+        /* $FlowFixMe[invalid-compare] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/4oq3zi07. */
         os.arch() === 'arm64'
           ? `@//arvr/mode/mac-arm/${mode}`
           : `@//arvr/mode/mac/${mode}`;

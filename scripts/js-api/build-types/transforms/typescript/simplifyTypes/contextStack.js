@@ -112,6 +112,8 @@ export function insideTypeAliasLayerWithTypeParam(
 }
 
 export function insideIndexedAccessLayer(state: InlineVisitorState): boolean {
+  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/4oq3zi07. */
   return state.stack.some(layer => layer.type === 'indexedAccess');
 }
 
