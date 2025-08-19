@@ -366,6 +366,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
       RCTScreenSize();
       RCTScreenScale();
+      RCTSwitchSize();
 
       std::lock_guard<std::mutex> lock(*mutex);
       *isReady = true;
