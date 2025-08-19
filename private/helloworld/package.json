@@ -9,7 +9,8 @@
     "install-and-run": "node ./cli.js install-and-run",
     "launch": "node ./scripts/metro.js",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "prepare-with-swiftpm": "node ../../packages/react-native/scripts/swiftpm/prepare-app . ../../packages/react-native HelloWorld.xcodeproj HelloWorld"
   },
   "dependencies": {
     "react": "19.1.1",
