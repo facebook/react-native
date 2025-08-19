@@ -134,6 +134,9 @@ function copyBundles(
   // A bundle is the name of the framework + _ + target name + .bundle. We can
   // check if the target has a bundle by checking if it defines one or more resources.
   frameworkPaths.forEach(frameworkPath => {
+    const frameworkPlatforms = execSync(
+      `vtool -show-build ${path.join(frameworkPath, 'PackageFrameworks', scheme + '.framework', scheme)}|grep platform`,
+    ).toString();
     dependencies.forEach(dep => {
       const resources = dep.files.resources;
       if (!resources || resources.length === 0) {
@@ -144,16 +147,33 @@ function copyBundles(
       const sourceBundlePath = path.join(frameworkPath, bundleName);
       if (fs.existsSync(sourceBundlePath)) {
         // Target folder - needs to be copied to the resulting framework
+        let targetArchFolderFound = false;
         targetArchFolders.forEach(targetArchFolder => {
-          const targetBundlePath = path.join(
-            targetArchFolder,
-            `${scheme}.framework`,
-            bundleName,
-          );
+          const targetPlatforms = execSync(
+            `vtool -show-build ${path.join(targetArchFolder, scheme + '.framework', scheme)}|grep platform`,
+          ).toString();
 
-          // A bundle is a directory, so we need to copy the whole directory
-          execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
+          if (targetPlatforms === frameworkPlatforms) {
+            console.log(
+              `  ${path.relative(outputFolder, sourceBundlePath)} → ${path.basename(targetArchFolder)}`,
+            );
+            const targetBundlePath = path.join(
+              targetArchFolder,
+              `${scheme}.framework`,
+              bundleName,
+            );
+
+            // A bundle is a directory, so we need to copy the whole directory
+            execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
+            targetArchFolderFound = true;
+          }
         });
+
+        if (!targetArchFolderFound) {
+          throw Error(
+            `Could not find target architecture for folder ${path.relative(outputFolder, frameworkPath)}. Expected to find ${frameworkPlatforms}`,
+          );
+        }
       } else {
         console.warn(`Bundle ${sourceBundlePath} not found`);
       }
