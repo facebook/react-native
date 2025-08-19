@@ -420,9 +420,14 @@ public class ReactHostImpl(
   }
 
   @DoNotStrip
-  private fun unstable_updatePerfMonitor(interactionName: String, durationMs: Int) {
+  private fun unstable_updatePerfMonitor(
+      eventName: String,
+      durationMs: Int,
+      responsivenessScore: Int,
+      ttl: Int
+  ) {
     if (devSupportManager is PerfMonitorV2Handler) {
-      devSupportManager.unstable_updatePerfMonitor(interactionName, durationMs)
+      devSupportManager.unstable_updatePerfMonitor(eventName, durationMs, responsivenessScore, ttl)
     }
   }
 

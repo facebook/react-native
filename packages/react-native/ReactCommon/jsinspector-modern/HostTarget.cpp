@@ -272,15 +272,13 @@ void HostTarget::sendCommand(HostCommand command) {
 }
 
 void HostTarget::installPerfMetricsBinding() {
+  perfMonitorUpdateHandler_ =
+      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
   perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
       *this, // Used immediately
       "__chromium_devtools_metrics_reporter",
       [this](const std::string& message) {
-        auto payload = folly::parseJson(message);
-        HostTargetDelegate::PerfMonitorUpdateRequest request{
-            .interactionName = payload["eventName"].asString(),
-            .durationMs = static_cast<uint16_t>(payload["duration"].asInt())};
-        delegate_.unstable_onPerfMonitorUpdate(request);
+        perfMonitorUpdateHandler_->handlePerfMetricsUpdate(message);
       });
 }
 

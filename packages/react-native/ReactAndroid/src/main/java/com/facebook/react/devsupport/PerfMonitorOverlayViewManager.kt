@@ -13,6 +13,8 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
@@ -39,6 +41,8 @@ internal class PerfMonitorOverlayViewManager(
   private var buttonDialog: Dialog? = null
   private var interactionNameLabel: TextView? = null
   private var durationLabel: TextView? = null
+  private var ttl: Int = 0
+  private var hideAfterTimeoutHandler: Handler? = null
 
   override fun enable() {
     UiThreadUtil.runOnUiThread {
@@ -63,14 +67,27 @@ internal class PerfMonitorOverlayViewManager(
     }
   }
 
-  override fun update(interactionName: String, durationMs: Int) {
+  override fun update(data: PerfMonitorOverlayManager.PerfMonitorUpdateData) {
     UiThreadUtil.runOnUiThread {
       ensureInitialized()
-      interactionNameLabel?.text = interactionName
-      durationLabel?.text = String.format(Locale.US, "%d ms", durationMs)
+      interactionNameLabel?.text = data.eventName
+      durationLabel?.text = String.format(Locale.US, "%d ms", data.durationMs)
+      durationLabel?.setTextColor(getDurationHighlightColor(data.responsivenessScore))
       hasInteractionData = true
+      this.ttl = data.ttl
+
+      hideAfterTimeoutHandler?.removeCallbacksAndMessages(null)
+
       if (enabled) {
         showOverlay()
+
+        // Schedule hiding overlay after ttl milliseconds
+        if (ttl > 0) {
+          if (hideAfterTimeoutHandler == null) {
+            hideAfterTimeoutHandler = Handler(Looper.getMainLooper())
+          }
+          hideAfterTimeoutHandler?.postDelayed({ hideOverlay() }, ttl.toLong())
+        }
       }
     }
   }
@@ -228,10 +245,20 @@ internal class PerfMonitorOverlayViewManager(
     }
   }
 
+  private fun getDurationHighlightColor(responsivenessScore: Int): Int {
+    return when (responsivenessScore) {
+      3 -> COLOR_TEXT_RED
+      2 -> COLOR_TEXT_YELLOW
+      else -> COLOR_TEXT_GREEN
+    }
+  }
+
   private fun dpToPx(dp: Float): Float = PixelUtil.toPixelFromDIP(dp)
 
   companion object {
     private val COLOR_TEXT_GREEN = Color.parseColor("#4AEB2F")
+    private val COLOR_TEXT_YELLOW = Color.parseColor("#FFAA00")
+    private val COLOR_TEXT_RED = Color.parseColor("#FF0000")
     private val COLOR_OVERLAY_BORDER = Color.parseColor("#6C6C6C")
     private val TEXT_SIZE_PRIMARY = 13f
     private val TEXT_SIZE_ACCESSORY = 9f

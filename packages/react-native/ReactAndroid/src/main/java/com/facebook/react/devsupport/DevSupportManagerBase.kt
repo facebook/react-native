@@ -927,10 +927,14 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun unstable_updatePerfMonitor(
-      interactionName: String,
+      eventName: String,
       durationMs: Int,
+      responsivenessScore: Int,
+      ttl: Int,
   ) {
-    perfMonitorOverlayManager?.update(interactionName, durationMs)
+    perfMonitorOverlayManager?.update(
+        PerfMonitorOverlayManager.PerfMonitorUpdateData(
+            eventName, durationMs, responsivenessScore, ttl))
   }
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {
