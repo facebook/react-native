@@ -75,6 +75,7 @@ Pod::Spec.new do |s|
     "react/renderer/components/scrollview/platform/cxx",
     "react/renderer/components/text/platform/cxx",
     "react/renderer/components/textinput/platform/ios",
+    "react/renderer/components/switch/iosswitch",
   ]);
 
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
