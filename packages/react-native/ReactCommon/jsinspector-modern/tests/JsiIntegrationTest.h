@@ -54,6 +54,7 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
   void SetUp() override {
     // NOTE: Using SetUp() so we can call virtual methods like
     // setupRuntimeBeforeRegistration().
+    page_ = HostTarget::create(*this, inspectorExecutor_);
     instance_ = &page_->registerInstance(instanceTargetDelegate_);
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
     runtimeTarget_ = &instance_->registerRuntime(
@@ -156,8 +157,7 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     return result;
   }
 
-  std::shared_ptr<HostTarget> page_ =
-      HostTarget::create(*this, inspectorExecutor_);
+  std::shared_ptr<HostTarget> page_;
   InstanceTarget* instance_{};
   RuntimeTarget* runtimeTarget_{};
 
