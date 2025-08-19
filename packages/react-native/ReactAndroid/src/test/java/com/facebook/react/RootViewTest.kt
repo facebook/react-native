@@ -98,7 +98,7 @@ class RootViewTest {
     val rootViewId = 11
     val rootView = ReactRootView(reactContext)
     rootView.id = rootViewId
-    rootView.rootViewTag = rootViewId
+    rootView.setRootViewTag(rootViewId)
     rootView.startReactApplication(instanceManager, "")
     rootView.simulateAttachForTesting()
     val ts = SystemClock.currentTimeMillis()
@@ -132,7 +132,8 @@ class RootViewTest {
                 0.0,
                 "targetSurface",
                 -1,
-            ))
+            )
+        )
 
     // Test ACTION_UP event
     reset(eventEmitterModuleMock, eventDispatcher)
@@ -165,13 +166,15 @@ class RootViewTest {
                 0.0,
                 "targetSurface",
                 -1,
-            ))
+            )
+        )
 
     // Test other action
     reset(eventDispatcher)
 
     rootView.onTouchEvent(
-        MotionEvent.obtain(50, Date().time, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0))
+        MotionEvent.obtain(50, Date().time, MotionEvent.ACTION_HOVER_MOVE, 0f, 0f, 0)
+    )
 
     verifyNoMoreInteractions(eventDispatcher)
   }
