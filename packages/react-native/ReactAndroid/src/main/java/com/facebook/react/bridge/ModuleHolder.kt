@@ -62,6 +62,7 @@ public class ModuleHolder {
             true,
             CxxModuleWrapper::class.java.isAssignableFrom(nativeModule.javaClass),
             ReactModuleInfo.classIsTurboModule(nativeModule.javaClass),
+            nativeModule.javaClass,
         )
 
     internalModule = nativeModule

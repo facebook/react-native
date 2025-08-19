@@ -105,6 +105,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       reactModule.isCxxModule,
                       ReactModuleInfo.classIsTurboModule(moduleClass),
+                      moduleClass,
                   )
               else
                   ReactModuleInfo(
@@ -114,6 +115,7 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
                       true,
                       CxxModuleWrapper::class.java.isAssignableFrom(moduleClass),
                       ReactModuleInfo.classIsTurboModule(moduleClass),
+                      moduleClass,
                   )
 
           reactModuleInfoMap[moduleName] = moduleInfo
@@ -151,6 +153,23 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
     }
 
     return resolvedModule as TurboModule
+  }
+
+  override fun <TInterface> getModulesConformingToInterface(
+      clazz: Class<TInterface>
+  ): List<TurboModule?> {
+    val modules = mutableListOf<TurboModule?>()
+
+    for (moduleProvider in moduleProviders) {
+      val moduleInfos = packageModuleInfos[moduleProvider]?.values ?: continue
+      for (moduleInfo in moduleInfos) {
+        if (clazz.isAssignableFrom(moduleInfo.moduleClass) && moduleInfo.isTurboModule) {
+          modules.add(moduleProvider.getModule(moduleInfo.name) as TurboModule)
+        }
+      }
+    }
+
+    return modules
   }
 
   override fun unstable_isModuleRegistered(moduleName: String): Boolean {

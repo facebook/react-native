@@ -75,6 +75,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                         needsEagerInit = false,
                                         isCxxModule = false,
                                         isTurboModule = true,
+                                        SampleTurboModule::class.java,
                                     ),
                                 SampleLegacyModule.NAME to
                                     ReactModuleInfo(
@@ -84,6 +85,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                         needsEagerInit = false,
                                         isCxxModule = false,
                                         isTurboModule = false,
+                                        SampleTurboModule::class.java,
                                     ),
                             )
                           }

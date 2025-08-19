@@ -108,6 +108,7 @@ internal class CoreReactPackage(
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
                 ReactModuleInfo.classIsTurboModule(moduleClass),
+                moduleClass,
             )
       }
     }
