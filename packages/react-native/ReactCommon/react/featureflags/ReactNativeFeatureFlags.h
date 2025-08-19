@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de9db1b4e8ad4d4a81368613a7d1cfb2>>
+ * @generated SignedSource<<b601a3c92cd80549ca2391ab0a123214>>
  */
 
 /**
@@ -138,11 +138,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
-
-  /**
-   * This feature flag enables a fix for reparenting fix in differentiator
-   */
-  RN_EXPORT static bool enableFixForParentTagDuringReparenting();
 
   /**
    * Enables font scale changes updating layout for measurable nodes.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<757089d037ab0f7c6cda11b079dafa2c>>
+ * @generated SignedSource<<60b81844a9af1862b27ed6b4d9be5f59>>
  */
 
 /**
@@ -223,15 +223,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
-  }
-
-  bool enableFixForParentTagDuringReparenting() override {
-    auto value = values_["enableFixForParentTagDuringReparenting"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFixForParentTagDuringReparenting();
   }
 
   bool enableFontScaleChangesUpdatingLayout() override {
