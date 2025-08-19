@@ -34,10 +34,7 @@ bool InspectorFlags::getNetworkInspectionEnabled() const {
 }
 
 bool InspectorFlags::getPerfMonitorV2Enabled() const {
-  // loadFlagsAndAssertUnchanged().perfMonitorV2Enabled
-  // disabling the feature for now while tests are failing
-  // instead of reverting the whole feature
-  return false;
+  return loadFlagsAndAssertUnchanged().perfMonitorV2Enabled;
 }
 
 void InspectorFlags::dangerouslyResetFlags() {
