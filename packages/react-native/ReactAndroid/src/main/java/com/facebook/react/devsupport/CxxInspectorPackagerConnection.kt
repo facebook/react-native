@@ -84,7 +84,7 @@ internal class CxxInspectorPackagerConnection(
             .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
             .build()
 
-    private val mHandler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     @Suppress("unused")
     @DoNotStrip
@@ -142,7 +142,7 @@ internal class CxxInspectorPackagerConnection(
 
     @DoNotStrip
     fun scheduleCallback(runnable: Runnable, delayMs: Long) {
-      mHandler.postDelayed(runnable, delayMs)
+      handler.postDelayed(runnable, delayMs)
     }
   }
 
