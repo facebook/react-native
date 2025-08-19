@@ -203,27 +203,44 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getCon
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(const ObjCTurboModule::InitParams &params)
     : ObjCTurboModule(params)
 {
-  methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
-  methodMap_["getBool"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
-  methodMap_["getEnum"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum};
-  methodMap_["getNumber"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};
-  methodMap_["getString"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
-  methodMap_["getArray"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};
-  methodMap_["getObject"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObject};
-  methodMap_["getUnsafeObject"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getUnsafeObject};
-  methodMap_["getRootTag"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
-  methodMap_["getValue"] = MethodMetadata{3, __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
+  methodMap_["voidFunc"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
+  methodMap_["getBool"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};
+  methodMap_["getEnum"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getEnum};
+  methodMap_["getNumber"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getNumber};
+  methodMap_["getString"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getString};
+  methodMap_["getArray"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getArray};
+  methodMap_["getObject"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getObject};
+  methodMap_["getUnsafeObject"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getUnsafeObject};
+  methodMap_["getRootTag"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getRootTag};
+  methodMap_["getValue"] =
+      MethodMetadata{.argCount = 3, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getValue};
   methodMap_["getValueWithCallback"] =
-      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback};
   methodMap_["getValueWithPromise"] =
-      MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
-  methodMap_["voidFuncThrows"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows};
-  methodMap_["getObjectThrows"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectThrows};
-  methodMap_["promiseThrows"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows};
-  methodMap_["voidFuncAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert};
-  methodMap_["getObjectAssert"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
-  methodMap_["promiseAssert"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
-  methodMap_["getConstants"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise};
+  methodMap_["voidFuncThrows"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncThrows};
+  methodMap_["getObjectThrows"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectThrows};
+  methodMap_["promiseThrows"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_promiseThrows};
+  methodMap_["voidFuncAssert"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_voidFuncAssert};
+  methodMap_["getObjectAssert"] =
+      MethodMetadata{.argCount = 1, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getObjectAssert};
+  methodMap_["promiseAssert"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_promiseAssert};
+  methodMap_["getConstants"] =
+      MethodMetadata{.argCount = 0, .invoker = __hostFunction_NativeSampleTurboModuleSpecJSI_getConstants};
   eventEmitterMap_["onPress"] = std::make_shared<AsyncEventEmitter<id>>();
   eventEmitterMap_["onClick"] = std::make_shared<AsyncEventEmitter<id>>();
   eventEmitterMap_["onChange"] = std::make_shared<AsyncEventEmitter<id>>();

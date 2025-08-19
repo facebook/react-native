@@ -30,8 +30,9 @@ class InputAccessoryComponentDescriptor final
             *shadowNode.getState())
             .getData();
 
-    layoutableShadowNode.setSize(
-        Size{stateData.viewportSize.width, stateData.viewportSize.height});
+    layoutableShadowNode.setSize(Size{
+        .width = stateData.viewportSize.width,
+        .height = stateData.viewportSize.height});
     layoutableShadowNode.setPositionType(YGPositionTypeAbsolute);
 
     ConcreteComponentDescriptor::adopt(shadowNode);
