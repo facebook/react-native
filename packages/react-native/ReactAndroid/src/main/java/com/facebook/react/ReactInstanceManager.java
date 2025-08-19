@@ -143,6 +143,8 @@ import java.util.Set;
  */
 @ThreadSafe
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactInstanceManager {
 
   static {
