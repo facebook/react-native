@@ -798,14 +798,14 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableAccessToHostTreeInFabric: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         description:
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
