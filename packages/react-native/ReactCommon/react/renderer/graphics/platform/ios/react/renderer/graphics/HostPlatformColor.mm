@@ -96,7 +96,8 @@ int32_t ColorFromUIColor(UIColor *color)
 {
   CGFloat rgba[4];
   [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
-  return ColorFromColorComponents({(float)rgba[0], (float)rgba[1], (float)rgba[2], (float)rgba[3]});
+  return ColorFromColorComponents(
+      {.red = (float)rgba[0], .green = (float)rgba[1], .blue = (float)rgba[2], .alpha = (float)rgba[3]});
 }
 
 int32_t ColorFromUIColorForSpecificTraitCollection(
