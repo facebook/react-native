@@ -215,7 +215,7 @@ function copySymbols(
     }
     const sourceSymbolPath = path.join(
       frameworkPath,
-      scheme + '.framework.dSym',
+      scheme + '.framework.dSYM,
     );
     if (!fs.existsSync(sourceSymbolPath)) {
       throw new Error(`dSym folder ${sourceSymbolPath} not found`);
