@@ -173,7 +173,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
               throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation")
+                  "Invalid extrapolation type " + extrapolateLeft + "for left extrapolation"
+              )
         }
       }
       if (result > inputMax) {
@@ -183,7 +184,8 @@ internal class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNod
           EXTRAPOLATE_TYPE_EXTEND -> {}
           else ->
               throw JSApplicationIllegalArgumentException(
-                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation")
+                  "Invalid extrapolation type " + extrapolateRight + "for right extrapolation"
+              )
         }
       }
       if (outputMin == outputMax) {

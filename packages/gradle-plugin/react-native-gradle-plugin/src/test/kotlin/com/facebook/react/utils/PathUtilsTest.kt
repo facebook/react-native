@@ -147,7 +147,8 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+        )
 
     assertThat(detectOSAwareHermesCommand(tempFolder.root, "")).isEqualTo(expected.toString())
   }
@@ -189,7 +190,8 @@ class PathUtilsTest {
     tempFolder.newFolder("node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/")
     val expected =
         tempFolder.newFile(
-            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc")
+            "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
+        )
     tempFolder.newFolder("node_modules/react-native/sdks/hermesc/osx-bin/")
     tempFolder.newFile("node_modules/react-native/sdks/hermesc/osx-bin/hermesc")
 
@@ -203,7 +205,8 @@ class PathUtilsTest {
             File(
                 tempFolder.root,
                 "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc",
-            ))
+            )
+        )
   }
 
   @Test
@@ -214,7 +217,8 @@ class PathUtilsTest {
             File(
                 tempFolder.root,
                 "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc.exe",
-            ))
+            )
+        )
   }
 
   @Test
@@ -311,7 +315,8 @@ class PathUtilsTest {
         "codegenConfig": {}
       }
       """
-              .trimIndent())
+              .trimIndent()
+      )
     }
     val project = ProjectBuilder.builder().withProjectDir(moduleFolder).build()
     project.plugins.apply("com.android.library")

@@ -95,7 +95,8 @@ internal class FabricEventDispatcher(
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             IllegalStateException(
-                "Fabric UIManager expected to implement SynchronousEventReceiver."),
+                "Fabric UIManager expected to implement SynchronousEventReceiver."
+            ),
         )
       }
     } finally {

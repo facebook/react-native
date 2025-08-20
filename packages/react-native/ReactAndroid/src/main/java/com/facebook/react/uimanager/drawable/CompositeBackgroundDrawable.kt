@@ -74,7 +74,8 @@ internal class CompositeBackgroundDrawable(
             feedbackUnderlay,
             innerShadows,
             outline,
-        )) {
+        )
+    ) {
 
   init {
     // We want to overlay drawables, instead of placing future drawables within the content area of

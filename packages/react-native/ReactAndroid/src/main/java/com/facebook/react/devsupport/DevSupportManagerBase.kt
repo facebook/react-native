@@ -210,11 +210,14 @@ public abstract class DevSupportManagerBase(
                   return@Supplier null
                 }
                 context
-              })
+              }
+          )
     }
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
-        perfMonitorOverlayManager == null) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+            ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
+            perfMonitorOverlayManager == null
+    ) {
       perfMonitorOverlayManager =
           PerfMonitorOverlayViewManager(
               Supplier {
@@ -224,7 +227,8 @@ public abstract class DevSupportManagerBase(
                 }
                 context
               },
-              { openDebugger() })
+              { openDebugger() },
+          )
     }
   }
 
@@ -350,7 +354,8 @@ public abstract class DevSupportManagerBase(
       val debuggerItemString =
           applicationContext.getString(
               if (isConnected) R.string.catalyst_debug_open
-              else R.string.catalyst_debug_open_disabled)
+              else R.string.catalyst_debug_open_disabled
+          )
       if (!isConnected) {
         disabledItemKeys.add(debuggerItemString)
       }
@@ -608,14 +613,16 @@ public abstract class DevSupportManagerBase(
         applicationContext.getString(
             R.string.catalyst_loading_from_url,
             parsedURL.host + ":" + port,
-        ))
+        )
+    )
     devLoadingViewVisible = true
   }
 
   @UiThread
   protected fun showDevLoadingViewForRemoteJSEnabled() {
     devLoadingViewManager?.showMessage(
-        applicationContext.getString(R.string.catalyst_debug_connecting))
+        applicationContext.getString(R.string.catalyst_debug_connecting)
+    )
     devLoadingViewVisible = true
   }
 
@@ -896,8 +903,10 @@ public abstract class DevSupportManagerBase(
       exported: Boolean,
   ) {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-        context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    ) {
       context.registerReceiver(
           receiver,
           filter,
@@ -912,7 +921,8 @@ public abstract class DevSupportManagerBase(
     devServerHelper.openDebugger(
         currentReactContext,
         applicationContext.getString(R.string.catalyst_open_debugger_error),
-        ChromeDevToolsViewKeys.Performance.value)
+        ChromeDevToolsViewKeys.Performance.value,
+    )
   }
 
   override fun showPausedInDebuggerOverlay(
@@ -934,7 +944,12 @@ public abstract class DevSupportManagerBase(
   ) {
     perfMonitorOverlayManager?.update(
         PerfMonitorOverlayManager.PerfMonitorUpdateData(
-            eventName, durationMs, responsivenessScore, ttl))
+            eventName,
+            durationMs,
+            responsivenessScore,
+            ttl,
+        )
+    )
   }
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {

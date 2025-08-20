@@ -98,7 +98,8 @@ public class I18nUtil private constructor() {
         ReplaceWith("instance"),
     )
     @JvmName(
-        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+        "DEPRECATED\$getInstance"
+    ) // We intentionally don't want to expose this accessor to Java.
     public fun getInstance(): I18nUtil = instance
   }
 }

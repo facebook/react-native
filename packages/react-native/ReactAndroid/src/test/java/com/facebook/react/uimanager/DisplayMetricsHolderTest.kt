@@ -41,7 +41,8 @@ import org.robolectric.annotation.Config
             ShadowNativeMap::class,
             ShadowWritableNativeMap::class,
             ShadowReadableNativeMap::class,
-        ])
+        ]
+)
 class DisplayMetricsHolderTest {
 
   private lateinit var context: Context

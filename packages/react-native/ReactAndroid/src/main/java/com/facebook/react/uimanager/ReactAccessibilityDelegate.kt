@@ -75,7 +75,8 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
       val accessibilityStateExpanded = host.getTag(R.id.accessibility_state_expanded) as Boolean
       info.addAction(
           if (accessibilityStateExpanded) AccessibilityNodeInfoCompat.ACTION_COLLAPSE
-          else AccessibilityNodeInfoCompat.ACTION_EXPAND)
+          else AccessibilityNodeInfoCompat.ACTION_EXPAND
+      )
     }
     val accessibilityRole = AccessibilityRole.fromViewTag(host)
     val accessibilityHint = host.getTag(R.id.accessibility_hint) as String?
@@ -136,16 +137,20 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
 
     // Process accessibilityValue
     val accessibilityValue = host.getTag(R.id.accessibility_value) as ReadableMap?
-    if (accessibilityValue != null &&
-        accessibilityValue.hasKey("min") &&
-        accessibilityValue.hasKey("now") &&
-        accessibilityValue.hasKey("max")) {
+    if (
+        accessibilityValue != null &&
+            accessibilityValue.hasKey("min") &&
+            accessibilityValue.hasKey("now") &&
+            accessibilityValue.hasKey("max")
+    ) {
       val minDynamic = accessibilityValue.getDynamic("min")
       val nowDynamic = accessibilityValue.getDynamic("now")
       val maxDynamic = accessibilityValue.getDynamic("max")
-      if (minDynamic.type == ReadableType.Number &&
-          nowDynamic.type == ReadableType.Number &&
-          maxDynamic.type == ReadableType.Number) {
+      if (
+          minDynamic.type == ReadableType.Number &&
+              nowDynamic.type == ReadableType.Number &&
+              maxDynamic.type == ReadableType.Number
+      ) {
         val min = minDynamic.asInt()
         val now = nowDynamic.asInt()
         val max = maxDynamic.asInt()
@@ -187,16 +192,20 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     // Set item count and current item index on accessibility events for adjustable
     // in order to make Talkback announce the value of the adjustable
     val accessibilityValue = host.getTag(R.id.accessibility_value) as ReadableMap?
-    if (accessibilityValue != null &&
-        accessibilityValue.hasKey("min") &&
-        accessibilityValue.hasKey("now") &&
-        accessibilityValue.hasKey("max")) {
+    if (
+        accessibilityValue != null &&
+            accessibilityValue.hasKey("min") &&
+            accessibilityValue.hasKey("now") &&
+            accessibilityValue.hasKey("max")
+    ) {
       val minDynamic = accessibilityValue.getDynamic("min")
       val nowDynamic = accessibilityValue.getDynamic("now")
       val maxDynamic = accessibilityValue.getDynamic("max")
-      if (minDynamic.type == ReadableType.Number &&
-          nowDynamic.type == ReadableType.Number &&
-          maxDynamic.type == ReadableType.Number) {
+      if (
+          minDynamic.type == ReadableType.Number &&
+              nowDynamic.type == ReadableType.Number &&
+              maxDynamic.type == ReadableType.Number
+      ) {
         val min = minDynamic.asInt()
         val now = nowDynamic.asInt()
         val max = maxDynamic.asInt()
@@ -225,7 +234,8 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
         val uiManager = getUIManager(reactContext, getUIManagerType(reactTag))
         if (uiManager != null) {
           uiManager.eventDispatcher.dispatchEvent(
-              AccessibilityActionEvent(eventData, surfaceId, reactTag))
+              AccessibilityActionEvent(eventData, surfaceId, reactTag)
+          )
         }
       } else {
         logSoftException(
@@ -238,9 +248,11 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
       // schedule to send a TYPE_VIEW_SELECTED event after performing the scroll actions.
       val accessibilityRole = host.getTag(R.id.accessibility_role) as AccessibilityRole
       val accessibilityValue = host.getTag(R.id.accessibility_value) as ReadableMap?
-      if (accessibilityRole == AccessibilityRole.ADJUSTABLE &&
-          (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.id ||
-              (action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.id))) {
+      if (
+          accessibilityRole == AccessibilityRole.ADJUSTABLE &&
+              (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.id ||
+                  (action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.id))
+      ) {
         if (accessibilityValue != null && !accessibilityValue.hasKey("text")) {
           scheduleAccessibilityEventSender(host)
         }
@@ -579,14 +591,16 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
     ) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems, so leave it alone.
-      if (!ViewCompat.hasAccessibilityDelegate(view) &&
-          (view.getTag(R.id.accessibility_role) != null ||
-              view.getTag(R.id.accessibility_state) != null ||
-              view.getTag(R.id.accessibility_actions) != null ||
-              view.getTag(R.id.react_test_id) != null ||
-              view.getTag(R.id.accessibility_collection_item) != null ||
-              view.getTag(R.id.accessibility_links) != null ||
-              view.getTag(R.id.role) != null)) {
+      if (
+          !ViewCompat.hasAccessibilityDelegate(view) &&
+              (view.getTag(R.id.accessibility_role) != null ||
+                  view.getTag(R.id.accessibility_state) != null ||
+                  view.getTag(R.id.accessibility_actions) != null ||
+                  view.getTag(R.id.react_test_id) != null ||
+                  view.getTag(R.id.accessibility_collection_item) != null ||
+                  view.getTag(R.id.accessibility_links) != null ||
+                  view.getTag(R.id.role) != null)
+      ) {
         ViewCompat.setAccessibilityDelegate(
             view,
             ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility),
@@ -810,8 +824,10 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
       }
 
       val important = ViewCompat.getImportantForAccessibility(view)
-      if (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS ||
-          (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO && node.childCount <= 0)) {
+      if (
+          important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS ||
+              (important == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO && node.childCount <= 0)
+      ) {
         return false
       }
 
@@ -974,8 +990,10 @@ public open class ReactAccessibilityDelegate( // The View this delegate is attac
           @Suppress("DEPRECATION") // TODO: Replace with direct invocation on view
           ViewCompat.onInitializeAccessibilityNodeInfo(child, childNodeInfo)
 
-          if (isSpeakingNode(childNodeInfo, child) &&
-              !isAccessibilityFocusable(childNodeInfo, child)) {
+          if (
+              isSpeakingNode(childNodeInfo, child) &&
+                  !isAccessibilityFocusable(childNodeInfo, child)
+          ) {
             val childNodeDescription = getTalkbackDescription(child, null)
             if (!childNodeDescription.isNullOrEmpty()) {
               concatChildDescription.append(childNodeDescription.toString() + delimiter)

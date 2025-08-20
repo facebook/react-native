@@ -23,7 +23,8 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  */
 @Deprecated(
     message =
-        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+)
 @DoNotStrip
 @LegacyArchitecture
 public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
@@ -128,16 +129,19 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun setTurboModuleRegistry(turboModuleRegistry: TurboModuleRegistry)
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun setFabricUIManager(fabricUIManager: UIManager)
 
   @Deprecated(
       message =
-          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
+  )
   public fun getFabricUIManager(): UIManager?
 }

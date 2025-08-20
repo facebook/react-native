@@ -86,7 +86,8 @@ internal class PackagerStatusCheck {
                 }
                 callback.onPackagerStatusFetched(true)
               }
-            })
+            }
+        )
   }
 
   private companion object {

@@ -67,7 +67,8 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
-          "CatalystInstance is not supported when Bridgeless mode is enabled.")
+          "CatalystInstance is not supported when Bridgeless mode is enabled."
+      )
     }
     Log.w(
         TAG,
@@ -78,14 +79,16 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   }
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead"
+  )
   override fun hasActiveCatalystInstance(): Boolean = hasActiveReactInstance()
 
   @Deprecated("DO NOT USE, this method will be removed in the near future.")
   override fun isBridgeless(): Boolean = true
 
   @Deprecated(
-      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead")
+      "This API has been deprecated due to naming consideration, please use hasReactInstance() instead"
+  )
   override fun hasCatalystInstance(): Boolean = false
 
   override fun hasActiveReactInstance(): Boolean = reactHost.isInstanceInitialized

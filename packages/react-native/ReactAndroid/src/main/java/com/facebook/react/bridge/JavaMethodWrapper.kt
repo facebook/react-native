@@ -190,7 +190,8 @@ internal class JavaMethodWrapper(
 
       if (jsArgumentsNeeded != parameters.size()) {
         throw NativeArgumentsParseException(
-            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded")
+            "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded"
+        )
       }
 
       var i = 0

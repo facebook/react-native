@@ -112,7 +112,8 @@ class ReactPlugin : Plugin<Project> {
       ********************************************************************************
 
       """
-              .trimIndent())
+              .trimIndent()
+      )
       exitProcess(1)
     }
   }
@@ -186,7 +187,8 @@ class ReactPlugin : Plugin<Project> {
                 // We want to exclude the build directory, to don't pick them up for execution
                 // avoidance.
                 tree.exclude("**/build/**/*")
-              })
+              }
+          )
 
           val needsCodegenFromPackageJson = project.needsCodegenFromPackageJson(rootExtension.root)
           it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
@@ -303,7 +305,8 @@ class ReactPlugin : Plugin<Project> {
     project.extensions.getByType(ApplicationAndroidComponentsExtension::class.java).apply {
       onVariants(selector().all()) { variant ->
         variant.sources.java?.addStaticSourceDirectory(
-            generatedAutolinkingJavaDir.get().asFile.absolutePath)
+            generatedAutolinkingJavaDir.get().asFile.absolutePath
+        )
       }
     }
   }

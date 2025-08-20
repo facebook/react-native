@@ -50,7 +50,8 @@ internal class InteropEventEmitter(private val reactContext: ReactContext) : RCT
       changedIndices: WritableArray,
   ) {
     throw UnsupportedOperationException(
-        "EventEmitter#receiveTouches is not supported by the Fabric Interop Layer")
+        "EventEmitter#receiveTouches is not supported by the Fabric Interop Layer"
+    )
   }
 
   @VisibleForTesting

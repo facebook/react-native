@@ -60,13 +60,15 @@ internal object MultiSourceHelper {
         bestPrecision = precision
         best = source
       }
-      if (precision < bestCachePrecision &&
-          source.cacheControl != ImageCacheControl.RELOAD &&
-          (imagePipeline.isInBitmapMemoryCache(source.uri) ||
-              // TODO: T206445115 isInDiskCacheSync is a blocking operation, we should move this
-              // to
-              // a separate thread
-              imagePipeline.isInDiskCacheSync(source.uri))) {
+      if (
+          precision < bestCachePrecision &&
+              source.cacheControl != ImageCacheControl.RELOAD &&
+              (imagePipeline.isInBitmapMemoryCache(source.uri) ||
+                  // TODO: T206445115 isInDiskCacheSync is a blocking operation, we should move this
+                  // to
+                  // a separate thread
+                  imagePipeline.isInDiskCacheSync(source.uri))
+      ) {
         bestCachePrecision = precision
         bestCached = source
       }

@@ -33,7 +33,8 @@ protected constructor(
   }
 
   @Deprecated(
-      "The method canOverrideExistingModule is not used in the New Architecture and will be removed in a future release.")
+      "The method canOverrideExistingModule is not used in the New Architecture and will be removed in a future release."
+  )
   override fun canOverrideExistingModule(): Boolean = false
 
   override fun invalidate() {

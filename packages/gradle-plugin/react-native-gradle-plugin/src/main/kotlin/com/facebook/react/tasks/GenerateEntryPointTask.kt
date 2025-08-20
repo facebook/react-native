@@ -32,17 +32,19 @@ abstract class GenerateEntryPointTask : DefaultTask() {
         JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
             ?: error(
                 """
-        RNGP - Autolinking: Could not parse autolinking config file:
-        ${autolinkInputFile.get().asFile.absolutePath}
-        
-        The file is either missing or not containing valid JSON so the build won't succeed. 
-      """
-                    .trimIndent())
+                  RNGP - Autolinking: Could not parse autolinking config file:
+                  ${autolinkInputFile.get().asFile.absolutePath}
+                  
+                  The file is either missing or not containing valid JSON so the build won't succeed. 
+                """
+                    .trimIndent()
+            )
 
     val packageName =
         model.project?.android?.packageName
             ?: error(
-                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
+                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field."
+            )
     val generatedFileContents = composeFileContent(packageName)
 
     val outputDir = generatedOutputDirectory.get().asFile
@@ -62,45 +64,45 @@ abstract class GenerateEntryPointTask : DefaultTask() {
     // language=java
     val generatedFileContentsTemplate =
         """
-      package com.facebook.react;
-      
-      import android.app.Application;
-      import android.content.Context;
-      import android.content.res.Resources;
-      
-      import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
-      import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
-      import com.facebook.react.views.view.WindowUtilKt;
-      import com.facebook.react.soloader.OpenSourceMergedSoMapping;
-      import com.facebook.soloader.SoLoader;
-      
-      import java.io.IOException;
-      
-      /**
-        * This class is the entry point for loading React Native using the configuration
-        * that the users specifies in their .gradle files.
-        *
-        * The `loadReactNative(this)` method invocation should be called inside the
-        * application onCreate otherwise the app won't load correctly.            
-        */
-      public class ReactNativeApplicationEntryPoint {
-        public static void loadReactNative(Context context) {
-          try {
-             SoLoader.init(context, OpenSourceMergedSoMapping.INSTANCE);
-          } catch (IOException error) {
-            throw new RuntimeException(error);
-          }
-          
-          if ({{packageName}}.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-            DefaultNewArchitectureEntryPoint.load();
-          }
-          
-          if ({{packageName}}.BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
-            WindowUtilKt.setEdgeToEdgeFeatureFlagOn();
+        package com.facebook.react;
+        
+        import android.app.Application;
+        import android.content.Context;
+        import android.content.res.Resources;
+        
+        import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+        import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+        import com.facebook.react.views.view.WindowUtilKt;
+        import com.facebook.react.soloader.OpenSourceMergedSoMapping;
+        import com.facebook.soloader.SoLoader;
+        
+        import java.io.IOException;
+        
+        /**
+          * This class is the entry point for loading React Native using the configuration
+          * that the users specifies in their .gradle files.
+          *
+          * The `loadReactNative(this)` method invocation should be called inside the
+          * application onCreate otherwise the app won't load correctly.            
+          */
+        public class ReactNativeApplicationEntryPoint {
+          public static void loadReactNative(Context context) {
+            try {
+               SoLoader.init(context, OpenSourceMergedSoMapping.INSTANCE);
+            } catch (IOException error) {
+              throw new RuntimeException(error);
+            }
+            
+            if ({{packageName}}.BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+              DefaultNewArchitectureEntryPoint.load();
+            }
+            
+            if ({{packageName}}.BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+              WindowUtilKt.setEdgeToEdgeFeatureFlagOn();
+            }
           }
         }
-      }
-            """
+              """
             .trimIndent()
   }
 }

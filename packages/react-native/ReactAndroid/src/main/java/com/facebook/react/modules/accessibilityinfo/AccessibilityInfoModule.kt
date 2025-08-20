@@ -241,7 +241,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
-        touchExplorationStateChangeListener)
+        touchExplorationStateChangeListener
+    )
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
@@ -249,7 +250,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         Settings.Secure.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
     contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
-        accessibilityManager?.isTouchExplorationEnabled == true)
+        accessibilityManager?.isTouchExplorationEnabled == true
+    )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()
@@ -259,7 +261,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
 
   override fun onHostPause() {
     accessibilityManager?.removeTouchExplorationStateChangeListener(
-        touchExplorationStateChangeListener)
+        touchExplorationStateChangeListener
+    )
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
     contentResolver.unregisterContentObserver(highTextContrastObserver)
@@ -268,7 +271,8 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   override fun initialize() {
     reactApplicationContext.addLifecycleEventListener(this)
     updateAndSendTouchExplorationChangeEvent(
-        accessibilityManager?.isTouchExplorationEnabled == true)
+        accessibilityManager?.isTouchExplorationEnabled == true
+    )
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
     updateAndSendHighTextContrastChangeEvent()

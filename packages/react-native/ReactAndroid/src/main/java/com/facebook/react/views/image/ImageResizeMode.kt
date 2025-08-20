@@ -44,11 +44,13 @@ public object ImageResizeMode {
   /** Converts JS resize modes into `Shader.TileMode`. See `ImageResizeMode.js`. */
   @JvmStatic
   public fun toTileMode(resizeModeValue: String?): TileMode {
-    if (RESIZE_MODE_CONTAIN == resizeModeValue ||
-        RESIZE_MODE_COVER == resizeModeValue ||
-        RESIZE_MODE_STRETCH == resizeModeValue ||
-        RESIZE_MODE_CENTER == resizeModeValue ||
-        RESIZE_MODE_NONE == resizeModeValue) {
+    if (
+        RESIZE_MODE_CONTAIN == resizeModeValue ||
+            RESIZE_MODE_COVER == resizeModeValue ||
+            RESIZE_MODE_STRETCH == resizeModeValue ||
+            RESIZE_MODE_CENTER == resizeModeValue ||
+            RESIZE_MODE_NONE == resizeModeValue
+    ) {
       return TileMode.CLAMP
     }
     if (RESIZE_MODE_REPEAT == resizeModeValue) {

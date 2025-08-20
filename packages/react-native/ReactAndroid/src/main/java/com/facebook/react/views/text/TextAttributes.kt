@@ -52,9 +52,9 @@ public class TextAttributes {
 
   public var maxFontSizeMultiplier: Float = Float.NaN
     set(maxFontSizeMultiplier) {
-      if (maxFontSizeMultiplier != 0f &&
-          maxFontSizeMultiplier < 1 &&
-          !maxFontSizeMultiplier.isNaN()) {
+      if (
+          maxFontSizeMultiplier != 0f && maxFontSizeMultiplier < 1 && !maxFontSizeMultiplier.isNaN()
+      ) {
         FLog.w(ReactConstants.TAG, "maxFontSizeMultiplier must be NaN, 0, or >= 1")
         field = Float.NaN
         return

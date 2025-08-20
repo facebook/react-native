@@ -13,7 +13,7 @@ internal interface PerfMonitorOverlayManager {
       val eventName: String,
       val durationMs: Int,
       val responsivenessScore: Int,
-      val ttl: Int
+      val ttl: Int,
   )
 
   /** Enable the Perf Monitor overlay. Will be shown when updates are received. */

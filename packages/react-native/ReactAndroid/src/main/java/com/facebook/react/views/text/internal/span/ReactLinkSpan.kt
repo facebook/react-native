@@ -37,7 +37,8 @@ internal class ReactLinkSpan(val fragmentIndex: Int) : ClickableSpan(), ReactSpa
     val reactTag = preparedLayout.reactTags[fragmentIndex]
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, reactTag)
     eventDispatcher?.dispatchEvent(
-        ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), reactTag))
+        ViewGroupClickEvent(UIManagerHelper.getSurfaceId(context), reactTag)
+    )
   }
 
   override fun updateDrawState(ds: TextPaint) {

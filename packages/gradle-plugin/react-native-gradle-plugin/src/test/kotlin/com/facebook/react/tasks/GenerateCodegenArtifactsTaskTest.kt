@@ -148,7 +148,8 @@ class GenerateCodegenArtifactsTaskTest {
             }
         }
         """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val task =
@@ -177,7 +178,8 @@ class GenerateCodegenArtifactsTaskTest {
             }
         }
         """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val task =

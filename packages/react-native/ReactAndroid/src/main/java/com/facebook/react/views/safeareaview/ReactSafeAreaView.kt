@@ -29,7 +29,8 @@ internal class ReactSafeAreaView(val reactContext: ThemedReactContext) : ViewGro
     ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
       val insets =
           windowInsets.getInsets(
-              WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+              WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+          )
       updateState(insets)
       CONSUMED
     }
@@ -60,7 +61,8 @@ internal class ReactSafeAreaView(val reactContext: ThemedReactContext) : ViewGro
                   .getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
                   ?.updateInsetsPadding(id, insets.top, insets.left, insets.bottom, insets.right)
             }
-          })
+          }
+      )
     }
   }
 }

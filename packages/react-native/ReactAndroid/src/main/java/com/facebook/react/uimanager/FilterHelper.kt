@@ -224,7 +224,8 @@ internal object FilterHelper {
             0f,
             1f,
             0f,
-        ))
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#grayscaleEquivalent
@@ -256,7 +257,8 @@ internal object FilterHelper {
             0f,
             1f,
             0f,
-        ))
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#sepiaEquivalent
@@ -288,7 +290,8 @@ internal object FilterHelper {
             0f,
             1f,
             0f,
-        ))
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#saturateEquivalent
@@ -333,7 +336,8 @@ internal object FilterHelper {
             0f,
             1f,
             0f,
-        ))
+        )
+    )
   }
 
   // https://www.w3.org/TR/filter-effects-1/#invertEquivalent
@@ -366,7 +370,8 @@ internal object FilterHelper {
             0f,
             1f,
             0f,
-        ))
+        )
+    )
   }
 
   private fun createColorMatrixEffect(

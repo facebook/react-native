@@ -152,7 +152,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           TAG,
           IllegalStateException(
               "Cannot dispatch a TouchEvent that has no MotionEvent; the TouchEvent has been" +
-                  " recycled"),
+                  " recycled"
+          ),
       )
       return false
     }

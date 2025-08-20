@@ -25,7 +25,8 @@ public abstract class BaseReactPackage : ReactPackage {
   @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     throw UnsupportedOperationException(
-        "createNativeModules method is not supported. Use getModule() method instead.")
+        "createNativeModules method is not supported. Use getModule() method instead."
+    )
   }
 
   /**
@@ -66,8 +67,10 @@ public abstract class BaseReactPackage : ReactPackage {
             // This Iterator is used to create the NativeModule registry. The NativeModule
             // registry must not have TurboModules. Therefore, if TurboModules are enabled, and
             // the current NativeModule is a TurboModule, we need to skip iterating over it.
-            if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() &&
-                reactModuleInfo.isTurboModule) {
+            if (
+                ReactNativeNewArchitectureFeatureFlags.useTurboModules() &&
+                    reactModuleInfo.isTurboModule
+            ) {
               continue
             }
 

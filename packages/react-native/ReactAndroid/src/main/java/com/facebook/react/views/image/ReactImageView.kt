@@ -147,7 +147,8 @@ public class ReactImageView(
                       imageSource?.source,
                       loaded,
                       total,
-                  ))
+                  )
+              )
             }
 
             override fun onSubmit(id: String, callerContext: Any?) {
@@ -155,7 +156,8 @@ public class ReactImageView(
                 return
               }
               eventDispatcher.dispatchEvent(
-                  createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId()))
+                  createLoadStartEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId())
+              )
             }
 
             override fun onFinalImageSet(
@@ -171,9 +173,11 @@ public class ReactImageView(
                         imageSource?.source,
                         imageInfo.width,
                         imageInfo.height,
-                    ))
+                    )
+                )
                 eventDispatcher.dispatchEvent(
-                    createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId()))
+                    createLoadEndEvent(UIManagerHelper.getSurfaceId(this@ReactImageView), getId())
+                )
               }
             }
 
@@ -186,7 +190,8 @@ public class ReactImageView(
                       UIManagerHelper.getSurfaceId(this@ReactImageView),
                       getId(),
                       throwable,
-                  ))
+                  )
+              )
             }
           }
     }
@@ -591,8 +596,10 @@ public class ReactImageView(
     // 3. ReactImageView detects the null src; displays a warning in LogBox (via this code).
     // 3. LogBox renders an <Image/>, which fabric preallocates.
     // 4. Rinse and repeat.
-    if (ReactBuildConfig.DEBUG &&
-        !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()) {
+    if (
+        ReactBuildConfig.DEBUG &&
+            !ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture()
+    ) {
       RNLog.w(context as ReactContext, "ReactImageView: Image source \"$uri\" doesn't exist")
     }
   }
@@ -633,7 +640,8 @@ public class ReactImageView(
     private fun buildHierarchy(context: Context) =
         GenericDraweeHierarchyBuilder(context.resources)
             .setRoundingParams(
-                RoundingParams.fromCornersRadius(0f).apply { setPaintFilterBitmap(true) })
+                RoundingParams.fromCornersRadius(0f).apply { setPaintFilterBitmap(true) }
+            )
             .build()
   }
 }
