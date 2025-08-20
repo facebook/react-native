@@ -421,13 +421,12 @@ public class ReactHostImpl(
 
   @DoNotStrip
   private fun unstable_updatePerfMonitor(
-      eventName: String,
-      durationMs: Int,
+      longTaskDuration: Int,
       responsivenessScore: Int,
       ttl: Int,
   ) {
     if (devSupportManager is PerfMonitorV2Handler) {
-      devSupportManager.unstable_updatePerfMonitor(eventName, durationMs, responsivenessScore, ttl)
+      devSupportManager.unstable_updatePerfMonitor(longTaskDuration, responsivenessScore, ttl)
     }
   }
 
