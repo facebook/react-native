@@ -148,6 +148,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
     'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     accessibilityLabel,
@@ -300,6 +301,10 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
         expanded: ariaExpanded ?? accessibilityState?.expanded,
         selected: ariaSelected ?? accessibilityState?.selected,
       };
+    }
+
+    if (ariaHidden === true) {
+      nativeProps.importantForAccessibility = 'no-hide-descendants';
     }
 
     const flattenedStyle_ = flattenStyle<ImageStyleProp>(style);
