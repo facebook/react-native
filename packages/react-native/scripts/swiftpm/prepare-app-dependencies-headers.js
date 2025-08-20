@@ -32,7 +32,11 @@ function prepareAppDependenciesHeaders(
     );
   }
 
-  if (!['react-native', 'codegen', 'third-party-dependencies', 'all'].includes(requiredHeaders)) {
+  if (
+    !['react-native', 'codegen', 'third-party-dependencies', 'all'].includes(
+      requiredHeaders,
+    )
+  ) {
     throw new Error(
       "requiredHeaders must be one of: 'react-native', 'codegen', 'third-party-dependencies', 'all'",
     );
@@ -76,7 +80,9 @@ function prepareAppDependenciesHeaders(
         hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder);
         break;
       default:
-        throw new Error(`Unsupported requiredHeaders value: ${requiredHeaders}`);
+        throw new Error(
+          `Unsupported requiredHeaders value: ${requiredHeaders}`,
+        );
     }
 
     console.log('Successfully prepared app dependencies headers');
@@ -109,7 +115,12 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
   const reactPath = path.join(reactNativePath, 'React');
   if (fs.existsSync(reactPath)) {
     console.log('Processing React folder...');
-    const reactCount = hardlinkHeadersFromPath(reactPath, reactHeadersOutput, false, ['includes', 'headers', 'tests']);
+    const reactCount = hardlinkHeadersFromPath(
+      reactPath,
+      reactHeadersOutput,
+      false,
+      ['includes', 'headers', 'tests'],
+    );
     totalLinkedCount += reactCount;
     console.log(`Created ${reactCount} hard links from React folder`);
   }
@@ -118,7 +129,12 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
   const librariesPath = path.join(reactNativePath, 'Libraries');
   if (fs.existsSync(librariesPath)) {
     console.log('Processing Libraries folder...');
-    const librariesCount = hardlinkHeadersFromPath(librariesPath, reactHeadersOutput, false, ['tests']);
+    const librariesCount = hardlinkHeadersFromPath(
+      librariesPath,
+      reactHeadersOutput,
+      false,
+      ['tests'],
+    );
     totalLinkedCount += librariesCount;
     console.log(`Created ${librariesCount} hard links from Libraries folder`);
   }
@@ -127,7 +143,10 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
   const reactApplePath = path.join(reactNativePath, 'ReactApple');
   if (fs.existsSync(reactApplePath)) {
     console.log('Processing ReactApple folder...');
-    const reactAppleCount = hardlinkReactAppleHeaders(reactApplePath, headersOutput);
+    const reactAppleCount = hardlinkReactAppleHeaders(
+      reactApplePath,
+      headersOutput,
+    );
     totalLinkedCount += reactAppleCount;
     console.log(`Created ${reactAppleCount} hard links from ReactApple folder`);
   }
@@ -138,12 +157,20 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
     console.log('Processing ReactCommon folder...');
     // Define paths that should be flattened in ReactCommon folder
     const flattenPaths = ['react/nativemodule/core/platform/ios'];
-    const reactCommonCount = hardlinkReactCommonHeaders(reactCommonPath, headersOutput, flattenPaths);
+    const reactCommonCount = hardlinkReactCommonHeaders(
+      reactCommonPath,
+      headersOutput,
+      flattenPaths,
+    );
     totalLinkedCount += reactCommonCount;
-    console.log(`Created ${reactCommonCount} hard links from ReactCommon folder`);
+    console.log(
+      `Created ${reactCommonCount} hard links from ReactCommon folder`,
+    );
   }
 
-  console.log(`Created hard links for ${totalLinkedCount} React Native headers total`);
+  console.log(
+    `Created hard links for ${totalLinkedCount} React Native headers total`,
+  );
 }
 
 /**
@@ -154,7 +181,12 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
  * @param {Array<string>} excludeFolders - Folder names to exclude
  * @returns {number} Number of hard links created
  */
-function hardlinkHeadersFromPath(sourcePath, outputPath, preserveStructure, excludeFolders) {
+function hardlinkHeadersFromPath(
+  sourcePath,
+  outputPath,
+  preserveStructure,
+  excludeFolders,
+) {
   let linkedCount = 0;
 
   try {
@@ -171,7 +203,10 @@ function hardlinkHeadersFromPath(sourcePath, outputPath, preserveStructure, excl
       stdio: 'pipe',
     });
 
-    const headerFiles = result.trim().split('\n').filter(p => p.length > 0);
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
 
     headerFiles.forEach(sourceHeaderPath => {
       if (fs.existsSync(sourceHeaderPath)) {
@@ -203,9 +238,11 @@ function hardlinkHeadersFromPath(sourcePath, outputPath, preserveStructure, excl
         linkedCount++;
       }
     });
-
   } catch (error) {
-    console.warn(`Failed to process headers from ${sourcePath}:`, error.message);
+    console.warn(
+      `Failed to process headers from ${sourcePath}:`,
+      error.message,
+    );
   }
 
   return linkedCount;
@@ -224,12 +261,18 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
   console.log(`Searching for headers in: ${reactApplePath}`);
 
   try {
-    const result = execSync(`find "${reactApplePath}" -name "*.h" -type f | grep -v "/tests/"`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
+    const result = execSync(
+      `find "${reactApplePath}" -name "*.h" -type f | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
 
-    const headerFiles = result.trim().split('\n').filter(p => p.length > 0);
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
     console.log(`Found ${headerFiles.length} header files in ReactApple`);
 
     headerFiles.forEach(sourceHeaderPath => {
@@ -242,7 +285,9 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
         const pathComponents = relativePath.split(path.sep);
 
         // Find "Exported" component
-        const exportedIndex = pathComponents.findIndex(component => component === 'Exported');
+        const exportedIndex = pathComponents.findIndex(
+          component => component === 'Exported',
+        );
 
         let destPath;
         const headerName = path.basename(sourceHeaderPath);
@@ -250,8 +295,14 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
         if (exportedIndex !== -1 && exportedIndex > 0) {
           // Get the component immediately before "Exported"
           const lastComponentBeforeExported = pathComponents[exportedIndex - 1];
-          destPath = path.join(headersOutput, lastComponentBeforeExported, headerName);
-          console.log(`  -> ${lastComponentBeforeExported}/${headerName} (preserved component before Exported)`);
+          destPath = path.join(
+            headersOutput,
+            lastComponentBeforeExported,
+            headerName,
+          );
+          console.log(
+            `  -> ${lastComponentBeforeExported}/${headerName} (preserved component before Exported)`,
+          );
         } else {
           // If no "Exported" found, flatten to headers folder
           destPath = path.join(headersOutput, headerName);
@@ -275,11 +326,12 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
           fs.linkSync(sourceHeaderPath, destPath);
           linkedCount++;
         } catch (linkError) {
-          console.warn(`Failed to create hard link from ${sourceHeaderPath} to ${destPath}: ${linkError.message}`);
+          console.warn(
+            `Failed to create hard link from ${sourceHeaderPath} to ${destPath}: ${linkError.message}`,
+          );
         }
       }
     });
-
   } catch (error) {
     console.warn(`Failed to process ReactApple headers:`, error.message);
   }
@@ -295,19 +347,29 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
  * @param {Array<string>} flattenPaths - Array of relative paths that should be flattened in ReactCommon folder
  * @returns {number} Number of hard links created
  */
-function hardlinkReactCommonHeaders(reactCommonPath, headersOutput, flattenPaths = []) {
+function hardlinkReactCommonHeaders(
+  reactCommonPath,
+  headersOutput,
+  flattenPaths = [],
+) {
   let linkedCount = 0;
 
   console.log(`Searching for headers in: ${reactCommonPath}`);
   console.log(`Flatten paths: ${flattenPaths.join(', ')}`);
 
   try {
-    const result = execSync(`find "${reactCommonPath}" -name "*.h" -type f | grep -v "/tests/"`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
+    const result = execSync(
+      `find "${reactCommonPath}" -name "*.h" -type f | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
 
-    const headerFiles = result.trim().split('\n').filter(p => p.length > 0);
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
     console.log(`Found ${headerFiles.length} header files in ReactCommon`);
 
     // Create ReactCommon subdirectory for headers that should go there
@@ -334,14 +396,18 @@ function hardlinkReactCommonHeaders(reactCommonPath, headersOutput, flattenPaths
           // Handle ReactCommon/**/ReactCommon/header.h pattern - flatten to ReactCommon folder
           const headerName = path.basename(sourceHeaderPath);
           destPath = path.join(reactCommonHeadersOutput, headerName);
-          console.log(`  -> ReactCommon/${headerName} (flattened from nested ReactCommon pattern: ${relativePath})`);
+          console.log(
+            `  -> ReactCommon/${headerName} (flattened from nested ReactCommon pattern: ${relativePath})`,
+          );
         } else {
           // Check if path should be flattened in ReactCommon folder
           const shouldFlatten = flattenPaths.some(flattenPath => {
             const matchPattern = flattenPath + '/';
             const matches = relativePath.startsWith(matchPattern);
             if (matches) {
-              console.log(`  Flattening: ${relativePath} (matches ${flattenPath})`);
+              console.log(
+                `  Flattening: ${relativePath} (matches ${flattenPath})`,
+              );
             }
             return matches;
           });
@@ -353,13 +419,59 @@ function hardlinkReactCommonHeaders(reactCommonPath, headersOutput, flattenPaths
             isFlattened = true;
             console.log(`  -> ${headerName} (flattened to ReactCommon)`);
           } else if (relativePath.startsWith('react/')) {
-            // If path starts with 'react/', preserve the relative path under headers/
-            destPath = path.join(headersOutput, relativePath);
-            console.log(`  -> ${relativePath} (preserved under headers/)`);
+            // Handle platform-specific headers with pattern:
+            // react/renderer/components/view/platform/{cxx,android}/react/renderer/components/view/header.h
+            const platformMatch = relativePath.match(
+              /^(react\/.*?)\/platform\/([^\/]+)\/react\/(.*)$/,
+            );
+
+            if (platformMatch) {
+              const [, basePath, platform, remainingPath] = platformMatch;
+              const supportedPlatforms = ['ios', 'cxx'];
+              const ignoredPlatforms = ['android', 'windows', 'macos'];
+
+              if (supportedPlatforms.includes(platform)) {
+                // Flatten to headers/react/renderer/components/view/
+                destPath = path.join(headersOutput, 'react', remainingPath);
+                console.log(
+                  `  -> react/${remainingPath} (flattened from platform-specific ${platform})`,
+                );
+              } else if (ignoredPlatforms.includes(platform)) {
+                // Skip headers for ignored platforms
+                console.log(
+                  `  -> Skipping header for ignored platform: ${platform}`,
+                );
+                return; // Skip this header file
+              } else {
+                // Unknown platform, preserve the original structure
+                destPath = path.join(headersOutput, relativePath);
+                console.log(
+                  `  -> ${relativePath} (unknown platform: ${platform}, preserved structure)`,
+                );
+              }
+            } else {
+              // If path starts with 'react/' but doesn't match platform pattern, preserve the relative path under headers/
+              destPath = path.join(headersOutput, relativePath);
+              console.log(`  -> ${relativePath} (preserved under headers/)`);
+            }
+          } else if (relativePath.startsWith('yoga/')) {
+            // Special case for yoga headers - handle the weird structure ReactCommon/yoga/yoga/{subfolder|header.h}
+            // Remove the duplicated yoga/ prefix to flatten to headers/yoga/{subfolder|header.h}
+            let yogaPath = relativePath;
+            if (relativePath.startsWith('yoga/yoga/')) {
+              // Remove the first 'yoga/' to get rid of duplication
+              yogaPath = relativePath.substring(5); // Remove 'yoga/' (5 characters)
+            }
+            destPath = path.join(headersOutput, yogaPath);
+            console.log(
+              `  -> ${yogaPath} (yoga headers flattened from ${relativePath})`,
+            );
           } else {
             // Otherwise, put it under headers/ReactCommon/ with structure preserved
             destPath = path.join(reactCommonHeadersOutput, relativePath);
-            console.log(`  -> ReactCommon/${relativePath} (structured under ReactCommon)`);
+            console.log(
+              `  -> ReactCommon/${relativePath} (structured under ReactCommon)`,
+            );
           }
         }
 
@@ -380,11 +492,12 @@ function hardlinkReactCommonHeaders(reactCommonPath, headersOutput, flattenPaths
           fs.linkSync(sourceHeaderPath, destPath);
           linkedCount++;
         } catch (linkError) {
-          console.warn(`Failed to create hard link from ${sourceHeaderPath} to ${destPath}: ${linkError.message}`);
+          console.warn(
+            `Failed to create hard link from ${sourceHeaderPath} to ${destPath}: ${linkError.message}`,
+          );
         }
       }
     });
-
   } catch (error) {
     console.warn(`Failed to process ReactCommon headers:`, error.message);
   }
@@ -400,10 +513,17 @@ function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder) {
   console.log('Creating hard links for Third-Party Dependencies headers...');
 
   // Look for ReactNativeDependencies.xcframework/Headers folder specifically
-  const thirdPartyHeadersPath = path.join(reactNativePath, 'third-party', 'ReactNativeDependencies.xcframework', 'Headers');
+  const thirdPartyHeadersPath = path.join(
+    reactNativePath,
+    'third-party',
+    'ReactNativeDependencies.xcframework',
+    'Headers',
+  );
 
   if (!fs.existsSync(thirdPartyHeadersPath)) {
-    console.warn(`Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`);
+    console.warn(
+      `Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`,
+    );
     return;
   }
 
@@ -414,12 +534,18 @@ function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder) {
 
   // Find all .h and .hpp files recursively in third-party headers, exclude 'tests' folders
   try {
-    const result = execSync(`find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
+    const result = execSync(
+      `find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
 
-    const headerFiles = result.trim().split('\n').filter(p => p.length > 0);
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
     let linkedCount = 0;
 
     headerFiles.forEach(sourcePath => {
@@ -445,9 +571,14 @@ function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder) {
       }
     });
 
-    console.log(`Created hard links for ${linkedCount} Third-Party Dependencies headers with preserved directory structure`);
+    console.log(
+      `Created hard links for ${linkedCount} Third-Party Dependencies headers with preserved directory structure`,
+    );
   } catch (error) {
-    console.warn('Failed to create hard links for third-party dependencies headers:', error.message);
+    console.warn(
+      'Failed to create hard links for third-party dependencies headers:',
+      error.message,
+    );
   }
 }
 
@@ -458,7 +589,13 @@ function hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder) {
   console.log('Creating hard links for Codegen headers...');
 
   // Look for ReactCodegen folder specifically
-  const reactCodegenPath = path.join(iosAppPath, 'build', 'generated', 'ios', 'ReactCodegen');
+  const reactCodegenPath = path.join(
+    iosAppPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactCodegen',
+  );
 
   if (!fs.existsSync(reactCodegenPath)) {
     console.warn(`ReactCodegen path does not exist: ${reactCodegenPath}`);
@@ -478,12 +615,18 @@ function hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder) {
 
   // Find all .h files recursively in ReactCodegen, excluding any 'headers' and 'tests' folders
   try {
-    const result = execSync(`find "${reactCodegenPath}" -name "*.h" -type f | grep -v "/headers/" | grep -v "/tests/"`, {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
+    const result = execSync(
+      `find "${reactCodegenPath}" -name "*.h" -type f | grep -v "/headers/" | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
 
-    const headerFiles = result.trim().split('\n').filter(p => p.length > 0);
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
     let linkedCount = 0;
 
     headerFiles.forEach(sourcePath => {
@@ -519,9 +662,14 @@ function hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder) {
       }
     });
 
-    console.log(`Created hard links for ${linkedCount} Codegen headers with conditional directory structure`);
+    console.log(
+      `Created hard links for ${linkedCount} Codegen headers with conditional directory structure`,
+    );
   } catch (error) {
-    console.warn('Failed to create hard links for codegen headers:', error.message);
+    console.warn(
+      'Failed to create hard links for codegen headers:',
+      error.message,
+    );
   }
 }
 
@@ -530,15 +678,24 @@ if (require.main === module) {
   const args = process.argv.slice(2);
 
   if (args.length !== 4) {
-    console.error('Usage: node prepare-app-dependencies-headers.js <react-native-path> <ios-app-path> <output-folder> <required-headers>');
-    console.error('  required-headers: react-native | codegen | third-party-dependencies | all');
+    console.error(
+      'Usage: node prepare-app-dependencies-headers.js <react-native-path> <ios-app-path> <output-folder> <required-headers>',
+    );
+    console.error(
+      '  required-headers: react-native | codegen | third-party-dependencies | all',
+    );
     process.exit(1);
   }
 
   const [reactNativePath, iosAppPath, outputFolder, requiredHeaders] = args;
 
   try {
-    prepareAppDependenciesHeaders(reactNativePath, iosAppPath, outputFolder, requiredHeaders);
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      iosAppPath,
+      outputFolder,
+      requiredHeaders,
+    );
   } catch (error) {
     console.error('Error:', error.message);
     process.exit(1);
