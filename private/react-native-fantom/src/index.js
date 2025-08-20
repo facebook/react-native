@@ -577,9 +577,8 @@ export type {
  */
 
 if (typeof global.Event === 'undefined') {
-  global.Event = class Event {
-    constructor() {}
-  };
+  global.Event =
+    require('react-native/src/private/webapis/dom/events/Event').default;
 } else {
   console.warn(
     'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
@@ -587,49 +586,8 @@ if (typeof global.Event === 'undefined') {
 }
 
 if (typeof global.EventTarget === 'undefined') {
-  global.EventTarget = class EventTarget {
-    listeners: $FlowFixMe;
-
-    constructor() {
-      this.listeners = {};
-    }
-
-    addEventListener(type: string, cb: () => void) {
-      if (!(type in this.listeners)) {
-        this.listeners[type] = [];
-      }
-      this.listeners[type].push(cb);
-    }
-
-    removeEventListener(type: string, cb: () => void): void {
-      if (!(type in this.listeners)) {
-        return;
-      }
-      let handlers = this.listeners[type];
-      for (let i in handlers) {
-        if (cb === handlers[i]) {
-          handlers.splice(i, 1);
-          return;
-        }
-      }
-    }
-
-    dispatchEvent(type: string, event: Event) {
-      if (!(type in this.listeners)) {
-        return;
-      }
-      let handlers = this.listeners[type];
-      for (let i in handlers) {
-        handlers[i].call(this, event);
-      }
-    }
-
-    clearEventListeners() {
-      for (let i in this.listeners) {
-        delete this.listeners[i];
-      }
-    }
-  };
+  global.EventTarget =
+    require('react-native/src/private/webapis/dom/events/EventTarget').default;
 } else {
   console.warn(
     'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
