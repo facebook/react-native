@@ -47,6 +47,6 @@ export default function mockNativeComponent<TProps: {...}>(
     Component.displayName = viewName;
   }
 
-  // $FlowFixMe[incompatible-return] - Error supressed during the migration of HostInstance to ReactNativeElement
+  // $FlowFixMe - Error supressed during the migration of HostInstance to ReactNativeElement
   return Component;
 }

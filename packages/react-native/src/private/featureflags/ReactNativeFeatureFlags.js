@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bbf4074ed0307ebafa895b5efdd8ef48>>
+ * @generated SignedSource<<f082e99b49f5206e95cf0ca3f92d2c1c>>
  * @flow strict
  * @noformat
  */
@@ -139,7 +139,7 @@ export const deferFlatListFocusChangeRenderUpdate: Getter<boolean> = createJavaS
 /**
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
-export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
+export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', true);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
