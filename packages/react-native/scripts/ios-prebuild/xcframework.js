@@ -236,7 +236,7 @@ function copySymbols(
         frameworkFolder,
         '..',
         '..',
-        'React.framework.dSym',
+        'React.framework.dSYM',
       );
       console.log(
         `  ${path.relative(outputPath, sourceSymbolPath)} → ${path.basename(targetFolder)}`,
