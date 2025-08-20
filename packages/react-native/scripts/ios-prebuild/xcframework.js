@@ -215,12 +215,12 @@ function copySymbols(
       path.join(frameworkFolder, 'React'),
     );
     if (frameworkPlatforms) {
-      const targetFolder = targetArchFolders.find(targetArchFolder => {
-        const targetPlatforms = getArchsFromFramework(
-          path.join(targetArchFolder, 'React.framework', 'React'),
-        );
-        return targetPlatforms === frameworkPlatforms;
-      });
+      const targetFolder = targetArchFolders.find(
+        targetArchFolder =>
+          getArchsFromFramework(
+            path.join(targetArchFolder, 'React.framework', 'React'),
+          ) === frameworkPlatforms,
+      );
       if (!targetFolder) {
         frameworkLog(
           `No target folder found for symbol slice: ${frameworkFolder}`,
@@ -365,9 +365,12 @@ function createModuleMapFile(outputPath /*: string */) {
 
 function getArchsFromFramework(frameworkPath /*:string*/) {
   try {
-    return execSync(
-      `vtool -show-build ${frameworkPath}|grep platform`,
-    ).toString();
+    return execSync(`vtool -show-build ${frameworkPath}|grep platform`)
+      .toString()
+      .split('\n')
+      .map(p => p.trim().split(' ')[1])
+      .sort((a, b) => a.localeCompare(b))
+      .join(' ');
   } catch (error) {
     return '';
   }
