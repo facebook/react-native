@@ -51,6 +51,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
     'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     children,
@@ -124,6 +125,13 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
           _accessibilityStateDisabled !== false))
     ) {
       _accessibilityState.disabled = _disabled;
+    }
+
+    if (ariaHidden !== undefined) {
+      processedProps.accessibilityElementsHidden = ariaHidden;
+      if (ariaHidden === true) {
+        processedProps.importantForAccessibility = 'no-hide-descendants';
+      }
     }
 
     const _accessible = Platform.select({

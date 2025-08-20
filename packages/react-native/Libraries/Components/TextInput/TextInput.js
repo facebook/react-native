@@ -719,7 +719,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
     const _importantForAccessibility =
-      props['aria-hidden'] === true ? 'no-hide-descendants' : undefined;
+      props['aria-hidden'] === true
+        ? ('no-hide-descendants' as const)
+        : undefined;
     const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
