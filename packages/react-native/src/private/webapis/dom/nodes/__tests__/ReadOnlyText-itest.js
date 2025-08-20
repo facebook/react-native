@@ -15,23 +15,15 @@ import type {HostInstance} from 'react-native';
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
 function ensureReadOnlyText(value: mixed): ReadOnlyText {
   return ensureInstance(value, ReadOnlyText);
-}
-
-function ensureReadOnlyNode(value: mixed): ReadOnlyNode {
-  return ensureInstance(value, ReadOnlyNode);
-}
-
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
-  return ensureInstance(value, ReactNativeElement);
 }
 
 describe('ReadOnlyText', () => {
@@ -44,7 +36,7 @@ describe('ReadOnlyText', () => {
       root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
     });
 
-    const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+    const parentNode = nullthrows(parentNodeRef.current);
     const textNode = parentNode.childNodes[0];
 
     expect(textNode).toBeInstanceOf(ReadOnlyText);
@@ -61,7 +53,7 @@ describe('ReadOnlyText', () => {
           root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+        const parentNode = nullthrows(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeName).toBe('#text');
@@ -78,7 +70,7 @@ describe('ReadOnlyText', () => {
           root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+        const parentNode = nullthrows(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeType).toBe(ReadOnlyNode.TEXT_NODE);
@@ -95,7 +87,7 @@ describe('ReadOnlyText', () => {
           root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode = ensureReadOnlyNode(parentNodeRef.current);
+        const parentNode = nullthrows(parentNodeRef.current);
         const textNode = parentNode.childNodes[0];
 
         expect(textNode.nodeValue).toBe('Some text');
@@ -120,12 +112,8 @@ describe('ReadOnlyText', () => {
           );
         });
 
-        const parentElement: ReactNativeElement = ensureReactNativeElement(
-          parentElementRef.current,
-        );
-        const childElementA: ReactNativeElement = ensureReactNativeElement(
-          childElementARef.current,
-        );
+        const parentElement = nullthrows(parentElementRef.current);
+        const childElementA = nullthrows(childElementARef.current);
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];
@@ -182,9 +170,7 @@ describe('ReadOnlyText', () => {
           root.render(<NativeText ref={parentNodeRef}>Some text</NativeText>);
         });
 
-        const parentNode: ReadOnlyNode = ensureReadOnlyNode(
-          parentNodeRef.current,
-        );
+        const parentNode = nullthrows(parentNodeRef.current);
         const textNode = ensureReadOnlyText(parentNode.childNodes[0]);
 
         expect(textNode.data).toBe('Some text');
@@ -215,18 +201,10 @@ describe('ReadOnlyText', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(
-          parentElementRef.current,
-        );
-        const childElementA = ensureReactNativeElement(
-          childElementARef.current,
-        );
-        const childElementB = ensureReactNativeElement(
-          childElementBRef.current,
-        );
-        const childElementC = ensureReactNativeElement(
-          childElementCRef.current,
-        );
+        const parentElement = nullthrows(parentElementRef.current);
+        const childElementA = nullthrows(childElementARef.current);
+        const childElementB = nullthrows(childElementBRef.current);
+        const childElementC = nullthrows(childElementCRef.current);
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];
@@ -288,9 +266,7 @@ describe('ReadOnlyText', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(
-          parentElementRef.current,
-        );
+        const parentElement = nullthrows(parentElementRef.current);
 
         // Get text nodes and refine them as text nodes for Flow
         const childTextA = parentElement.childNodes[0];

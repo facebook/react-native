@@ -8,8 +8,9 @@
  * @format
  */
 
+import type {HostInstance} from '../../types/HostInstance';
+
 import ReactNativeElement from '../../webapis/dom/nodes/ReadOnlyNode';
-import ensureInstance from './ensureInstance';
 import * as Fantom from '@react-native/fantom';
 
 export function createShadowNodeReferenceCounter(
@@ -34,7 +35,7 @@ function createExpirationChecker(
 
 export function createShadowNodeReferenceCountingRef(): [
   () => number,
-  React.RefSetter<mixed>,
+  React.RefSetter<HostInstance>,
 ] {
   let getReferenceCount: ?() => number;
 
@@ -45,15 +46,14 @@ export function createShadowNodeReferenceCountingRef(): [
     return getReferenceCount();
   }
 
-  function ref(instance: mixed | null) {
+  function ref(instance: HostInstance | null) {
     if (instance == null) {
       return;
     }
-    const element = ensureInstance(instance, ReactNativeElement);
     if (getReferenceCount != null) {
       throw new Error('ShadowNode reference counter was already initialized.');
     }
-    getReferenceCount = createShadowNodeReferenceCounter(element);
+    getReferenceCount = createShadowNodeReferenceCounter(instance);
   }
 
   return [getShadowNodeReferenceCount, ref];

@@ -12,10 +12,10 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Switch} from 'react-native';
-import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('<ExampleComponent>', () => {
@@ -39,7 +39,7 @@ describe('<ExampleComponent>', () => {
         });
 
         expect(elementRef.current).toBeInstanceOf(ReactNativeElement);
-        const element = ensureInstance(elementRef.current, ReactNativeElement);
+        const element = nullthrows(elementRef.current);
         expect(element.tagName).toBe('RN:Switch');
       });
     });

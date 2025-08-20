@@ -12,15 +12,12 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import isUnreachable from '../../../../__tests__/utilities/isUnreachable';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {View} from 'react-native';
-import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 describe('ReactNativeDocument', () => {
@@ -32,8 +29,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
 
     expect(document.isConnected).toBe(true);
 
@@ -58,8 +55,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
 
     expect(document.childNodes.length).toBe(1);
     expect(document.childNodes[0]).toBe(document.documentElement);
@@ -77,8 +74,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
 
     expect(document.childElementCount).toBe(1);
     expect(document.firstElementChild).toBe(document.documentElement);
@@ -95,8 +92,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
 
     expect(document.nodeName).toBe('#document');
     expect(document.nodeType).toBe(ReadOnlyNode.DOCUMENT_NODE);
@@ -117,8 +114,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
 
     const {x, y, width, height} =
       document.documentElement.getBoundingClientRect();
@@ -141,8 +138,8 @@ describe('ReactNativeDocument', () => {
       root.render(<View ref={nodeRef} />);
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
-    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+    const element = nullthrows(nodeRef.current);
+    const document = nullthrows(element.ownerDocument);
     const documentElement = document.documentElement;
 
     /* eslint-disable no-bitwise */
@@ -192,14 +189,9 @@ describe('ReactNativeDocument', () => {
     let maybeWeakDocument;
     Fantom.runTask(() => {
       maybeWeakDocument = new WeakRef(
-        ensureInstance(
-          ensureInstance(nodeRef.current, ReactNativeElement).ownerDocument,
-          ReactNativeDocument,
-        ),
+        nullthrows(nullthrows(nodeRef.current).ownerDocument),
       );
-      maybeWeakNode = new WeakRef(
-        ensureInstance(nodeRef.current, ReactNativeElement),
-      );
+      maybeWeakNode = new WeakRef(nullthrows(nodeRef.current));
     });
 
     const weakDocument = nullthrows(maybeWeakDocument);
@@ -259,11 +251,8 @@ describe('ReactNativeDocument', () => {
         );
       });
 
-      const element = ensureInstance(lastNode, ReactNativeElement);
-      const document = ensureInstance(
-        element.ownerDocument,
-        ReactNativeDocument,
-      );
+      const element = nullthrows(lastNode);
+      const document = nullthrows(element.ownerDocument);
 
       expect(document.getElementById('foo')).toBe(fooNode);
       expect(document.getElementById('bar')).toBe(barFirstNode);

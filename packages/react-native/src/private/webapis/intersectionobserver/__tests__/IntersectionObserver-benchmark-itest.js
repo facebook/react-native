@@ -14,8 +14,8 @@ import type {Root} from '@react-native/fantom';
 import type {HostInstance} from 'react-native';
 import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import ScrollView from 'react-native/Libraries/Components/ScrollView/ScrollView';
@@ -109,7 +109,7 @@ Fantom.unstable_benchmark
         Fantom.runTask(() => {
           root.render(<View ref={rootRef} />);
         });
-        rootNode = ensureInstance(rootRef.current, ReactNativeElement);
+        rootNode = nullthrows(rootRef.current);
       },
       afterEach: () => {
         expect(mockCallback).not.toHaveBeenCalled();
@@ -131,7 +131,7 @@ Fantom.unstable_benchmark
           root.render(<View style={{width: 100, height: 10}} ref={nodeRef} />);
           observer = new IntersectionObserver(mockCallback);
         });
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        node = nullthrows(nodeRef.current);
       },
       afterEach: () => {
         expect(mockCallback).toHaveBeenCalledTimes(1);
@@ -160,8 +160,8 @@ Fantom.unstable_benchmark
             </View>,
           );
         });
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
-        rootNode = ensureInstance(rootRef.current, ReactNativeElement);
+        node = nullthrows(nodeRef.current);
+        rootNode = nullthrows(rootRef.current);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {root: rootNode});
         });
@@ -193,10 +193,7 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
+        scrollViewNode = nullthrows(scrollViewRef.current);
       },
       afterEach: () => {
         cleanup(root, observer);
@@ -220,10 +217,7 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
+        scrollViewNode = nullthrows(scrollViewRef.current);
       },
       afterEach: () => {
         cleanup(root);
@@ -249,11 +243,8 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        scrollViewNode = nullthrows(scrollViewRef.current);
+        node = nullthrows(nodeRef.current);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {});
           observer.observe(node);
@@ -289,11 +280,8 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        scrollViewNode = nullthrows(scrollViewRef.current);
+        node = nullthrows(nodeRef.current);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {
             root: scrollViewNode,
@@ -331,11 +319,8 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        scrollViewNode = nullthrows(scrollViewRef.current);
+        node = nullthrows(nodeRef.current);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {threshold: 1});
           observer.observe(node);
@@ -379,11 +364,8 @@ Fantom.unstable_benchmark
             </ScrollView>,
           );
         });
-        scrollViewNode = ensureInstance(
-          scrollViewRef.current,
-          ReactNativeElement,
-        );
-        node = ensureInstance(nodeRef.current, ReactNativeElement);
+        scrollViewNode = nullthrows(scrollViewRef.current);
+        node = nullthrows(nodeRef.current);
         Fantom.runTask(() => {
           observer = new IntersectionObserver(mockCallback, {
             threshold: 1,

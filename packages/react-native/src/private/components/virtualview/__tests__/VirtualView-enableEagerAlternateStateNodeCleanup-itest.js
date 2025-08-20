@@ -15,6 +15,7 @@ import {createShadowNodeReferenceCountingRef} from '../../../__tests__/utilities
 import VirtualView, {_logs, VirtualViewMode} from '../VirtualView';
 import {dispatchModeChangeEvent} from './VirtualView-itest';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Text} from 'react-native';
@@ -41,7 +42,10 @@ describe('VirtualView with enableEagerAlternateStateNodeCleanup flag', () => {
 
     expect(getReferenceCount()).toBeGreaterThan(0);
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(getReferenceCount()).toBe(0);
   });

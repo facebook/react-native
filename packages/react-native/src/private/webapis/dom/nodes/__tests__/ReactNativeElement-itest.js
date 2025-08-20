@@ -12,8 +12,8 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {ScrollView, View} from 'react-native';
@@ -26,10 +26,6 @@ import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnly
 import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import HTMLCollection from 'react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection';
 import NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/NodeList';
-
-function ensureReactNativeElement(value: mixed): ReactNativeElement {
-  return ensureInstance(value, ReactNativeElement);
-}
 
 /* eslint-disable no-bitwise */
 
@@ -76,10 +72,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
-        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
+        const childNodeC = nullthrows(childNodeCRef.current);
 
         expect(parentNode.nodeType).toBe(ReadOnlyNode.ELEMENT_NODE);
         expect(childNodeA.nodeType).toBe(ReadOnlyNode.ELEMENT_NODE);
@@ -107,10 +103,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
-        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
+        const childNodeC = nullthrows(childNodeCRef.current);
 
         expect(parentNode.nodeValue).toBe(null);
         expect(childNodeA.nodeValue).toBe(null);
@@ -138,10 +134,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
-        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
+        const childNodeC = nullthrows(childNodeCRef.current);
 
         const childNodes = parentNode.childNodes;
         expect(childNodes).toBeInstanceOf(NodeList);
@@ -205,10 +201,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentANode = ensureReactNativeElement(parentANodeRef.current);
-        const childANode = ensureReactNativeElement(childANodeRef.current);
-        const parentBNode = ensureReactNativeElement(parentBNodeRef.current);
-        const childBNode = ensureReactNativeElement(childBNodeRef.current);
+        const parentANode = nullthrows(parentANodeRef.current);
+        const childANode = nullthrows(childANodeRef.current);
+        const parentBNode = nullthrows(parentBNodeRef.current);
+        const childBNode = nullthrows(childBNodeRef.current);
 
         expect(childANode.getRootNode()).toBe(childBNode.getRootNode());
         const document = childANode.getRootNode();
@@ -261,10 +257,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
-        const childNodeC = ensureReactNativeElement(childNodeCRef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
+        const childNodeC = nullthrows(childNodeCRef.current);
 
         expect(parentNode.isConnected).toBe(true);
         expect(parentNode.firstChild).toBe(childNodeA);
@@ -403,11 +399,11 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
-        const childNodeAA = ensureReactNativeElement(childNodeAARef.current);
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
-        const childNodeBB = ensureReactNativeElement(childNodeBBRef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
+        const childNodeAA = nullthrows(childNodeAARef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
+        const childNodeBB = nullthrows(childNodeBBRef.current);
 
         // Node/self
         expect(parentNode.compareDocumentPosition(parentNode)).toBe(0);
@@ -504,9 +500,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const altParentNode = ensureReactNativeElement(
-          altParentNodeRef.current,
-        );
+        const altParentNode = nullthrows(altParentNodeRef.current);
 
         // Node/same position in different tree
         expect(altParentNode.compareDocumentPosition(parentNode)).toBe(
@@ -577,16 +571,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(parentRef.current);
-        const childElementA = ensureReactNativeElement(
-          childElementARef.current,
-        );
-        const childElementB = ensureReactNativeElement(
-          childElementBRef.current,
-        );
-        const childElementC = ensureReactNativeElement(
-          childElementCRef.current,
-        );
+        const parentElement = nullthrows(parentRef.current);
+        const childElementA = nullthrows(childElementARef.current);
+        const childElementB = nullthrows(childElementBRef.current);
+        const childElementC = nullthrows(childElementCRef.current);
 
         const children = parentElement.children;
         expect(children).toBeInstanceOf(HTMLCollection);
@@ -647,16 +635,10 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(parentRef.current);
-        const childElementA = ensureReactNativeElement(
-          childElementARef.current,
-        );
-        const childElementB = ensureReactNativeElement(
-          childElementBRef.current,
-        );
-        const childElementC = ensureReactNativeElement(
-          childElementCRef.current,
-        );
+        const parentElement = nullthrows(parentRef.current);
+        const childElementA = nullthrows(childElementARef.current);
+        const childElementB = nullthrows(childElementBRef.current);
+        const childElementC = nullthrows(childElementCRef.current);
 
         expect(parentElement.firstElementChild).toBe(childElementA);
         expect(parentElement.lastElementChild).toBe(childElementC);
@@ -757,8 +739,8 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentNode = ensureReactNativeElement(parentRef.current);
-        const childNodeA = ensureReactNativeElement(childNodeARef.current);
+        const parentNode = nullthrows(parentRef.current);
+        const childNodeA = nullthrows(childNodeARef.current);
 
         expect(parentNode.textContent).toBe('Hello world!');
         expect(childNodeA.textContent).toBe('world!');
@@ -783,7 +765,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const childNodeB = ensureReactNativeElement(childNodeBRef.current);
+        const childNodeB = nullthrows(childNodeBRef.current);
 
         expect(parentNode.textContent).toBe('Hello world again and again!');
         expect(childNodeA.textContent).toBe('world ');
@@ -813,7 +795,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         const boundingClientRect = element.getBoundingClientRect();
         expect(boundingClientRect).toBeInstanceOf(DOMRect);
@@ -858,7 +840,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         const boundingClientRect = element.getBoundingClientRect();
         expect(boundingClientRect).toBeInstanceOf(DOMRect);
@@ -884,7 +866,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.scrollLeft).toBeCloseTo(5.1);
         expect(element.scrollTop).toBeCloseTo(10.2);
@@ -914,7 +896,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.scrollWidth).toBe(200);
         expect(element.scrollHeight).toBe(1500);
@@ -946,7 +928,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.clientWidth).toBe(200);
         expect(element.clientHeight).toBe(250);
@@ -978,7 +960,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.clientLeft).toBe(200);
         expect(element.clientTop).toBe(250);
@@ -1007,7 +989,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.id).toBe('<react-native-element-id>');
       });
@@ -1026,7 +1008,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.id).toBe('<react-native-element-id>');
       });
@@ -1041,7 +1023,7 @@ describe('ReactNativeElement', () => {
           root.render(<View ref={elementRef} />);
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.tagName).toBe('RN:View');
       });
@@ -1058,7 +1040,7 @@ describe('ReactNativeElement', () => {
         root.render(<View ref={ref} />);
       });
 
-      const node = ensureReactNativeElement(ref.current);
+      const node = nullthrows(ref.current);
       expect(node).toBeInstanceOf(ReactNativeElement);
     });
 
@@ -1083,7 +1065,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.offsetWidth).toBe(50);
         expect(element.offsetHeight).toBe(100);
@@ -1116,8 +1098,8 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(parentRef.current);
-        const element = ensureReactNativeElement(elementRef.current);
+        const parentElement = nullthrows(parentRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);
@@ -1167,8 +1149,8 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const parentElement = ensureReactNativeElement(parentRef.current);
-        const element = ensureReactNativeElement(elementRef.current);
+        const parentElement = nullthrows(parentRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);
@@ -1195,7 +1177,7 @@ describe('ReactNativeElement', () => {
           );
         });
 
-        const element = ensureReactNativeElement(elementRef.current);
+        const element = nullthrows(elementRef.current);
 
         expect(element.offsetTop).toBe(11);
         expect(element.offsetLeft).toBe(5);

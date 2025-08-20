@@ -12,12 +12,11 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
 import {ScrollView, Text} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('UIConsistency', () => {
   it('should provide consistent data from the tree within the same synchronous function', () => {
@@ -35,10 +34,7 @@ describe('UIConsistency', () => {
       );
     });
 
-    const scrollViewNode = ensureInstance(
-      scrollViewRef.current,
-      ReactNativeElement,
-    );
+    const scrollViewNode = nullthrows(scrollViewRef.current);
 
     Fantom.runTask(() => {
       expect(scrollViewNode.scrollTop).toBe(0);
@@ -68,10 +64,7 @@ describe('UIConsistency', () => {
       );
     });
 
-    const scrollViewNode = ensureInstance(
-      scrollViewRef.current,
-      ReactNativeElement,
-    );
+    const scrollViewNode = nullthrows(scrollViewRef.current);
 
     Fantom.runTask(() => {
       // We never accessed the tree before the state update
@@ -117,10 +110,7 @@ describe('UIConsistency', () => {
       );
     });
 
-    const scrollViewNode = ensureInstance(
-      scrollViewRef.current,
-      ReactNativeElement,
-    );
+    const scrollViewNode = nullthrows(scrollViewRef.current);
 
     Fantom.runTask(() => {
       root.render(

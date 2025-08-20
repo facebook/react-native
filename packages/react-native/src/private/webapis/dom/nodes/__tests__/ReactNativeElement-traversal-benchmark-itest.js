@@ -12,9 +12,8 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
-import ReactNativeElement from '../ReactNativeElement';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {View} from 'react-native';
 
@@ -39,7 +38,7 @@ const commonOptions = {
       );
     });
 
-    node = ensureInstance(viewRef.current, ReactNativeElement);
+    node = nullthrows(viewRef.current);
   },
   afterAll: () => {
     Fantom.runTask(() => root.destroy());
