@@ -2313,7 +2313,7 @@ exports.examples = [
     },
   },
   {
-    title: 'aria-hidden prop',
+    title: 'aria-hidden',
     render(): React.MixedElement {
       return <AriaHiddenExample />;
     },
