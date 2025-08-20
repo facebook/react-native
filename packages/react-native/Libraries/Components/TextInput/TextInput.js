@@ -676,8 +676,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
         (flattenedStyle.padding == null &&
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
-    
-    const _accessibilityElementsHidden = props['aria-hidden'] ?? props.accessibilityElementsHidden;
+
+    const _accessibilityElementsHidden =
+      props['aria-hidden'] ?? props.accessibilityElementsHidden;
 
     textInput = (
       <RCTTextInputView
@@ -717,7 +718,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
-    const _importantForAccessibility = props['aria-hidden'] === true ? 'no-hide-descendants' : undefined;
+    const _importantForAccessibility =
+      props['aria-hidden'] === true ? 'no-hide-descendants' : undefined;
     const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
