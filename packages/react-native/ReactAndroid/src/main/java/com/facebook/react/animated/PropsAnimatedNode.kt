@@ -43,8 +43,7 @@ internal class PropsAnimatedNode(
   fun connectToView(viewTag: Int, uiManager: UIManager?) {
     if (connectedViewTag != -1) {
       throw JSApplicationIllegalArgumentException(
-          "Animated node $tag is already attached to a view: $connectedViewTag"
-      )
+          "Animated node $tag is already attached to a view: $connectedViewTag")
     }
     connectedViewTag = viewTag
     connectedViewUIManager = uiManager
@@ -55,8 +54,7 @@ internal class PropsAnimatedNode(
       throw JSApplicationIllegalArgumentException(
           "Attempting to disconnect view that has " +
               "not been connected with the given animated node: $viewTag " +
-              "but is connected to view $connectedViewTag"
-      )
+              "but is connected to view $connectedViewTag")
     }
     connectedViewTag = -1
   }
@@ -105,8 +103,7 @@ internal class PropsAnimatedNode(
         node.collectViewUpdates(key, propMap)
       } else {
         throw IllegalArgumentException(
-            "Unsupported type of node used in property node ${node.javaClass}"
-        )
+            "Unsupported type of node used in property node ${node.javaClass}")
       }
     }
     connectedViewUIManager?.synchronouslyUpdateViewOnUIThread(connectedViewTag, propMap)

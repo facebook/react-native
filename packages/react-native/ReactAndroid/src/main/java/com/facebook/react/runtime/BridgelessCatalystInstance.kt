@@ -35,8 +35,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
 
 @Deprecated(
     message =
-        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
-)
+        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @FrameworkAPI
 internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
@@ -109,8 +108,7 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   override val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
     get() =
         throw UnsupportedOperationException(
-            "Unimplemented method 'getNativeMethodCallInvokerHolder'"
-        )
+            "Unimplemented method 'getNativeMethodCallInvokerHolder'")
 
   override fun <T : NativeModule> hasNativeModule(nativeModuleInterface: Class<T>): Boolean =
       reactHost.hasNativeModule(nativeModuleInterface)
@@ -159,24 +157,21 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
 
   @Deprecated(
       message =
-          "This class is deprecated, please migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
-  )
+          "This class is deprecated, please migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun setTurboModuleRegistry(turboModuleRegistry: TurboModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'setTurboModuleRegistry'")
   }
 
   @Deprecated(
       message =
-          "This class is deprecated, please migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
-  )
+          "This class is deprecated, please migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun setFabricUIManager(fabricUIManager: UIManager) {
     throw UnsupportedOperationException("Unimplemented method 'setFabricUIManager'")
   }
 
   @Deprecated(
       message =
-          "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead."
-  )
+          "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun getFabricUIManager(): UIManager {
     throw UnsupportedOperationException("Unimplemented method 'getFabricUIManager'")
   }

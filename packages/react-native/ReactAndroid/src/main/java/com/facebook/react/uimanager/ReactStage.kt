@@ -21,8 +21,7 @@ import androidx.annotation.IntDef
             ReactStage.SURFACE_DID_INITIAL_LAYOUT,
             ReactStage.SURFACE_DID_INITIAL_MOUNTING,
             ReactStage.SURFACE_DID_STOP,
-        ]
-)
+        ])
 public annotation class ReactStage {
   public companion object {
     public const val SURFACE_DID_INITIALIZE: Int = 0

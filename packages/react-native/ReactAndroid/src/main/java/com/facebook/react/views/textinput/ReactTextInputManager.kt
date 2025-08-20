@@ -121,20 +121,16 @@ public open class ReactTextInputManager public constructor() :
                         mapOf(
                             "bubbled" to "onSubmitEditing",
                             "captured" to "onSubmitEditingCapture",
-                        )
-                ),
+                        )),
             "topEndEditing" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")
-                ),
+                        mapOf("bubbled" to "onEndEditing", "captured" to "onEndEditingCapture")),
             "topKeyPress" to
                 mapOf(
                     "phasedRegistrationNames" to
-                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture")
-                ),
-        )
-    )
+                        mapOf("bubbled" to "onKeyPress", "captured" to "onKeyPressCapture")),
+        ))
     return eventTypeConstants
   }
 
@@ -142,8 +138,7 @@ public open class ReactTextInputManager public constructor() :
     val baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants()
     val eventTypeConstants = baseEventTypeConstants ?: mutableMapOf()
     eventTypeConstants.putAll(
-        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll"))
-    )
+        mapOf(getJSEventName(ScrollEventType.SCROLL) to mapOf("registrationName" to "onScroll")))
     return eventTypeConstants
   }
 
@@ -213,12 +208,10 @@ public open class ReactTextInputManager public constructor() :
       val paddingTop = extraData.paddingTop.toInt()
       val paddingRight = extraData.paddingRight.toInt()
       val paddingBottom = extraData.paddingBottom.toInt()
-      if (
-          paddingLeft != UNSET ||
-              paddingTop != UNSET ||
-              paddingRight != UNSET ||
-              paddingBottom != UNSET
-      ) {
+      if (paddingLeft != UNSET ||
+          paddingTop != UNSET ||
+          paddingRight != UNSET ||
+          paddingBottom != UNSET) {
         view.setPadding(
             if (paddingLeft != UNSET) paddingLeft else view.paddingLeft,
             if (paddingTop != UNSET) paddingTop else view.paddingTop,
@@ -506,10 +499,8 @@ public open class ReactTextInputManager public constructor() :
 
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public fun setCaretHidden(view: ReactEditText, caretHidden: Boolean) {
-    if (
-        view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
-            shouldHideCursorForEmailTextInput()
-    ) {
+    if (view.stagedInputType == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS &&
+        shouldHideCursorForEmailTextInput()) {
       return
     }
     view.isCursorVisible = !caretHidden
@@ -538,8 +529,7 @@ public open class ReactTextInputManager public constructor() :
             TAG,
             IllegalStateException(
                 "Could not get default text color from View Context: " +
-                    (if (c != null) c.javaClass.canonicalName else "null")
-            ),
+                    (if (c != null) c.javaClass.canonicalName else "null")),
         )
       }
     } else {
@@ -932,8 +922,7 @@ public open class ReactTextInputManager public constructor() :
       } else {
         eventDispatcher?.dispatchEvent(BlurEvent(surfaceId, editText.id))
         eventDispatcher?.dispatchEvent(
-            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString())
-        )
+            ReactTextInputEndEditingEvent(surfaceId, editText.id, editText.text.toString()))
       }
     }
 
@@ -958,8 +947,7 @@ public open class ReactTextInputManager public constructor() :
                   reactContext.surfaceId,
                   editText.id,
                   editText.text.toString(),
-              )
-          )
+              ))
         }
 
         if (shouldBlur) {
@@ -994,8 +982,7 @@ public open class ReactTextInputManager public constructor() :
                   "characters" to InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS,
                   "words" to InputType.TYPE_TEXT_FLAG_CAP_WORDS,
                   "sentences" to InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
-              )
-      )
+              ))
 
   override fun setPadding(view: ReactEditText, left: Int, top: Int, right: Int, bottom: Int) {
     view.setPadding(left, top, right, bottom)
@@ -1052,8 +1039,7 @@ public open class ReactTextInputManager public constructor() :
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt())
-        )
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY.toInt()))
     val currentJustificationMode =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
           0
@@ -1164,10 +1150,8 @@ public open class ReactTextInputManager public constructor() :
 
     // Sets the correct password type, since numeric and text passwords have different types
     private fun checkPasswordType(view: ReactEditText) {
-      if (
-          (view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
-              (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0
-      ) {
+      if ((view.stagedInputType and INPUT_TYPE_KEYBOARD_NUMBERED) != 0 &&
+          (view.stagedInputType and InputType.TYPE_TEXT_VARIATION_PASSWORD) != 0) {
         // Text input type is numbered password, remove text password variation, add numeric one
         updateStagedInputTypeFlag(
             view,

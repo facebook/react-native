@@ -48,8 +48,7 @@ class UIManagerModuleConstantsTest {
                 mutableMapOf(
                     "Small" to 1,
                     "Large" to 2,
-                )
-        )
+                ))
 
     override fun getNativeProps(): MutableMap<String, String> = mutableMapOf("fooProp" to "number")
   }
@@ -126,8 +125,7 @@ class UIManagerModuleConstantsTest {
     Assertions.assertThat(constants!![VIEW_MANAGER_NAME] as Map<String, Any>)
         .containsKey("Constants")
     Assertions.assertThat(
-            valueAtPath(constants, VIEW_MANAGER_NAME, "Constants") as Map<String, Any>?
-        )
+            valueAtPath(constants, VIEW_MANAGER_NAME, "Constants") as Map<String, Any>?)
         .containsKey("PhotoSizeType")
   }
 
@@ -140,8 +138,7 @@ class UIManagerModuleConstantsTest {
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
     val constants = uiManagerModule.constants.orEmpty()
     Assertions.assertThat(
-            valueAtPath(constants, VIEW_MANAGER_NAME, "NativeProps", "fooProp") as String?
-        )
+            valueAtPath(constants, VIEW_MANAGER_NAME, "NativeProps", "fooProp") as String?)
         .isEqualTo("number")
   }
 
@@ -160,8 +157,7 @@ class UIManagerModuleConstantsTest {
                             "keyToOverride" to "innerValueX",
                             "anotherKey" to "valueX",
                         ),
-                )
-        )
+                ))
 
     val managerY = ConcreteViewManager("ManagerY")
     managerY.exportedCustomDirectEventTypeConstants =
@@ -175,8 +171,7 @@ class UIManagerModuleConstantsTest {
                             "keyToOverride" to "innerValueY",
                             "extraKey" to "valueY",
                         ),
-                )
-        )
+                ))
 
     val viewManagers = listOf(managerX, managerY)
     val uiManagerModule = UIManagerModule(reactContext, viewManagers, 0)
@@ -208,8 +203,7 @@ class UIManagerModuleConstantsTest {
                 mapOf(
                     "bubbled" to "onTwirl",
                     "captured" to "onTwirlCaptured",
-                )
-        )
+                ))
 
     private val TWIRL_DIRECT_EVENT_MAP: Map<String, Any> = mapOf("registrationName" to "onTwirl")
 

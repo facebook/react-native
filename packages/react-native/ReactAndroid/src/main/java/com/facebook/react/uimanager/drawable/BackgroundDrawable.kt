@@ -194,10 +194,8 @@ internal class BackgroundDrawable(
             computedBorderInsets?.right != 0f ||
             computedBorderInsets?.bottom != 0f)
 
-    if (
-        computedBorderRadius?.hasRoundedBorders() == true &&
-            computedBorderRadius?.isUniform() == false
-    ) {
+    if (computedBorderRadius?.hasRoundedBorders() == true &&
+        computedBorderRadius?.isUniform() == false) {
       backgroundRenderPath = backgroundRenderPath ?: Path()
       backgroundRenderPath?.reset()
     }

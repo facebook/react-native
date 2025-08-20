@@ -87,8 +87,7 @@ internal class FpsDebugFrameCallback(private val reactContext: ReactContext) :
           reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
       if (!reactContext.isBridgeless) {
         reactContext.catalystInstance.removeBridgeIdleDebugListener(
-            didJSUpdateUiDuringFrameDetector
-        )
+            didJSUpdateUiDuringFrameDetector)
       }
       uiManagerModule?.setViewHierarchyUpdateDebugListener(null)
     }

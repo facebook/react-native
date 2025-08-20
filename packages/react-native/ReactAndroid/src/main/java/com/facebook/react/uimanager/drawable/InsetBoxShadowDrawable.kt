@@ -132,8 +132,7 @@ internal class InsetBoxShadowDrawable(
     canvas.save().let { saveCount ->
       if (paddingBoxRadii != null) {
         canvas.clipPath(
-            Path().apply { addRoundRect(paddingBoxRect, paddingBoxRadii, Path.Direction.CW) }
-        )
+            Path().apply { addRoundRect(paddingBoxRect, paddingBoxRadii, Path.Direction.CW) })
 
         val innerRadii =
             paddingBoxRadii.map { adjustRadiusForSpread(it, -spreadExtent) }.toFloatArray()

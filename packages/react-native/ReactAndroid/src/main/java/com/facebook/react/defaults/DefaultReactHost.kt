@@ -191,8 +191,7 @@ public object DefaultReactHost {
         exceptionHandler: (Exception) -> Unit,
         bindingsInstaller: BindingsInstaller?,
       ): ReactHost
-    """
-          ),
+    """),
   )
   @JvmStatic
   public fun getDefaultReactHost(
@@ -252,8 +251,7 @@ public object DefaultReactHost {
         useDevSupport: Boolean,
         cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage>,
       ): ReactHost
-    """
-          ),
+    """),
   )
   @JvmStatic
   public fun getDefaultReactHost(

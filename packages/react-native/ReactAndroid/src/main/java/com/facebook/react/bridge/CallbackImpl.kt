@@ -26,8 +26,7 @@ internal class CallbackImpl(private val jsInstance: JSInstance, private val call
   override fun invoke(vararg args: Any?) {
     if (invoked) {
       throw RuntimeException(
-          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code."
-      )
+          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code.")
     }
     @Suppress("UNCHECKED_CAST")
     jsInstance.invokeCallback(callbackId, Arguments.fromJavaArgs(args as Array<Any?>))

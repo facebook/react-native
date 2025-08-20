@@ -62,8 +62,7 @@ internal class ShadowNodeRegistry {
     threadAsserter.assertNow()
     if (rootTags[tag]) {
       throw IllegalViewOperationException(
-          "Trying to remove root node $tag without using removeRootNode!"
-      )
+          "Trying to remove root node $tag without using removeRootNode!")
     }
     tagsToCSSNodes.remove(tag)
   }

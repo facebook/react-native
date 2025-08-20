@@ -178,8 +178,7 @@ internal class IntBufferBatchMountItem(
           }
           else -> {
             throw IllegalArgumentException(
-                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
-            )
+                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
           }
         }
       }
@@ -218,8 +217,7 @@ internal class IntBufferBatchMountItem(
                       intBuffer[i++],
                       intBuffer[i++],
                       fabricComponentName,
-                  )
-              )
+                  ))
             }
             INSTRUCTION_DELETE ->
                 s.append(String.format(Locale.ROOT, "DELETE [%d]\n", intBuffer[i++]))
@@ -231,8 +229,7 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    )
-                )
+                    ))
             INSTRUCTION_REMOVE ->
                 s.append(
                     String.format(
@@ -241,16 +238,15 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    )
-                )
+                    ))
             INSTRUCTION_UPDATE_PROPS -> {
               val props = objBuffer[j++]
               val propsString =
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (props?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString)
-              )
+                  String.format(
+                      Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString))
             }
             INSTRUCTION_UPDATE_STATE -> {
               val state: StateWrapper? = objBuffer[j++] as StateWrapper?
@@ -258,8 +254,8 @@ internal class IntBufferBatchMountItem(
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (state?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString)
-              )
+                  String.format(
+                      Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString))
             }
             INSTRUCTION_UPDATE_LAYOUT ->
                 s.append(
@@ -275,8 +271,7 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    )
-                )
+                    ))
             INSTRUCTION_UPDATE_PADDING ->
                 s.append(
                     String.format(
@@ -287,8 +282,7 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    )
-                )
+                    ))
             INSTRUCTION_UPDATE_OVERFLOW_INSET ->
                 s.append(
                     String.format(
@@ -299,8 +293,7 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                    )
-                )
+                    ))
             INSTRUCTION_UPDATE_EVENT_EMITTER -> {
               j += 1
               s.append(String.format(Locale.ROOT, "UPDATE EVENTEMITTER [%d]\n", intBuffer[i++]))
@@ -308,8 +301,7 @@ internal class IntBufferBatchMountItem(
             else -> {
               FLog.e(TAG, "String so far: $s")
               throw IllegalArgumentException(
-                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
-              )
+                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
             }
           }
         }

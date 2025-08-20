@@ -48,8 +48,7 @@ internal class MaintainVisibleScrollPositionHelper<ScrollViewT>(
             UIManagerHelper.getUIManager(
                 checkNotNull(scrollView?.context as ReactContext?),
                 getUIManagerType(scrollView?.id ?: 0),
-            )
-        )
+            ))
 
   class Config
   internal constructor(val minIndexForVisible: Int, val autoScrollToTopThreshold: Int?) {

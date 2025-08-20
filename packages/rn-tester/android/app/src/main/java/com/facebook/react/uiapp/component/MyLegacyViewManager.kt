@@ -55,9 +55,7 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
                     mapOf(
                         "bubbled" to "onColorChanged",
                         "captured" to "onColorChangedCapture",
-                    )
-            )
-    )
+                    )))
   }
 
   override fun receiveCommand(view: MyNativeView, commandId: String, args: ReadableArray?) {

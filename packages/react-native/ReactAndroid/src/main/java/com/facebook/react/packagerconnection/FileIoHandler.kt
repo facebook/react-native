@@ -56,8 +56,7 @@ public class FileIoHandler : Runnable {
                 val paramsObj =
                     params as JSONObject?
                         ?: throw Exception(
-                            "params must be an object { mode: string, filename: string }"
-                        )
+                            "params must be an object { mode: string, filename: string }")
                 val mode = paramsObj.optString("mode") ?: throw Exception("missing params.mode")
                 val filename =
                     paramsObj.optString("filename") ?: throw Exception("missing params.filename")
@@ -99,8 +98,7 @@ public class FileIoHandler : Runnable {
                 val paramsObj =
                     params as JSONObject?
                         ?: throw Exception(
-                            "params must be an object { file: handle, size: number }"
-                        )
+                            "params must be an object { file: handle, size: number }")
                 val file = paramsObj.optInt("file")
                 if (file == 0) {
                   throw Exception("invalid or missing file handle")

@@ -39,8 +39,7 @@ internal object BackwardCompatUtils {
         
           ********************************************************************************
           """
-                .trimIndent()
-        )
+                .trimIndent())
       }
     }
 
@@ -56,14 +55,14 @@ internal object BackwardCompatUtils {
     val message =
         """
 
-        =============== JavaScriptCore is being moved ===============
-        JavaScriptCore has been extracted from react-native core
-        and will be removed in a future release. It can now be
-        installed from `@react-native-community/javascriptcore`
-        See: https://github.com/react-native-community/javascriptcore
-        =============================================================
+=============== JavaScriptCore is being moved ===============
+JavaScriptCore has been extracted from react-native core
+and will be removed in a future release. It can now be
+installed from `@react-native-community/javascriptcore`
+See: https://github.com/react-native-community/javascriptcore
+=============================================================
 
-        """
+"""
             .trimIndent()
     project.logger.warn(message)
     hasShownJSCRemovalMessage = true

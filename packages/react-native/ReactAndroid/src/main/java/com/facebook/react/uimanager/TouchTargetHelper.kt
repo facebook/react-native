@@ -193,10 +193,8 @@ public object TouchTargetHelper {
         if (view is ReactOverflowViewWithInset) {
           // If the touch point is outside of the overflow inset for the view, we can safely ignore
           // it.
-          if (
-              ViewUtil.getUIManagerType(view.id) == UIManagerType.FABRIC &&
-                  !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)
-          ) {
+          if (ViewUtil.getUIManagerType(view.id) == UIManagerType.FABRIC &&
+              !isTouchPointInViewWithOverflowInset(eventCoords[0], eventCoords[1], view)) {
             return null
           }
 
@@ -238,10 +236,8 @@ public object TouchTargetHelper {
     }
 
     // Check if parent can handle the touch after the children
-    if (
-        allowReturnTouchTargetTypes.contains(TouchTargetReturnType.SELF) &&
-            isTouchPointInView(eventCoords[0], eventCoords[1], view)
-    ) {
+    if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.SELF) &&
+        isTouchPointInView(eventCoords[0], eventCoords[1], view)) {
       return view
     }
 
@@ -255,12 +251,10 @@ public object TouchTargetHelper {
   private fun isTouchPointInView(x: Float, y: Float, view: View): Boolean {
     val hitSlopRect = (view as? ReactHitSlopView)?.hitSlopRect
     if (hitSlopRect != null) {
-      if (
-          x >= -hitSlopRect.left &&
-              x < view.width + hitSlopRect.right &&
-              y >= -hitSlopRect.top &&
-              y < view.height + hitSlopRect.bottom
-      ) {
+      if (x >= -hitSlopRect.left &&
+          x < view.width + hitSlopRect.right &&
+          y >= -hitSlopRect.top &&
+          y < view.height + hitSlopRect.bottom) {
         return true
       }
       return false
@@ -393,11 +387,9 @@ public object TouchTargetHelper {
           FLog.w(ReactConstants.TAG, "Unknown pointer event type: $pointerEvents")
         }
         // Either this view or one of its children is the target
-        if (
-            view is ReactCompoundViewGroup &&
-                isTouchPointInView(eventCoords[0], eventCoords[1], view) &&
-                view.interceptsTouchEvent(eventCoords[0], eventCoords[1])
-        ) {
+        if (view is ReactCompoundViewGroup &&
+            isTouchPointInView(eventCoords[0], eventCoords[1], view) &&
+            view.interceptsTouchEvent(eventCoords[0], eventCoords[1])) {
           pathAccumulator?.add(ViewTarget(view.id, view))
           return view
         }

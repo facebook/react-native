@@ -52,10 +52,8 @@ public object BackgroundStyleApplicator {
   @JvmStatic
   public fun setBackgroundColor(view: View, @ColorInt color: Int?): Unit {
     // No color to set, and no color already set
-    if (
-        (color == null || color == Color.TRANSPARENT) &&
-            view.background !is CompositeBackgroundDrawable
-    ) {
+    if ((color == null || color == Color.TRANSPARENT) &&
+        view.background !is CompositeBackgroundDrawable) {
       return
     }
 
@@ -304,8 +302,7 @@ public object BackgroundStyleApplicator {
                 offsetY = offsetY,
                 blurRadius = blurRadius,
                 spread = spreadDistance,
-            )
-        )
+            ))
       } else if (!inset && Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
         outerShadows.add(
             OutsetBoxShadowDrawable(
@@ -316,8 +313,7 @@ public object BackgroundStyleApplicator {
                 offsetY = offsetY,
                 blurRadius = blurRadius,
                 spread = spreadDistance,
-            )
-        )
+            ))
       }
     }
 

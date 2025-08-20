@@ -256,8 +256,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   @Deprecated(
-      "setTranslucentBackgroundDrawable is deprecated since React Native 0.76.0 and will be removed in a future version"
-  )
+      "setTranslucentBackgroundDrawable is deprecated since React Native 0.76.0 and will be removed in a future version")
   public fun setTranslucentBackgroundDrawable(background: Drawable?) {
     setFeedbackUnderlay(this, background)
   }
@@ -458,8 +457,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
       }
       if (i - clippedSoFar > childCount) {
         throw IllegalStateException(
-            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount  excludedViews=${excludedViewsSet?.size ?: 0}"
-        )
+            "Invalid clipping state. i=$i clippedSoFar=$clippedSoFar count=$childCount allChildrenCount=$allChildrenCount recycleCount=$recycleCount  excludedViews=${excludedViewsSet?.size ?: 0}")
       }
     }
     inSubviewClippingLoop = false
@@ -490,13 +488,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
       needUpdateClippingRecursive = true
     }
     // We don't want to clip a view that is currently focused at that might break focus navigation
-    if (
-        !intersects &&
-            !isViewClipped(child, idx) &&
-            !isAnimating &&
-            child !== focusedChild &&
-            !shouldSkipView
-    ) {
+    if (!intersects &&
+        !isViewClipped(child, idx) &&
+        !isAnimating &&
+        child !== focusedChild &&
+        !shouldSkipView) {
       setViewClipped(child, true)
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
@@ -696,13 +692,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
                 logSoftException(
                     ReactSoftExceptionLogger.Categories.CLIPPING_PROHIBITED_VIEW,
                     ReactNoCrashSoftException(
-                        "Child view has been added to Parent view in which it is clipped and not visible. This is not legal for this particular child view. Child: [${child.id}] $child Parent: [$id] ${toString()}"
-                    ),
+                        "Child view has been added to Parent view in which it is clipped and not visible. This is not legal for this particular child view. Child: [${child.id}] $child Parent: [$id] ${toString()}"),
                 )
               }
             }
-          }
-      )
+          })
     }
   }
 
@@ -753,8 +747,7 @@ public open class ReactViewGroup public constructor(context: Context?) :
       logSoftException(
           ReactSoftExceptionLogger.Categories.RVG_IS_VIEW_CLIPPED,
           ReactNoCrashSoftException(
-              "View missing clipping tag: index=$index parentNull=${parent == null} parentThis=${parent === this} transitioning=$transitioning"
-          ),
+              "View missing clipping tag: index=$index parentNull=${parent == null} parentThis=${parent === this} transitioning=$transitioning"),
       )
     }
     // fallback - should be transitioning or have no parent if the view was removed
@@ -839,13 +832,11 @@ public open class ReactViewGroup public constructor(context: Context?) :
     }
 
   override fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int) {
-    if (
-        needsIsolatedLayer(this) &&
-            (overflowInset.left != left ||
-                overflowInset.top != top ||
-                overflowInset.right != right ||
-                overflowInset.bottom != bottom)
-    ) {
+    if (needsIsolatedLayer(this) &&
+        (overflowInset.left != left ||
+            overflowInset.top != top ||
+            overflowInset.right != right ||
+            overflowInset.bottom != bottom)) {
       invalidate()
     }
     overflowInset[left, top, right] = bottom
@@ -861,11 +852,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
   }
 
   override fun draw(canvas: Canvas) {
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            getUIManagerType(this) == UIManagerType.FABRIC &&
-            needsIsolatedLayer(this)
-    ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        getUIManagerType(this) == UIManagerType.FABRIC &&
+        needsIsolatedLayer(this)) {
       // Check if the view is a stacking context and has children, if it does, do the rendering
       // offscreen and then composite back. This follows the idea of group isolation on blending
       // https://www.w3.org/TR/compositing-1/#isolationblending
@@ -900,11 +889,9 @@ public open class ReactViewGroup public constructor(context: Context?) :
     }
 
     var mixBlendMode: BlendMode? = null
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-            getUIManagerType(this) == UIManagerType.FABRIC &&
-            needsIsolatedLayer(this)
-    ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        getUIManagerType(this) == UIManagerType.FABRIC &&
+        needsIsolatedLayer(this)) {
       mixBlendMode = child.getTag(R.id.mix_blend_mode) as? BlendMode
       if (mixBlendMode != null) {
         val p = Paint()

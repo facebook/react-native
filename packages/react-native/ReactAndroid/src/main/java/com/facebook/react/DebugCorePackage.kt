@@ -26,8 +26,7 @@ public class DebugCorePackage public constructor() :
       lazy(LazyThreadSafetyMode.NONE) {
         mapOf(
             DebuggingOverlayManager.REACT_CLASS to
-                ModuleSpec.viewManagerSpec { DebuggingOverlayManager() }
-        )
+                ModuleSpec.viewManagerSpec { DebuggingOverlayManager() })
       }
 
   override fun getReactModuleInfoProvider(): ReactModuleInfoProvider = ReactModuleInfoProvider {

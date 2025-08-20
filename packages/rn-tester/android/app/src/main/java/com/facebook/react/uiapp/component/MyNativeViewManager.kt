@@ -77,7 +77,5 @@ internal class MyNativeViewManager :
                       mapOf(
                           "bubbled" to "onIntArrayChanged",
                           "captured" to "onIntArrayChangedCapture",
-                      )
-              )
-      )
+                      )))
 }

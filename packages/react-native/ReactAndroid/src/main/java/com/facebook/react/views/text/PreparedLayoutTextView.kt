@@ -135,8 +135,7 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     val layout = checkNotNull(preparedLayout).layout
     if (start < 0 || end > layout.text.length || start >= end) {
       throw IllegalArgumentException(
-          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${layout.text.length}"
-      )
+          "setSelection start and end are not in valid range. start: $start, end: $end, text length: ${layout.text.length}")
     }
 
     val textSelection = selection
@@ -211,19 +210,15 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     for (span in spans) {
       val spanFlags = spanned.getSpanFlags(span)
       val inclusiveStart =
-          if (
-              (spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
-                  (spanFlags and Spanned.SPAN_INCLUSIVE_EXCLUSIVE) != 0
-          ) {
+          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+              (spanFlags and Spanned.SPAN_INCLUSIVE_EXCLUSIVE) != 0) {
             spanned.getSpanStart(span)
           } else {
             spanned.getSpanStart(span) + 1
           }
       val inclusiveEnd =
-          if (
-              (spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
-                  (spanFlags and Spanned.SPAN_EXCLUSIVE_INCLUSIVE) != 0
-          ) {
+          if ((spanFlags and Spanned.SPAN_INCLUSIVE_INCLUSIVE) != 0 ||
+              (spanFlags and Spanned.SPAN_EXCLUSIVE_INCLUSIVE) != 0) {
             spanned.getSpanEnd(span)
           } else {
             spanned.getSpanEnd(span) - 1
@@ -299,10 +294,8 @@ internal class PreparedLayoutTextView(context: Context) : ViewGroup(context), Re
     }
     super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     val accessibilityDelegateCompat = ViewCompat.getAccessibilityDelegate(this)
-    if (
-        accessibilityDelegateCompat != null &&
-            accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate
-    ) {
+    if (accessibilityDelegateCompat != null &&
+        accessibilityDelegateCompat is ReactTextViewAccessibilityDelegate) {
       accessibilityDelegateCompat.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
     }
   }

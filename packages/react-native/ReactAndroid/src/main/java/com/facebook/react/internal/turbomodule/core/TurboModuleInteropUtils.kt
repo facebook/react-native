@@ -56,11 +56,9 @@ internal object TurboModuleInteropUtils {
         if (returnType != MutableMap::class.java) {
           throw ParsingException(moduleName, "getConstants must return a Map")
         }
-      } else if (
-          (annotation != null) &&
-              ((annotation.isBlockingSynchronousMethod && returnType == Void.TYPE) ||
-                  (!annotation.isBlockingSynchronousMethod && returnType != Void.TYPE))
-      ) {
+      } else if ((annotation != null) &&
+          ((annotation.isBlockingSynchronousMethod && returnType == Void.TYPE) ||
+              (!annotation.isBlockingSynchronousMethod && returnType != Void.TYPE))) {
         throw ParsingException(
             moduleName,
             "TurboModule system assumes returnType == void iff the method is synchronous.",
@@ -73,8 +71,7 @@ internal object TurboModuleInteropUtils {
               createJniSignature(moduleName, methodName, paramClasses, returnType),
               createJSIReturnKind(moduleName, methodName, paramClasses, returnType),
               getJsArgCount(moduleName, methodName, paramClasses),
-          )
-      )
+          ))
     }
 
     return methodDescriptors
@@ -128,18 +125,16 @@ internal object TurboModuleInteropUtils {
       return "F"
     }
 
-    if (
-        paramClass == Boolean::class.javaObjectType ||
-            paramClass == Int::class.javaObjectType ||
-            paramClass == Double::class.javaObjectType ||
-            paramClass == Float::class.javaObjectType ||
-            paramClass == String::class.java ||
-            paramClass == Callback::class.java ||
-            paramClass == Promise::class.java ||
-            paramClass == ReadableMap::class.java ||
-            paramClass == ReadableArray::class.java ||
-            paramClass == Dynamic::class.java
-    ) {
+    if (paramClass == Boolean::class.javaObjectType ||
+        paramClass == Int::class.javaObjectType ||
+        paramClass == Double::class.javaObjectType ||
+        paramClass == Float::class.javaObjectType ||
+        paramClass == String::class.java ||
+        paramClass == Callback::class.java ||
+        paramClass == Promise::class.java ||
+        paramClass == ReadableMap::class.java ||
+        paramClass == ReadableArray::class.java ||
+        paramClass == Dynamic::class.java) {
       return convertClassToJniType(paramClass)
     }
 
@@ -175,16 +170,14 @@ internal object TurboModuleInteropUtils {
       return "V"
     }
 
-    if (
-        returnClass == Boolean::class.javaObjectType ||
-            returnClass == Integer::class.javaObjectType ||
-            returnClass == Double::class.javaObjectType ||
-            returnClass == Float::class.javaObjectType ||
-            returnClass == String::class.java ||
-            returnClass == WritableMap::class.java ||
-            returnClass == WritableArray::class.java ||
-            returnClass == MutableMap::class.java
-    ) {
+    if (returnClass == Boolean::class.javaObjectType ||
+        returnClass == Integer::class.javaObjectType ||
+        returnClass == Double::class.javaObjectType ||
+        returnClass == Float::class.javaObjectType ||
+        returnClass == String::class.java ||
+        returnClass == WritableMap::class.java ||
+        returnClass == WritableArray::class.java ||
+        returnClass == MutableMap::class.java) {
       return convertClassToJniType(returnClass)
     }
 
@@ -247,21 +240,17 @@ internal object TurboModuleInteropUtils {
       i += 1
     }
 
-    if (
-        returnClass == Boolean::class.javaPrimitiveType ||
-            returnClass == Boolean::class.javaObjectType
-    ) {
+    if (returnClass == Boolean::class.javaPrimitiveType ||
+        returnClass == Boolean::class.javaObjectType) {
       return "BooleanKind"
     }
 
-    if (
-        returnClass == Double::class.javaPrimitiveType ||
-            returnClass == Double::class.javaObjectType ||
-            returnClass == Float::class.javaPrimitiveType ||
-            returnClass == Float::class.javaObjectType ||
-            returnClass == Int::class.javaPrimitiveType ||
-            returnClass == Int::class.javaObjectType
-    ) {
+    if (returnClass == Double::class.javaPrimitiveType ||
+        returnClass == Double::class.javaObjectType ||
+        returnClass == Float::class.javaPrimitiveType ||
+        returnClass == Float::class.javaObjectType ||
+        returnClass == Int::class.javaPrimitiveType ||
+        returnClass == Int::class.javaObjectType) {
       return "NumberKind"
     }
 
@@ -300,15 +289,13 @@ internal object TurboModuleInteropUtils {
         moduleName: String,
         message: String,
     ) : super(
-        ("Unable to parse @ReactMethod annotations from native module: ${moduleName}. Details: ${message}")
-    )
+        ("Unable to parse @ReactMethod annotations from native module: ${moduleName}. Details: ${message}"))
 
     constructor(
         moduleName: String,
         methodName: String,
         message: String,
     ) : super(
-        ("Unable to parse @ReactMethod annotation from native module method: ${moduleName}.${methodName}(). Details: ${message}")
-    )
+        ("Unable to parse @ReactMethod annotation from native module method: ${moduleName}.${methodName}(). Details: ${message}"))
   }
 }

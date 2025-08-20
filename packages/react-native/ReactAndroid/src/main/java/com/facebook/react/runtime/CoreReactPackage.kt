@@ -38,8 +38,7 @@ import java.util.HashMap
             LogBoxModule::class,
             DeviceEventManagerModule::class,
             ExceptionsManagerModule::class,
-        ]
-)
+        ])
 internal class CoreReactPackage(
     private val devSupportManager: DevSupportManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,

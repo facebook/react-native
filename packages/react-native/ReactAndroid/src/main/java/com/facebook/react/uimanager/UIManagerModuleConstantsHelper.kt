@@ -37,8 +37,7 @@ internal object UIManagerModuleConstantsHelper {
           mapOf(
               "ViewManagerNames" to ArrayList<String?>(resolver.getViewManagerNames()),
               "LazyViewManagersEnabled" to true,
-          )
-      )
+          ))
 
   @JvmStatic
   val defaultExportableEventTypes: Map<String, Any>
@@ -59,12 +58,10 @@ internal object UIManagerModuleConstantsHelper {
     for ((key, value) in directEvents) {
       if (value is MutableMap<*, *>) {
         val regName = value["registrationName"] as String?
-        if (
-            regName != null &&
-                key.startsWith("top") &&
-                regName.startsWith("on") &&
-                (key.substring(3) != regName.substring(2))
-        ) {
+        if (regName != null &&
+            key.startsWith("top") &&
+            regName.startsWith("on") &&
+            (key.substring(3) != regName.substring(2))) {
           FLog.e(
               TAG,
               "Direct event name for '$viewManagerName' doesn't correspond to the naming convention," +
@@ -231,9 +228,9 @@ internal object UIManagerModuleConstantsHelper {
 
     for ((key, sourceValue) in source) {
       var destValue = dest[key]
-      if (
-          destValue != null && (sourceValue is MutableMap<*, *>) && (destValue is MutableMap<*, *>)
-      ) {
+      if (destValue != null &&
+          (sourceValue is MutableMap<*, *>) &&
+          (destValue is MutableMap<*, *>)) {
         // Since event maps are client based Map interface, it could be immutable
         if (destValue !is HashMap<*, *>) {
           destValue = HashMap(destValue)

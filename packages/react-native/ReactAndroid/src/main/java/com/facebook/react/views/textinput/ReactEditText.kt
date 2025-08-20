@@ -217,10 +217,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
     // Turn off hardware acceleration for Oreo (T40484798)
     // see https://issuetracker.google.com/issues/67102093
-    if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1
-    ) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
       setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
@@ -308,12 +306,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
       MotionEvent.ACTION_MOVE ->
           if (detectScrollMovement) {
-            if (
-                !canScrollVertically(-1) &&
-                    !canScrollVertically(1) &&
-                    !canScrollHorizontally(-1) &&
-                    !canScrollHorizontally(1)
-            ) {
+            if (!canScrollVertically(-1) &&
+                !canScrollVertically(1) &&
+                !canScrollHorizontally(-1) &&
+                !canScrollHorizontally(1)) {
               // We cannot scroll, let parent views take care of these touches.
               this.parent.requestDisallowInterceptTouchEvent(false)
             }
@@ -369,8 +365,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
    */
   override fun onTextContextMenuItem(id: Int): Boolean =
       super.onTextContextMenuItem(
-          if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id
-      )
+          if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
 
   internal fun clearFocusAndMaybeRefocus() {
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode) {
@@ -612,12 +607,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
     paintFlags =
-        if (
-            fontStyle != ReactConstants.UNSET ||
-                fontWeight != ReactConstants.UNSET ||
-                fontFamily != null ||
-                fontFeatureSettings != null
-        ) {
+        if (fontStyle != ReactConstants.UNSET ||
+            fontWeight != ReactConstants.UNSET ||
+            fontFamily != null ||
+            fontFeatureSettings != null) {
           paintFlags or Paint.SUBPIXEL_TEXT_FLAG
         } else {
           paintFlags and (Paint.SUBPIXEL_TEXT_FLAG.inv())
@@ -839,12 +832,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       )
     }
 
-    if (
-        fontStyle != ReactConstants.UNSET ||
-            fontWeight != ReactConstants.UNSET ||
-            fontFamily != null ||
-            fontFeatureSettings != null
-    ) {
+    if (fontStyle != ReactConstants.UNSET ||
+        fontWeight != ReactConstants.UNSET ||
+        fontFamily != null ||
+        fontFeatureSettings != null) {
       workingText.setSpan(
           CustomStyleSpan(fontStyle, fontWeight, fontFeatureSettings, fontFamily, context.assets),
           0,
@@ -963,10 +954,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
 
-    if (
-        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-            ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()
-    ) {
+    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+        ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
       applyTextAttributes()
     }
   }

@@ -43,8 +43,7 @@ protected constructor(
         DefaultTurboModuleManagerDelegate.Builder()
       } else {
         error(
-            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
-        )
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
       }
 
   override fun getUIManagerProvider(): UIManagerProvider? =
@@ -61,12 +60,10 @@ protected constructor(
                           reactInstanceManager.createViewManager(viewManagerName)
 
                       override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
-                    }
-                )
+                    })
               } else {
                 ViewManagerRegistry(
-                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
-                )
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
               }
 
           FabricUIManagerProviderImpl(componentFactory, viewManagerRegistry)
@@ -74,8 +71,7 @@ protected constructor(
         }
       } else {
         error(
-            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
-        )
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
       }
 
   override fun clear() {

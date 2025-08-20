@@ -42,8 +42,7 @@ import com.facebook.react.packagerconnection.RequestHandler
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
-    level = DeprecationLevel.WARNING,
-)
+    level = DeprecationLevel.WARNING)
 public class ReactInstanceManagerBuilder {
   private val packages: MutableList<ReactPackage> = mutableListOf()
   private var jsBundleAssetUrl: String? = null

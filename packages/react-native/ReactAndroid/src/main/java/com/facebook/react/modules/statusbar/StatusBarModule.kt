@@ -80,8 +80,7 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
               window.statusBarColor = color
             }
           }
-        }
-    )
+        })
   }
 
   override fun setTranslucent(translucent: Boolean) {
@@ -105,8 +104,7 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
           override fun runGuarded() {
             activity.window?.setStatusBarTranslucency(translucent)
           }
-        }
-    )
+        })
   }
 
   override fun setHidden(hidden: Boolean) {
@@ -159,8 +157,7 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
                 }
             decorView.systemUiVisibility = systemUiVisibilityFlags
           }
-        }
-    )
+        })
   }
 
   companion object {

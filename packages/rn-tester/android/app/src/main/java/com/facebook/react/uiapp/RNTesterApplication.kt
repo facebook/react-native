@@ -87,8 +87,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                                     ),
                             )
                           }
-                    }
-                )
+                    })
                 add(
                     object : ReactPackage, ViewManagerOnDemandReactPackage {
                       override fun getViewManagerNames(reactContext: ReactApplicationContext) =
@@ -117,8 +116,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                             "RNTReportFullyDrawnView" -> ReportFullyDrawnViewManager()
                             else -> null
                           }
-                    }
-                )
+                    })
               }
 
           override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED

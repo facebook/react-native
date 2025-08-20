@@ -57,8 +57,7 @@ public object UIManagerHelper {
         ReactSoftExceptionLogger.logSoftException(
             TAG,
             ReactNoCrashSoftException(
-                "Cannot get UIManager because the instance hasn't been initialized yet."
-            ),
+                "Cannot get UIManager because the instance hasn't been initialized yet."),
         )
         return null
       }
@@ -79,8 +78,7 @@ public object UIManagerHelper {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           ReactNoCrashSoftException(
-              "Cannot get UIManager because the context doesn't contain a CatalystInstance."
-          ),
+              "Cannot get UIManager because the context doesn't contain a CatalystInstance."),
       )
       return null
     }
@@ -91,8 +89,7 @@ public object UIManagerHelper {
           TAG,
           ReactNoCrashSoftException(
               "Cannot get UIManager because the context doesn't contain an active" +
-                  " CatalystInstance."
-          ),
+                  " CatalystInstance."),
       )
       if (returnNullIfCatalystIsInactive) {
         return null
@@ -215,8 +212,7 @@ public object UIManagerHelper {
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           IllegalStateException(
-              "Fabric View [$reactTag] does not have SurfaceId associated with it"
-          ),
+              "Fabric View [$reactTag] does not have SurfaceId associated with it"),
       )
     }
     return surfaceId

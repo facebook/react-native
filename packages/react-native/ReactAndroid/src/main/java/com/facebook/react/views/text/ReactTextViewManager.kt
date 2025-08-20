@@ -151,8 +151,7 @@ public constructor(
 
     val textBreakStrategy =
         TextAttributeProps.getTextBreakStrategy(
-            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY)
-        )
+            paragraphAttributes.getString(TextLayoutManager.PA_KEY_TEXT_BREAK_STRATEGY))
     val currentJustificationMode =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) 0 else view.justificationMode
 

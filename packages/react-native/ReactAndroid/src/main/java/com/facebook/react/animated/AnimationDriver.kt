@@ -35,7 +35,6 @@ internal abstract class AnimationDriver {
    */
   open fun resetConfig(config: ReadableMap) {
     throw JSApplicationCausedNativeException(
-        "Animation config for ${javaClass.simpleName} cannot be reset"
-    )
+        "Animation config for ${javaClass.simpleName} cannot be reset")
   }
 }

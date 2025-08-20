@@ -64,8 +64,7 @@ import com.facebook.yoga.YogaUnit
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
-    message = "This class is part of Legacy Architecture and will be removed in a future release"
-)
+    message = "This class is part of Legacy Architecture and will be removed in a future release")
 public abstract class ReactBaseTextShadowNode
 @JvmOverloads
 public constructor(
@@ -544,8 +543,7 @@ public constructor(
                   sb.length - INLINE_VIEW_PLACEHOLDER.length,
                   sb.length,
                   child.buildInlineImageSpan(),
-              )
-          )
+              ))
         } else if (supportsInlineViews) {
           val reactTag = child.reactTag
           val widthValue = child.styleWidth
@@ -574,15 +572,13 @@ public constructor(
                   sb.length - INLINE_VIEW_PLACEHOLDER.length,
                   sb.length,
                   TextInlineViewPlaceholderSpan(reactTag, width.toInt(), height.toInt()),
-              )
-          )
+              ))
 
           // supportsInlineViews is true, so we can assume that inlineViews is not null
           checkNotNull(inlineViews)[reactTag] = child
         } else {
           throw IllegalViewOperationException(
-              "Unexpected view type nested under a <Text> or <TextInput> node: ${child.javaClass}"
-          )
+              "Unexpected view type nested under a <Text> or <TextInput> node: ${child.javaClass}")
         }
         child.markUpdateSeen()
         i++
@@ -594,8 +590,8 @@ public constructor(
         }
         if (textShadowNode.isBackgroundColorSet) {
           ops.add(
-              SetSpanOperation(start, end, ReactBackgroundColorSpan(textShadowNode.backgroundColor))
-          )
+              SetSpanOperation(
+                  start, end, ReactBackgroundColorSpan(textShadowNode.backgroundColor)))
         }
         val roleIsLink =
             if (textShadowNode.role != null)
@@ -605,26 +601,21 @@ public constructor(
           ops.add(SetSpanOperation(start, end, ReactClickableSpan(textShadowNode.reactTag)))
         }
         val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
-        if (
-            !java.lang.Float.isNaN(effectiveLetterSpacing) &&
-                (parentTextAttributes == null ||
-                    parentTextAttributes.effectiveLetterSpacing != effectiveLetterSpacing)
-        ) {
+        if (!java.lang.Float.isNaN(effectiveLetterSpacing) &&
+            (parentTextAttributes == null ||
+                parentTextAttributes.effectiveLetterSpacing != effectiveLetterSpacing)) {
           ops.add(SetSpanOperation(start, end, CustomLetterSpacingSpan(effectiveLetterSpacing)))
         }
         val effectiveFontSize = textAttributes.effectiveFontSize
         if ( // `getEffectiveFontSize` always returns a value so don't need to check for anything
-            // like `Float.NaN`.
-            parentTextAttributes == null ||
-                parentTextAttributes.effectiveFontSize != effectiveFontSize
-        ) {
+        // like `Float.NaN`.
+        parentTextAttributes == null ||
+            parentTextAttributes.effectiveFontSize != effectiveFontSize) {
           ops.add(SetSpanOperation(start, end, ReactAbsoluteSizeSpan(effectiveFontSize)))
         }
-        if (
-            textShadowNode.fontStyle != ReactConstants.UNSET ||
-                textShadowNode.fontWeight != ReactConstants.UNSET ||
-                textShadowNode.fontFamily != null
-        ) {
+        if (textShadowNode.fontStyle != ReactConstants.UNSET ||
+            textShadowNode.fontWeight != ReactConstants.UNSET ||
+            textShadowNode.fontFamily != null) {
           ops.add(
               SetSpanOperation(
                   start,
@@ -636,8 +627,7 @@ public constructor(
                       textShadowNode.fontFamily,
                       textShadowNode.themedContext.assets,
                   ),
-              )
-          )
+              ))
         }
         if (textShadowNode.isUnderlineTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactUnderlineSpan()))
@@ -645,12 +635,10 @@ public constructor(
         if (textShadowNode.isLineThroughTextDecorationSet) {
           ops.add(SetSpanOperation(start, end, ReactStrikethroughSpan()))
         }
-        if (
-            (textShadowNode.textShadowOffsetDx != 0f ||
-                textShadowNode.textShadowOffsetDy != 0f ||
-                textShadowNode.textShadowRadius != 0f) &&
-                Color.alpha(textShadowNode.textShadowColor) != 0
-        ) {
+        if ((textShadowNode.textShadowOffsetDx != 0f ||
+            textShadowNode.textShadowOffsetDy != 0f ||
+            textShadowNode.textShadowRadius != 0f) &&
+            Color.alpha(textShadowNode.textShadowColor) != 0) {
           ops.add(
               SetSpanOperation(
                   start,
@@ -661,15 +649,12 @@ public constructor(
                       textShadowNode.textShadowRadius,
                       textShadowNode.textShadowColor,
                   ),
-              )
-          )
+              ))
         }
         val effectiveLineHeight = textAttributes.effectiveLineHeight
-        if (
-            !java.lang.Float.isNaN(effectiveLineHeight) &&
-                (parentTextAttributes == null ||
-                    parentTextAttributes.effectiveLineHeight != effectiveLineHeight)
-        ) {
+        if (!java.lang.Float.isNaN(effectiveLineHeight) &&
+            (parentTextAttributes == null ||
+                parentTextAttributes.effectiveLineHeight != effectiveLineHeight)) {
           ops.add(SetSpanOperation(start, end, CustomLineHeightSpan(effectiveLineHeight)))
         }
         ops.add(SetSpanOperation(start, end, ReactTagSpan(textShadowNode.reactTag)))

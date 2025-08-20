@@ -86,8 +86,7 @@ public class ThemedReactContext(
       reactApplicationContext.getNativeModule(moduleName)
 
   @Deprecated(
-      "This method is deprecated and will be removed once the Legacy Architecture is removed"
-  )
+      "This method is deprecated and will be removed once the Legacy Architecture is removed")
   @LegacyArchitecture
   override fun getCatalystInstance(): CatalystInstance? =
       reactApplicationContext.getCatalystInstance()
@@ -124,8 +123,7 @@ public class ThemedReactContext(
    *   with this [ThemedReactContext]
    */
   @Deprecated(
-      "Do not depend on this method. It will be removed in a future release of React Native."
-  )
+      "Do not depend on this method. It will be removed in a future release of React Native.")
   public fun getSurfaceID(): String? = moduleName
 
   override fun handleException(e: Exception?) {
@@ -133,8 +131,7 @@ public class ThemedReactContext(
   }
 
   @Deprecated(
-      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future."
-  )
+      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future.")
   override fun isBridgeless(): Boolean = reactApplicationContext.isBridgeless()
 
   override fun getJavaScriptContextHolder(): JavaScriptContextHolder? =

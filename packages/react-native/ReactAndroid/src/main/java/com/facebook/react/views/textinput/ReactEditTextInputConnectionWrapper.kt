@@ -82,9 +82,8 @@ internal class ReactEditTextInputConnectionWrapper(
         currentSelectionStart < previousSelectionStart || currentSelectionStart <= 0
 
     val inputKey =
-        if (
-            cursorMovedBackwardsOrAtBeginningOfInput || (!noPreviousSelection && cursorDidNotMove)
-        ) {
+        if (cursorMovedBackwardsOrAtBeginningOfInput ||
+            (!noPreviousSelection && cursorDidNotMove)) {
           BACKSPACE_KEY_VALUE
         } else {
           editText.text?.get(currentSelectionStart - 1).toString()

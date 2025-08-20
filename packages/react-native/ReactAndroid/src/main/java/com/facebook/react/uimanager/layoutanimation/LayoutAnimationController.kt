@@ -155,8 +155,7 @@ public open class LayoutAnimationController {
             }
 
             override fun onAnimationRepeat(animation: Animation) = Unit
-          }
-      )
+          })
     } else {
       view.layout(x, y, x + width, y + height)
     }
@@ -198,8 +197,7 @@ public open class LayoutAnimationController {
             override fun onAnimationEnd(anim: Animation) {
               listener.onAnimationEnd()
             }
-          }
-      )
+          })
 
       val animationDuration = animation.duration
       if (animationDuration > maxAnimationDuration) {

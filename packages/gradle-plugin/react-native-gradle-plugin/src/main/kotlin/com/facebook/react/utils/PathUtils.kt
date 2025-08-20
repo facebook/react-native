@@ -105,14 +105,13 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 
   error(
       """
-        Couldn't determine CLI location!
+      Couldn't determine CLI location!
 
-        Please set `react { cliFile = file(...) }` inside your
-        build.gradle to the path of the react-native cli.js file.
-        This file typically resides in `node_modules/react-native/cli.js`
-      """
-          .trimIndent()
-  )
+      Please set `react { cliFile = file(...) }` inside your
+      build.gradle to the path of the react-native cli.js file.
+      This file typically resides in `node_modules/react-native/cli.js`
+    """
+          .trimIndent())
 }
 
 /**
@@ -161,8 +160,7 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
   error(
       "Couldn't determine Hermesc location. " +
           "Please set `react.hermesCommand` to the path of the hermesc binary file. " +
-          "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
-  )
+          "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc")
 }
 
 /**
@@ -188,8 +186,7 @@ internal fun getHermesOSBin(): String {
   if (Os.isLinuxAmd64()) return "linux64-bin"
   error(
       "OS not recognized. Please set project.react.hermesCommand " +
-          "to the path of a working Hermes compiler."
-  )
+          "to the path of a working Hermes compiler.")
 }
 
 internal fun projectPathToLibraryName(projectPath: String): String =

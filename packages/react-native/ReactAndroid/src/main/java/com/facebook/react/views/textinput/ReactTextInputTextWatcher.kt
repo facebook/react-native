@@ -63,8 +63,7 @@ internal class ReactTextInputTextWatcher(
             editText.id,
             s.toString(),
             editText.incrementAndGetEventCounter(),
-        )
-    )
+        ))
   }
 
   override fun afterTextChanged(s: Editable) = Unit

@@ -54,8 +54,7 @@ public object ColorPropConverter {
       val resourcePaths =
           value.getArray(JSON_KEY)
               ?: throw JSApplicationCausedNativeException(
-                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings."
-              )
+                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings.")
 
       for (i in 0 until resourcePaths.size()) {
         val result = resolveResourcePath(context, resourcePaths.getString(i))
@@ -65,8 +64,7 @@ public object ColorPropConverter {
       }
 
       throw JSApplicationCausedNativeException(
-          "ColorValue: None of the paths in the `$JSON_KEY` array resolved to a color resource."
-      )
+          "ColorValue: None of the paths in the `$JSON_KEY` array resolved to a color resource.")
     }
 
     throw JSApplicationCausedNativeException("ColorValue: the value must be a number or Object.")
@@ -103,8 +101,7 @@ public object ColorPropConverter {
       val resourcePaths =
           value.getArray(JSON_KEY)
               ?: throw JSApplicationCausedNativeException(
-                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings."
-              )
+                  "ColorValue: The `$JSON_KEY` must be an array of color resource path strings.")
 
       for (i in 0 until resourcePaths.size()) {
         val result = resolveResourcePath(context, resourcePaths.getString(i))
@@ -114,8 +111,7 @@ public object ColorPropConverter {
       }
 
       throw JSApplicationCausedNativeException(
-          "ColorValue: None of the paths in the `$JSON_KEY` array resolved to a color resource."
-      )
+          "ColorValue: None of the paths in the `$JSON_KEY` array resolved to a color resource.")
     }
 
     throw JSApplicationCausedNativeException("ColorValue: the value must be a number or Object.")

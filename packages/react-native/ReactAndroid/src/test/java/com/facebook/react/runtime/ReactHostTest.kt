@@ -76,8 +76,7 @@ class ReactHostTest {
                 Task.IMMEDIATE_EXECUTOR,
                 false /* allowPackagerServerAccess */,
                 false /* useDevSupport */,
-            )
-        )
+            ))
     doReturn(null).whenever(reactHost).getOrCreateReactHostInspectorTarget()
     doNothing().whenever(reactHost).unregisterInstanceFromInspector(any())
   }

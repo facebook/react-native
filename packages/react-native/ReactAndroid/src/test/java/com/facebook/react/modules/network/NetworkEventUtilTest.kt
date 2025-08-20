@@ -46,8 +46,7 @@ class NetworkEventUtilTest {
     ReactNativeFeatureFlags.override(
         object : ReactNativeFeatureFlagsDefaults() {
           override fun enableNetworkEventReporting(): Boolean = false
-        }
-    )
+        })
   }
 
   @After

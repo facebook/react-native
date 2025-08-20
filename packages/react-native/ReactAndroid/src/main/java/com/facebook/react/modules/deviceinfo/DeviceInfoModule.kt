@@ -69,8 +69,7 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
         ReactSoftExceptionLogger.logSoftException(
             NativeDeviceInfoSpec.NAME,
             ReactNoCrashSoftException(
-                "No active CatalystInstance, cannot emitUpdateDimensionsEvent"
-            ),
+                "No active CatalystInstance, cannot emitUpdateDimensionsEvent"),
         )
       }
     }

@@ -6,8 +6,7 @@
  */
 
 @file:Suppress(
-    "DEPRECATION"
-) // silents "interface RCTEventEmitter : JavaScriptModule' is deprecated."
+    "DEPRECATION") // silents "interface RCTEventEmitter : JavaScriptModule' is deprecated."
 
 package com.facebook.react.views.text
 
@@ -77,11 +76,9 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
       // Minimum font size is 4pts to match the iOS implementation.
       val minimumFontSize =
           max((minimumFontScale * initialFontSize), PixelUtil.toPixelFromDIP(4f)).toInt()
-      while (
-          currentFontSize > minimumFontSize &&
-              ((numberOfLines != ReactConstants.UNSET && layout.lineCount > numberOfLines) ||
-                  (heightMode != YogaMeasureMode.UNDEFINED && layout.height > height))
-      ) {
+      while (currentFontSize > minimumFontSize &&
+          ((numberOfLines != ReactConstants.UNSET && layout.lineCount > numberOfLines) ||
+              (heightMode != YogaMeasureMode.UNDEFINED && layout.height > height))) {
         // TODO: We could probably use a smarter algorithm here. This will require 0(n)
         // measurements
         // based on the number of points the font size needs to be reduced by.
@@ -92,8 +89,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
         for (span in sizeSpans) {
           text.setSpan(
               ReactAbsoluteSizeSpan(
-                  max((span.size * ratio).toDouble(), minimumFontSize.toDouble()).toInt()
-              ),
+                  max((span.size * ratio).toDouble(), minimumFontSize.toDouble()).toInt()),
               text.getSpanStart(span),
               text.getSpanEnd(span),
               text.getSpanFlags(span),
@@ -204,11 +200,9 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
           else -> Layout.Alignment.ALIGN_NORMAL
         }
 
-    if (
-        boring == null &&
-            (unconstrainedWidth ||
-                (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))
-    ) {
+    if (boring == null &&
+        (unconstrainedWidth ||
+            (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
       // Is used when the width is not known and the text is not boring, ie. if it contains
       // unicode characters.
       val hintWidth = ceil(desiredWidth.toDouble()).toInt()

@@ -94,8 +94,7 @@ import com.facebook.react.views.view.ReactViewManager
             ToastModule::class,
             VibrationModule::class,
             WebSocketModule::class,
-        ]
-)
+        ])
 public class MainReactPackage
 @JvmOverloads
 constructor(private val config: MainPackageConfig? = null) :
@@ -224,8 +223,7 @@ constructor(private val config: MainPackageConfig? = null) :
     try {
       val reactModuleInfoProviderClass =
           ClassFinder.findClass(
-              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider"
-          )
+              "com.facebook.react.shell.MainReactPackage$\$ReactModuleInfoProvider")
       @Suppress("DEPRECATION")
       return reactModuleInfoProviderClass?.newInstance() as? ReactModuleInfoProvider
           ?: fallbackForMissingClass()

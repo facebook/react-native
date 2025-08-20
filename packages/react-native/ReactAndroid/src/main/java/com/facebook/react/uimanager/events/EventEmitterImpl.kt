@@ -88,8 +88,7 @@ internal class EventEmitterImpl(
         logSoftException(
             TAG,
             ReactNoCrashSoftException(
-                "Cannot get RCTEventEmitter without active Catalyst instance!"
-            ),
+                "Cannot get RCTEventEmitter without active Catalyst instance!"),
         )
       }
     }

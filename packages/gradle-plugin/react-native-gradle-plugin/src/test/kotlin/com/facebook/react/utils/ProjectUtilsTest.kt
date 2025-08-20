@@ -128,8 +128,7 @@ class ProjectUtilsTest {
         "codegenConfig": {}
       }
       """
-              .trimIndent()
-      )
+              .trimIndent())
     }
     extension.root.set(tempFolder.root)
     assertThat(project.needsCodegenFromPackageJson(extension.root)).isTrue()
@@ -147,8 +146,7 @@ class ProjectUtilsTest {
         "name": "a-library"
       }
       """
-              .trimIndent()
-      )
+              .trimIndent())
     }
     extension.root.set(tempFolder.root)
     assertThat(project.needsCodegenFromPackageJson(extension.root)).isFalse()

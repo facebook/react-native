@@ -67,8 +67,7 @@ class DefaultNewArchitectureEntryPointTest {
     assertThat(isValid).isFalse()
     assertThat(errorMessage)
         .isEqualTo(
-            "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        )
+            "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
 
   @Test
@@ -82,8 +81,7 @@ class DefaultNewArchitectureEntryPointTest {
     assertThat(isValid).isFalse()
     assertThat(errorMessage)
         .isEqualTo(
-            "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        )
+            "fabricEnabled=true requires turboModulesEnabled=true (is now false) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
 
   @Test
@@ -97,7 +95,6 @@ class DefaultNewArchitectureEntryPointTest {
     assertThat(isValid).isFalse()
     assertThat(errorMessage)
         .isEqualTo(
-            "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters."
-        )
+            "bridgelessEnabled=true requires (turboModulesEnabled=true AND fabricEnabled=true) - Please update your DefaultNewArchitectureEntryPoint.load() parameters.")
   }
 }

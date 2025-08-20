@@ -203,8 +203,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     public fun build(): ReactFragment = newInstance(componentName, launchOptions, fabricEnabled)
 
     @Deprecated(
-        "You should not change call ReactFragment.setFabricEnabled. Instead enable the NewArchitecture for the whole application with newArchEnabled=true in your gradle.properties file"
-    )
+        "You should not change call ReactFragment.setFabricEnabled. Instead enable the NewArchitecture for the whole application with newArchEnabled=true in your gradle.properties file")
     public fun setFabricEnabled(fabricEnabled: Boolean): Builder {
       this.fabricEnabled = fabricEnabled
       return this
@@ -217,8 +216,7 @@ public open class ReactFragment : Fragment(), PermissionAwareActivity {
     protected const val ARG_FABRIC_ENABLED: String = "arg_fabric_enabled"
 
     @Deprecated(
-        "We will remove this and use a different solution for handling Fragment lifecycle events."
-    )
+        "We will remove this and use a different solution for handling Fragment lifecycle events.")
     protected const val ARG_DISABLE_HOST_LIFECYCLE_EVENTS: String =
         "arg_disable_host_lifecycle_events"
 

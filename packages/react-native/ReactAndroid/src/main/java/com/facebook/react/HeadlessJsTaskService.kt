@@ -145,8 +145,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
               invokeStartTask(context, taskConfig)
               reactHost.removeReactInstanceEventListener(this)
             }
-          }
-      )
+          })
       reactHost.start()
     } else {
       val reactInstanceManager = reactNativeHost.reactInstanceManager
@@ -156,8 +155,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
               invokeStartTask(context, taskConfig)
               reactInstanceManager.removeReactInstanceEventListener(this)
             }
-          }
-      )
+          })
       reactInstanceManager.createReactContextInBackground()
     }
   }

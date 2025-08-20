@@ -367,27 +367,23 @@ internal class BorderDrawable(
     canvas.clipPath(checkNotNull(outerClipPathForBorderRadius))
 
     val borderWidth = computeBorderInsets()
-    if (
-        borderWidth.top > 0 ||
-            borderWidth.bottom > 0 ||
-            borderWidth.left > 0 ||
-            borderWidth.right > 0
-    ) {
+    if (borderWidth.top > 0 ||
+        borderWidth.bottom > 0 ||
+        borderWidth.left > 0 ||
+        borderWidth.right > 0) {
 
       // If it's a full and even border draw inner rect path with stroke
       val fullBorderWidth: Float = getFullBorderWidth()
       val borderColor = getBorderColor(LogicalEdge.ALL)
 
-      if (
-          borderWidth.top == fullBorderWidth &&
-              borderWidth.bottom == fullBorderWidth &&
-              borderWidth.left == fullBorderWidth &&
-              borderWidth.right == fullBorderWidth &&
-              computedBorderColors.left == borderColor &&
-              computedBorderColors.top == borderColor &&
-              computedBorderColors.right == borderColor &&
-              computedBorderColors.bottom == borderColor
-      ) {
+      if (borderWidth.top == fullBorderWidth &&
+          borderWidth.bottom == fullBorderWidth &&
+          borderWidth.left == fullBorderWidth &&
+          borderWidth.right == fullBorderWidth &&
+          computedBorderColors.left == borderColor &&
+          computedBorderColors.top == borderColor &&
+          computedBorderColors.right == borderColor &&
+          computedBorderColors.bottom == borderColor) {
         if (fullBorderWidth > 0) {
           borderPaint.color = multiplyColorAlpha(borderColor, borderAlpha)
           borderPaint.style = Paint.Style.STROKE
@@ -494,12 +490,10 @@ internal class BorderDrawable(
       colorBottom: Int,
   ): Int {
     // If any of the border colors are translucent then we can't use the fast path.
-    if (
-        Color.alpha(colorLeft) < 255 ||
-            Color.alpha(colorTop) < 255 ||
-            Color.alpha(colorRight) < 255 ||
-            Color.alpha(colorBottom) < 255
-    ) {
+    if (Color.alpha(colorLeft) < 255 ||
+        Color.alpha(colorTop) < 255 ||
+        Color.alpha(colorRight) < 255 ||
+        Color.alpha(colorBottom) < 255) {
       return 0
     }
 
@@ -691,12 +685,10 @@ internal class BorderDrawable(
     val borderWidth = computeBorderInsets()
 
     // Clip border ONLY if at least one edge is non-transparent
-    if (
-        Color.alpha(computedBorderColors.left) != 0 ||
-            Color.alpha(computedBorderColors.top) != 0 ||
-            Color.alpha(computedBorderColors.right) != 0 ||
-            Color.alpha(computedBorderColors.bottom) != 0
-    ) {
+    if (Color.alpha(computedBorderColors.left) != 0 ||
+        Color.alpha(computedBorderColors.top) != 0 ||
+        Color.alpha(computedBorderColors.right) != 0 ||
+        Color.alpha(computedBorderColors.bottom) != 0) {
       innerClipTempRectForBorderRadius?.top =
           innerClipTempRectForBorderRadius?.top?.plus(borderWidth.top) ?: 0f
       innerClipTempRectForBorderRadius?.bottom =

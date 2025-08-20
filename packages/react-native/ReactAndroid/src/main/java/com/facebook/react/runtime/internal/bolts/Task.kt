@@ -125,8 +125,7 @@ public class Task<TResult> : TaskInterface<TResult> {
       completed = this.isCompleted()
       if (!completed) {
         continuations.add(
-            Continuation { task -> completeImmediately(tcs, continuation, task, executor) }
-        )
+            Continuation { task -> completeImmediately(tcs, continuation, task, executor) })
       }
     }
     if (completed) {
@@ -150,8 +149,7 @@ public class Task<TResult> : TaskInterface<TResult> {
       completed = this.isCompleted()
       if (!completed) {
         continuations.add(
-            Continuation { task -> completeAfterTask(tcs, continuation, task, executor) }
-        )
+            Continuation { task -> completeAfterTask(tcs, continuation, task, executor) })
       }
     }
     if (completed) {

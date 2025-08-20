@@ -36,16 +36,14 @@ internal class ReactTextViewAccessibilityDelegate(
     fun setDelegate(view: View, originalFocus: Boolean, originalImportantForAccessibility: Int) {
       // if a view already has an accessibility delegate, replacing it could cause
       // problems,so leave it alone.
-      if (
-          !ViewCompat.hasAccessibilityDelegate(view) &&
-              (view.getTag(R.id.accessibility_role) != null ||
-                  view.getTag(R.id.accessibility_state) != null ||
-                  view.getTag(R.id.accessibility_actions) != null ||
-                  view.getTag(R.id.react_test_id) != null ||
-                  view.getTag(R.id.accessibility_collection_item) != null ||
-                  view.getTag(R.id.accessibility_links) != null ||
-                  view.getTag(R.id.role) != null)
-      ) {
+      if (!ViewCompat.hasAccessibilityDelegate(view) &&
+          (view.getTag(R.id.accessibility_role) != null ||
+              view.getTag(R.id.accessibility_state) != null ||
+              view.getTag(R.id.accessibility_actions) != null ||
+              view.getTag(R.id.react_test_id) != null ||
+              view.getTag(R.id.accessibility_collection_item) != null ||
+              view.getTag(R.id.accessibility_links) != null ||
+              view.getTag(R.id.role) != null)) {
         ViewCompat.setAccessibilityDelegate(
             view,
             ReactTextViewAccessibilityDelegate(
@@ -122,10 +120,8 @@ internal class ReactTextViewAccessibilityDelegate(
 
   override fun getVirtualViewAt(x: Float, y: Float): Int {
     val accessibilityLinks = accessibilityLinks ?: return INVALID_ID
-    if (
-        accessibilityLinks.size() == 0 ||
-            (hostView !is TextView && hostView !is PreparedLayoutTextView)
-    ) {
+    if (accessibilityLinks.size() == 0 ||
+        (hostView !is TextView && hostView !is PreparedLayoutTextView)) {
       return INVALID_ID
     }
 

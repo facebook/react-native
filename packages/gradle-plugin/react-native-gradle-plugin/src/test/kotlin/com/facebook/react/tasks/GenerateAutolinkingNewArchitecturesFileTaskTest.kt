@@ -72,11 +72,9 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
                                 name = "a-dependency",
                                 platforms =
                                     ModelAutolinkingDependenciesPlatformJson(android = null),
-                            )
-                    ),
+                            )),
                 project = null,
-            )
-        )
+            ))
     assertThat(result).isEmpty()
   }
 
@@ -103,11 +101,9 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
                                 name = "a-dependency",
                                 platforms =
                                     ModelAutolinkingDependenciesPlatformJson(android = android),
-                            )
-                    ),
+                            )),
                 project = null,
-            )
-        )
+            ))
     assertThat(result).containsExactly(android)
   }
 
@@ -134,8 +130,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
         
       )
     """
-                .trimIndent()
-        )
+                .trimIndent())
   }
 
   @Test
@@ -165,8 +160,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       another_cxxModule
       )
     """
-                .trimIndent()
-        )
+                .trimIndent())
   }
 
   @Test
@@ -210,8 +204,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       } // namespace react
       } // namespace facebook
     """
-                .trimIndent()
-        )
+                .trimIndent())
   }
 
   @Test
@@ -267,8 +260,7 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       } // namespace react
       } // namespace facebook
     """
-                .trimIndent()
-        )
+                .trimIndent())
   }
 
   @Test

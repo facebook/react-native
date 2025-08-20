@@ -46,8 +46,7 @@ internal class ReactTextContentSizeWatcher(private val editText: ReactEditText) 
               editText.id,
               toDIPFromPixel(contentWidth.toFloat()),
               toDIPFromPixel(contentHeight.toFloat()),
-          )
-      )
+          ))
     }
   }
 }
