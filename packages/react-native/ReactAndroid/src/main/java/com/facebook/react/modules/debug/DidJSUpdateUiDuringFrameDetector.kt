@@ -6,7 +6,8 @@
  */
 
 @file:Suppress(
-    "DEPRECATION") // Suppressing deprecation of NotThreadSafeViewHierarchyUpdateDebugListener
+    "DEPRECATION"
+) // Suppressing deprecation of NotThreadSafeViewHierarchyUpdateDebugListener
 
 package com.facebook.react.modules.debug
 

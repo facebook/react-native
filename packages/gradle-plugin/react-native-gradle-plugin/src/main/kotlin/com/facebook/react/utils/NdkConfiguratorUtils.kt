@@ -45,7 +45,8 @@ internal object NdkConfiguratorUtils {
         }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
-              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
+              "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}"
+          )
         }
         if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
@@ -86,7 +87,8 @@ internal object NdkConfiguratorUtils {
             "**/libjsi.so",
             // AGP will give priority of libc++_shared coming from App modules.
             "**/libc++_shared.so",
-        ))
+        )
+    )
   }
 
   /**

@@ -129,7 +129,8 @@ val installCMake by
     tasks.registering(CustomExecTask::class) {
       onlyIfProvidedPathDoesNotExists.set(cmakePath)
       commandLine(
-          windowsAwareCommandLine(getSDKManagerPath(), "--install", "cmake;${cmakeVersion}"))
+          windowsAwareCommandLine(getSDKManagerPath(), "--install", "cmake;${cmakeVersion}")
+      )
     }
 
 val configureBuildForHermes by
@@ -264,7 +265,8 @@ android {
             "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=True",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
-            "-DHERMES_ENABLE_INTL=True")
+            "-DHERMES_ENABLE_INTL=True",
+        )
 
         targets("libhermes")
       }
@@ -302,7 +304,8 @@ android {
           arguments(
               "-DCMAKE_BUILD_TYPE=MinSizeRel",
               // For release builds, we don't want to enable the Hermes Debugger.
-              "-DHERMES_ENABLE_DEBUGGER=False")
+              "-DHERMES_ENABLE_DEBUGGER=False",
+          )
         }
       }
     }

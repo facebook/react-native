@@ -59,10 +59,12 @@ class ReactRootProjectPlugin : Plugin<Project> {
   }
 
   private fun checkLegacyArchProperty(project: Project) {
-    if ((project.hasProperty(PropertyUtils.NEW_ARCH_ENABLED) &&
-        !project.property(PropertyUtils.NEW_ARCH_ENABLED).toString().toBoolean()) ||
-        (project.hasProperty(PropertyUtils.SCOPED_NEW_ARCH_ENABLED) &&
-            !project.property(PropertyUtils.SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())) {
+    if (
+        (project.hasProperty(PropertyUtils.NEW_ARCH_ENABLED) &&
+            !project.property(PropertyUtils.NEW_ARCH_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(PropertyUtils.SCOPED_NEW_ARCH_ENABLED) &&
+                !project.property(PropertyUtils.SCOPED_NEW_ARCH_ENABLED).toString().toBoolean())
+    ) {
       project.logger.error(
           """
       ********************************************************************************
@@ -77,7 +79,8 @@ class ReactRootProjectPlugin : Plugin<Project> {
       ********************************************************************************
 
       """
-              .trimIndent())
+              .trimIndent()
+      )
     }
   }
 }

@@ -58,7 +58,8 @@ import okio.Okio
  * - Genymotion emulator with default settings: 10.0.3.2
  */
 @SuppressLint(
-    "StaticFieldLeak") // TODO: This entire class should be rewritten to don't use AsyncTask
+    "StaticFieldLeak"
+) // TODO: This entire class should be rewritten to don't use AsyncTask
 public open class DevServerHelper(
     private val settings: DeveloperSettings,
     private val applicationContext: Context,
@@ -361,7 +362,8 @@ public open class DevServerHelper(
             "http://%s/open-debugger?device=%s",
             packagerConnectionSettings.debugServerHost,
             Uri.encode(inspectorDeviceId),
-        ))
+        )
+    )
 
     if (landingView != null) {
       requestUrlBuilder.append("&landingView=" + Uri.encode(landingView))
@@ -382,7 +384,8 @@ public open class DevServerHelper(
               }
 
               override fun onResponse(call: Call, response: Response) = Unit
-            })
+            }
+        )
   }
 
   private companion object {

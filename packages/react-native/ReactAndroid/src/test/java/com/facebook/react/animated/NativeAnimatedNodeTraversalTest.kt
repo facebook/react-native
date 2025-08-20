@@ -437,9 +437,11 @@ class NativeAnimatedNodeTraversalTest {
         wasGreaterThanOne = true
       }
       // Test to see if it reset after coming to rest
-      if (didComeToRest &&
-          currentValue == 0.0 &&
-          abs(abs(currentValue - previousValue) - 1.0) < 0.001) {
+      if (
+          didComeToRest &&
+              currentValue == 0.0 &&
+              abs(abs(currentValue - previousValue) - 1.0) < 0.001
+      ) {
         numberOfResets++
       }
 
@@ -1044,7 +1046,8 @@ class NativeAnimatedNodeTraversalTest {
 
     whenever(uiManagerMock.constants).thenAnswer {
       mapOf(
-          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll")))
+          "customDirectEventTypes" to mapOf("onScroll" to mapOf("registrationName" to "onScroll"))
+      )
     }
 
     nativeAnimatedNodesManager = NativeAnimatedNodesManager(reactApplicationContextMock)

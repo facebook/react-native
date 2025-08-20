@@ -54,7 +54,8 @@ import com.facebook.systrace.Systrace
             SourceCodeModule::class,
             TimingModule::class,
             com.facebook.react.uimanager.UIManagerModule::class,
-        ])
+        ]
+)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
 @Deprecated(
     message = "This class is part of Legacy Architecture and will be removed in a future release",
@@ -153,7 +154,8 @@ internal class CoreModulesPackage(
       DeviceInfoModule.NAME -> DeviceInfoModule(reactContext)
       else ->
           throw IllegalArgumentException(
-              "In CoreModulesPackage, could not find Native module for $name")
+              "In CoreModulesPackage, could not find Native module for $name"
+          )
     }
   }
 

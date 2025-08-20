@@ -424,7 +424,7 @@ public class ReactHostImpl(
       eventName: String,
       durationMs: Int,
       responsivenessScore: Int,
-      ttl: Int
+      ttl: Int,
   ) {
     if (devSupportManager is PerfMonitorV2Handler) {
       devSupportManager.unstable_updatePerfMonitor(eventName, durationMs, responsivenessScore, ttl)
@@ -545,12 +545,15 @@ public class ReactHostImpl(
 
   @Suppress("DEPRECATION")
   internal fun <T : NativeModule> getNativeModule(nativeModuleInterface: Class<T>): T? {
-    if (!ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
-        nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java) {
+    if (
+        !ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE &&
+            nativeModuleInterface == com.facebook.react.uimanager.UIManagerModule::class.java
+    ) {
       ReactSoftExceptionLogger.logSoftExceptionVerbose(
           TAG,
           ReactNoCrashSoftException(
-              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"),
+              "getNativeModule(UIManagerModule.class) cannot be called when the bridge is disabled"
+          ),
       )
     }
 
@@ -633,8 +636,10 @@ public class ReactHostImpl(
       val action = intent.action
       val uri = intent.data
 
-      if (uri != null &&
-          (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)) {
+      if (
+          uri != null &&
+              (Intent.ACTION_VIEW == action || NfcAdapter.ACTION_NDEF_DISCOVERED == action)
+      ) {
         val deviceEventManagerModule =
             currentContext.getNativeModule(DeviceEventManagerModule::class.java)
         deviceEventManagerModule?.emitNewIntentReceived(uri)
@@ -1113,7 +1118,8 @@ public class ReactHostImpl(
     val asyncDevSupportManager = devSupportManager as DevSupportManagerBase
     val bundleURL =
         asyncDevSupportManager.devServerHelper.getDevServerBundleURL(
-            checkNotNull(asyncDevSupportManager.jsAppBundleName))
+            checkNotNull(asyncDevSupportManager.jsAppBundleName)
+        )
 
     asyncDevSupportManager.reloadJSFromServer(
         bundleURL,
@@ -1251,8 +1257,10 @@ public class ReactHostImpl(
                 raiseSoftException(method, "ReactContext is null. Reload reason: $reason")
               }
 
-              if (reactContext != null &&
-                  reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED) {
+              if (
+                  reactContext != null &&
+                      reactLifecycleStateManager.lifecycleState == LifecycleState.RESUMED
+              ) {
                 log(method, "Calling ReactContext.onHostPause()")
                 reactContext.onHostPause()
               }

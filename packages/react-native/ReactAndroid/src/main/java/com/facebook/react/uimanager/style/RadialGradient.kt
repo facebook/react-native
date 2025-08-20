@@ -297,7 +297,8 @@ internal class RadialGradient(
     var distance =
         sqrt(
             (centerX - corners[cornerIndex].first).pow(2) +
-                (centerY - corners[cornerIndex].second).pow(2))
+                (centerY - corners[cornerIndex].second).pow(2)
+        )
     val isClosestCorner = sizeKeyword == GradientSize.KeywordType.CLOSEST_CORNER
 
     for (i in 1 until corners.size) {

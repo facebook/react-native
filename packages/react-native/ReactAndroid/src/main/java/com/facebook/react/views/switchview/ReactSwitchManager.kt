@@ -141,7 +141,8 @@ internal class ReactSwitchManager :
           val reactTag = buttonView.id
           UIManagerHelper.getEventDispatcherForReactTag(reactContext, reactTag)
               ?.dispatchEvent(
-                  ReactSwitchEvent(UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked))
+                  ReactSwitchEvent(UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked)
+              )
         }
   }
 }

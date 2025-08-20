@@ -33,7 +33,8 @@ internal object DependencyUtils {
     val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
     if (exclusiveEnterpriseRepository != null) {
       project.logger.lifecycle(
-          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository")
+          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository"
+      )
     }
 
     project.rootProject.allprojects { eachProject ->
@@ -135,26 +136,30 @@ internal object DependencyUtils {
             "com.facebook.react:react-native",
             "${groupString}:react-android:${versionString}",
             "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.",
-        ))
+        )
+    )
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:hermes-engine",
             "${groupString}:hermes-android:${versionString}",
             "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.",
-        ))
+        )
+    )
     if (groupString != DEFAULT_INTERNAL_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:react-android",
               "${groupString}:react-android:${versionString}",
               "The react-android dependency was modified to use the correct Maven group.",
-          ))
+          )
+      )
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
               "${groupString}:hermes-android:${versionString}",
               "The hermes-android dependency was modified to use the correct Maven group.",
-          ))
+          )
+      )
     }
     return dependencySubstitution
   }

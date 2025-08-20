@@ -164,7 +164,8 @@ public class NetworkingModule(
 
   @Deprecated(
       """To be removed in a future release. See
-        https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914""")
+        https://github.com/facebook/react-native/pull/37798#pullrequestreview-1518338914"""
+  )
   public interface CustomClientBuilder : com.facebook.react.modules.network.CustomClientBuilder
 
   override fun initialize() {
@@ -669,7 +670,8 @@ public class NetworkingModule(
                   NetworkEventUtil.onRequestError(reactApplicationContext, requestId, e.message, e)
                 }
               }
-            })
+            }
+        )
   }
 
   private fun wrapRequestBodyWithProgressEmitter(
@@ -830,13 +832,16 @@ public class NetworkingModule(
         headers = headers.newBuilder().removeAll(CONTENT_TYPE_HEADER_NAME).build()
       }
 
-      if (bodyPart.hasKey(REQUEST_BODY_KEY_STRING) &&
-          bodyPart.getString(REQUEST_BODY_KEY_STRING) != null) {
+      if (
+          bodyPart.hasKey(REQUEST_BODY_KEY_STRING) &&
+              bodyPart.getString(REQUEST_BODY_KEY_STRING) != null
+      ) {
         val bodyValue = bodyPart.getString(REQUEST_BODY_KEY_STRING).orEmpty()
         @Suppress("DEPRECATION")
         multipartBuilder.addPart(headers, RequestBody.create(partContentType, bodyValue))
-      } else if (bodyPart.hasKey(REQUEST_BODY_KEY_URI) &&
-          bodyPart.getString(REQUEST_BODY_KEY_URI) != null) {
+      } else if (
+          bodyPart.hasKey(REQUEST_BODY_KEY_URI) && bodyPart.getString(REQUEST_BODY_KEY_URI) != null
+      ) {
         if (partContentType == null) {
           NetworkEventUtil.onRequestError(
               reactApplicationContext,

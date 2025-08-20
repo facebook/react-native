@@ -31,7 +31,8 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
+          ),
       )
     }
   }
@@ -44,7 +45,8 @@ internal class ReactScrollViewAccessibilityDelegate : AccessibilityDelegateCompa
       ReactSoftExceptionLogger.logSoftException(
           TAG,
           AssertionException(
-              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"),
+              "ReactScrollViewAccessibilityDelegate should only be used with ReactAccessibleScrollView, not with class: ${host.javaClass.simpleName}"
+          ),
       )
     }
   }

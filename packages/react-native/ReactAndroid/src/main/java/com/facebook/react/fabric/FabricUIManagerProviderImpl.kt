@@ -69,7 +69,8 @@ public class FabricUIManagerProviderImpl(
     } else {
       throw IllegalStateException(
           "Unable to register FabricUIManager with CatalystInstance, runtimeExecutor and" +
-              " runtimeScheduler must not be null")
+              " runtimeScheduler must not be null"
+      )
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT)

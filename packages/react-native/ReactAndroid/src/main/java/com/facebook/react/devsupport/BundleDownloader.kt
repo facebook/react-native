@@ -92,23 +92,28 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
             object : Callback {
               override fun onFailure(call: Call, e: IOException) {
                 // ignore callback if call was cancelled
-                if (downloadBundleFromURLCall == null ||
-                    downloadBundleFromURLCall?.isCanceled() == true) {
+                if (
+                    downloadBundleFromURLCall == null ||
+                        downloadBundleFromURLCall?.isCanceled() == true
+                ) {
                   downloadBundleFromURLCall = null
                   return
                 }
                 downloadBundleFromURLCall = null
                 val url = call.request().url().toString()
                 callback.onFailure(
-                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e))
+                    makeGeneric(url, "Could not connect to development server.", "URL: $url", e)
+                )
               }
 
               @Throws(IOException::class)
               override fun onResponse(call: Call, response: Response) {
                 response.use { resp ->
                   // ignore callback if call was cancelled
-                  if (downloadBundleFromURLCall == null ||
-                      downloadBundleFromURLCall?.isCanceled() == true) {
+                  if (
+                      downloadBundleFromURLCall == null ||
+                          downloadBundleFromURLCall?.isCanceled() == true
+                  ) {
                     downloadBundleFromURLCall = null
                     return
                   }
@@ -146,7 +151,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                   }
                 }
               }
-            })
+            }
+        )
   }
 
   @Throws(IOException::class)
@@ -170,7 +176,9 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     
                     
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
       return
     }
     val source = checkNotNull(response.body()?.source())
@@ -204,8 +212,10 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                       callback,
                   )
                 } else {
-                  if (!headers.containsKey("Content-Type") ||
-                      headers["Content-Type"] != "application/json") {
+                  if (
+                      !headers.containsKey("Content-Type") ||
+                          headers["Content-Type"] != "application/json"
+                  ) {
                     return
                   }
 
@@ -241,7 +251,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                   )
                 }
               }
-            })
+            }
+        )
     if (!completed) {
       callback.onFailure(
           DebugServerException(
@@ -254,7 +265,9 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     
                     
                     """
-                  .trimIndent())))
+                  .trimIndent())
+          )
+      )
     }
   }
 

@@ -135,8 +135,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     for (moduleProvider in moduleProviders) {
       val moduleInfo: ReactModuleInfo? = packageModuleInfos[moduleProvider]?.get(moduleName)
-      if (moduleInfo?.isTurboModule == true &&
-          (resolvedModule == null || moduleInfo.canOverrideExistingModule)) {
+      if (
+          moduleInfo?.isTurboModule == true &&
+              (resolvedModule == null || moduleInfo.canOverrideExistingModule)
+      ) {
         val module = moduleProvider.getModule(moduleName)
         if (module != null) {
           resolvedModule = module
@@ -182,8 +184,10 @@ public abstract class ReactPackageTurboModuleManagerDelegate : TurboModuleManage
 
     for (moduleProvider in moduleProviders) {
       val moduleInfo: ReactModuleInfo? = packageModuleInfos[moduleProvider]?.get(moduleName)
-      if (moduleInfo?.isTurboModule == false &&
-          (resolvedModule == null || moduleInfo.canOverrideExistingModule)) {
+      if (
+          moduleInfo?.isTurboModule == false &&
+              (resolvedModule == null || moduleInfo.canOverrideExistingModule)
+      ) {
         val module = moduleProvider.getModule(moduleName)
         if (module != null) {
           resolvedModule = module

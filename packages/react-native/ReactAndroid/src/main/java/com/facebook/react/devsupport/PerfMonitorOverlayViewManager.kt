@@ -155,7 +155,8 @@ internal class PerfMonitorOverlayViewManager(
           textSize = TEXT_SIZE_PRIMARY
           setTextColor(Color.WHITE)
           typeface = TYPEFACE_BOLD
-        })
+        }
+    )
     buttonInner.addView(
         TextView(context).apply {
           text = "cmd + A"
@@ -163,7 +164,8 @@ internal class PerfMonitorOverlayViewManager(
           setTextColor(Color.WHITE)
           alpha = 0.7f
           typeface = TYPEFACE_BOLD
-        })
+        }
+    )
     val buttonView =
         LinearLayout(context).apply {
           orientation = LinearLayout.VERTICAL

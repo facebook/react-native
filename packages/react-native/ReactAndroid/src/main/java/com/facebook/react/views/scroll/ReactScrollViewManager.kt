@@ -289,7 +289,8 @@ constructor(private val fpsListener: FpsListener? = null) :
     val child =
         scrollView.getChildAt(0)
             ?: throw RetryableMountingLayerException(
-                "scrollToEnd called on ScrollView without child")
+                "scrollToEnd called on ScrollView without child"
+            )
 
     // ScrollView always has one child - the scrollable area
     val bottom = child.height + scrollView.paddingBottom
@@ -334,7 +335,8 @@ constructor(private val fpsListener: FpsListener? = null) :
     if (view.fadingEdgeLengthStart > 0 || view.fadingEdgeLengthEnd > 0) {
       view.isVerticalFadingEdgeEnabled = true
       view.setFadingEdgeLength(
-          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx()))
+          Math.round(Math.max(view.fadingEdgeLengthStart, view.fadingEdgeLengthEnd).dpToPx())
+      )
     } else {
       view.isVerticalFadingEdgeEnabled = false
       view.setFadingEdgeLength(0)
@@ -350,7 +352,8 @@ constructor(private val fpsListener: FpsListener? = null) :
   public fun setMaintainVisibleContentPosition(view: ReactScrollView, value: ReadableMap?) {
     if (value != null) {
       view.setMaintainVisibleContentPosition(
-          MaintainVisibleScrollPositionHelper.Config.fromReadableMap(value))
+          MaintainVisibleScrollPositionHelper.Config.fromReadableMap(value)
+      )
     } else {
       view.setMaintainVisibleContentPosition(null)
     }

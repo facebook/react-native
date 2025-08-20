@@ -75,6 +75,7 @@ internal class ProgressRequestBody(
             val contentLength = contentLength()
             progressListener.onProgress(bytesWritten, contentLength, bytesWritten == contentLength)
           }
-        })
+        }
+    )
   }
 }

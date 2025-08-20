@@ -79,7 +79,8 @@ class NetworkingModuleTest {
     ReactNativeFeatureFlags.override(
         object : ReactNativeFeatureFlagsDefaults() {
           override fun enableNetworkEventReporting(): Boolean = false
-        })
+        }
+    )
 
     networkingModule = NetworkingModule(context, "", httpClient, null)
 
@@ -455,7 +456,8 @@ class NetworkingModuleTest {
                     "content-disposition",
                     "filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg",
                 ),
-            )),
+            )
+        ),
     )
 
     formData.pushMap(imageBodyPart)
