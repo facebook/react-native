@@ -215,7 +215,7 @@ function copySymbols(
     }
     const sourceSymbolPath = path.join(
       frameworkPath,
-      scheme + '.framework.dSYM,
+      scheme + '.framework.dSYM',
     );
     if (!fs.existsSync(sourceSymbolPath)) {
       throw new Error(`dSYM folder ${sourceSymbolPath} not found`);
@@ -239,9 +239,12 @@ function copySymbols(
 }
 
 function getArchsFromFramework(frameworkPath /*:string*/) {
-  return execSync(
-    `vtool -show-build ${frameworkPath}|grep platform`,
-  ).toString();
+  return execSync(`vtool -show-build ${frameworkPath}|grep platform`)
+    .toString()
+    .split('\n')
+    .map(p => p.trim().split(' ')[1])
+    .sort((a, b) => a.localeCompare(b))
+    .join(' ');
 }
 
 function signXCFramework(
