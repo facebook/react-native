@@ -412,9 +412,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
                   CGRect frame;
-                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-
-                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
+                  UIFont *font = [[textStorage attributedSubstringFromRange:range] attribute:NSFontAttributeName
+                                                                                     atIndex:0
+                                                                              effectiveRange:nil];
+                  frame = {
+                      {glyphRect.origin.x,
+                       glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                      attachmentSize};
 
                   auto rect = facebook::react::Rect{
                       facebook::react::Point{frame.origin.x, frame.origin.y},
