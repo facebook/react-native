@@ -97,7 +97,7 @@ internal class PerfMonitorOverlayViewManager(
       return
     }
     val context = contextSupplier.get() ?: return
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(context)
     createDialog(context)
     createButton(context)
     initialized = true
