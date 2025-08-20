@@ -218,7 +218,7 @@ function copySymbols(
       scheme + '.framework.dSYM,
     );
     if (!fs.existsSync(sourceSymbolPath)) {
-      throw new Error(`dSym folder ${sourceSymbolPath} not found`);
+      throw new Error(`dSYM folder ${sourceSymbolPath} not found`);
     }
 
     const archName = path.basename(targetFolder);
