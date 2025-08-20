@@ -937,18 +937,12 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun unstable_updatePerfMonitor(
-      eventName: String,
-      durationMs: Int,
+      longTaskDuration: Int,
       responsivenessScore: Int,
       ttl: Int,
   ) {
     perfMonitorOverlayManager?.update(
-        PerfMonitorOverlayManager.PerfMonitorUpdateData(
-            eventName,
-            durationMs,
-            responsivenessScore,
-            ttl,
-        )
+        PerfMonitorOverlayManager.PerfMonitorUpdateData(longTaskDuration, responsivenessScore, ttl)
     )
   }
 
