@@ -246,6 +246,11 @@ jobs:
       - name: Print ReactCore folder
         shell: bash
         run: ls -lR /tmp/ReactCore
+      - name: Configure git
+        shell: bash
+        run: |
+            git config --global user.email "react-native-bot@meta.com"
+            git config --global user.name "React Native Bot"
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
