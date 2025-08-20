@@ -377,7 +377,8 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
     const _accessibilityStateDisabled = _accessibilityState?.disabled;
     const _disabled = disabled ?? _accessibilityStateDisabled;
 
-    let _accessibilityElementsHidden = ariaHidden ?? accessibilityElementsHidden;
+    let _accessibilityElementsHidden =
+      ariaHidden ?? accessibilityElementsHidden;
     let _importantForAccessibility = importantForAccessibility;
     if (ariaHidden === true) {
       _importantForAccessibility = 'no-hide-descendants';
