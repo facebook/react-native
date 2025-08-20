@@ -14,13 +14,12 @@ import type {Root} from '@react-native/fantom';
 import type {HostInstance} from 'react-native';
 
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {LogBox, Modal, ScrollView, Text, TextInput, View} from 'react-native';
-import ensureInstance from 'react-native/src/private/__tests__/utilities/ensureInstance';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 function getActualViewportDimensions(root: Root): {
   viewportWidth: number,
@@ -568,7 +567,7 @@ describe('Fantom', () => {
         root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -600,7 +599,7 @@ describe('Fantom', () => {
         );
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(element, 'change', {
@@ -631,7 +630,7 @@ describe('Fantom', () => {
         );
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueNativeEvent(
@@ -684,7 +683,7 @@ describe('Fantom', () => {
         root.render(<TextInput onFocus={focusEvent} ref={ref} />);
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -703,7 +702,7 @@ describe('Fantom', () => {
         root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
@@ -735,10 +734,7 @@ describe('Fantom', () => {
         );
       });
 
-      const scrollViewElement = ensureInstance(
-        scrollViewRef.current,
-        ReactNativeElement,
-      );
+      const scrollViewElement = nullthrows(scrollViewRef.current);
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueScrollEvent(scrollViewElement, {
@@ -751,7 +747,7 @@ describe('Fantom', () => {
 
       expect(onScroll).toHaveBeenCalledTimes(1);
 
-      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+      const viewElement = nullthrows(viewRef.current);
 
       let rect;
 
@@ -794,7 +790,7 @@ describe('Fantom', () => {
         root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       expect(() => {
         Fantom.scrollTo(element, {
@@ -824,10 +820,7 @@ describe('Fantom', () => {
         );
       });
 
-      const scrollViewElement = ensureInstance(
-        scrollViewRef.current,
-        ReactNativeElement,
-      );
+      const scrollViewElement = nullthrows(scrollViewRef.current);
 
       expect(scrollViewElement.scrollTop).toBe(0);
 
@@ -840,7 +833,7 @@ describe('Fantom', () => {
 
       expect(onScroll).toHaveBeenCalledTimes(1);
 
-      const viewElement = ensureInstance(viewRef.current, ReactNativeElement);
+      const viewElement = nullthrows(viewRef.current);
 
       let rect;
 
@@ -906,7 +899,7 @@ describe('Fantom', () => {
         root.render(<View ref={ref} />);
       });
 
-      const element = ensureInstance(ref.current, ReactNativeElement);
+      const element = nullthrows(ref.current);
 
       expect(() => {
         Fantom.runOnUIThread(() => {
@@ -933,10 +926,7 @@ describe('Fantom', () => {
         );
       });
 
-      const modalElement = ensureInstance(
-        modalNodeRef.current,
-        ReactNativeElement,
-      );
+      const modalElement = nullthrows(modalNodeRef.current);
 
       Fantom.runOnUIThread(() => {
         Fantom.enqueueModalSizeUpdate(modalElement, {
@@ -947,10 +937,7 @@ describe('Fantom', () => {
 
       Fantom.runWorkLoop();
 
-      const viewElement = ensureInstance(
-        viewNodeRef.current,
-        ReactNativeElement,
-      );
+      const viewElement = nullthrows(viewNodeRef.current);
 
       const boundingClientRect = viewElement.getBoundingClientRect();
       expect(boundingClientRect.height).toBe(25);

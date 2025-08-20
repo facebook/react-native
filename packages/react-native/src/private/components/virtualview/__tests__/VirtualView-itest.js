@@ -12,11 +12,10 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {Rect} from '../VirtualView';
 import type {NativeModeChangeEvent} from '../VirtualViewNativeComponent';
+import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../__tests__/utilities/ensureInstance';
 import isUnreachable from '../../../__tests__/utilities/isUnreachable';
 import {getNodeFromPublicInstance} from '../../../../../Libraries/ReactPrivate/ReactNativePrivateInterface';
-import ReactNativeElement from '../../../webapis/dom/nodes/ReactNativeElement';
 import VirtualView, {_logs, VirtualViewMode} from '../VirtualView';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
@@ -48,7 +47,10 @@ describe('mode changes', () => {
       </rn-virtualView>,
     );
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
@@ -68,14 +70,20 @@ describe('mode changes', () => {
       );
     });
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(_logs.states).toHaveLength(2);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
       <rn-virtualView />,
     );
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Visible,
+    );
 
     expect(_logs.states).toHaveLength(3);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
@@ -97,7 +105,10 @@ describe('mode changes', () => {
       );
     });
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Prerender);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Prerender,
+    );
 
     expect(_logs.states).toHaveLength(1);
     expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
@@ -106,7 +117,10 @@ describe('mode changes', () => {
       </rn-virtualView>,
     );
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Visible);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Visible,
+    );
 
     // Expects `VirtualView` does not undergo a state update.
     expect(_logs.states).toHaveLength(1);
@@ -139,7 +153,10 @@ describe('styles', () => {
       root.render(<VirtualView ref={viewRef} />);
     });
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Prerender);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Prerender,
+    );
 
     expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
       <rn-virtualView />,
@@ -154,7 +171,10 @@ describe('styles', () => {
       root.render(<VirtualView ref={viewRef} />);
     });
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
       <rn-virtualView height="100.000000" />,
@@ -224,7 +244,10 @@ describe('memory management', () => {
     expect(weakRefs.length).toBe(1);
     expect(isUnreachable(weakRefs[0])).toBe(false);
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(isUnreachable(weakRefs[0])).toBe(true);
   });
@@ -251,7 +274,10 @@ describe('memory management', () => {
     expect(weakRef).not.toBe(undefined);
     expect(isUnreachable(nullthrows(weakRef))).toBe(false);
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(isUnreachable(nullthrows(weakRef))).toBe(true);
   });
@@ -287,7 +313,10 @@ describe('memory management', () => {
     expect(weakRef).not.toBe(undefined);
     expect(isUnreachable(nullthrows(weakRef))).toBe(false);
 
-    dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
+    dispatchModeChangeEvent(
+      nullthrows(viewRef.current),
+      VirtualViewMode.Hidden,
+    );
 
     expect(isUnreachable(nullthrows(weakRef))).toBe(true);
   });
@@ -297,7 +326,7 @@ describe('memory management', () => {
  * Helper to reduce duplication of the mock event payload.
  */
 export function dispatchModeChangeEvent(
-  instance: mixed,
+  instance: HostInstance,
   mode: VirtualViewMode,
 ): void {
   const targetRect = {
@@ -340,16 +369,12 @@ export function dispatchModeChangeEvent(
     }
   }
 
-  Fantom.dispatchNativeEvent(
-    ensureInstance(instance, ReactNativeElement),
-    'onModeChange',
-    {
-      mode: mode as number,
-      targetRect,
-      // $FlowFixMe[incompatible-type] - https://fburl.com/workplace/t8a3yvuo
-      thresholdRect,
-    } as NativeModeChangeEvent,
-  );
+  Fantom.dispatchNativeEvent(instance, 'onModeChange', {
+    mode: mode as number,
+    targetRect,
+    // $FlowFixMe[incompatible-type] - https://fburl.com/workplace/t8a3yvuo
+    thresholdRect,
+  } as NativeModeChangeEvent);
 }
 
 /**
@@ -373,10 +398,10 @@ function createWeakRefCallback<T: interface {} = interface {}>(): $ReadOnly<{
 /**
  * Gets the shadow node via `instance.__internalInstanceHandle.stateNode.node`.
  */
-function getNodeAsObjectFromPublicInstance(instance: mixed): interface {} {
-  const node = getNodeFromPublicInstance(
-    ensureInstance(instance, ReactNativeElement),
-  );
+function getNodeAsObjectFromPublicInstance(
+  instance: HostInstance,
+): interface {} {
+  const node = getNodeFromPublicInstance(instance);
   if (node == null || typeof node !== 'object') {
     throw new Error('Expected node to be an object, got: ' + typeof node);
   }

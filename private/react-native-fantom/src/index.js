@@ -471,10 +471,10 @@ export type ScrollEventOptions = {
  *   );
  * });
  *
- * const element = ensureInstance(maybeScrollViewNode, ReactNativeElement);
+ * const scrollViewNode = nullthrows(maybeScrollViewNode);
  *
  * Fantom.runOnUIThread(() => {
- *   Fantom.enqueueScrollEvent(element, {
+ *   Fantom.enqueueScrollEvent(scrollViewNode, {
  *     x: 20,
  *     y: 10,
  *  });
@@ -518,9 +518,9 @@ export function enqueueScrollEvent(
  *   );
  * });
  *
- * const element = ensureInstance(maybeScrollViewNode, ReactNativeElement);
+ * const scrollViewNode = nullthrows(maybeScrollViewNode);
  *
- * Fantom.scrollTo(element, {x: 0, y: 20});
+ * Fantom.scrollTo(scrollViewNode, {x: 0, y: 20});
  *
  * // Assert that changes from Fantom.scrollTo are in effect.
  * ```

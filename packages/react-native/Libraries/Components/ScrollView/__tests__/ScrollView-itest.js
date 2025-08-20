@@ -12,12 +12,11 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {ScrollView} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('onScroll', () => {
   it('delivers onScroll event', () => {
@@ -36,7 +35,7 @@ describe('onScroll', () => {
       );
     });
 
-    const element = ensureInstance(scrollViewRef.current, ReactNativeElement);
+    const element = nullthrows(scrollViewRef.current);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueNativeEvent(
@@ -80,7 +79,7 @@ describe('onScroll', () => {
       );
     });
 
-    const element = ensureInstance(scrollViewRef.current, ReactNativeElement);
+    const element = nullthrows(scrollViewRef.current);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueNativeEvent(

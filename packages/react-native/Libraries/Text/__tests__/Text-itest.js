@@ -15,6 +15,7 @@ import type {AccessibilityProps, HostInstance} from 'react-native';
 
 import ensureInstance from '../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
+import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Text} from 'react-native';
@@ -22,8 +23,6 @@ import accessibilityPropsSuite, {
   rolePropSuite,
 } from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import {testIDPropSuite} from 'react-native/src/private/__tests__/utilities/commonPropsSuite';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
-import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
 const TEST_TEXT = 'the text';
 
@@ -365,7 +364,7 @@ describe('<Text>', () => {
         root.render(<Text ref={elementRef}>{TEST_TEXT}</Text>);
       });
 
-      const element = ensureInstance(elementRef.current, ReactNativeElement);
+      const element = nullthrows(elementRef.current);
       expect(element.tagName).toBe('RN:Paragraph');
     });
 
@@ -378,10 +377,10 @@ describe('<Text>', () => {
         root.render(<Text ref={elementRef}>{TEST_TEXT}</Text>);
       });
 
-      const element = ensureInstance(elementRef.current, ReactNativeElement);
+      const element = nullthrows(elementRef.current);
       expect(element.childNodes.length).toBe(1);
 
-      const textChild = ensureInstance(element.childNodes[0], ReadOnlyText);
+      const textChild = nullthrows(element.childNodes[0]);
       expect(textChild.textContent).toBe(TEST_TEXT);
     });
 
@@ -398,23 +397,19 @@ describe('<Text>', () => {
         );
       });
 
-      const element = ensureInstance(elementRef.current, ReactNativeElement);
+      const element = nullthrows(elementRef.current);
       expect(element.childNodes.length).toBe(2);
 
-      const firstChild = ensureInstance(element.childNodes[0], ReadOnlyText);
+      const firstChild = nullthrows(element.childNodes[0]);
+      expect(firstChild.nodeType).toBe(Node.TEXT_NODE);
       expect(firstChild.textContent).toBe('Some text ');
 
-      const secondChild = ensureInstance(
-        element.childNodes[1],
-        ReactNativeElement,
-      );
+      const secondChild = ensureInstance(element.childNodes[1], Element);
+      expect(secondChild.nodeType).toBe(Node.ELEMENT_NODE);
       expect(secondChild.tagName).toBe('RN:Text');
       expect(secondChild.childNodes.length).toBe(1);
 
-      const secondChildText = ensureInstance(
-        secondChild.childNodes[0],
-        ReadOnlyText,
-      );
+      const secondChildText = nullthrows(secondChild.childNodes[0]);
       expect(secondChildText.textContent).toBe('also in bold');
     });
   });

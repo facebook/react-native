@@ -12,13 +12,12 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {TextInputInstance} from '../TextInput.flow';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
+import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef, useEffect, useLayoutEffect, useRef} from 'react';
 import {TextInput} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('<TextInput>', () => {
   describe('props', () => {
@@ -60,7 +59,7 @@ describe('<TextInput>', () => {
           );
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
+        const element = nullthrows(nodeRef.current);
 
         Fantom.runOnUIThread(() => {
           Fantom.enqueueNativeEvent(element, 'change', {
@@ -86,7 +85,7 @@ describe('<TextInput>', () => {
           root.render(<TextInput onChangeText={onChangeText} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
+        const element = nullthrows(nodeRef.current);
 
         Fantom.runOnUIThread(() => {
           Fantom.enqueueNativeEvent(element, 'change', {
@@ -113,7 +112,7 @@ describe('<TextInput>', () => {
           root.render(<TextInput onFocus={focusEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
+        const element = nullthrows(nodeRef.current);
 
         expect(focusEvent).toHaveBeenCalledTimes(0);
 
@@ -141,7 +140,7 @@ describe('<TextInput>', () => {
           root.render(<TextInput onBlur={blurEvent} ref={nodeRef} />);
         });
 
-        const element = ensureInstance(nodeRef.current, ReactNativeElement);
+        const element = nullthrows(nodeRef.current);
 
         expect(blurEvent).toHaveBeenCalledTimes(0);
 

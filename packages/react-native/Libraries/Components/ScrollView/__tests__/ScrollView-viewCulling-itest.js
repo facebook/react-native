@@ -13,13 +13,11 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
 
-import ensureInstance from '../../../../src/private/__tests__/utilities/ensureInstance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {createRef, useState} from 'react';
 import {FlatList, Modal, ScrollView, View} from 'react-native';
-import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
@@ -46,7 +44,7 @@ test('basic culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -118,7 +116,7 @@ test('recursive culling', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   // === Scroll down to the edge of child AA ===
   Fantom.scrollTo(element, {
@@ -265,7 +263,7 @@ test('recursive culling when initial offset is negative', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -328,7 +326,7 @@ test('deep nesting', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -489,7 +487,7 @@ test('initial render', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -561,7 +559,7 @@ test('basic culling smaller ScrollView', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -624,7 +622,7 @@ test('culling with transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -669,7 +667,7 @@ test('culling with recursive transform move', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -713,7 +711,7 @@ test('culling with transform scale', () => {
     'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
   ]);
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.scrollTo(element, {
     x: 0,
@@ -774,7 +772,7 @@ test('culling inside of Modal', () => {
     );
   });
 
-  const element = ensureInstance(nodeRef.current, ReactNativeElement);
+  const element = nullthrows(nodeRef.current);
 
   Fantom.runOnUIThread(() => {
     Fantom.enqueueModalSizeUpdate(element, {
@@ -900,7 +898,7 @@ describe('reparenting', () => {
       'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     Fantom.scrollTo(element, {
       x: 0,
@@ -1578,7 +1576,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     // Scroll down to see the grandchild.
     Fantom.scrollTo(element, {
@@ -1669,7 +1667,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     // Scroll down to see the grandchild.
     Fantom.scrollTo(element, {
@@ -1911,7 +1909,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     // Scroll to reveal grandchild.
     Fantom.scrollTo(element, {
@@ -2001,7 +1999,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     // Scroll to reveal grandchild.
     Fantom.scrollTo(element, {
@@ -2214,7 +2212,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: "unflattened", index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     Fantom.scrollTo(element, {
       x: 0,
@@ -2312,7 +2310,7 @@ describe('reparenting', () => {
       'Insert {type: "View", parentNativeID: "unflattened", index: 0, nativeID: "child"}',
     ]);
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     Fantom.scrollTo(element, {
       x: 0,
@@ -2463,7 +2461,7 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
         </ScrollView>,
       );
     });
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueModalSizeUpdate(element, {
@@ -2517,7 +2515,7 @@ describe('opt out mechanism - Unstable_uncullableView & Unstable_uncullableTrace
       );
     });
 
-    const element = ensureInstance(nodeRef.current, ReactNativeElement);
+    const element = nullthrows(nodeRef.current);
 
     Fantom.runOnUIThread(() => {
       Fantom.enqueueModalSizeUpdate(element, {
