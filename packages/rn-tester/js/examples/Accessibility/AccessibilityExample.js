@@ -30,6 +30,7 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
+  Text,
   TextInput,
   TouchableNativeFeedback,
   TouchableOpacity,
@@ -2136,6 +2137,66 @@ function LabelCooptingExample(): React.Node {
   );
 }
 
+function AriaHiddenExample(): React.Node {
+  return (
+    <View>
+      <View
+        accessible
+        aria-hidden
+        aria-label="This should be hidden"
+        style={styles.smallRedSquare}
+      />
+
+      <View accessible aria-hidden aria-label="This should be hidden">
+        <Text>View with Text content with aria-hidden</Text>
+      </View>
+
+      <Text aria-hidden aria-label="This should be hidden">
+        Text with aria-hidden
+      </Text>
+      <Text aria-hidden aria-label="This should be hidden">
+        Text with aria-hidden with nested Image
+        <Image
+          aria-label="This should be hidden"
+          aria-hidden
+          source={require('../../assets/like.png')}
+          style={styles.button}
+        />
+      </Text>
+
+      <TextInput
+        aria-hidden
+        editable={false}
+        placeholder="Non-editable TextInput with aria-hidden"
+        aria-label="This should be hidden"
+      />
+      <TextInput
+        aria-hidden
+        editable={false}
+        placeholder="Non-editable multiline TextInput with aria-hidden"
+        aria-label="This should be hidden"
+        multiline
+        numberOfLines={3}
+      />
+
+      <Pressable
+        aria-hidden
+        onPress={() => console.log('Pressed')}
+        aria-label="This should be hidden"
+        style={styles.button}>
+        <Text>Pressable with aria-hidden</Text>
+      </Pressable>
+
+      <Image
+        aria-label="This should be hidden"
+        aria-hidden
+        source={require('../../assets/like.png')}
+        style={styles.button}
+      />
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -2249,6 +2310,12 @@ exports.examples = [
     title: 'Label coopting',
     render(): React.MixedElement {
       return <LabelCooptingExample />;
+    },
+  },
+  {
+    title: 'aria-hidden prop',
+    render(): React.MixedElement {
+      return <AriaHiddenExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;
