@@ -33,11 +33,11 @@ class PrepareGlogTaskTest {
     val project = createProject()
     val glogThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/glog/")
     val task =
-        createTestTask<PrepareGlogTask>(project = project) {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask>(project = project) { task ->
+          task.glogPath.setFrom(glogpath)
+          task.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          task.glogVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(glogThirdPartyJniPath, "CMakeLists.txt").apply {
       parentFile.mkdirs()
@@ -55,11 +55,11 @@ class PrepareGlogTaskTest {
     val project = createProject()
     val glogThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/glog/")
     val task =
-        createTestTask<PrepareGlogTask>(project = project) {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask>(project = project) { prepareTask ->
+          prepareTask.glogPath.setFrom(glogpath)
+          prepareTask.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          prepareTask.glogVersion.set("1.0.0")
+          prepareTask.outputDir.set(output)
         }
     File(glogThirdPartyJniPath, "config.h").apply {
       parentFile.mkdirs()
@@ -76,11 +76,11 @@ class PrepareGlogTaskTest {
     val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareGlogTask> {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask> { glogTask ->
+          glogTask.glogPath.setFrom(glogpath)
+          glogTask.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          glogTask.glogVersion.set("1.0.0")
+          glogTask.outputDir.set(output)
         }
     File(glogpath, "glog-1.0.0/src/glog.cpp").apply {
       parentFile.mkdirs()
@@ -98,11 +98,11 @@ class PrepareGlogTaskTest {
     val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareGlogTask> {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask> { testTask ->
+          testTask.glogPath.setFrom(glogpath)
+          testTask.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          testTask.glogVersion.set("1.0.0")
+          testTask.outputDir.set(output)
         }
     File(glogpath, "glog-1.0.0/src/glog.h.in").apply {
       parentFile.mkdirs()
@@ -122,11 +122,11 @@ class PrepareGlogTaskTest {
     val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareGlogTask> {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask> { headerTask ->
+          headerTask.glogPath.setFrom(glogpath)
+          headerTask.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          headerTask.glogVersion.set("1.0.0")
+          headerTask.outputDir.set(output)
         }
     File(glogpath, "glog-1.0.0/src/logging.h.in").apply {
       parentFile.mkdirs()
