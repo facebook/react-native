@@ -45,3 +45,7 @@ tasks.named("ktfmtFormat") {
       ":shared:ktfmtFormat",
   )
 }
+
+// We intentionally disable the `ktfmtCheck` tasks as the formatting is primarly handled inside
+// fbsource
+allprojects { tasks.withType<com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask>() { enabled = false } }
