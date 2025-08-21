@@ -74,7 +74,14 @@ val GLOG_VERSION = libs.versions.glog.get()
 
 val preparePrefab by
     tasks.registering(PreparePrefabHeadersTask::class) {
-      dependsOn(prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog)
+      dependsOn(
+          prepareBoost,
+          prepareDoubleConversion,
+          prepareFastFloat,
+          prepareFmt,
+          prepareFolly,
+          prepareGlog,
+      )
       dependsOn("generateCodegenArtifactsFromSchema")
       // To export to a ReactNativePrefabProcessingEntities.kt once all
       // libraries have been moved. We keep it here for now as it make easier to
