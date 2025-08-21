@@ -17,9 +17,11 @@ using namespace facebook::react::jsinspector_modern;
 
 namespace facebook::react {
 JReactHostInspectorTarget::JReactHostInspectorTarget(
+    alias_ref<JReactHostInspectorTarget::javaobject> jobj,
     alias_ref<JReactHostImpl> reactHostImpl,
     alias_ref<JExecutor::javaobject> executor)
-    : javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
+    : jobj_(make_global(jobj)),
+      javaReactHostImpl_(make_global(makeJWeakReference(reactHostImpl))),
       inspectorExecutor_([javaExecutor =
                               // Use a SafeReleaseJniRef because this lambda may
                               // be copied to arbitrary threads.
@@ -62,10 +64,10 @@ JReactHostInspectorTarget::~JReactHostInspectorTarget() {
 
 local_ref<JReactHostInspectorTarget::jhybriddata>
 JReactHostInspectorTarget::initHybrid(
-    alias_ref<JReactHostInspectorTarget::jhybridobject> /*self*/,
+    alias_ref<JReactHostInspectorTarget::jhybridobject> jobj,
     jni::alias_ref<JReactHostImpl> reactHostImpl,
     jni::alias_ref<JExecutor::javaobject> javaExecutor) {
-  return makeCxxInstance(reactHostImpl, javaExecutor);
+  return makeCxxInstance(jobj, reactHostImpl, javaExecutor);
 }
 
 void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
@@ -129,12 +131,13 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
 
 void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
     const PerfMonitorUpdateRequest& request) {
-  if (auto javaReactHostImplStrong = javaReactHostImpl_->get()) {
-    javaReactHostImplStrong->unstable_updatePerfMonitor(
-        request.activeInteraction.duration,
-        request.activeInteraction.responsivenessScore,
-        request.activeInteraction.ttl);
-  }
+  static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
+      "handleNativePerfMonitorMetricUpdate");
+  method(
+      jobj_,
+      request.activeInteraction.duration,
+      static_cast<jint>(request.activeInteraction.responsivenessScore),
+      request.activeInteraction.ttl);
 }
 
 void JReactHostInspectorTarget::loadNetworkResource(
@@ -153,4 +156,5 @@ void JReactHostInspectorTarget::loadNetworkResource(
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
 }
+
 } // namespace facebook::react

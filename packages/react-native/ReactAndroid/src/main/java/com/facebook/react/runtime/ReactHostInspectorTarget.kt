@@ -12,6 +12,8 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.soloader.SoLoader
 import java.io.Closeable
 import java.util.concurrent.Executor
@@ -19,15 +21,38 @@ import java.util.concurrent.Executor
 @DoNotStripAny
 @UnstableReactNativeAPI
 @OptIn(FrameworkAPI::class)
-internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) : Closeable {
+internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
+    PerfMonitorInspectorTarget, Closeable {
   // fbjni looks for the exact name "mHybridData":
   // https://github.com/facebookincubator/fbjni/blob/5587a7fd2b191656be9391a3832ce04c034009a5/cxx/fbjni/detail/Hybrid.h#L310
   @Suppress("NoHungarianNotation")
   private val mHybridData: HybridData = initHybrid(reactHostImpl, UIThreadConditionalSyncExecutor())
 
+  private val perfMonitorListeners = mutableSetOf<PerfMonitorUpdateListener>()
+
   private external fun initHybrid(reactHostImpl: ReactHostImpl, executor: Executor): HybridData
 
   external fun sendDebuggerResumeCommand()
+
+  override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
+    perfMonitorListeners.add(listener)
+  }
+
+  override fun pauseAndAnalyzeTrace() {
+    // TODO(T233874551)
+  }
+
+  fun handleNativePerfMonitorMetricUpdate(
+      longTaskDurationMs: Int,
+      responsivenessScore: Int,
+      ttl: Int,
+  ) {
+    perfMonitorListeners.forEach { listener ->
+      listener.onNewFocusedEvent(
+          PerfMonitorUpdateListener.LongTaskEventData(longTaskDurationMs, responsivenessScore, ttl)
+      )
+    }
+  }
 
   override fun close() {
     mHybridData.resetNative()

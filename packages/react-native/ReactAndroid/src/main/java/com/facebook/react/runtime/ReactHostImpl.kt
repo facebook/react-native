@@ -47,7 +47,6 @@ import com.facebook.react.devsupport.inspector.InspectorNetworkRequestListener
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PausedInDebuggerOverlayCommandListener
-import com.facebook.react.devsupport.interfaces.PerfMonitorV2Handler
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.interfaces.TaskInterface
@@ -133,7 +132,7 @@ public class ReactHostImpl(
       CopyOnWriteArrayList()
   private val beforeDestroyListeners: MutableList<() -> Unit> = CopyOnWriteArrayList()
 
-  private var reactHostInspectorTarget: ReactHostInspectorTarget? = null
+  internal var reactHostInspectorTarget: ReactHostInspectorTarget? = null
 
   @Volatile private var hostInvalidated = false
 
@@ -416,17 +415,6 @@ public class ReactHostImpl(
             }
           },
       )
-    }
-  }
-
-  @DoNotStrip
-  private fun unstable_updatePerfMonitor(
-      longTaskDuration: Int,
-      responsivenessScore: Int,
-      ttl: Int,
-  ) {
-    if (devSupportManager is PerfMonitorV2Handler) {
-      devSupportManager.unstable_updatePerfMonitor(longTaskDuration, responsivenessScore, ttl)
     }
   }
 

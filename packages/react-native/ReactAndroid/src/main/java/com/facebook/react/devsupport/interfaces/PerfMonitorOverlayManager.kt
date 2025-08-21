@@ -9,8 +9,6 @@ package com.facebook.react.devsupport.interfaces
 
 /** [Experimental] Interface to manage the V2 Perf Monitor overlay. */
 internal interface PerfMonitorOverlayManager {
-  data class PerfMonitorUpdateData(val durationMs: Int, val responsivenessScore: Int, val ttl: Int)
-
   /** Enable the Perf Monitor overlay. Will be shown when updates are received. */
   public fun enable()
 
@@ -19,7 +17,4 @@ internal interface PerfMonitorOverlayManager {
 
   /** Reset the Perf Monitor overlay, e.g. after a reload. */
   public fun reset()
-
-  /** Update the state of the Perf Monitor overlay. */
-  public fun update(data: PerfMonitorUpdateData)
 }
