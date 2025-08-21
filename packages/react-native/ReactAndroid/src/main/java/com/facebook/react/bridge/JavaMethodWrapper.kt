@@ -189,7 +189,7 @@ internal class JavaMethodWrapper(
           }
 
       if (jsArgumentsNeeded != parameters.size()) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "$traceName got ${parameters.size()} arguments, expected $jsArgumentsNeeded"
         )
       }
@@ -208,7 +208,7 @@ internal class JavaMethodWrapper(
           i++
         }
       } catch (e: UnexpectedNativeTypeException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
@@ -218,7 +218,7 @@ internal class JavaMethodWrapper(
             e,
         )
       } catch (e: NullPointerException) {
-        throw NativeArgumentsParseException(
+        throw JSApplicationCausedNativeException(
             "${e.message} (constructing arguments for $traceName at argument index ${
               getAffectedRange(
                   jsArgumentsConsumed,
