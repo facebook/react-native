@@ -1018,10 +1018,6 @@ public abstract interface class com/facebook/react/bridge/NotThreadSafeBridgeIdl
 	public abstract fun onTransitionToBridgeIdle ()V
 }
 
-public abstract interface class com/facebook/react/bridge/OnBatchCompleteListener {
-	public abstract fun onBatchComplete ()V
-}
-
 public abstract interface class com/facebook/react/bridge/PerformanceCounter {
 	public abstract fun getPerformanceCounters ()Ljava/util/Map;
 	public abstract fun profileNextBatch ()V
