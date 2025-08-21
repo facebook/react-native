@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f082e99b49f5206e95cf0ca3f92d2c1c>>
+ * @generated SignedSource<<66a3905e1c94e7769418becc3bace939>>
  * @flow strict
  * @noformat
  */
@@ -415,11 +415,11 @@ export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabr
 /**
  * Use a native implementation of equals in NativeReadableArray.
  */
-export const useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean> = createNativeFlagGetter('useNativeEqualsInNativeReadableArrayAndroid', false);
+export const useNativeEqualsInNativeReadableArrayAndroid: Getter<boolean> = createNativeFlagGetter('useNativeEqualsInNativeReadableArrayAndroid', true);
 /**
  * Use a native implementation of TransformHelper
  */
-export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlagGetter('useNativeTransformHelperAndroid', false);
+export const useNativeTransformHelperAndroid: Getter<boolean> = createNativeFlagGetter('useNativeTransformHelperAndroid', true);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */
