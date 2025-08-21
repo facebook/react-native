@@ -21,10 +21,10 @@ echo '' > dummy.c
 
 platforms=( "macosx" "ios" "xros" ) # Add other platforms here if needed
 
-for platform in "${platforms[@]}" 
-do 
-    mkdir -p "${platform}/hermes.framework"
-    clang dummy.c -dynamiclib -o "${platform}/hermes.framework/hermes"
+for platform in "${platforms[@]}"
+do
+    mkdir -p "${platform}/hermesvm.framework"
+    clang dummy.c -dynamiclib -o "${platform}/hermesvm.framework/hermesvm"
 done
 
 rm dummy.c

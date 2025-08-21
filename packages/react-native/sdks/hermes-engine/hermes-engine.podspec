@@ -45,10 +45,10 @@ Pod::Spec.new do |spec|
                     "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                   }
 
-  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
-  spec.tvos.vendored_frameworks = "destroot/Library/Frameworks/tvos/hermes.framework"
-  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
-  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermes.framework"
+  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermesvm.framework"
+  spec.tvos.vendored_frameworks = "destroot/Library/Frameworks/tvos/hermesvm.framework"
+  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
+  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermesvm.framework"
 
   if HermesEngineSourceType::isPrebuilt(source_type) then
 
@@ -56,10 +56,10 @@ Pod::Spec.new do |spec|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
       ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
-      ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+      ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
     end
 
 
@@ -139,7 +139,7 @@ Pod::Spec.new do |spec|
         {
           :name => '[RN] [1] Build Hermesc',
           :output_files => [
-            "#{hermesc_path}/ImportHermesc.cmake"
+            "#{hermesc_path}/ImportHostCompilers.cmake"
           ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
@@ -149,14 +149,14 @@ Pod::Spec.new do |spec|
         },
         {
           :name => '[RN] [2] Build Hermes',
-          :input_files => ["#{hermesc_path}/ImportHermesc.cmake"],
+          :input_files => ["#{hermesc_path}/ImportHostCompilers.cmake"],
           :output_files => [
-            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermes.framework/hermes"
+            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermesvm.framework/hermesvm"
           ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHostCompilers.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
           EOS
         }
       ]

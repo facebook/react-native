@@ -126,15 +126,15 @@ function populateMockFilesystemWithHermesBuildArtifacts() {
   fs.mkdirSync(path.join(frameworksDir, 'macosx/hermes.framework'), {
     recursive: true,
   });
-  fs.mkdirSync(path.join(frameworksDir, 'universal/hermes.xcframework'), {
+  fs.mkdirSync(path.join(frameworksDir, 'universal/hermesvm.xcframework'), {
     recursive: true,
   });
 
   const dsymsDirs = [
     'macosx',
-    'universal/hermes.xcframework/ios-arm64/dSYMs',
-    'universal/hermes.xcframework/ios-arm64_x86_64-simulator/dSYMs',
-    'universal/hermes.xcframework/ios-arm64_x86_64-maccatalyst/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64_x86_64-simulator/dSYMs',
+    'universal/hermesvm.xcframework/ios-arm64_x86_64-maccatalyst/dSYMs',
   ];
 
   for (const dsymsDir of dsymsDirs) {
@@ -354,7 +354,7 @@ describe('hermes-utils', () => {
         configureMakeForPrebuiltHermesC();
         expect(
           fs.existsSync(
-            path.join(SDKS_DIR, 'hermesc/osx-bin/ImportHermesc.cmake'),
+            path.join(SDKS_DIR, 'hermesc/osx-bin/ImportHostCompilers.cmake'),
           ),
         ).toBe(true);
       });
