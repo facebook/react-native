@@ -133,6 +133,8 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
     // Define custom mappings for Libraries folder
     const librariesMappings = {
       'Required/': path.join(headersOutput, 'RCTRequired'),
+      'TypeSafety/': path.join(headersOutput, 'RCTTypeSafety'),
+      'FBLazyVector/': path.join(headersOutput, 'FBLazyVector'),
     };
 
     const librariesCount = hardlinkHeadersFromPath(

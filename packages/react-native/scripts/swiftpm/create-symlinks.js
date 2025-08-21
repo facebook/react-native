@@ -142,6 +142,137 @@ async function createSymlinks(reactNativePath) {
     }
   });
 
+  // Create symlinks from ReactApple/Libraries structure
+  console.log('\nProcessing ReactApple/Libraries...');
+  const reactAppleLibrariesDir = path.join(
+    reactNativePath,
+    'ReactApple/Libraries',
+  );
+
+  if (fs.existsSync(reactAppleLibrariesDir)) {
+    const libraryNames = fs
+      .readdirSync(reactAppleLibrariesDir, {withFileTypes: true})
+      .filter(entry => entry.isDirectory())
+      .map(entry => entry.name);
+
+    for (const libraryName of libraryNames) {
+      const libraryPath = path.join(reactAppleLibrariesDir, libraryName);
+
+      // Find all library-subname directories
+      const subLibraries = fs
+        .readdirSync(libraryPath, {withFileTypes: true})
+        .filter(entry => entry.isDirectory())
+        .map(entry => entry.name);
+
+      for (const subLibraryName of subLibraries) {
+        const exportedDir = path.join(libraryPath, subLibraryName, 'Exported');
+
+        if (fs.existsSync(exportedDir)) {
+          console.log(
+            `Found exported headers in: ${libraryName}/${subLibraryName}`,
+          );
+
+          // Create the includes/<library-subname> directory if it doesn't exist
+          const includesSubDir = path.join(
+            reactNativePath,
+            'React/includes',
+            subLibraryName,
+          );
+          if (!fs.existsSync(includesSubDir)) {
+            console.log(`Creating directory: ${includesSubDir}`);
+            fs.mkdirSync(includesSubDir, {recursive: true});
+          }
+
+          // Find all header files in the Exported directory
+          const headerFiles = fs
+            .readdirSync(exportedDir, {withFileTypes: true})
+            .filter(entry => entry.isFile() && entry.name.endsWith('.h'))
+            .map(entry => entry.name);
+
+          for (const headerFile of headerFiles) {
+            try {
+              const sourcePath = path.join(exportedDir, headerFile);
+              const destPath = path.join(includesSubDir, headerFile);
+
+              // Remove existing symlink/file if it exists
+              if (fs.existsSync(destPath)) {
+                fs.unlinkSync(destPath);
+              }
+
+              // Create relative symlink
+              const relativeSourcePath = path.relative(
+                includesSubDir,
+                sourcePath,
+              );
+              fs.symlinkSync(relativeSourcePath, destPath);
+
+              console.log(
+                `Created ReactApple symlink: ${subLibraryName}/${headerFile} -> ${relativeSourcePath}`,
+              );
+              found++;
+            } catch (error) {
+              console.error(
+                `Error creating ReactApple symlink for ${headerFile}: ${error.message}`,
+              );
+              errors++;
+            }
+          }
+        }
+      }
+    }
+  } else {
+    console.log('ReactApple/Libraries directory not found, skipping...');
+  }
+
+  // Create symlinks for Yoga public headers
+  console.log('\nProcessing Yoga headers...');
+  const yogaHeadersDir = path.join(reactNativePath, 'ReactCommon/yoga/yoga');
+
+  if (fs.existsSync(yogaHeadersDir)) {
+    // Create the includes/yoga directory if it doesn't exist
+    const includesYogaDir = path.join(reactNativePath, 'React/includes/yoga');
+    if (!fs.existsSync(includesYogaDir)) {
+      console.log(`Creating directory: ${includesYogaDir}`);
+      fs.mkdirSync(includesYogaDir, {recursive: true});
+    }
+
+    // Get header files directly in the yoga directory (ignore subfolders)
+    const yogaEntries = fs.readdirSync(yogaHeadersDir, {withFileTypes: true});
+    const yogaHeaderFiles = yogaEntries
+      .filter(entry => entry.isFile() && entry.name.endsWith('.h'))
+      .map(entry => entry.name);
+
+    console.log(`Found ${yogaHeaderFiles.length} Yoga header files`);
+
+    for (const headerFile of yogaHeaderFiles) {
+      try {
+        const sourcePath = path.join(yogaHeadersDir, headerFile);
+        const destPath = path.join(includesYogaDir, headerFile);
+
+        // Remove existing symlink/file if it exists
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+        }
+
+        // Create relative symlink
+        const relativeSourcePath = path.relative(includesYogaDir, sourcePath);
+        fs.symlinkSync(relativeSourcePath, destPath);
+
+        console.log(
+          `Created Yoga symlink: yoga/${headerFile} -> ${relativeSourcePath}`,
+        );
+        found++;
+      } catch (error) {
+        console.error(
+          `Error creating Yoga symlink for ${headerFile}: ${error.message}`,
+        );
+        errors++;
+      }
+    }
+  } else {
+    console.log('ReactCommon/yoga/yoga directory not found, skipping...');
+  }
+
   console.log('\nSummary:');
   console.log(`- Found and linked: ${found} files`);
   console.log(`- Not found: ${notFound} files`);
@@ -189,11 +320,11 @@ if (require.main === module) {
   console.log(`Using React Native path: ${reactNativePath}`);
 
   createSymlinks(reactNativePath)
-    .then((stats) => {
+    .then(stats => {
       console.log('\n✅ Symlink creation completed successfully!');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Symlink creation failed:', error.message);
       process.exit(1);
     });
@@ -201,5 +332,5 @@ if (require.main === module) {
 
 module.exports = {
   createSymlinks,
-  buildHeaderMap
+  buildHeaderMap,
 };
