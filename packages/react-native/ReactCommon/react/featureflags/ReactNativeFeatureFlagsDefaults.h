@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7f5d45347dee3c9c5b17731e1bf8993>>
+ * @generated SignedSource<<54a695ed4e9c536cd8650498b9dab2fc>>
  */
 
 /**
@@ -260,11 +260,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useNativeEqualsInNativeReadableArrayAndroid() override {
-    return false;
+    return true;
   }
 
   bool useNativeTransformHelperAndroid() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
