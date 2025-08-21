@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3db9f160e7221eb9c7660a3e93da0f40>>
+ * @generated SignedSource<<5f84a9a17209b9ecb95e13e6567e7c3c>>
  */
 
 /**
@@ -98,6 +98,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForScrollView(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 

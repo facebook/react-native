@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4cc61b5f71805589fa91abbdefb5eade>>
+ * @generated SignedSource<<5494951448e43319e9165388aa5559a2>>
  */
 
 /**
@@ -98,6 +98,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
+
+  override fun enableViewRecyclingForScrollView(): Boolean = true
 
   override fun enableViewRecyclingForText(): Boolean = true
 
