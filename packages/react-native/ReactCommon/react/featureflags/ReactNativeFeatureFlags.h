@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b601a3c92cd80549ca2391ab0a123214>>
+ * @generated SignedSource<<4831f7b871223d8347db93f9a0b3a1f9>>
  */
 
 /**
@@ -228,6 +228,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForScrollView();
 
   /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c321b78f9d710e5f3dc3a73e56be298>>
+ * @generated SignedSource<<998bdf037d58ca747c22ada099d236f0>>
  */
 
 /**
@@ -232,6 +232,11 @@ bool NativeReactNativeFeatureFlags::enableViewCulling(
 bool NativeReactNativeFeatureFlags::enableViewRecycling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableViewRecycling();
+}
+
+bool NativeReactNativeFeatureFlags::enableViewRecyclingForScrollView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForScrollView();
 }
 
 bool NativeReactNativeFeatureFlags::enableViewRecyclingForText(

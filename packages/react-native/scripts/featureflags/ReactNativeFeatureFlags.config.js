@@ -451,6 +451,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableViewRecyclingForScrollView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-08-20',
+        description:
+          'Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableViewRecyclingForText: {
       defaultValue: true,
       metadata: {
