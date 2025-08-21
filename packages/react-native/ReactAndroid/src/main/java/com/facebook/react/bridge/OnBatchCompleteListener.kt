@@ -16,6 +16,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
     message = "This class is part of Legacy Architecture and will be removed in a future release",
     level = DeprecationLevel.WARNING,
 )
-public fun interface OnBatchCompleteListener {
-  public fun onBatchComplete()
+internal fun interface OnBatchCompleteListener {
+  fun onBatchComplete()
 }
