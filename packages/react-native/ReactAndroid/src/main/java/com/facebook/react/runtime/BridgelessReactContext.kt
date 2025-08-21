@@ -64,6 +64,9 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
   override fun getFabricUIManager(): UIManager? = reactHost.uiManager
 
   @OptIn(FrameworkAPI::class)
+  @Deprecated(
+      "This method is deprecated in the New Architecture. You should not be invoking directly as we're going to remove it in the future."
+  )
   override fun getCatalystInstance(): CatalystInstance {
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE) {
       throw UnsupportedOperationException(
