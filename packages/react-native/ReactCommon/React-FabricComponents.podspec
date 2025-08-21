@@ -127,6 +127,14 @@ Pod::Spec.new do |s|
       sss.header_dir           = "react/renderer/components/iostextinput"
     end
 
+    ss.subspec "switch" do |sss|
+      sss.source_files         = podspec_sources(
+                                  ["react/renderer/components/switch/iosswitch/**/*.{m,mm,cpp,h}"],
+                                  ["react/renderer/components/switch/iosswitch/**/*.h"])
+      sss.exclude_files        = "react/renderer/components/switch/iosswitch/**/MacOS*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/switch/"
+    end
+
     ss.subspec "textinput" do |sss|
       sss.source_files         = podspec_sources("react/renderer/components/textinput/*.{m,mm,cpp,h}", "react/renderer/components/textinput/**/*.h")
       sss.header_dir           = "react/renderer/components/textinput"
