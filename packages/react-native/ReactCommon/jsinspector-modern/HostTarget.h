@@ -146,6 +146,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
   }
+
+  /**
+   * Will be called at the CDP session initialization to get the trace recording
+   * that could have been stashed by the Host from the previous background
+   * session.
+   *
+   * \return the trace recording state if there is one that needs to be
+   * displayed, otherwise std::nullopt.
+   */
+  virtual std::optional<tracing::TraceRecordingState>
+  getStashedTraceRecordingStateForDisplaying() {
+    return std::nullopt;
+  }
 };
 
 /**
@@ -285,6 +298,14 @@ class JSINSPECTOR_EXPORT HostTarget
    * Stops previously started trace recording.
    */
   tracing::TraceRecordingState stopTracing();
+
+  /**
+   * Uses the existence of traceRecording_ to determine if we are actively
+   * recording
+   */
+  bool isRecording() {
+    return traceRecording_ != nullptr;
+  }
 
  private:
   /**

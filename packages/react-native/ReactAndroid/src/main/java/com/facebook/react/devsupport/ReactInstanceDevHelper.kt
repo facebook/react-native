@@ -41,4 +41,6 @@ public interface ReactInstanceDevHelper {
   public fun reload(reason: String)
 
   public fun loadBundle(bundleLoader: JSBundleLoader): TaskInterface<Boolean>
+
+  public fun isRecording(): Boolean
 }
