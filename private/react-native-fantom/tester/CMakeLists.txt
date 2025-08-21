@@ -18,12 +18,11 @@ include_directories(${REACT_ANDROID_DIR}/hermes-engine/build/prefab-headers)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
 include(Deps)
 
-find_library(LIB_HERMES libhermes
-  NAMES hermes
-  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/API/hermes
+find_library(LIB_HERMES hermesvm
+  HINTS ${REACT_ANDROID_DIR}/hermes-engine/build/hermes/lib
   REQUIRED)
-add_library(hermes-engine::libhermes INTERFACE IMPORTED)
-set_target_properties(hermes-engine::libhermes PROPERTIES
+add_library(hermes-engine::hermesvm INTERFACE IMPORTED)
+set_target_properties(hermes-engine::hermesvm PROPERTIES
   INTERFACE_LINK_LIBRARIES ${LIB_HERMES})
 find_package(OpenSSL REQUIRED)
 
@@ -151,7 +150,7 @@ target_link_libraries(fantom_tester
     glog
 
     # hermes
-    hermes-engine::libhermes
+    hermes-engine::hermesvm
 
     # codegen
     react_codegen_rncore

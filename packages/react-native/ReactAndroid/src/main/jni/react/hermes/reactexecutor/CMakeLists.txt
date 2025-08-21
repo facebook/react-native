@@ -20,7 +20,7 @@ target_include_directories(hermes_executor PRIVATE .)
 target_link_libraries(
         hermes_executor
         hermes_executor_common
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         jsi
         reactnative
 )

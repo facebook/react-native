@@ -153,7 +153,7 @@ function checkExistingVersion(
     'Library',
     'Frameworks',
     'universal',
-    'hermes.xcframework',
+    'hermesvm.xcframework',
   );
 
   if (fs.existsSync(versionFilePath) && fs.existsSync(hermesXCFramework)) {

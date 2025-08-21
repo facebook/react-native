@@ -19,7 +19,7 @@ target_include_directories(bridgelesshermes PUBLIC .)
 
 react_native_android_selector(reactnative reactnative "")
 target_link_libraries(bridgelesshermes
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         hermes_executor_common
         hermes_inspector_modern
         jsi
