@@ -15,8 +15,8 @@ namespace facebook::react {
 
 ImageRequest ImageFetcher::requestImage(
     const ImageSource& imageSource,
-    const ImageRequestParams& imageRequestParams,
     SurfaceId surfaceId,
+    const ImageRequestParams& imageRequestParams,
     Tag tag) const {
   auto fabricUIManager_ =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");

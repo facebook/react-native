@@ -27,7 +27,7 @@ ImageRequest ImageManager::requestImage(
     Tag tag) const {
   if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     return static_cast<ImageFetcher*>(self_)->requestImage(
-        imageSource, imageRequestParams, surfaceId, tag);
+        imageSource, surfaceId, imageRequestParams, tag);
   }
   return {imageSource, nullptr, {}};
 }
