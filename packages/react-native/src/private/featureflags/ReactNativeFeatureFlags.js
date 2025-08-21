@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<825b92d137ed3253e0badd0696605882>>
+ * @generated SignedSource<<8c13ccfed8750e3a8d5259e4b8ce3021>>
  * @flow strict
  * @noformat
  */
@@ -31,6 +31,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
+  cxxAnimatedDebounceQueueFlushDisabled: Getter<boolean>,
   deferFlatListFocusChangeRenderUpdate: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
@@ -131,6 +132,11 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
  * Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.
  */
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
+
+/**
+ * Disable debounce queue flush if C++ Native Animated is enabled.
+ */
+export const cxxAnimatedDebounceQueueFlushDisabled: Getter<boolean> = createJavaScriptFlagGetter('cxxAnimatedDebounceQueueFlushDisabled', false);
 
 /**
  * Use the deferred cell render update mechanism for focus change in FlatList.
