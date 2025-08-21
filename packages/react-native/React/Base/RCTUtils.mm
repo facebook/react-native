@@ -431,7 +431,9 @@ CGSize RCTSwitchSize(void)
   static CGSize rctSwitchSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    });
   });
   return rctSwitchSize;
 }
