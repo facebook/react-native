@@ -125,15 +125,22 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
     console.log(`Created ${reactCount} hard links from React folder`);
   }
 
-  // 2. Process Libraries folder - flatten structure, exclude 'tests' folders
+  // 2. Process Libraries folder with custom mapping for RCTRequired
   const librariesPath = path.join(reactNativePath, 'Libraries');
   if (fs.existsSync(librariesPath)) {
     console.log('Processing Libraries folder...');
+
+    // Define custom mappings for Libraries folder
+    const librariesMappings = {
+      'Required/': path.join(headersOutput, 'RCTRequired'),
+    };
+
     const librariesCount = hardlinkHeadersFromPath(
       librariesPath,
       reactHeadersOutput,
       false,
       ['tests'],
+      librariesMappings,
     );
     totalLinkedCount += librariesCount;
     console.log(`Created ${librariesCount} hard links from Libraries folder`);
@@ -176,9 +183,10 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
 /**
  * Helper function to create hard links from a source path
  * @param {string} sourcePath - Source directory to search for headers
- * @param {string} outputPath - Output directory for hard links
+ * @param {string} outputPath - Default output directory for hard links
  * @param {boolean} preserveStructure - Whether to preserve directory structure
  * @param {Array<string>} excludeFolders - Folder names to exclude
+ * @param {Object} customMappings - Custom path mappings (prefix -> output path)
  * @returns {number} Number of hard links created
  */
 function hardlinkHeadersFromPath(
@@ -186,6 +194,7 @@ function hardlinkHeadersFromPath(
   outputPath,
   preserveStructure,
   excludeFolders,
+  customMappings = {},
 ) {
   let linkedCount = 0;
 
@@ -210,22 +219,32 @@ function hardlinkHeadersFromPath(
 
     headerFiles.forEach(sourceHeaderPath => {
       if (fs.existsSync(sourceHeaderPath)) {
+        const relativePath = path.relative(sourcePath, sourceHeaderPath);
         let destPath;
+        let mappedOutputPath = outputPath;
+
+        // Check for custom mappings first
+        for (const [prefix, customOutput] of Object.entries(customMappings)) {
+          if (relativePath.startsWith(prefix)) {
+            mappedOutputPath = customOutput;
+            console.log(`  Custom mapping: ${prefix} -> ${customOutput}`);
+            break;
+          }
+        }
 
         if (preserveStructure) {
           // Preserve directory structure
-          const relativePath = path.relative(sourcePath, sourceHeaderPath);
-          destPath = path.join(outputPath, relativePath);
-
-          // Create destination directory if it doesn't exist
-          const destDir = path.dirname(destPath);
-          if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, {recursive: true});
-          }
+          destPath = path.join(mappedOutputPath, relativePath);
         } else {
           // Flatten structure - just use the header filename
           const headerName = path.basename(sourceHeaderPath);
-          destPath = path.join(outputPath, headerName);
+          destPath = path.join(mappedOutputPath, headerName);
+        }
+
+        // Create destination directory if it doesn't exist
+        const destDir = path.dirname(destPath);
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, {recursive: true});
         }
 
         // Remove existing hard link if it exists
