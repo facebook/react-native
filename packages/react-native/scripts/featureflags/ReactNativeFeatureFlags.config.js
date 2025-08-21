@@ -797,6 +797,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    cxxAnimatedDebounceQueueFlushDisabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-21',
+        description:
+          'Disable debounce queue flush if C++ Native Animated is enabled.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     deferFlatListFocusChangeRenderUpdate: {
       defaultValue: false,
       metadata: {
