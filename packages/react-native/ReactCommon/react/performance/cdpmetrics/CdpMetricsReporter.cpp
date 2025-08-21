@@ -72,4 +72,27 @@ void CdpMetricsReporter::onEventTimingEntry(
   });
 }
 
+void CdpMetricsReporter::onLongTaskEntry(
+    const PerformanceLongTaskTiming& entry) {
+  runtimeExecutor_([entry = std::move(entry)](jsi::Runtime& runtime) {
+    auto global = runtime.global();
+    if (!global.hasProperty(runtime, metricsReporterName.data())) {
+      return;
+    }
+
+    folly::dynamic jsonPayload = folly::dynamic::object;
+    jsonPayload["name"] = "__ReactNative__LongTask";
+    jsonPayload["duration"] =
+        static_cast<int>(entry.duration.toDOMHighResTimeStamp());
+    jsonPayload["startTime"] =
+        static_cast<int>(entry.startTime.toDOMHighResTimeStamp());
+
+    auto jsonString = folly::toJson(jsonPayload);
+    auto jsiString = jsi::String::createFromUtf8(runtime, jsonString);
+    auto metricsReporter =
+        global.getPropertyAsFunction(runtime, metricsReporterName.data());
+    metricsReporter.call(runtime, jsiString);
+  });
+}
+
 } // namespace facebook::react

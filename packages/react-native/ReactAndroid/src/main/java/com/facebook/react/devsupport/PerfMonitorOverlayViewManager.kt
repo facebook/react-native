@@ -39,7 +39,6 @@ internal class PerfMonitorOverlayViewManager(
   private var hasInteractionData: Boolean = false
   private var interactionDialog: Dialog? = null
   private var buttonDialog: Dialog? = null
-  private var interactionNameLabel: TextView? = null
   private var durationLabel: TextView? = null
   private var ttl: Int = 0
   private var hideAfterTimeoutHandler: Handler? = null
@@ -70,7 +69,6 @@ internal class PerfMonitorOverlayViewManager(
   override fun update(data: PerfMonitorOverlayManager.PerfMonitorUpdateData) {
     UiThreadUtil.runOnUiThread {
       ensureInitialized()
-      interactionNameLabel?.text = data.eventName
       durationLabel?.text = String.format(Locale.US, "%d ms", data.durationMs)
       durationLabel?.setTextColor(getDurationHighlightColor(data.responsivenessScore))
       hasInteractionData = true
@@ -115,9 +113,10 @@ internal class PerfMonitorOverlayViewManager(
 
   private fun createDialog(context: Context) {
     val containerLayout = createInnerLayout(context)
-    interactionNameLabel =
+    val longTaskLabel =
         TextView(context).apply {
           textSize = TEXT_SIZE_PRIMARY
+          text = "Long Task"
           setTextColor(Color.WHITE)
           typeface = TYPEFACE_BOLD
         }
@@ -127,7 +126,7 @@ internal class PerfMonitorOverlayViewManager(
           setTextColor(COLOR_TEXT_GREEN)
           typeface = TYPEFACE_BOLD
         }
-    containerLayout.addView(interactionNameLabel)
+    containerLayout.addView(longTaskLabel)
     containerLayout.addView(durationLabel)
 
     val dialog =
