@@ -1372,6 +1372,7 @@ public class FabricUIManager
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
         if (mountItem != null
+            && mountItem.getSurfaceId() != View.NO_ID
             && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
           mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }
