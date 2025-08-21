@@ -66,7 +66,7 @@ internal class CoreModulesPackage(
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
     private val lazyViewManagersEnabled: Boolean,
     private val minTimeLeftInFrameForNonBatchedOperationMs: Int,
-) : BaseReactPackage(), ReactPackageLogger {
+) : BaseReactPackage() {
   /**
    * This method is overridden, since OSS does not run the annotation processor to generate
    * [CoreModulesPackage.ReactModuleInfoProvider] class. Here we check if it exists with the method
@@ -194,14 +194,6 @@ internal class CoreModulesPackage(
       Systrace.endSection(Systrace.TRACE_TAG_REACT)
       ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_END)
     }
-  }
-
-  override fun startProcessPackage() {
-    ReactMarker.logMarker(ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START)
-  }
-
-  override fun endProcessPackage() {
-    ReactMarker.logMarker(ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END)
   }
 
   private companion object {

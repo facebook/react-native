@@ -1570,14 +1570,7 @@ public class ReactInstanceManager {
     SystraceMessage.beginSection(TRACE_TAG_REACT, "processPackage")
         .arg("className", reactPackage.getClass().getSimpleName())
         .flush();
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).startProcessPackage();
-    }
     nativeModuleRegistryBuilder.processPackage(reactPackage);
-
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).endProcessPackage();
-    }
     SystraceMessage.endSection(TRACE_TAG_REACT).flush();
   }
 
