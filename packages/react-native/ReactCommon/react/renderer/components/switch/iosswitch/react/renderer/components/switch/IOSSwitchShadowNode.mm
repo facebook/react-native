@@ -20,7 +20,9 @@ Size SwitchShadowNode::measureContent(
     const LayoutConstraints & /*layoutConstraints*/) const
 {
   CGSize uiSwitchSize = RCTSwitchSize();
-  return {.width = uiSwitchSize.width, .height = uiSwitchSize.height};
+  // Apple has some error when returning the width of the component and it doesn't
+  // account for the borders.
+  return {.width = uiSwitchSize.width + 2, .height = uiSwitchSize.height};
 }
 
 } // namespace facebook::react
