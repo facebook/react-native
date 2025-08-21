@@ -77,6 +77,8 @@ const ActionSheetIOS = {
     callback: (buttonIndex: number) => void,
   ) {
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof options === 'object' && options !== null,
       'Options must be a valid object',
     );
@@ -162,6 +164,8 @@ const ActionSheetIOS = {
     successCallback: Function | ((success: boolean, method: ?string) => void),
   ) {
     invariant(
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/5whu3i34. */
       typeof options === 'object' && options !== null,
       'Options must be a valid object',
     );
