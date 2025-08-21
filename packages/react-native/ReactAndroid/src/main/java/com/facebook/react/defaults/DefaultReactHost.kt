@@ -51,50 +51,6 @@ public object DefaultReactHost {
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
-   *
-   * TODO(T186951312): Should this be @UnstableReactNativeAPI?
-   */
-  @OptIn(UnstableReactNativeAPI::class)
-  @JvmStatic
-  public fun getDefaultReactHost(
-      context: Context,
-      packageList: List<ReactPackage>,
-      jsMainModulePath: String = "index",
-      jsBundleAssetPath: String = "index",
-      jsBundleFilePath: String? = null,
-      jsRuntimeFactory: JSRuntimeFactory? = null,
-      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
-      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-  ): ReactHost =
-      getDefaultReactHost(
-          context,
-          packageList,
-          jsMainModulePath,
-          jsBundleAssetPath,
-          jsBundleFilePath,
-          jsRuntimeFactory,
-          useDevSupport,
-          cxxReactPackageProviders,
-          { throw it },
-          null,
-      )
-
-  /**
-   * Util function to create a default [ReactHost] to be used in your application. This method is
-   * used by the New App template.
-   *
-   * @param context the Android [Context] to use for creating the [ReactHost]
-   * @param packageList the list of [ReactPackage]s to use for creating the [ReactHost]
-   * @param jsMainModulePath the path to your app's main module on Metro. Usually `index` or
-   *   `index.<platform>`
-   * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
-   *   composed in a `asset://...` URL
-   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
-   *   `file://...` URL
-   * @param jsRuntimeFactory the JS engine to use for executing [ReactHost], default to Hermes.
-   * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
-   * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
-   *   modules)
    * @param exceptionHandler Callback that can be used by React Native host applications to react to
    *   exceptions thrown by the internals of React Native.
    * @param bindingsInstaller that can be used for installing bindings.
