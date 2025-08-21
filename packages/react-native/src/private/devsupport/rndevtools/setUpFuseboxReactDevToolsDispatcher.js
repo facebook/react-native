@@ -8,7 +8,7 @@
  * @format
  */
 
-import stringifySafe from '../../../Libraries/Utilities/stringifySafe';
+import stringifySafe from '../../../../Libraries/Utilities/stringifySafe';
 
 type JSONValue =
   | string
