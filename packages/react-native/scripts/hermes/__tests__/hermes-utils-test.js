@@ -123,7 +123,7 @@ function populateMockFilesystemWithHermesBuildArtifacts() {
     SDKS_DIR,
     'hermes/destroot/Library/Frameworks',
   );
-  fs.mkdirSync(path.join(frameworksDir, 'macosx/hermes.framework'), {
+  fs.mkdirSync(path.join(frameworksDir, 'macosx/hermesvm.framework'), {
     recursive: true,
   });
   fs.mkdirSync(path.join(frameworksDir, 'universal/hermesvm.xcframework'), {
@@ -138,9 +138,12 @@ function populateMockFilesystemWithHermesBuildArtifacts() {
   ];
 
   for (const dsymsDir of dsymsDirs) {
-    fs.mkdirSync(path.join(frameworksDir, dsymsDir, 'hermes.framework.dSYM'), {
-      recursive: true,
-    });
+    fs.mkdirSync(
+      path.join(frameworksDir, dsymsDir, 'hermesvm.framework.dSYM'),
+      {
+        recursive: true,
+      },
+    );
   }
 }
 

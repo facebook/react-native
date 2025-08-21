@@ -304,7 +304,7 @@ function createHermesPrebuiltArtifactsTarball(
 function validateHermesFrameworksExist(destrootDir /*: string */) {
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),
+      path.join(destrootDir, 'Library/Frameworks/macosx/hermesvm.framework'),
     )
   ) {
     throw new Error(
