@@ -26,14 +26,16 @@ import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.interfaces.PerfMonitorOverlayManager
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTargetBinding
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
 import java.util.Locale
 
 internal class PerfMonitorOverlayViewManager(
     private val contextSupplier: Supplier<Context?>,
-    private val onRequestAnalyzeTrace: () -> Unit,
-) : PerfMonitorOverlayManager {
+    private val inspectorTarget: PerfMonitorInspectorTargetBinding?,
+) : PerfMonitorOverlayManager, PerfMonitorUpdateListener {
   private var initialized: Boolean = false
   private var enabled: Boolean = false
   private var hasInteractionData: Boolean = false
@@ -66,13 +68,13 @@ internal class PerfMonitorOverlayViewManager(
     }
   }
 
-  override fun update(data: PerfMonitorOverlayManager.PerfMonitorUpdateData) {
+  override fun onNewFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
     UiThreadUtil.runOnUiThread {
       ensureInitialized()
       durationLabel?.text = String.format(Locale.US, "%d ms", data.durationMs)
       durationLabel?.setTextColor(getDurationHighlightColor(data.responsivenessScore))
       hasInteractionData = true
-      this.ttl = data.ttl
+      ttl = data.ttl
 
       hideAfterTimeoutHandler?.removeCallbacksAndMessages(null)
 
@@ -175,7 +177,7 @@ internal class PerfMonitorOverlayViewManager(
               dpToPx(8f).toInt(),
           )
           addView(buttonInner)
-          setOnClickListener { onRequestAnalyzeTrace() }
+          setOnClickListener { inspectorTarget?.pauseAndAnalyzeTrace() }
         }
     val dialog =
         createAnchoredDialog(context, dpToPx(0f), dpToPx(0f)).apply { setContentView(buttonView) }

@@ -62,10 +62,9 @@ import com.facebook.react.devsupport.interfaces.ErrorCustomizer
 import com.facebook.react.devsupport.interfaces.ErrorType
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
-import com.facebook.react.devsupport.interfaces.PerfMonitorOverlayManager
-import com.facebook.react.devsupport.interfaces.PerfMonitorV2Handler
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
@@ -92,7 +91,7 @@ public abstract class DevSupportManagerBase(
     private val surfaceDelegateFactory: SurfaceDelegateFactory?,
     public var devLoadingViewManager: DevLoadingViewManager?,
     private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
-) : DevSupportManager, PerfMonitorV2Handler {
+) : DevSupportManager {
 
   public interface CallbackWithBundleLoader {
     public fun onSuccess(bundleLoader: JSBundleLoader)
@@ -184,7 +183,7 @@ public abstract class DevSupportManagerBase(
           null
         }
 
-  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
+  private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -216,6 +215,7 @@ public abstract class DevSupportManagerBase(
     if (
         ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
             ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
+            reactInstanceDevHelper is PerfMonitorDevHelper &&
             perfMonitorOverlayManager == null
     ) {
       perfMonitorOverlayManager =
@@ -227,7 +227,7 @@ public abstract class DevSupportManagerBase(
                 }
                 context
               },
-              { openDebugger() },
+              reactInstanceDevHelper.inspectorTarget,
           )
     }
   }
@@ -507,6 +507,12 @@ public abstract class DevSupportManagerBase(
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     resetCurrentContext(reactContext)
+
+    if (perfMonitorOverlayManager != null && reactInstanceDevHelper is PerfMonitorDevHelper) {
+      perfMonitorOverlayManager?.let { manager ->
+        reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
+      }
+    }
   }
 
   override fun onReactInstanceDestroyed(reactContext: ReactContext) {
@@ -934,16 +940,6 @@ public abstract class DevSupportManagerBase(
 
   override fun hidePausedInDebuggerOverlay() {
     pausedInDebuggerOverlayManager?.hidePausedInDebuggerOverlay()
-  }
-
-  override fun unstable_updatePerfMonitor(
-      longTaskDuration: Int,
-      responsivenessScore: Int,
-      ttl: Int,
-  ) {
-    perfMonitorOverlayManager?.update(
-        PerfMonitorOverlayManager.PerfMonitorUpdateData(longTaskDuration, responsivenessScore, ttl)
-    )
   }
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {

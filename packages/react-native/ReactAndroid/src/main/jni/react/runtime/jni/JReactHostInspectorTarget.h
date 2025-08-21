@@ -38,16 +38,6 @@ struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
     method(self(), message ? jni::make_jstring(*message) : nullptr);
   }
 
-  void unstable_updatePerfMonitor(
-      uint16_t longTaskDuration,
-      jsinspector_modern::InteractionResponsivenessScore responsivenessScore,
-      uint16_t ttl) {
-    static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
-        "unstable_updatePerfMonitor");
-    method(
-        self(), longTaskDuration, static_cast<jint>(responsivenessScore), ttl);
-  }
-
   jni::local_ref<jni::JMap<jstring, jstring>> getHostMetadata() const {
     static auto method =
         javaClassStatic()
@@ -80,7 +70,7 @@ class JReactHostInspectorTarget
   ~JReactHostInspectorTarget() override;
 
   static jni::local_ref<JReactHostInspectorTarget::jhybriddata> initHybrid(
-      jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jThis,
+      jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jobj,
       jni::alias_ref<JReactHostImpl> reactHost,
       jni::alias_ref<JExecutor::javaobject> javaExecutor);
 
@@ -103,8 +93,10 @@ class JReactHostInspectorTarget
 
  private:
   JReactHostInspectorTarget(
+      jni::alias_ref<JReactHostInspectorTarget::javaobject> jobj,
       jni::alias_ref<JReactHostImpl> reactHostImpl,
       jni::alias_ref<JExecutor::javaobject> javaExecutor);
+  jni::global_ref<JReactHostInspectorTarget::javaobject> jobj_;
   // This weak reference breaks the cycle between the C++ HostTarget and the
   // Java ReactHostImpl, preventing memory leaks in apps that create multiple
   // ReactHostImpls over time.
