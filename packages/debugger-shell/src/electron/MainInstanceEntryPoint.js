@@ -36,7 +36,7 @@ function handleLaunchArgs(argv: string[]) {
   });
 
   // Find an existing window for this app and launch configuration.
-  const existingWindow = BrowserWindow.getAllWindows().find(window => {
+  let frontendWindow = BrowserWindow.getAllWindows().find(window => {
     const metadata = windowMetadata.get(window);
     if (!metadata) {
       return false;
@@ -44,34 +44,27 @@ function handleLaunchArgs(argv: string[]) {
     return metadata.windowKey === windowKey;
   });
 
-  if (existingWindow) {
+  if (frontendWindow) {
     // If the window is already visible, flash it.
-    if (existingWindow.isVisible()) {
-      existingWindow.flashFrame(true);
+    if (frontendWindow.isVisible()) {
+      frontendWindow.flashFrame(true);
       setTimeout(() => {
-        existingWindow.flashFrame(false);
+        frontendWindow.flashFrame(false);
       }, 1000);
     }
-    if (process.platform === 'darwin') {
-      app.focus({
-        steal: true,
-      });
-    }
-    existingWindow.focus();
-    return;
+  } else {
+    // Create the browser window.
+    frontendWindow = new BrowserWindow({
+      width: 1200,
+      height: 600,
+      webPreferences: {
+        partition: 'persist:react-native-devtools',
+        preload: require.resolve('./preload.js'),
+      },
+      // Icon for Linux
+      icon: path.join(__dirname, 'resources', 'icon.png'),
+    });
   }
-
-  // Create the browser window.
-  const frontendWindow = new BrowserWindow({
-    width: 1200,
-    height: 600,
-    webPreferences: {
-      partition: 'persist:react-native-devtools',
-      preload: require.resolve('./preload.js'),
-    },
-    // Icon for Linux
-    icon: path.join(__dirname, 'resources', 'icon.png'),
-  });
 
   // Open links in the default browser instead of in new Electron windows.
   frontendWindow.webContents.setWindowOpenHandler(({url}) => {
@@ -79,6 +72,9 @@ function handleLaunchArgs(argv: string[]) {
     return {action: 'deny'};
   });
 
+  // TODO: If the window contains a live, working frontend instance with a valid connection to the backend,
+  // we should avoid this reload and instead send the frontend a message to handle the launch arguments
+  // dynamically (e.g. update the launch ID for telemetry purposes, handle deeplinking to a specific CDT panel, etc).
   frontendWindow.loadURL(frontendUrl);
 
   windowMetadata.set(frontendWindow, {
@@ -90,6 +86,7 @@ function handleLaunchArgs(argv: string[]) {
       steal: true,
     });
   }
+  frontendWindow.focus();
 }
 
 app.whenReady().then(() => {
