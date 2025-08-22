@@ -54,7 +54,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
    * in a concrete constructor to enable View Recycling per ViewManager.
    */
-  @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+  @Nullable private Map<Integer, Stack<T>> mRecyclableViews = null;
 
   public ViewManager() {
     super(null);
