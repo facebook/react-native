@@ -1,0 +1,3 @@
+__tests__/
+dist/electron/
+src/electron/
