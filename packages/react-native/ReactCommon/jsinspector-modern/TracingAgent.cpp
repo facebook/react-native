@@ -44,6 +44,8 @@ TracingAgent::TracingAgent(
       sessionState_(sessionState),
       hostTargetController_(hostTargetController) {
   if (traceRecordingToEmit.has_value()) {
+    frontendChannel_(
+        cdp::jsonNotification("ReactNativeApplication.traceRequested"));
     emitTraceRecording(std::move(traceRecordingToEmit.value()));
   }
 }
