@@ -244,6 +244,21 @@ describe('Event Timing API', () => {
     expect([...performance.eventCounts.values()]).toEqual([1, 1, 3]);
   });
 
+  it('does NOT allow creating instances of PerformanceEventTiming directly', () => {
+    expect(() => {
+      return new PerformanceEventTiming();
+    }).toThrow(
+      "Failed to construct 'PerformanceEventTiming': Illegal constructor",
+    );
+  });
+
+  it('does NOT allow creating instances of EventCounts directly', () => {
+    expect(() => {
+      // $FlowExpectedError[cannot-resolve-name]
+      return new EventCounts();
+    }).toThrow("Failed to construct 'EventCounts': Illegal constructor");
+  });
+
   describe('durationThreshold option', () => {
     it('works when used with `type`', () => {
       const callback = jest.fn();
