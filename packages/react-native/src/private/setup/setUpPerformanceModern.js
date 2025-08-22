@@ -12,12 +12,19 @@ import {polyfillGlobal} from '../../../Libraries/Utilities/PolyfillFunctions';
 
 let initialized = false;
 
-export default function setUpPerformanceObserver() {
+export default function setUpPerformanceModern() {
   if (initialized) {
     return;
   }
 
   initialized = true;
+
+  const Performance = require('../webapis/performance/Performance').default;
+
+  // We don't use `polyfillGlobal` to define this lazily because the
+  // `performance` object is always accessed.
+  // $FlowExpectedError[cannot-write]
+  global.performance = new Performance();
 
   polyfillGlobal(
     'EventCounts',
