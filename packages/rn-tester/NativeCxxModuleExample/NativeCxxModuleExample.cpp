@@ -7,6 +7,12 @@
 
 #include "NativeCxxModuleExample.h"
 #include <react/debug/react_native_assert.h>
+
+// Include to verify that paths are resolved correctly when using
+// precompiled binaries & USE_FRAMEWORKS is set.
+#include <react/renderer/components/AppSpecs/Props.h>
+#include <react/renderer/components/image/conversions.h>
+
 #include <iomanip>
 #include <ostream>
 #include <sstream>

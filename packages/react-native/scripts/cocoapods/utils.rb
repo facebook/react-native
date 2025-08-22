@@ -258,7 +258,8 @@ class ReactNativePodsUtils
         search_paths = []
 
         # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
-        if ReactNativeCoreUtils.build_rncore_from_source()
+        # Except for when adding search path for ReactCodegen since it contains source code.
+        if ReactNativeCoreUtils.build_rncore_from_source() || pod_name === "ReactCodegen"
             platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
 
             if platforms.empty?() || platforms.length() == 1
