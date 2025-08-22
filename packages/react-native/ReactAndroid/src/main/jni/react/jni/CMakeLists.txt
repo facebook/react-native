@@ -54,7 +54,6 @@ add_library(
           CatalystInstanceImpl.cpp
           InspectorNetworkRequestListener.cpp
           JExecutor.cpp
-          JInspector.cpp
           JMessageQueueThread.cpp
           JReactCxxErrorHandler.cpp
           JReactSoftExceptionLogger.cpp
