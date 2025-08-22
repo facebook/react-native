@@ -10,15 +10,10 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type {
-  PerformanceObserverCallbackOptions,
-  PerformanceObserverEntryList,
-} from 'react-native/src/private/webapis/performance/PerformanceObserver';
+import type {PerformanceObserverCallbackOptions} from '../PerformanceObserver';
 
 import * as Fantom from '@react-native/fantom';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
-import {PerformanceLongTaskTiming} from 'react-native/src/private/webapis/performance/LongTasks';
-import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 setUpPerformanceObserver();
 
