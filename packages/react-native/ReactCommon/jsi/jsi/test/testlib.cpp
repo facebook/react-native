@@ -1882,6 +1882,65 @@ TEST_P(JSITest, CastInterface) {
   EXPECT_TRUE(ptr == nullptr);
 }
 
+TEST_P(JSITest, DeleteProperty) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::deleteProperty
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void deleteProperty(const Object& object, const PropNameID& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const String& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+    void deleteProperty(const Object& object, const Value& name) override {
+      Runtime::deleteProperty(object, name);
+    }
+  };
+  RD rd = RD(rt);
+  auto obj = eval("obj = {1:2, foo: 'bar', 3: 4, salt:'pepper'}").getObject(rd);
+
+  auto prop = PropNameID::forAscii(rd, "1");
+  auto hasRes = obj.hasProperty(rd, prop);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, prop);
+  hasRes = obj.hasProperty(rd, prop);
+  EXPECT_FALSE(hasRes);
+
+  auto str = String::createFromAscii(rd, "foo");
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, str);
+  hasRes = obj.hasProperty(rd, str);
+  EXPECT_FALSE(hasRes);
+
+  auto valProp = Value(3);
+  hasRes = obj.hasProperty(rd, "3");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, valProp);
+  auto getRes = obj.getProperty(rd, "3");
+  EXPECT_TRUE(getRes.isUndefined());
+
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_TRUE(hasRes);
+  obj.deleteProperty(rd, "salt");
+  hasRes = obj.hasProperty(rd, "salt");
+  EXPECT_FALSE(hasRes);
+
+  obj = eval(
+            "const obj = {};"
+            "Object.defineProperty(obj, 'prop', {"
+            "  value: 10,"
+            "  configurable: false,});"
+            "obj;")
+            .getObject(rd);
+  EXPECT_THROW(obj.deleteProperty(rd, "prop"), JSError);
+  hasRes = obj.hasProperty(rd, "prop");
+  EXPECT_TRUE(hasRes);
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

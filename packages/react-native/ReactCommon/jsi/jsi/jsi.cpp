@@ -416,6 +416,37 @@ Object Runtime::createObjectWithPrototype(const Value& prototype) {
   return createFn.call(*this, prototype).asObject(*this);
 }
 
+void Runtime::deleteProperty(const Object& object, const PropNameID& name) {
+  auto nameStr = String::createFromUtf16(*this, name.utf16(*this));
+  auto deleteFn = global()
+                      .getPropertyAsObject(*this, "Reflect")
+                      .getPropertyAsFunction(*this, "deleteProperty");
+  auto res = deleteFn.call(*this, object, nameStr).getBool();
+  if (!res) {
+    throw JSError(*this, "Failed to delete property");
+  }
+}
+
+void Runtime::deleteProperty(const Object& object, const String& name) {
+  auto deleteFn = global()
+                      .getPropertyAsObject(*this, "Reflect")
+                      .getPropertyAsFunction(*this, "deleteProperty");
+  auto res = deleteFn.call(*this, object, name).getBool();
+  if (!res) {
+    throw JSError(*this, "Failed to delete property");
+  }
+}
+
+void Runtime::deleteProperty(const Object& object, const Value& name) {
+  auto deleteFn = global()
+                      .getPropertyAsObject(*this, "Reflect")
+                      .getPropertyAsFunction(*this, "deleteProperty");
+  auto res = deleteFn.call(*this, object, name).getBool();
+  if (!res) {
+    throw JSError(*this, "Failed to delete property");
+  }
+}
+
 void Runtime::setRuntimeDataImpl(
     const UUID& uuid,
     const void* data,
