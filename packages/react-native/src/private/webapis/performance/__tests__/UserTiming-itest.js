@@ -10,18 +10,12 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from '../Performance';
-import type {
-  PerformanceEntryJSON,
-  PerformanceEntryList,
-} from '../PerformanceEntry';
-
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import DOMException from '../../errors/DOMException';
-import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
 import * as Fantom from '@react-native/fantom';
 
-declare var performance: Performance;
+setUpPerformanceObserver();
 
 function getThrownError(fn: () => mixed): mixed {
   try {
@@ -32,7 +26,7 @@ function getThrownError(fn: () => mixed): mixed {
   throw new Error('Expected function to throw');
 }
 
-function toJSON(entries: PerformanceEntryList): Array<PerformanceEntryJSON> {
+function toJSON(entries: PerformanceEntryList): Array<mixed> {
   return entries.map(entry => entry.toJSON());
 }
 
