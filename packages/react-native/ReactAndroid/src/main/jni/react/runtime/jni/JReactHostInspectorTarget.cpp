@@ -80,15 +80,6 @@ void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
   }
 }
 
-void JReactHostInspectorTarget::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
-      makeNativeMethod(
-          "sendDebuggerResumeCommand",
-          JReactHostInspectorTarget::sendDebuggerResumeCommand),
-  });
-}
-
 jsinspector_modern::HostTargetMetadata
 JReactHostInspectorTarget::getMetadata() {
   jsinspector_modern::HostTargetMetadata metadata = {
@@ -155,6 +146,65 @@ void JReactHostInspectorTarget::loadNetworkResource(
 
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
+}
+
+bool JReactHostInspectorTarget::startBackgroundTrace() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->startTracing(tracing::Mode::Background);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->stopTracing();
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot stop Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+void JReactHostInspectorTarget::stopAndStashBackgroundTrace() {
+  auto capturedTrace = inspectorTarget_->stopTracing();
+  stashTraceRecordingState(std::move(capturedTrace));
+}
+
+void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
+  inspectorTarget_->stopTracing();
+}
+
+void JReactHostInspectorTarget::stashTraceRecordingState(
+    tracing::TraceRecordingState&& state) {
+  stashedTraceRecordingState_ = std::move(state);
+}
+
+std::optional<tracing::TraceRecordingState> JReactHostInspectorTarget::
+    unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
+  auto state = std::move(stashedTraceRecordingState_);
+  stashedTraceRecordingState_.reset();
+  return state;
+}
+
+void JReactHostInspectorTarget::registerNatives() {
+  registerHybrid({
+      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "startBackgroundTrace",
+          JReactHostInspectorTarget::startBackgroundTrace),
+      makeNativeMethod(
+          "stopAndStashBackgroundTrace",
+          JReactHostInspectorTarget::stopAndStashBackgroundTrace),
+      makeNativeMethod(
+          "stopAndDiscardBackgroundTrace",
+          JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+  });
 }
 
 } // namespace facebook::react
