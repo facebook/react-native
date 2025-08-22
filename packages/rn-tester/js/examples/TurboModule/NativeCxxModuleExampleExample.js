@@ -313,7 +313,7 @@ class NativeCxxModuleExampleExample extends React.Component<{}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
-                // $FlowFixMe
+                // $FlowFixMe[incompatible-type]
                 this._setResult(item, this._tests[item]()),
               )
             }>
