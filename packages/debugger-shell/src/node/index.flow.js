@@ -86,6 +86,7 @@ async function unstable_spawnDebuggerShellWithArgs(
 export type DebuggerShellPreparationResult = $ReadOnly<{
   code:
     | 'success'
+    | 'not_implemented'
     | 'likely_offline'
     | 'platform_not_supported'
     | 'possible_corruption'
