@@ -55,12 +55,13 @@ export function testBadRenderItemFunction(): $ReadOnlyArray<React.Node> {
   ];
   return [
     <SectionList
-      // $FlowExpectedError - title should be inside `item`
+      // $FlowExpectedError[incompatible-type] - title should be inside `item`
       renderItem={(info: {title: string, ...}) => <span />}
       sections={sections}
     />,
     <SectionList
-      // $FlowExpectedError - bad index type string, should be number
+      // $FlowExpectedError[incompatible-type] - bad index type string, should be number
+      // $FlowExpectedError[incompatible-exact]
       renderItem={(info: {index: string}) => <span />}
       sections={sections}
     />,
@@ -78,14 +79,14 @@ export function testBadInheritedDefaultProp(): React.MixedElement {
     <SectionList
       renderItem={renderMyListItem}
       sections={sections}
-      // $FlowExpectedError - bad windowSize type "big"
+      // $FlowExpectedError[incompatible-type] - bad windowSize type "big"
       windowSize="big"
     />
   );
 }
 
 export function testMissingData(): React.MixedElement {
-  // $FlowExpectedError - missing `sections` prop
+  // $FlowExpectedError[incompatible-type] - missing `sections` prop
   return <SectionList renderItem={renderMyListItem} />;
 }
 
@@ -122,7 +123,7 @@ export function testBadSectionsMetadata(): React.MixedElement {
     <SectionList
       renderSectionHeader={renderMyHeader}
       renderItem={renderMyListItem}
-      /* $FlowExpectedError - section has bad meta data `fooNumber` field of
+      /* $FlowExpectedError[incompatible-type] - section has bad meta data `fooNumber` field of
        * type string */
       sections={sections}
     />

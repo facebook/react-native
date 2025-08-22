@@ -47,14 +47,14 @@ const getMethod: (<MethodName: $Keys<ReactFabricType>>(
   ) => ReactNativeType[MethodName]) = (getRenderer, methodName) => {
   let cachedImpl;
 
-  // $FlowExpectedError
+  // $FlowExpectedError[incompatible-type]
   return function (arg1, arg2, arg3, arg4, arg5, arg6) {
     if (cachedImpl == null) {
-      // $FlowExpectedError
+      // $FlowExpectedError[prop-missing]
       cachedImpl = getRenderer()[methodName];
     }
 
-    // $FlowExpectedError
+    // $FlowExpectedError[extra-arg]
     return cachedImpl(arg1, arg2, arg3, arg4, arg5);
   };
 };

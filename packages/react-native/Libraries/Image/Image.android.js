@@ -387,7 +387,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
       // in order to have a better alignment between platforms in the future.
       src: sources,
       source: sources,
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+      /* $FlowFixMe[prop-missing](>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
       defaultSource: defaultSource ? defaultSource.uri : null,

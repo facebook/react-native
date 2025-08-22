@@ -37,17 +37,17 @@ export function testGoodCompose() {
 }
 
 export function testBadCompose() {
-  // $FlowExpectedError - Incompatible type.
+  // $FlowExpectedError[incompatible-type]  - Incompatible type.
   (StyleSheet.compose(textStyle, textStyle): ImageStyleProp);
 
-  // $FlowExpectedError - Incompatible type.
+  // $FlowExpectedError[incompatible-type]  - Incompatible type.
   (StyleSheet.compose(
     // $FlowExpectedError - Incompatible type.
     [textStyle],
     null,
   ): ImageStyleProp);
 
-  // $FlowExpectedError - Incompatible type.
+  // $FlowExpectedError[incompatible-type]  - Incompatible type.
   (StyleSheet.compose(
     Math.random() < 0.5 ? textStyle : null,
     null,
