@@ -719,13 +719,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useRawPropsJsiValue: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-12-02',
         description:
           'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
