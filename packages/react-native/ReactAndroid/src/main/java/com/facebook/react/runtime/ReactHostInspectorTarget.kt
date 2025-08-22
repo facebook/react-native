@@ -34,6 +34,12 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun sendDebuggerResumeCommand()
 
+  external fun startBackgroundTrace(): Boolean
+
+  external fun stopAndStashBackgroundTrace()
+
+  external fun stopAndDiscardBackgroundTrace()
+
   override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
     perfMonitorListeners.add(listener)
   }

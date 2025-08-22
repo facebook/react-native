@@ -77,6 +77,22 @@ class JReactHostInspectorTarget
   static void registerNatives();
   void sendDebuggerResumeCommand();
 
+  /**
+   * Starts a background trace recording for this HostTarget.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startBackgroundTrace();
+  /**
+   * Stops previously started trace recording and stashes the captured trace,
+   * which will be emitted the next time CDP session is created.
+   */
+  void stopAndStashBackgroundTrace();
+  /**
+   * Stops previously started trace recording and discards the captured trace.
+   */
+  void stopAndDiscardBackgroundTrace();
+
   jsinspector_modern::HostTarget* getInspectorTarget();
 
   // HostTargetDelegate methods
@@ -90,6 +106,8 @@ class JReactHostInspectorTarget
       const jsinspector_modern::LoadNetworkResourceRequest& params,
       jsinspector_modern::ScopedExecutor<
           jsinspector_modern::NetworkRequestListener> executor) override;
+  std::optional<jsinspector_modern::tracing::TraceRecordingState>
+  unstable_getTraceRecordingThatWillBeEmittedOnInitialization() override;
 
  private:
   JReactHostInspectorTarget(
@@ -105,6 +123,24 @@ class JReactHostInspectorTarget
 
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;
+
+  /**
+   * Stops previously started trace recording and returns the captured trace.
+   */
+  jsinspector_modern::tracing::TraceRecordingState stopTracing();
+  /**
+   * Stashes previously recorded trace recording state that will be emitted when
+   * CDP session is created. Once emitted, the value will be cleared from this
+   * instance.
+   */
+  void stashTraceRecordingState(
+      jsinspector_modern::tracing::TraceRecordingState&& state);
+  /**
+   * Previously recorded trace recording state that will be emitted when
+   * CDP session is created.
+   */
+  std::optional<jsinspector_modern::tracing::TraceRecordingState>
+      stashedTraceRecordingState_;
 
   friend HybridBase;
 };
