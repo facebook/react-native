@@ -33,10 +33,11 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources(["ReactCommon/*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"], ["ReactCommon/*.h", "platform/ios/**/*.h"])
   s.header_dir             = "ReactCommon"
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir      = '.'
+  if ENV['USE_FRAMEWORKS']
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
+
+  resolve_use_frameworks(s, header_mappings_dir: ".")
 
   s.pod_target_xcconfig    = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),

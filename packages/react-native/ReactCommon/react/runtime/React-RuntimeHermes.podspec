@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir     = '../../'
-    s.module_name             = 'React_RuntimeHermes'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../../", module_name: "React_RuntimeHermes")
 
   s.dependency "React-jsitracing"
   s.dependency "React-jsi"
