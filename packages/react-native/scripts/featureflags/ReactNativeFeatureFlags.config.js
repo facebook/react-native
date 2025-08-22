@@ -452,7 +452,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     enableViewRecyclingForScrollView: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
         dateAdded: '2025-08-20',
         description:
