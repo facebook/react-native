@@ -217,6 +217,11 @@ HostTarget::~HostTarget() {
   // HostCommandSender owns a session, so we must release it for the assertion
   // below to be valid.
   commandSender_.reset();
+
+  // HostRuntimeBinding owns a connection, so we must release it for the
+  // assertion
+  perfMetricsBinding_.reset();
+
   // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
   // they hold a HostTarget& that we must guarantee is valid.
   assert(
