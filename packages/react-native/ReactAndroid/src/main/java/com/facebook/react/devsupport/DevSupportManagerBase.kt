@@ -927,7 +927,7 @@ public abstract class DevSupportManagerBase(
     devServerHelper.openDebugger(
         currentReactContext,
         applicationContext.getString(R.string.catalyst_open_debugger_error),
-        ChromeDevToolsViewKeys.Performance.value,
+        null,
     )
   }
 
