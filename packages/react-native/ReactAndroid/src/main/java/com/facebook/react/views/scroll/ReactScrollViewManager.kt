@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.RetryableMountingLayerException
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderColor
 import com.facebook.react.uimanager.BackgroundStyleApplicator.setBorderRadius
@@ -55,6 +56,24 @@ public open class ReactScrollViewManager
 @JvmOverloads
 constructor(private val fpsListener: FpsListener? = null) :
     ViewGroupManager<ReactScrollView>(), ScrollCommandHandler<ReactScrollView> {
+
+  init {
+    if (ReactNativeFeatureFlags.enableViewRecyclingForScrollView()) {
+      setupViewRecycling()
+    }
+  }
+
+  override fun prepareToRecycleView(
+      reactContext: ThemedReactContext,
+      view: ReactScrollView,
+  ): ReactScrollView? {
+    // BaseViewManager
+    val preparedView = super.prepareToRecycleView(reactContext, view)
+    if (preparedView != null) {
+      preparedView.recycleView()
+    }
+    return preparedView
+  }
 
   override fun getName(): String = REACT_CLASS
 
