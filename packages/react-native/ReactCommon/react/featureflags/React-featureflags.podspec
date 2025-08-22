@@ -37,10 +37,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.module_name            = "React_featureflags"
-    s.header_mappings_dir  = "../.."
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: "React_featureflags")
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
