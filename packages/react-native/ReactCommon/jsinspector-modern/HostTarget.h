@@ -146,6 +146,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
   }
+
+  /**
+   * [Experimental] Will be called at the CDP session initialization to get the
+   * trace recording that may have been stashed by the Host from the previous
+   * background session.
+   *
+   * \return the trace recording state if there is one that needs to be
+   * displayed, otherwise std::nullopt.
+   */
+  virtual std::optional<tracing::TraceRecordingState>
+  unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
+    return std::nullopt;
+  }
 };
 
 /**
