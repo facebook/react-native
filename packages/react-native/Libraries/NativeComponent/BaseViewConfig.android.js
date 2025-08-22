@@ -412,6 +412,9 @@ const validAttributesForEventProps = {
   onPointerOutCapture: true,
   onPointerOver: true,
   onPointerOverCapture: true,
+
+    // Custom discord props:
+  preventClipping: true,
 } as const;
 
 /**
