@@ -98,7 +98,7 @@
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
-  const CGFloat buttonHeight = 60;
+  const CGFloat buttonHeight = 50;
 
   CGRect detailsFrame = self.view.bounds;
   detailsFrame.size.height -= buttonHeight + (double)[self bottomSafeViewHeight];
@@ -154,7 +154,11 @@
   buttonStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonStackView.distribution = UIStackViewDistributionFillEqually;
   buttonStackView.alignment = UIStackViewAlignmentTop;
+  buttonStackView.spacing = 10;
   buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+  
+  buttonStackView.layoutMargins = UIEdgeInsetsMake(10, 10, 0, 10);
+  buttonStackView.layoutMarginsRelativeArrangement = YES;
 
   [buttonStackView addArrangedSubview:dismissButton];
   [buttonStackView addArrangedSubview:reloadButton];
@@ -164,7 +168,7 @@
   [self.view addSubview:buttonStackView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight]],
+    [buttonStackView.heightAnchor constraintEqualToConstant:buttonHeight + [self bottomSafeViewHeight] + 10],
     [buttonStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [buttonStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [buttonStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
@@ -199,16 +203,40 @@
                       block:(RCTRedBoxButtonPressHandler)block
 {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  UIButtonConfiguration *config;
+  
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000 /* __IPHONE_26_0 */
+  if (@available(iOS 26.0, *)) {
+    config = [UIButtonConfiguration glassButtonConfiguration];
+  }
+#endif
+  else {
+    config = [UIButtonConfiguration plainButtonConfiguration];
+  }
+  
+  config.buttonSize = UIButtonConfigurationSizeSmall;
+  config.titleAlignment = UIButtonConfigurationTitleAlignmentCenter;
+  config.titleLineBreakMode = NSLineBreakByWordWrapping;
+  config.baseBackgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+
   button.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
   button.accessibilityIdentifier = accessibilityIdentifier;
-  button.titleLabel.font = [UIFont systemFontOfSize:13];
-  button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  button.titleLabel.textAlignment = NSTextAlignmentCenter;
-  button.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-  [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
+
+  NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+
+  NSDictionary *attributes = @{
+      NSForegroundColorAttributeName: [UIColor whiteColor],
+      NSFontAttributeName: [UIFont systemFontOfSize:13],
+      NSParagraphStyleAttributeName: paragraphStyle
+  };
+
+  NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attributes];
+  config.attributedTitle = attributedTitle;
+
+  [button setConfiguration:config];
   if (selector) {
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
   } else if (block) {
