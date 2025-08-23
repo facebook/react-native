@@ -60,6 +60,10 @@ let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 const shouldSignalBatch: boolean =
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
+const disableDebounceOperations: boolean =
+  ReactNativeFeatureFlags.cxxNativeAnimatedEnabled() &&
+  ReactNativeFeatureFlags.cxxAnimatedDebounceQueueFlushDisabled();
+
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [
     'createAnimatedNode', // 1
@@ -97,8 +101,12 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         // details, see `NativeAnimatedModule.queueAndExecuteBatchedOperations`.
         singleOpQueue.push(operationID, ...args);
         if (shouldSignalBatch) {
-          clearImmediate(flushQueueImmediate);
-          flushQueueImmediate = setImmediate(API.flushQueue);
+          if (disableDebounceOperations) {
+            API.flushQueue();
+          } else {
+            clearImmediate(flushQueueImmediate);
+            flushQueueImmediate = setImmediate(API.flushQueue);
+          }
         }
       };
     }
@@ -118,8 +126,12 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
         } else if (shouldSignalBatch) {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           queue.push(() => method(...args));
-          clearImmediate(flushQueueImmediate);
-          flushQueueImmediate = setImmediate(API.flushQueue);
+          if (disableDebounceOperations) {
+            API.flushQueue();
+          } else {
+            clearImmediate(flushQueueImmediate);
+            flushQueueImmediate = setImmediate(API.flushQueue);
+          }
         } else {
           // $FlowExpectedError[incompatible-call] - Dynamism.
           method(...args);
@@ -162,6 +174,7 @@ const API = {
     queueOperations = true;
     if (
       ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
+      !disableDebounceOperations &&
       flushQueueImmediate
     ) {
       clearImmediate(flushQueueImmediate);
@@ -184,7 +197,10 @@ const API = {
   disableQueue(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
 
-    if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
+    if (
+      ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
+      !disableDebounceOperations
+    ) {
       const prevImmediate = flushQueueImmediate;
       clearImmediate(prevImmediate);
       flushQueueImmediate = setImmediate(API.flushQueue);
