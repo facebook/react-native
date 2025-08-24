@@ -1,7 +1,6 @@
 {
   "plugins": [
     "@babel/plugin-transform-flow-strip-types",
-    "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-transform-class-properties",
     "@babel/plugin-transform-nullish-coalescing-operator",
     "@babel/plugin-transform-optional-chaining"
