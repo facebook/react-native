@@ -186,6 +186,7 @@ RadiusVector GetRadialGradientRadius(
 
   [RCTGradientUtils getColors:colors andLocations:locations fromColorStops:colorStops];
 
+  gradientLayer.frame = CGRectMake(0.0f, 0.0f, size.width, size.height);
   gradientLayer.colors = colors;
   gradientLayer.locations = locations;
 
