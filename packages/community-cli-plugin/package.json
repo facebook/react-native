@@ -40,6 +40,9 @@
   "peerDependenciesMeta": {
     "@react-native-community/cli": {
       "optional": true
+    },
+    "@react-native/metro-config": {
+      "optional": true
     }
   },
   "engines": {
