@@ -7,6 +7,8 @@
 
 package com.facebook.react.animated
 
+import android.content.Context
+import android.view.WindowManager
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
@@ -23,6 +25,7 @@ import com.facebook.react.bridge.buildReadableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.GuardedFrameCallback
@@ -1110,6 +1113,12 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
         }
     )
     finishOperationBatch()
+  }
+
+  override fun getTypedExportedConstants(): Map<String?, Any?>? {
+    return mapOf(
+      "singleFrameInterval" to getSingleFrameInterval(context = reactApplicationContext),
+    )
   }
 
   public companion object {

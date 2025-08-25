@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1e8a84a53072fa0c8665aead80d0199f>>
+ * @generated SignedSource<<1049251770171308f0dd79974aa9627c>>
  */
 
 /**
@@ -59,6 +59,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableFabricCommitInCXXAnimated(): Boolean = accessor.disableFabricCommitInCXXAnimated()
+
+  /**
+   * Disables high refresh rate animations on devices that support it (e.g. 120Hz).
+   */
+  @JvmStatic
+  public fun disableHighRefreshRateAnimations(): Boolean = accessor.disableHighRefreshRateAnimations()
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread

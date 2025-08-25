@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce6cfc25358a636fcd9cd6605e9008ed>>
+ * @generated SignedSource<<009c00b2f643505839123289abb0f40e>>
  */
 
 /**
@@ -37,6 +37,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool cxxNativeAnimatedEnabled();
   bool cxxNativeAnimatedRemoveJsSync();
   bool disableFabricCommitInCXXAnimated();
+  bool disableHighRefreshRateAnimations();
   bool disableMountItemReorderingAndroid();
   bool disableOldAndroidAttachmentMetricsWorkarounds();
   bool disableTextLayoutManagerCacheAndroid();
@@ -111,13 +112,14 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 68> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedEnabled_;
   std::atomic<std::optional<bool>> cxxNativeAnimatedRemoveJsSync_;
   std::atomic<std::optional<bool>> disableFabricCommitInCXXAnimated_;
+  std::atomic<std::optional<bool>> disableHighRefreshRateAnimations_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> disableOldAndroidAttachmentMetricsWorkarounds_;
   std::atomic<std::optional<bool>> disableTextLayoutManagerCacheAndroid_;

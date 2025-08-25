@@ -247,7 +247,7 @@ public class NativeAnimatedNodesManager(
 
     val animation =
         when (val type = animationConfig.getString("type")) {
-          "frames" -> FrameBasedAnimationDriver(animationConfig)
+          "frames" -> FrameBasedAnimationDriver(animationConfig, reactApplicationContext)
           "spring" -> SpringAnimation(animationConfig)
           "decay" -> DecayAnimation(animationConfig)
           else -> {

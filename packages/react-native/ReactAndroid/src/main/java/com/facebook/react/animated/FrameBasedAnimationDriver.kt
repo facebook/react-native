@@ -7,18 +7,23 @@
 
 package com.facebook.react.animated
 
+import android.content.Context
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.build.ReactBuildConfig
+import kotlin.math.roundToInt
 
 /**
  * Implementation of [AnimationDriver] which provides a support for simple time-based animations
  * that are pre-calculate on the JS side. For each animation frame JS provides a value from 0 to 1
  * that indicates a progress of the animation at that frame.
  */
-internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver() {
+internal class FrameBasedAnimationDriver(config: ReadableMap,
+                                         private var context: ReactApplicationContext?
+) : AnimationDriver() {
   private var startFrameTimeNanos: Long = -1
   private var frames: DoubleArray = DoubleArray(0)
   private var toValue = 0.0
@@ -62,7 +67,8 @@ internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver(
       }
     }
     val timeFromStartMillis = (frameTimeNanos - startFrameTimeNanos) / 1000000
-    val frameIndex = Math.round(timeFromStartMillis / FRAME_TIME_MILLIS).toInt()
+    val frameTime = getFrameTimeMillis(context)
+    val frameIndex = (timeFromStartMillis / frameTime).roundToInt()
     if (frameIndex < 0) {
       val message =
           ("Calculated frame index should never be lower than 0. Called with frameTimeNanos " +
@@ -98,7 +104,11 @@ internal class FrameBasedAnimationDriver(config: ReadableMap) : AnimationDriver(
   }
 
   companion object {
-    // 60FPS
-    private const val FRAME_TIME_MILLIS = 1000.0 / 60.0
+    fun getFrameTimeMillis(context: Context?): Double {
+      if (context == null) {
+        return 1000.0 / 60.0
+      }
+      return 1000.0 / getSingleFrameInterval(context)
+    }
   }
 }

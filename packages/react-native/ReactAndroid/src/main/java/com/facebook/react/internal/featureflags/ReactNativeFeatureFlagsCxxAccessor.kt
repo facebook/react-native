@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d07316109dce5cc1ce7b0dc010962c3c>>
+ * @generated SignedSource<<7347872aafe465d387af7706930203fb>>
  */
 
 /**
@@ -25,6 +25,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var cxxNativeAnimatedEnabledCache: Boolean? = null
   private var cxxNativeAnimatedRemoveJsSyncCache: Boolean? = null
   private var disableFabricCommitInCXXAnimatedCache: Boolean? = null
+  private var disableHighRefreshRateAnimationsCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var disableOldAndroidAttachmentMetricsWorkaroundsCache: Boolean? = null
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
@@ -130,6 +131,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.disableFabricCommitInCXXAnimated()
       disableFabricCommitInCXXAnimatedCache = cached
+    }
+    return cached
+  }
+
+  override fun disableHighRefreshRateAnimations(): Boolean {
+    var cached = disableHighRefreshRateAnimationsCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.disableHighRefreshRateAnimations()
+      disableHighRefreshRateAnimationsCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4831f7b871223d8347db93f9a0b3a1f9>>
+ * @generated SignedSource<<e7aa31de51e0cd5c612e64c55fc9bdf3>>
  */
 
 /**
@@ -63,6 +63,11 @@ class ReactNativeFeatureFlags {
    * Prevents use of Fabric commit in C++ Animated implementation
    */
   RN_EXPORT static bool disableFabricCommitInCXXAnimated();
+
+  /**
+   * Disables high refresh rate animations on devices that support it (e.g. 120Hz).
+   */
+  RN_EXPORT static bool disableHighRefreshRateAnimations();
 
   /**
    * Prevent FabricMountingManager from reordering mountItems, which may lead to invalid state on the UI thread

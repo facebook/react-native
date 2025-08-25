@@ -15,8 +15,21 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type {AnimationConfig, EndCallback} from './Animation';
 
+import NativeAnimatedModule from '../NativeAnimatedModule';
+import NativeAnimatedTurboModule from '../NativeAnimatedTurboModule';
 import AnimatedColor from '../nodes/AnimatedColor';
 import Animation from './Animation';
+
+const Platform = require('../Utilities/Platform').default;
+
+const singleFrameInterval =
+  Platform.OS === 'ios'
+    ? NativeAnimatedTurboModule?.getConstants().singleFrameInterval
+    : NativeAnimatedModule?.getConstants().singleFrameInterval;
+
+const frameDuration = singleFrameInterval
+  ? singleFrameInterval * 1000
+  : 1000.0 / 60.0;
 
 export type TimingAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
@@ -88,7 +101,6 @@ export default class TimingAnimation extends Animation {
     platformConfig: ?PlatformConfig,
     ...
   }> {
-    const frameDuration = 1000.0 / 60.0;
     const frames = [];
     const numFrames = Math.round(this._duration / frameDuration);
     for (let frame = 0; frame < numFrames; frame++) {

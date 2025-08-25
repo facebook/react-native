@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e384a07f0e7bc237f72b49a1268e16b>>
+ * @generated SignedSource<<c54ef984ff9f2bcd280133efa560fe69>>
  */
 
 /**
@@ -37,6 +37,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun cxxNativeAnimatedRemoveJsSync(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableFabricCommitInCXXAnimated(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun disableHighRefreshRateAnimations(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
 

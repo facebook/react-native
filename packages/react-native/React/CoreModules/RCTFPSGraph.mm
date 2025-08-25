@@ -100,7 +100,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
     });
 
     CGFloat previousScale = _scale;
-    CGFloat targetFps = MAX(_maxFPS, 60.0);
+    CGFloat screenRefreshRate = [UIScreen mainScreen].maximumFramesPerSecond;
+    CGFloat targetFps = MAX(_maxFPS, screenRefreshRate);
     _scale = targetFps / (CGFloat)_height;
     for (NSUInteger i = 0; i < _length - 1; i++) {
       // Move each Frame back one position and adjust to new scale (if there is a new scale)

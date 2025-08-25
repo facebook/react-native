@@ -10,6 +10,20 @@ package com.facebook.react.animated
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.JSApplicationCausedNativeException
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import android.content.Context
+import android.view.WindowManager
+
+public fun getSingleFrameInterval(context: Context): Double {
+  if (ReactNativeFeatureFlags.disableHighRefreshRateAnimations()) {
+    return 60.0
+  }
+
+  val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+  val refreshRate = windowManager.defaultDisplay.supportedRefreshRates.maxOrNull()
+  return refreshRate?.toDouble() ?: 60.0
+}
 
 /**
  * Base class for different types of animation drivers. Can be used to implement simple time-based

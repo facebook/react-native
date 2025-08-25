@@ -22,6 +22,10 @@ export type EventMapping = {
   animatedValueTag: ?number,
 };
 
+export type AnimatedConstants = {
+  +singleFrameInterval?: number,
+};
+
 // The config has different keys depending on the type of the Node
 // TODO(T54896888): Make these types strict
 export type AnimatedNodeConfig = Object;
@@ -69,9 +73,12 @@ export interface Spec extends TurboModule {
 
   // All of the above in a batched mode
   +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
+
+  +getConstants?: () => AnimatedConstants;
 }
 
 const NativeModule: ?Spec = !shouldUseTurboAnimatedModule()
   ? TurboModuleRegistry.get<Spec>('NativeAnimatedModule')
   : null;
+
 export default NativeModule;
