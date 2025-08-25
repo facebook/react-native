@@ -178,6 +178,7 @@ jsi::Value TurboModuleBinding::getModule(
     jsi::Object jsRepresentation(runtime);
     weakJsRepresentation =
         std::make_unique<jsi::WeakObject>(runtime, jsRepresentation);
+    module->representationRuntime_ = &runtime;
 
     // Lazily populate the jsRepresentation, on property access.
     //
