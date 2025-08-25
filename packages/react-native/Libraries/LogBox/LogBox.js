@@ -39,6 +39,7 @@ if (__DEV__) {
   const {
     parseLogBoxLog,
     parseComponentStack,
+    parseBundlingErrorFromMessage,
   } = require('./Data/parseLogBoxLog');
 
   let originalConsoleWarn;
@@ -164,6 +165,20 @@ if (__DEV__) {
               }
               args[0] = filterResult.finalFormat;
             }
+          }
+
+          // Ensure bundling errors are parsed before anything else.
+          // This ensures bundling errors are not symbolicated
+          // (symbolication would fail since the bundle & source map won't be created)
+          const bundlingError = parseBundlingErrorFromMessage(
+            // If args[0] is a string use it directly, otherwise try to extract message property
+            typeof args[0] === 'string'
+              ? args[0]
+              : typeof args[0]?.message === 'string'
+                ? args[0].message
+                : undefined)
+          if (bundlingError) {
+            return LogBoxData.addLog(bundlingError);
           }
 
           const result = parseLogBoxLog(args);
