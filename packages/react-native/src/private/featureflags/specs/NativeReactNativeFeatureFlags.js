@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2b0679c42d8e1cb021612807d94d9f4c>>
+ * @generated SignedSource<<da22f4c43e3bdcd999e3dd1dd5896c63>>
  * @flow strict
  * @noformat
  */
@@ -92,6 +92,7 @@ export interface Spec extends TurboModule {
   +useShadowNodeStateOnClone?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
+  +virtualViewHysteresisRatio?: () => number;
   +virtualViewPrerenderRatio?: () => number;
 }
 

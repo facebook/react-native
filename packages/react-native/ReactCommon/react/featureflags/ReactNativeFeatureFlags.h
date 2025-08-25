@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4831f7b871223d8347db93f9a0b3a1f9>>
+ * @generated SignedSource<<eee81e4e9bb13ef5134d4e2d79876b38>>
  */
 
 /**
@@ -373,6 +373,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  RN_EXPORT static double virtualViewHysteresisRatio();
 
   /**
    * Initial prerender ratio for VirtualView.

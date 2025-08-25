@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cb505b80eebdf982b88aebf4c37843da>>
+ * @generated SignedSource<<bb685c713f0fdecb402fc14a6158d5ae>>
  * @flow strict
  * @noformat
  */
@@ -114,6 +114,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useShadowNodeStateOnClone: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
+  virtualViewHysteresisRatio: Getter<number>,
   virtualViewPrerenderRatio: Getter<number>,
 }>;
 
@@ -449,6 +450,10 @@ export const useTurboModuleInterop: Getter<boolean> = createNativeFlagGetter('us
  * When enabled, NativeModules will be executed by using the TurboModule system
  */
 export const useTurboModules: Getter<boolean> = createNativeFlagGetter('useTurboModules', false);
+/**
+ * Sets a hysteresis window for transition between prerender and hidden modes.
+ */
+export const virtualViewHysteresisRatio: Getter<number> = createNativeFlagGetter('virtualViewHysteresisRatio', 0);
 /**
  * Initial prerender ratio for VirtualView.
  */

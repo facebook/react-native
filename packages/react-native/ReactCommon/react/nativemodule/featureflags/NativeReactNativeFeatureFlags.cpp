@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<998bdf037d58ca747c22ada099d236f0>>
+ * @generated SignedSource<<c9c36c1dbece9e27f7b71da7611cb747>>
  */
 
 /**
@@ -377,6 +377,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+double NativeReactNativeFeatureFlags::virtualViewHysteresisRatio(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(
