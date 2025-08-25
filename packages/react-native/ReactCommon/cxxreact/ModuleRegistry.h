@@ -25,12 +25,14 @@ namespace facebook::react {
 
 class NativeModule;
 
-struct ModuleConfig {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] ModuleConfig {
   size_t index;
   folly::dynamic config;
 };
 
-class RN_EXPORT ModuleRegistry {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] ModuleRegistry {
  public:
   // not implemented:
   // onBatchComplete: see

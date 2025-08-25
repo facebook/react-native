@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
+             initialProperties:(NSDictionary *)initialProperties
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #pragma mark - Layout: Setting the size constrains
 
@@ -44,18 +45,20 @@ NS_ASSUME_NONNULL_BEGIN
  * Previously set `minimumSize` layout constraint.
  * Defaults to `{0, 0}`.
  */
-@property (atomic, assign, readonly) CGSize minimumSize;
+@property (atomic, assign, readonly)
+    CGSize minimumSize __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Previously set `maximumSize` layout constraint.
  * Defaults to `{CGFLOAT_MAX, CGFLOAT_MAX}`.
  */
-@property (atomic, assign, readonly) CGSize maximumSize;
+@property (atomic, assign, readonly)
+    CGSize maximumSize __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Simple shortcut to `-[RCTSurface setMinimumSize:size maximumSize:size]`.
  */
-- (void)setSize:(CGSize)size;
+- (void)setSize:(CGSize)size __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #pragma mark - Synchronous waiting
 
@@ -68,7 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
  *    stage temporary is not supported; in this case the stage will be
  *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
-- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+- (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage
+                          timeout:(NSTimeInterval)timeout
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #pragma mark - Mounting/Unmounting of React components
 
@@ -78,12 +83,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)mountReactComponentWithBridge:(RCTBridge *)bridge
                            moduleName:(NSString *)moduleName
-                               params:(NSDictionary *)params;
+                               params:(NSDictionary *)params
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Unmount the React component specified by the given rootViewTag, called from native.
  */
-- (void)unmountReactComponentWithBridge:(RCTBridge *)bridge rootViewTag:(NSNumber *)rootViewTag;
+- (void)unmountReactComponentWithBridge:(RCTBridge *)bridge
+                            rootViewTag:(NSNumber *)rootViewTag
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 @end
 
