@@ -16,7 +16,9 @@
 
 namespace facebook::react {
 
-class JniJSModulesUnbundle : public JSModulesUnbundle {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JniJSModulesUnbundle
+    : public JSModulesUnbundle {
   /**
    * This implementation reads modules as single file from the assets of an apk.
    */

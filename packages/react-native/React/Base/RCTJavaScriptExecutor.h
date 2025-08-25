@@ -10,8 +10,10 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 
-typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
-typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
+typedef void (^RCTJavaScriptCompleteBlock)(NSError *error)
+    __deprecated_msg("This api will be removed along with the bridge.");
+typedef void (^RCTJavaScriptCallback)(id result, NSError *error)
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
 /**
@@ -24,18 +26,20 @@ typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
  * Used to set up the executor after the bridge has been fully initialized.
  * Do any expensive setup in this method instead of `-init`.
  */
-- (void)setUp;
+- (void)setUp __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Whether the executor has been invalidated
  */
-@property (nonatomic, readonly, getter=isValid) BOOL valid;
+@property (nonatomic, readonly, getter=isValid)
+    BOOL valid __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Executes BatchedBridge.flushedQueue on JS thread and calls the given callback
  * with JSValue, containing the next queue, and JSContext.
  */
-- (void)flushedQueue:(RCTJavaScriptCallback)onComplete;
+- (void)flushedQueue:(RCTJavaScriptCallback)onComplete
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module name,
@@ -45,38 +49,46 @@ typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
 - (void)callFunctionOnModule:(NSString *)module
                       method:(NSString *)method
                    arguments:(NSArray *)args
-                    callback:(RCTJavaScriptCallback)onComplete;
+                    callback:(RCTJavaScriptCallback)onComplete
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Executes BatchedBridge.invokeCallbackAndReturnFlushedQueue with the cbID,
  * and optional additional arguments on the JS thread and calls the
  * given callback with JSValue, containing the next queue, and JSContext.
  */
-- (void)invokeCallbackID:(NSNumber *)cbID arguments:(NSArray *)args callback:(RCTJavaScriptCallback)onComplete;
+- (void)invokeCallbackID:(NSNumber *)cbID
+               arguments:(NSArray *)args
+                callback:(RCTJavaScriptCallback)onComplete
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Runs an application script, and notifies of the script load being complete via `onComplete`.
  */
 - (void)executeApplicationScript:(NSData *)script
                        sourceURL:(NSURL *)sourceURL
-                      onComplete:(RCTJavaScriptCompleteBlock)onComplete;
+                      onComplete:(RCTJavaScriptCompleteBlock)onComplete
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 - (void)injectJSONText:(NSString *)script
     asGlobalObjectNamed:(NSString *)objectName
-               callback:(RCTJavaScriptCompleteBlock)onComplete;
+               callback:(RCTJavaScriptCompleteBlock)onComplete
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Enqueue a block to run in the executors JS thread. Fallback to `dispatch_async`
  * on the main queue if the executor doesn't own a thread.
  */
-- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block;
+- (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 /**
  * Special case for Timers + ContextExecutor - instead of the default
  *   if jsthread then call else dispatch call on jsthread
  * ensure the call is made async on the jsthread
  */
-- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
+- (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 @end
 #endif // RCT_FIT_RM_OLD_RUNTIME
