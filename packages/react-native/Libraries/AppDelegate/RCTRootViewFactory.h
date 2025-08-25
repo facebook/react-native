@@ -23,11 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocks' definitions
 typedef UIView *_Nonnull (
-    ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
+    ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps)
+    __attribute__((deprecated(
+        "RCTCreateRootViewWithBridgeBlock is deprecated and will be removed when removing the legacy architecture.")));
 typedef RCTBridge *_Nonnull (
-    ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
+    ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions)
+    __attribute__((deprecated(
+        "RCTCreateBridgeWithDelegateBlock is deprecated and will be removed when removing the legacy architecture.")));
 typedef void (^RCTCustomizeRootViewBlock)(UIView *rootView);
-typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
+typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge) __attribute__((
+    deprecated("RCTSourceURLForBridgeBlock is deprecated and will be removed when removing the legacy architecture.")));
 typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
 typedef NSDictionary<NSString *, Class> *_Nonnull (^RCTExtraLazyModuleClassesForBridge)(RCTBridge *bridge);
@@ -35,8 +40,13 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 typedef void (^RCTLoadSourceForBridgeWithProgressBlock)(
     RCTBridge *bridge,
     RCTSourceLoadProgressBlock onProgress,
-    RCTSourceLoadBlock loadCallback);
-typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback);
+    RCTSourceLoadBlock loadCallback)
+    __attribute__((deprecated(
+        "RCTLoadSourceForBridgeWithProgressBlock is deprecated and will be removed when removing the legacy architecture.")));
+typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBlock loadCallback)
+    __attribute__((deprecated(
+        "RCTLoadSourceForBridgeBlock is deprecated and will be removed when removing the legacy architecture.")));
+;
 
 #pragma mark - RCTRootViewFactory Configuration
 @interface RCTRootViewFactoryConfiguration : NSObject
@@ -65,16 +75,30 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
                         newArchEnabled:(BOOL)newArchEnabled
                     turboModuleEnabled:(BOOL)turboModuleEnabled
-                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated;
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated
+    __attribute__((deprecated(
+        "initWithBundleURLBlock:newArchEnabled:turboModuleEnabled:bridgelessEnabled: is deprecated and will be removed when we remove the legacy architecture. Please use initWithBundleURLBlock:")));
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
-                bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
+                bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated
+    __attribute__((deprecated(
+        "initWithBundleURL:newArchEnabled:turboModuleEnabled:bridgelessEnabled: is deprecated and will be removed when we remove the legacy architecture. Please use initWithBundleUrl:")));
 
-- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled;
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+                        newArchEnabled:(BOOL)newArchEnabled
+    __attribute__((deprecated(
+        "initWithBundleURLBlock:newArchEnabled is deprecated and will be removed when we remove the legacy architecture. Please use initWithBundleURLBlock:")));
 
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled;
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                   newArchEnabled:(BOOL)newArchEnabled
+    __attribute__((deprecated(
+        "initWithBundleURL:newArchEnabled is deprecated and will be removed when we remove the legacy architecture. Please use initWithBundleUrl:")));
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock;
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL;
 
 /**
  * Block that allows to override logic of creating root view instance.
@@ -89,7 +113,8 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  *
  * @returns: a UIView properly configured with a bridge for React Native.
  */
-@property (nonatomic, nullable) RCTCreateRootViewWithBridgeBlock createRootViewWithBridge;
+@property (nonatomic, nullable) RCTCreateRootViewWithBridgeBlock createRootViewWithBridge __attribute__((
+    deprecated("createRootViewWithBridge is deprecated and will be removed when we remove the legacy architecture.")));
 
 /**
  * Block that allows to override default behavior of creating bridge.
@@ -102,7 +127,8 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  *
  * @returns: a newly created instance of RCTBridge.
  */
-@property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
+@property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate __attribute__((
+    deprecated("createBridgeWithDelegate is deprecated and will be removed when we remove the legacy architecture.")));
 
 /**
  * Block that allows to customize the rootView that is passed to React Native.
@@ -121,7 +147,9 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * When running from a locally bundled JS file, this should be a `file://` url
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  */
-@property (nonatomic, nullable) RCTSourceURLForBridgeBlock sourceURLForBridge;
+@property (nonatomic, nullable) RCTSourceURLForBridgeBlock sourceURLForBridge __attribute__((
+    deprecated("sourceURLForBridge is deprecated and will be removed when we remove the legacy architecture.")));
+;
 
 /**
  * The bridge initializes any registered RCTBridgeModules automatically, however
@@ -158,13 +186,18 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * location specified by the `sourceURLForBridge:` method, however, if you want
  * to handle loading the JS yourself, you can do so by setting this property.
  */
-@property (nonatomic, nullable) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress;
+@property (nonatomic, nullable) RCTLoadSourceForBridgeWithProgressBlock loadSourceForBridgeWithProgress
+    __attribute__((deprecated(
+        "loadSourceForBridgeWithProgress is deprecated and will be removed when we remove the legacy architecture.")));
+;
 
 /**
  * Similar to loadSourceForBridgeWithProgress but without progress
  * reporting.
  */
-@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridge;
+@property (nonatomic, nullable) RCTLoadSourceForBridgeBlock loadSourceForBridge __attribute__((
+    deprecated("loadSourceForBridge is deprecated and will be removed when we remove the legacy architecture.")));
+;
 
 @end
 
@@ -181,9 +214,11 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  */
 @interface RCTRootViewFactory : NSObject
 
-@property (nonatomic, strong, nullable) RCTBridge *bridge;
+@property (nonatomic, strong, nullable) RCTBridge *bridge
+    __attribute__((deprecated("The bridge is deprecated and will be removed when we remove the legacy architecture.")));
 @property (nonatomic, strong, nullable) RCTHost *reactHost;
-@property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
+@property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter __attribute__((
+    deprecated("The bridgeAdapter is deprecated and will be removed when we remove the legacy architecture.")));
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
         andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate> _Nullable)turboModuleManagerDelegate;
