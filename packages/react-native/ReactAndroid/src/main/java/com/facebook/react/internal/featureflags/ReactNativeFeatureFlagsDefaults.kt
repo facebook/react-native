@@ -137,7 +137,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useRawPropsJsiValue(): Boolean = false
 
-  override fun useShadowNodeStateOnClone(): Boolean = false
+  override fun useShadowNodeStateOnClone(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = false
 
