@@ -264,7 +264,11 @@ public class ReactInstanceManager {
     FLog.d(TAG, "ReactInstanceManager.ctor()");
     initializeSoLoaderIfNecessary(applicationContext);
 
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(applicationContext);
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(applicationContext);
+
+    if (currentActivity != null) {
+      DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(currentActivity);
+    }
 
     // See {@code ReactInstanceManagerBuilder} for description of all flags here.
     mApplicationContext = applicationContext;
@@ -929,6 +933,13 @@ public class ReactInstanceManager {
 
     ReactContext currentReactContext = getCurrentReactContext();
     if (currentReactContext != null) {
+      DisplayMetricsHolder.initScreenDisplayMetrics(currentReactContext);
+      Activity currentActivity = currentReactContext.getCurrentActivity();
+
+      if (currentActivity != null) {
+        DisplayMetricsHolder.initWindowDisplayMetrics(currentActivity);
+      }
+
       AppearanceModule appearanceModule =
           currentReactContext.getNativeModule(AppearanceModule.class);
 

@@ -87,23 +87,35 @@ class DisplayMetricsHolderTest {
   }
 
   @Test
-  fun initDisplayMetrics_setsMetrics() {
-    DisplayMetricsHolder.initDisplayMetrics(context)
-    assertThat(DisplayMetricsHolder.getWindowDisplayMetrics()).isNotNull()
+  fun initScreenDisplayMetrics_setsMetrics() {
+    DisplayMetricsHolder.initScreenDisplayMetrics(context)
     assertThat(DisplayMetricsHolder.getScreenDisplayMetrics()).isNotNull()
   }
 
   @Test
-  fun initDisplayMetricsIfNotInitialized_onlyInitializesOnce() {
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
-    val firstWindow = DisplayMetricsHolder.getWindowDisplayMetrics()
+  fun initWindowDisplayMetrics_setsMetrics() {
+    DisplayMetricsHolder.initWindowDisplayMetrics(context)
+    assertThat(DisplayMetricsHolder.getWindowDisplayMetrics()).isNotNull()
+  }
+
+  @Test
+  fun initScreenDisplayMetricsIfNotInitialized_onlyInitializesOnce() {
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(context)
     val firstScreen = DisplayMetricsHolder.getScreenDisplayMetrics()
     // Should not reinitialize
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
-    val secondWindow = DisplayMetricsHolder.getWindowDisplayMetrics()
+    DisplayMetricsHolder.initScreenDisplayMetricsIfNotInitialized(context)
     val secondScreen = DisplayMetricsHolder.getScreenDisplayMetrics()
-    assertThat(secondWindow).isEqualTo(firstWindow)
     assertThat(secondScreen).isEqualTo(firstScreen)
+  }
+
+  @Test
+  fun initWindowDisplayMetricsIfNotInitialized_onlyInitializesOnce() {
+    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(context)
+    val firstWindow = DisplayMetricsHolder.getWindowDisplayMetrics()
+    // Should not reinitialize
+    DisplayMetricsHolder.initWindowDisplayMetricsIfNotInitialized(context)
+    val secondWindow = DisplayMetricsHolder.getWindowDisplayMetrics()
+    assertThat(secondWindow).isEqualTo(firstWindow)
   }
 
   @Test(expected = IllegalStateException::class)
@@ -114,7 +126,8 @@ class DisplayMetricsHolderTest {
   @Test
   fun getDisplayMetricsWritableMap_returnsCorrectMap() {
     // Use the official initialization method to ensure both metrics are set
-    DisplayMetricsHolder.initDisplayMetrics(context)
+    DisplayMetricsHolder.initScreenDisplayMetrics(context)
+    DisplayMetricsHolder.initWindowDisplayMetrics(context)
     val map: WritableMap = DisplayMetricsHolder.getDisplayMetricsWritableMap(1.0)
     assertThat(map.hasKey("windowPhysicalPixels")).isTrue()
     assertThat(map.hasKey("screenPhysicalPixels")).isTrue()
@@ -132,7 +145,8 @@ class DisplayMetricsHolderTest {
   @Test
   @TargetApi(30)
   fun getEncodedScreenSizeWithoutVerticalInsets_returnsEncodedValue() {
-    DisplayMetricsHolder.initDisplayMetrics(context)
+    DisplayMetricsHolder.initScreenDisplayMetrics(context)
+    DisplayMetricsHolder.initWindowDisplayMetrics(context)
 
     val activity: Activity = mock()
     val window: Window = mock()
