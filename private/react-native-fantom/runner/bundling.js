@@ -15,6 +15,9 @@ import path from 'path';
 
 type BundleOptions = {
   ...RunBuildOptions,
+  customTransformOptions: ?{
+    collectCoverage: boolean,
+  },
   out: $NonMaybeType<RunBuildOptions['out']>,
   testPath: string,
 };
@@ -94,6 +97,7 @@ function getBundleBaseURL({
   dev,
   sourceMap,
   sourceMapUrl,
+  customTransformOptions,
 }: BundleOptions): URL {
   const requestPath = path.relative(PROJECT_ROOT, entry).replace(/\.js$/, '');
   const port = getMetroPort();
@@ -118,6 +122,15 @@ function getBundleBaseURL({
 
   if (sourceMapUrl != null) {
     baseURL.searchParams.append('sourceMapUrl', sourceMapUrl);
+  }
+
+  if (customTransformOptions != null) {
+    Object.keys(customTransformOptions).forEach(key => {
+      const value = customTransformOptions[key];
+      if (value != null) {
+        baseURL.searchParams.append(`transform.${key}`, JSON.stringify(value));
+      }
+    });
   }
 
   return baseURL;

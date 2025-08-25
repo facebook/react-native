@@ -26,6 +26,24 @@ const transform: BabelTransformer['transform'] = (
       ...(args.plugins ?? []),
       // $FlowExpectedError[untyped-import]
       require('./babel-plugins/inject-debugger-statements-in-tests'),
+      ...(args.options.customTransformOptions?.collectCoverage === 'true'
+        ? [
+            [
+              require.resolve('babel-plugin-istanbul'),
+              {
+                include: [
+                  'packages/react-native/Libraries/**/*.js',
+                  'packages/react-native/src/**/*.js',
+                  'packages/virtualized-lists/**/*.js',
+                ],
+                exclude: [
+                  'packages/react-native/Libraries/Renderer/**',
+                  '**/__tests__/**',
+                ],
+              },
+            ],
+          ]
+        : []),
     ],
   };
   return MetroBabelTransformer.transform(processedArgs);

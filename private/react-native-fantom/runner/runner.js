@@ -9,6 +9,7 @@
  */
 
 import type {
+  CoverageMap,
   FailureDetail,
   TestCaseResult,
   TestSuiteResult,
@@ -193,6 +194,7 @@ function generateBytecodeBundle({
 module.exports = async function runTest(
   globalConfig: {
     updateSnapshot: 'all' | 'new' | 'none',
+    collectCoverage: boolean,
     ...
   },
   config: {
@@ -205,6 +207,7 @@ module.exports = async function runTest(
   runtime: {...},
   testPath: string,
 ): mixed {
+  let coverageMap: CoverageMap | void;
   const snapshotResolver = await buildSnapshotResolver(config);
   const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
   const snapshotState = new SnapshotState(snapshotPath, {
@@ -339,6 +342,9 @@ module.exports = async function runTest(
       dev: !testConfig.isJsOptimized,
       sourceMap: true,
       sourceMapUrl: sourceMapPath,
+      customTransformOptions: {
+        collectCoverage: globalConfig.collectCoverage,
+      },
     };
 
     await createBundle({
@@ -456,6 +462,8 @@ module.exports = async function runTest(
     }
 
     testResultsByConfig.push(testResults);
+
+    coverageMap = processedResult.coverageMap;
   }
 
   const endTime = Date.now();
@@ -481,6 +489,7 @@ module.exports = async function runTest(
       globalConfig,
       testPath,
     ),
+    coverage: coverageMap,
     leaks: false,
     openHandles: [],
     perfStats: {
