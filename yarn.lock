@@ -4507,6 +4507,11 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
+fb-dotslash@0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/fb-dotslash/-/fb-dotslash-0.5.8.tgz#c5ef3dacd75e1ddb2197c367052464ddde0115f5"
+  integrity sha512-XHYLKk9J4BupDxi9bSEhkfss0m+Vr9ChTrjhf9l2iw3jB5C7BnY4GVPoMcqbrTutsKJso6yj2nAB6BI/F2oZaA==
+
 fb-watchman@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/fb-watchman/-/fb-watchman-2.0.2.tgz#e9524ee6b5c77e9e5001af0f85f3adbb8623255c"
