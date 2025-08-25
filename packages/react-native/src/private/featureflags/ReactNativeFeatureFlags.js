@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ec32c21e134bd51702d7fcab094c725>>
+ * @generated SignedSource<<cb505b80eebdf982b88aebf4c37843da>>
  * @flow strict
  * @noformat
  */
@@ -436,7 +436,7 @@ export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeF
 /**
  * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
  */
-export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', false);
+export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', true);
 /**
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
