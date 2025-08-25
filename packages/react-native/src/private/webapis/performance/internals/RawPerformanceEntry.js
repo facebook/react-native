@@ -44,7 +44,6 @@ export function rawToPerformanceEntry(
     case RawPerformanceEntryTypeValues.LONGTASK:
       return new PerformanceLongTaskTiming({
         name: entry.name,
-        entryType: rawToPerformanceEntryType(entry.entryType),
         startTime: entry.startTime,
         duration: entry.duration,
       });
@@ -53,7 +52,8 @@ export function rawToPerformanceEntry(
         startTime: entry.startTime,
       });
     case RawPerformanceEntryTypeValues.MEASURE:
-      return new PerformanceMeasure(entry.name, {
+      return new PerformanceMeasure({
+        name: entry.name,
         startTime: entry.startTime,
         duration: entry.duration,
       });
@@ -71,9 +71,8 @@ export function rawToPerformanceEntry(
         responseStatus: entry.responseStatus,
       });
     default:
-      return new PerformanceEntry({
+      return new PerformanceEntry(rawToPerformanceEntryType(entry.entryType), {
         name: entry.name,
-        entryType: rawToPerformanceEntryType(entry.entryType),
         startTime: entry.startTime,
         duration: entry.duration,
       });

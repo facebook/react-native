@@ -9,8 +9,10 @@
  */
 
 // flowlint unsafe-getters-setters:off
-
-import type {PerformanceEntryJSON} from './PerformanceEntry';
+import type {
+  PerformanceEntryInit,
+  PerformanceEntryJSON,
+} from './PerformanceEntry';
 
 import {PerformanceEntry} from './PerformanceEntry';
 
@@ -25,7 +27,13 @@ export class TaskAttributionTiming extends PerformanceEntry {}
 const EMPTY_ATTRIBUTION: $ReadOnlyArray<TaskAttributionTiming> =
   Object.preventExtensions([]);
 
+export interface PerformanceLongTaskTimingInit extends PerformanceEntryInit {}
+
 export class PerformanceLongTaskTiming extends PerformanceEntry {
+  constructor(init: PerformanceEntryInit) {
+    super('longtask', init);
+  }
+
   get attribution(): $ReadOnlyArray<TaskAttributionTiming> {
     return EMPTY_ATTRIBUTION;
   }
