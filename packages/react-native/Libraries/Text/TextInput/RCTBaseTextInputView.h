@@ -22,43 +22,69 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTBaseTextInputView : RCTView <RCTBackedTextInputDelegate>
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder *)decoder NS_UNAVAILABLE;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
-@property (nonatomic, readonly) UIView<RCTBackedTextInputViewProtocol> *backedTextInputView;
+@property (nonatomic, readonly) UIView<RCTBackedTextInputViewProtocol> *backedTextInputView
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, strong, nullable) RCTTextAttributes *textAttributes;
-@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
-@property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
+@property (nonatomic, strong, nullable) RCTTextAttributes *textAttributes
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) UIEdgeInsets reactPaddingInsets
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) UIEdgeInsets reactBorderInsets
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, assign) NSInteger mostRecentEventCount;
-@property (nonatomic, assign, readonly) NSInteger nativeEventCount;
-@property (nonatomic, assign) BOOL autoFocus;
-@property (nonatomic, copy) NSString *submitBehavior;
-@property (nonatomic, assign) BOOL selectTextOnFocus;
-@property (nonatomic, assign) BOOL clearTextOnFocus;
-@property (nonatomic, assign) BOOL secureTextEntry;
-@property (nonatomic, copy) RCTTextSelection *selection;
-@property (nonatomic, strong, nullable) NSNumber *maxLength;
-@property (nonatomic, copy, nullable) NSAttributedString *attributedText;
-@property (nonatomic, copy) NSString *inputAccessoryViewID;
-@property (nonatomic, strong) NSString *inputAccessoryViewButtonLabel;
-@property (nonatomic, assign) UIKeyboardType keyboardType;
-@property (nonatomic, assign) BOOL showSoftInputOnFocus;
+@property (nonatomic, assign) NSInteger mostRecentEventCount
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign, readonly) NSInteger nativeEventCount
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL autoFocus
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) NSString *submitBehavior
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL selectTextOnFocus
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL clearTextOnFocus
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL secureTextEntry
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) RCTTextSelection *selection
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, strong, nullable) NSNumber *maxLength
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) NSAttributedString *attributedText
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) NSString *inputAccessoryViewID
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, strong) NSString *inputAccessoryViewButtonLabel
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) UIKeyboardType keyboardType
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL showSoftInputOnFocus
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/
-- (void)setSelectionStart:(NSInteger)start selectionEnd:(NSInteger)end;
+- (void)setSelectionStart:(NSInteger)start
+             selectionEnd:(NSInteger)end
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

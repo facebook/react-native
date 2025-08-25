@@ -11,9 +11,11 @@
 
 @interface RCTModalHostViewController : UIViewController
 
-@property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds);
+@property (nonatomic, copy) void (^boundsDidChangeBlock)(CGRect newBounds)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations;
+@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

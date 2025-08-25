@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTWrapperViewControllerHostingView : UIView
 
-@property (nonatomic, retain, nullable) UIViewController *contentViewController;
+@property (nonatomic, retain, nullable) UIViewController *contentViewController
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 #pragma mark - Restrictions
 

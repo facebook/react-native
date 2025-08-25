@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTWrapperViewManager : RCTViewManager
 
-- (RCTWrapperView *)view NS_REQUIRES_SUPER;
+- (RCTWrapperView *)view NS_REQUIRES_SUPER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

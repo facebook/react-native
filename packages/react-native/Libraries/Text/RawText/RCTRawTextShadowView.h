@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTRawTextShadowView : RCTShadowView
 
-@property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, copy, nullable) NSString *text
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

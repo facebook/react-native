@@ -13,8 +13,10 @@
 
 @interface RCTSwitch : UISwitch
 
-@property (nonatomic, assign) BOOL wasOn;
-@property (nonatomic, copy) RCTBubblingEventBlock onChange;
+@property (nonatomic, assign) BOOL wasOn
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) RCTBubblingEventBlock onChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

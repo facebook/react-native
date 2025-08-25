@@ -11,7 +11,8 @@
 
 @interface RCTConvert (UIActivityIndicatorView)
 
-+ (UIActivityIndicatorViewStyle)UIActivityIndicatorViewStyle:(id)json;
++ (UIActivityIndicatorViewStyle)UIActivityIndicatorViewStyle:(id)json
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

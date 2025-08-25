@@ -14,7 +14,8 @@
 
 @interface RCTInputAccessoryView : UIView
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

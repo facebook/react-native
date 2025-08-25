@@ -15,16 +15,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTTextView : UIView
 
-@property (nonatomic, assign) BOOL selectable;
+@property (nonatomic, assign) BOOL selectable
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 - (void)setTextStorage:(NSTextStorage *)textStorage
           contentFrame:(CGRect)contentFrame
-       descendantViews:(NSArray<UIView *> *)descendantViews;
+       descendantViews:(NSArray<UIView *> *)descendantViews
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */
-@property (nonatomic, assign) RCTBubblingEventBlock onClick;
+@property (nonatomic, assign) RCTBubblingEventBlock onClick
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 
