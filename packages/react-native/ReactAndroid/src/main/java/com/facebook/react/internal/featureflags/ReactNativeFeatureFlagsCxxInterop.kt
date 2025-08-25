@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e384a07f0e7bc237f72b49a1268e16b>>
+ * @generated SignedSource<<a0453230524ebca2bfb8fad656a6f54a>>
  */
 
 /**
@@ -161,6 +161,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun virtualViewHysteresisRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

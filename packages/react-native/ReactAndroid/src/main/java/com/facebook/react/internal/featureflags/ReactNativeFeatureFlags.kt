@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1e8a84a53072fa0c8665aead80d0199f>>
+ * @generated SignedSource<<34c12f5a31aab5bfb874953f1beefef1>>
  */
 
 /**
@@ -431,6 +431,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  @JvmStatic
+  public fun virtualViewHysteresisRatio(): Double = accessor.virtualViewHysteresisRatio()
 
   /**
    * Initial prerender ratio for VirtualView.

@@ -230,21 +230,34 @@ static BOOL sIsAccessibilityUsed = NO;
       scrollView.contentOffset.y,
       scrollView.frame.size.width,
       scrollView.frame.size.height);
+  const CGFloat visibleWidth = thresholdRect.size.width;
+  const CGFloat visibleHeight = thresholdRect.size.height;
+
   if (CGRectOverlaps(targetRect, thresholdRect)) {
     newMode = RCTVirtualViewModeVisible;
   } else {
     auto prerender = false;
     const CGFloat prerenderRatio = ReactNativeFeatureFlags::virtualViewPrerenderRatio();
     if (prerenderRatio > 0) {
-      thresholdRect = CGRectInset(
-          thresholdRect, -thresholdRect.size.width * prerenderRatio, -thresholdRect.size.height * prerenderRatio);
+      thresholdRect = CGRectInset(thresholdRect, -visibleWidth * prerenderRatio, -visibleHeight * prerenderRatio);
       prerender = CGRectOverlaps(targetRect, thresholdRect);
     }
     if (prerender) {
       newMode = RCTVirtualViewModePrerender;
     } else {
-      newMode = RCTVirtualViewModeHidden;
-      thresholdRect = CGRectZero;
+      const CGFloat hysteresisRatio = ReactNativeFeatureFlags::virtualViewHysteresisRatio();
+      if (_mode.has_value() && hysteresisRatio > 0) {
+        thresholdRect = CGRectInset(thresholdRect, -visibleWidth * hysteresisRatio, -visibleHeight * hysteresisRatio);
+        if (CGRectOverlaps(targetRect, thresholdRect)) {
+          newMode = _mode.value();
+        } else {
+          newMode = RCTVirtualViewModeHidden;
+          thresholdRect = CGRectZero;
+        }
+      } else {
+        newMode = RCTVirtualViewModeHidden;
+        thresholdRect = CGRectZero;
+      }
     }
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d5243da4eb6bdde1e703ae55fcccbf0f>>
+ * @generated SignedSource<<3c5588a851e6cdefaba22236c5ebb828>>
  */
 
 /**
@@ -1235,6 +1235,24 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
   return flagValue.value();
 }
 
+double ReactNativeFeatureFlagsAccessor::virtualViewHysteresisRatio() {
+  auto flagValue = virtualViewHysteresisRatio_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(67, "virtualViewHysteresisRatio");
+
+    flagValue = currentProvider_->virtualViewHysteresisRatio();
+    virtualViewHysteresisRatio_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
   auto flagValue = virtualViewPrerenderRatio_.load();
 
@@ -1244,7 +1262,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(67, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(68, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6030ed59832efdf42e23c13b689da64f>>
+ * @generated SignedSource<<e2a5086e5586caf4c90ef503416a0e83>>
  */
 
 /**
@@ -646,6 +646,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  double virtualViewHysteresisRatio() override {
+    auto value = values_["virtualViewHysteresisRatio"];
+    if (!value.isNull()) {
+      return value.getDouble();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::virtualViewHysteresisRatio();
   }
 
   double virtualViewPrerenderRatio() override {

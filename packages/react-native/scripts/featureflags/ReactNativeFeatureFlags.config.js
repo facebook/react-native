@@ -761,6 +761,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
+    virtualViewHysteresisRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-08-22',
+        description:
+          'Sets a hysteresis window for transition between prerender and hidden modes.',
+        expectedReleaseValue: 1,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
       metadata: {

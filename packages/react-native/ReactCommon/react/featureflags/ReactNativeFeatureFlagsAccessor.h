@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce6cfc25358a636fcd9cd6605e9008ed>>
+ * @generated SignedSource<<f1eb31a7412bff743a5c581224d71e2a>>
  */
 
 /**
@@ -99,6 +99,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useShadowNodeStateOnClone();
   bool useTurboModuleInterop();
   bool useTurboModules();
+  double virtualViewHysteresisRatio();
   double virtualViewPrerenderRatio();
 
   void override(std::unique_ptr<ReactNativeFeatureFlagsProvider> provider);
@@ -111,7 +112,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 68> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -180,6 +181,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useShadowNodeStateOnClone_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
+  std::atomic<std::optional<double>> virtualViewHysteresisRatio_;
   std::atomic<std::optional<double>> virtualViewPrerenderRatio_;
 };
 
