@@ -126,10 +126,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   if (_lineBreakStrategy != NSLineBreakStrategyNone) {
-    if (@available(iOS 14.0, *)) {
-      paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
-      isParagraphStyleUsed = YES;
-    }
+    paragraphStyle.lineBreakStrategy = _lineBreakStrategy;
+    isParagraphStyleUsed = YES;
   }
 
   if (_lineBreakMode != NSLineBreakByWordWrapping) {
