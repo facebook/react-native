@@ -82,17 +82,34 @@
                              action:(SEL)action
 {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+  UIButtonConfiguration *config;
+  
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 260000 /* __IPHONE_26_0 */
+  if (@available(iOS 26.0, *)) {
+    config = [UIButtonConfiguration glassButtonConfiguration];
+  }
+#endif
+  else {
+    config = [UIButtonConfiguration plainButtonConfiguration];
+  }
+  
+  config.baseBackgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+  config.buttonSize = UIButtonConfigurationSizeSmall;
+
   button.accessibilityIdentifier = accessibilityIdentifier;
 
-  button.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+  NSDictionary *attributes = @{
+      NSForegroundColorAttributeName: [UIColor whiteColor],
+      NSFontAttributeName: [UIFont systemFontOfSize:13],
+  };
 
-  button.titleLabel.font = [UIFont systemFontOfSize:13];
-
+  NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attributes];
+  config.attributedTitle = attributedTitle;
+  
+  [button setConfiguration:config];
   [button setTitle:title forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorWithWhite:1 alpha:1] forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
-
   [button addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
+  
   return button;
 }
 
@@ -133,7 +150,11 @@
   buttonStackView.axis = UILayoutConstraintAxisHorizontal;
   buttonStackView.distribution = UIStackViewDistributionFillEqually;
   buttonStackView.alignment = UIStackViewAlignmentTop;
+  buttonStackView.spacing = 10;
   buttonStackView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+  
+  buttonStackView.layoutMargins = UIEdgeInsetsMake(10, 10, 0, 10);
+  buttonStackView.layoutMarginsRelativeArrangement = YES;
 
   [buttonStackView addArrangedSubview:dismissButton];
   [buttonStackView addArrangedSubview:reloadButton];
