@@ -10,18 +10,12 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from '../Performance';
-import type {
-  PerformanceEntryJSON,
-  PerformanceEntryList,
-} from '../PerformanceEntry';
-
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
+import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import DOMException from '../../errors/DOMException';
-import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
 import * as Fantom from '@react-native/fantom';
 
-declare var performance: Performance;
+setUpPerformanceObserver();
 
 function getThrownError(fn: () => mixed): mixed {
   try {
@@ -32,7 +26,7 @@ function getThrownError(fn: () => mixed): mixed {
   throw new Error('Expected function to throw');
 }
 
-function toJSON(entries: PerformanceEntryList): Array<PerformanceEntryJSON> {
+function toJSON(entries: PerformanceEntryList): Array<mixed> {
   return entries.map(entry => entry.toJSON());
 }
 
@@ -48,6 +42,24 @@ describe('User Timing', () => {
 
   afterEach(() => {
     mockClock.uninstall();
+  });
+
+  it('allows creating instances of PerformanceMark directly', () => {
+    const before = performance.now();
+    const entry = new PerformanceMark('mark-now');
+    const after = performance.now();
+
+    expect(entry).toBeInstanceOf(PerformanceMark);
+    expect(entry.startTime).toBeGreaterThanOrEqual(before);
+    expect(entry.startTime).toBeLessThanOrEqual(after);
+    expect(entry.duration).toBe(0);
+    expect(entry.detail).toBe(null);
+  });
+
+  it('does NOT allow creating instances of PerformanceMeasure directly', () => {
+    expect(() => {
+      return new PerformanceMeasure();
+    }).toThrow("Failed to construct 'PerformanceMeasure': Illegal constructor");
   });
 
   describe('mark', () => {
