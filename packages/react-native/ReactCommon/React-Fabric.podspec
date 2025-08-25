@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_Fabric'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_Fabric")
 
   s.dependency "React-jsiexecutor"
   s.dependency "RCTRequired"

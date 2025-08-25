@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_jsitracing'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: './', module_name: "React_jsitracing")
 
   s.dependency "React-jsi"
 end

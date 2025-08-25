@@ -50,10 +50,7 @@ Pod::Spec.new do |s|
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
                           }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_FabricImage'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: './', module_name: "React_FabricImage")
 
   s.dependency "React-jsiexecutor", version
   s.dependency "RCTRequired", version
