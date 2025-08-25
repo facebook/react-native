@@ -20,7 +20,9 @@ namespace facebook::react {
 
 class MessageQueueThread;
 
-class ModuleHolder : public jni::JavaClass<ModuleHolder> {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] ModuleHolder
+    : public jni::JavaClass<ModuleHolder> {
  public:
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/ModuleHolder;";
@@ -30,6 +32,7 @@ class ModuleHolder : public jni::JavaClass<ModuleHolder> {
       const std::string& moduleName) const;
 };
 
+[[deprecated("This API will be removed along with the legacy architecture.")]]
 std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
     std::weak_ptr<Instance> winstance,
     jni::alias_ref<jni::JCollection<JavaModuleWrapper::javaobject>::javaobject>
