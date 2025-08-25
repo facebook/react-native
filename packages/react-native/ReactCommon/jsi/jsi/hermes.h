@@ -11,6 +11,7 @@
 
 struct SHUnit;
 struct SHRuntime;
+using SHUnitCreator = SHUnit* (*)();
 namespace hermes::vm {
 class GCExecTrace;
 }
@@ -128,10 +129,14 @@ class IHermes : public jsi::ICast {
       const std::shared_ptr<const jsi::Buffer>& sourceMapBuf,
       const std::string& sourceURL) = 0;
 
+  /// Get the unit creating function pointer which can be passed to
+  /// evaluateSHUnit() for evaluation.
+  virtual SHUnitCreator getSHUnitCreator() const = 0;
+
   /// Associate the SHUnit returned by \p shUnitCreator with this runtime and
   /// run its initialization code. The unit will be freed when the runtime is
   /// destroyed.
-  virtual jsi::Value evaluateSHUnit(SHUnit* (*shUnitCreator)()) = 0;
+  virtual jsi::Value evaluateSHUnit(SHUnitCreator shUnitCreator) = 0;
 
   /// Retrieve the underlying SHRuntime.
   virtual SHRuntime* getSHRuntime() noexcept = 0;
