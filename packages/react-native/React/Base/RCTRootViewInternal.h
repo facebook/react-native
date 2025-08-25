@@ -19,9 +19,10 @@
  * This setter should be used only by RCTUIManager on react root view
  * intrinsic content size update.
  */
-@property (readwrite, nonatomic, assign) CGSize intrinsicContentSize;
+@property (readwrite, nonatomic, assign)
+    CGSize intrinsicContentSize __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-- (void)contentViewInvalidated;
+- (void)contentViewInvalidated __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 @end
 

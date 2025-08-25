@@ -21,7 +21,8 @@ RCT_EXTERN void RCTRegisterModule(Class);
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
                        bundleURL:(NSURL *)bundleURL
                   moduleProvider:(RCTBridgeModuleListProvider)block
-                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #endif // RCT_FIT_RM_OLD_RUNTIME
 
@@ -150,7 +151,8 @@ RCT_EXTERN void RCTRegisterModule(Class);
 @property (nonatomic, readonly) void *runtime;
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
-- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 #endif // RCT_FIT_RM_OLD_RUNTIME
 
 @end

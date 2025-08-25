@@ -55,7 +55,8 @@ extern
 - (instancetype)initWithFrame:(CGRect)frame
                        bridge:(RCTBridge *)bridge
                    moduleName:(NSString *)moduleName
-            initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+            initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * - Convenience initializer -
@@ -63,7 +64,8 @@ extern
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(nullable NSDictionary *)initialProperties;
+             initialProperties:(nullable NSDictionary *)initialProperties
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * - Convenience initializer -
@@ -75,7 +77,8 @@ extern
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
                 initialProperties:(nullable NSDictionary *)initialProperties
-                    launchOptions:(nullable NSDictionary *)launchOptions;
+                    launchOptions:(nullable NSDictionary *)launchOptions
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The name of the JavaScript module to execute within the
@@ -83,13 +86,15 @@ extern
  * any immediate effect, but it must be done prior to loading
  * the script.
  */
-@property (nonatomic, copy, readonly) NSString *moduleName;
+@property (nonatomic, copy, readonly)
+    NSString *moduleName __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The bridge used by the root view. Bridges can be shared between multiple
  * root views, so you can use this property to initialize another RCTRootView.
  */
-@property (nonatomic, strong, readonly) RCTBridge *bridge;
+@property (nonatomic, strong, readonly)
+    RCTBridge *bridge __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The properties to apply to the view. Use this property to update
@@ -98,44 +103,52 @@ extern
  *
  * Set this property only on the main thread.
  */
-@property (nonatomic, copy, readwrite, nullable) NSDictionary *appProperties;
+@property (nonatomic, copy, readwrite, nullable)
+    NSDictionary *appProperties __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The size flexibility mode of the root view.
  */
-@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
+@property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /*
  * The minimum size of the root view, defaults to CGSizeZero.
  */
-@property (nonatomic, assign) CGSize minimumSize;
+@property (nonatomic, assign)
+    CGSize minimumSize __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The delegate that handles intrinsic size updates.
  */
-@property (nonatomic, weak, nullable) id<RCTRootViewDelegate> delegate;
+@property (nonatomic, weak, nullable) id<RCTRootViewDelegate> delegate __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * The backing view controller of the root view.
  */
-@property (nonatomic, weak, nullable) UIViewController *reactViewController;
+@property (nonatomic, weak, nullable) UIViewController *reactViewController __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 /**
  * The root view casted as UIView. Used by splash screen libraries.
  */
-@property (nonatomic, strong, readonly) UIView *view;
+@property (nonatomic, strong, readonly)
+    UIView *view __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The React-managed contents view of the root view.
  */
-@property (nonatomic, strong, readonly) UIView *contentView;
+@property (nonatomic, strong, readonly)
+    UIView *contentView __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * A view to display while the JavaScript is loading, so users aren't presented
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong, nullable) UIView *loadingView;
+@property (nonatomic, strong, nullable)
+    UIView *loadingView __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * When set, any touches on the RCTRootView that are not matched up to any of the child
@@ -147,14 +160,18 @@ extern
  *
  * The default value is NO.
  */
-@property (nonatomic, assign) BOOL passThroughTouches;
+@property (nonatomic, assign)
+    BOOL passThroughTouches __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Timings for hiding the loading view after the content has loaded. Both of
  * these values default to 0.25 seconds.
  */
-@property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
-@property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
+@property (nonatomic, assign)
+    NSTimeInterval loadingViewFadeDelay __deprecated_msg("This API will be removed along with the legacy architecture.")
+        ;
+@property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration __deprecated_msg(
+    "This API will be removed along with the legacy architecture.");
 
 @end
 
