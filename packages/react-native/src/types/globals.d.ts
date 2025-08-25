@@ -461,8 +461,18 @@ declare global {
     | 'text';
 
   interface URL {
+    hash: string;
+    host: string;
+    hostname: string;
     href: string;
+    readonly origin: string;
+    password: string;
+    pathname: string;
+    port: string;
+    protocol: string;
+    search: string;
     readonly searchParams: URLSearchParams;
+    username: string;
 
     toJSON(): string;
     toString(): string;
@@ -479,9 +489,20 @@ declare global {
    * Based on definitions of lib.dom and lib.dom.iterable
    */
   interface URLSearchParams {
+    readonly size: number;
     append(key: string, value: string): void;
+    delete(name: string): void;
+    get(name: string): string | null;
+    getAll(name: string): string[];
+    has(name: string): boolean;
+    set(name: string, value: string): void;
+    sort(): void;
+    forEach(callbackfn: (value: string, key: string, parent: URLSearchParams) => void): void;
     toString(): string;
 
+    entries(): IterableIterator<[string, string]>;
+    keys(): IterableIterator<string>;
+    values(): IterableIterator<string>;
     [Symbol.iterator](): IterableIterator<[string, string]>;
   }
 
