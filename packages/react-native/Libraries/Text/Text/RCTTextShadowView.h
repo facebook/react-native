@@ -15,15 +15,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTTextShadowView : RCTBaseTextShadowView
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, assign) NSInteger maximumNumberOfLines;
-@property (nonatomic, assign) NSLineBreakMode lineBreakMode;
-@property (nonatomic, assign) BOOL adjustsFontSizeToFit;
-@property (nonatomic, assign) CGFloat minimumFontScale;
-@property (nonatomic, copy) RCTDirectEventBlock onTextLayout;
+@property (nonatomic, assign) NSInteger maximumNumberOfLines
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) NSLineBreakMode lineBreakMode
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL adjustsFontSizeToFit
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) CGFloat minimumFontScale
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) RCTDirectEventBlock onTextLayout
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-- (void)uiManagerWillPerformMounting;
+- (void)uiManagerWillPerformMounting
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

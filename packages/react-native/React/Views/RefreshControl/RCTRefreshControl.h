@@ -14,9 +14,12 @@
 
 @interface RCTRefreshControl : UIRefreshControl <RCTCustomRefreshControlProtocol>
 
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) RCTDirectEventBlock onRefresh;
-@property (nonatomic, weak) UIScrollView *scrollView;
+@property (nonatomic, copy) NSString *title
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) RCTDirectEventBlock onRefresh
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, weak) UIScrollView *scrollView
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

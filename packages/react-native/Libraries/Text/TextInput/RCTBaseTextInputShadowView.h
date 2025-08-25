@@ -13,14 +13,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTBaseTextInputShadowView : RCTBaseTextShadowView
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, copy, nullable) NSString *text;
-@property (nonatomic, copy, nullable) NSString *placeholder;
-@property (nonatomic, assign) NSInteger maximumNumberOfLines;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange;
+@property (nonatomic, copy, nullable) NSString *text
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) NSString *placeholder
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) NSInteger maximumNumberOfLines
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy, nullable) RCTDirectEventBlock onContentSizeChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-- (void)uiManagerWillPerformMounting;
+- (void)uiManagerWillPerformMounting
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

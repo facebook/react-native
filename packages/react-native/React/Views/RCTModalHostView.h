@@ -20,30 +20,45 @@
 
 @interface RCTModalHostView : UIView <RCTInvalidating, UIAdaptivePresentationControllerDelegate>
 
-@property (nonatomic, copy) NSString *animationType;
-@property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
-@property (nonatomic, assign, getter=isTransparent) BOOL transparent;
+@property (nonatomic, copy) NSString *animationType
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) UIModalPresentationStyle presentationStyle
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign, getter=isTransparent) BOOL transparent
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, copy) RCTDirectEventBlock onShow;
-@property (nonatomic, assign) BOOL visible;
-@property (nonatomic, assign) BOOL allowSwipeDismissal;
+@property (nonatomic, copy) RCTDirectEventBlock onShow
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL visible
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL allowSwipeDismissal
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 // Android only
-@property (nonatomic, assign) BOOL statusBarTranslucent;
-@property (nonatomic, assign) BOOL hardwareAccelerated;
-@property (nonatomic, assign) BOOL animated;
+@property (nonatomic, assign) BOOL statusBarTranslucent
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL hardwareAccelerated
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) BOOL animated
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, copy) NSNumber *identifier;
+@property (nonatomic, copy) NSNumber *identifier
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate;
+@property (nonatomic, weak) id<RCTModalHostViewInteractor> delegate
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, copy) NSArray<NSString *> *supportedOrientations;
-@property (nonatomic, copy) RCTDirectEventBlock onOrientationChange;
+@property (nonatomic, copy) NSArray<NSString *> *supportedOrientations
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) RCTDirectEventBlock onOrientationChange
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 // Fabric only
-@property (nonatomic, copy) RCTDirectEventBlock onDismiss;
+@property (nonatomic, copy) RCTDirectEventBlock onDismiss
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 
@@ -51,10 +66,12 @@
 
 - (void)presentModalHostView:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
-                    animated:(BOOL)animated;
+                    animated:(BOOL)animated
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 - (void)dismissModalHostView:(RCTModalHostView *)modalHostView
           withViewController:(RCTModalHostViewController *)viewController
-                    animated:(BOOL)animated;
+                    animated:(BOOL)animated
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

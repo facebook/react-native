@@ -14,7 +14,8 @@
 
 @interface RCTModalManager : RCTEventEmitter <RCTBridgeModule>
 
-- (void)modalDismissed:(NSNumber *)modalID;
+- (void)modalDismissed:(NSNumber *)modalID
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

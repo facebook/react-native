@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * (Experimental and unused for Paper) Pointer event handlers.
  */
-@property (nonatomic, assign) RCTBubblingEventBlock onClick;
+@property (nonatomic, assign) RCTBubblingEventBlock onClick
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

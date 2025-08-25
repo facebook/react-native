@@ -9,7 +9,8 @@
 
 #ifndef RCT_FIT_RM_OLD_COMPONENT
 
-typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize);
+typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @class RCTBridge;
 
@@ -17,10 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTWrapperView : UIView
 
-@property (nonatomic, retain, nullable) UIView *contentView;
-@property (nonatomic, readonly) RCTWrapperMeasureBlock measureBlock;
+@property (nonatomic, retain, nullable) UIView *contentView
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, readonly) RCTWrapperMeasureBlock measureBlock
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 #pragma mark - Restrictions
 

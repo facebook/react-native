@@ -13,9 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTSafeAreaViewLocalData : NSObject
 
-- (instancetype)initWithInsets:(UIEdgeInsets)insets;
+- (instancetype)initWithInsets:(UIEdgeInsets)insets
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (atomic, readonly) UIEdgeInsets insets;
+@property (atomic, readonly) UIEdgeInsets insets
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

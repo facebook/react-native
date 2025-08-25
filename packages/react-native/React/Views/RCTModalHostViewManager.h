@@ -15,7 +15,8 @@ typedef void (^RCTModalViewInteractionBlock)(
     UIViewController *reactViewController,
     UIViewController *viewController,
     BOOL animated,
-    dispatch_block_t completionBlock);
+    dispatch_block_t completionBlock)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @interface RCTModalHostViewManager : RCTViewManager <RCTInvalidating>
 
@@ -24,8 +25,10 @@ typedef void (^RCTModalViewInteractionBlock)(
  * e.g. in case you have a native navigator that has its own way to display a modal.
  * If these are not specified, it falls back to the UIViewController standard way of presenting.
  */
-@property (nonatomic, strong) RCTModalViewInteractionBlock presentationBlock;
-@property (nonatomic, strong) RCTModalViewInteractionBlock dismissalBlock;
+@property (nonatomic, strong) RCTModalViewInteractionBlock presentationBlock
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, strong) RCTModalViewInteractionBlock dismissalBlock
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

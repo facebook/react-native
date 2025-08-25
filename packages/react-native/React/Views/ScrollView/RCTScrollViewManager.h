@@ -12,7 +12,8 @@
 
 @interface RCTConvert (UIScrollView)
 
-+ (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
++ (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

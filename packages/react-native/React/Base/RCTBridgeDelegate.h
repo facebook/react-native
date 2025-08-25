@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
  * When running from a locally bundled JS file, this should be a `file://` url
  * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
  */
-- (NSURL *__nullable)sourceURLForBridge:(RCTBridge *)bridge;
+- (NSURL *__nullable)sourceURLForBridge:(RCTBridge *)bridge
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 @optional
 
@@ -39,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
  * not recommended in most cases - if the module methods and behavior do not
  * match exactly, it may lead to bugs or crashes.
  */
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The bridge will call this method when a module been called from JS
@@ -48,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
  * in the implementation, and the system must attempt to look for it again among registered.
  * If the module was not registered, return NO to prevent further searches.
  */
-- (BOOL)bridge:(RCTBridge *)bridge didNotFindModule:(NSString *)moduleName;
+- (BOOL)bridge:(RCTBridge *)bridge
+    didNotFindModule:(NSString *)moduleName
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The bridge will automatically attempt to load the JS source code from the
@@ -57,18 +61,22 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                  onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback;
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Similar to loadSourceForBridge:onProgress:onComplete: but without progress
  * reporting.
  */
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback;
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                  withBlock:(RCTSourceLoadBlock)loadCallback
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Retrieve the list of lazy-native-modules names for the given bridge.
  */
-- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
+- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #endif // RCT_FIT_RM_OLD_RUNTIME
 @end

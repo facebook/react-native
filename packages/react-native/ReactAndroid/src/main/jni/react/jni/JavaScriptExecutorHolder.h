@@ -14,7 +14,8 @@
 
 namespace facebook::react {
 
-class JavaScriptExecutorHolder
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JavaScriptExecutorHolder
     : public jni::HybridClass<JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =

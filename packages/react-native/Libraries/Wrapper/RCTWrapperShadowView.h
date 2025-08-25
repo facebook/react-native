@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTWrapperShadowView : RCTShadowView
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 

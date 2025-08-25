@@ -16,15 +16,23 @@
 
 @interface RCTImageView : RCTView
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@property (nonatomic, assign) UIEdgeInsets capInsets;
-@property (nonatomic, strong) UIImage *defaultImage;
-@property (nonatomic, assign) UIImageRenderingMode renderingMode;
-@property (nonatomic, copy) NSArray<RCTImageSource *> *imageSources;
-@property (nonatomic, assign) CGFloat blurRadius;
-@property (nonatomic, assign) RCTResizeMode resizeMode;
-@property (nonatomic, copy) NSString *internal_analyticTag;
+@property (nonatomic, assign) UIEdgeInsets capInsets
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, strong) UIImage *defaultImage
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) UIImageRenderingMode renderingMode
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) NSArray<RCTImageSource *> *imageSources
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) CGFloat blurRadius
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, assign) RCTResizeMode resizeMode
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
+@property (nonatomic, copy) NSString *internal_analyticTag
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @end
 
