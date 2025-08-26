@@ -33,6 +33,19 @@ class IHermes : public jsi::ICast {
       0xa6f7,
       0x325096b39f47};
 
+  struct DebugFlags {
+    // Looking for the .lazy flag? It's no longer necessary.
+    // Source is evaluated lazily by default. See
+    // RuntimeConfig::CompilationMode.
+  };
+
+  /// Evaluate the given code in an unoptimized form, used for debugging.
+  /// This will be no-op if the implementation does not have debugger enabled.
+  virtual void debugJavaScript(
+      const std::string& src,
+      const std::string& sourceURL,
+      const DebugFlags& debugFlags) = 0;
+
   /// Return a ICast pointer to an object that be cast into the interface
   /// IHermesRootAPI. This root API object has static lifetime.
   virtual ICast* getHermesRootAPI() = 0;
