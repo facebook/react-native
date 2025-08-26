@@ -147,7 +147,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                     hostDelegate:hostDelegate
       turboModuleManagerDelegate:turboModuleManagerDelegate
                 jsEngineProvider:jsEngineProvider
-                   launchOptions:launchOptions];
+                   launchOptions:launchOptions
+            devMenuConfiguration:nil];
 }
 
 /**
@@ -159,6 +160,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                     devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;

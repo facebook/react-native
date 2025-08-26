@@ -20,6 +20,10 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 @class RCTDevMenuItem;
 
+@interface RCTDevMenuConfiguration
+@property (nonatomic, readonly) BOOL isDevMenuEnabled;
+@end
+
 /**
  * Developer menu, useful for exposing extra functionality when debugging.
  */

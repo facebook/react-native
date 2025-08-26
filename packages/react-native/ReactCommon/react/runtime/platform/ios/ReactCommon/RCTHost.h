@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
+#import <React/RCTDevMenu.h>
 #import <react/renderer/core/ReactPrimitives.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
@@ -63,7 +64,9 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
                              hostDelegate:(id<RCTHostDelegate>)hostDelegate
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
-                            launchOptions:(nullable NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
+                            launchOptions:(nullable NSDictionary *)launchOptions
+                     devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                      hostDelegate:(id<RCTHostDelegate>)hostDelegate

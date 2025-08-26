@@ -7,6 +7,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
+#import <React/RCTDevMenu.h>
 #import <UIKit/UIKit.h>
 #import "RCTArchConfiguratorProtocol.h"
 #import "RCTDependencyProvider.h"
@@ -101,12 +102,16 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
                      initialProperties:(NSDictionary *_Nullable)initialProperties
                          launchOptions:(NSDictionary *_Nullable)launchOptions;
 
+- (void)setDevToolsConfiguration:(RCTDevMenuConfiguration *)configuration;
+
 @property (nonatomic, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 
 @property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 @property (nonatomic, weak) id<RCTReactNativeFactoryDelegate> delegate;
+
+@property (nonatomic, nullable) RCTDevMenuConfiguration *devMenuConfiguration;
 
 @end
 
