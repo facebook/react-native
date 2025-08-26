@@ -13,8 +13,6 @@ import com.facebook.common.logging.FLog
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.TouchEvent
@@ -35,19 +33,9 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
   private val touchEventCoalescingKeyHelper: TouchEventCoalescingKeyHelper =
       TouchEventCoalescingKeyHelper()
 
-  @OptIn(UnstableReactNativeAPI::class)
   public fun onChildStartedNativeGesture(
       androidEvent: MotionEvent,
       eventDispatcher: EventDispatcher
-  ) {
-    onChildStartedNativeGesture(androidEvent, eventDispatcher, null)
-  }
-
-  @UnstableReactNativeAPI
-  public fun onChildStartedNativeGesture(
-      androidEvent: MotionEvent,
-      eventDispatcher: EventDispatcher,
-      reactContext: ReactContext?,
   ) {
     if (childIsHandlingNativeGesture) {
       // This means we previously had another child start handling this native gesture and now a
@@ -58,12 +46,6 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
 
     dispatchCancelEvent(androidEvent, eventDispatcher)
     childIsHandlingNativeGesture = true
-
-    if (targetTag != -1 && ReactNativeFeatureFlags.sweepActiveTouchOnChildNativeGesturesAndroid()) {
-      val surfaceId = UIManagerHelper.getSurfaceId(viewGroup)
-      sweepActiveTouchForTag(surfaceId, targetTag, reactContext)
-    }
-
     targetTag = -1
   }
 
