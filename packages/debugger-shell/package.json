@@ -26,12 +26,12 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">= 20.19.4",
-    "electron": ">=37.2.6"
+    "node": ">= 20.19.4"
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "electron": "37.2.6"
+    "electron": "37.2.6",
+    "fb-dotslash": "0.5.8"
   },
   "devDependencies": {
     "semver": "^7.1.3"
