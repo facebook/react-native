@@ -104,7 +104,7 @@ class Scheduler final : public UIManagerDelegate {
   void uiManagerShouldRemoveEventListener(
       const std::shared_ptr<const EventListener>& listener) final;
   void uiManagerDidStartSurface(const ShadowTree& shadowTree) override;
-  void uiManagerMeasure(const ShadowNode::Shared& shadowNode, std::function<void(folly::dynamic)> jsCallback) override;
+  void uiManagerMeasure(const std::shared_ptr<const ShadowNode>& shadowNode, std::function<void(folly::dynamic)> jsCallback) override;
 
 #pragma mark - ContextContainer
   ContextContainer::Shared getContextContainer() const;
