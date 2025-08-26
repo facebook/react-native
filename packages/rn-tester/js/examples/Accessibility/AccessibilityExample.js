@@ -2142,8 +2142,14 @@ function AriaHiddenExample(): React.Node {
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 40}}>
-        <RNTesterText variant="label" style={{ flex: 1 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 40,
+        }}>
+        <RNTesterText variant="label" style={{flex: 1}}>
           Enable aria-hidden
         </RNTesterText>
         <Switch
@@ -2152,37 +2158,42 @@ function AriaHiddenExample(): React.Node {
           accessibilityLabel="Enable aria-hidden"
         />
       </View>
-      
+
       <View
         accessible
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
         style={styles.smallRedSquare}
       />
 
       <View
         accessible
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
-      >
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }>
         <Text>View with Text content</Text>
       </View>
 
-      <Text aria-hidden={ariaHidden}>
-        Regular Text
-      </Text>
+      <Text aria-hidden={ariaHidden}>Regular Text</Text>
 
       <TextInput
         editable={false}
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
         placeholder={`Non-editable TextInput`}
       />
 
       <TextInput
         editable={false}
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
         placeholder={`Non-editable multiline TextInput`}
         multiline
         numberOfLines={3}
@@ -2191,7 +2202,9 @@ function AriaHiddenExample(): React.Node {
       <Pressable
         aria-hidden={ariaHidden}
         onPress={() => console.log('Pressed')}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
         style={styles.button}>
         <Text>Pressable with text content</Text>
       </Pressable>
@@ -2199,7 +2212,9 @@ function AriaHiddenExample(): React.Node {
       <Image
         accessible
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
         source={require('../../assets/like.png')}
         style={styles.button}
       />

@@ -167,7 +167,8 @@ let BaseImage: AbstractImageIOS = ({
   };
 
   // In order for `aria-hidden` to work on iOS we must set `accessible` to false (`accessibilityElementsHidden` is not enough).
-  const accessible = ariaHidden !== true && (props.alt !== undefined ? true : props.accessible);
+  const accessible =
+    ariaHidden !== true && (props.alt !== undefined ? true : props.accessible);
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
