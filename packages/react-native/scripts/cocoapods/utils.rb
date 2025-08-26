@@ -702,7 +702,7 @@ class ReactNativePodsUtils
     end
 
     def self.resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
-        if ENV['USE_FRAMEWORKS']
+        return unless ENV['USE_FRAMEWORKS'] 
             if module_name
                 spec.module_name = module_name
             end
