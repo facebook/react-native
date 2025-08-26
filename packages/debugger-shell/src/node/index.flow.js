@@ -8,12 +8,22 @@
  * @format
  */
 
+import {
+  prepareDebuggerShellFromDotSlashFile,
+  spawnAndGetStderr,
+} from './private/LaunchUtils';
+
 const {spawn} = require('cross-spawn');
 const path = require('path');
 
 // The 'prebuilt' flavor will use the prebuilt shell binary (and the JavaScript embedded in it).
 // The 'dev' flavor will use a stock Electron binary and run the shell code from the `electron/` directory.
 type DebuggerShellFlavor = 'prebuilt' | 'dev';
+
+const DEVTOOLS_BINARY_DOTSLASH_FILE = path.join(
+  __dirname,
+  '../../bin/react-native-devtools',
+);
 
 async function unstable_spawnDebuggerShellWithArgs(
   args: string[],
@@ -74,6 +84,68 @@ async function unstable_spawnDebuggerShellWithArgs(
   });
 }
 
+export type DebuggerShellPreparationResult = $ReadOnly<{
+  code:
+    | 'success'
+    | 'likely_offline'
+    | 'platform_not_supported'
+    | 'possible_corruption'
+    | 'unexpected_error',
+  humanReadableMessage?: string,
+  verboseInfo?: string,
+}>;
+
+/**
+ * Attempts to prepare the debugger shell for use and returns a coded result
+ * that can be used to advise the user on how to proceed in case of failure.
+ * In particular, this function will attempt to download and extract an
+ * appropriate binary for the "prebuilt" flavor.
+ *
+ * This function should be called early during dev server startup, in parallel
+ * with other initialization steps, so that the debugger shell is ready to use
+ * instantly when the user tries to open it (and conversely, the user is
+ * informed ASAP if it is not ready to use).
+ */
+async function unstable_prepareDebuggerShell(
+  flavor: DebuggerShellFlavor,
+): Promise<DebuggerShellPreparationResult> {
+  const [binaryPath, baseArgs] = getShellBinaryAndArgs(flavor);
+
+  try {
+    switch (flavor) {
+      case 'prebuilt':
+        const prebuiltResult = await prepareDebuggerShellFromDotSlashFile(
+          DEVTOOLS_BINARY_DOTSLASH_FILE,
+        );
+        if (prebuiltResult.code !== 'success') {
+          return prebuiltResult;
+        }
+        break;
+      case 'dev':
+        break;
+      default:
+        flavor as empty;
+        throw new Error(`Unknown flavor: ${flavor}`);
+    }
+    const {code, stderr} = await spawnAndGetStderr(binaryPath, [
+      ...baseArgs,
+      '--version',
+    ]);
+    if (code !== 0) {
+      return {
+        code: 'unexpected_error',
+        verboseInfo: stderr,
+      };
+    }
+    return {code: 'success'};
+  } catch (e) {
+    return {
+      code: 'unexpected_error',
+      verboseInfo: e.message,
+    };
+  }
+}
+
 function getShellBinaryAndArgs(
   flavor: DebuggerShellFlavor,
 ): [string, Array<string>] {
@@ -82,7 +154,7 @@ function getShellBinaryAndArgs(
       return [
         // $FlowIssue[cannot-resolve-module] fb-dotslash includes Flow types but Flow does not pick them up
         require('fb-dotslash'),
-        [path.join(__dirname, '../../bin/react-native-devtools')],
+        [DEVTOOLS_BINARY_DOTSLASH_FILE],
       ];
     case 'dev':
       return [
@@ -98,4 +170,4 @@ function getShellBinaryAndArgs(
   }
 }
 
-export {unstable_spawnDebuggerShellWithArgs};
+export {unstable_spawnDebuggerShellWithArgs, unstable_prepareDebuggerShell};
