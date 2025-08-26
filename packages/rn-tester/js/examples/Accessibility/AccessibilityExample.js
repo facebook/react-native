@@ -2142,47 +2142,48 @@ function AriaHiddenExample(): React.Node {
 
   return (
     <View>
-      <Text>Set aria-hidden</Text>
-      <Switch
-        value={ariaHidden}
-        onValueChange={() => setAriaHidden(!ariaHidden)}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 40}}>
+        <RNTesterText variant="label" style={{ flex: 1 }}>
+          Enable aria-hidden
+        </RNTesterText>
+        <Switch
+          value={ariaHidden}
+          onValueChange={() => setAriaHidden(!ariaHidden)}
+          accessibilityLabel="Enable aria-hidden"
+        />
+      </View>
+      
+      <View
+        accessible
+        aria-hidden={ariaHidden}
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        style={styles.smallRedSquare}
       />
 
       <View
         accessible
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
-        style={styles.smallRedSquare}
-      />
-
-      <View accessible aria-hidden={ariaHidden} aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}>
-        <Text>View with Text content with aria-hidden={ariaHidden ? "true" : "false"}</Text>
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+      >
+        <Text>View with Text content</Text>
       </View>
 
-      <Text aria-hidden={ariaHidden} aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}>
-        Text with aria-hidden={ariaHidden ? "true" : "false"}
-      </Text>
-      <Text aria-hidden={ariaHidden} aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}>
-        Text with aria-hidden={ariaHidden ? "true" : "false"} with nested Image
-        <Image
-          aria-hidden={ariaHidden}
-          aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
-          source={require('../../assets/like.png')}
-          style={styles.button}
-        />
+      <Text aria-hidden={ariaHidden}>
+        Regular Text
       </Text>
 
       <TextInput
-        aria-hidden={ariaHidden}
         editable={false}
-        placeholder={`Non-editable TextInput with aria-hidden=${ariaHidden ? "true" : "false"}`}
-        aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
+        aria-hidden={ariaHidden}
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        placeholder={`Non-editable TextInput`}
       />
+
       <TextInput
-        aria-hidden={ariaHidden}
         editable={false}
-        placeholder={`Non-editable multiline TextInput with aria-hidden=${ariaHidden ? "true" : "false"}`}
-        aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
+        aria-hidden={ariaHidden}
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
+        placeholder={`Non-editable multiline TextInput`}
         multiline
         numberOfLines={3}
       />
@@ -2190,15 +2191,15 @@ function AriaHiddenExample(): React.Node {
       <Pressable
         aria-hidden={ariaHidden}
         onPress={() => console.log('Pressed')}
-        aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
         style={styles.button}>
-        <Text>Pressable with aria-hidden={ariaHidden ? "true" : "false"}</Text>
+        <Text>Pressable with text content</Text>
       </Pressable>
 
       <Image
+        accessible
         aria-hidden={ariaHidden}
-        aria-label={ariaHidden ? "This should be hidden" : "This shouldn't be hidden"}
-        accessible={true}
+        aria-label={ariaHidden ? "This should be hidden" : "This should be accessible"}
         source={require('../../assets/like.png')}
         style={styles.button}
       />
