@@ -497,6 +497,13 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    # In XCode 26 we need to revert the new setting SWIFT_ENABLE_EXPLICIT_MODULES when building
+    # with precompiled binaries.
+    ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ENABLE_EXPLICIT_MODULES", value: "NO")
+  end
+
   SPM.apply_on_post_install(installer)
 
   if privacy_file_aggregation_enabled
