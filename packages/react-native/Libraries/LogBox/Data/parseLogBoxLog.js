@@ -290,9 +290,107 @@ export function parseLogBoxException(
   const message =
     error.originalMessage != null ? error.originalMessage : 'Unknown';
 
-  const bundlingError = parseBundlingErrorFromMessage(message);
-  if (bundlingError) {
-    return bundlingError;
+  const metroInternalError = message.match(RE_METRO_ERROR_FORMAT);
+  if (metroInternalError) {
+    const [content, fileName, row, column, codeFrame] =
+      metroInternalError.slice(1);
+
+    return {
+      level: 'fatal',
+      type: 'Metro Error',
+      stack: [],
+      isComponentError: false,
+      componentStackType: 'legacy',
+      componentStack: [],
+      codeFrame: {
+        fileName,
+        location: {
+          row: parseInt(row, 10),
+          column: parseInt(column, 10),
+        },
+        content: codeFrame,
+      },
+      message: {
+        content,
+        substitutions: [],
+      },
+      category: `${fileName}-${row}-${column}`,
+      extraData: error.extraData,
+    };
+  }
+
+  const babelTransformError = message.match(RE_BABEL_TRANSFORM_ERROR_FORMAT);
+  if (babelTransformError) {
+    // Transform errors are thrown from inside the Babel transformer.
+    const [fileName, content, row, column, codeFrame] =
+      babelTransformError.slice(1);
+
+    return {
+      level: 'syntax',
+      stack: [],
+      isComponentError: false,
+      componentStackType: 'legacy',
+      componentStack: [],
+      codeFrame: {
+        fileName,
+        location: {
+          row: parseInt(row, 10),
+          column: parseInt(column, 10),
+        },
+        content: codeFrame,
+      },
+      message: {
+        content,
+        substitutions: [],
+      },
+      category: `${fileName}-${row}-${column}`,
+      extraData: error.extraData,
+    };
+  }
+
+  // Perform a cheap match first before trying to parse the full message, which
+  // can get expensive for arbitrary input.
+  if (RE_BABEL_CODE_FRAME_MARKER_PATTERN.test(message)) {
+    const babelCodeFrameError = message.match(RE_BABEL_CODE_FRAME_ERROR_FORMAT);
+
+    if (babelCodeFrameError) {
+      // Codeframe errors are thrown from any use of buildCodeFrameError.
+      const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
+      return {
+        level: 'syntax',
+        stack: [],
+        isComponentError: false,
+        componentStackType: 'legacy',
+        componentStack: [],
+        codeFrame: {
+          fileName,
+          location: null, // We are not given the location.
+          content: codeFrame,
+        },
+        message: {
+          content,
+          substitutions: [],
+        },
+        category: `${fileName}-${1}-${1}`,
+        extraData: error.extraData,
+      };
+    }
+  }
+
+  if (message.match(RE_TRANSFORM_ERROR)) {
+    return {
+      level: 'syntax',
+      stack: error.stack,
+      isComponentError: error.isComponentError,
+      componentStackType: 'legacy',
+      componentStack: [],
+      message: {
+        content: message,
+        substitutions: [],
+      },
+      category: message,
+      extraData: error.extraData,
+    };
   }
 
   const componentStack = error.componentStack;
@@ -344,117 +442,6 @@ export function parseLogBoxException(
     extraData: error.extraData,
     ...parseLogBoxLog([message]),
   };
-}
-
-export function parseBundlingErrorFromMessage(message?: string, extraData?: Object): LogBoxLogData | null {
-  if (!message || typeof message !== 'string') {
-    return null;
-  }
-
-    const metroInternalError = message.match(RE_METRO_ERROR_FORMAT);
-  if (metroInternalError) {
-    const [content, fileName, row, column, codeFrame] =
-      metroInternalError.slice(1);
-
-    return {
-      level: 'fatal',
-      type: 'Metro Error',
-      stack: [],
-      isComponentError: false,
-      componentStackType: 'legacy',
-      componentStack: [],
-      codeFrame: {
-        fileName,
-        location: {
-          row: parseInt(row, 10),
-          column: parseInt(column, 10),
-        },
-        content: codeFrame,
-      },
-      message: {
-        content,
-        substitutions: [],
-      },
-      category: `${fileName}-${row}-${column}`,
-      extraData,
-    };
-  }
-
-  const babelTransformError = message.match(RE_BABEL_TRANSFORM_ERROR_FORMAT);
-  if (babelTransformError) {
-    // Transform errors are thrown from inside the Babel transformer.
-    const [fileName, content, row, column, codeFrame] =
-      babelTransformError.slice(1);
-
-    return {
-      level: 'syntax',
-      stack: [],
-      isComponentError: false,
-      componentStackType: 'legacy',
-      componentStack: [],
-      codeFrame: {
-        fileName,
-        location: {
-          row: parseInt(row, 10),
-          column: parseInt(column, 10),
-        },
-        content: codeFrame,
-      },
-      message: {
-        content,
-        substitutions: [],
-      },
-      category: `${fileName}-${row}-${column}`,
-      extraData,
-    };
-  }
-
-  // Perform a cheap match first before trying to parse the full message, which
-  // can get expensive for arbitrary input.
-  if (RE_BABEL_CODE_FRAME_MARKER_PATTERN.test(message)) {
-    const babelCodeFrameError = message.match(RE_BABEL_CODE_FRAME_ERROR_FORMAT);
-
-    if (babelCodeFrameError) {
-      // Codeframe errors are thrown from any use of buildCodeFrameError.
-      const [fileName, content, codeFrame] = babelCodeFrameError.slice(1);
-      return {
-        level: 'syntax',
-        stack: [],
-        isComponentError: false,
-        componentStackType: 'legacy',
-        componentStack: [],
-        codeFrame: {
-          fileName,
-          location: null, // We are not given the location.
-          content: codeFrame,
-        },
-        message: {
-          content,
-          substitutions: [],
-        },
-        category: `${fileName}-${1}-${1}`,
-        extraData,
-      };
-    }
-  }
-
-  if (message.match(RE_TRANSFORM_ERROR)) {
-    return {
-      level: 'syntax',
-      stack: error.stack,
-      isComponentError: error.isComponentError,
-      componentStackType: 'legacy',
-      componentStack: [],
-      message: {
-        content: message,
-        substitutions: [],
-      },
-      category: message,
-      extraData,
-    };
-  }
-
-  return null;
 }
 
 export function withoutANSIColorStyles(message: mixed): mixed {
