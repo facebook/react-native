@@ -436,11 +436,33 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      WindowInfoTracker tracker = WindowInfoTracker.getOrCreate(getContext());
+      windowLayoutListener = info -> {
+        WindowManager wm = getContext().getSystemService(WindowManager.class);
+        if (wm != null) {
+          WritableMap dimensions = DisplayMetricsHolder.getDisplayMetricsMap(getContext());
+          ReactContext reactContext = getReactContext();
+          if (reactContext != null) {
+            reactContext
+              .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+              .emit("didUpdateDimensions", dimensions);
+          }
+        }
+      };
+
+      tracker.addWindowLayoutInfoListener(
+        ContextCompat.getMainExecutor(getContext()),
+        windowLayoutListener
+      );
+    }
+
     if (isViewAttachedToReactInstance()) {
       removeOnGlobalLayoutListener();
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
-  }
+}
+
 
   @Override
   protected void onDetachedFromWindow() {
