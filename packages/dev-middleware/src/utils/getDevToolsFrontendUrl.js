@@ -24,7 +24,7 @@ export default function getDevToolsFrontendUrl(
     /** Whether to use the modern `rn_fusebox.html` entry point. */
     useFuseboxEntryPoint?: boolean,
     appId?: string,
-    landingView?: string,
+    panel?: string,
   }>,
 ): string {
   const wsParam = getWsParam({
@@ -55,8 +55,8 @@ export default function getDevToolsFrontendUrl(
   if (options?.telemetryInfo != null && options.telemetryInfo !== '') {
     searchParams.append('telemetryInfo', options.telemetryInfo);
   }
-  if (options?.landingView != null && options.landingView !== '') {
-    searchParams.append('landingView', options.landingView);
+  if (options?.panel != null && options.panel !== '') {
+    searchParams.append('panel', options.panel);
   }
 
   return appUrl + '?' + searchParams.toString();

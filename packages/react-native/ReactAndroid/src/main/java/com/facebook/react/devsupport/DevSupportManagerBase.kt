@@ -75,10 +75,6 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
 
-public enum class ChromeDevToolsViewKeys(public val value: String) {
-  Performance("timeline")
-}
-
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
     public val reactInstanceDevHelper: ReactInstanceDevHelper,
