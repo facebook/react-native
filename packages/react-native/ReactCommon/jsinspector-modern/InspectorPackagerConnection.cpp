@@ -268,10 +268,6 @@ void InspectorPackagerConnection::Impl::reconnect() {
           }
 
           strongSelf->connect();
-
-          if (!strongSelf->isConnected()) {
-            strongSelf->reconnect();
-          }
         }
       },
       RECONNECT_DELAY);
