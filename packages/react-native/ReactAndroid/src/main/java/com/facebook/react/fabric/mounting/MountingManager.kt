@@ -380,7 +380,12 @@ internal class MountingManager(
       callback.invoke(0, 0, 0, 0, 0, 0)
       return
     }
-    val view = smm.getView(reactTag)
+    val view: View = try {
+      smm.getView(reactTag)
+    } catch (e: Exception) {
+      FLog.e(TAG, "Failed to get view for reactTag: %d, surfaceId: %d", reactTag, surfaceId, e)
+      return
+    }
     val measureBuffer = IntArray(4)
     val rootView = smm.getRootViewIfAttached()
     if (rootView == null) {
