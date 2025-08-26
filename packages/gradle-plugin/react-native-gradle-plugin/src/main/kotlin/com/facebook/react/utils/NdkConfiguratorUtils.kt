@@ -7,7 +7,7 @@
 
 package com.facebook.react.utils
 
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.getReactNativeArchitectures
