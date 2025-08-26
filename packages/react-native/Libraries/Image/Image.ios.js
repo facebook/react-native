@@ -165,6 +165,8 @@ let BaseImage: AbstractImageIOS = ({
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
+  const accessibilityElementsHidden =
+    props['aria-hidden'] ?? props.accessibilityElementsHidden;
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 
@@ -177,6 +179,7 @@ let BaseImage: AbstractImageIOS = ({
             {...restProps}
             accessible={props.alt !== undefined ? true : props.accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
+            accessibilityElementsHidden={accessibilityElementsHidden}
             ref={actualRef}
             style={style}
             resizeMode={resizeMode}

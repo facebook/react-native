@@ -414,7 +414,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
       importantForAccessibility:
         props['aria-hidden'] === true
           ? ('no-hide-descendants' as const)
-          : undefined,
+          : props.importantForAccessibility,
     };
 
     const flattenedStyle = flattenStyle<ImageStyleProp>(style);
