@@ -95,7 +95,7 @@ class ImageSource {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps(
-      const std::string prefix) const {
+      const std::string& prefix) const {
     ImageSource imageSource{};
 
     SharedDebugStringConvertibleList headersList;
