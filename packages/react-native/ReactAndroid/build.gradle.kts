@@ -760,11 +760,5 @@ publishing {
     getByName("release", MavenPublication::class) {
       artifactId = "react-android"
     }
-    create<MavenPublication>("libZip") {
-      groupId = "com.facebook.react"
-      version = "test"
-      artifactId = "discord-rn-libs"
-      artifact(tasks.named("createReactNdkLibraryZipArchiveForDiscord").get())
-    }
   }
 }
