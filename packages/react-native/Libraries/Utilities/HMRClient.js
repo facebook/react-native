@@ -367,7 +367,8 @@ function showCompileError() {
   // Symbolicating compile errors is wasted effort
   // because the stack trace is meaningless:
   error.preventSymbolication = true;
-  throw error;
+  error.originalMessage = message;
+  LogBox.addException(error);
 }
 
 export default HMRClient;
