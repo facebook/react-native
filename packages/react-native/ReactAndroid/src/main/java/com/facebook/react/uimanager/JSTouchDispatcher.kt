@@ -45,6 +45,10 @@ public class JSTouchDispatcher(private val viewGroup: ViewGroup) {
     }
 
     dispatchCancelEvent(androidEvent, eventDispatcher)
+    // TODO: can be removed once we land https://github.com/facebook/react-native/commit/87749470ccf596c5b3bc06fe46ba3239b684fd1b
+    val surfaceId = UIManagerHelper.getSurfaceId(viewGroup)
+    val reactContext = UIManagerHelper.getReactContext(viewGroup)
+    sweepActiveTouchForTag(surfaceId, targetTag, reactContext)
     childIsHandlingNativeGesture = true
     targetTag = -1
   }

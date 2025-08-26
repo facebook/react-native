@@ -14,6 +14,7 @@ import android.content.ContextWrapper
 import android.view.View
 import android.widget.EditText
 import androidx.core.view.ViewCompat
+import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactNoCrashSoftException
@@ -160,6 +161,13 @@ public object UIManagerHelper {
    */
   @JvmStatic
   public fun getReactContext(view: View): ReactContext {
+    // TODO: this if can be removed once we land https://github.com/facebook/react-native/commit/87749470ccf596c5b3bc06fe46ba3239b684fd1b
+    if (view is ReactRootView) {
+      val reactContext: ReactContext? = view.currentReactContext
+      return requireNotNull(reactContext) {
+        "ReactRootView should always have a ReactContext associated with it, but it was null."
+      }
+    }
     var context = view.context
     if (context !is ReactContext && context is ContextWrapper) {
       context = context.baseContext
