@@ -212,6 +212,7 @@ public object DefaultReactHost {
       getDefaultReactHost(
           context,
           packageList,
+          { ctx, surface -> ReactSurfaceView(ctx, surface) },
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
@@ -268,6 +269,7 @@ public object DefaultReactHost {
       getDefaultReactHost(
           context,
           packageList,
+          { ctx, surface -> ReactSurfaceView(ctx, surface) },
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
