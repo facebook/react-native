@@ -65,6 +65,7 @@ import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
@@ -183,7 +184,7 @@ public abstract class DevSupportManagerBase(
           null
         }
 
-  private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
+  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -219,15 +220,13 @@ public abstract class DevSupportManagerBase(
             perfMonitorOverlayManager == null
     ) {
       perfMonitorOverlayManager =
-          PerfMonitorOverlayViewManager(
-              Supplier {
-                val context = reactInstanceDevHelper.currentActivity
-                if (context == null || context.isFinishing) {
-                  return@Supplier null
+          PerfMonitorOverlayManager(
+              reactInstanceDevHelper,
+              {
+                UiThreadUtil.runOnUiThread {
+                  openDebugger(ChromeDevToolsViewKeys.Performance.value)
                 }
-                context
               },
-              reactInstanceDevHelper.inspectorTarget,
           )
     }
   }
@@ -508,9 +507,10 @@ public abstract class DevSupportManagerBase(
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     resetCurrentContext(reactContext)
 
-    if (perfMonitorOverlayManager != null && reactInstanceDevHelper is PerfMonitorDevHelper) {
+    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
+        manager.init()
       }
     }
   }
@@ -928,6 +928,14 @@ public abstract class DevSupportManagerBase(
         currentReactContext,
         applicationContext.getString(R.string.catalyst_open_debugger_error),
         null,
+    )
+  }
+
+  override fun openDebugger(landingView: String) {
+    devServerHelper.openDebugger(
+        currentReactContext,
+        applicationContext.getString(R.string.catalyst_open_debugger_error),
+        landingView,
     )
   }
 

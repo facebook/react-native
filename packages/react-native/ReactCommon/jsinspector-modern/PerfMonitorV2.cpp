@@ -50,7 +50,8 @@ void PerfMonitorUpdateHandler::handlePerfMetricsUpdate(
     }
 
     auto responsivenessScore = getInteractionScore(duration);
-    auto ttl = responsivenessScore == InteractionResponsivenessScore::Poor
+    auto ttl =
+        responsivenessScore == InteractionResponsivenessScore::NeedsImprovement
         ? BAD_EVENT_TTL
         : DEFAULT_TTL;
 

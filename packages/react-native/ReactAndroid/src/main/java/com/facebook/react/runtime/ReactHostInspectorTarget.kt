@@ -44,8 +44,18 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     perfMonitorListeners.add(listener)
   }
 
-  override fun pauseAndAnalyzeTrace() {
-    // TODO(T233874551)
+  override fun pauseAndAnalyzeBackgroundTrace() {
+    stopAndStashBackgroundTrace()
+    perfMonitorListeners.forEach { listener ->
+      listener.onRecordingStateChanged(PerfMonitorUpdateListener.BackgroundTracingState.STOPPED)
+    }
+  }
+
+  override fun resumeBackgroundTrace() {
+    startBackgroundTrace()
+    perfMonitorListeners.forEach { listener ->
+      listener.onRecordingStateChanged(PerfMonitorUpdateListener.BackgroundTracingState.RUNNING)
+    }
   }
 
   fun handleNativePerfMonitorMetricUpdate(

@@ -15,6 +15,16 @@ internal interface PerfMonitorUpdateListener {
       val ttl: Int,
   )
 
+  /** Aligns with facebook::react::jsinspector_modern::tracing::BackgroundTracingState. */
+  enum class BackgroundTracingState(val value: Int) {
+    DISABLED(0),
+    RUNNING(1),
+    STOPPED(2),
+  }
+
   /** Called when a new active performance event should be displayed. */
   fun onNewFocusedEvent(data: LongTaskEventData)
+
+  /** Called when the recording state of the background performance trace has changed. */
+  fun onRecordingStateChanged(state: BackgroundTracingState)
 }
