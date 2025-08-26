@@ -18,6 +18,10 @@ class GCExecTrace;
 
 namespace facebook::hermes {
 
+namespace sampling_profiler {
+class Profile;
+}
+
 namespace debugger {
 class Debugger;
 }
@@ -49,6 +53,10 @@ class IHermes : public jsi::ICast {
   /// Return a ICast pointer to an object that be cast into the interface
   /// IHermesRootAPI. This root API object has static lifetime.
   virtual ICast* getHermesRootAPI() = 0;
+
+  /// Dump sampled stack trace for a given runtime to a data structure that can
+  /// be used by third parties.
+  virtual void dumpSampledTraceToProfile(sampling_profiler::Profile&) = 0;
 
   /// Serialize the sampled stack to the format expected by DevTools'
   /// Profiler.stop return type.
