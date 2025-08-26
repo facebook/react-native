@@ -42,7 +42,7 @@ class UIManagerDelegate {
       const std::string& commandName,
       const folly::dynamic& args) = 0;
 
-  virtual void uiManagerMeasure(const ShadowNode::Shared& shadowNode, std::function<void(folly::dynamic)> jsCallback) = 0;
+  virtual void uiManagerMeasure(const std::shared_ptr<const ShadowNode>& shadowNode, std::function<void(folly::dynamic)> jsCallback) = 0;
 
   /*
    * Called when UIManager wants to dispatch some accessibility event
