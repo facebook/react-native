@@ -67,7 +67,7 @@ export default function openDebuggerMiddleware({
         launchId?: string,
         telemetryInfo?: string,
         target?: string,
-        landingView?: string,
+        panel?: string,
         ...
       } = parsedUrl.query;
 
@@ -152,7 +152,7 @@ export default function openDebuggerMiddleware({
                 telemetryInfo: query.telemetryInfo,
                 appId: target.appId,
                 useFuseboxEntryPoint,
-                landingView: query.landingView,
+                panel: query.panel,
               },
             );
             if (
