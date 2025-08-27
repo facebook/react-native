@@ -29,7 +29,7 @@ async function unstable_spawnDebuggerShellWithArgs(
   args: string[],
   {
     mode = 'detached',
-    flavor = 'dev',
+    flavor = 'prebuilt',
   }: $ReadOnly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
     // with the same exit code as the spawned process.
