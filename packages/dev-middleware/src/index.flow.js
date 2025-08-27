@@ -20,3 +20,5 @@ export type {
   CustomMessageHandlerConnection,
   CreateCustomMessageHandlerFn,
 } from './inspector-proxy/CustomMessageHandler';
+
+export {default as unstable_DefaultBrowserLauncher} from './utils/DefaultBrowserLauncher';

@@ -46,7 +46,10 @@ export interface BrowserLauncher {
    * the host of dev-middleware. Implementations are responsible for rewriting
    * this as necessary where the server is remote.
    */
-  unstable_showFuseboxShell?: (url: string, windowKey: string) => Promise<void>;
+  +unstable_showFuseboxShell?: (
+    url: string,
+    windowKey: string,
+  ) => Promise<void>;
 
   /**
    * Attempt to prepare the debugger shell for use and returns a coded result
@@ -59,5 +62,5 @@ export interface BrowserLauncher {
    * SHOULD NOT return a rejecting promise in any case, and instead SHOULD report
    * errors via the returned result object.
    */
-  unstable_prepareFuseboxShell?: () => Promise<DebuggerShellPreparationResult>;
+  +unstable_prepareFuseboxShell?: () => Promise<DebuggerShellPreparationResult>;
 }
