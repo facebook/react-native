@@ -241,7 +241,11 @@ const API = {
       }) as () => void,
 
   createAnimatedNode(tag: number, config: AnimatedNodeConfig): void {
-    NativeOperations.createAnimatedNode(tag, config);
+    if (config.disableBatchingForNativeCreate) {
+      NativeAnimatedModule?.createAnimatedNode(tag, config);
+    } else {
+      NativeOperations.createAnimatedNode(tag, config);
+    }
   },
 
   updateAnimatedNodeConfig(tag: number, config: AnimatedNodeConfig): void {
