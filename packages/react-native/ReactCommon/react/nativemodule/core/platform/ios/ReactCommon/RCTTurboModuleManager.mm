@@ -215,15 +215,17 @@ typedef struct {
 
   RCTBridgeProxy *_bridgeProxy;
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+  RCTDevMenuConfigurationDecorator *_devMenuConfigurationDecorator;
 
   dispatch_queue_t _sharedModuleQueue;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
-                   bridgeProxy:(RCTBridgeProxy *)bridgeProxy
-         bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
-                      delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                      bridgeProxy:(RCTBridgeProxy *)bridgeProxy
+            bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                         delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                        jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+    devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
 {
   if (self = [super init]) {
     _jsInvoker = std::move(jsInvoker);
@@ -233,6 +235,7 @@ typedef struct {
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
     _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    _devMenuConfigurationDecorator = devMenuConfigurationDecorator;
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -273,22 +276,25 @@ typedef struct {
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
   return [self initWithBridge:bridge
-                  bridgeProxy:nil
-        bridgeModuleDecorator:[bridge bridgeModuleDecorator]
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:nil
+              bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
 }
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                            delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                           jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator
 {
   return [self initWithBridge:nil
-                  bridgeProxy:bridgeProxy
-        bridgeModuleDecorator:bridgeModuleDecorator
-                     delegate:delegate
-                    jsInvoker:jsInvoker];
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:devMenuConfigurationDecorator];
 }
 
 /**
@@ -768,6 +774,11 @@ typedef struct {
    */
   if ([module respondsToSelector:@selector(initialize)]) {
     [(id<RCTInitializing>)module initialize];
+  }
+
+  if ([module isKindOfClass:[RCTDevMenu class]]) {
+    RCTDevMenu *devMenu = (RCTDevMenu *)module;
+    [_devMenuConfigurationDecorator decorate:devMenu];
   }
 
   /**

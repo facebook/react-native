@@ -253,7 +253,8 @@
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
                                 }
-                                   launchOptions:launchOptions];
+                                   launchOptions:launchOptions
+                            devMenuConfiguration:devMenuConfiguration];
   [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];

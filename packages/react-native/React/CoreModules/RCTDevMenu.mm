@@ -29,6 +29,23 @@
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
+@interface RCTDevMenuConfiguration ()
+@end
+
+@implementation RCTDevMenuConfiguration
+  - (instancetype)initWithDevMenuEnabled:(BOOL) isDevMenuEnabled
+                     shakeGestureEnabled:(BOOL) isShakeGestureEnabled
+                   keyboardShortcutsEnabled:(BOOL) areKeyboardShortcutsEnabled
+  {
+    if (self = [super init]) {
+      _isDevMenuEnabled = isDevMenuEnabled;
+      _isShakeGestureEnabled = isShakeGestureEnabled;
+      _areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled;
+    }
+    return self;
+  }
+@end
+
 @implementation UIWindow (RCTDevMenu)
 
 - (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
@@ -102,6 +119,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
+@synthesize isDevMenuEnabled = _isDevMenuEnabled;
 
 RCT_EXPORT_MODULE()
 
@@ -379,7 +397,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || RCTRunningInAppExtension()) {
+  if (_actionSheet || RCTRunningInAppExtension() || !_isDevMenuEnabled) {
     return;
   }
 

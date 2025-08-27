@@ -10,6 +10,7 @@
 #import <memory>
 
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
@@ -71,7 +72,8 @@
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                            delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+      devMenuConfigurationDecorator:(RCTDevMenuConfigurationDecorator *)devMenuConfigurationDecorator;
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 

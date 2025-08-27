@@ -20,8 +20,14 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 @class RCTDevMenuItem;
 
-@interface RCTDevMenuConfiguration
+@interface RCTDevMenuConfiguration : NSObject
 @property (nonatomic, readonly) BOOL isDevMenuEnabled;
+@property (nonatomic, readonly) BOOL isShakeGestureEnabled;
+@property (nonatomic, readonly) BOOL areKeyboardShortcutsEnabled;
+
+- (instancetype)initWithDevMenuEnabled:(BOOL) isDevMenuEnabled
+                shakeGestureEnabled:(BOOL) isShakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL) areKeyboardShortcutsEnabled;
 @end
 
 /**
@@ -53,6 +59,8 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * Presented items in development menu
  */
 @property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;
+
+@property (nonatomic, assign) BOOL isDevMenuEnabled;
 
 /**
  * Detect if actions sheet (development menu) is shown

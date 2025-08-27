@@ -123,6 +123,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+  RCTDevMenuConfiguration *_devMenuConfiguration;
 
   std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
   std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
@@ -203,6 +204,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
+    _devMenuConfiguration = devMenuConfiguration;
   }
   return self;
 }
@@ -248,7 +250,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                        devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -451,7 +454,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                        devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
