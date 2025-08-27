@@ -702,14 +702,13 @@ class ReactNativePodsUtils
     end
 
     def self.resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
-        return unless ENV['USE_FRAMEWORKS'] 
-            if module_name
-                spec.module_name = module_name
-            end
+        return unless ENV['USE_FRAMEWORKS']
+        if module_name
+            spec.module_name = module_name
+        end
 
-            if header_mappings_dir != nil && ReactNativeCoreUtils.build_rncore_from_source()
-                spec.header_mappings_dir = header_mappings_dir
-            end
+        if header_mappings_dir != nil && ReactNativeCoreUtils.build_rncore_from_source()
+            spec.header_mappings_dir = header_mappings_dir
         end
     end
 end
