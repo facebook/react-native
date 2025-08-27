@@ -48,8 +48,15 @@ void AnimatedModule::createAnimatedNode(
     Tag tag,
     jsi::Object config) {
   auto configDynamic = dynamicFromValue(rt, jsi::Value(rt, config));
-  operations_.emplace_back(
-      CreateAnimatedNodeOp{.tag = tag, .config = std::move(configDynamic)});
+  if (auto it = configDynamic.find("disableBatchingForNativeCreate");
+      it != configDynamic.items().end() && it->second == true) {
+    if (nodesManager_) {
+      nodesManager_->createAnimatedNode(tag, configDynamic);
+    }
+  } else {
+    operations_.emplace_back(
+        CreateAnimatedNodeOp{.tag = tag, .config = std::move(configDynamic)});
+  }
 }
 
 void AnimatedModule::updateAnimatedNodeConfig(
