@@ -8,9 +8,18 @@
  * @format
  */
 
+import buildInfo from './BuildInfo';
+
+// $FlowFixMe[untyped-import] Flow doesn't infer JSON types
+const pkg = require('../../package.json');
+const util = require('util');
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
 const {app} = require('electron') as any;
-const util = require('util');
+
+// Set the app name and version early - these are used in --version as well as
+// in the User-Agent string.
+app.setName(pkg.name);
+app.setVersion(pkg.version + '-' + buildInfo.revision);
 
 // Handle global command line arguments which don't require a window
 // or the single instance lock to be held.
