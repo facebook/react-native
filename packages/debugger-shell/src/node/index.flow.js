@@ -153,7 +153,7 @@ function getShellBinaryAndArgs(
   switch (flavor) {
     case 'prebuilt':
       return [
-        // $FlowIssue[cannot-resolve-module] fb-dotslash includes Flow types but Flow does not pick them up
+        // $FlowFixMe[cannot-resolve-module] fb-dotslash includes Flow types but Flow does not pick them up
         require('fb-dotslash'),
         [DEVTOOLS_BINARY_DOTSLASH_FILE],
       ];
