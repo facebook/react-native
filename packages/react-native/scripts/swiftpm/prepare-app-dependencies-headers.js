@@ -94,11 +94,14 @@ function prepareAppDependenciesHeaders(
 
 /**
  * Create hard links for React Native headers in the output folder
+ * @param {string} reactNativePath - Path to the React Native directory
+ * @param {string} outputFolder - Path to the output folder
+ * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
-function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
+function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 'headers') {
   console.log('Creating hard links for React Native headers...');
 
-  const headersOutput = path.join(outputFolder, 'headers');
+  const headersOutput = path.join(outputFolder, folderName);
   if (!fs.existsSync(headersOutput)) {
     fs.mkdirSync(headersOutput, {recursive: true});
   }
@@ -166,10 +169,18 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder) {
     console.log('Processing ReactCommon folder...');
     // Define paths that should be flattened in ReactCommon folder
     const flattenPaths = ['react/nativemodule/core/platform/ios'];
+    // Define special mappings for flattening specific directories
+    const specialMapping = {
+      'yoga/': 'yoga',
+      'cxxreact/': 'cxxreact',
+      'jsinspector-modern/': 'jsinspector-modern',
+      'jserrorhandler/': 'jserrorhandler',
+    };
     const reactCommonCount = hardlinkReactCommonHeaders(
       reactCommonPath,
       headersOutput,
       flattenPaths,
+      specialMapping,
     );
     totalLinkedCount += reactCommonCount;
     console.log(
@@ -366,12 +377,14 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
  * @param {string} reactCommonPath - Path to ReactCommon directory
  * @param {string} headersOutput - Base headers output directory
  * @param {Array<string>} flattenPaths - Array of relative paths that should be flattened in ReactCommon folder
+ * @param {Object} specialMapping - Map of prefix -> destination folder for special cases
  * @returns {number} Number of hard links created
  */
 function hardlinkReactCommonHeaders(
   reactCommonPath,
   headersOutput,
   flattenPaths = [],
+  specialMapping = {},
 ) {
   let linkedCount = 0;
 
@@ -475,24 +488,34 @@ function hardlinkReactCommonHeaders(
               destPath = path.join(headersOutput, relativePath);
               console.log(`  -> ${relativePath} (preserved under headers/)`);
             }
-          } else if (relativePath.startsWith('yoga/')) {
-            // Special case for yoga headers - handle the weird structure ReactCommon/yoga/yoga/{subfolder|header.h}
-            // Remove the duplicated yoga/ prefix to flatten to headers/yoga/{subfolder|header.h}
-            let yogaPath = relativePath;
-            if (relativePath.startsWith('yoga/yoga/')) {
-              // Remove the first 'yoga/' to get rid of duplication
-              yogaPath = relativePath.substring(5); // Remove 'yoga/' (5 characters)
-            }
-            destPath = path.join(headersOutput, yogaPath);
-            console.log(
-              `  -> ${yogaPath} (yoga headers flattened from ${relativePath})`,
-            );
           } else {
-            // Otherwise, put it under headers/ReactCommon/ with structure preserved
-            destPath = path.join(reactCommonHeadersOutput, relativePath);
-            console.log(
-              `  -> ReactCommon/${relativePath} (structured under ReactCommon)`,
-            );
+            // Check for special mappings
+            let specialCaseMatched = false;
+            for (const [prefix, destinationFolder] of Object.entries(specialMapping)) {
+              if (relativePath.startsWith(prefix)) {
+                let mappedPath = relativePath;
+
+                // Special handling for yoga - remove duplicated yoga/ prefix
+                if (prefix === 'yoga/' && relativePath.startsWith('yoga/yoga/')) {
+                  mappedPath = relativePath.substring(5); // Remove 'yoga/' (5 characters)
+                }
+
+                destPath = path.join(headersOutput, destinationFolder, mappedPath.substring(prefix.length));
+                console.log(
+                  `  -> ${destinationFolder}/${mappedPath.substring(prefix.length)} (${prefix.slice(0, -1)} headers flattened, bypassing ReactCommon)`,
+                );
+                specialCaseMatched = true;
+                break;
+              }
+            }
+
+            if (!specialCaseMatched) {
+              // Otherwise, put it under headers/ReactCommon/ with structure preserved
+              destPath = path.join(reactCommonHeadersOutput, relativePath);
+              console.log(
+                `  -> ReactCommon/${relativePath} (structured under ReactCommon)`,
+              );
+            }
           }
         }
 
@@ -529,8 +552,11 @@ function hardlinkReactCommonHeaders(
 
 /**
  * Create hard links for third-party dependencies headers in the output folder
+ * @param {string} reactNativePath - Path to the React Native directory
+ * @param {string} outputFolder - Path to the output folder
+ * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
-function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder) {
+function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder, folderName = 'headers') {
   console.log('Creating hard links for Third-Party Dependencies headers...');
 
   // Look for ReactNativeDependencies.xcframework/Headers folder specifically
@@ -548,7 +574,7 @@ function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder) {
     return;
   }
 
-  const headersOutput = path.join(outputFolder, 'headers');
+  const headersOutput = path.join(outputFolder, folderName);
   if (!fs.existsSync(headersOutput)) {
     fs.mkdirSync(headersOutput, {recursive: true});
   }
@@ -725,4 +751,6 @@ if (require.main === module) {
 
 module.exports = {
   prepareAppDependenciesHeaders,
+  hardlinkReactNativeHeaders,
+  hardlinkThirdPartyDependenciesHeaders,
 };
