@@ -92,6 +92,7 @@ export default function createDevMiddleware({
   const eventReporter = createWrappedEventReporter(
     unstable_eventReporter,
     logger,
+    experiments,
   );
 
   const inspectorProxy = new InspectorProxy(
@@ -152,6 +153,7 @@ function getExperiments(config: ExperimentsConfig): Experiments {
 function createWrappedEventReporter(
   reporter: ?EventReporter,
   logger: ?Logger,
+  experiments: Experiments,
 ): EventReporter {
   return {
     logEvent(event: ReportableEvent) {
@@ -166,8 +168,11 @@ function createWrappedEventReporter(
           logger?.info(
             '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
               'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
-              'the terminal to open (requires Google Chrome or Microsoft Edge).' +
-              '\u001B[27m',
+              'the terminal to open' +
+              (experiments.enableStandaloneFuseboxShell
+                ? ''
+                : ' (requires Google Chrome or Microsoft Edge)') +
+              '.\u001B[27m',
           );
           break;
         case 'fusebox_shell_preparation_attempt':
