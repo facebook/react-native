@@ -229,6 +229,20 @@ def folly_flags()
   return NewArchitectureHelper.folly_compiler_flags
 end
 
+# Resolve the spec for use with the USE_FRAMEWORKS environment variable. To avoid each podspec
+# to manually specify the header mappings and module name, we can use this helper function.
+# This helper will also resolve header mappings if we're building from source. Precompiled
+# React-Core will not generate frameworks since their podspec files only contains the
+# header files and no source code - so header_mappings should be the same as for without USE_FRAMEWORKS
+#
+# Parameters:
+# - s: the spec to modify
+# - header_mappings_dir: the directory to map headers when building Pod header structure
+# - module_name: the name of the module when exposed to swift
+def resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
+  ReactNativePodsUtils.resolve_use_frameworks(spec, :header_mappings_dir => header_mappings_dir, :module_name => module_name)
+end
+
 # Add a dependency to a spec, making sure that the HEADER_SERACH_PATHS are set properly.
 # This function automate the requirement to specify the HEADER_SEARCH_PATHS which was error prone
 # and hard to pull out properly to begin with.
