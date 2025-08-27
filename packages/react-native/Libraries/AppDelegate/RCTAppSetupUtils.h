@@ -40,17 +40,20 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
-    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler);
+    const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
+    __attribute__((deprecated(
+        "RCTAppSetupJsExecutorFactoryForOldArch(RCTBridge *, RuntimeScheduler) is deprecated and will be removed when we remove the legacy architecture.")));
+;
 
 #endif // __cplusplus
 
 RCT_EXTERN_C_BEGIN
 
-void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled);
-UIView *RCTAppSetupDefaultRootView(
-    RCTBridge *bridge,
-    NSString *moduleName,
-    NSDictionary *initialProperties,
-    BOOL fabricEnabled);
+void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled) __attribute__((deprecated(
+    "RCTAppSetupPrepareApp(UIApplication, BOOL) is deprecated and it's signature will change when we remove the legacy arch")));
+UIView *
+RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
+    __attribute__((deprecated(
+        "RCTAppSetupDefaultRootView(RCTBridge *, NSString *, NSDictionary *, BOOL) is deprecated and it's signature will change when we remove the legacy arch")));
 
 RCT_EXTERN_C_END
