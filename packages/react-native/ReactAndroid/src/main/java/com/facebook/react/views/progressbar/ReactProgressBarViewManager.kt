@@ -38,6 +38,7 @@ import java.util.WeakHashMap
 internal class ReactProgressBarViewManager :
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>(),
     AndroidProgressBarManagerInterface<ProgressBarContainerView> {
+  @Suppress("IDENTITY_SENSITIVE_OPERATIONS_WITH_VALUE_TYPE")
   private val measuredStyles = WeakHashMap<Int, Pair<Int, Int>>()
 
   private val delegate: ViewManagerDelegate<ProgressBarContainerView> =
