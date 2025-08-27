@@ -147,7 +147,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       List<ViewManager> viewManagersList,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     super(reactContext);
-    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.init");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT, "UIManagerModule.init");
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
@@ -168,8 +168,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     }
 
     reactContext.addLifecycleEventListener(this);
-    mEventDispatcher.registerEventEmitter(
-        DEFAULT, getReactApplicationContext().getJSModule(RCTEventEmitter.class));
   }
 
   /**
