@@ -144,6 +144,8 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun openDebugger(): Unit = Unit
 
+  public override fun openDebugger(landingView: String): Unit = Unit
+
   public override fun showPausedInDebuggerOverlay(
       message: String,
       listener: PausedInDebuggerOverlayCommandListener,
