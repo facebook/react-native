@@ -38,18 +38,12 @@
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled
 {
-  return [self initWithBundleURL:bundleURL
-                  newArchEnabled:newArchEnabled
-              turboModuleEnabled:newArchEnabled
-               bridgelessEnabled:newArchEnabled];
+  return [self initWithBundleURL:bundleURL];
 }
 
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled
 {
-  return [self initWithBundleURLBlock:bundleURLBlock
-                       newArchEnabled:newArchEnabled
-                   turboModuleEnabled:newArchEnabled
-                    bridgelessEnabled:newArchEnabled];
+  return [self initWithBundleURLBlock:bundleURLBlock];
 }
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
@@ -57,13 +51,9 @@
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled
 {
-  return [self
-      initWithBundleURLBlock:^{
-        return bundleURL;
-      }
-              newArchEnabled:newArchEnabled
-          turboModuleEnabled:turboModuleEnabled
-           bridgelessEnabled:bridgelessEnabled];
+  return [self initWithBundleURLBlock:^{
+    return bundleURL;
+  }];
 }
 
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
@@ -78,6 +68,24 @@
     _bridgelessEnabled = YES;
   }
   return self;
+}
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
+{
+  if (self = [super init]) {
+    _bundleURLBlock = bundleURLBlock;
+    _fabricEnabled = YES;
+    _turboModuleEnabled = YES;
+    _bridgelessEnabled = YES;
+  }
+  return self;
+}
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+{
+  return [self initWithBundleURLBlock:^{
+    return bundleURL;
+  }];
 }
 
 @end
