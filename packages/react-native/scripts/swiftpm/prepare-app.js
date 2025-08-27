@@ -22,6 +22,8 @@ const {execSync} = require('child_process');
 // Import functions from other scripts
 const {
   prepareAppDependenciesHeaders,
+  hardlinkReactNativeHeaders,
+  hardlinkThirdPartyDependenciesHeaders,
 } = require('./prepare-app-dependencies-headers');
 const {createSymlinks: createSymlinksFunction} = require('./create-symlinks');
 const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
@@ -101,36 +103,40 @@ async function prepareApp(
     console.log('\n🏗️  Step 2: Running iOS prebuild...');
     await runIosPrebuild(absoluteReactNativePath);
 
-    // Step 3: Modify BUILD_FROM_SOURCE setting
-    console.log('\n⚙️  Step 3: Setting BUILD_FROM_SOURCE to true...');
+    // Step 3: Configure app for Swift integration
+    console.log('\n🏗️  Step 3: Configuring app for Swift integration...');
+    await configureAppForSwift(absoluteReactNativePath);
+
+    // Step 4: Modify BUILD_FROM_SOURCE setting
+    console.log('\n⚙️  Step 4: Setting BUILD_FROM_SOURCE to true...');
     await setBuildFromSource(absoluteReactNativePath);
 
-    // Step 4: Create symlinks
-    console.log('\n🔗 Step 4: Creating symlinks...');
-    await createSymlinks(absoluteReactNativePath);
+    // Step 5: Create hard links
+    console.log('\n🔗 Step 5: Creating hard links...');
+    await createHardlinks(absoluteReactNativePath);
 
-    // Step 5: Generate codegen artifacts
-    console.log('\n🧬 Step 5: Generating codegen artifacts...');
+    // Step 6: Generate codegen artifacts
+    console.log('\n🧬 Step 6: Generating codegen artifacts...');
     await generateCodegenArtifacts(
       absoluteReactNativePath,
       absoluteAppPath,
       appIosPath,
     );
 
-    // Step 6: Prepare app dependencies headers (3 times)
-    console.log('\n📂 Step 6: Preparing app dependencies headers...');
+    // Step 7: Prepare app dependencies headers (3 times)
+    console.log('\n📂 Step 7: Preparing app dependencies headers...');
     await prepareHeaders(absoluteReactNativePath, appIosPath);
 
-    // Step 7: Fix REACT_NATIVE_PATH in Xcode project
-    console.log('\n🔧 Step 7: Fixing REACT_NATIVE_PATH in Xcode project...');
+    // Step 8: Fix REACT_NATIVE_PATH in Xcode project
+    console.log('\n🔧 Step 8: Fixing REACT_NATIVE_PATH in Xcode project...');
     await fixReactNativePath(
       appIosPath,
       absoluteReactNativePath,
       appXcodeProject,
     );
 
-    // Step 8: Integrate SwiftPM packages in Xcode
-    console.log('\n📦 Step 8: Integrating SwiftPM packages in Xcode...');
+    // Step 9: Integrate SwiftPM packages in Xcode
+    console.log('\n📦 Step 9: Integrating SwiftPM packages in Xcode...');
     await integrateSwiftPMPackages(
       appIosPath,
       absoluteReactNativePath,
@@ -139,8 +145,8 @@ async function prepareApp(
       targetName,
     );
 
-    // Step 9: Open Xcode project
-    console.log('\n📱 Step 9: Opening Xcode project...');
+    // Step 10: Open Xcode project
+    console.log('\n📱 Step 10: Opening Xcode project...');
     await openXcodeProject(appIosPath, appXcodeProject);
 
     console.log('\n✅ App preparation completed successfully!');
@@ -193,6 +199,76 @@ async function runIosPrebuild(reactNativePath) {
 }
 
 /**
+ * Configure app for Swift integration
+ */
+async function configureAppForSwift(reactNativePath) {
+  try {
+    console.log('Configuring app for Swift integration...');
+
+    // 1. Create hardlink from React-umbrella.h to React-umbrella.h
+    const sourceUmbrellaPath = path.join(
+      reactNativePath,
+      'scripts',
+      'ios-prebuild',
+      'React-umbrella.h',
+    );
+    const reactIncludesReactPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+    );
+    const destUmbrellaPath = path.join(
+      reactIncludesReactPath,
+      'React-umbrella.h',
+    );
+
+    // Ensure the React/includes/React directory exists
+    if (!fs.existsSync(reactIncludesReactPath)) {
+      fs.mkdirSync(reactIncludesReactPath, {recursive: true});
+    }
+
+    // Remove existing hardlink if it exists
+    if (fs.existsSync(destUmbrellaPath)) {
+      fs.unlinkSync(destUmbrellaPath);
+    }
+
+    // Create hardlink for umbrella header
+    if (fs.existsSync(sourceUmbrellaPath)) {
+      fs.linkSync(sourceUmbrellaPath, destUmbrellaPath);
+      console.log(
+        `✓ Created hardlink: React-umbrella.h -> ${path.relative(
+          reactNativePath,
+          sourceUmbrellaPath,
+        )}`,
+      );
+    } else {
+      throw new Error(
+        `Source umbrella header not found: ${sourceUmbrellaPath}`,
+      );
+    }
+
+    // 2. Generate module.modulemap file
+    const reactIncludesPath = path.join(reactNativePath, 'React', 'includes');
+    const moduleMapPath = path.join(reactIncludesPath, 'module.modulemap');
+    const absoluteUmbrellaPath = path.join(reactNativePath, 'React', 'includes', 'React', 'React-umbrella.h');
+    const moduleMapContent = `framework module React {
+  umbrella header "${absoluteUmbrellaPath}"
+  export *
+  module * { export * }
+}
+`;
+
+    fs.writeFileSync(moduleMapPath, moduleMapContent, 'utf8');
+    console.log('✓ Generated module.modulemap file');
+
+    console.log('✓ App configured for Swift integration');
+  } catch (error) {
+    throw new Error(`Swift configuration failed: ${error.message}`);
+  }
+}
+
+/**
  * Set BUILD_FROM_SOURCE to true in Package.swift
  */
 async function setBuildFromSource(reactNativePath) {
@@ -232,17 +308,20 @@ async function setBuildFromSource(reactNativePath) {
 }
 
 /**
- * Create symlinks using the imported function
+ * Create hard links for React Native headers in React/includes
  */
-async function createSymlinks(reactNativePath) {
+async function createHardlinks(reactNativePath) {
   try {
-    console.log('Creating symlinks...');
-    const stats = await createSymlinksFunction(reactNativePath);
-    console.log(
-      `✓ Symlinks created: ${stats.found} found, ${stats.notFound} not found, ${stats.errors} errors`,
-    );
+    console.log('Creating hard links for React Native headers...');
+    const reactIncludesPath = path.join(reactNativePath, 'React');
+    hardlinkReactNativeHeaders(reactNativePath, reactIncludesPath, 'includes');
+    console.log('✓ React Native hard links created in React/includes');
+
+    console.log('Creating hard links for third-party dependencies...');
+    hardlinkThirdPartyDependenciesHeaders(reactNativePath, reactIncludesPath, 'includes');
+    console.log('✓ Third-party dependencies hard links created in React/includes');
   } catch (error) {
-    throw new Error(`Symlink creation failed: ${error.message}`);
+    throw new Error(`Hard link creation failed: ${error.message}`);
   }
 }
 
@@ -479,8 +558,9 @@ module.exports = {
   prepareApp,
   runPodDeintegrate,
   runIosPrebuild,
+  configureAppForSwift,
   setBuildFromSource,
-  createSymlinks,
+  createHardlinks,
   generateCodegenArtifacts,
   prepareHeaders,
   fixReactNativePath,
