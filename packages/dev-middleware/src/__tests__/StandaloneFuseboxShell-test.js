@@ -28,6 +28,9 @@ describe('enableStandaloneFuseboxShell experiment', () => {
     unstable_showFuseboxShell: () => {
       throw new Error('Not implemented');
     },
+    unstable_prepareFuseboxShell: async () => {
+      return {code: 'not_implemented'};
+    },
   };
   const serverRef = withServerForEachTest({
     logger: undefined,
@@ -127,5 +130,7 @@ describe('enableStandaloneFuseboxShell experiment', () => {
         device.close();
       }
     });
+
+    // TODO(moti): Add tests around unstable_prepareFuseboxShell
   });
 });
