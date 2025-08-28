@@ -9,6 +9,7 @@
 
 #ifndef RCT_FIT_RM_OLD_COMPONENT
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTInputAccessoryViewContent : UIView
 
 @end
