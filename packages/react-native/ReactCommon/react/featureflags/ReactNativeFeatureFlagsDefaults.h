@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a76f1a1e8ba0d65b689b4b87d33d7ced>>
+ * @generated SignedSource<<bfe32d620105d5aa49c2ff676fa6be61>>
  */
 
 /**
@@ -152,7 +152,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableNetworkEventReporting() override {
-    return false;
+    return true;
   }
 
   bool enableNewBackgroundAndBorderDrawables() override {
@@ -168,7 +168,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableResourceTimingAPI() override {
-    return false;
+    return true;
   }
 
   bool enableViewCulling() override {
@@ -212,7 +212,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool fuseboxNetworkInspectionEnabled() override {
-    return false;
+    return true;
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {

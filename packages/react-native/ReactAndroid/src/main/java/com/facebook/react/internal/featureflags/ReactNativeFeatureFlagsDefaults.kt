@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<719706a983a073b6c286c49d993f7f80>>
+ * @generated SignedSource<<6a7eec2a7487f65ce1de9cb469498cba>>
  */
 
 /**
@@ -85,7 +85,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNativeCSSParsing(): Boolean = false
 
-  override fun enableNetworkEventReporting(): Boolean = false
+  override fun enableNetworkEventReporting(): Boolean = true
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
 
@@ -93,7 +93,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
-  override fun enableResourceTimingAPI(): Boolean = false
+  override fun enableResourceTimingAPI(): Boolean = true
 
   override fun enableViewCulling(): Boolean = false
 
@@ -115,7 +115,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
-  override fun fuseboxNetworkInspectionEnabled(): Boolean = false
+  override fun fuseboxNetworkInspectionEnabled(): Boolean = true
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
 
