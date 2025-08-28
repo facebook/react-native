@@ -142,20 +142,20 @@ function findCodegenEnabledLibraries(
   baseOutputPath /*: string */,
   reactNativeConfig /*: $FlowFixMe */,
 ) /*: Array<$FlowFixMe> */ {
-  if (!!readGeneratedReactNativeConfig(baseOutputPath)) {
-    // If we ran autolinking, we shouldn't try to run our own "autolinking-like"
-    // library discovery
-    return findLibrariesFromReactNativeConfig(projectRoot, reactNativeConfig);
-  }
   const projectLibraries = findProjectRootLibraries(pkgJson, projectRoot);
   if (pkgJsonIncludesGeneratedCode(pkgJson)) {
     return projectLibraries;
   } else {
-    return [
-      ...projectLibraries,
-      ...findExternalLibraries(pkgJson, projectRoot),
+    const libraries = [...projectLibraries];
+    // If we ran autolinking, we shouldn't try to run our own "autolinking-like"
+    // library discovery
+    if (!readGeneratedReactNativeConfig(baseOutputPath)) {
+      libraries.push(...findExternalLibraries(pkgJson, projectRoot));
+    }
+    libraries.push(
       ...findLibrariesFromReactNativeConfig(projectRoot, reactNativeConfig),
-    ];
+    );
+    return libraries;
   }
 }
 
