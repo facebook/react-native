@@ -394,7 +394,8 @@ class RawValue {
 
   static int
   castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, int* /*type*/) {
-    double number = value.asNumber();
+    // Casting directly from double to int loses precision, go via int64
+    auto number = static_cast<int64_t>(value.asNumber());
     return static_cast<int>(number);
   }
 
