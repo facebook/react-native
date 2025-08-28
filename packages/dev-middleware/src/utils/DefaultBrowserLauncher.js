@@ -74,7 +74,7 @@ const DefaultBrowserLauncher = {
     windowKey: string,
   ): Promise<void> {
     return await unstable_spawnDebuggerShellWithArgs(
-      ['--frontendUrl', url, '--windowKey', windowKey],
+      ['--frontendUrl=' + url, '--windowKey=' + windowKey],
       {
         mode: 'detached',
         flavor: process.env.RNDT_DEV === '1' ? 'dev' : 'prebuilt',
