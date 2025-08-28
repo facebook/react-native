@@ -29,6 +29,19 @@ export type PerformanceResourceTimingJSON = {
   ...
 };
 
+export interface PerformanceResourceTimingInit {
+  +name: string;
+  +startTime: DOMHighResTimeStamp;
+  +duration: DOMHighResTimeStamp;
+  +fetchStart: DOMHighResTimeStamp;
+  +requestStart: DOMHighResTimeStamp;
+  +connectStart: DOMHighResTimeStamp;
+  +connectEnd: DOMHighResTimeStamp;
+  +responseStart: DOMHighResTimeStamp;
+  +responseEnd: DOMHighResTimeStamp;
+  +responseStatus?: number;
+}
+
 export class PerformanceResourceTiming extends PerformanceEntry {
   #fetchStart: DOMHighResTimeStamp;
   #requestStart: DOMHighResTimeStamp;
@@ -38,24 +51,9 @@ export class PerformanceResourceTiming extends PerformanceEntry {
   #responseEnd: DOMHighResTimeStamp;
   #responseStatus: ?number;
 
-  constructor(init: {
-    name: string,
-    startTime: DOMHighResTimeStamp,
-    duration: DOMHighResTimeStamp,
-    fetchStart: DOMHighResTimeStamp,
-    requestStart: DOMHighResTimeStamp,
-    connectStart: DOMHighResTimeStamp,
-    connectEnd: DOMHighResTimeStamp,
-    responseStart: DOMHighResTimeStamp,
-    responseEnd: DOMHighResTimeStamp,
-    responseStatus?: number,
-  }) {
-    super({
-      name: init.name,
-      entryType: 'resource',
-      startTime: init.startTime,
-      duration: init.duration,
-    });
+  constructor(init: PerformanceResourceTimingInit) {
+    super('resource', init);
+
     this.#fetchStart = init.fetchStart;
     this.#requestStart = init.requestStart;
     this.#connectStart = init.connectStart;
@@ -106,3 +104,16 @@ export class PerformanceResourceTiming extends PerformanceEntry {
     };
   }
 }
+
+export const PerformanceResourceTiming_public: typeof PerformanceResourceTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceResourceTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceResourceTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceResourceTiming_public.prototype =
+  PerformanceResourceTiming.prototype;
