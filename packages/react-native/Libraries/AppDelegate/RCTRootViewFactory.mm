@@ -194,8 +194,8 @@
   RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                                                    delegate:_turboModuleManagerDelegate
                                                                                   jsInvoker:callInvoker];
-  _contextContainer->erase("RuntimeScheduler");
-  _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
+  _contextContainer->erase(facebook::react::RuntimeSchedulerKey);
+  _contextContainer->insert(facebook::react::RuntimeSchedulerKey, _runtimeScheduler);
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);
 }
 
