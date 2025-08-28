@@ -22,9 +22,10 @@ class ImageFetcher {
       const ImageSource& imageSource,
       SurfaceId surfaceId,
       const ImageRequestParams& imageRequestParams,
-      Tag tag) const;
+      Tag tag);
 
  private:
+  std::vector<ImageRequestItem> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react

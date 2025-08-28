@@ -984,10 +984,9 @@ public class FabricUIManager
    * by an ImageView.
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
-    mMountingManager.experimental_prefetchResource(
-        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  public void experimental_prefetchResources(String componentName, ReadableMapBuffer params) {
+    mMountingManager.experimental_prefetchResources(
+        mReactApplicationContext, componentName, params);
   }
 
   void setBinding(FabricUIManagerBinding binding) {
