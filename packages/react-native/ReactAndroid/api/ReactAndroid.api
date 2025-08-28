@@ -1914,7 +1914,7 @@ public class com/facebook/react/devsupport/DevServerHelper {
 	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
 	public final fun getWebsocketProxyURL ()Ljava/lang/String;
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;)V
+	public final fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;Ljava/lang/String;)V
 	public final fun openInspectorConnection ()V
 	public final fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
 }
@@ -1962,8 +1962,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun openDebugger ()V
-	public fun openDebugger (Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;)V
+	public fun openDebugger (Ljava/lang/String;)V
 	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
@@ -2052,8 +2051,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun openDebugger ()V
-	public fun openDebugger (Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;)V
+	public fun openDebugger (Ljava/lang/String;)V
 	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
@@ -2112,15 +2110,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/BundleL
 	public abstract fun onSuccess ()V
 }
 
-public final class com/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName : java/lang/Enum {
-	public static final field PERFORMANCE Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public final fun getInternalName ()Ljava/lang/String;
-	public fun toString ()Ljava/lang/String;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;
-	public static fun values ()[Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;
-}
-
 public abstract interface class com/facebook/react/devsupport/interfaces/DevBundleDownloadListener {
 	public abstract fun onFailure (Ljava/lang/Exception;)V
 	public abstract fun onProgress (Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/Integer;)V
@@ -2162,8 +2151,8 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public abstract fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public abstract fun openDebugger ()V
-	public abstract fun openDebugger (Lcom/facebook/react/devsupport/interfaces/DebuggerFrontendPanelName;)V
+	public abstract fun openDebugger (Ljava/lang/String;)V
+	public static synthetic fun openDebugger$default (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;Ljava/lang/String;ILjava/lang/Object;)V
 	public abstract fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public abstract fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public abstract fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V

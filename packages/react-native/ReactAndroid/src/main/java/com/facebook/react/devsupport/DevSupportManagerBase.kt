@@ -52,7 +52,6 @@ import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
-import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
@@ -920,15 +919,7 @@ public abstract class DevSupportManagerBase(
     }
   }
 
-  override fun openDebugger() {
-    devServerHelper.openDebugger(
-        currentReactContext,
-        applicationContext.getString(R.string.catalyst_open_debugger_error),
-        null,
-    )
-  }
-
-  override fun openDebugger(panel: DebuggerFrontendPanelName) {
+  override fun openDebugger(panel: String?) {
     devServerHelper.openDebugger(
         currentReactContext,
         applicationContext.getString(R.string.catalyst_open_debugger_error),

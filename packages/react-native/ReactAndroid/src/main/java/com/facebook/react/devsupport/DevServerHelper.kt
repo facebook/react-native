@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
-import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
@@ -356,7 +355,7 @@ public open class DevServerHelper(
   public fun openDebugger(
       context: ReactContext?,
       errorMessage: String?,
-      panel: DebuggerFrontendPanelName?,
+      panel: String?,
   ) {
     // TODO(huntie): Requests to dev server should not assume 'http' URL scheme
     val requestUrlBuilder = StringBuilder()
@@ -371,7 +370,7 @@ public open class DevServerHelper(
     )
 
     if (panel != null) {
-      requestUrlBuilder.append("&panel=" + Uri.encode(panel.toString()))
+      requestUrlBuilder.append("&panel=" + Uri.encode(panel))
     }
 
     val request =

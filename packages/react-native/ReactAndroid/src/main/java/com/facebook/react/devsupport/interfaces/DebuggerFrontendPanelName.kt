@@ -7,8 +7,15 @@
 
 package com.facebook.react.devsupport.interfaces
 
-public enum class DebuggerFrontendPanelName(public val internalName: String) {
-  PERFORMANCE("timeline");
+internal enum class DebuggerFrontendPanelName(public val internalName: String) {
+  CONSOLE("console"),
+  MEMORY("heap-profiler"),
+  NETWORK("network"),
+  PERFORMANCE("timeline"),
+  REACT_COMPONENTS("react-devtools-components"),
+  REACT_PROFILER("react-devtools-profiler"),
+  SOURCES("sources"),
+  WELCOME("rn-welcome");
 
   override fun toString(): String = internalName
 }

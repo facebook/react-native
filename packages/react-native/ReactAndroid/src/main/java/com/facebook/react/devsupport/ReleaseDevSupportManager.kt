@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
-import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PackagerLocationCustomizer
@@ -143,9 +142,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun createSurfaceDelegate(moduleName: String): SurfaceDelegate? = null
 
-  public override fun openDebugger(): Unit = Unit
-
-  public override fun openDebugger(panel: DebuggerFrontendPanelName): Unit = Unit
+  public override fun openDebugger(panel: String?): Unit = Unit
 
   public override fun showPausedInDebuggerOverlay(
       message: String,

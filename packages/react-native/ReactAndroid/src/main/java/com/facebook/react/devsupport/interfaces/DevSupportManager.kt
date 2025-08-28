@@ -94,11 +94,14 @@ public interface DevSupportManager : JSExceptionHandler {
    */
   public fun createSurfaceDelegate(moduleName: String): SurfaceDelegate?
 
-  /** Attempt to open the JS debugger on the host machine. */
-  public fun openDebugger()
-
-  /** Attempt to open the JS debugger on the host machine, providing a destination panel name. */
-  public fun openDebugger(panel: DebuggerFrontendPanelName)
+  /**
+   * Attempt to open the JS debugger on the host machine.
+   *
+   * @param panel Optionally provide a destination panel name. This can be a value of
+   *   [DebuggerFrontendPanelName] or a custom string. If omitted, the debugger will open on the
+   *   last used panel (default behaviour).
+   */
+  public fun openDebugger(panel: String? = null)
 
   /** Shows the "paused in debugger" overlay with the given message. */
   public fun showPausedInDebuggerOverlay(
