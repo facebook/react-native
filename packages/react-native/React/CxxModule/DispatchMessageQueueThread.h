@@ -18,7 +18,8 @@ namespace facebook::react {
 // is not the JS thread.  C++ modules don't use RCTNativeModule, so this little
 // adapter does the work.
 
-class DispatchMessageQueueThread : public MessageQueueThread {
+class [[deprecated("This API will be removed along with the legacy architecture.")]] DispatchMessageQueueThread
+    : public MessageQueueThread {
  public:
   DispatchMessageQueueThread(RCTModuleData *moduleData) : moduleData_(moduleData) {}
 
