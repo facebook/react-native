@@ -24,10 +24,10 @@ const clearCachedValuesFns: Array<() => void> = [];
 
 export type Getter<T> = () => T;
 
-// This defines the types for the overrides object, whose methods also receive
-// the default value as a parameter.
+// This defines the types for the overrides object, whose methods can return
+// null or undefined to fallback to the default value.
 export type OverridesFor<T> = Partial<{
-  [key in keyof T]: (ReturnType<T[key]>) => ReturnType<T[key]>,
+  [key in keyof T]: Getter<?ReturnType<T[key]>>,
 }>;
 
 function createGetter<T: boolean | number | string>(
@@ -61,8 +61,7 @@ export function createJavaScriptFlagGetter<
     configName,
     () => {
       accessedFeatureFlags.add(configName);
-      // $FlowFixMe[incompatible-type] - `defaultValue` is not refined.
-      return overrides?.[configName]?.(defaultValue);
+      return overrides?.[configName]?.();
     },
     defaultValue,
   );
