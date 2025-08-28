@@ -36,9 +36,12 @@ export type FailureDetail = {
   cause?: FailureDetail,
 };
 
+export opaque type CoverageMap = mixed;
+
 export type TestSuiteResult =
   | {
       testResults: Array<TestCaseResult>,
+      coverageMap?: CoverageMap,
     }
   | {
       error: FailureDetail,
@@ -465,6 +468,7 @@ global.$$RunTests$$ = () => {
   } else {
     reportTestSuiteResult({
       testResults: runTest(),
+      coverageMap: global.__coverage__,
     });
   }
 };
