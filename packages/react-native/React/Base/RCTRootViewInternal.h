@@ -13,7 +13,7 @@
  * The interface provides a set of functions that allow other internal framework
  * classes to change the RCTRootViews's internal state.
  */
-@interface RCTRootView ()
+__deprecated_msg("This API will be removed along with the legacy architecture.") @interface RCTRootView()
 
 /**
  * This setter should be used only by RCTUIManager on react root view
