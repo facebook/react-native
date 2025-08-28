@@ -129,6 +129,9 @@ public class ReactVirtualViewExperimental(context: Context) :
     }
 
   override fun onModeChange(newMode: VirtualViewMode, thresholdRect: Rect) {
+    modeChangeEmitter ?: return
+    scrollView ?: return
+
     if (newMode == mode) {
       return
     }
