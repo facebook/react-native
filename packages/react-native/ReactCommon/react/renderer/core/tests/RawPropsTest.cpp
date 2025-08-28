@@ -12,10 +12,10 @@
 #include <react/debug/flags.h>
 #include <react/renderer/core/ConcreteShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/propsConversions.h>
-
-#include "TestComponent.h"
 
 using namespace facebook;
 using namespace facebook::react;
