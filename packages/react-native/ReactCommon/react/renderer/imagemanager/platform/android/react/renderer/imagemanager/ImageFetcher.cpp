@@ -7,6 +7,7 @@
 
 #include "ImageFetcher.h"
 
+#include <cxxreact/TraceSection.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
 
@@ -17,6 +18,7 @@ ImageRequest ImageFetcher::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) {
+  TraceSection s("ImageFetcher::requestImage");
   items_.emplace_back(ImageRequestItem{
       .imageSource = imageSource,
       .surfaceId = surfaceId,
@@ -30,11 +32,19 @@ ImageRequest ImageFetcher::requestImage(
           ->getMethod<void(std::string, JReadableMapBuffer::javaobject)>(
               "experimental_prefetchResources");
 
-  auto readableMapBuffer =
-      JReadableMapBuffer::createWithContents(serializeImageRequests(items_));
-  items_.clear();
-  prefetchResources(fabricUIManager_, "RCTImageView", readableMapBuffer.get());
+  jni::local_ref<JReadableMapBuffer::jhybridobject> readableMapBuffer = nullptr;
+  {
+    TraceSection s("ImageFetcher::createWithContents");
+    readableMapBuffer =
+        JReadableMapBuffer::createWithContents(serializeImageRequests(items_));
+    items_.clear();
+  }
 
+  {
+    TraceSection s("FabricUIManager::experimental_prefetchResource");
+    prefetchResources(
+        fabricUIManager_, "RCTImageView", readableMapBuffer.get());
+  }
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
   return {imageSource, telemetry};
