@@ -168,8 +168,11 @@ export const VirtualViewExperimental = createVirtualView(
 
 export function createHiddenVirtualView(
   height: number,
-  experimental: boolean,
+  MaybeExperimentalComponent?: VirtualViewComponent,
 ): VirtualViewComponent {
+  // This is a bit weird, but it's because consumers do not have access to the
+  // native components; only components exported by this module.
+  const experimental = MaybeExperimentalComponent === VirtualViewExperimental;
   return createVirtualView(height as HiddenHeight, experimental);
 }
 
