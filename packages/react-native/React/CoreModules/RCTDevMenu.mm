@@ -180,7 +180,6 @@ RCT_EXPORT_MODULE()
 
   [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
   [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
-  [commands unregisterKeyCommandWithInput:@"n" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -190,10 +189,27 @@ RCT_EXPORT_MODULE()
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"n" modifierFlags:UIKeyModifierCommand];
+      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand];
 #else
   return NO;
+#endif
+}
+
+- (BOOL)isReloadCommandRegistered
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  return [commands isKeyCommandRegisteredForInput:@"r" modifierFlags:UIKeyModifierCommand];
+#else
+  return NO;
+#endif
+}
+
+- (void)unregisterReloadCommand
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  [commands unregisterKeyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -494,6 +510,13 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 - (BOOL)hotkeysEnabled
 {
   return [self isHotkeysRegistered];
+}
+
+- (void)disableReloadCommand
+{
+  if ([self isReloadCommandRegistered]) {
+    [self unregisterReloadCommand];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

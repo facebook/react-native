@@ -15,7 +15,7 @@
   if (self = [super init]) {
     _devMenuConfiguration = devMenuConfiguration;
   }
-  
+
   return self;
 }
 
@@ -24,9 +24,16 @@
   if ([bridgeModule isKindOfClass:[RCTDevMenu class]]) {
     RCTDevMenu *devMenu = (RCTDevMenu *)bridgeModule;
     devMenu.isDevMenuEnabled = _devMenuConfiguration.isDevMenuEnabled;
-    [devMenu setHotkeysEnabled:_devMenuConfiguration.areKeyboardShortcutsEnabled];
+
+    if (_devMenuConfiguration.areKeyboardShortcutsEnabled == false) {
+      if ([devMenu hotkeysEnabled]) {
+        [devMenu setHotkeysEnabled:_devMenuConfiguration.areKeyboardShortcutsEnabled];
+      }
+
+      [devMenu disableReloadCommand];
+    }
   }
-  
+
   if ([bridgeModule isKindOfClass:[RCTDevSettings class]]) {
     RCTDevSettings *devSettings = (RCTDevSettings *)bridgeModule;
     [devSettings setIsShakeToShowDevMenuEnabled:_devMenuConfiguration.isShakeGestureEnabled];

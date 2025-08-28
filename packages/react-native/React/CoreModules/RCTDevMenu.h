@@ -25,9 +25,9 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 @property (nonatomic, readonly) BOOL isShakeGestureEnabled;
 @property (nonatomic, readonly) BOOL areKeyboardShortcutsEnabled;
 
-- (instancetype)initWithDevMenuEnabled:(BOOL) isDevMenuEnabled
-                shakeGestureEnabled:(BOOL) isShakeGestureEnabled
-              keyboardShortcutsEnabled:(BOOL) areKeyboardShortcutsEnabled;
+- (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
+                   shakeGestureEnabled:(BOOL)isShakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled;
 @end
 
 /**
@@ -87,6 +87,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * when user selects the item.
  */
 - (void)addItem:(RCTDevMenuItem *)item;
+
+/**
+ * Disable the reload command (Cmd+R) in the simulator.
+ */
+- (void)disableReloadCommand;
 
 @end
 
