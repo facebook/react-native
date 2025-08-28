@@ -20,6 +20,7 @@ class NativeModule;
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
 
+[[deprecated("This API will be removed along with the legacy architecture.")]]
 std::vector<std::unique_ptr<NativeModule>>
 createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
 

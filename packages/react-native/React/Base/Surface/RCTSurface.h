@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
  *  * ability to create a UIView instance on demand (later);
  *  * ability to communicate the current stage of the surface granularly.
  */
-@interface RCTSurface : NSObject <RCTSurfaceProtocol>
+__deprecated_msg("This API will be removed along with the legacy architecture.") @interface RCTSurface
+    : NSObject<RCTSurfaceProtocol>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
