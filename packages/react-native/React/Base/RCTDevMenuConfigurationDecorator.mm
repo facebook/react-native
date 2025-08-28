@@ -6,6 +6,7 @@
  */
 
 #import <RCTDevMenuConfigurationDecorator.h>
+#import <React/RCTDevSettings.h>
 
 @implementation RCTDevMenuConfigurationDecorator
 
@@ -18,11 +19,17 @@
   return self;
 }
 
-- (void)decorate:(RCTDevMenu *)devMenuModule
+- (void)decorate:(id<RCTBridgeModule>)bridgeModule
 {
-  if (_devMenuConfiguration != nil) {
-    devMenuModule.isDevMenuEnabled = _devMenuConfiguration.isDevMenuEnabled;
-    [devMenuModule setShakeToShow:_devMenuConfiguration.isShakeGestureEnabled];
+  if ([bridgeModule isKindOfClass:[RCTDevMenu class]]) {
+    RCTDevMenu *devMenu = (RCTDevMenu *)bridgeModule;
+    devMenu.isDevMenuEnabled = _devMenuConfiguration.isDevMenuEnabled;
+    [devMenu setHotkeysEnabled:_devMenuConfiguration.areKeyboardShortcutsEnabled];
+  }
+  
+  if ([bridgeModule isKindOfClass:[RCTDevSettings class]]) {
+    RCTDevSettings *devSettings = (RCTDevSettings *)bridgeModule;
+    [devSettings setIsShakeToShowDevMenuEnabled:_devMenuConfiguration.isShakeGestureEnabled];
   }
 }
 

@@ -33,17 +33,17 @@ NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 @end
 
 @implementation RCTDevMenuConfiguration
-  - (instancetype)initWithDevMenuEnabled:(BOOL) isDevMenuEnabled
-                     shakeGestureEnabled:(BOOL) isShakeGestureEnabled
-                   keyboardShortcutsEnabled:(BOOL) areKeyboardShortcutsEnabled
-  {
-    if (self = [super init]) {
-      _isDevMenuEnabled = isDevMenuEnabled;
-      _isShakeGestureEnabled = isShakeGestureEnabled;
-      _areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled;
-    }
-    return self;
+- (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
+                   shakeGestureEnabled:(BOOL)isShakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled
+{
+  if (self = [super init]) {
+    _isDevMenuEnabled = isDevMenuEnabled;
+    _isShakeGestureEnabled = isShakeGestureEnabled;
+    _areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled;
   }
+  return self;
+}
 @end
 
 @implementation UIWindow (RCTDevMenu)
@@ -445,7 +445,8 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
+  RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
+  [devSettings setIsShakeToShowDevMenuEnabled:shakeToShow];
 }
 
 - (BOOL)shakeToShow

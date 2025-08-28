@@ -776,10 +776,7 @@ typedef struct {
     [(id<RCTInitializing>)module initialize];
   }
 
-  if ([module isKindOfClass:[RCTDevMenu class]]) {
-    RCTDevMenu *devMenu = (RCTDevMenu *)module;
-    [_devMenuConfigurationDecorator decorate:devMenu];
-  }
+  [_devMenuConfigurationDecorator decorate:module];
 
   /**
    * Attach method queue to id<RCTBridgeModule> object.
