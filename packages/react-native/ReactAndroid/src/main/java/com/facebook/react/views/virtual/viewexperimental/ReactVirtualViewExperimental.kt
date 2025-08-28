@@ -56,6 +56,7 @@ public class ReactVirtualViewExperimental(context: Context) :
       updateParentOffset()
       reportRectChangeToContainer()
     }
+    debugLog("doAttachedToWindow")
   }
 
   /** From [View#onLayout] */
@@ -70,6 +71,7 @@ public class ReactVirtualViewExperimental(context: Context) :
           right + offsetX,
           bottom + offsetY,
       )
+      debugLog("onLayout") { "containerRelativeRect=$containerRelativeRect" }
       reportRectChangeToContainer()
     }
   }
@@ -88,8 +90,21 @@ public class ReactVirtualViewExperimental(context: Context) :
   ) {
     if (oldLeft != left || oldTop != top) {
       updateParentOffset()
+      debugLog("onLayoutChange") { "containerRelativeRect=$containerRelativeRect" }
       reportRectChangeToContainer()
     }
+  }
+
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    containerRelativeRect.set(
+        left + offsetX,
+        top + offsetY,
+        right + offsetX,
+        bottom + offsetY,
+    )
+    debugLog("onSizeChanged") { "container=$containerRelativeRect" }
+    reportRectChangeToContainer()
   }
 
   override fun onDetachedFromWindow() {
@@ -110,7 +125,7 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   override val virtualViewID: String
     get() {
-      return "${nativeId ?: "unknown"}:${id}"
+      return "${nativeId ?: "unknown"}:::${id}"
     }
 
   override fun onModeChange(newMode: VirtualViewMode, thresholdRect: Rect) {
@@ -191,7 +206,7 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   private fun reportRectChangeToContainer() {
     if (lastContainerRelativeRect == containerRelativeRect) {
-      debugLog("reportRectChangeToContainer") { "no rect change" }
+      debugLog("reportRectChangeToContainer") { "no rect change $containerRelativeRect" }
       return
     }
     scrollView?.virtualViewContainerState?.onChange(this)
@@ -228,7 +243,7 @@ public class ReactVirtualViewExperimental(context: Context) :
 
   internal inline fun debugLog(subtag: String, block: () -> String = { "" }) {
     if (IS_DEBUG_BUILD && ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()) {
-      FLog.d("$DEBUG_TAG:$subtag", "${block()} [$id][$nativeId]")
+      FLog.d("$DEBUG_TAG:[$virtualViewID]:$subtag", "${block()}")
     }
   }
 }
