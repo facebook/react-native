@@ -20,14 +20,19 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithWindowScene:RCTKeyWindow().windowScene];
-
+    UIWindowScene *scene = RCTKeyWindow().windowScene;
+    if (scene != nil) {
+      _alertWindow = [[UIWindow alloc] initWithWindowScene:scene];
+    } else {
+      _alertWindow = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    }
+    
     if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
       _alertWindow.windowLevel = UIWindowLevelAlert + 1;
     }
   }
-
+  
   return _alertWindow;
 }
 
@@ -38,9 +43,9 @@
     UIUserInterfaceStyle overriddenStyle = RCTKeyWindow().overrideUserInterfaceStyle;
     style = overriddenStyle ? overriddenStyle : UIUserInterfaceStyleUnspecified;
   }
-
+  
   self.overrideUserInterfaceStyle = style;
-
+  
   [self.alertWindow makeKeyAndVisible];
   [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
 }
@@ -48,9 +53,9 @@
 - (void)hide
 {
   [_alertWindow setHidden:YES];
-
+  
   _alertWindow.windowScene = nil;
-
+  
   _alertWindow = nil;
 }
 
