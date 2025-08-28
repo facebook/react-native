@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -27,6 +29,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException
  * order to animate layout when a valid configuration has been supplied by the application.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal abstract class AbstractLayoutAnimation {
   var interpolator: Interpolator? = null
   var delayMs: Int = 0
@@ -45,7 +51,7 @@ internal abstract class AbstractLayoutAnimation {
       x: Int,
       y: Int,
       width: Int,
-      height: Int
+      height: Int,
   ): Animation?
 
   fun reset() {
@@ -100,7 +106,9 @@ internal abstract class AbstractLayoutAnimation {
   companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "AbstractLayoutAnimation", LegacyArchitectureLogLevel.ERROR)
+          "AbstractLayoutAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
 
     // Forces animation to be playing 10x slower, used for debug purposes.
@@ -111,7 +119,8 @@ internal abstract class AbstractLayoutAnimation {
             InterpolatorType.LINEAR to LinearInterpolator(),
             InterpolatorType.EASE_IN to AccelerateInterpolator(),
             InterpolatorType.EASE_OUT to DecelerateInterpolator(),
-            InterpolatorType.EASE_IN_EASE_OUT to AccelerateDecelerateInterpolator())
+            InterpolatorType.EASE_IN_EASE_OUT to AccelerateDecelerateInterpolator(),
+        )
 
     @VisibleForTesting
     fun getInterpolator(type: InterpolatorType, params: ReadableMap): Interpolator {

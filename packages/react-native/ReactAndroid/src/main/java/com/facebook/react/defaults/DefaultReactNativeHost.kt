@@ -43,7 +43,8 @@ protected constructor(
         DefaultTurboModuleManagerDelegate.Builder()
       } else {
         error(
-            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
+        )
       }
 
   override fun getUIManagerProvider(): UIManagerProvider? =
@@ -60,10 +61,12 @@ protected constructor(
                           reactInstanceManager.createViewManager(viewManagerName)
 
                       override fun getViewManagerNames() = reactInstanceManager.viewManagerNames
-                    })
+                    }
+                )
               } else {
                 ViewManagerRegistry(
-                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
+                    reactInstanceManager.getOrCreateViewManagers(reactApplicationContext)
+                )
               }
 
           FabricUIManagerProviderImpl(componentFactory, viewManagerRegistry)
@@ -71,7 +74,8 @@ protected constructor(
         }
       } else {
         error(
-            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`.")
+            "Overriding isNewArchEnabled to false is not supported anymore since React Native 0.82. Please check your MainApplication.kt file, and remove the override for `isNewArchEnabled`."
+        )
       }
 
   override fun clear() {
@@ -98,7 +102,8 @@ protected constructor(
    */
   @Deprecated(
       "Setting isHermesEnabled inside `ReactNativeHost` is deprecated and this field will be ignored. If this field is set to true, you can safely remove it. If this field is set to false, please follow the setup on https://github.com/react-native-community/javascriptcore to continue using JSC",
-      ReplaceWith(""))
+      ReplaceWith(""),
+  )
   protected open val isHermesEnabled: Boolean
     get() = true
 
@@ -110,7 +115,7 @@ protected constructor(
   @UnstableReactNativeAPI
   internal fun toReactHost(
       context: Context,
-      jsRuntimeFactory: JSRuntimeFactory? = null
+      jsRuntimeFactory: JSRuntimeFactory? = null,
   ): ReactHost {
     val concreteJSRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
     return DefaultReactHost.getDefaultReactHost(

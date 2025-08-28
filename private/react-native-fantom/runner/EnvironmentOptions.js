@@ -10,13 +10,17 @@
 
 const VALID_ENVIRONMENT_VARIABLES = [
   'FANTOM_DEBUG_CPP',
+  'FANTOM_ENABLE_ASAN',
+  'FANTOM_ENABLE_TSAN',
   'FANTOM_ENABLE_CPP_DEBUGGING',
   'FANTOM_FORCE_CI_MODE',
   'FANTOM_FORCE_OSS_BUILD',
   'FANTOM_FORCE_TEST_MODE',
   'FANTOM_LOG_COMMANDS',
   'FANTOM_PRINT_OUTPUT',
+  'FANTOM_DEBUG_JS',
   'FANTOM_PROFILE_JS',
+  'FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION',
 ];
 
 /**
@@ -61,7 +65,23 @@ export const forceTestModeForBenchmarks: boolean = Boolean(
   process.env.FANTOM_FORCE_TEST_MODE,
 );
 
+export const debugJS: boolean = Boolean(process.env.FANTOM_DEBUG_JS);
+
 export const profileJS: boolean = Boolean(process.env.FANTOM_PROFILE_JS);
+
+/**
+ * Enables address sanitizer (ASAN) build mode for the C++ side.
+ */
+export const enableASAN: boolean = Boolean(process.env.FANTOM_ENABLE_ASAN);
+
+/**
+ * Enables thread sanitizer (TSAN) build mode for the C++ side.
+ */
+export const enableTSAN: boolean = Boolean(process.env.FANTOM_ENABLE_TSAN);
+
+export const enableJSMemoryInstrumentation: boolean = Boolean(
+  process.env.FANTOM_ENABLE_JS_MEMORY_INSTRUMENTATION,
+);
 
 /**
  * Throws an error if there is an environment variable defined with the FANTOM_
@@ -77,5 +97,16 @@ export function validateEnvironmentVariables(): void {
         `Unexpected Fantom environment variable: ${key}=${String(process.env[key])}. Accepted variables are: ${VALID_ENVIRONMENT_VARIABLES.join(', ')}`,
       );
     }
+  }
+
+  // Enabling memory instrumentation is only necessary when taking JS heap
+  // snapshots in optimized builds (where it is disabled by default).
+  // This isn't supported in CI or in OSS because that would require adding
+  // another dimension to the build matrix, duplicating the number of binaries
+  // we need to build before starting test execution.
+  if ((isCI || isOSS) && enableJSMemoryInstrumentation) {
+    throw new Error(
+      'Memory instrumentation is not supported in CI or OSS environments, as it requires a custom Hermes build that is not prebuilt in those environments.',
+    );
   }
 }

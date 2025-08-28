@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -53,7 +55,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
   }
@@ -100,7 +102,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
 
@@ -124,7 +126,7 @@ class AbstractLayoutAnimationTest {
               x: Int,
               y: Int,
               width: Int,
-              height: Int
+              height: Int,
           ): Animation = mock()
         }
 

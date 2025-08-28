@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 
 internal class MountItemDispatcher(
     private val mountingManager: MountingManager,
-    private val itemDispatchListener: ItemDispatchListener
+    private val itemDispatchListener: ItemDispatchListener,
 ) {
   private val viewCommandMountItems: Queue<DispatchCommandMountItem> = ConcurrentLinkedQueue()
   private val mountItems: Queue<MountItem> = ConcurrentLinkedQueue()
@@ -62,7 +62,8 @@ internal class MountItemDispatcher(
           TAG,
           "Not queueing PreAllocateMountItem: surfaceId stopped: [%d] - %s",
           mountItem.getSurfaceId(),
-          mountItem.toString())
+          mountItem.toString(),
+      )
     }
   }
 
@@ -158,7 +159,9 @@ internal class MountItemDispatcher(
     // errors/glitches.
     viewCommandMountItemsToDispatch?.let { commands ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews viewCommandMountItems")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews viewCommandMountItems",
+      )
 
       for (command in commands) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
@@ -181,12 +184,15 @@ internal class MountItemDispatcher(
             // common, mundane, and there's not much we can do about them currently.
             ReactSoftExceptionLogger.logSoftException(
                 TAG,
-                ReactNoCrashSoftException("Caught exception executing ViewCommand: $command", e))
+                ReactNoCrashSoftException("Caught exception executing ViewCommand: $command", e),
+            )
           }
         } catch (e: Throwable) {
           // Non-retryable exceptions are logged as soft exceptions in prod, but crash in Debug.
           ReactSoftExceptionLogger.logSoftException(
-              TAG, RuntimeException("Caught exception executing ViewCommand: $command", e))
+              TAG,
+              RuntimeException("Caught exception executing ViewCommand: $command", e),
+          )
         }
       }
 
@@ -197,7 +203,9 @@ internal class MountItemDispatcher(
     // first
     getAndResetPreMountItems()?.let { preMountItems ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews preMountItems")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews preMountItems",
+      )
       for (preMountItem in preMountItems) {
         if (ReactNativeFeatureFlags.enableFabricLogs()) {
           printMountItem(preMountItem, "dispatchMountItems: Executing preMountItem")
@@ -209,7 +217,9 @@ internal class MountItemDispatcher(
 
     mountItemsToDispatch?.let { items ->
       Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT, "MountItemDispatcher::mountViews mountItems to execute")
+          Systrace.TRACE_TAG_REACT,
+          "MountItemDispatcher::mountViews mountItems to execute",
+      )
       val batchedExecutionStartTime = SystemClock.uptimeMillis()
 
       for (mountItem in items) {
@@ -302,11 +312,14 @@ internal class MountItemDispatcher(
         FLog.e(
             TAG,
             "executeOrEnqueue: Item execution delayed, surface %s is not ready yet",
-            item.getSurfaceId())
+            item.getSurfaceId(),
+        )
       }
       val surfaceMountingManager: SurfaceMountingManager =
           mountingManager.getSurfaceManagerEnforced(
-              item.getSurfaceId(), "MountItemDispatcher::executeOrEnqueue")
+              item.getSurfaceId(),
+              "MountItemDispatcher::executeOrEnqueue",
+          )
       surfaceMountingManager.scheduleMountItemOnViewAttach(item)
     } else {
       item.execute(mountingManager)

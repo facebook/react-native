@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<49925440c97d02cffe248072a14370b6>>
+ * @generated SignedSource<<0cc76f6f1e3f5402f4876bdc4b438df8>>
  */
 
 /**
@@ -225,15 +225,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
   }
 
-  bool enableFixForParentTagDuringReparenting() override {
-    auto value = values_["enableFixForParentTagDuringReparenting"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFixForParentTagDuringReparenting();
-  }
-
   bool enableFontScaleChangesUpdatingLayout() override {
     auto value = values_["enableFontScaleChangesUpdatingLayout"];
     if (!value.isNull()) {
@@ -403,6 +394,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecycling();
+  }
+
+  bool enableViewRecyclingForScrollView() override {
+    auto value = values_["enableViewRecyclingForScrollView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForScrollView();
   }
 
   bool enableViewRecyclingForText() override {
@@ -655,6 +655,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useTurboModules();
+  }
+
+  double virtualViewHysteresisRatio() override {
+    auto value = values_["virtualViewHysteresisRatio"];
+    if (!value.isNull()) {
+      return value.getDouble();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::virtualViewHysteresisRatio();
   }
 
   double virtualViewPrerenderRatio() override {

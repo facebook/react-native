@@ -28,10 +28,7 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources("react/runtime/*.{cpp,h}", "react/runtime/*.h")
   s.header_dir             = "react/runtime"
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.module_name            = "JSITooling"
-    s.header_mappings_dir  = "./"
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "JSITooling")
 
   s.pod_target_xcconfig    = {
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -40,6 +37,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
+  add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')

@@ -63,7 +63,8 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   private inline fun <reified T> checkInstance(name: String, instance: Any?, type: Class<T>): T =
       instance as? T
           ?: throw UnexpectedNativeTypeException(
-              "Value for $name cannot be cast from ${instance?.javaClass?.simpleName ?: "NULL"} to ${type.simpleName}")
+              "Value for $name cannot be cast from ${instance?.javaClass?.simpleName ?: "NULL"} to ${type.simpleName}"
+          )
 
   private fun getValue(name: String): Any {
     if (hasKey(name)) {
@@ -132,7 +133,8 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
 
                 override fun setValue(newValue: Any): Any {
                   throw UnsupportedOperationException(
-                      "Can't set a value while iterating over a ReadableNativeMap")
+                      "Can't set a value while iterating over a ReadableNativeMap"
+                  )
                 }
               }
             }

@@ -43,7 +43,7 @@ function createAnimatedStyle(
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
           ? AnimatedObject.from(value)
-          : // $FlowFixMe[incompatible-call] - `value` is mixed.
+          : // $FlowFixMe[incompatible-type] - `value` is mixed.
             AnimatedTransform.from(value);
       } else if (value instanceof AnimatedNode) {
         node = value;
@@ -102,6 +102,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     const [nodeKeys, nodes, style] = createAnimatedStyle(
       flatStyle,
       allowlist,
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       Platform.OS !== 'web',
     );
     if (nodes.length === 0) {
@@ -123,7 +125,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     this._style = style;
 
     if ((Platform.OS as string) === 'web') {
-      // $FlowIgnore[cannot-write] - Intentional shadowing.
+      // $FlowFixMe[cannot-write] - Intentional shadowing.
       this.__getValueForStyle = resultStyle => [
         originalStyleForWeb,
         resultStyle,
@@ -249,8 +251,8 @@ export default class AnimatedStyle extends AnimatedWithChildren {
 
 // Supported versions of JSC do not implement the newer Object.hasOwn. Remove
 // this shim when they do.
-// $FlowIgnore[method-unbinding]
+// $FlowFixMe[method-unbinding]
 const _hasOwnProp = Object.prototype.hasOwnProperty;
 const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
-  // $FlowIgnore[method-unbinding]
+  // $FlowFixMe[method-unbinding]
   Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));

@@ -31,7 +31,7 @@ class BridgingTest : public ::testing::Test {
                 .withMicrotaskQueue(true)
                 .build())),
         rt(*runtime),
-        invoker(std::make_shared<TestCallInvoker>(runtime)) {}
+        invoker(std::make_shared<TestCallInvoker>(*runtime)) {}
 
   ~BridgingTest() override {
     LongLivedObjectCollection::get(rt).clear();

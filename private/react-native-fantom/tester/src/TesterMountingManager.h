@@ -7,12 +7,17 @@
 
 #pragma once
 
+#include "FantomImageLoader.h"
+
 #include <react/renderer/mounting/stubs/StubViewTree.h>
 #include <react/renderer/uimanager/IMountingManager.h>
 #include <string>
 #include <unordered_map>
 
+#include "render/RenderOutput.h"
+
 namespace facebook::react {
+class IImageLoader;
 
 class TesterMountingManager : public IMountingManager {
  public:
@@ -47,11 +52,23 @@ class TesterMountingManager : public IMountingManager {
     viewTrees_[surfaceId] = viewTree;
   }
 
+  std::shared_ptr<FantomImageLoader> imageLoader_;
+
+  std::shared_ptr<IImageLoader> getImageLoader() noexcept override {
+    return imageLoader_;
+  }
+
+  std::unique_ptr<RenderOutput>& renderer() {
+    return renderer_;
+  }
+
  private:
   std::function<void(SurfaceId)> onAfterMount_;
   std::unordered_map<SurfaceId, StubViewTree> viewTrees_;
   std::unordered_map<Tag, folly::dynamic> viewDirectManipulationProps_;
   std::unordered_map<Tag, folly::dynamic> viewFabricUpdateProps_;
+
+  std::unique_ptr<RenderOutput> renderer_;
 };
 
 }; // namespace facebook::react

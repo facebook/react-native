@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -22,6 +24,10 @@ import java.lang.ref.WeakReference
  * ScaleAnimation and TranslateAnimation.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, height: Int) :
     Animation(), LayoutHandlingAnimation {
   private val viewRef = WeakReference(view)
@@ -48,7 +54,8 @@ internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, 
           Math.round(newX),
           Math.round(newY),
           Math.round(newX + newWidth),
-          Math.round(newY + newHeight))
+          Math.round(newY + newHeight),
+      )
     }
   }
 
@@ -83,7 +90,9 @@ internal class PositionAndSizeAnimation(view: View, x: Int, y: Int, width: Int, 
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "PositionAndSizeAnimation", LegacyArchitectureLogLevel.ERROR)
+          "PositionAndSizeAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

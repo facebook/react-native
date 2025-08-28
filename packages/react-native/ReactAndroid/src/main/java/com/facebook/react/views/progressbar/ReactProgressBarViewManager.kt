@@ -33,6 +33,7 @@ import java.util.WeakHashMap
  * a [ProgressBar] changes, we have to drop the existing [ProgressBar] (if there is one) and create
  * a new one with the style given.
  */
+@Suppress("DEPRECATION")
 @ReactModule(name = ReactProgressBarViewManager.REACT_CLASS)
 internal class ReactProgressBarViewManager :
     BaseViewManager<ProgressBarContainerView, ProgressBarShadowNode>(),
@@ -104,7 +105,7 @@ internal class ReactProgressBarViewManager :
       widthMode: YogaMeasureMode,
       height: Float,
       heightMode: YogaMeasureMode,
-      attachmentsPositions: FloatArray?
+      attachmentsPositions: FloatArray?,
   ): Long {
     val style = getStyleFromString(props.getString(PROP_STYLE))
     val value =
@@ -116,7 +117,9 @@ internal class ReactProgressBarViewManager :
         }
 
     return YogaMeasureOutput.make(
-        toDIPFromPixel(value.first.toFloat()), toDIPFromPixel(value.second.toFloat()))
+        toDIPFromPixel(value.first.toFloat()),
+        toDIPFromPixel(value.second.toFloat()),
+    )
   }
 
   companion object {

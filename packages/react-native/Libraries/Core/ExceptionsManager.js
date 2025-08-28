@@ -169,7 +169,7 @@ function handleException(e: mixed, isFatal: boolean) {
       inExceptionHandler = true;
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       reportException(error, isFatal, reportToConsole);
     } finally {
       inExceptionHandler = false;
@@ -259,7 +259,7 @@ function reactConsoleErrorHandler(...args) {
     reportException(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       error,
       isFatal,
       reportToConsole,

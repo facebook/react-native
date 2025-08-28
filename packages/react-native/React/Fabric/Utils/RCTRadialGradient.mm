@@ -17,7 +17,7 @@ using namespace facebook::react;
 namespace {
 using RadiusVector = std::pair<CGFloat, CGFloat>;
 
-static RadiusVector RadiusToSide(
+RadiusVector RadiusToSide(
     CGFloat centerX,
     CGFloat centerY,
     CGFloat width,
@@ -53,7 +53,7 @@ static RadiusVector RadiusToSide(
   return {radiusX, radiusY};
 }
 
-static RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspectRatio)
+RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspectRatio)
 {
   if (aspectRatio == 0 || std::isinf(aspectRatio) || std::isnan(aspectRatio)) {
     return {0, 0};
@@ -67,7 +67,7 @@ static RadiusVector EllipseRadius(CGFloat offsetX, CGFloat offsetY, CGFloat aspe
   return {a, a / aspectRatio};
 }
 
-static RadiusVector RadiusToCorner(
+RadiusVector RadiusToCorner(
     CGFloat centerX,
     CGFloat centerY,
     CGFloat width,
@@ -75,7 +75,8 @@ static RadiusVector RadiusToCorner(
     bool isCircle,
     RadialGradientSize::SizeKeyword keyword)
 {
-  std::array<CGPoint, 4> corners = {{{0, 0}, {width, 0}, {width, height}, {0, height}}};
+  std::array<CGPoint, 4> corners = {
+      {{.x = 0, .y = 0}, {.x = width, .y = 0}, {.x = width, .y = height}, {.x = 0, .y = height}}};
 
   size_t cornerIndex = 0;
   CGFloat distance = hypot(centerX - corners[cornerIndex].x, centerY - corners[cornerIndex].y);
@@ -113,7 +114,7 @@ static RadiusVector RadiusToCorner(
       corners[cornerIndex].x - centerX, corners[cornerIndex].y - centerY, sideRadius.first / sideRadius.second);
 }
 
-static RadiusVector GetRadialGradientRadius(
+RadiusVector GetRadialGradientRadius(
     bool isCircle,
     const RadialGradientSize &size,
     CGFloat centerX,

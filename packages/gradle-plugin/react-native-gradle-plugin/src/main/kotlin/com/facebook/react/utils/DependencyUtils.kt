@@ -33,7 +33,8 @@ internal object DependencyUtils {
     val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
     if (exclusiveEnterpriseRepository != null) {
       project.logger.lifecycle(
-          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository")
+          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository"
+      )
     }
 
     project.rootProject.allprojects { eachProject ->
@@ -99,7 +100,7 @@ internal object DependencyUtils {
   fun configureDependencies(
       project: Project,
       versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP,
   ) {
     if (versionString.isBlank()) return
     project.rootProject.allprojects { eachProject ->
@@ -127,30 +128,38 @@ internal object DependencyUtils {
 
   internal fun getDependencySubstitutions(
       versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP,
   ): List<Triple<String, String, String>> {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
             "${groupString}:react-android:${versionString}",
-            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."))
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.",
+        )
+    )
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:hermes-engine",
             "${groupString}:hermes-android:${versionString}",
-            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."))
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.",
+        )
+    )
     if (groupString != DEFAULT_INTERNAL_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:react-android",
               "${groupString}:react-android:${versionString}",
-              "The react-android dependency was modified to use the correct Maven group."))
+              "The react-android dependency was modified to use the correct Maven group.",
+          )
+      )
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
               "${groupString}:hermes-android:${versionString}",
-              "The hermes-android dependency was modified to use the correct Maven group."))
+              "The hermes-android dependency was modified to use the correct Maven group.",
+          )
+      )
     }
     return dependencySubstitution
   }
@@ -175,7 +184,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromUrl(
       url: String,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = URI.create(url)
@@ -184,7 +193,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromURI(
       uri: URI,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = uri

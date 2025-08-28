@@ -64,7 +64,8 @@ class GeneratePackageListTaskTest {
       // @react-native/another-package
       import com.facebook.react.anotherPackage;
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -88,7 +89,8 @@ class GeneratePackageListTaskTest {
             new APackage(),
             new AnotherPackage()
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -146,8 +148,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = null),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -174,8 +180,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result.entries.size).isEqualTo(1)
     assertThat(result["a-dependency"]).isEqualTo(android)
   }
@@ -189,7 +199,8 @@ class GeneratePackageListTaskTest {
             packageImportPath = "import com.facebook.react.aPackage;",
             packageInstance = "new APackage()",
             buildTypes = emptyList(),
-            isPureCxxDependency = true)
+            isPureCxxDependency = true,
+        )
 
     val result =
         task.filterAndroidPackages(
@@ -202,8 +213,12 @@ class GeneratePackageListTaskTest {
                                 root = "./a/directory",
                                 name = "a-pure-cxx-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result)
         .isEqualTo(emptyMap<String, ModelAutolinkingDependenciesPlatformAndroidJson>())
   }
@@ -282,7 +297,8 @@ class GeneratePackageListTaskTest {
       }
     }
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -364,7 +380,8 @@ class GeneratePackageListTaskTest {
       }
     }
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   private val testDependencies =
@@ -388,5 +405,6 @@ class GeneratePackageListTaskTest {
                   libraryName = "anotherPackage",
                   componentDescriptors = emptyList(),
                   cmakeListsPath = "./another/directory/CMakeLists.txt",
-              ))
+              ),
+      )
 }

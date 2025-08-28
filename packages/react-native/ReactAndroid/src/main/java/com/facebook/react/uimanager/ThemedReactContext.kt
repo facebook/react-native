@@ -38,20 +38,20 @@ public class ThemedReactContext(
     public val reactApplicationContext: ReactApplicationContext,
     base: Context,
     public val moduleName: String?,
-    public val surfaceId: Int
+    public val surfaceId: Int,
 ) : ReactContext(base) {
 
   @Deprecated("This constructor is deprecated and you should not be using it.")
   public constructor(
       reactApplicationContext: ReactApplicationContext,
       base: Context,
-      moduleName: String? = null
+      moduleName: String? = null,
   ) : this(reactApplicationContext, base, moduleName, -1)
 
   @Deprecated("This constructor is deprecated and you should not be using it.")
   public constructor(
       reactApplicationContext: ReactApplicationContext,
-      base: Context
+      base: Context,
   ) : this(reactApplicationContext, base, null, -1)
 
   init {
@@ -86,14 +86,16 @@ public class ThemedReactContext(
       reactApplicationContext.getNativeModule(moduleName)
 
   @Deprecated(
-      "This method is deprecated and will be removed once the Legacy Architecture is removed")
+      "This method is deprecated and will be removed once the Legacy Architecture is removed"
+  )
   @LegacyArchitecture
   override fun getCatalystInstance(): CatalystInstance? =
       reactApplicationContext.getCatalystInstance()
 
   @Deprecated(
       "This API has been deprecated due to naming consideration, please use hasActiveReactInstance() instead",
-      ReplaceWith("hasActiveReactInstance()"))
+      ReplaceWith("hasActiveReactInstance()"),
+  )
   @LegacyArchitecture
   override fun hasActiveCatalystInstance(): Boolean =
       reactApplicationContext.hasActiveCatalystInstance()
@@ -103,7 +105,8 @@ public class ThemedReactContext(
 
   @Deprecated(
       "This API has been deprecated due to naming consideration, please use hasReactInstance() instead",
-      ReplaceWith("hasReactInstance()"))
+      ReplaceWith("hasReactInstance()"),
+  )
   @LegacyArchitecture
   override fun hasCatalystInstance(): Boolean = reactApplicationContext.hasCatalystInstance()
 
@@ -121,7 +124,8 @@ public class ThemedReactContext(
    *   with this [ThemedReactContext]
    */
   @Deprecated(
-      "Do not depend on this method. It will be removed in a future release of React Native.")
+      "Do not depend on this method. It will be removed in a future release of React Native."
+  )
   public fun getSurfaceID(): String? = moduleName
 
   override fun handleException(e: Exception?) {
@@ -129,7 +133,8 @@ public class ThemedReactContext(
   }
 
   @Deprecated(
-      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future.")
+      "You should not invoke isBridgeless and let your code depend on this check. This function will be removed in the future."
+  )
   override fun isBridgeless(): Boolean = reactApplicationContext.isBridgeless()
 
   override fun getJavaScriptContextHolder(): JavaScriptContextHolder? =
@@ -140,7 +145,8 @@ public class ThemedReactContext(
 
   @Deprecated(
       "This method is deprecated, please use UIManagerHelper.getUIManager() instead.",
-      ReplaceWith("UIManagerHelper.getUIManager()"))
+      ReplaceWith("UIManagerHelper.getUIManager()"),
+  )
   override fun getFabricUIManager(): UIManager? = reactApplicationContext.getFabricUIManager()
 
   override fun getSourceURL(): String? = reactApplicationContext.getSourceURL()

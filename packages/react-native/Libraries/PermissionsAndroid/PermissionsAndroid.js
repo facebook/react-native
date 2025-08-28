@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {DialogOptions} from '../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid';
+
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 import NativePermissionsAndroid from './NativePermissionsAndroid';
 import invariant from 'invariant';
@@ -249,24 +251,24 @@ class PermissionsAndroidImpl {
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
-          const options = {
+          /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
+           * This comment suppresses an error found when Flow v0.111 was
+           * deployed. To see the error, delete this comment and run Flow.
+           */
+          const options: DialogOptions = {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
-            /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
-             * This comment suppresses an error found when Flow v0.111 was
-             * deployed. To see the error, delete this comment and run Flow.
-             */
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               resolve(NativePermissionsAndroid.requestPermission(permission)),
           );
         });
       }
     }
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestPermission(permission);
   }
 
@@ -291,8 +293,7 @@ class PermissionsAndroidImpl {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-    // $FlowFixMe[incompatible-return]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }

@@ -116,7 +116,7 @@ describe('createCompositeKeyForProps', () => {
           transform: [null, {rotateY}, null],
         },
       });
-      // $FlowIgnore[prop-missing]
+      // $FlowFixMe[prop-missing]
       expect(compositeKey?.style?.transform?.[1]?.rotateY).toBe(rotateY);
     });
 
@@ -213,7 +213,7 @@ describe('createCompositeKeyForProps', () => {
         },
       });
       expect(compositeKey?.style?.opacity).toBe(opacity);
-      // $FlowIgnore[prop-missing]
+      // $FlowFixMe[prop-missing]
       expect(compositeKey?.style?.transform?.[1]?.rotateY).toBe(rotateY);
     });
 

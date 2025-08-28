@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -19,6 +21,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
  * was supplied for the layout animation of UPDATE type.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
   override fun isValid(): Boolean = durationMs > 0
@@ -28,7 +34,7 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
       x: Int,
       y: Int,
       width: Int,
-      height: Int
+      height: Int,
   ): Animation? {
     val animateLocation = view.x.toInt() != x || view.y.toInt() != y
     val animateSize = view.width != width || view.height != height
@@ -52,7 +58,9 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutUpdateAnimation", LegacyArchitectureLogLevel.ERROR)
+          "LayoutUpdateAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

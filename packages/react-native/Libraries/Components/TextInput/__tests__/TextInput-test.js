@@ -432,6 +432,7 @@ jest.unmock('../TextInput');
 
       expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityLabel="label"
         accessibilityState={
           Object {
             "busy": true,

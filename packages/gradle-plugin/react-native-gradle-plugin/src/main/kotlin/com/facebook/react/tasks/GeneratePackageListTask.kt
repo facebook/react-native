@@ -34,17 +34,19 @@ abstract class GeneratePackageListTask : DefaultTask() {
         JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
             ?: error(
                 """
-        RNGP - Autolinking: Could not parse autolinking config file:
-        ${autolinkInputFile.get().asFile.absolutePath}
-        
-        The file is either missing or not containing valid JSON so the build won't succeed. 
-      """
-                    .trimIndent())
+                  RNGP - Autolinking: Could not parse autolinking config file:
+                  ${autolinkInputFile.get().asFile.absolutePath}
+                  
+                  The file is either missing or not containing valid JSON so the build won't succeed. 
+                """
+                    .trimIndent()
+            )
 
     val packageName =
         model.project?.android?.packageName
             ?: error(
-                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
+                "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field."
+            )
 
     val androidPackages = filterAndroidPackages(model)
     val packageImports = composePackageImports(packageName, androidPackages)
@@ -61,7 +63,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   internal fun composePackageImports(
       packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
   ) =
       packages.entries.joinToString("\n") { (name, dep) ->
         val packageImportPath =
@@ -73,7 +75,7 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   internal fun composePackageInstance(
       packageName: String,
-      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>
+      packages: Map<String, ModelAutolinkingDependenciesPlatformAndroidJson>,
   ) =
       if (packages.isEmpty()) {
         ""
@@ -134,69 +136,69 @@ abstract class GeneratePackageListTask : DefaultTask() {
     // language=java
     val generatedFileContentsTemplate =
         """
-            package com.facebook.react;
-            
-            import android.app.Application;
-            import android.content.Context;
-            import android.content.res.Resources;
-            
-            import com.facebook.react.ReactPackage;
-            import com.facebook.react.shell.MainPackageConfig;
-            import com.facebook.react.shell.MainReactPackage;
-            import java.util.Arrays;
-            import java.util.ArrayList;
-            
-            {{ packageImports }}
-            
-            @SuppressWarnings("deprecation")
-            public class PackageList {
-              private Application application;
-              private ReactNativeHost reactNativeHost;
-              private MainPackageConfig mConfig;
-            
-              public PackageList(ReactNativeHost reactNativeHost) {
-                this(reactNativeHost, null);
-              }
-            
-              public PackageList(Application application) {
-                this(application, null);
-              }
-            
-              public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
-                this.reactNativeHost = reactNativeHost;
-                mConfig = config;
-              }
-            
-              public PackageList(Application application, MainPackageConfig config) {
-                this.reactNativeHost = null;
-                this.application = application;
-                mConfig = config;
-              }
-            
-              private ReactNativeHost getReactNativeHost() {
-                return this.reactNativeHost;
-              }
-            
-              private Resources getResources() {
-                return this.getApplication().getResources();
-              }
-            
-              private Application getApplication() {
-                if (this.reactNativeHost == null) return this.application;
-                return this.reactNativeHost.getApplication();
-              }
-            
-              private Context getApplicationContext() {
-                return this.getApplication().getApplicationContext();
-              }
-            
-              public ArrayList<ReactPackage> getPackages() {
-                return new ArrayList<>(Arrays.<ReactPackage>asList(
-                  new MainReactPackage(mConfig){{ packageClassInstances }}
-                ));
-              }
-            }
-            """
+        package com.facebook.react;
+        
+        import android.app.Application;
+        import android.content.Context;
+        import android.content.res.Resources;
+        
+        import com.facebook.react.ReactPackage;
+        import com.facebook.react.shell.MainPackageConfig;
+        import com.facebook.react.shell.MainReactPackage;
+        import java.util.Arrays;
+        import java.util.ArrayList;
+        
+        {{ packageImports }}
+        
+        @SuppressWarnings("deprecation")
+        public class PackageList {
+          private Application application;
+          private ReactNativeHost reactNativeHost;
+          private MainPackageConfig mConfig;
+        
+          public PackageList(ReactNativeHost reactNativeHost) {
+            this(reactNativeHost, null);
+          }
+        
+          public PackageList(Application application) {
+            this(application, null);
+          }
+        
+          public PackageList(ReactNativeHost reactNativeHost, MainPackageConfig config) {
+            this.reactNativeHost = reactNativeHost;
+            mConfig = config;
+          }
+        
+          public PackageList(Application application, MainPackageConfig config) {
+            this.reactNativeHost = null;
+            this.application = application;
+            mConfig = config;
+          }
+        
+          private ReactNativeHost getReactNativeHost() {
+            return this.reactNativeHost;
+          }
+        
+          private Resources getResources() {
+            return this.getApplication().getResources();
+          }
+        
+          private Application getApplication() {
+            if (this.reactNativeHost == null) return this.application;
+            return this.reactNativeHost.getApplication();
+          }
+        
+          private Context getApplicationContext() {
+            return this.getApplication().getApplicationContext();
+          }
+        
+          public ArrayList<ReactPackage> getPackages() {
+            return new ArrayList<>(Arrays.<ReactPackage>asList(
+              new MainReactPackage(mConfig){{ packageClassInstances }}
+            ));
+          }
+        }
+        """
             .trimIndent()
   }
 }

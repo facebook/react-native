@@ -40,10 +40,10 @@ struct Color {
     float ratio = 255;
     int32_t primitiveColor = getColor();
     return ColorComponents{
-        (float)((primitiveColor >> 16) & 0xff) / ratio,
-        (float)((primitiveColor >> 8) & 0xff) / ratio,
-        (float)((primitiveColor >> 0) & 0xff) / ratio,
-        (float)((primitiveColor >> 24) & 0xff) / ratio};
+        .red = (float)((primitiveColor >> 16) & 0xff) / ratio,
+        .green = (float)((primitiveColor >> 8) & 0xff) / ratio,
+        .blue = (float)((primitiveColor >> 0) & 0xff) / ratio,
+        .alpha = (float)((primitiveColor >> 24) & 0xff) / ratio};
   }
   bool operator==(const Color& other) const;
   bool operator!=(const Color& other) const;

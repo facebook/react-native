@@ -15,6 +15,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
  * Native.
  */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 public fun interface UIManagerProvider {
 
   /* Provides a [com.facebook.react.bridge.UIManager] for the context received as a parameter. */

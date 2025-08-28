@@ -43,6 +43,14 @@ class FantomRenderedOutput {
     return Array.isArray(this.#json) ? [...this.#json] : {...this.#json};
   }
 
+  toJSONObject(): FantomJsonObject {
+    if (Array.isArray(this.#json)) {
+      throw new Error('Cannot convert array to JSON object');
+    }
+
+    return {...this.#json};
+  }
+
   toJSX(): React.Node {
     return convertRawJsonToJSX(this.#json);
   }
@@ -128,6 +136,8 @@ function convertRawJsonToJSX(
   actualJSON: FantomJsonObject | $ReadOnlyArray<FantomJsonObject>,
 ): React.Node {
   let actualJSX;
+  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/5whu3i34. */
   if (actualJSON === null || typeof actualJSON === 'string') {
     actualJSX = actualJSON;
   } else if (Array.isArray(actualJSON)) {

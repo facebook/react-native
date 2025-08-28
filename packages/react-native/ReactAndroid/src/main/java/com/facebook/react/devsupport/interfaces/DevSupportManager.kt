@@ -97,6 +97,9 @@ public interface DevSupportManager : JSExceptionHandler {
   /** Attempt to open the JS debugger on the host machine. */
   public fun openDebugger()
 
+  /** Attempt to open the JS debugger on the host machine, providing a destination panel name. */
+  public fun openDebugger(panel: DebuggerFrontendPanelName)
+
   /** Shows the "paused in debugger" overlay with the given message. */
   public fun showPausedInDebuggerOverlay(
       message: String,

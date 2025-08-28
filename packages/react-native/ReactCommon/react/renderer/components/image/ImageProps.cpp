@@ -292,7 +292,7 @@ SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
     sourcesList = sources[0].getDebugProps("source");
   } else if (sources.size() > 1) {
     for (const auto& source : sources) {
-      std::string sourceName = "source@" + react::toString(source.scale) + "x";
+      std::string sourceName = "source-" + react::toString(source.scale) + "x";
       auto debugProps = source.getDebugProps(sourceName);
       sourcesList.insert(
           sourcesList.end(), debugProps.begin(), debugProps.end());
@@ -304,8 +304,32 @@ SharedDebugStringConvertibleList ImageProps::getDebugProps() const {
       SharedDebugStringConvertibleList{
           debugStringConvertibleItem(
               "blurRadius", blurRadius, imageProps.blurRadius),
+          debugStringConvertibleItem(
+              "resizeMode",
+              toString(resizeMode),
+              toString(imageProps.resizeMode)),
+          debugStringConvertibleItem(
+              "tintColor", toString(tintColor), toString(imageProps.tintColor)),
       };
 }
+
+inline std::string toString(ImageResizeMode resizeMode) {
+  switch (resizeMode) {
+    case ImageResizeMode::Cover:
+      return "cover";
+    case ImageResizeMode::Contain:
+      return "contain";
+    case ImageResizeMode::Stretch:
+      return "stretch";
+    case ImageResizeMode::Center:
+      return "center";
+    case ImageResizeMode::Repeat:
+      return "repeat";
+    case ImageResizeMode::None:
+      return "none";
+  }
+}
+
 #endif
 
 } // namespace facebook::react

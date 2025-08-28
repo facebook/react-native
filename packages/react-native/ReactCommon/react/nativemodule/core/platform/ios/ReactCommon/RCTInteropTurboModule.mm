@@ -75,7 +75,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
 NSString *getJSMethodName(const RCTMethodInfo *methodInfo)
 {
   std::string jsName = methodInfo->jsName;
-  if (jsName != "") {
+  if (!jsName.empty()) {
     return @(jsName.c_str());
   }
 
@@ -124,7 +124,7 @@ std::vector<ExportedMethod> parseExportedMethods(std::string moduleName, Class m
     NSMethodSignature *objCMethodSignature = [moduleClass instanceMethodSignatureForSelector:objCMethodSelector];
     if (objCMethodSignature == nullptr) {
       RCTLogWarn(
-          @"The objective-c `%s` method signature for the JS method `%@` can not be found in the ObjecitveC definition of the %s module.\nThe `%@` JS method will not be available.",
+          @"The Objective-C `%s` method signature for the JS method `%@` can not be found in the Objective-C definition of the %s module.\nThe `%@` JS method will not be available.",
           methodInfo->objcName,
           jsMethodName,
           moduleName.c_str(),
@@ -215,7 +215,8 @@ ObjCInteropTurboModule::ObjCInteropTurboModule(const ObjCTurboModule::InitParams
         : method.returnType == @encode(void)                      ? VoidKind
                                                                   : ObjectKind;
 
-    methodMap_[[method.methodName UTF8String]] = MethodMetadata{static_cast<size_t>(jsArgCount), nullptr};
+    methodMap_[[method.methodName UTF8String]] =
+        MethodMetadata{.argCount = static_cast<size_t>(jsArgCount), .invoker = nullptr};
 
     for (NSUInteger i = 0; i < numArgs; i += 1) {
       NSString *typeName = method.argumentTypes[i];

@@ -71,8 +71,12 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = null))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = null),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result).isEmpty()
   }
 
@@ -98,8 +102,12 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
                                 root = "./a/directory",
                                 name = "a-dependency",
                                 platforms =
-                                    ModelAutolinkingDependenciesPlatformJson(android = android))),
-                project = null))
+                                    ModelAutolinkingDependenciesPlatformJson(android = android),
+                            )
+                    ),
+                project = null,
+            )
+        )
     assertThat(result).containsExactly(android)
   }
 
@@ -126,7 +134,8 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
         
       )
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -156,7 +165,8 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       another_cxxModule
       )
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -200,7 +210,8 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       } // namespace react
       } // namespace facebook
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -256,7 +267,8 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
       } // namespace react
       } // namespace facebook
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 
   @Test
@@ -299,5 +311,6 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
               cxxModuleCMakeListsPath = "./another/directory/cxx/CMakeLists.txt",
               cxxModuleHeaderName = "AnotherCxxModule",
               cxxModuleCMakeListsModuleName = "another_cxxModule",
-          ))
+          ),
+      )
 }

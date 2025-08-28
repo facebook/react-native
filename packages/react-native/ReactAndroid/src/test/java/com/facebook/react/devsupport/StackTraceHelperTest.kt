@@ -122,7 +122,7 @@ class StackTraceHelperTest {
         filename: String,
         methodName: String,
         lineNumber: Int,
-        columnNumber: Int
+        columnNumber: Int,
     ) {
       checkNotNull(map)
       assertThat(map.getString("file")).isEqualTo(filename)

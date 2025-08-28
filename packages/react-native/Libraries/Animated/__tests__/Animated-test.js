@@ -21,11 +21,11 @@ function mockQueueMicrotask() {
   let queueMicrotask;
   beforeEach(() => {
     queueMicrotask = global.queueMicrotask;
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.queueMicrotask = process.nextTick;
   });
   afterEach(() => {
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.queueMicrotask = queueMicrotask;
   });
 }
@@ -193,7 +193,7 @@ describe('Animated', () => {
 
     it('renders animated and primitive style correctly', () => {
       const anim = new Animated.Value(0);
-      const staticProps = {
+      const staticProps: {[string]: mixed} = {
         style: [
           {transform: [{translateX: anim}]},
           {transform: [{translateX: 100}]},
@@ -251,7 +251,7 @@ describe('Animated', () => {
     it('warns if `useNativeDriver` is missing', () => {
       jest.spyOn(console, 'warn').mockImplementationOnce(() => {});
 
-      // $FlowExpectedError[prop-missing]
+      // $FlowExpectedError[incompatible-type]
       Animated.spring(new Animated.Value(0), {
         toValue: 0,
         velocity: 0,
@@ -665,7 +665,7 @@ describe('Animated', () => {
     const anim2 = {start: jest.fn(), stop: jest.fn()};
     const seq = Animated.sequence([anim1 as $FlowFixMe, anim2 as $FlowFixMe]);
 
-    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     const loop = Animated.loop(seq, {resetBeforeIteration: false});
 
     loop.start();
@@ -1191,7 +1191,7 @@ describe('Animated', () => {
       color = new Animated.Color('unknown');
       expect(color.__getValue()).toEqual('rgba(0, 0, 0, 1)');
 
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       color = new Animated.Color({key: 'value'});
       expect(color.__getValue()).toEqual('rgba(0, 0, 0, 1)');
     });

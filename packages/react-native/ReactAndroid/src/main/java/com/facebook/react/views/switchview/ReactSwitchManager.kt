@@ -25,6 +25,7 @@ import com.facebook.react.viewmanagers.AndroidSwitchManagerInterface
 import com.facebook.yoga.YogaMeasureMode
 import com.facebook.yoga.YogaMeasureOutput
 
+@Suppress("DEPRECATION")
 internal class ReactSwitchManager :
     BaseViewManager<ReactSwitch, ReactSwitchShadowNode>(),
     AndroidSwitchManagerInterface<ReactSwitch> {
@@ -113,14 +114,15 @@ internal class ReactSwitchManager :
       widthMode: YogaMeasureMode,
       height: Float,
       heightMode: YogaMeasureMode,
-      attachmentsPositions: FloatArray?
+      attachmentsPositions: FloatArray?,
   ): Long {
     val view = ReactSwitch(context).apply { showText = false }
     val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
     view.measure(measureSpec, measureSpec)
     return YogaMeasureOutput.make(
         PixelUtil.toDIPFromPixel(view.measuredWidth.toFloat()),
-        PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()))
+        PixelUtil.toDIPFromPixel(view.measuredHeight.toFloat()),
+    )
   }
 
   private fun setValueInternal(view: ReactSwitch, value: Boolean) {
@@ -139,7 +141,8 @@ internal class ReactSwitchManager :
           val reactTag = buttonView.id
           UIManagerHelper.getEventDispatcherForReactTag(reactContext, reactTag)
               ?.dispatchEvent(
-                  ReactSwitchEvent(UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked))
+                  ReactSwitchEvent(UIManagerHelper.getSurfaceId(reactContext), reactTag, isChecked)
+              )
         }
   }
 }

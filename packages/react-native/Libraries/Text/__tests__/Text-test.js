@@ -56,7 +56,7 @@ describe('Text compat with web', () => {
       testID: 'testID',
     };
 
-    // $FlowFixMe[prop-missing]
+    // $FlowFixMe[incompatible-type]
     const instance = await create(<Text {...props} />);
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`

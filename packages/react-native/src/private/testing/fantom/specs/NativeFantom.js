@@ -66,6 +66,13 @@ export type ScrollOptions = {
   zoomScale?: number,
 };
 
+export type ImageResponse = {
+  width: number,
+  height: number,
+  cacheStatus?: 'memory' | 'disk' | 'disk/memory',
+  errorMessage?: string,
+};
+
 interface Spec extends TurboModule {
   startSurface: (
     viewportWidth: number,
@@ -119,6 +126,9 @@ interface Spec extends TurboModule {
   forceHighResTimeStamp: (timeStamp: ?number) => void;
   startJSSamplingProfiler: () => void;
   stopJSSamplingProfilerAndSaveToFile: (filePath: string) => void;
+  setImageResponse(uri: string, imageResponse: ImageResponse): void;
+  clearImage(uri: string): void;
+  clearAllImages(): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(

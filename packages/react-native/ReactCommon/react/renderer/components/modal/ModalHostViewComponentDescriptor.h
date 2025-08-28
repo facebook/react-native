@@ -37,6 +37,16 @@ class ModalHostViewComponentDescriptor final
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
+
+#ifdef ANDROID
+  State::Shared createInitialState(
+      const Props::Shared& props,
+      const ShadowNodeFamily::Shared& family) const override;
+#endif // ANDROID
+
+ private:
+  constexpr static auto UIManagerJavaDescriptor =
+      "com/facebook/react/fabric/FabricUIManager";
 };
 
 } // namespace facebook::react

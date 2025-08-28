@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.common.SurfaceDelegate
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
+import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager.PackagerLocationCustomizer
@@ -40,13 +41,13 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun addCustomDevOption(
       optionName: String,
-      optionHandler: DevOptionHandler
+      optionHandler: DevOptionHandler,
   ): Unit = Unit
 
   public override fun showNewJSError(
       message: String?,
       details: ReadableArray?,
-      errorCookie: Int
+      errorCookie: Int,
   ): Unit = Unit
 
   public override fun createRootView(appKey: String): View? = null
@@ -106,7 +107,7 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun downloadBundleResourceFromUrlSync(
       resourceURL: String,
-      outputFile: File
+      outputFile: File,
   ): File? = null
 
   public override val lastErrorTitle: String?
@@ -144,9 +145,11 @@ public open class ReleaseDevSupportManager : DevSupportManager {
 
   public override fun openDebugger(): Unit = Unit
 
+  public override fun openDebugger(panel: DebuggerFrontendPanelName): Unit = Unit
+
   public override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   ): Unit = Unit
 
   public override fun hidePausedInDebuggerOverlay(): Unit = Unit

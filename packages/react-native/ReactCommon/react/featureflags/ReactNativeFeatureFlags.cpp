@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<afac3c9a1b09e19b98699c67e4e9b86e>>
+ * @generated SignedSource<<10dd7992af528e8562fa8444ea242e52>>
  */
 
 /**
@@ -106,10 +106,6 @@ bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
 }
 
-bool ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting() {
-  return getAccessor().enableFixForParentTagDuringReparenting();
-}
-
 bool ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout() {
   return getAccessor().enableFontScaleChangesUpdatingLayout();
 }
@@ -184,6 +180,10 @@ bool ReactNativeFeatureFlags::enableViewCulling() {
 
 bool ReactNativeFeatureFlags::enableViewRecycling() {
   return getAccessor().enableViewRecycling();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecyclingForScrollView() {
+  return getAccessor().enableViewRecyclingForScrollView();
 }
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
@@ -296,6 +296,10 @@ bool ReactNativeFeatureFlags::useTurboModuleInterop() {
 
 bool ReactNativeFeatureFlags::useTurboModules() {
   return getAccessor().useTurboModules();
+}
+
+double ReactNativeFeatureFlags::virtualViewHysteresisRatio() {
+  return getAccessor().virtualViewHysteresisRatio();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

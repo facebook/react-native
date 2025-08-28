@@ -179,7 +179,7 @@ export default class Device {
       this.#deviceEventReporter?.logProfilingTargetRegistered();
     }
 
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     this.#deviceSocket.on('message', (message: string) => {
       try {
         const parsedMessage = JSON.parse(message);
@@ -346,7 +346,7 @@ export default class Device {
       frontendUserAgent: userAgent,
     });
 
-    const debuggerInfo = {
+    const debuggerInfo: ?DebuggerConnection & DebuggerConnection = {
       socket,
       prependedFilePrefix: false,
       pageId,
@@ -408,7 +408,7 @@ export default class Device {
 
     this.#sendConnectEventToDevice(this.#mapToDevicePageId(pageId));
 
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     socket.on('message', (message: string) => {
       this.#cdpDebugLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);
@@ -809,6 +809,8 @@ export default class Device {
     }
 
     if (
+      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       payload.method === 'Runtime.executionContextCreated' &&
       this.#isLegacyPageReloading
     ) {
@@ -968,7 +970,10 @@ export default class Device {
     socket: WS,
   ): void {
     const sendSuccessResponse = (scriptSource: string) => {
-      const result = {scriptSource};
+      const result: {
+        scriptSource: string,
+        bytecode?: string,
+      } = {scriptSource};
       const response: CDPResponse<'Debugger.getScriptSource'> = {
         id: req.id,
         result,

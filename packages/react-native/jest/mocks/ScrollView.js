@@ -44,7 +44,7 @@ const BaseComponent = mockComponent(
   true, // isESModule
 ) as TScrollView;
 
-// $FlowFixMe[incompatible-extend]
+// $FlowFixMe[incompatible-type]
 // $FlowFixMe[invalid-exported-annotation]
 export default class ScrollViewMock extends BaseComponent {
   render(): React.Node {

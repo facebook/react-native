@@ -108,7 +108,7 @@ describe('inspector proxy device message middleware', () => {
       await until(async () => {
         pageList = (await fetchJson(
           `${serverBaseUrl}/json`,
-          // $FlowIgnore[unclear-type]
+          // $FlowFixMe[unclear-type]
         ): any);
         expect(pageList.length).toBeGreaterThan(0);
       });

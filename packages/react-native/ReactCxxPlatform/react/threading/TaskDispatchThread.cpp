@@ -13,10 +13,9 @@
 #include <future>
 #include <utility>
 
-#include <glog/logging.h>
-
 #ifdef ANDROID
 #include <fbjni/fbjni.h>
+#include <glog/logging.h>
 #include <sys/syscall.h>
 #endif
 

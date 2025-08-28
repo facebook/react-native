@@ -63,7 +63,6 @@ import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil.getUIManagerType
 import com.facebook.react.uimanager.events.EventDispatcher
@@ -218,14 +217,20 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
     // Turn off hardware acceleration for Oreo (T40484798)
     // see https://issuetracker.google.com/issues/67102093
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1
+    ) {
       setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
     val editTextAccessibilityDelegate: ReactAccessibilityDelegate =
         object :
-            ReactAccessibilityDelegate(this, this.isFocusable, this.importantForAccessibility) {
+            ReactAccessibilityDelegate(
+                this@ReactEditText,
+                this@ReactEditText.isFocusable,
+                this@ReactEditText.importantForAccessibility,
+            ) {
           override fun performAccessibilityAction(host: View, action: Int, args: Bundle?): Boolean {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
               val length = checkNotNull(text).length
@@ -303,10 +308,12 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
 
       MotionEvent.ACTION_MOVE ->
           if (detectScrollMovement) {
-            if (!canScrollVertically(-1) &&
-                !canScrollVertically(1) &&
-                !canScrollHorizontally(-1) &&
-                !canScrollHorizontally(1)) {
+            if (
+                !canScrollVertically(-1) &&
+                    !canScrollVertically(1) &&
+                    !canScrollHorizontally(-1) &&
+                    !canScrollHorizontally(1)
+            ) {
               // We cannot scroll, let parent views take care of these touches.
               this.parent.requestDisallowInterceptTouchEvent(false)
             }
@@ -342,7 +349,11 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     if (inputConnection != null && onKeyPress) {
       inputConnection =
           ReactEditTextInputConnectionWrapper(
-              inputConnection, reactContext, this, checkNotNull(eventDispatcher))
+              inputConnection,
+              reactContext,
+              this,
+              checkNotNull(eventDispatcher),
+          )
     }
 
     if (isMultiline && (shouldBlurOnReturn() || shouldSubmitOnReturn())) {
@@ -358,7 +369,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
    */
   override fun onTextContextMenuItem(id: Int): Boolean =
       super.onTextContextMenuItem(
-          if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id)
+          if (id == android.R.id.paste) android.R.id.pasteAsPlainText else id
+      )
 
   internal fun clearFocusAndMaybeRefocus() {
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P || !isInTouchMode) {
@@ -600,10 +612,12 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     // Match behavior of CustomStyleSpan and enable SUBPIXEL_TEXT_FLAG when setting anything
     // nonstandard
     paintFlags =
-        if (fontStyle != ReactConstants.UNSET ||
-            fontWeight != ReactConstants.UNSET ||
-            fontFamily != null ||
-            fontFeatureSettings != null) {
+        if (
+            fontStyle != ReactConstants.UNSET ||
+                fontWeight != ReactConstants.UNSET ||
+                fontFamily != null ||
+                fontFeatureSettings != null
+        ) {
           paintFlags or Paint.SUBPIXEL_TEXT_FLAG
         } else {
           paintFlags and (Paint.SUBPIXEL_TEXT_FLAG.inv())
@@ -643,7 +657,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     if (DEBUG_MODE) {
       FLog.e(
           TAG,
-          ("maybeSetText[" + id + "]: current text: " + text + " update: " + reactTextUpdate.text))
+          ("maybeSetText[" + id + "]: current text: " + text + " update: " + reactTextUpdate.text),
+      )
     }
 
     // The current text gets replaced with the text received from JS. However, the spans on the
@@ -760,7 +775,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   private fun <T> stripSpansOfKind(
       sb: SpannableStringBuilder,
       clazz: Class<T>,
-      shouldStrip: Predicate<T>
+      shouldStrip: Predicate<T>,
   ) {
     val spans = sb.getSpans(0, sb.length, clazz)
 
@@ -783,15 +798,27 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     spanFlags = spanFlags or Spannable.SPAN_PRIORITY
 
     workingText.setSpan(
-        ReactAbsoluteSizeSpan(textAttributes.effectiveFontSize), 0, workingText.length, spanFlags)
+        ReactAbsoluteSizeSpan(textAttributes.effectiveFontSize),
+        0,
+        workingText.length,
+        spanFlags,
+    )
 
     workingText.setSpan(
-        ReactForegroundColorSpan(currentTextColor), 0, workingText.length, spanFlags)
+        ReactForegroundColorSpan(currentTextColor),
+        0,
+        workingText.length,
+        spanFlags,
+    )
 
     val backgroundColor = getBackgroundColor(this)
     if (backgroundColor != null && backgroundColor != Color.TRANSPARENT) {
       workingText.setSpan(
-          ReactBackgroundColorSpan(backgroundColor), 0, workingText.length, spanFlags)
+          ReactBackgroundColorSpan(backgroundColor),
+          0,
+          workingText.length,
+          spanFlags,
+      )
     }
 
     if ((paintFlags and Paint.STRIKE_THRU_TEXT_FLAG) != 0) {
@@ -805,18 +832,25 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
     val effectiveLetterSpacing = textAttributes.effectiveLetterSpacing
     if (!effectiveLetterSpacing.isNaN()) {
       workingText.setSpan(
-          CustomLetterSpacingSpan(effectiveLetterSpacing), 0, workingText.length, spanFlags)
+          CustomLetterSpacingSpan(effectiveLetterSpacing),
+          0,
+          workingText.length,
+          spanFlags,
+      )
     }
 
-    if (fontStyle != ReactConstants.UNSET ||
-        fontWeight != ReactConstants.UNSET ||
-        fontFamily != null ||
-        fontFeatureSettings != null) {
+    if (
+        fontStyle != ReactConstants.UNSET ||
+            fontWeight != ReactConstants.UNSET ||
+            fontFamily != null ||
+            fontFeatureSettings != null
+    ) {
       workingText.setSpan(
           CustomStyleSpan(fontStyle, fontWeight, fontFeatureSettings, fontFamily, context.assets),
           0,
           workingText.length,
-          spanFlags)
+          spanFlags,
+      )
     }
 
     val lineHeight = textAttributes.effectiveLineHeight
@@ -850,7 +884,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
       @Suppress("DEPRECATION")
       if (stateWrapper == null && !reactContext.isBridgeless) {
         val localData = ReactTextInputLocalData(this)
-        val uiManager = reactContext.getNativeModule(UIManagerModule::class.java)
+        val uiManager =
+            reactContext.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
         uiManager?.setViewLocalData(id, localData)
       }
     }
@@ -928,8 +963,10 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
   public override fun onConfigurationChanged(newConfig: Configuration) {
     super.onConfigurationChanged(newConfig)
 
-    if (ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
-        ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+            ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()
+    ) {
       applyTextAttributes()
     }
   }
@@ -1137,7 +1174,8 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         ReactTextPaintHolderSpan(TextPaint(paint)),
         0,
         sb.length,
-        Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE,
+    )
     TextLayoutManager.setCachedSpannableForTag(id, sb)
   }
 
@@ -1255,7 +1293,7 @@ public open class ReactEditText public constructor(context: Context) : AppCompat
         oldText: Editable,
         newText: SpannableStringBuilder,
         start: Int,
-        end: Int
+        end: Int,
     ): Boolean {
       if (start > newText.length || end > newText.length) {
         return false

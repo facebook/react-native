@@ -6,7 +6,8 @@
  */
 
 @file:Suppress(
-    "DEPRECATION") // Suppressing as we want to test specifically with RCTEventEmitter here
+    "DEPRECATION"
+) // Suppressing as we want to test specifically with RCTEventEmitter here
 
 package com.facebook.react.bridge.interop
 
@@ -71,6 +72,7 @@ class InteropModuleRegistryTest {
           override fun useFabricInterop(): Boolean = useFabricInterop
 
           override fun enableFabricRenderer(): Boolean = enableFabricRenderer
-        })
+        }
+    )
   }
 }

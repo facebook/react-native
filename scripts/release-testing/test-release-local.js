@@ -345,10 +345,10 @@ async function main() {
   const onReleaseBranch = branchName.endsWith('-stable');
 
   let ghaArtifacts = await setupGHAArtifacts(
-    // $FlowIgnoreError[prop-missing]
+    // $FlowFixMe[prop-missing]
     argv.ciToken,
     branchName,
-    // $FlowIgnoreError[prop-missing]
+    // $FlowFixMe[prop-missing]
     argv.useLastSuccessfulPipeline,
   );
 

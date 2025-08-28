@@ -64,6 +64,10 @@ std::shared_ptr<const ShadowNode> getParentNode(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);
 
+std::shared_ptr<const ShadowNode> getElementById(
+    const std::shared_ptr<const ShadowNode>& currentRevision,
+    const std::string& id);
+
 std::vector<std::shared_ptr<const ShadowNode>> getChildNodes(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode);

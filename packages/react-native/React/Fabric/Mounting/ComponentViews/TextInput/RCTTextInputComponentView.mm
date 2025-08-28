@@ -22,6 +22,7 @@
 #import "RCTTextInputNativeCommands.h"
 #import "RCTTextInputUtils.h"
 
+#import <limits>
 #import "RCTFabricComponentsPlugins.h"
 
 /** Native iOS text field bottom keyboard offset amount */
@@ -450,7 +451,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     }
   }
 
-  if (props.maxLength) {
+  if (props.maxLength < std::numeric_limits<int>::max()) {
     NSInteger allowedLength = props.maxLength - _backedTextInputView.attributedText.string.length + range.length;
 
     if (allowedLength > 0 && text.length > allowedLength) {
@@ -733,7 +734,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
                                                   toPosition:selectedTextRange.start];
   NSInteger end = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                 toPosition:selectedTextRange.end];
-  return AttributedString::Range{(int)start, (int)(end - start)};
+  return AttributedString::Range{.location = (int)start, .length = (int)(end - start)};
 }
 
 - (void)_restoreTextSelection

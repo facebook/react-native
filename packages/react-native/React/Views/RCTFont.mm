@@ -131,7 +131,7 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     RCTFontWeight weight;
   };
 
-  CacheKey key{size, weight};
+  CacheKey key{.size = size, .weight = weight};
   NSValue *cacheKey = [[NSValue alloc] initWithBytes:&key objCType:@encode(CacheKey)];
   UIFont *font = [fontCache objectForKey:cacheKey];
 

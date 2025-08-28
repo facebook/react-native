@@ -146,6 +146,12 @@ using namespace facebook::react;
 #if RN_DISABLE_OSS_PLUGIN_HEADER
   return RCTTurboModulePluginClassProvider(name);
 #else
+  if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
+    Class moduleClass = [_delegate getModuleClassFromName:name];
+    if (moduleClass != nil) {
+      return moduleClass;
+    }
+  }
   return RCTCoreModulesClassProvider(name);
 #endif
 }
@@ -176,7 +182,12 @@ using namespace facebook::react;
                 format:@"Delegate must provide a valid dependencyProvider"];
   }
 #endif
-
+  if ([_delegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
+    id<RCTTurboModule> moduleInstance = [_delegate getModuleInstanceFromClass:moduleClass];
+    if (moduleInstance != nil) {
+      return moduleInstance;
+    }
+  }
   return RCTAppSetupDefaultModuleFromClass(moduleClass, self.delegate.dependencyProvider);
 }
 

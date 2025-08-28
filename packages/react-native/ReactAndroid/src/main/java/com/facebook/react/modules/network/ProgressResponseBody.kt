@@ -21,7 +21,7 @@ import okio.Source
 public class ProgressResponseBody
 public constructor(
     private val responseBody: ResponseBody,
-    private val progressListener: ProgressListener
+    private val progressListener: ProgressListener,
 ) : ResponseBody() {
   private lateinit var bufferedSource: BufferedSource
   private var totalBytesRead = 0L
@@ -49,7 +49,10 @@ public constructor(
             totalBytesRead += bytesRead
           }
           progressListener.onProgress(
-              totalBytesRead, responseBody.contentLength(), bytesRead == -1L)
+              totalBytesRead,
+              responseBody.contentLength(),
+              bytesRead == -1L,
+          )
         }
       }
     }

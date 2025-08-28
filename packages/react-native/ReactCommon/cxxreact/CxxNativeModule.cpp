@@ -200,7 +200,7 @@ void CxxNativeModule::invoke(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(params, first, second);
-    } catch (const facebook::xplat::JsArgumentException& ex) {
+    } catch (const facebook::xplat::JsArgumentException&) {
       throw;
     } catch (std::exception& e) {
       LOG(ERROR) << "std::exception. Method call " << method.name.c_str()

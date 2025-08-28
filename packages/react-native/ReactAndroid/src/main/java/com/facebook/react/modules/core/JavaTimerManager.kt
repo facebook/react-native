@@ -38,13 +38,13 @@ public open class JavaTimerManager(
     private val reactApplicationContext: ReactApplicationContext,
     private val javaScriptTimerExecutor: JavaScriptTimerExecutor,
     private val reactChoreographer: ReactChoreographer,
-    private val devSupportManager: DevSupportManager
+    private val devSupportManager: DevSupportManager,
 ) : LifecycleEventListener, HeadlessJsTaskEventListener {
   private class Timer(
       val timerId: Int,
       var targetTime: Long,
       val interval: Int,
-      val repeat: Boolean
+      val repeat: Boolean,
   )
 
   private val timerGuard = Any()
@@ -127,7 +127,9 @@ public open class JavaTimerManager(
   private fun setChoreographerCallback() {
     if (!frameCallbackPosted) {
       reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS, timerFrameCallback)
+          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          timerFrameCallback,
+      )
       frameCallbackPosted = true
     }
   }
@@ -136,7 +138,9 @@ public open class JavaTimerManager(
     val headlessJsTaskContext = HeadlessJsTaskContext.getInstance(reactApplicationContext)
     if (frameCallbackPosted && isPaused.get() && !headlessJsTaskContext.hasActiveTasks()) {
       reactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.TIMERS_EVENTS, timerFrameCallback)
+          ReactChoreographer.CallbackType.TIMERS_EVENTS,
+          timerFrameCallback,
+      )
       frameCallbackPosted = false
     }
   }
@@ -144,7 +148,9 @@ public open class JavaTimerManager(
   private fun setChoreographerIdleCallback() {
     if (!frameIdleCallbackPosted) {
       reactChoreographer.postFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT, idleFrameCallback)
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          idleFrameCallback,
+      )
       frameIdleCallbackPosted = true
     }
   }
@@ -152,7 +158,9 @@ public open class JavaTimerManager(
   private fun clearChoreographerIdleCallback() {
     if (frameIdleCallbackPosted) {
       reactChoreographer.removeFrameCallback(
-          ReactChoreographer.CallbackType.IDLE_EVENT, idleFrameCallback)
+          ReactChoreographer.CallbackType.IDLE_EVENT,
+          idleFrameCallback,
+      )
       frameIdleCallbackPosted = false
     }
   }
@@ -188,7 +196,7 @@ public open class JavaTimerManager(
       timerId: Int,
       duration: Int,
       jsSchedulingTime: Double,
-      repeat: Boolean
+      repeat: Boolean,
   ) {
     val deviceTime = currentTimeMillis()
     val remoteTime = jsSchedulingTime.toLong()
@@ -201,7 +209,8 @@ public open class JavaTimerManager(
       if (driftTime > 60000) {
         javaScriptTimerExecutor.emitTimeDriftWarning(
             "Debugger and device times have drifted by more than 60s. Please correct this by " +
-                "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine.")
+                "running adb shell \"date `date +%m%d%H%M%Y.%S`\" on your debugger machine."
+        )
       }
     }
 

@@ -117,7 +117,7 @@ public class Task<TResult> : TaskInterface<TResult> {
   @JvmOverloads
   public fun <TContinuationResult> continueWith(
       continuation: Continuation<TResult, TContinuationResult>,
-      executor: Executor = IMMEDIATE_EXECUTOR
+      executor: Executor = IMMEDIATE_EXECUTOR,
   ): Task<TContinuationResult> {
     val completed: Boolean
     val tcs = TaskCompletionSource<TContinuationResult>()
@@ -125,7 +125,8 @@ public class Task<TResult> : TaskInterface<TResult> {
       completed = this.isCompleted()
       if (!completed) {
         continuations.add(
-            Continuation { task -> completeImmediately(tcs, continuation, task, executor) })
+            Continuation { task -> completeImmediately(tcs, continuation, task, executor) }
+        )
       }
     }
     if (completed) {
@@ -149,7 +150,8 @@ public class Task<TResult> : TaskInterface<TResult> {
       completed = this.isCompleted()
       if (!completed) {
         continuations.add(
-            Continuation { task -> completeAfterTask(tcs, continuation, task, executor) })
+            Continuation { task -> completeAfterTask(tcs, continuation, task, executor) }
+        )
       }
     }
     if (completed) {
@@ -174,7 +176,8 @@ public class Task<TResult> : TaskInterface<TResult> {
               else -> task.continueWith(continuation)
             }
           },
-          executor)
+          executor,
+      )
 
   /**
    * Runs a continuation when a task completes successfully, forwarding along [java.lang.Exception]s
@@ -192,7 +195,8 @@ public class Task<TResult> : TaskInterface<TResult> {
               else -> task.continueWithTask(continuation)
             }
           },
-          executor)
+          executor,
+      )
 
   private fun runContinuations() =
       synchronized(lock) {
@@ -299,7 +303,7 @@ public class Task<TResult> : TaskInterface<TResult> {
     @JvmStatic
     public fun <TResult> call(
         callable: Callable<Task<TResult>>,
-        executor: Executor
+        executor: Executor,
     ): Task<TResult> {
       val tcs = TaskCompletionSource<TResult>()
       try {
@@ -348,7 +352,7 @@ public class Task<TResult> : TaskInterface<TResult> {
         tcs: TaskCompletionSource<TContinuationResult>,
         continuation: Continuation<TResult, TContinuationResult>,
         task: Task<TResult>,
-        executor: Executor
+        executor: Executor,
     ) {
       try {
         executor.execute {
@@ -382,7 +386,7 @@ public class Task<TResult> : TaskInterface<TResult> {
         tcs: TaskCompletionSource<TContinuationResult>,
         continuation: Continuation<TResult, Task<TContinuationResult>>,
         task: Task<TResult>,
-        executor: Executor
+        executor: Executor,
     ) {
       try {
         executor.execute {

@@ -32,5 +32,6 @@ internal object ReactDebugOverlayTags {
       DebugOverlayTag(
           "UI Manager",
           "UI Manager View Operations (requires restart\nwarning: this is spammy)",
-          Color.CYAN)
+          Color.CYAN,
+      )
 }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9486ceb9a821413d42e5291316a6674b>>
+ * @generated SignedSource<<da5de754ad23d097c07669df8b64f03b>>
  */
 
 /**
@@ -63,8 +63,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableFixForParentTagDuringReparenting(): Boolean
-
   @DoNotStrip public fun enableFontScaleChangesUpdatingLayout(): Boolean
 
   @DoNotStrip public fun enableIOSTextBaselineOffsetPerLine(): Boolean
@@ -102,6 +100,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewCulling(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForScrollView(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
@@ -158,6 +158,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip public fun useTurboModules(): Boolean
+
+  @DoNotStrip public fun virtualViewHysteresisRatio(): Double
 
   @DoNotStrip public fun virtualViewPrerenderRatio(): Double
 }

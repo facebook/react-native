@@ -65,7 +65,7 @@ const Item = ({item, section, separators}) => {
 };
 
 type Props = $ReadOnly<{
-  // $FlowIgnore[unclear-type]
+  // $FlowFixMe[unclear-type]
   exampleProps: Partial<React.ElementConfig<typeof SectionList<any>>>,
   onTest?: ?() => void,
   testLabel?: ?string,
@@ -74,14 +74,14 @@ type Props = $ReadOnly<{
 }>;
 
 const SectionListBaseExample: component(
-  // $FlowIgnore[unclear-type]
+  // $FlowFixMe[unclear-type]
   ref: React.RefSetter<SectionList<any>>,
   ...props: Props
 ) = ({
   ref,
   ...props
 }: {
-  // $FlowIgnore[unclear-type]
+  // $FlowFixMe[unclear-type]
   ref: React.RefSetter<SectionList<any>>,
   ...Props,
 }): React.Node => {

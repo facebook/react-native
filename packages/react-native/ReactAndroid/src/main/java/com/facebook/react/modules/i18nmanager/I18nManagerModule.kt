@@ -22,7 +22,8 @@ internal class I18nManagerModule(context: ReactApplicationContext?) :
     return mapOf(
         "isRTL" to I18nUtil.instance.isRTL(context),
         "doLeftAndRightSwapInRTL" to I18nUtil.instance.doLeftAndRightSwapInRTL(context),
-        "localeIdentifier" to locale.toString())
+        "localeIdentifier" to locale.toString(),
+    )
   }
 
   override fun allowRTL(value: Boolean) {

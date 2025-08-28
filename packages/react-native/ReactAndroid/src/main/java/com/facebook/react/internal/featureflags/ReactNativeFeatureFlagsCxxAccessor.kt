@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc30f59142a3b995e4e904215e2899b1>>
+ * @generated SignedSource<<f8756708c95b8a68fe0a87916ed02c8b>>
  */
 
 /**
@@ -40,7 +40,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
-  private var enableFixForParentTagDuringReparentingCache: Boolean? = null
   private var enableFontScaleChangesUpdatingLayoutCache: Boolean? = null
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -60,6 +59,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
+  private var enableViewRecyclingForScrollViewCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
@@ -88,6 +88,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useShadowNodeStateOnCloneCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
+  private var virtualViewHysteresisRatioCache: Double? = null
   private var virtualViewPrerenderRatioCache: Double? = null
 
   override fun commonTestFlag(): Boolean {
@@ -270,15 +271,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableFixForParentTagDuringReparenting(): Boolean {
-    var cached = enableFixForParentTagDuringReparentingCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableFixForParentTagDuringReparenting()
-      enableFixForParentTagDuringReparentingCache = cached
-    }
-    return cached
-  }
-
   override fun enableFontScaleChangesUpdatingLayout(): Boolean {
     var cached = enableFontScaleChangesUpdatingLayoutCache
     if (cached == null) {
@@ -446,6 +438,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecycling()
       enableViewRecyclingCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForScrollView(): Boolean {
+    var cached = enableViewRecyclingForScrollViewCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForScrollView()
+      enableViewRecyclingForScrollViewCache = cached
     }
     return cached
   }
@@ -698,6 +699,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useTurboModules()
       useTurboModulesCache = cached
+    }
+    return cached
+  }
+
+  override fun virtualViewHysteresisRatio(): Double {
+    var cached = virtualViewHysteresisRatioCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.virtualViewHysteresisRatio()
+      virtualViewHysteresisRatioCache = cached
     }
     return cached
   }

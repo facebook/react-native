@@ -23,7 +23,7 @@ private constructor(
     private val width: Int = 0,
     private val height: Int = 0,
     private val loaded: Int = 0,
-    private val total: Int = 0
+    private val total: Int = 0,
 ) : Event<ImageLoadEvent>(surfaceId, viewId) {
   @IntDef(ON_ERROR, ON_LOAD, ON_LOAD_END, ON_LOAD_START, ON_PROGRESS)
   @Retention(AnnotationRetention.SOURCE)
@@ -64,43 +64,48 @@ private constructor(
 
     @Deprecated(
         "Use the createLoadStartEvent version that explicitly takes surfaceId as an argument",
-        ReplaceWith("createLoadStartEvent(surfaceId, viewId)"))
+        ReplaceWith("createLoadStartEvent(surfaceId, viewId)"),
+    )
     @JvmStatic
     public fun createLoadStartEvent(viewId: Int): ImageLoadEvent =
         createLoadStartEvent(ViewUtil.NO_SURFACE_ID, viewId)
 
     @Deprecated(
         "Use the createProgressEvent version that explicitly takes surfaceId as an argument",
-        ReplaceWith("createProgressEvent(surfaceId, viewId, imageUri, loaded, total)"))
+        ReplaceWith("createProgressEvent(surfaceId, viewId, imageUri, loaded, total)"),
+    )
     @JvmStatic
     public fun createProgressEvent(
         viewId: Int,
         imageUri: String?,
         loaded: Int,
-        total: Int
+        total: Int,
     ): ImageLoadEvent = createProgressEvent(ViewUtil.NO_SURFACE_ID, viewId, imageUri, loaded, total)
 
     @Deprecated(
         "Use the createLoadEvent version that explicitly takes surfaceId as an argument",
-        ReplaceWith("createLoadEvent(surfaceId, viewId, imageUri, width, height)"))
+        ReplaceWith("createLoadEvent(surfaceId, viewId, imageUri, width, height)"),
+    )
     @JvmStatic
     public fun createLoadEvent(
         viewId: Int,
         imageUri: String?,
         width: Int,
-        height: Int
+        height: Int,
     ): ImageLoadEvent = createLoadEvent(ViewUtil.NO_SURFACE_ID, viewId, imageUri, width, height)
 
     @Deprecated(
         "Use the createErrorEvent version that explicitly takes surfaceId as an argument",
-        ReplaceWith("createErrorEvent(surfaceId, viewId, throwable)"))
+        ReplaceWith("createErrorEvent(surfaceId, viewId, throwable)"),
+    )
     @JvmStatic
     public fun createErrorEvent(viewId: Int, throwable: Throwable): ImageLoadEvent =
         createErrorEvent(ViewUtil.NO_SURFACE_ID, viewId, throwable)
 
     @Deprecated(
         "Use the createLoadEndEvent version that explicitly takes surfaceId as an argument",
-        ReplaceWith("createLoadEndEvent(surfaceId, viewId)"))
+        ReplaceWith("createLoadEndEvent(surfaceId, viewId)"),
+    )
     @JvmStatic
     public fun createLoadEndEvent(viewId: Int): ImageLoadEvent =
         createLoadEndEvent(ViewUtil.NO_SURFACE_ID, viewId)
@@ -120,7 +125,7 @@ private constructor(
         viewId: Int,
         imageUri: String?,
         loaded: Int,
-        total: Int
+        total: Int,
     ): ImageLoadEvent =
         ImageLoadEvent(surfaceId, viewId, ON_PROGRESS, null, imageUri, 0, 0, loaded, total)
 
@@ -130,7 +135,7 @@ private constructor(
         viewId: Int,
         imageUri: String?,
         width: Int,
-        height: Int
+        height: Int,
     ): ImageLoadEvent =
         ImageLoadEvent(surfaceId, viewId, ON_LOAD, null, imageUri, width, height, 0, 0)
 

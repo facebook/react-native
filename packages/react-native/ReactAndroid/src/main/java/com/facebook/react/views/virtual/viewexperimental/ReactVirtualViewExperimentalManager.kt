@@ -64,7 +64,7 @@ public class ReactVirtualViewExperimentalManager :
 
   override fun addEventEmitters(
       reactContext: ThemedReactContext,
-      view: ReactVirtualViewExperimental
+      view: ReactVirtualViewExperimental,
   ) {
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id) ?: return
     view.modeChangeEmitter =
@@ -88,7 +88,7 @@ public class ReactVirtualViewExperimentalManager :
 public class VirtualViewEventEmitter(
     private val viewId: Int,
     private val surfaceId: Int,
-    private val dispatcher: EventDispatcher
+    private val dispatcher: EventDispatcher,
 ) : VirtualViewModeChangeEmitter {
   override fun emitModeChange(
       mode: VirtualViewMode,
@@ -104,6 +104,7 @@ public class VirtualViewEventEmitter(
             targetRect,
             thresholdRect,
             synchronous,
-        ))
+        )
+    )
   }
 }

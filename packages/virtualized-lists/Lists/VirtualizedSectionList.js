@@ -155,7 +155,13 @@ class VirtualizedSectionList<
         .getCellMetricsApprox(index - params.itemIndex, listRef.props);
       viewOffset += frame.length;
     }
-    const toIndexParams = {
+    const toIndexParams: {
+      animated?: ?boolean,
+      index: number,
+      viewOffset?: number,
+      viewPosition?: number,
+      ...
+    } = {
       ...params,
       viewOffset,
       index,
@@ -237,7 +243,7 @@ class VirtualizedSectionList<
         // We intend for there to be overflow by one on both ends of the list.
         // This will be for headers and footers. When returning a header or footer
         // item the section itself is the item.
-        // $FlowIgnore[incompatible-return]
+        // $FlowFixMe[incompatible-type]
         return section;
       } else if (itemIdx < itemCount) {
         // If we are in the bounds of the list's data then return the item.
@@ -547,7 +553,7 @@ function ItemWithSeparator<ItemT>(
 
   useEffect(() => {
     setSelfHighlightCallback(cellKey, setSeparatorHighlighted);
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     setSelfUpdatePropsCallback(cellKey, setSeparatorProps);
 
     return () => {

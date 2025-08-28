@@ -52,7 +52,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.uimanager.internal.LegacyArchitectureShadowNodeLogger;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -88,6 +87,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @ReactModule(name = UIManagerModule.NAME)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   static {
@@ -115,7 +116,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final ViewManagerRegistry mViewManagerRegistry;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
-  private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
   private final CopyOnWriteArrayList<UIManagerListener> mUIManagerListeners =
       new CopyOnWriteArrayList<>();
 
@@ -685,9 +685,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     SystraceMessage.beginSection(Systrace.TRACE_TAG_REACT, "onBatchCompleteUI")
         .arg("BatchId", batchId)
         .flush();
-    for (UIManagerModuleListener listener : mListeners) {
-      listener.willDispatchViewUpdates(this);
-    }
     for (UIManagerListener listener : mUIManagerListeners) {
       listener.willDispatchViewUpdates(this);
     }
@@ -753,16 +750,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   public void prependUIBlock(UIBlock block) {
     mUIImplementation.prependUIBlock(block);
-  }
-
-  @Deprecated
-  public void addUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.add(listener);
-  }
-
-  @Deprecated
-  public void removeUIManagerListener(UIManagerModuleListener listener) {
-    mListeners.remove(listener);
   }
 
   public void addUIManagerEventListener(UIManagerListener listener) {

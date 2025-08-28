@@ -119,19 +119,19 @@ class LayoutEventsTest extends React.Component<Props, State> {
   }
 
   onViewLayout: (e: LayoutChangeEvent) => void = (e: LayoutChangeEvent) => {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     debug('received view layout event\n', e.nativeEvent);
     this.setState({viewLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
   onTextLayout: (e: LayoutChangeEvent) => void = (e: LayoutChangeEvent) => {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     debug('received text layout event\n', e.nativeEvent);
     this.setState({textLayout: e.nativeEvent.layout}, this.checkLayout);
   };
 
   onImageLayout: (e: LayoutChangeEvent) => void = (e: LayoutChangeEvent) => {
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     debug('received image layout event\n', e.nativeEvent);
     this.setState({imageLayout: e.nativeEvent.layout}, this.checkLayout);
   };

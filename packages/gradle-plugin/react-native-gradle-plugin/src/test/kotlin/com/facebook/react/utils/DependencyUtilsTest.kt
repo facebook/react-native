@@ -40,7 +40,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == localMavenURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -54,7 +55,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -68,7 +70,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -82,7 +85,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -96,7 +100,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -106,7 +111,9 @@ class DependencyUtilsTest {
 
     val project = createProject()
     project.rootProject.extensions.extraProperties.set(
-        "exclusiveEnterpriseRepository", repositoryURI.toString())
+        "exclusiveEnterpriseRepository",
+        repositoryURI.toString(),
+    )
 
     configureRepositories(project)
 
@@ -114,7 +121,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -129,7 +137,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNull()
 
     // We test both with scoped and unscoped property
@@ -141,7 +150,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNull()
   }
 
@@ -156,7 +166,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
 
     // We test both with scoped and unscoped property
@@ -168,7 +179,8 @@ class DependencyUtilsTest {
     assertThat(
             project.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -224,12 +236,14 @@ class DependencyUtilsTest {
     assertThat(
             appProject.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
     assertThat(
             libProject.repositories.firstOrNull {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isNotNull()
   }
 
@@ -252,7 +266,8 @@ class DependencyUtilsTest {
     assertThat(
             libProject.repositories.count {
               it is MavenArtifactRepository && it.url == repositoryURI
-            })
+            }
+        )
         .isEqualTo(2)
   }
 
@@ -330,13 +345,15 @@ class DependencyUtilsTest {
     assertThat("com.facebook.react:react-android:0.42.0")
         .isEqualTo(dependencySubstitutions[0].second)
     assertThat(
-            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."
+        )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
     assertThat("com.facebook.react:hermes-android:0.42.0")
         .isEqualTo(dependencySubstitutions[1].second)
     assertThat(
-            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
+        )
         .isEqualTo(dependencySubstitutions[1].third)
   }
 
@@ -347,12 +364,14 @@ class DependencyUtilsTest {
     assertThat("com.facebook.react:react-native").isEqualTo(dependencySubstitutions[0].first)
     assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[0].second)
     assertThat(
-            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.")
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."
+        )
         .isEqualTo(dependencySubstitutions[0].third)
     assertThat("com.facebook.react:hermes-engine").isEqualTo(dependencySubstitutions[1].first)
     assertThat("io.github.test:hermes-android:0.42.0").isEqualTo(dependencySubstitutions[1].second)
     assertThat(
-            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.")
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."
+        )
         .isEqualTo(dependencySubstitutions[1].third)
     assertThat("com.facebook.react:react-android").isEqualTo(dependencySubstitutions[2].first)
     assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[2].second)
@@ -373,7 +392,8 @@ class DependencyUtilsTest {
         VERSION_NAME=1000.0.0
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
@@ -390,7 +410,8 @@ class DependencyUtilsTest {
         VERSION_NAME=0.0.0-20221101-2019-cfe811ab1
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
@@ -406,7 +427,8 @@ class DependencyUtilsTest {
               """
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
@@ -422,7 +444,8 @@ class DependencyUtilsTest {
         VERSION_NAME=
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val versionString = readVersionAndGroupStrings(propertiesFile).first
@@ -438,7 +461,8 @@ class DependencyUtilsTest {
         react.internal.publishingGroup=io.github.test
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val groupString = readVersionAndGroupStrings(propertiesFile).second
@@ -454,7 +478,8 @@ class DependencyUtilsTest {
               """
         ANOTHER_PROPERTY=true
       """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
 
     val groupString = readVersionAndGroupStrings(propertiesFile).second
@@ -503,7 +528,9 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_withScopedProperty() {
     val project = createProject(tempFolder.root)
     project.extensions.extraProperties.set(
-        "react.exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+        "react.exclusiveEnterpriseRepository",
+        "https://maven.myfabolousorganization.it",
+    )
     assertThat(project.exclusiveEnterpriseRepository())
         .isEqualTo("https://maven.myfabolousorganization.it")
   }
@@ -512,7 +539,9 @@ class DependencyUtilsTest {
   fun exclusiveEnterpriseRepository_withUnscopedProperty() {
     val project = createProject(tempFolder.root)
     project.extensions.extraProperties.set(
-        "exclusiveEnterpriseRepository", "https://maven.myfabolousorganization.it")
+        "exclusiveEnterpriseRepository",
+        "https://maven.myfabolousorganization.it",
+    )
     assertThat(project.exclusiveEnterpriseRepository())
         .isEqualTo("https://maven.myfabolousorganization.it")
   }

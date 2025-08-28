@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
@@ -23,7 +25,9 @@ internal class LayoutCreateAnimation : BaseLayoutAnimation() {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "LayoutCreateAnimation", LegacyArchitectureLogLevel.ERROR)
+          "LayoutCreateAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

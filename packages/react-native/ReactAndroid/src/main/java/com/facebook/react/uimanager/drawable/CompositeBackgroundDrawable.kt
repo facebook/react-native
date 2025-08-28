@@ -73,7 +73,9 @@ internal class CompositeBackgroundDrawable(
             border,
             feedbackUnderlay,
             innerShadows,
-            outline)) {
+            outline,
+        )
+    ) {
 
   init {
     // We want to overlay drawables, instead of placing future drawables within the content area of
@@ -116,7 +118,7 @@ internal class CompositeBackgroundDrawable(
 
   fun withNewShadows(
       outerShadows: List<Drawable>,
-      innerShadows: List<Drawable>
+      innerShadows: List<Drawable>,
   ): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
@@ -189,7 +191,11 @@ internal class CompositeBackgroundDrawable(
 
       val computedBorderRadius =
           borderRadius?.resolve(
-              layoutDirection, context, bounds.width().toFloat(), bounds.height().toFloat())
+              layoutDirection,
+              context,
+              bounds.width().toFloat(),
+              bounds.height().toFloat(),
+          )
 
       val computedBorderInsets = borderInsets?.resolve(layoutDirection, context)
 
@@ -204,8 +210,10 @@ internal class CompositeBackgroundDrawable(
                 (it.bottomRight.horizontal + (computedBorderInsets?.right ?: 0f)).dpToPx(),
                 (it.bottomRight.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx(),
                 (it.bottomLeft.horizontal + (computedBorderInsets?.left ?: 0f)).dpToPx(),
-                (it.bottomLeft.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx()),
-            Path.Direction.CW)
+                (it.bottomLeft.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx(),
+            ),
+            Path.Direction.CW,
+        )
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -227,7 +235,7 @@ internal class CompositeBackgroundDrawable(
         border: BorderDrawable?,
         feedbackUnderlay: Drawable?,
         innerShadows: List<Drawable>,
-        outline: OutlineDrawable?
+        outline: OutlineDrawable?,
     ): Array<Drawable?> {
       val layers = mutableListOf<Drawable?>()
       originalBackground?.let { layers.add(it) }

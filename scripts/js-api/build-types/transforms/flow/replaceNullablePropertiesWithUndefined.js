@@ -32,7 +32,7 @@ const visitors: TransformVisitor = context => ({
       return;
     }
 
-    // $FlowExpectedError[incompatible-call] - UnionTypeAnnotation is not assignable to NullableTypeAnnotation
+    // $FlowExpectedError[incompatible-type] - UnionTypeAnnotation is not assignable to NullableTypeAnnotation
     context.replaceNode(node, {
       type: 'UnionTypeAnnotation',
       types: [

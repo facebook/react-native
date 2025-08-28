@@ -48,7 +48,8 @@ internal fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
           defaultInsets.systemWindowInsetLeft,
           0,
           defaultInsets.systemWindowInsetRight,
-          defaultInsets.systemWindowInsetBottom)
+          defaultInsets.systemWindowInsetBottom,
+      )
     }
   } else {
     decorView.setOnApplyWindowInsetsListener(null)

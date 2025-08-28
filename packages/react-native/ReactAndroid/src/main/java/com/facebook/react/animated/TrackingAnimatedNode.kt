@@ -12,7 +12,7 @@ import com.facebook.react.bridge.ReadableMap
 
 internal class TrackingAnimatedNode(
     config: ReadableMap,
-    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager
+    private val nativeAnimatedNodesManager: NativeAnimatedNodesManager,
 ) : AnimatedNode() {
   private val animationConfig: JavaOnlyMap = JavaOnlyMap.deepClone(config.getMap("animationConfig"))
   private val animationId: Int = config.getInt("animationId")

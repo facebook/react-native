@@ -26,7 +26,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 7,
                 "file",
-                "Fb4aBundle.js"),
+                "Fb4aBundle.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_ram_bundle",
@@ -35,7 +36,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 18,
                 "file",
-                "199.js"),
+                "199.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_ram_bundle_with_address",
@@ -44,7 +46,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 18,
                 "file",
-                "address at 199.js"),
+                "address at 199.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_segment",
@@ -53,7 +56,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 9,
                 "file",
-                "seg-1.js"),
+                "seg-1.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_segment_with_address",
@@ -62,7 +66,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 9,
                 "file",
-                "address at seg-1.js"),
+                "address at seg-1.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_ram_segment",
@@ -71,7 +76,8 @@ class JSStackTraceTest {
                 "lineNumber",
                 10,
                 "file",
-                "seg-3_198.js"),
+                "seg-3_198.js",
+            ),
             JavaOnlyMap.of(
                 "methodName",
                 "method_from_ram_segment_with_address",
@@ -80,7 +86,9 @@ class JSStackTraceTest {
                 "lineNumber",
                 10,
                 "file",
-                "address at seg-3_198.js"))
+                "address at seg-3_198.js",
+            ),
+        )
     val message = JSStackTrace.format("Error", values)
     assertThat(message)
         .isEqualTo(
@@ -95,6 +103,7 @@ class JSStackTraceTest {
             method_from_ram_segment_with_address@seg-3_198.js:10:20
             
             """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 }

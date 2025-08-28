@@ -577,7 +577,7 @@ module.exports = ({
   category: 'UI',
   description: 'Component for making views pressable.',
   displayName: 'Pressable',
-  /* $FlowFixMe[incompatible-cast] Natural Inference rollout. See
+  /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
    * https://fburl.com/workplace/6291gfvu */
   examples,
 }: RNTesterModule);

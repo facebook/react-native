@@ -36,7 +36,7 @@ internal class IntBufferBatchMountItem(
     private val surfaceId: Int,
     private val intBuffer: IntArray,
     private val objBuffer: Array<Any?>,
-    private val commitNumber: Int
+    private val commitNumber: Int,
 ) : BatchMountItem {
   private val intBufferLen = intBuffer.size
   private val objBufferLen = objBuffer.size
@@ -46,14 +46,20 @@ internal class IntBufferBatchMountItem(
 
     if (commitNumber > 0) {
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START, null, commitNumber)
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_START,
+          null,
+          commitNumber,
+      )
     }
   }
 
   private fun endMarkers() {
     if (commitNumber > 0) {
       ReactMarker.logFabricMarker(
-          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END, null, commitNumber)
+          ReactMarkerConstants.FABRIC_BATCH_EXECUTION_END,
+          null,
+          commitNumber,
+      )
     }
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
@@ -63,7 +69,10 @@ internal class IntBufferBatchMountItem(
     val surfaceMountingManager = mountingManager.getSurfaceManager(surfaceId)
     if (surfaceMountingManager == null) {
       FLog.e(
-          TAG, "Skipping batch of MountItems; no SurfaceMountingManager found for [%d].", surfaceId)
+          TAG,
+          "Skipping batch of MountItems; no SurfaceMountingManager found for [%d].",
+          surfaceId,
+      )
       return
     }
     if (surfaceMountingManager.isStopped) {
@@ -89,7 +98,8 @@ internal class IntBufferBatchMountItem(
           Systrace.TRACE_TAG_REACT,
           "IntBufferBatchMountItem::mountInstructions::" + nameForInstructionString(type),
           args,
-          args.size)
+          args.size,
+      )
       for (k in 0 until numInstructions) {
         when (type) {
           INSTRUCTION_CREATE -> {
@@ -102,7 +112,8 @@ internal class IntBufferBatchMountItem(
                 objBuffer[j++] as ReadableMap?,
                 objBuffer[j++] as StateWrapper?,
                 objBuffer[j++] as EventEmitterWrapper?,
-                intBuffer[i++] == 1)
+                intBuffer[i++] == 1,
+            )
           }
           INSTRUCTION_DELETE -> surfaceMountingManager.deleteView(intBuffer[i++])
           INSTRUCTION_INSERT -> {
@@ -126,11 +137,24 @@ internal class IntBufferBatchMountItem(
             val displayType = intBuffer[i++]
             val layoutDirection = intBuffer[i++]
             surfaceMountingManager.updateLayout(
-                reactTag, parentTag, x, y, width, height, displayType, layoutDirection)
+                reactTag,
+                parentTag,
+                x,
+                y,
+                width,
+                height,
+                displayType,
+                layoutDirection,
+            )
           }
           INSTRUCTION_UPDATE_PADDING ->
               surfaceMountingManager.updatePadding(
-                  intBuffer[i++], intBuffer[i++], intBuffer[i++], intBuffer[i++], intBuffer[i++])
+                  intBuffer[i++],
+                  intBuffer[i++],
+                  intBuffer[i++],
+                  intBuffer[i++],
+                  intBuffer[i++],
+              )
           INSTRUCTION_UPDATE_OVERFLOW_INSET -> {
             val reactTag = intBuffer[i++]
             val overflowInsetLeft = intBuffer[i++]
@@ -143,7 +167,8 @@ internal class IntBufferBatchMountItem(
                 overflowInsetLeft,
                 overflowInsetTop,
                 overflowInsetRight,
-                overflowInsetBottom)
+                overflowInsetBottom,
+            )
           }
           INSTRUCTION_UPDATE_EVENT_EMITTER -> {
             val eventEmitterWrapper = objBuffer[j++] as EventEmitterWrapper?
@@ -153,7 +178,8 @@ internal class IntBufferBatchMountItem(
           }
           else -> {
             throw IllegalArgumentException(
-                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
+                "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
+            )
           }
         }
       }
@@ -191,7 +217,9 @@ internal class IntBufferBatchMountItem(
                       "CREATE [%d] - layoutable:%d - %s\n",
                       intBuffer[i++],
                       intBuffer[i++],
-                      fabricComponentName))
+                      fabricComponentName,
+                  )
+              )
             }
             INSTRUCTION_DELETE ->
                 s.append(String.format(Locale.ROOT, "DELETE [%d]\n", intBuffer[i++]))
@@ -202,7 +230,9 @@ internal class IntBufferBatchMountItem(
                         "INSERT [%d]->[%d] @%d\n",
                         intBuffer[i++],
                         intBuffer[i++],
-                        intBuffer[i++]))
+                        intBuffer[i++],
+                    )
+                )
             INSTRUCTION_REMOVE ->
                 s.append(
                     String.format(
@@ -210,15 +240,17 @@ internal class IntBufferBatchMountItem(
                         "REMOVE [%d]->[%d] @%d\n",
                         intBuffer[i++],
                         intBuffer[i++],
-                        intBuffer[i++]))
+                        intBuffer[i++],
+                    )
+                )
             INSTRUCTION_UPDATE_PROPS -> {
               val props = objBuffer[j++]
               val propsString =
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (props?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(
-                      Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString))
+                  String.format(Locale.ROOT, "UPDATE PROPS [%d]: %s\n", intBuffer[i++], propsString)
+              )
             }
             INSTRUCTION_UPDATE_STATE -> {
               val state: StateWrapper? = objBuffer[j++] as StateWrapper?
@@ -226,8 +258,8 @@ internal class IntBufferBatchMountItem(
                   if (FabricUIManager.IS_DEVELOPMENT_ENVIRONMENT) (state?.toString() ?: "<null>")
                   else "<hidden>"
               s.append(
-                  String.format(
-                      Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString))
+                  String.format(Locale.ROOT, "UPDATE STATE [%d]: %s\n", intBuffer[i++], stateString)
+              )
             }
             INSTRUCTION_UPDATE_LAYOUT ->
                 s.append(
@@ -242,7 +274,9 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                        intBuffer[i++]))
+                        intBuffer[i++],
+                    )
+                )
             INSTRUCTION_UPDATE_PADDING ->
                 s.append(
                     String.format(
@@ -252,7 +286,9 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                        intBuffer[i++]))
+                        intBuffer[i++],
+                    )
+                )
             INSTRUCTION_UPDATE_OVERFLOW_INSET ->
                 s.append(
                     String.format(
@@ -262,7 +298,9 @@ internal class IntBufferBatchMountItem(
                         intBuffer[i++],
                         intBuffer[i++],
                         intBuffer[i++],
-                        intBuffer[i++]))
+                        intBuffer[i++],
+                    )
+                )
             INSTRUCTION_UPDATE_EVENT_EMITTER -> {
               j += 1
               s.append(String.format(Locale.ROOT, "UPDATE EVENTEMITTER [%d]\n", intBuffer[i++]))
@@ -270,7 +308,8 @@ internal class IntBufferBatchMountItem(
             else -> {
               FLog.e(TAG, "String so far: $s")
               throw IllegalArgumentException(
-                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i")
+                  "Invalid type argument to IntBufferBatchMountItem: $type at index: $i"
+              )
             }
           }
         }

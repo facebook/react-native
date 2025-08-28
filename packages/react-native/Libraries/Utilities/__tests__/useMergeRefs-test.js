@@ -43,7 +43,7 @@ function TestComponent(
 }
 
 function id(instance: HostInstance | null): string | null {
-  // $FlowIgnore[prop-missing] - Intentional.
+  // $FlowFixMe[prop-missing] - Intentional.
   return instance?.props?.id ?? null;
 }
 
@@ -108,7 +108,7 @@ test('accepts a ref object', () => {
   const ledger: Array<{[string]: string | null}> = [];
 
   const ref = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({ref: id(current)});
     },
@@ -140,7 +140,7 @@ test('invokes refs in order', () => {
     ledger.push({refA: id(current)});
   };
   const refB = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({refB: id(current)});
     },
@@ -149,7 +149,7 @@ test('invokes refs in order', () => {
     ledger.push({refC: id(current)});
   };
   const refD = {
-    // $FlowIgnore[unsafe-getters-setters] - Intentional.
+    // $FlowFixMe[unsafe-getters-setters] - Intentional.
     set current(current: HostInstance | null) {
       ledger.push({refD: id(current)});
     },

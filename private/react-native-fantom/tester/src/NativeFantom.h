@@ -7,13 +7,7 @@
 
 #pragma once
 
-#if __has_include("rncoreJSI.h") // Cmake headers on Android
-#include "rncoreJSI.h"
-#elif __has_include("FBReactNativeSpecJSI.h") // CocoaPod headers on Apple
-#include "FBReactNativeSpecJSI.h"
-#else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
-#endif
 
 #include <react/renderer/bridging/bridging.h>
 #include <react/renderer/core/RawEvent.h>
@@ -72,6 +66,16 @@ template <>
 struct Bridging<ScrollOptions>
     : NativeFantomScrollOptionsBridging<ScrollOptions> {};
 
+using NativeFantomSetImageResponseImageResponse = NativeFantomImageResponse<
+    Float, // width
+    Float, // height
+    std::optional<std::string>, // cacheStatus
+    std::optional<std::string>>; // errorMessage
+template <>
+struct Bridging<NativeFantomSetImageResponseImageResponse>
+    : NativeFantomImageResponseBridging<
+          NativeFantomSetImageResponseImageResponse> {};
+
 class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
  public:
   NativeFantom(
@@ -110,7 +114,7 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
   void enqueueNativeEvent(
       jsi::Runtime& runtime,
       std::shared_ptr<const ShadowNode> shadowNode,
-      std::string type,
+      const std::string& type,
       const std::optional<folly::dynamic>& payload,
       std::optional<RawEvent::Category> category,
       std::optional<bool> isUnique);
@@ -154,7 +158,14 @@ class NativeFantom : public NativeFantomCxxSpec<NativeFantom> {
 
   void stopJSSamplingProfilerAndSaveToFile(
       jsi::Runtime& runtime,
-      std::string filePath);
+      const std::string& filePath);
+
+  void setImageResponse(
+      jsi::Runtime& rt,
+      const std::string& uri,
+      const NativeFantomSetImageResponseImageResponse& imageResponse);
+  void clearImage(jsi::Runtime& rt, const std::string& uri);
+  void clearAllImages(jsi::Runtime& rt);
 
  private:
   TesterAppDelegate& appDelegate_;

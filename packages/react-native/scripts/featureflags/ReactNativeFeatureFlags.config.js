@@ -145,7 +145,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     enableAccumulatedUpdatesInRawPropsAndroid: {
       defaultValue: false,
@@ -260,19 +260,8 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    enableFixForParentTagDuringReparenting: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-04-22',
-        description:
-          'This feature flag enables a fix for reparenting fix in differentiator',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableFontScaleChangesUpdatingLayout: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-04-07',
         description:
@@ -468,6 +457,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-31',
         description:
           'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForScrollView: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-20',
+        description:
+          'Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -687,7 +687,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useNativeEqualsInNativeReadableArrayAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-07-15',
         description:
@@ -695,17 +695,17 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'stable',
     },
     useNativeTransformHelperAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-07-15',
         description: 'Use a native implementation of TransformHelper',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'stable',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -730,13 +730,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useRawPropsJsiValue: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-12-02',
         description:
           'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -771,6 +770,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    virtualViewHysteresisRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-08-22',
+        description:
+          'Sets a hysteresis window for transition between prerender and hidden modes.',
+        expectedReleaseValue: 1,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
@@ -819,15 +829,26 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableAccessToHostTreeInFabric: {
+    disableMaintainVisibleContentPosition: {
       defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-26',
+        description:
+          'Disable prop maintainVisibleContentPosition in ScrollView',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableAccessToHostTreeInFabric: {
+      defaultValue: true,
       metadata: {
         description:
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'stable',
     },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
@@ -847,6 +868,17 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    reduceDefaultPropsInImage: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-7-29',
+        description:
+          'Optimize how default props are processed in Image to avoid unnecessary keys.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -888,6 +920,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    virtualViewActivityBehavior: {
+      defaultValue: 'no-activity',
+      metadata: {
+        dateAdded: '2025-08-27',
+        description: 'Changes whether and how `VirtualView` uses `Activity`.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

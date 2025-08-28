@@ -42,11 +42,14 @@ public object ReactClippingViewGroupHelper {
         if (parent.removeClippedSubviews) {
           parent.getClippingRect(helperRect)
           // Intersect the view with the parent's rectangle
-          if (!helperRect.intersect(
-              view.left,
-              view.top + view.translationY.toInt(),
-              view.right,
-              view.bottom + view.translationY.toInt())) {
+          if (
+              !helperRect.intersect(
+                  view.left,
+                  view.top + view.translationY.toInt(),
+                  view.right,
+                  view.bottom + view.translationY.toInt(),
+              )
+          ) {
             outputRect.setEmpty()
             return
           }

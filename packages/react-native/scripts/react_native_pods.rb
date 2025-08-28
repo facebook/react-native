@@ -72,6 +72,7 @@ def use_react_native! (
   privacy_file_aggregation_enabled: true
 )
   error_if_try_to_use_jsc_from_core()
+  warn_if_new_arch_disabled()
 
   hermes_enabled= true
   # Set the app_path as env variable so the podspecs can access it.
@@ -232,6 +233,20 @@ def folly_flags()
   return NewArchitectureHelper.folly_compiler_flags
 end
 
+# Resolve the spec for use with the USE_FRAMEWORKS environment variable. To avoid each podspec
+# to manually specify the header mappings and module name, we can use this helper function.
+# This helper will also resolve header mappings if we're building from source. Precompiled
+# React-Core will not generate frameworks since their podspec files only contains the
+# header files and no source code - so header_mappings should be the same as for without USE_FRAMEWORKS
+#
+# Parameters:
+# - s: the spec to modify
+# - header_mappings_dir: the directory to map headers when building Pod header structure
+# - module_name: the name of the module when exposed to swift
+def resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
+  ReactNativePodsUtils.resolve_use_frameworks(spec, :header_mappings_dir => header_mappings_dir, :module_name => module_name)
+end
+
 # Add a dependency to a spec, making sure that the HEADER_SERACH_PATHS are set properly.
 # This function automate the requirement to specify the HEADER_SEARCH_PATHS which was error prone
 # and hard to pull out properly to begin with.
@@ -378,7 +393,7 @@ end
 
 # This method can be used to set the fast_float config
 # that can be used to configure libraries.
-def set_fast_float_config(fmt_config)
+def set_fast_float_config(fast_float_config)
   Helpers::Constants.set_fast_float_config(fast_float_config)
 end
 
@@ -439,6 +454,24 @@ def print_cocoapods_deprecation_message()
 
 end
 
+def warn_if_new_arch_disabled
+  if ENV["RCT_NEW_ARCH_ENABLED"] == "1" || ENV["RCT_NEW_ARCH_ENABLED"] == nil
+    return
+  end
+
+  puts ''
+  puts '====================== NEW ARCH ONLY ======================='.yellow
+  puts 'WARNING: Calling pod install with `RCT_NEW_ARCH_ENABLED=0'.yellow
+  puts 'is not supported anymore since React Native 0.82.'.yellow
+  puts 'You can remove the ENV["RCT_NEW_ARCH_ENABLED"]=0 from your'.yellow
+  puts 'Podfie, if you have it.'.yellow
+  puts 'The application will run with the New Architecture enabled'.yellow
+  puts 'by default.'.yellow
+  puts '============================================================'.yellow
+  puts ''
+
+end
+
 def error_if_try_to_use_jsc_from_core()
   explicitly_not_use_hermes = ENV['USE_HERMES'] != nil && ENV['USE_HERMES'] == '0'
   not_use_3rd_party_jsc = ENV['USE_THIRD_PARTY_JSC'] == nil || ENV['USE_THIRD_PARTY_JSC'] == '0'
@@ -486,6 +519,13 @@ def react_native_post_install(
   ReactNativePodsUtils.updateOSDeploymentTarget(installer)
   ReactNativePodsUtils.set_dynamic_frameworks_flags(installer)
   ReactNativePodsUtils.add_ndebug_flag_to_pods_in_release(installer)
+
+  if !ReactNativeCoreUtils.build_rncore_from_source()
+    # In XCode 26 we need to revert the new setting SWIFT_ENABLE_EXPLICIT_MODULES when building
+    # with precompiled binaries.
+    ReactNativePodsUtils.set_build_setting(installer, build_setting: "SWIFT_ENABLE_EXPLICIT_MODULES", value: "NO")
+  end
+
   SPM.apply_on_post_install(installer)
 
   if privacy_file_aggregation_enabled

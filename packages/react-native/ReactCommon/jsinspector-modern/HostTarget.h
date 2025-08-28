@@ -12,11 +12,14 @@
 #include "InspectorInterfaces.h"
 #include "InstanceTarget.h"
 #include "NetworkIOAgent.h"
+#include "PerfMonitorV2.h"
 #include "ScopedExecutor.h"
 #include "WeakList.h"
 
 #include <optional>
 #include <string>
+
+#include <jsinspector-modern/tracing/TracingMode.h>
 
 #ifndef JSINSPECTOR_EXPORT
 #ifdef _MSC_VER
@@ -34,8 +37,11 @@ namespace facebook::react::jsinspector_modern {
 
 class HostTargetSession;
 class HostAgent;
+class HostTracingAgent;
 class HostCommandSender;
+class HostRuntimeBinding;
 class HostTarget;
+class HostTargetTraceRecording;
 
 struct HostTargetMetadata {
   std::optional<std::string> appDisplayName;
@@ -122,6 +128,13 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
       const OverlaySetPausedInDebuggerMessageRequest& request) = 0;
 
   /**
+   * [Experimental] Called when the runtime has new data for the V2 Perf
+   * Monitor overlay. This is called on the inspector thread.
+   */
+  virtual void unstable_onPerfMonitorUpdate(
+      const PerfMonitorUpdateRequest& /*request*/) {}
+
+  /**
    * Called by NetworkIOAgent on handling a `Network.loadNetworkResource` CDP
    * request. Platform implementations should override this to perform a
    * network request of the given URL, and use listener's callbacks on receipt
@@ -132,6 +145,19 @@ class HostTargetDelegate : public LoadNetworkResourceDelegate {
       ScopedExecutor<NetworkRequestListener> /*executor*/) override {
     throw NotImplementedException(
         "LoadNetworkResourceDelegate.loadNetworkResource is not implemented by this host target delegate.");
+  }
+
+  /**
+   * [Experimental] Will be called at the CDP session initialization to get the
+   * trace recording that may have been stashed by the Host from the previous
+   * background session.
+   *
+   * \return the trace recording state if there is one that needs to be
+   * displayed, otherwise std::nullopt.
+   */
+  virtual std::optional<tracing::TraceRecordingState>
+  unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
+    return std::nullopt;
   }
 };
 
@@ -165,6 +191,19 @@ class HostTargetController final {
    * \returns false if the counter has reached 0, otherwise true.
    */
   bool decrementPauseOverlayCounter();
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
 
  private:
   HostTarget& target_;
@@ -237,6 +276,29 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   void sendCommand(HostCommand command);
 
+  /**
+   * Creates a new HostTracingAgent.
+   * This Agent is not owned by the HostTarget. The Agent will be destroyed at
+   * the end of the tracing session.
+   *
+   * \param state A reference to the state of the active trace recording.
+   */
+  std::shared_ptr<HostTracingAgent> createTracingAgent(
+      tracing::TraceRecordingState& state);
+
+  /**
+   * Starts trace recording for this HostTarget.
+   *
+   * \param mode In which mode to start the trace recording.
+   * \return false if already tracing, true otherwise.
+   */
+  bool startTracing(tracing::Mode mode);
+
+  /**
+   * Stops previously started trace recording.
+   */
+  tracing::TraceRecordingState stopTracing();
+
  private:
   /**
    * Constructs a new HostTarget.
@@ -256,6 +318,16 @@ class JSINSPECTOR_EXPORT HostTarget
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
   std::shared_ptr<InstanceTarget> currentInstance_{nullptr};
   std::unique_ptr<HostCommandSender> commandSender_;
+  std::unique_ptr<PerfMonitorUpdateHandler> perfMonitorUpdateHandler_;
+  std::unique_ptr<HostRuntimeBinding> perfMetricsBinding_;
+
+  /**
+   * Current pending trace recording, which encapsulates the configuration of
+   * the tracing session and the state.
+   *
+   * Should only be allocated when there is an active tracing session.
+   */
+  std::unique_ptr<HostTargetTraceRecording> traceRecording_{nullptr};
 
   inline HostTargetDelegate& getDelegate() {
     return delegate_;
@@ -264,6 +336,13 @@ class JSINSPECTOR_EXPORT HostTarget
   inline bool hasInstance() const {
     return currentInstance_ != nullptr;
   }
+
+  /**
+   * Install a runtime binding subscribing to the Interaction to Next Paint
+   * (INP) live metric, which we broadcast to the V2 Perf Monitor overlay
+   * via \ref HostTargetDelegate::unstable_onPerfMonitorUpdate.
+   */
+  void installPerfMetricsBinding();
 
   // Necessary to allow HostAgent to access HostTarget's internals in a
   // controlled way (i.e. only HostTargetController gets friend access, while

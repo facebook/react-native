@@ -128,7 +128,6 @@ const HMRClient: HMRClientNativeInterface = {
         JSON.stringify({
           type: 'log',
           level,
-          mode: global.RN$Bridgeless === true ? 'NOBRIDGE' : 'BRIDGE',
           data: data.map(item =>
             typeof item === 'string'
               ? item
@@ -166,6 +165,8 @@ const HMRClient: HMRClientNativeInterface = {
     // Moving to top gives errors due to NativeModules not being initialized
     const DevLoadingView = require('./DevLoadingView').default;
 
+    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+     * roll out. See https://fburl.com/workplace/5whu3i34. */
     const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
 
     const serverScheme = scheme;

@@ -34,11 +34,12 @@ class RNTesterStartupBenchmark {
           metrics = listOf(StartupTimingMetric()),
           iterations = 10,
           startupMode = StartupMode.COLD,
-          setupBlock = { pressHome() }) {
-            startActivityAndWait()
+          setupBlock = { pressHome() },
+      ) {
+        startActivityAndWait()
 
-            // Waits for an element that corresponds to fully drawn state
-            device.wait(Until.hasObject(By.text("Components")), 10_000)
-            device.waitForIdle()
-          }
+        // Waits for an element that corresponds to fully drawn state
+        device.wait(Until.hasObject(By.text("Components")), 10_000)
+        device.waitForIdle()
+      }
 }

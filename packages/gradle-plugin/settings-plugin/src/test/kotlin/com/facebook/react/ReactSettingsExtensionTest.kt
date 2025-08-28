@@ -29,11 +29,12 @@ class ReactSettingsExtensionTest {
     val validFile =
         createJsonFile(
             """
-      {
-        "value": "¯\\_(ツ)_/¯"
-      }
-      """
-                .trimIndent())
+            {
+              "value": "¯\\_(ツ)_/¯"
+            }
+            """
+                .trimIndent()
+        )
     assertThat(computeSha256(validFile))
         .isEqualTo("838aa9a72a16fdd55b0d49b510a82e264a30f59333b5fdd97c7798a29146f6a8")
   }
@@ -43,11 +44,12 @@ class ReactSettingsExtensionTest {
     val validJsonFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0"
-      }
-      """
-                .trimIndent())
+            {
+              "reactNativeVersion": "1000.0.0"
+            }
+            """
+                .trimIndent()
+        )
 
     val map = getLibrariesToAutolink(validJsonFile)
     assertThat(map.keys).isEmpty()
@@ -58,41 +60,42 @@ class ReactSettingsExtensionTest {
     val validJsonFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0",
-        "dependencies": {
-          "@react-native/oss-library-example": {
-            "root": "./node_modules/@react-native/oss-library-example",
-            "name": "@react-native/oss-library-example",
-            "platforms": {
-              "ios": {
-                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
-                "version": "0.0.1",
-                "configurations": [],
-                "scriptPhases": []
-              },
-              "android": {
-                "sourceDir": "./node_modules/@react-native/oss-library-example/android",
-                "packageImportPath": "import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage;",
-                "packageInstance": "new OSSLibraryExamplePackage()",
-                "buildTypes": ["staging", "debug", "release"],
-                "libraryName": "OSSLibraryExampleSpec",
-                "componentDescriptors": [
-                  "SampleNativeComponentComponentDescriptor"
-                ],
-                "cmakeListsPath": "./node_modules/@react-native/oss-library-example/android/build/generated/source/codegen/jni/CMakeLists.txt",
-                "cxxModuleCMakeListsModuleName": null,
-                "cxxModuleCMakeListsPath": null,
-                "cxxModuleHeaderName": null,
-                "dependencyConfiguration": "implementation",
-                "isPureCxxDependency": false
+            {
+              "reactNativeVersion": "1000.0.0",
+              "dependencies": {
+                "@react-native/oss-library-example": {
+                  "root": "./node_modules/@react-native/oss-library-example",
+                  "name": "@react-native/oss-library-example",
+                  "platforms": {
+                    "ios": {
+                      "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                      "version": "0.0.1",
+                      "configurations": [],
+                      "scriptPhases": []
+                    },
+                    "android": {
+                      "sourceDir": "./node_modules/@react-native/oss-library-example/android",
+                      "packageImportPath": "import com.facebook.react.osslibraryexample.OSSLibraryExamplePackage;",
+                      "packageInstance": "new OSSLibraryExamplePackage()",
+                      "buildTypes": ["staging", "debug", "release"],
+                      "libraryName": "OSSLibraryExampleSpec",
+                      "componentDescriptors": [
+                        "SampleNativeComponentComponentDescriptor"
+                      ],
+                      "cmakeListsPath": "./node_modules/@react-native/oss-library-example/android/build/generated/source/codegen/jni/CMakeLists.txt",
+                      "cxxModuleCMakeListsModuleName": null,
+                      "cxxModuleCMakeListsPath": null,
+                      "cxxModuleHeaderName": null,
+                      "dependencyConfiguration": "implementation",
+                      "isPureCxxDependency": false
+                    }
+                  }
+                }
               }
             }
-          }
-        }
-      }
-      """
-                .trimIndent())
+            """
+                .trimIndent()
+        )
 
     val map = getLibrariesToAutolink(validJsonFile)
     assertThat(map.keys).containsExactly(":react-native_oss-library-example")
@@ -105,25 +108,26 @@ class ReactSettingsExtensionTest {
     val validJsonFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0",
-        "dependencies": {
-          "@react-native/oss-library-example": {
-            "root": "./node_modules/@react-native/oss-library-example",
-            "name": "@react-native/oss-library-example",
-            "platforms": {
-              "ios": {
-                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
-                "version": "0.0.1",
-                "configurations": [],
-                "scriptPhases": []
+            {
+              "reactNativeVersion": "1000.0.0",
+              "dependencies": {
+                "@react-native/oss-library-example": {
+                  "root": "./node_modules/@react-native/oss-library-example",
+                  "name": "@react-native/oss-library-example",
+                  "platforms": {
+                    "ios": {
+                      "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                      "version": "0.0.1",
+                      "configurations": [],
+                      "scriptPhases": []
+                    }
+                  }
+                }
               }
             }
-          }
-        }
-      }
-      """
-                .trimIndent())
+            """
+                .trimIndent()
+        )
 
     val map = getLibrariesToAutolink(validJsonFile)
     assertThat(map.keys).isEmpty()
@@ -258,7 +262,8 @@ class ReactSettingsExtensionTest {
         }
       }
     """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
@@ -311,7 +316,8 @@ class ReactSettingsExtensionTest {
         }
       }
     """
-                  .trimIndent())
+                  .trimIndent()
+          )
         }
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
@@ -356,9 +362,10 @@ class ReactSettingsExtensionTest {
     val invalidConfigFile =
         createJsonFile(
             """
-      {}
-      """
-                .trimIndent())
+            {}
+            """
+                .trimIndent()
+        )
 
     assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
         .isTrue()
@@ -377,11 +384,12 @@ class ReactSettingsExtensionTest {
     val invalidConfigFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0"
-      }
-      """
-                .trimIndent())
+            {
+              "reactNativeVersion": "1000.0.0"
+            }
+            """
+                .trimIndent()
+        )
 
     assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
         .isTrue()
@@ -400,12 +408,13 @@ class ReactSettingsExtensionTest {
     val invalidConfigFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0",
-        "dependencies": {}
-      }
-      """
-                .trimIndent())
+            {
+              "reactNativeVersion": "1000.0.0",
+              "dependencies": {}
+            }
+            """
+                .trimIndent()
+        )
 
     assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
         .isTrue()
@@ -424,25 +433,26 @@ class ReactSettingsExtensionTest {
     val invalidConfigFile =
         createJsonFile(
             """
-      {
-        "reactNativeVersion": "1000.0.0",
-        "dependencies": {
-          "@react-native/oss-library-example": {
-            "root": "./node_modules/@react-native/oss-library-example",
-            "name": "@react-native/oss-library-example",
-            "platforms": {
-              "ios": {
-                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
-                "version": "0.0.1",
-                "configurations": [],
-                "scriptPhases": []
+            {
+              "reactNativeVersion": "1000.0.0",
+              "dependencies": {
+                "@react-native/oss-library-example": {
+                  "root": "./node_modules/@react-native/oss-library-example",
+                  "name": "@react-native/oss-library-example",
+                  "platforms": {
+                    "ios": {
+                      "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                      "version": "0.0.1",
+                      "configurations": [],
+                      "scriptPhases": []
+                    }
+                  }
+                }
               }
             }
-          }
-        }
-      }
-      """
-                .trimIndent())
+            """
+                .trimIndent()
+        )
 
     assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
         .isTrue()

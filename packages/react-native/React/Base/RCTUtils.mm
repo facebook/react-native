@@ -410,6 +410,18 @@ CGSize RCTViewportSize(void)
   return window ? window.bounds.size : RCTScreenSize();
 }
 
+CGSize RCTSwitchSize(void)
+{
+  static CGSize rctSwitchSize;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    });
+  });
+  return rctSwitchSize;
+}
+
 CGFloat RCTRoundPixelValue(CGFloat value)
 {
   CGFloat scale = RCTScreenScale();

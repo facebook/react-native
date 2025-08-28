@@ -52,6 +52,7 @@ import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
+import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
@@ -64,6 +65,9 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
 import com.facebook.react.packagerconnection.RequestHandler
@@ -83,7 +87,7 @@ public abstract class DevSupportManagerBase(
     private val customPackagerCommandHandlers: Map<String, RequestHandler>?,
     private val surfaceDelegateFactory: SurfaceDelegateFactory?,
     public var devLoadingViewManager: DevLoadingViewManager?,
-    private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
+    private var pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?,
 ) : DevSupportManager {
 
   public interface CallbackWithBundleLoader {
@@ -104,7 +108,8 @@ public abstract class DevSupportManagerBase(
             override fun onInternalSettingsChanged() {
               this@DevSupportManagerBase.reloadSettings()
             }
-          })
+          },
+      )
 
   override val currentActivity: Activity?
     get() = reactInstanceDevHelper.currentActivity
@@ -175,6 +180,8 @@ public abstract class DevSupportManagerBase(
           null
         }
 
+  private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
+
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
     // In case when someone schedule 2 subsequent reloads it may happen that JS thread will
@@ -199,7 +206,26 @@ public abstract class DevSupportManagerBase(
                   return@Supplier null
                 }
                 context
-              })
+              }
+          )
+    }
+    if (
+        ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
+            ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
+            reactInstanceDevHelper is PerfMonitorDevHelper &&
+            perfMonitorOverlayManager == null
+    ) {
+      perfMonitorOverlayManager =
+          PerfMonitorOverlayViewManager(
+              Supplier {
+                val context = reactInstanceDevHelper.currentActivity
+                if (context == null || context.isFinishing) {
+                  return@Supplier null
+                }
+                context
+              },
+              reactInstanceDevHelper.inspectorTarget,
+          )
     }
   }
 
@@ -277,7 +303,7 @@ public abstract class DevSupportManagerBase(
       message: String?,
       stack: Array<StackFrame>,
       errorCookie: Int,
-      errorType: ErrorType
+      errorType: ErrorType,
   ) {
     UiThreadUtil.runOnUiThread {
       // Keep a copy of the latest error to be shown by the RedBoxSurface
@@ -311,7 +337,8 @@ public abstract class DevSupportManagerBase(
         Toast.makeText(
                 applicationContext,
                 applicationContext.getString(R.string.catalyst_hot_reloading_auto_disable),
-                Toast.LENGTH_LONG)
+                Toast.LENGTH_LONG,
+            )
             .show()
         devSettings.isHotModuleReplacementEnabled = false
       }
@@ -324,7 +351,8 @@ public abstract class DevSupportManagerBase(
       val debuggerItemString =
           applicationContext.getString(
               if (isConnected) R.string.catalyst_debug_open
-              else R.string.catalyst_debug_open_disabled)
+              else R.string.catalyst_debug_open_disabled
+          )
       if (!isConnected) {
         disabledItemKeys.add(debuggerItemString)
       }
@@ -337,7 +365,8 @@ public abstract class DevSupportManagerBase(
           if (context == null || context.isFinishing) {
             FLog.e(
                 ReactConstants.TAG,
-                "Unable to launch change bundle location because react activity is not available")
+                "Unable to launch change bundle location because react activity is not available",
+            )
             return@DevOptionHandler
           }
 
@@ -373,7 +402,8 @@ public abstract class DevSupportManagerBase(
         Toast.makeText(
                 applicationContext,
                 applicationContext.getString(R.string.catalyst_hot_reloading_auto_enable),
-                Toast.LENGTH_LONG)
+                Toast.LENGTH_LONG,
+            )
             .show()
         devSettings.isJSDevModeEnabled = true
         handleReloadJS()
@@ -411,7 +441,8 @@ public abstract class DevSupportManagerBase(
     if (context == null || context.isFinishing) {
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch dev options menu because react activity " + "isn't available")
+          "Unable to launch dev options menu because react activity " + "isn't available",
+      )
       return
     }
 
@@ -419,7 +450,7 @@ public abstract class DevSupportManagerBase(
     header.orientation = LinearLayout.VERTICAL
 
     TextView(context).apply {
-      text = context.getString(R.string.catalyst_dev_menu_header, uniqueTag)
+      text = context.getString(R.string.catalyst_dev_menu_header)
       setPadding(0, 50, 0, 0)
       gravity = Gravity.CENTER
       textSize = 16f
@@ -442,7 +473,10 @@ public abstract class DevSupportManagerBase(
     val adapter: ListAdapter =
         object :
             ArrayAdapter<String?>(
-                context, android.R.layout.simple_list_item_1, options.keys.toTypedArray<String>()) {
+                context,
+                android.R.layout.simple_list_item_1,
+                options.keys.toTypedArray<String>(),
+            ) {
           override fun areAllItemsEnabled(): Boolean = false
 
           override fun isEnabled(position: Int): Boolean =
@@ -470,6 +504,12 @@ public abstract class DevSupportManagerBase(
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     resetCurrentContext(reactContext)
+
+    if (perfMonitorOverlayManager != null && reactInstanceDevHelper is PerfMonitorDevHelper) {
+      perfMonitorOverlayManager?.let { manager ->
+        reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
+      }
+    }
   }
 
   override fun onReactInstanceDestroyed(reactContext: ReactContext) {
@@ -574,14 +614,18 @@ public abstract class DevSupportManagerBase(
     val port = if (parsedURL.port != -1) parsedURL.port else parsedURL.defaultPort
     devLoadingViewManager?.showMessage(
         applicationContext.getString(
-            R.string.catalyst_loading_from_url, parsedURL.host + ":" + port))
+            R.string.catalyst_loading_from_url,
+            parsedURL.host + ":" + port,
+        )
+    )
     devLoadingViewVisible = true
   }
 
   @UiThread
   protected fun showDevLoadingViewForRemoteJSEnabled() {
     devLoadingViewManager?.showMessage(
-        applicationContext.getString(R.string.catalyst_debug_connecting))
+        applicationContext.getString(R.string.catalyst_debug_connecting)
+    )
     devLoadingViewVisible = true
   }
 
@@ -593,7 +637,7 @@ public abstract class DevSupportManagerBase(
 
   public fun fetchSplitBundleAndCreateBundleLoader(
       bundlePath: String,
-      callback: CallbackWithBundleLoader
+      callback: CallbackWithBundleLoader,
   ) {
     val bundleUrl = devServerHelper.getDevServerSplitBundleURL(bundlePath)
     // The bundle path may contain the '/' character, which is not allowed in file names.
@@ -612,7 +656,9 @@ public abstract class DevSupportManagerBase(
 
               val bundleLoader =
                   JSBundleLoader.createCachedSplitBundleFromNetworkLoader(
-                      bundleUrl, bundleFile.absolutePath)
+                      bundleUrl,
+                      bundleFile.absolutePath,
+                  )
               callback.onSuccess(bundleLoader)
             }
 
@@ -629,7 +675,8 @@ public abstract class DevSupportManagerBase(
           },
           bundleFile,
           bundleUrl,
-          null)
+          null,
+      )
     }
   }
 
@@ -658,7 +705,7 @@ public abstract class DevSupportManagerBase(
       message: String?,
       stack: Array<StackFrame>,
       errorCookie: Int,
-      errorType: ErrorType
+      errorType: ErrorType,
   ) {
     lastErrorTitle = message
     lastErrorStack = stack
@@ -697,7 +744,8 @@ public abstract class DevSupportManagerBase(
         },
         jsBundleDownloadedFile,
         bundleURL,
-        bundleInfo)
+        bundleInfo,
+    )
   }
 
   private fun reportBundleLoadingFailure(cause: Exception) {
@@ -779,11 +827,14 @@ public abstract class DevSupportManagerBase(
         devLoadingViewManager?.showMessage("Reloading...")
       }
 
+      perfMonitorOverlayManager?.reset()
+
       devServerHelper.openPackagerConnection(
           javaClass.simpleName,
           object : PackagerCommandListener {
             override fun onPackagerConnected() {
               isPackagerConnected = true
+              perfMonitorOverlayManager?.enable()
             }
 
             override fun onPackagerDisconnected() {
@@ -805,7 +856,8 @@ public abstract class DevSupportManagerBase(
             override fun customCommandHandlers(): Map<String, RequestHandler>? {
               return customPackagerCommandHandlers
             }
-          })
+          },
+      )
     } else {
       // hide FPS debug overlay
       debugOverlayController?.setFpsDebugViewVisible(false)
@@ -822,14 +874,11 @@ public abstract class DevSupportManagerBase(
         isReceiverRegistered = false
       }
 
-      // hide redbox dialog
       hideRedboxDialog()
-
-      // hide dev options dialog
       hideDevOptionsDialog()
-
-      // hide loading view
       devLoadingViewManager?.hide()
+      perfMonitorOverlayManager?.reset()
+
       devServerHelper.closePackagerConnection()
     }
   }
@@ -854,15 +903,18 @@ public abstract class DevSupportManagerBase(
       context: Context,
       receiver: BroadcastReceiver,
       filter: IntentFilter,
-      exported: Boolean
+      exported: Boolean,
   ) {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
-        context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+    ) {
       context.registerReceiver(
           receiver,
           filter,
-          if (exported) Context.RECEIVER_EXPORTED else Context.RECEIVER_NOT_EXPORTED)
+          if (exported) Context.RECEIVER_EXPORTED else Context.RECEIVER_NOT_EXPORTED,
+      )
     } else {
       context.registerReceiver(receiver, filter)
     }
@@ -870,12 +922,23 @@ public abstract class DevSupportManagerBase(
 
   override fun openDebugger() {
     devServerHelper.openDebugger(
-        currentReactContext, applicationContext.getString(R.string.catalyst_open_debugger_error))
+        currentReactContext,
+        applicationContext.getString(R.string.catalyst_open_debugger_error),
+        null,
+    )
+  }
+
+  override fun openDebugger(panel: DebuggerFrontendPanelName) {
+    devServerHelper.openDebugger(
+        currentReactContext,
+        applicationContext.getString(R.string.catalyst_open_debugger_error),
+        panel,
+    )
   }
 
   override fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   ) {
     pausedInDebuggerOverlayManager?.showPausedInDebuggerOverlay(message, listener)
   }

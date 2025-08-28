@@ -16,13 +16,18 @@
 #include <optional>
 
 namespace facebook::react {
+class TurboModule;
 
 template <typename T, typename... Args>
 class TurboModuleTestFixture : public ::testing::Test {
+  static_assert(
+      std::is_base_of<TurboModule, T>::value,
+      "T must be derived from TurboModule");
+
  public:
   explicit TurboModuleTestFixture(Args... args)
-      : runtime_(facebook::hermes::makeHermesRuntime()),
-        jsInvoker_(std::make_shared<TestCallInvoker>(runtime_)),
+      : runtime_(hermes::makeHermesRuntime()),
+        jsInvoker_(std::make_shared<TestCallInvoker>(*runtime_)),
         module_(std::make_shared<T>(jsInvoker_, std::forward<Args>(args)...)) {}
 
   void SetUp() override {
@@ -92,6 +97,33 @@ class TurboModuleTestFixture : public ::testing::Test {
                 jsInvoker_));
     jsInvoker_->flushQueue();
     return message;
+  }
+
+  template <typename TEvent>
+  AsyncCallback<TEvent> makeAsyncCallback(
+      std::function<void(TEvent)>&& callback) {
+    auto func = jsi::Function::createFromHostFunction(
+        *runtime_,
+        jsi::PropNameID::forAscii(*runtime_, "callback"),
+        1,
+        [jsInvoker = jsInvoker_, callback = std::move(callback)](
+            jsi::Runtime& rt,
+            [[maybe_unused]] const jsi::Value& thisVal,
+            const jsi::Value* args,
+            size_t count) {
+          if (count < 1) {
+            throw jsi::JSINativeException("callback: Missing argument");
+          }
+          callback(
+              Bridging<TEvent>::fromJs(rt, args[0].asObject(rt), jsInvoker));
+          return jsi::Value::undefined();
+        });
+    return {*runtime_, std::move(func), jsInvoker_};
+  }
+
+  void expectAndFlushQueue(size_t queueSize) {
+    EXPECT_EQ(jsInvoker_->queueSize(), queueSize);
+    jsInvoker_->flushQueue();
   }
 
  protected:

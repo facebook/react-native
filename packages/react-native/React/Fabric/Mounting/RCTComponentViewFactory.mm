@@ -165,7 +165,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
     auto constructor = [RCTLegacyViewManagerInteropComponentView componentDescriptorProvider].constructor;
 
-    auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
+    auto provider = ComponentDescriptorProvider{
+        .handle = componentHandle, .name = componentName, .flavor = flavor, .constructor = constructor};
 
     _providerRegistry.add(provider);
     _componentViewClasses[componentHandle] =
@@ -179,7 +180,8 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   auto componentName = ComponentName{flavor->c_str()};
   auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
   auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
-  auto provider = ComponentDescriptorProvider{componentHandle, componentName, flavor, constructor};
+  auto provider = ComponentDescriptorProvider{
+      .handle = componentHandle, .name = componentName, .flavor = flavor, .constructor = constructor};
 
   _providerRegistry.add(provider);
   _componentViewClasses[componentHandle] =

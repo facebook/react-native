@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d3925084c6606858f33112cd9d1ca733>>
+ * @generated SignedSource<<d5555c830f8d967502f559925e445cf9>>
  */
 
 /**
@@ -76,8 +76,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
-  bool enableFixForParentTagDuringReparenting(jsi::Runtime& runtime);
-
   bool enableFontScaleChangesUpdatingLayout(jsi::Runtime& runtime);
 
   bool enableIOSTextBaselineOffsetPerLine(jsi::Runtime& runtime);
@@ -115,6 +113,8 @@ class NativeReactNativeFeatureFlags
   bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForScrollView(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
@@ -171,6 +171,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double virtualViewHysteresisRatio(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

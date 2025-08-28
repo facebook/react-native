@@ -13,12 +13,12 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.viewmanagers.VirtualViewManagerDelegate
 import com.facebook.react.viewmanagers.VirtualViewManagerInterface
+import com.facebook.react.views.view.ReactClippingViewManager
 import com.facebook.react.views.virtual.VirtualViewMode
 import com.facebook.react.views.virtual.VirtualViewModeChangeEmitter
 import com.facebook.react.views.virtual.VirtualViewModeChangeEvent
@@ -26,7 +26,7 @@ import com.facebook.react.views.virtual.VirtualViewRenderState
 
 @ReactModule(name = ReactVirtualViewManager.REACT_CLASS)
 public class ReactVirtualViewManager :
-    ViewGroupManager<ReactVirtualView>(), VirtualViewManagerInterface<ReactVirtualView> {
+    ReactClippingViewManager<ReactVirtualView>(), VirtualViewManagerInterface<ReactVirtualView> {
 
   private val _delegate = VirtualViewManagerDelegate(this)
 
@@ -85,7 +85,7 @@ public class ReactVirtualViewManager :
 public class VirtualViewEventEmitter(
     private val viewId: Int,
     private val surfaceId: Int,
-    private val dispatcher: EventDispatcher
+    private val dispatcher: EventDispatcher,
 ) : VirtualViewModeChangeEmitter {
   override fun emitModeChange(
       mode: VirtualViewMode,
@@ -101,6 +101,7 @@ public class VirtualViewEventEmitter(
             targetRect,
             thresholdRect,
             synchronous,
-        ))
+        )
+    )
   }
 }

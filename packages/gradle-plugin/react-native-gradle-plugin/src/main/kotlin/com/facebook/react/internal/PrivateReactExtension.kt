@@ -39,12 +39,15 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
               //   - We're inside a user project, so inside the ./android folder. Default should be
               // ../
               // User can always override this default by setting a `root =` inside the template.
-              if (project.rootProject.name == "react-native-github" ||
-                  project.rootProject.name == "react-native-build-from-source") {
+              if (
+                  project.rootProject.name == "react-native-github" ||
+                      project.rootProject.name == "react-native-build-from-source"
+              ) {
                 project.rootProject.layout.projectDirectory.dir("../../")
               } else {
                 project.rootProject.layout.projectDirectory.dir("../")
-              })
+              }
+          )
 
   val reactNativeDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/react-native"))

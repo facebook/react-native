@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b0b9d987a8b10d87e4d8b4c51e75b9ab>>
+ * @generated SignedSource<<5fad964fff693cf34f1d2ab3b666839a>>
  */
 
 /**
@@ -144,11 +144,6 @@ bool NativeReactNativeFeatureFlags::enableFabricRenderer(
   return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
-bool NativeReactNativeFeatureFlags::enableFixForParentTagDuringReparenting(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFixForParentTagDuringReparenting();
-}
-
 bool NativeReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFontScaleChangesUpdatingLayout();
@@ -242,6 +237,11 @@ bool NativeReactNativeFeatureFlags::enableViewCulling(
 bool NativeReactNativeFeatureFlags::enableViewRecycling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableViewRecycling();
+}
+
+bool NativeReactNativeFeatureFlags::enableViewRecyclingForScrollView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForScrollView();
 }
 
 bool NativeReactNativeFeatureFlags::enableViewRecyclingForText(
@@ -382,6 +382,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+double NativeReactNativeFeatureFlags::virtualViewHysteresisRatio(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(

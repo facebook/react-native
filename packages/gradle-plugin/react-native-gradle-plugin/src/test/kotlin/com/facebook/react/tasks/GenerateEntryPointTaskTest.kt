@@ -86,6 +86,7 @@ class GenerateEntryPointTaskTest {
           }
         }
     """
-                .trimIndent())
+                .trimIndent()
+        )
   }
 }

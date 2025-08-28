@@ -10,7 +10,7 @@ package com.facebook.react.internal.featureflags
 public class ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
     private val fabricEnabled: Boolean,
     private val bridgelessEnabled: Boolean,
-    private val turboModulesEnabled: Boolean
+    private val turboModulesEnabled: Boolean,
 ) : ReactNativeNewArchitectureFeatureFlagsDefaults(bridgelessEnabled) {
   override fun useFabricInterop(): Boolean = bridgelessEnabled || fabricEnabled
 

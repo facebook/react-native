@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.util.SparseArray
@@ -29,6 +31,10 @@ import javax.annotation.concurrent.NotThreadSafe
  */
 @NotThreadSafe
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 public open class LayoutAnimationController {
   private val layoutCreateAnimation: AbstractLayoutAnimation = LayoutCreateAnimation()
   private val layoutUpdateAnimation: AbstractLayoutAnimation = LayoutUpdateAnimation()
@@ -49,17 +55,23 @@ public open class LayoutAnimationController {
     val globalDuration = if (config.hasKey("duration")) config.getInt("duration") else 0
     if (config.hasKey(toString(LayoutAnimationType.CREATE))) {
       layoutCreateAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.CREATE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.CREATE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
     if (config.hasKey(toString(LayoutAnimationType.UPDATE))) {
       layoutUpdateAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.UPDATE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.UPDATE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
     if (config.hasKey(toString(LayoutAnimationType.DELETE))) {
       layoutDeleteAnimation.initializeFromConfig(
-          config.getMap(toString(LayoutAnimationType.DELETE))!!, globalDuration)
+          config.getMap(toString(LayoutAnimationType.DELETE))!!,
+          globalDuration,
+      )
       shouldAnimateLayout = true
     }
 
@@ -143,7 +155,8 @@ public open class LayoutAnimationController {
             }
 
             override fun onAnimationRepeat(animation: Animation) = Unit
-          })
+          }
+      )
     } else {
       view.layout(x, y, x + width, y + height)
     }
@@ -185,7 +198,8 @@ public open class LayoutAnimationController {
             override fun onAnimationEnd(anim: Animation) {
               listener.onAnimationEnd()
             }
-          })
+          }
+      )
 
       val animationDuration = animation.duration
       if (animationDuration > maxAnimationDuration) {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<db0ea51c480f1929e47feef73150f7b8>>
+ * @generated SignedSource<<be9f123a66e6fffb684b60be6796b782>>
  */
 
 /**
@@ -140,11 +140,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRenderer();
 
   /**
-   * This feature flag enables a fix for reparenting fix in differentiator
-   */
-  RN_EXPORT static bool enableFixForParentTagDuringReparenting();
-
-  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   RN_EXPORT static bool enableFontScaleChangesUpdatingLayout();
@@ -238,6 +233,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForScrollView();
 
   /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
@@ -378,6 +378,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  RN_EXPORT static double virtualViewHysteresisRatio();
 
   /**
    * Initial prerender ratio for VirtualView.

@@ -347,7 +347,7 @@ CommandNativeComponentProps::CommandNativeComponentProps(
     const CommandNativeComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
+    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {std::string{\\"\\"}})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName CommandNativeComponentProps::getDiffPropsImplementationTarget() const {
@@ -1168,7 +1168,7 @@ InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
     const InterfaceOnlyComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})) {}
+    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {std::string{\\"\\"}})) {}
     
 #ifdef RN_SERIALIZABLE_STATE
 ComponentName InterfaceOnlyComponentProps::getDiffPropsImplementationTarget() const {
@@ -1554,7 +1554,7 @@ StringPropComponentProps::StringPropComponentProps(
     const StringPropComponentProps &sourceProps,
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
-    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {\\"\\"})),
+    accessibilityHint(convertRawProp(context, rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, {std::string{\\"\\"}})),
     accessibilityRole(convertRawProp(context, rawProps, \\"accessibilityRole\\", sourceProps.accessibilityRole, {})) {}
     
 #ifdef RN_SERIALIZABLE_STATE

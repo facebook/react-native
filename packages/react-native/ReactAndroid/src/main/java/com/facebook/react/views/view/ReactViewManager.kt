@@ -72,7 +72,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
-      view: ReactViewGroup
+      view: ReactViewGroup,
   ): ReactViewGroup? {
     // We don't want to run the view clipping when the view is being prepared for recycling to avoid
     // have size changes iterate over child view that should be removed anyway
@@ -190,15 +190,18 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_END_START_RADIUS,
               ViewProps.BORDER_START_END_RADIUS,
               ViewProps.BORDER_START_START_RADIUS,
-          ])
+          ]
+  )
   public open fun setBorderRadius(view: ReactViewGroup, index: Int, rawBorderRadius: Dynamic) {
     var borderRadius = LengthPercentage.setFromDynamic(rawBorderRadius)
 
     // We do not support percentage border radii on Paper in order to be consistent with iOS (to
     // avoid developer surprise if it works on one platform but not another).
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
-        borderRadius != null &&
-        borderRadius.type == LengthPercentageType.PERCENT) {
+    if (
+        ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
+            borderRadius != null &&
+            borderRadius.type == LengthPercentageType.PERCENT
+    ) {
       borderRadius = null
     }
 
@@ -207,7 +210,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Don't use setBorderRadius(view, int, Float) as it was deprecated in React Native 0.75.0.",
-      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"))
+      ReplaceWith("setBorderRadius(view, index, DynamicFromObject(borderRadius)"),
+  )
   public open fun setBorderRadius(view: ReactViewGroup, index: Int, borderRadius: Float) {
     setBorderRadius(view, index, DynamicFromObject(borderRadius))
   }
@@ -272,7 +276,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   @ReactProp(name = ViewProps.NEEDS_OFFSCREEN_ALPHA_COMPOSITING)
   public open fun setNeedsOffscreenAlphaCompositing(
       view: ReactViewGroup,
-      needsOffscreenAlphaCompositing: Boolean
+      needsOffscreenAlphaCompositing: Boolean,
   ) {
     view.setNeedsOffscreenAlphaCompositing(needsOffscreenAlphaCompositing)
   }
@@ -288,7 +292,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_START_WIDTH,
               ViewProps.BORDER_END_WIDTH,
           ],
-      defaultFloat = Float.NaN)
+      defaultFloat = Float.NaN,
+  )
   public open fun setBorderWidth(view: ReactViewGroup, index: Int, width: Float) {
     BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width)
   }
@@ -307,10 +312,14 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
               ViewProps.BORDER_BLOCK_END_COLOR,
               ViewProps.BORDER_BLOCK_START_COLOR,
           ],
-      customType = "Color")
+      customType = "Color",
+  )
   public open fun setBorderColor(view: ReactViewGroup, index: Int, color: Int?) {
     BackgroundStyleApplicator.setBorderColor(
-        view, LogicalEdge.fromSpacingType(SPACING_TYPES[index]), color)
+        view,
+        LogicalEdge.fromSpacingType(SPACING_TYPES[index]),
+        color,
+    )
   }
 
   @ReactProp(name = ViewProps.COLLAPSABLE)
@@ -333,7 +342,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
         val eventDispatcher =
             UIManagerHelper.getEventDispatcherForReactTag((view.context as ReactContext), view.id)
         eventDispatcher?.dispatchEvent(
-            ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id))
+            ViewGroupClickEvent(UIManagerHelper.getSurfaceId(view.context), view.id)
+        )
       }
 
       // Clickable elements are focusable. On API 26, this is taken care by setClickable.
@@ -364,7 +374,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   override fun setTransformProperty(
       view: ReactViewGroup,
       transforms: ReadableArray?,
-      transformOrigin: ReadableArray?
+      transformOrigin: ReadableArray?,
   ) {
     super.setTransformProperty(view, transforms, transformOrigin)
     view.setBackfaceVisibilityDependantOpacity()
@@ -380,7 +390,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @Deprecated(
       "Use receiveCommand(View, String, ReadableArray)",
-      ReplaceWith("receiveCommand(root, commandIdString, args)"))
+      ReplaceWith("receiveCommand(root, commandIdString, args)"),
+  )
   override fun receiveCommand(root: ReactViewGroup, commandId: Int, args: ReadableArray?) {
     when (commandId) {
       CMD_HOTSPOT_UPDATE -> handleHotspotUpdate(root, args)
@@ -400,7 +411,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   private fun handleSetPressed(root: ReactViewGroup, args: ReadableArray?) {
     if (args == null || args.size() != 1) {
       throw JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'setPressed' command")
+          "Illegal number of arguments for 'setPressed' command"
+      )
     }
     root.isPressed = args.getBoolean(0)
   }
@@ -408,7 +420,8 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   private fun handleHotspotUpdate(root: ReactViewGroup, args: ReadableArray?) {
     if (args == null || args.size() != 2) {
       throw JSApplicationIllegalArgumentException(
-          "Illegal number of arguments for 'updateHotspot' command")
+          "Illegal number of arguments for 'updateHotspot' command"
+      )
     }
 
     val x = args.getDouble(0).dpToPx()

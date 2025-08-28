@@ -187,34 +187,36 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   std::vector<LineMeasurement> paragraphLines{};
   auto blockParagraphLines = &paragraphLines;
 
-  [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
-                                          usingBlock:^(
-                                              CGRect overallRect,
-                                              CGRect usedRect,
-                                              NSTextContainer *_Nonnull usedTextContainer,
-                                              NSRange lineGlyphRange,
-                                              BOOL *_Nonnull stop) {
-                                            NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
-                                                                                      actualGlyphRange:nil];
-                                            NSString *renderedString = [textStorage.string substringWithRange:range];
-                                            UIFont *font = [[textStorage attributedSubstringFromRange:range]
-                                                     attribute:NSFontAttributeName
-                                                       atIndex:0
-                                                effectiveRange:nil];
-                                            auto rect = facebook::react::Rect{
-                                                facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
-                                                facebook::react::Size{usedRect.size.width, usedRect.size.height}};
+  [layoutManager
+      enumerateLineFragmentsForGlyphRange:glyphRange
+                               usingBlock:^(
+                                   CGRect overallRect,
+                                   CGRect usedRect,
+                                   NSTextContainer *_Nonnull usedTextContainer,
+                                   NSRange lineGlyphRange,
+                                   BOOL *_Nonnull stop) {
+                                 NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
+                                                                           actualGlyphRange:nil];
+                                 NSString *renderedString = [textStorage.string substringWithRange:range];
+                                 UIFont *font =
+                                     [[textStorage attributedSubstringFromRange:range] attribute:NSFontAttributeName
+                                                                                         atIndex:0
+                                                                                  effectiveRange:nil];
+                                 auto rect = facebook::react::Rect{
+                                     .origin = facebook::react::Point{.x = usedRect.origin.x, .y = usedRect.origin.y},
+                                     .size = facebook::react::Size{
+                                         .width = usedRect.size.width, .height = usedRect.size.height}};
 
-                                            CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-                                            auto line = LineMeasurement{
-                                                std::string([renderedString UTF8String]),
-                                                rect,
-                                                overallRect.size.height - baseline,
-                                                font.capHeight,
-                                                baseline,
-                                                font.xHeight};
-                                            blockParagraphLines->push_back(line);
-                                          }];
+                                 CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                                 auto line = LineMeasurement{
+                                     std::string([renderedString UTF8String]),
+                                     rect,
+                                     overallRect.size.height - baseline,
+                                     font.capHeight,
+                                     baseline,
+                                     font.xHeight};
+                                 blockParagraphLines->push_back(line);
+                               }];
   return paragraphLines;
 }
 
@@ -412,19 +414,24 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
                   CGRect frame;
-                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-
-                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
+                  UIFont *font = [[textStorage attributedSubstringFromRange:range] attribute:NSFontAttributeName
+                                                                                     atIndex:0
+                                                                              effectiveRange:nil];
+                  frame = {
+                      .origin =
+                          {glyphRect.origin.x,
+                           glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
+                      .size = attachmentSize};
 
                   auto rect = facebook::react::Rect{
-                      facebook::react::Point{frame.origin.x, frame.origin.y},
-                      facebook::react::Size{frame.size.width, frame.size.height}};
+                      .origin = facebook::react::Point{.x = frame.origin.x, .y = frame.origin.y},
+                      .size = facebook::react::Size{.width = frame.size.width, .height = frame.size.height}};
 
                   attachments.push_back(TextMeasurement::Attachment{.frame = rect, .isClipped = false});
                 }
               }];
 
-  return TextMeasurement{{size.width, size.height}, attachments};
+  return TextMeasurement{.size = {.width = size.width, .height = size.height}, .attachments = attachments};
 }
 
 @end

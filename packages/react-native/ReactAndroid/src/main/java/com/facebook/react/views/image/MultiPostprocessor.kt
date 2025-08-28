@@ -27,7 +27,7 @@ internal class MultiPostprocessor private constructor(postprocessors: List<Postp
 
   override fun process(
       sourceBitmap: Bitmap,
-      bitmapFactory: PlatformBitmapFactory
+      bitmapFactory: PlatformBitmapFactory,
   ): CloseableReference<Bitmap> {
     var prevBitmap: CloseableReference<Bitmap>? = null
     var nextBitmap: CloseableReference<Bitmap>? = null

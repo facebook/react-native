@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c380c11e27a94a4c588cf682cac5fe8d>>
+ * @generated SignedSource<<c14fe36952f9d33a4bf075be708f386f>>
  * @flow strict
  * @noformat
  */
@@ -45,7 +45,6 @@ export interface Spec extends TurboModule {
   +enableEagerRootViewAttachment?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
-  +enableFixForParentTagDuringReparenting?: () => boolean;
   +enableFontScaleChangesUpdatingLayout?: () => boolean;
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
@@ -65,6 +64,7 @@ export interface Spec extends TurboModule {
   +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
+  +enableViewRecyclingForScrollView?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
@@ -93,6 +93,7 @@ export interface Spec extends TurboModule {
   +useShadowNodeStateOnClone?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
+  +virtualViewHysteresisRatio?: () => number;
   +virtualViewPrerenderRatio?: () => number;
 }
 

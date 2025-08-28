@@ -43,7 +43,7 @@ let reactNativeDependencies = BinaryTarget(
 
 let hermesPrebuilt = BinaryTarget(
   name: .hermesPrebuilt,
-  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermes.xcframework",
+  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermesvm.xcframework",
   searchPaths: [".build/artifacts/hermes/destroot/include"]
 )
 
@@ -95,7 +95,10 @@ let reactDebug = RNTarget(
 let jsi = RNTarget(
   name: .jsi,
   path: "ReactCommon/jsi",
-  excludedPaths: ["jsi/test", "CMakeLists.txt", "jsi/CMakeLists.txt"],
+  // JSI is a part of hermes-engine. Including them also in react-native will violate the One Definition Rule.
+  // Precompiled binaries are only supported with hermes - so we can safely exclude the jsi.cpp file.
+  // https://github.com/facebook/react-native/issues/53257
+  excludedPaths: ["jsi/test", "jsi/jsi.cpp", "CMakeLists.txt", "jsi/CMakeLists.txt"],
   dependencies: [.reactNativeDependencies]
 )
 
@@ -441,6 +444,7 @@ let reactFabricComponents = RNTarget(
     "components/view/platform/android",
     "components/view/platform/windows",
     "components/view/platform/macos",
+    "components/switch/iosswitch/react/renderer/components/switch/MacOSSwitchShadowNode.mm",
     "components/textinput/platform/android",
     "components/text/platform/android",
     "components/textinput/platform/macos",
@@ -453,7 +457,7 @@ let reactFabricComponents = RNTarget(
     "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "components/virtualviewexperimental", "textlayoutmanager", "textlayoutmanager/platform/ios"]
+  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "components/virtualviewexperimental", "textlayoutmanager", "textlayoutmanager/platform/ios", "components/switch/iosswitch"]
 )
 
 /// React-FabricImage.podspec

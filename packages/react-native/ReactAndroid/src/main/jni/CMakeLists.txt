@@ -29,9 +29,6 @@ if(CCACHE_FOUND)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
 endif(CCACHE_FOUND)
 
-# Make sure every shared lib includes a .note.gnu.build-id header
-add_link_options(-Wl,--build-id)
-
 function(add_react_android_subdir relative_path)
   add_subdirectory(${REACT_ANDROID_DIR}/${relative_path} ReactAndroid/${relative_path})
 endfunction()

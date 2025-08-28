@@ -27,12 +27,12 @@ function _setDevelopmentModeForTests(dev: mixed) {
 
   beforeAll(() => {
     originalDev = global.__DEV__;
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = dev;
   });
 
   afterAll(() => {
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = originalDev;
   });
 }

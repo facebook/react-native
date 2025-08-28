@@ -14,8 +14,7 @@ import type {
   TestSuiteResult,
 } from '../runtime/setup';
 import type {TestSnapshotResults} from '../runtime/snapshotContext';
-import type {BenchmarkTestArtifact} from './benchmarkUtils';
-import type {FantomTestConfig} from './getFantomTestConfigs';
+import type {BenchmarkResult} from '../src/Benchmark';
 import type {
   AsyncCommandResult,
   ConsoleLogMessage,
@@ -30,7 +29,13 @@ import {run as runHermesCompiler} from './executables/hermesc';
 import {run as runFantomTester} from './executables/tester';
 import formatFantomConfig from './formatFantomConfig';
 import getFantomTestConfigs from './getFantomTestConfigs';
-import {JS_TRACES_OUTPUT_PATH, getTestBuildOutputPath} from './paths';
+import {
+  JS_HEAP_SNAPSHOTS_OUTPUT_PATH,
+  JS_TRACES_OUTPUT_PATH,
+  buildJSHeapSnapshotsOutputPathTemplate,
+  buildJSTracesOutputPath,
+  getTestBuildOutputPath,
+} from './paths';
 import {
   getInitialSnapshotData,
   updateSnapshotsAndGetJestSnapshotResult,
@@ -53,6 +58,7 @@ import readline from 'readline';
 
 const TEST_BUILD_OUTPUT_PATH = getTestBuildOutputPath();
 fs.mkdirSync(TEST_BUILD_OUTPUT_PATH, {recursive: true});
+fs.mkdirSync(JS_HEAP_SNAPSHOTS_OUTPUT_PATH, {recursive: true});
 
 if (EnvironmentOptions.profileJS) {
   fs.mkdirSync(JS_TRACES_OUTPUT_PATH, {recursive: true});
@@ -74,7 +80,7 @@ function buildError(
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
-): Promise<TestSuiteResult> {
+): Promise<[TestSuiteResult, ?BenchmarkResult]> {
   const stdoutChunks = [];
   const stderrChunks = [];
 
@@ -86,7 +92,7 @@ async function processRNTesterCommandResult(
     stderrChunks.push(chunk);
   });
 
-  let testResult;
+  let testResult, benchmarkResult;
 
   const rl = readline.createInterface({input: result.childProcess.stdout});
   rl.on('line', (rawLine: string) => {
@@ -109,6 +115,9 @@ async function processRNTesterCommandResult(
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
+        break;
+      case 'benchmark-result':
+        benchmarkResult = parsed;
         break;
       case 'console-log':
         printConsoleLog(parsed);
@@ -146,7 +155,7 @@ async function processRNTesterCommandResult(
     );
   }
 
-  return testResult;
+  return [testResult, benchmarkResult];
 }
 
 function generateBytecodeBundle({
@@ -217,6 +226,7 @@ module.exports = async function runTest(
   );
 
   const testResultsByConfig = [];
+  const benchmarkResults = [];
 
   const skippedTestResults = ({
     ancestorTitles,
@@ -235,7 +245,6 @@ module.exports = async function runTest(
       snapshotResults: {} as TestSnapshotResults,
       status: 'pending' as TestCaseResult['status'],
       testFilePath: testPath,
-      testArtifact: {} as mixed,
       title,
     },
   ];
@@ -277,8 +286,21 @@ module.exports = async function runTest(
     }
 
     const jsTraceOutputPath = EnvironmentOptions.profileJS
-      ? buildJSTracesOutputPath(testPath, testConfig, testConfigs.length > 1)
+      ? buildJSTracesOutputPath({
+          testPath,
+          testConfig,
+          isMultiConfigTest: testConfigs.length > 1,
+        })
       : null;
+
+    const [
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
+    ] = buildJSHeapSnapshotsOutputPathTemplate({
+      testPath,
+      testConfig,
+      isMultiConfigTest: testConfigs.length > 1,
+    });
 
     const entrypointContents = entrypointTemplate({
       testPath: `${path.relative(TEST_BUILD_OUTPUT_PATH, testPath)}`,
@@ -289,6 +311,8 @@ module.exports = async function runTest(
         updateSnapshot: snapshotState._updateSnapshot,
         data: getInitialSnapshotData(snapshotState),
       },
+      jsHeapSnapshotOutputPathTemplate,
+      jsHeapSnapshotOutputPathTemplateToken,
       jsTraceOutputPath,
     });
 
@@ -340,6 +364,13 @@ module.exports = async function runTest(
       EnvironmentOptions.printCLIOutput ? 'info' : 'error',
     ];
 
+    if (EnvironmentOptions.debugJS) {
+      rnTesterCommandArgs.push(
+        '--inspectorPort',
+        nullthrows(process.env.__FANTOM_METRO_PORT__),
+      );
+    }
+
     const rnTesterCommandResult = EnvironmentOptions.isOSS
       ? runCommand(
           path.join(__dirname, '..', 'build', 'tester', 'fantom_tester'),
@@ -350,9 +381,8 @@ module.exports = async function runTest(
           hermesVariant: testConfig.hermesVariant,
         });
 
-    const processedResult = await processRNTesterCommandResult(
-      rnTesterCommandResult,
-    );
+    const [processedResult, benchmarkResult] =
+      await processRNTesterCommandResult(rnTesterCommandResult);
 
     if (containsError(processedResult) || EnvironmentOptions.profileJS) {
       await createSourceMap({
@@ -418,6 +448,13 @@ module.exports = async function runTest(
       });
     }
 
+    if (benchmarkResult != null) {
+      benchmarkResults.push({
+        title: testResults[0]?.ancestorTitles?.[0] ?? maybeCommonAncestor,
+        result: benchmarkResult,
+      });
+    }
+
     testResultsByConfig.push(testResults);
   }
 
@@ -434,17 +471,7 @@ module.exports = async function runTest(
     snapshotResults,
   );
 
-  printBenchmarkResultsRanking(
-    testResults.map(testResult => {
-      // $FlowExpectedError[incompatible-cast]
-      const testArtifact = testResult.testArtifact as ?BenchmarkTestArtifact;
-      const title = testResult.ancestorTitles[0];
-      return {
-        title,
-        testArtifact,
-      };
-    }),
-  );
+  printBenchmarkResultsRanking(benchmarkResults);
 
   return {
     testFilePath: testPath,
@@ -485,21 +512,4 @@ function containsError(testResult: TestSuiteResult): boolean {
         result.failureDetails.length > 0 || result.failureMessages.length > 0,
     )
   );
-}
-
-function buildJSTracesOutputPath(
-  testPath: string,
-  testConfig: FantomTestConfig,
-  isMultiConfig: boolean,
-): string {
-  let fileName;
-
-  if (isMultiConfig) {
-    const configSummary = formatFantomConfig(testConfig, {style: 'short'});
-    fileName = `${path.basename(testPath)}-${configSummary}-${Date.now()}.cpuprofile`;
-  } else {
-    fileName = `${path.basename(testPath)}-${Date.now()}.cpuprofile`;
-  }
-
-  return path.join(JS_TRACES_OUTPUT_PATH, fileName);
 }

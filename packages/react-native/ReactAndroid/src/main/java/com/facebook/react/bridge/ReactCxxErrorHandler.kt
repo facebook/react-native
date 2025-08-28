@@ -16,10 +16,16 @@ import java.lang.reflect.Method
 
 @DoNotStrip
 @LegacyArchitecture
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal object ReactCxxErrorHandler {
   init {
     LegacyArchitectureLogger.assertLegacyArchitecture(
-        "ReactCxxErrorHandler", LegacyArchitectureLogLevel.WARNING)
+        "ReactCxxErrorHandler",
+        LegacyArchitectureLogLevel.WARNING,
+    )
   }
 
   private var handleErrorFunc: Method? = null

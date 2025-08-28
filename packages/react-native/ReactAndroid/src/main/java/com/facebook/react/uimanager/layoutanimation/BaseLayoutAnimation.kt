@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
@@ -17,6 +19,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   abstract fun isReverse(): Boolean
 
@@ -42,7 +48,8 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
               Animation.RELATIVE_TO_SELF,
               .5f,
               Animation.RELATIVE_TO_SELF,
-              .5f)
+              .5f,
+          )
         }
 
         AnimatedPropertyType.SCALE_X -> {
@@ -56,7 +63,8 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
               Animation.RELATIVE_TO_SELF,
               .5f,
               Animation.RELATIVE_TO_SELF,
-              0f)
+              0f,
+          )
         }
 
         AnimatedPropertyType.SCALE_Y -> {
@@ -70,7 +78,8 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
               Animation.RELATIVE_TO_SELF,
               0f,
               Animation.RELATIVE_TO_SELF,
-              .5f)
+              .5f,
+          )
         }
       }
     } ?: throw IllegalViewOperationException("Missing animated property from animation config")
@@ -79,7 +88,9 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "BaseLayoutAnimation", LegacyArchitectureLogLevel.ERROR)
+          "BaseLayoutAnimation",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

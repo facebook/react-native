@@ -75,7 +75,9 @@ module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
 
-suppress_type=$FlowFixMe
+experimental.only_support_flow_fixme_and_expected_error=true
+experimental.require_suppression_with_error_code=true
+experimental.invariant_subtyping_error_message_improvement=true
 
 ban_spread_key_props=true
 
@@ -100,4 +102,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.278.0
+^0.280.0

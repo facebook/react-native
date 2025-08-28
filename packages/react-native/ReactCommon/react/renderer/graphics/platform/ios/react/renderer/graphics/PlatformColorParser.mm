@@ -43,10 +43,10 @@ inline facebook::react::SharedColor RCTPlatformColorComponentsFromDynamicItems(
   }
 
   Color color = Color(DynamicColor{
-      (*lightSharedColor).getColor(),
-      (*darkSharedColor).getColor(),
-      (*highContrastLightSharedColor).getColor(),
-      (*highContrastDarkSharedColor).getColor()});
+      .lightColor = (*lightSharedColor).getColor(),
+      .darkColor = (*darkSharedColor).getColor(),
+      .highContrastLightColor = (*highContrastLightSharedColor).getColor(),
+      .highContrastDarkColor = (*highContrastDarkSharedColor).getColor()});
   return SharedColor(color);
 }
 

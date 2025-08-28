@@ -45,7 +45,7 @@ describe('MutationObserver', () => {
   describe('constructor(callback)', () => {
     it('should throw if `callback` is not provided', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new MutationObserver();
       }).toThrow(
         "Failed to construct 'MutationObserver': 1 argument required, but only 0 present.",
@@ -54,7 +54,7 @@ describe('MutationObserver', () => {
 
     it('should throw if `callback` is not a function', () => {
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         return new MutationObserver('not a function!');
       }).toThrow(
         "Failed to construct 'MutationObserver': parameter 1 is not of type 'Function'.",
@@ -66,7 +66,7 @@ describe('MutationObserver', () => {
     it('should throw if `target` is not a `ReactNativeElement`', () => {
       const observer = new MutationObserver(() => {});
       expect(() => {
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer.observe('something');
       }).toThrow(
         "Failed to execute 'observe' on 'MutationObserver': parameter 1 is not of type 'ReactNativeElement'.",
@@ -92,7 +92,7 @@ describe('MutationObserver', () => {
 
       expect(() => {
         const observer = new MutationObserver(() => {});
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer.observe(node, {childList: false});
       }).toThrow(
         "Failed to execute 'observe' on 'MutationObserver': The options object must set 'childList' to true.",
@@ -105,7 +105,7 @@ describe('MutationObserver', () => {
 
       expect(() => {
         const observer = new MutationObserver(() => {});
-        // $FlowExpectedError[incompatible-call]
+        // $FlowExpectedError[incompatible-type]
         observer.observe(node, {childList: 1});
       }).not.toThrow();
     });

@@ -14,5 +14,5 @@ data class ModelAutolinkingAndroidProjectJson(
     val applicationId: String,
     val mainActivity: String,
     val watchModeCommandParams: List<String>?,
-    val dependencyConfiguration: String?
+    val dependencyConfiguration: String?,
 )

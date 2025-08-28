@@ -48,7 +48,8 @@ public object DefaultNewArchitectureEntryPoint {
       message =
           "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
               "Please use load() instead when loading the New Architecture.",
-      replaceWith = ReplaceWith("load()"))
+      replaceWith = ReplaceWith("load()"),
+  )
   public fun load(
       turboModulesEnabled: Boolean = true,
   ) {
@@ -60,7 +61,8 @@ public object DefaultNewArchitectureEntryPoint {
       message =
           "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
               "Please use load() instead when loading the New Architecture.",
-      replaceWith = ReplaceWith("load()"))
+      replaceWith = ReplaceWith("load()"),
+  )
   public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
@@ -73,11 +75,12 @@ public object DefaultNewArchitectureEntryPoint {
       message =
           "Loading the entry point with different flags for Fabric, TurboModule and Bridgeless is deprecated." +
               "Please use load() instead when loading the New Architecture.",
-      replaceWith = ReplaceWith("load()"))
+      replaceWith = ReplaceWith("load()"),
+  )
   public fun load(
       turboModulesEnabled: Boolean = true,
       fabricEnabled: Boolean = true,
-      bridgelessEnabled: Boolean = true
+      bridgelessEnabled: Boolean = true,
   ) {
     val (isValid, errorMessage) =
         isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
@@ -88,7 +91,8 @@ public object DefaultNewArchitectureEntryPoint {
     when (releaseLevel) {
       ReleaseLevel.EXPERIMENTAL -> {
         ReactNativeFeatureFlags.override(
-            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android())
+            ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android()
+        )
       }
       ReleaseLevel.CANARY -> {
         ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
@@ -96,7 +100,11 @@ public object DefaultNewArchitectureEntryPoint {
       ReleaseLevel.STABLE -> {
         ReactNativeFeatureFlags.override(
             ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
-                fabricEnabled, bridgelessEnabled, turboModulesEnabled))
+                fabricEnabled,
+                bridgelessEnabled,
+                turboModulesEnabled,
+            )
+        )
       }
     }
 
@@ -148,7 +156,7 @@ public object DefaultNewArchitectureEntryPoint {
   public fun isConfigurationValid(
       turboModulesEnabled: Boolean,
       fabricEnabled: Boolean,
-      bridgelessEnabled: Boolean
+      bridgelessEnabled: Boolean,
   ): Pair<Boolean, String> =
       when {
         fabricEnabled && !turboModulesEnabled ->

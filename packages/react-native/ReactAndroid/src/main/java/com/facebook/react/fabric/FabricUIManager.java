@@ -70,6 +70,7 @@ import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatur
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
@@ -97,6 +98,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -725,6 +727,23 @@ public class FabricUIManager
     return true;
   }
 
+  /**
+   * This method is used to get the encoded screen size without vertical insets for a given surface.
+   * It's used by the Modal component to determine the size of the screen without vertical insets.
+   * The method is private as it's accessed via JNI from C++.
+   *
+   * @param surfaceId The surface ID of the surface for which the Modal is going to render.
+   * @return The encoded screen size as a long (both width and height) are represented without
+   *     vertical insets.
+   */
+  private long getEncodedScreenSizeWithoutVerticalInsets(int surfaceId) {
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    Objects.requireNonNull(surfaceMountingManager);
+    ThemedReactContext context = Objects.requireNonNull(surfaceMountingManager.getContext());
+    return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
+        context.getCurrentActivity());
+  }
+
   @Override
   public void addUIManagerEventListener(UIManagerListener listener) {
     mListeners.add(listener);
@@ -916,14 +935,14 @@ public class FabricUIManager
     if (shouldSchedule) {
       Assertions.assertNotNull(mountItem, "MountItem is null");
       mMountItemDispatcher.addMountItem(mountItem);
-      Runnable runnable =
-          new GuardedRunnable(mReactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              mMountItemDispatcher.tryDispatchMountItems();
-            }
-          };
       if (UiThreadUtil.isOnUiThread()) {
+        Runnable runnable =
+            new GuardedRunnable(mReactApplicationContext) {
+              @Override
+              public void runGuarded() {
+                mMountItemDispatcher.tryDispatchMountItems();
+              }
+            };
         runnable.run();
       }
     }
@@ -1353,6 +1372,7 @@ public class FabricUIManager
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
         if (mountItem != null
+            && mountItem.getSurfaceId() != View.NO_ID
             && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
           mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }

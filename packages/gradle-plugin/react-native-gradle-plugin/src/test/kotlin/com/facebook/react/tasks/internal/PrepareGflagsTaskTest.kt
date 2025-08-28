@@ -125,7 +125,8 @@ typedef unsigned __int64 uint64;
 #endif
 
 } // namespace GFLAGS_NAMESPACE
-""")
+"""
+      )
     }
     File(gflagspath, "gflags-1.0.0/src/config.h.in").apply {
       parentFile.mkdirs()
@@ -188,7 +189,8 @@ typedef unsigned __int64 uint64;
 #endif
 
 } // namespace GFLAGS_NAMESPACE
-""")
+""",
+    )
 
     val configFile = File(output, "gflags/config.h")
     assertThat(configFile.exists()).isTrue()

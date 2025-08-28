@@ -29,10 +29,7 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
 } from './internals/RawPerformanceEntry';
-import {
-  getCurrentTimeStamp,
-  warnNoNativePerformance,
-} from './internals/Utilities';
+import {getCurrentTimeStamp} from './internals/Utilities';
 import MemoryInfo from './MemoryInfo';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import MaybeNativePerformance from './specs/NativePerformance';
@@ -78,18 +75,16 @@ const MEASURE_OPTIONS_REUSABLE_OBJECT: {...PerformanceMeasureInit} = {
   detail: undefined,
 };
 
-const getMarkTimeForMeasure = cachedGetMarkTime
-  ? (markName: string): number => {
-      const markTime = cachedGetMarkTime(markName);
-      if (markTime == null) {
-        throw new DOMException(
-          `Failed to execute 'measure' on 'Performance': The mark '${markName}' does not exist.`,
-          'SyntaxError',
-        );
-      }
-      return markTime;
-    }
-  : undefined;
+const getMarkTimeForMeasure = (markName: string): number => {
+  const markTime = cachedGetMarkTime(markName);
+  if (markTime == null) {
+    throw new DOMException(
+      `Failed to execute 'measure' on 'Performance': The mark '${markName}' does not exist.`,
+      'SyntaxError',
+    );
+  }
+  return markTime;
+};
 
 /**
  * Partial implementation of the Performance interface for RN,
@@ -150,11 +145,6 @@ export default class Performance {
     // IMPORTANT: this method has been micro-optimized.
     // Please run the benchmarks in `Performance-benchmarks-itest` to ensure
     // changes do not regress performance.
-
-    if (cachedReportMark === undefined) {
-      warnNoNativePerformance();
-      return new PerformanceMark(markName, {startTime: 0});
-    }
 
     if (markName === undefined) {
       throw new TypeError(
@@ -225,14 +215,6 @@ export default class Performance {
     // Please run the benchmarks in `Performance-benchmarks-itest` to ensure
     // changes do not regress performance.
 
-    if (
-      getMarkTimeForMeasure === undefined ||
-      cachedReportMeasure === undefined
-    ) {
-      warnNoNativePerformance();
-      return new PerformanceMeasure(measureName, {startTime: 0, duration: 0});
-    }
-
     let resolvedMeasureName: string;
     let resolvedStartTime: number;
     let resolvedDuration: number;
@@ -245,7 +227,7 @@ export default class Performance {
     }
 
     resolvedMeasureName =
-      measureName === 'string' ? measureName : String(measureName);
+      typeof measureName === 'string' ? measureName : String(measureName);
 
     if (startMarkOrOptions != null) {
       switch (typeof startMarkOrOptions) {

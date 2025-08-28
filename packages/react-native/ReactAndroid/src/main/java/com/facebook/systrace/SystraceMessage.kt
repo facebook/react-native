@@ -43,7 +43,8 @@ internal object SystraceMessage {
                 " (${java.lang.String.join(", ", args)})"
               } else {
                 ""
-              })
+              },
+      )
     }
 
     override fun arg(key: String, value: Any): Builder {

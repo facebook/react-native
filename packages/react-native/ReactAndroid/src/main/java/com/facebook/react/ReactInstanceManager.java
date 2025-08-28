@@ -143,6 +143,8 @@ import java.util.Set;
  */
 @ThreadSafe
 @LegacyArchitecture
+@Deprecated(
+    since = "This class is part of Legacy Architecture and will be removed in a future release")
 public class ReactInstanceManager {
 
   static {
@@ -229,6 +231,9 @@ public class ReactInstanceManager {
     return new ReactInstanceManagerBuilder();
   }
 
+  /**
+   * @noinspection deprecation
+   */
   /* package */ ReactInstanceManager(
       Context applicationContext,
       @Nullable Activity currentActivity,
@@ -1565,14 +1570,7 @@ public class ReactInstanceManager {
     SystraceMessage.beginSection(TRACE_TAG_REACT, "processPackage")
         .arg("className", reactPackage.getClass().getSimpleName())
         .flush();
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).startProcessPackage();
-    }
     nativeModuleRegistryBuilder.processPackage(reactPackage);
-
-    if (reactPackage instanceof ReactPackageLogger) {
-      ((ReactPackageLogger) reactPackage).endProcessPackage();
-    }
     SystraceMessage.endSection(TRACE_TAG_REACT).flush();
   }
 

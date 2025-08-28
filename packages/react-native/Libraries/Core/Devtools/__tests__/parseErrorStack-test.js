@@ -38,7 +38,7 @@ describe('parseErrorStack', function () {
 
   it('ignores bad inputs', function () {
     expect(parseErrorStack(undefined)).toEqual([]);
-    // $FlowExpectedError[incompatible-call]
+    // $FlowExpectedError[incompatible-type]
     expect(parseErrorStack(null)).toEqual([]);
   });
 });

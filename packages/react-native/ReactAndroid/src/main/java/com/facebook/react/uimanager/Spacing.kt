@@ -66,11 +66,13 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
    */
   public operator fun get(spacingType: Int): Float {
     val defaultVal =
-        if (spacingType == START ||
-            spacingType == END ||
-            spacingType == BLOCK ||
-            spacingType == BLOCK_END ||
-            spacingType == BLOCK_START) {
+        if (
+            spacingType == START ||
+                spacingType == END ||
+                spacingType == BLOCK ||
+                spacingType == BLOCK_END ||
+                spacingType == BLOCK_START
+        ) {
           YogaConstants.UNDEFINED
         } else {
           defaultValue
@@ -180,7 +182,8 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
             256, /*ALL*/
             512, /*BLOCK*/
             1024, /*BLOCK_END*/
-            2048)
+            2048,
+        )
 
     private fun newFullSpacingArray(): FloatArray {
       return floatArrayOf(
@@ -195,7 +198,8 @@ public class Spacing(private val defaultValue: Float, private val spacing: Float
           YogaConstants.UNDEFINED,
           YogaConstants.UNDEFINED,
           YogaConstants.UNDEFINED,
-          YogaConstants.UNDEFINED)
+          YogaConstants.UNDEFINED,
+      )
     }
   }
 }

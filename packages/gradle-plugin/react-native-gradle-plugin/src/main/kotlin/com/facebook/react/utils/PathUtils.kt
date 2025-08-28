@@ -30,7 +30,8 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
     detectEntryFile(
         entryFile = config.entryFile.orNull?.asFile,
         reactRoot = config.root.get().asFile,
-        envVariableOverride = envVariableOverride)
+        envVariableOverride = envVariableOverride,
+    )
 
 /**
  * Computes the CLI file for React Native. The Algo follows this order:
@@ -42,7 +43,8 @@ internal fun detectedEntryFile(config: ReactExtension, envVariableOverride: Stri
 internal fun detectedCliFile(config: ReactExtension): File =
     detectCliFile(
         reactNativeRoot = config.root.get().asFile,
-        preconfiguredCliFile = config.cliFile.asFile.orNull)
+        preconfiguredCliFile = config.cliFile.asFile.orNull,
+    )
 
 /**
  * Computes the `hermesc` command location. The Algo follows this order:
@@ -60,7 +62,7 @@ internal fun detectedHermesCommand(config: ReactExtension): String =
 private fun detectEntryFile(
     entryFile: File?,
     reactRoot: File,
-    envVariableOverride: String? = null
+    envVariableOverride: String? = null,
 ): File =
     when {
       envVariableOverride != null -> File(reactRoot, envVariableOverride)
@@ -83,7 +85,8 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
           .exec(
               arrayOf("node", "--print", "require.resolve('react-native/cli');"),
               emptyArray(),
-              reactNativeRoot)
+              reactNativeRoot,
+          )
 
   val nodeProcessOutput = nodeProcess.inputStream.use { it.bufferedReader().readText().trim() }
 
@@ -102,13 +105,14 @@ private fun detectCliFile(reactNativeRoot: File, preconfiguredCliFile: File?): F
 
   error(
       """
-      Couldn't determine CLI location!
+        Couldn't determine CLI location!
 
-      Please set `react { cliFile = file(...) }` inside your
-      build.gradle to the path of the react-native cli.js file.
-      This file typically resides in `node_modules/react-native/cli.js`
-    """
-          .trimIndent())
+        Please set `react { cliFile = file(...) }` inside your
+        build.gradle to the path of the react-native cli.js file.
+        This file typically resides in `node_modules/react-native/cli.js`
+      """
+          .trimIndent()
+  )
 }
 
 /**
@@ -157,7 +161,8 @@ internal fun detectOSAwareHermesCommand(projectRoot: File, hermesCommand: String
   error(
       "Couldn't determine Hermesc location. " +
           "Please set `react.hermesCommand` to the path of the hermesc binary file. " +
-          "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc")
+          "node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc"
+  )
 }
 
 /**
@@ -183,7 +188,8 @@ internal fun getHermesOSBin(): String {
   if (Os.isLinuxAmd64()) return "linux64-bin"
   error(
       "OS not recognized. Please set project.react.hermesCommand " +
-          "to the path of a working Hermes compiler.")
+          "to the path of a working Hermes compiler."
+  )
 }
 
 internal fun projectPathToLibraryName(projectPath: String): String =
@@ -221,7 +227,7 @@ internal fun findPackageJsonFile(project: Project, rootProperty: DirectoryProper
  */
 internal fun readPackageJsonFile(
     project: Project,
-    rootProperty: DirectoryProperty
+    rootProperty: DirectoryProperty,
 ): ModelPackageJson? {
   val packageJson = findPackageJsonFile(project, rootProperty)
   return packageJson?.let { JsonUtils.fromPackageJson(it) }

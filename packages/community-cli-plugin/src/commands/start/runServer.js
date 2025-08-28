@@ -92,14 +92,14 @@ async function runServer(
   console.info(`Starting dev server on ${devServerUrl}\n`);
 
   if (args.assetPlugins) {
-    // $FlowIgnore[cannot-write] Assigning to readonly property
+    // $FlowFixMe[cannot-write] Assigning to readonly property
     metroConfig.transformer.assetPlugins = args.assetPlugins.map(plugin =>
       require.resolve(plugin),
     );
   }
   // TODO(T214991636): Remove legacy Metro log forwarding
   if (!args.clientLogs) {
-    // $FlowIgnore[cannot-write] Assigning to readonly property
+    // $FlowFixMe[cannot-write] Assigning to readonly property
     metroConfig.server.forwardClientLogs = false;
   }
 
@@ -146,7 +146,7 @@ async function runServer(
       }
     },
   };
-  // $FlowIgnore[cannot-write] Assigning to readonly property
+  // $FlowFixMe[cannot-write] Assigning to readonly property
   metroConfig.reporter = reporter;
 
   await Metro.runServer(metroConfig, {
@@ -175,7 +175,7 @@ function getReporterImpl(
   try {
     // First we let require resolve it, so we can require packages in node_modules
     // as expected. eg: require('my-package/reporter');
-    // $FlowIgnore[unsupported-syntax]
+    // $FlowFixMe[unsupported-syntax]
     return require(customLogReporterPath);
   } catch (e) {
     if (e.code !== 'MODULE_NOT_FOUND') {
@@ -183,7 +183,7 @@ function getReporterImpl(
     }
     // If that doesn't work, then we next try relative to the cwd, eg:
     // require('./reporter');
-    // $FlowIgnore[unsupported-syntax]
+    // $FlowFixMe[unsupported-syntax]
     return require(path.resolve(customLogReporterPath));
   }
 }

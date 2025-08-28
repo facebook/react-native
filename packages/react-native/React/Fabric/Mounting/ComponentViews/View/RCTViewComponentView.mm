@@ -573,7 +573,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     _backgroundColorLayer.frame = CGRectMake(0, 0, self.layer.bounds.size.width, self.layer.bounds.size.height);
   }
 
-  if ((_props->transformOrigin.isSet() || _props->transform.operations.size() > 0) &&
+  if ((_props->transformOrigin.isSet() || !_props->transform.operations.empty()) &&
       layoutMetrics.frame.size != oldLayoutMetrics.frame.size) {
     auto newTransform = _props->resolveTransform(layoutMetrics);
     self.layer.transform = RCTCATransform3DFromTransformMatrix(newTransform);

@@ -23,6 +23,6 @@ public interface ViewManagerOnDemandReactPackage {
    */
   public fun createViewManager(
       reactContext: ReactApplicationContext,
-      viewManagerName: String
+      viewManagerName: String,
   ): ViewManager<in Nothing, in Nothing>?
 }

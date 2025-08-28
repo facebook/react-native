@@ -70,12 +70,28 @@ class JReactHostInspectorTarget
   ~JReactHostInspectorTarget() override;
 
   static jni::local_ref<JReactHostInspectorTarget::jhybriddata> initHybrid(
-      jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jThis,
+      jni::alias_ref<JReactHostInspectorTarget::jhybridobject> jobj,
       jni::alias_ref<JReactHostImpl> reactHost,
       jni::alias_ref<JExecutor::javaobject> javaExecutor);
 
   static void registerNatives();
   void sendDebuggerResumeCommand();
+
+  /**
+   * Starts a background trace recording for this HostTarget.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startBackgroundTrace();
+  /**
+   * Stops previously started trace recording and stashes the captured trace,
+   * which will be emitted the next time CDP session is created.
+   */
+  void stopAndStashBackgroundTrace();
+  /**
+   * Stops previously started trace recording and discards the captured trace.
+   */
+  void stopAndDiscardBackgroundTrace();
 
   jsinspector_modern::HostTarget* getInspectorTarget();
 
@@ -83,16 +99,22 @@ class JReactHostInspectorTarget
   jsinspector_modern::HostTargetMetadata getMetadata() override;
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
-      const OverlaySetPausedInDebuggerMessageRequest&) override;
+      const OverlaySetPausedInDebuggerMessageRequest& request) override;
+  void unstable_onPerfMonitorUpdate(
+      const jsinspector_modern::PerfMonitorUpdateRequest& request) override;
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest& params,
       jsinspector_modern::ScopedExecutor<
           jsinspector_modern::NetworkRequestListener> executor) override;
+  std::optional<jsinspector_modern::tracing::TraceRecordingState>
+  unstable_getTraceRecordingThatWillBeEmittedOnInitialization() override;
 
  private:
   JReactHostInspectorTarget(
+      jni::alias_ref<JReactHostInspectorTarget::javaobject> jobj,
       jni::alias_ref<JReactHostImpl> reactHostImpl,
       jni::alias_ref<JExecutor::javaobject> javaExecutor);
+  jni::global_ref<JReactHostInspectorTarget::javaobject> jobj_;
   // This weak reference breaks the cycle between the C++ HostTarget and the
   // Java ReactHostImpl, preventing memory leaks in apps that create multiple
   // ReactHostImpls over time.
@@ -101,6 +123,24 @@ class JReactHostInspectorTarget
 
   std::shared_ptr<jsinspector_modern::HostTarget> inspectorTarget_;
   std::optional<int> inspectorPageId_;
+
+  /**
+   * Stops previously started trace recording and returns the captured trace.
+   */
+  jsinspector_modern::tracing::TraceRecordingState stopTracing();
+  /**
+   * Stashes previously recorded trace recording state that will be emitted when
+   * CDP session is created. Once emitted, the value will be cleared from this
+   * instance.
+   */
+  void stashTraceRecordingState(
+      jsinspector_modern::tracing::TraceRecordingState&& state);
+  /**
+   * Previously recorded trace recording state that will be emitted when
+   * CDP session is created.
+   */
+  std::optional<jsinspector_modern::tracing::TraceRecordingState>
+      stashedTraceRecordingState_;
 
   friend HybridBase;
 };

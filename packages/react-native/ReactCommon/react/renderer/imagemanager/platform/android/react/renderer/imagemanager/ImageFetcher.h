@@ -20,8 +20,8 @@ class ImageFetcher {
 
   ImageRequest requestImage(
       const ImageSource& imageSource,
-      const ImageRequestParams& imageRequestParams,
       SurfaceId surfaceId,
+      const ImageRequestParams& imageRequestParams,
       Tag tag) const;
 
  private:

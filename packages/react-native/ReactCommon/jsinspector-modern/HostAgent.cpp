@@ -41,13 +41,18 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor)
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
       : frontendChannel_(frontendChannel),
         targetController_(targetController),
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(frontendChannel, sessionState)) {}
+        tracingAgent_(TracingAgent(
+            frontendChannel,
+            sessionState,
+            targetController,
+            std::move(traceRecordingToEmit))) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -310,8 +315,6 @@ class HostAgent::Impl final {
   }
 
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> instanceAgent) {
-    tracingAgent_.setCurrentInstanceAgent(instanceAgent);
-
     auto previousInstanceAgent = std::move(instanceAgent_);
     instanceAgent_ = std::move(instanceAgent);
 
@@ -429,7 +432,8 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor) {}
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit) {}
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
@@ -442,14 +446,16 @@ HostAgent::HostAgent(
     HostTargetController& targetController,
     HostTargetMetadata hostMetadata,
     SessionState& sessionState,
-    VoidExecutor executor)
+    VoidExecutor executor,
+    std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
     : impl_(std::make_unique<Impl>(
           *this,
           frontendChannel,
           targetController,
           std::move(hostMetadata),
           sessionState,
-          std::move(executor))) {}
+          std::move(executor),
+          std::move(traceRecordingToEmit))) {}
 
 HostAgent::~HostAgent() = default;
 
@@ -460,6 +466,19 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
+}
+
+#pragma mark - Tracing
+
+HostTracingAgent::HostTracingAgent(tracing::TraceRecordingState& state)
+    : tracing::TargetTracingAgent(state) {}
+
+void HostTracingAgent::setTracedInstance(InstanceTarget* instanceTarget) {
+  if (instanceTarget != nullptr) {
+    instanceTracingAgent_ = instanceTarget->createTracingAgent(state_);
+  } else {
+    instanceTracingAgent_ = nullptr;
+  }
 }
 
 } // namespace facebook::react::jsinspector_modern

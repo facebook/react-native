@@ -61,6 +61,7 @@ export function createJavaScriptFlagGetter<
     configName,
     () => {
       accessedFeatureFlags.add(configName);
+      // $FlowFixMe[incompatible-type] - `defaultValue` is not refined.
       return overrides?.[configName]?.(defaultValue);
     },
     defaultValue,

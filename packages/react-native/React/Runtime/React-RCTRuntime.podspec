@@ -35,9 +35,7 @@ Pod::Spec.new do |s|
   s.header_dir             = header_dir
   s.module_name          = module_name
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir = "./"
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./")
 
   s.pod_target_xcconfig    = {
     "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
@@ -49,6 +47,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "React-jsi"
+  add_dependency(s, "React-debug")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')

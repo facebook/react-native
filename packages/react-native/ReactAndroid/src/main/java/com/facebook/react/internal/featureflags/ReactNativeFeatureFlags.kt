@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8c98913f6aa27523fcef5b4e86aee818>>
+ * @generated SignedSource<<a4a724b7f134cddda588f33c65d4d09e>>
  */
 
 /**
@@ -151,12 +151,6 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
-   * This feature flag enables a fix for reparenting fix in differentiator
-   */
-  @JvmStatic
-  public fun enableFixForParentTagDuringReparenting(): Boolean = accessor.enableFixForParentTagDuringReparenting()
-
-  /**
    * Enables font scale changes updating layout for measurable nodes.
    */
   @JvmStatic
@@ -269,6 +263,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForScrollView(): Boolean = accessor.enableViewRecyclingForScrollView()
 
   /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
@@ -437,6 +437,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  @JvmStatic
+  public fun virtualViewHysteresisRatio(): Double = accessor.virtualViewHysteresisRatio()
 
   /**
    * Initial prerender ratio for VirtualView.

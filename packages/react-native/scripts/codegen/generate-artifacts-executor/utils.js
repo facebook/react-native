@@ -104,7 +104,7 @@ function readReactNativeConfig(projectRoot /*: string */) /*: $FlowFixMe */ {
     return {};
   }
 
-  // $FlowIgnore[unsupported-syntax]
+  // $FlowFixMe[unsupported-syntax]
   return require(rnConfigFilePath);
 }
 
@@ -206,6 +206,26 @@ function findExternalLibraries(
     } catch (e) {
       // require.resolve fails if the dependency is a local node module.
       if (
+        // require.resolve fails if the `./package.json` subpath is not explicitly defined in the library's `exports` field in its package.json
+        'code' in e &&
+        e.code === 'ERR_PACKAGE_PATH_NOT_EXPORTED'
+      ) {
+        // find the closest library's package.json with the search paths
+        // $FlowFixMe[prop-missing]
+        const paths /*: Array<string>*/ = require.main.paths;
+        for (const nodeModulesPath of paths) {
+          const packageJsonFilePath = path.join(
+            nodeModulesPath,
+            dependency,
+            'package.json',
+          );
+          if (fs.existsSync(packageJsonFilePath)) {
+            configFilePath = packageJsonFilePath;
+            break;
+          }
+        }
+      } else if (
+        // require.resolve fails if the dependency is a local node module.
         dependencies[dependency].startsWith('.') || // handles relative paths
         dependencies[dependency].startsWith('/') // handles absolute paths
       ) {

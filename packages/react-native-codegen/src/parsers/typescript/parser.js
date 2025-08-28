@@ -108,8 +108,8 @@ class TypeScriptParser implements Parser {
   }
 
   remapUnionTypeAnnotationMemberNames(
-    membersTypes: $FlowFixMe[],
-  ): UnionTypeAnnotationMemberType[] {
+    membersTypes: Array<$FlowFixMe>,
+  ): Array<UnionTypeAnnotationMemberType> {
     const remapLiteral = (item: $FlowFixMe) => {
       return item.literal
         ? item.literal.type
@@ -118,14 +118,14 @@ class TypeScriptParser implements Parser {
         : 'ObjectTypeAnnotation';
     };
 
-    /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
     return [...new Set(membersTypes.map(remapLiteral))];
   }
 
   getStringLiteralUnionTypeAnnotationStringLiterals(
-    membersTypes: $FlowFixMe[],
-  ): string[] {
+    membersTypes: Array<$FlowFixMe>,
+  ): Array<string> {
     return membersTypes.map((item: $FlowFixMe) => item.literal.value);
   }
 
