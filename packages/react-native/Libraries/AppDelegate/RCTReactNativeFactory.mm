@@ -90,13 +90,6 @@ using namespace facebook::react;
   [window makeKeyAndVisible];
 }
 
-#pragma mark - RCTDevMenuConfiguration
-
-- (void)setDevToolsConfiguration:(RCTDevMenuConfiguration *)configuration
-{
-  self.devMenuConfiguration = configuration;
-}
-
 #pragma mark - RCTUIConfiguratorProtocol
 
 - (RCTColorSpace)defaultColorSpace
