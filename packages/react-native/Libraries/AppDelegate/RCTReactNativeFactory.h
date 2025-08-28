@@ -102,8 +102,6 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
                      initialProperties:(NSDictionary *_Nullable)initialProperties
                          launchOptions:(NSDictionary *_Nullable)launchOptions;
 
-- (void)setDevToolsConfiguration:(RCTDevMenuConfiguration *)configuration;
-
 @property (nonatomic, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 
