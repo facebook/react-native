@@ -94,4 +94,4 @@ class EnableExecutorFromThis : public std::enable_shared_from_this<Self> {
   VoidExecutor baseExecutor_;
 };
 
-}; // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react::jsinspector_modern
