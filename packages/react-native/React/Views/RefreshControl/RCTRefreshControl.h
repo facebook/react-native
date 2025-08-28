@@ -12,7 +12,8 @@
 #import <React/RCTComponent.h>
 #import <React/RCTScrollableProtocol.h>
 
-@interface RCTRefreshControl : UIRefreshControl <RCTCustomRefreshControlProtocol>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTRefreshControl : UIRefreshControl<RCTCustomRefreshControlProtocol>
 
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) RCTDirectEventBlock onRefresh;

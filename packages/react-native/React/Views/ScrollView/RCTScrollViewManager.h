@@ -10,12 +10,14 @@
 
 #ifndef RCT_FIT_RM_OLD_COMPONENT
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTConvert (UIScrollView)
 
 + (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 
 @end
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTScrollViewManager : RCTViewManager
 
 @end
