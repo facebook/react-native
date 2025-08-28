@@ -273,12 +273,8 @@ class RawValue {
     }
 
     for (const auto& item : dynamic) {
-      if (!checkValueType(item, (T*)nullptr)) {
-        return false;
-      }
-
       // Note: We test only one element.
-      break;
+      return checkValueType(item, (T*)nullptr);
     }
 
     return true;
@@ -294,7 +290,6 @@ class RawValue {
     }
 
     jsi::Object asObject = value.getObject(*runtime);
-
     if (!asObject.isArray(*runtime)) {
       return false;
     }
@@ -303,12 +298,8 @@ class RawValue {
     size_t size = array.size(*runtime);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
-      if (!checkValueType(runtime, itemValue, (T*)nullptr)) {
-        return false;
-      }
-
       // Note: We test only one element.
-      break;
+      return checkValueType(runtime, itemValue, (T*)nullptr);
     }
 
     return true;
@@ -324,12 +315,8 @@ class RawValue {
 
     for (const auto& item : dynamic.items()) {
       react_native_assert(item.first.isString());
-      if (!checkValueType(item.second, (T*)nullptr)) {
-        return false;
-      }
-
       // Note: We test only one element.
-      break;
+      return checkValueType(item.second, (T*)nullptr);
     }
 
     return true;
@@ -352,12 +339,8 @@ class RawValue {
       jsi::String propertyName =
           propertyNames.getValueAtIndex(*runtime, i).getString(*runtime);
       jsi::Value propertyValue = asObject.getProperty(*runtime, propertyName);
-      if (!checkValueType(runtime, propertyValue, (T*)nullptr)) {
-        return false;
-      }
-
       // Note: We test only one element.
-      break;
+      return checkValueType(runtime, propertyValue, (T*)nullptr);
     }
 
     return true;
