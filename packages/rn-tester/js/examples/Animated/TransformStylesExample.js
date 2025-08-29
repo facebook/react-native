@@ -82,6 +82,7 @@ function AnimatedTransformStyleExample(): React.Node {
   const [properties, setProperties] = useState(transformProperties);
   const [useNativeDriver, setUseNativeDriver] = useState(false);
   const onToggle = (property: string) =>
+    // $FlowFixMe[incompatible-type]
     setProperties({
       ...properties,
       [property]: {
