@@ -13,8 +13,6 @@
 #import <react/renderer/components/AppSpecs/Props.h>
 #import <react/renderer/components/AppSpecs/RCTComponentViewHelpers.h>
 
-#import "RCTFabricComponentsPlugins.h"
-
 using namespace facebook::react;
 
 @interface RNTMyNativeViewComponentView () <RCTRNTMyNativeViewViewProtocol>
