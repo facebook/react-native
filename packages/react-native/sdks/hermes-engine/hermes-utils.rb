@@ -17,13 +17,14 @@ module HermesEngineSourceType
     BUILD_FROM_GITHUB_TAG = :build_from_github_tag
     BUILD_FROM_GITHUB_MAIN = :build_from_github_main
     BUILD_FROM_LOCAL_SOURCE_DIR = :build_from_local_source_dir
+    BUILD_FROM_CUSTOM_GITHUB_URL = :build_from_custom_github_url
 
     def HermesEngineSourceType.isPrebuilt(source_type)
         return source_type == LOCAL_PREBUILT_TARBALL || source_type == DOWNLOAD_PREBUILD_RELEASE_TARBALL || source_type == DOWNLOAD_PREBUILT_NIGHTLY_TARBALL
     end
 
     def HermesEngineSourceType.isFromSource(source_type)
-        return source_type == BUILD_FROM_GITHUB_COMMIT || source_type == BUILD_FROM_GITHUB_TAG || source_type == BUILD_FROM_GITHUB_MAIN || source_type == BUILD_FROM_LOCAL_SOURCE_DIR
+        return source_type == BUILD_FROM_GITHUB_COMMIT || source_type == BUILD_FROM_GITHUB_TAG || source_type == BUILD_FROM_GITHUB_MAIN || source_type == BUILD_FROM_LOCAL_SOURCE_DIR || source_type == BUILD_FROM_CUSTOM_GITHUB_URL
     end
 end
 
@@ -52,6 +53,10 @@ def hermes_source_type(version, react_native_path)
 
     if hermes_commit_envvar_defined()
         return HermesEngineSourceType::BUILD_FROM_GITHUB_COMMIT
+    end
+
+    if hermes_custom_github_url_envvar_defined()
+        return HermesEngineSourceType::BUILD_FROM_CUSTOM_GITHUB_URL
     end
 
     if force_build_from_tag(react_native_path)
@@ -85,6 +90,10 @@ def hermes_commit_envvar_defined()
     return ENV.has_key?('HERMES_COMMIT')
 end
 
+def hermes_custom_github_url_envvar_defined()
+    return ENV.has_key?('RCT_HERMES_OVERRIDE_GITHUB_URL')
+end
+
 def force_build_from_tag(react_native_path)
     return ENV[ENV_BUILD_FROM_SOURCE] === 'true' && File.exist?(hermestag_file(react_native_path))
 end
@@ -113,6 +122,8 @@ def podspec_source(source_type, version, react_native_path)
         return podspec_source_build_from_github_tag(react_native_path)
     when HermesEngineSourceType::BUILD_FROM_GITHUB_MAIN
         return podspec_source_build_from_github_main()
+    when HermesEngineSourceType::BUILD_FROM_CUSTOM_GITHUB_URL
+        return podspec_source_build_from_custom_github_url()
     when HermesEngineSourceType::DOWNLOAD_PREBUILD_RELEASE_TARBALL
         return podspec_source_download_prebuild_release_tarball(react_native_path, version)
     when HermesEngineSourceType::DOWNLOAD_PREBUILT_NIGHTLY_TARBALL
@@ -177,6 +188,12 @@ end
 def podspec_source_build_from_github_main()
     hermes_log("Using the latest commit from main.")
     return {:git => HERMES_GITHUB_URL, :commit => `git ls-remote #{HERMES_GITHUB_URL} main | cut -f 1`.strip}
+end
+
+def podspec_source_build_from_custom_github_url()
+    url = ENV['RCT_HERMES_OVERRIDE_GITHUB_URL']
+    hermes_log("Using custom github url: #{url}")
+    return {:git => url}
 end
 
 def podspec_source_download_prebuild_release_tarball(react_native_path, version)
