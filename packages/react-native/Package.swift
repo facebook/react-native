@@ -48,7 +48,7 @@ let reactNativeDependencies = BinaryTarget(
 
 let hermesPrebuilt = BinaryTarget(
   name: .hermesPrebuilt,
-  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermes.xcframework",
+  path: ".build/artifacts/hermes/destroot/Library/Frameworks/universal/hermesvm.xcframework",
   searchPaths: [".build/artifacts/hermes/destroot/include"]
 )
 
@@ -412,6 +412,7 @@ let reactFabric = RNTarget(
     "components/modal",
     "components/rncore",
     "components/safeareaview",
+    "components/switch",
     "components/text",
     "components/textinput",
     "components/textinput/platform/ios/",
@@ -434,25 +435,58 @@ let reactFabricModal = RNTarget(
   name: .reactFabricModal,
   path: "ReactCommon/react/renderer/components/modal",
   excludedPaths: [
-    "components/modal/platform/android",
-    "components/modal/platform/cxx",
-    "components/view/platform/android",
-    "components/view/platform/windows",
-    "components/view/platform/macos",
-    "components/switch/iosswitch/react/renderer/components/switch/MacOSSwitchShadowNode.mm",
-    "components/textinput/platform/android",
-    "components/text/platform/android",
-    "components/textinput/platform/macos",
-    "components/text/tests",
-    "textlayoutmanager/tests",
-    "textlayoutmanager/platform/android",
-    "textlayoutmanager/platform/cxx",
-    "textlayoutmanager/platform/windows",
-    "textlayoutmanager/platform/macos",
-    "conponents/rncore", // this was the old folder where RN Core Components were generated. If you ran codegen in the past, you might have some files in it that might make the build fail.
+    "platform/android",
+    "platform/cxx",
+  ],
+  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
+)
+
+let reactFabricSwitch = RNTarget(
+  name: .reactFabricSwitch,
+  path: "ReactCommon/react/renderer/components/switch/iosswitch/react/renderer/components/switch",
+  excludedPaths: ["MacOSSwitchShadowNode.mm"],
+  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
+)
+
+let reactFabricSafeAreaView = RNTarget(
+  name: .reactFabricSafeAreaView,
+  path: "ReactCommon/react/renderer/components/safeareaview",
+  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
+)
+
+let reactFabricTextLayoutManager = RNTarget(
+  name: .reactFabricTextLayoutManager,
+  path: "ReactCommon/react/renderer/textlayoutmanager",
+  excludedPaths: [
+    "platform/android",
+    "platform/cxx",
+    "platform/windows",
+    "platform/macos",
+    "tests",
   ],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging],
-  sources: ["components/inputaccessory", "components/modal", "components/safeareaview", "components/text", "components/text/platform/cxx", "components/textinput", "components/textinput/platform/ios/", "components/unimplementedview", "components/virtualview", "components/virtualviewexperimental", "textlayoutmanager", "textlayoutmanager/platform/ios", "components/switch/iosswitch"]
+  sources: [".", "platform/ios"]
+)
+
+let reactFabricText = RNTarget(
+  name: .reactFabricText,
+  path: "ReactCommon/react/renderer/components/text",
+  excludedPaths: [
+    "platform/android",
+    "tests",
+  ],
+  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
+  sources: [".", "platform/cxx"]
+)
+
+let reactFabricTextInput = RNTarget(
+  name: .reactFabricTextInput,
+  path: "ReactCommon/react/renderer/components/textinput",
+  excludedPaths: [
+    "platform/android",
+  ],
+  dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging, .reactFabricTextLayoutManager],
+  sources: [".", "platform/ios"]
 )
 
 /// React-FabricImage.podspec
@@ -473,7 +507,7 @@ let reactFabricUnimplementedView = RNTarget(
 let reactRCTFabric = RNTarget(
   name: .reactRCTFabric,
   path: "React/Fabric",
-  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricInputAccessory, .reactFabricModal, .reactFabricSafeAreaView, .reactFabricText, .reactFabricTextInput, .reactFabricUnimplementedView, .reactFabricTextLayoutManager, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage]
+  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricInputAccessory, .reactFabricModal, .reactFabricSafeAreaView, .reactFabricSwitch, .reactFabricText, .reactFabricTextInput, .reactFabricUnimplementedView, .reactFabricTextLayoutManager, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage]
 )
 
 /// React-ImageManagerApple.podspec
@@ -584,6 +618,7 @@ let targets = [
   reactFabricInputAccessory,
   reactFabricModal,
   reactFabricSafeAreaView,
+  reactFabricSwitch,
   reactFabricTextLayoutManager,
   reactFabricText,
   reactFabricTextInput,
@@ -759,6 +794,7 @@ extension String {
   static let reactFabricInputAccessory = "React-FabricInputAccessory"
   static let reactFabricModal = "React-FabricModal"
   static let reactFabricSafeAreaView = "React-FabricSafeAreaView"
+  static let reactFabricSwitch = "React-FabricSwitch"
   static let reactFabricTextLayoutManager = "React-FabricTextLayoutManager"
   static let reactFabricText = "React-FabricText"
   static let reactFabricTextInput = "React-FabricTextInput"
