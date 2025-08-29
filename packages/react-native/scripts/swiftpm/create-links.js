@@ -37,7 +37,10 @@ function buildHeaderMap(directory) {
       const fullPath = path.join(dir, entry.name);
 
       if (entry.isDirectory()) {
-        scanDirectory(fullPath);
+        // Skip the includes directory to avoid scanning destination files
+        if (entry.name !== 'includes') {
+          scanDirectory(fullPath);
+        }
       } else if (entry.isFile() && entry.name.endsWith('.h')) {
         // Store by filename only, without any subpath
         headerMap.set(entry.name, fullPath);
