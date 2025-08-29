@@ -95,21 +95,30 @@ public class ReactHostImpl(
     private val useDevSupport: Boolean,
     devSupportManagerFactory: DevSupportManagerFactory? = null,
 ) : ReactHost {
+  private val reactHostImplDevHelper = ReactHostImplDevHelper(this)
+
   public override val devSupportManager: DevSupportManager =
-      (devSupportManagerFactory ?: DefaultDevSupportManagerFactory()).create(
-          applicationContext = context.applicationContext,
-          reactInstanceManagerHelper = ReactHostImplDevHelper(this),
-          packagerPathForJSBundleName = reactHostDelegate.jsMainModulePath,
-          enableOnCreate = true,
-          redBoxHandler = null,
-          devBundleDownloadListener = null,
-          minNumShakes = 2,
-          customPackagerCommandHandlers = null,
-          surfaceDelegateFactory = null,
-          devLoadingViewManager = null,
-          pausedInDebuggerOverlayManager = null,
-          useDevSupport = useDevSupport,
-      )
+      (devSupportManagerFactory ?: DefaultDevSupportManagerFactory())
+          .create(
+              applicationContext = context.applicationContext,
+              reactInstanceManagerHelper = reactHostImplDevHelper,
+              packagerPathForJSBundleName = reactHostDelegate.jsMainModulePath,
+              enableOnCreate = true,
+              redBoxHandler = null,
+              devBundleDownloadListener = null,
+              minNumShakes = 2,
+              customPackagerCommandHandlers = null,
+              surfaceDelegateFactory = null,
+              devLoadingViewManager = null,
+              pausedInDebuggerOverlayManager = null,
+              useDevSupport = useDevSupport,
+          )
+          .also { devSupportManager ->
+            // Wire up the tracing state provider
+            if (devSupportManager is DevSupportManagerBase) {
+              devSupportManager.setTracingStateProvider(reactHostImplDevHelper)
+            }
+          }
   public override val memoryPressureRouter: MemoryPressureRouter = MemoryPressureRouter(context)
 
   private val attachedSurfaces: MutableSet<ReactSurfaceImpl> = HashSet()

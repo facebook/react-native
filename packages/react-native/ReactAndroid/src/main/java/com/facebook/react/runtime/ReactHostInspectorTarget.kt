@@ -12,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTarget
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.soloader.SoLoader
@@ -40,12 +41,28 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun stopAndDiscardBackgroundTrace()
 
+  external fun tracingStateAsInt(): Int
+
+  fun tracingState(): TracingState {
+    return TracingState.entries[tracingStateAsInt()]
+  }
+
   override fun addPerfMonitorListener(listener: PerfMonitorUpdateListener) {
     perfMonitorListeners.add(listener)
   }
 
-  override fun pauseAndAnalyzeTrace() {
-    // TODO(T233874551)
+  override fun pauseAndAnalyzeBackgroundTrace() {
+    stopAndStashBackgroundTrace()
+    perfMonitorListeners.forEach { listener ->
+      listener.onRecordingStateChanged(TracingState.DISABLED)
+    }
+  }
+
+  override fun resumeBackgroundTrace() {
+    startBackgroundTrace()
+    perfMonitorListeners.forEach { listener ->
+      listener.onRecordingStateChanged(TracingState.ENABLEDINBACKGROUNDMODE)
+    }
   }
 
   fun handleNativePerfMonitorMetricUpdate(
