@@ -8,6 +8,7 @@
 #include "AnimationTestsBase.h"
 
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
+#include <react/renderer/animated/nodes/ObjectAnimatedNode.h>
 #include <react/renderer/core/ReactRootViewTagGenerator.h>
 #include <react/renderer/graphics/Color.h>
 
@@ -212,6 +213,56 @@ TEST_F(AnimatedNodeTests, DiffClampAnimatedNode) {
   nodesManager_->setAnimatedNodeValue(valueTag, 2);
   runAnimationFrame(0);
   EXPECT_EQ(nodesManager_->getValue(diffClampTag), 1);
+}
+
+TEST_F(AnimatedNodeTests, ObjectAnimatedNode) {
+  initNodesManager();
+
+  auto rootTag = getNextRootViewTag();
+
+  auto valueTag = ++rootTag;
+  auto objectTag = ++rootTag;
+  nodesManager_->createAnimatedNode(
+      valueTag,
+      folly::dynamic::object("type", "value")("value", 4)("offset", 0));
+
+  nodesManager_->createAnimatedNode(
+      objectTag,
+      folly::dynamic::object("type", "object")(
+          "value",
+          folly::dynamic::array(
+              folly::dynamic::object(
+                  "translate3d",
+                  folly::dynamic::object("x", 1)("y", 0)("z", 0)),
+              folly::dynamic::object(
+                  "rotate3d",
+                  folly::dynamic::object("x", 1)("y", 0)("z", 0)(
+                      "angle", "180deg")),
+              folly::dynamic::object(
+                  "scale3d", folly::dynamic::object("nodeTag", valueTag)))));
+
+  nodesManager_->connectAnimatedNodes(valueTag, objectTag);
+
+  const auto objectNode =
+      nodesManager_->getAnimatedNode<ObjectAnimatedNode>(objectTag);
+  folly::dynamic collectedProps = folly::dynamic::object();
+  objectNode->collectViewUpdates("test", collectedProps);
+
+  const auto expected = folly::dynamic::object(
+      "test",
+      folly::dynamic::array(
+          folly::dynamic::object(
+              "translate3d", folly::dynamic::object("x", 1)("y", 0)("z", 0)),
+          folly::dynamic::object(
+              "rotate3d",
+              folly::dynamic::object("x", 1)("y", 0)("z", 0)(
+                  "angle", "180deg")),
+          folly::dynamic::object("scale3d", 4)));
+  EXPECT_EQ(collectedProps["test"].size(), 3);
+  EXPECT_EQ(collectedProps["test"][0]["translate3d"]["x"], 1);
+  EXPECT_EQ(collectedProps["test"][1]["rotate3d"]["y"], 0);
+  EXPECT_EQ(collectedProps["test"][1]["rotate3d"]["angle"], "180deg");
+  EXPECT_EQ(collectedProps["test"][2]["scale3d"], 4);
 }
 
 } // namespace facebook::react

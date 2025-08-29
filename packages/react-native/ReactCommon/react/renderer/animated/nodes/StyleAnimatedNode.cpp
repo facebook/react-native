@@ -14,6 +14,7 @@
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/internal/NativeAnimatedAllowlist.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
+#include <react/renderer/animated/nodes/ObjectAnimatedNode.h>
 #include <react/renderer/animated/nodes/TransformAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
 
@@ -80,6 +81,12 @@ void StyleAnimatedNode::collectViewUpdates(folly::dynamic& props) {
             props.insert(
                 propName.c_str(),
                 static_cast<int32_t>(colorAnimNode->getColor()));
+          }
+        } break;
+        case AnimatedNodeType::Object: {
+          if (const auto objectNode =
+                  manager_->getAnimatedNode<ObjectAnimatedNode>(nodeTag)) {
+            objectNode->collectViewUpdates(propName, props);
           }
         } break;
         case AnimatedNodeType::Tracking:

@@ -32,6 +32,7 @@ enum class AnimatedNodeType {
   Tracking,
   Color,
   Round,
+  Object
 };
 
 class NativeAnimatedNodesManager;
