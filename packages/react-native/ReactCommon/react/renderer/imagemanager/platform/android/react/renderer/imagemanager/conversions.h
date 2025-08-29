@@ -12,29 +12,12 @@
 #include <react/renderer/imagemanager/primitives.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
-#include <string>
+#include <react/utils/to_underlying.h>
 #include <vector>
 
 namespace facebook::react {
 
 namespace {
-
-inline std::string toString(const ImageResizeMode& value) {
-  switch (value) {
-    case ImageResizeMode::Cover:
-      return "cover";
-    case ImageResizeMode::Contain:
-      return "contain";
-    case ImageResizeMode::Stretch:
-      return "stretch";
-    case ImageResizeMode::Center:
-      return "center";
-    case ImageResizeMode::Repeat:
-      return "repeat";
-    case ImageResizeMode::None:
-      return "none";
-  }
-}
 
 constexpr MapBuffer::Key IS_KEY_URI = 0;
 constexpr MapBuffer::Key IS_KEY_DEFAULT_SRC = 1;
@@ -68,8 +51,8 @@ inline void serializeImageRequestParams(
     MapBufferBuilder& builder,
     const ImageRequestParams& imageRequestParams) {
   builder.putString(IS_KEY_DEFAULT_SRC, imageRequestParams.defaultSource.uri);
-  builder.putString(
-      IS_KEY_RESIZE_MODE, toString(imageRequestParams.resizeMode));
+  builder.putInt(
+      IS_KEY_RESIZE_MODE, to_underlying(imageRequestParams.resizeMode));
   builder.putString(IS_KEY_RESIZE_METHOD, imageRequestParams.resizeMethod);
   builder.putInt(
       IS_KEY_BLUR_RADIUS, static_cast<int32_t>(imageRequestParams.blurRadius));

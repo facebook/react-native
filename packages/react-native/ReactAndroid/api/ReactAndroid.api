@@ -5344,18 +5344,25 @@ public final class com/facebook/react/views/image/ImageLoadEvent$Companion {
 
 public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/Enum {
 	public static final field AUTO Lcom/facebook/react/views/image/ImageResizeMethod;
+	public static final field Companion Lcom/facebook/react/views/image/ImageResizeMethod$Companion;
 	public static final field NONE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field RESIZE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field SCALE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static final fun parse (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun values ()[Lcom/facebook/react/views/image/ImageResizeMethod;
+}
+
+public final class com/facebook/react/views/image/ImageResizeMethod$Companion {
+	public final fun parse (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 }
 
 public final class com/facebook/react/views/image/ImageResizeMode {
 	public static final field INSTANCE Lcom/facebook/react/views/image/ImageResizeMode;
 	public static final fun defaultTileMode ()Landroid/graphics/Shader$TileMode;
 	public static final fun defaultValue ()Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
+	public final synthetic fun fromInt (I)Ljava/lang/String;
 	public static final fun toScaleType (Ljava/lang/String;)Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
 	public static final fun toTileMode (Ljava/lang/String;)Landroid/graphics/Shader$TileMode;
 }
