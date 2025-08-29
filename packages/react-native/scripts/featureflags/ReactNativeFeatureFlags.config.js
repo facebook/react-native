@@ -387,17 +387,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableNewBackgroundAndBorderDrawables: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-24',
-        description:
-          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enablePreparedTextLayout: {
       defaultValue: false,
       metadata: {
