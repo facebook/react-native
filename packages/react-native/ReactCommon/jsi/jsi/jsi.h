@@ -914,7 +914,7 @@ class JSI_EXPORT Object : public Pointer {
   Object& operator=(Object&& other) = default;
 
   /// Creates a new Object instance, like '{}' in JS.
-  Object(Runtime& runtime) : Object(runtime.createObject()) {}
+  explicit Object(Runtime& runtime) : Object(runtime.createObject()) {}
 
   static Object createFromHostObject(
       Runtime& runtime,
