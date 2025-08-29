@@ -7,27 +7,16 @@
 
 #pragma once
 
-#include "BoundedRequestBuffer.h"
 #include "NetworkTypes.h"
 
 #include <folly/dynamic.h>
 #include <react/timing/primitives.h>
 
-#include <atomic>
-#include <functional>
 #include <mutex>
 #include <string>
-#include <tuple>
 #include <unordered_map>
 
-namespace facebook::react::jsinspector_modern {
-
-/**
- * A callback that can be used to send debugger messages (method responses and
- * events) to the frontend. The message must be a JSON-encoded string.
- * The callback may be called from any thread.
- */
-using FrontendChannel = std::function<void(std::string_view messageJson)>;
+namespace facebook::react {
 
 /**
  * Container for static network event metadata aligning with the
@@ -58,33 +47,9 @@ class NetworkReporter {
   static NetworkReporter& getInstance();
 
   /**
-   * Set the channel used to send CDP events to the frontend. This should be
-   * supplied before calling `enableDebugging`.
-   */
-  void setFrontendChannel(FrontendChannel frontendChannel);
-
-  /**
-   * Enable network tracking over CDP. Once enabled, network events will be
-   * sent to the debugger client. Returns `false` if already enabled.
-   *
-   * Corresponds to `Network.enable` in CDP.
-   */
-  bool enableDebugging();
-
-  /**
-   * Disable network tracking over CDP, preventing network events from being
-   * sent to the debugger client. Returns `false` if not initially enabled.
-   *
-   * Corresponds to `Network.disable` in CDP.
-   */
-  bool disableDebugging();
-
-  /**
    * Returns whether network tracking over CDP is currently enabled.
    */
-  inline bool isDebuggingEnabled() const {
-    return debuggingEnabled_.load(std::memory_order_acquire);
-  }
+  bool isDebuggingEnabled() const;
 
   /**
    * Report a network request that is about to be sent.
@@ -174,38 +139,14 @@ class NetworkReporter {
       std::string_view body,
       bool base64Encoded);
 
-  /**
-   * Retrieve a stored response body for a given request ID.
-   *
-   * \returns An optional tuple of [responseBody, base64Encoded]. Returns
-   * nullopt if no entry is found in the buffer.
-   */
-  std::optional<std::tuple<std::string, bool>> getResponseBody(
-      const std::string& requestId);
-
  private:
   NetworkReporter() = default;
   NetworkReporter(const NetworkReporter&) = delete;
   NetworkReporter& operator=(const NetworkReporter&) = delete;
   ~NetworkReporter() = default;
 
-  std::atomic<bool> debuggingEnabled_{false};
-
-  inline bool isDebuggingEnabledNoSync() const {
-    return debuggingEnabled_.load(std::memory_order_relaxed);
-  }
-
-  FrontendChannel frontendChannel_;
-
   std::unordered_map<std::string, ResourceTimingData> perfTimingsBuffer_{};
   std::mutex perfTimingsMutex_;
-
-  // Only populated when CDP debugging is enabled.
-  std::map<std::string, std::string> resourceTypeMap_{};
-
-  // Only populated when CDP debugging is enabled.
-  BoundedRequestBuffer requestBodyBuffer_{};
-  std::mutex requestBodyMutex_;
 };
 
-} // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react

@@ -11,7 +11,7 @@
 #include "Base64.h"
 #include "Utf8.h"
 
-#include <jsinspector-modern/network/NetworkReporter.h>
+#include <jsinspector-modern/network/NetworkHandler.h>
 
 #include <sstream>
 #include <tuple>
@@ -272,19 +272,19 @@ bool NetworkIOAgent::handleRequest(
   }
 
   if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
-    auto& networkReporter = NetworkReporter::getInstance();
+    auto& networkHandler = NetworkHandler::getInstance();
 
     // @cdp Network.enable support is experimental.
     if (req.method == "Network.enable") {
-      networkReporter.setFrontendChannel(frontendChannel_);
-      networkReporter.enableDebugging();
+      networkHandler.setFrontendChannel(frontendChannel_);
+      networkHandler.enable();
       frontendChannel_(cdp::jsonResult(req.id));
       return true;
     }
 
     // @cdp Network.disable support is experimental.
     if (req.method == "Network.disable") {
-      networkReporter.disableDebugging();
+      networkHandler.disable();
       frontendChannel_(cdp::jsonResult(req.id));
       return true;
     }
@@ -497,9 +497,9 @@ void NetworkIOAgent::handleGetResponseBody(const cdp::PreparsedRequest& req) {
     return;
   }
 
-  auto& networkReporter = NetworkReporter::getInstance();
+  auto& networkHandler = NetworkHandler::getInstance();
 
-  if (!networkReporter.isDebuggingEnabled()) {
+  if (!networkHandler.isEnabled()) {
     frontendChannel_(cdp::jsonError(
         requestId,
         cdp::ErrorCode::InvalidRequest,
@@ -508,7 +508,7 @@ void NetworkIOAgent::handleGetResponseBody(const cdp::PreparsedRequest& req) {
   }
 
   auto storedResponse =
-      networkReporter.getResponseBody(req.params.at("requestId").asString());
+      networkHandler.getResponseBody(req.params.at("requestId").asString());
 
   if (!storedResponse) {
     frontendChannel_(cdp::jsonError(
