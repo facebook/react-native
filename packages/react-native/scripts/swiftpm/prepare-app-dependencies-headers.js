@@ -175,6 +175,7 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 
       'cxxreact/': 'cxxreact',
       'jsinspector-modern/': 'jsinspector-modern',
       'jserrorhandler/': 'jserrorhandler',
+      'oscompat/': 'oscompat',
     };
     const reactCommonCount = hardlinkReactCommonHeaders(
       reactCommonPath,
