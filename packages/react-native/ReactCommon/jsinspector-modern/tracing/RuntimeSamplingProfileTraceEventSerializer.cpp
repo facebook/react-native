@@ -283,7 +283,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
     const std::function<void(folly::dynamic&& traceEventsChunk)>&
         dispatchCallback,
     uint16_t traceEventChunkSize,
-    uint16_t profileChunkSize) {
+    uint16_t profileChunkSize,
+    uint16_t maxUniqueNodesPerChunk) {
   for (auto&& profile : profiles) {
     serializeAndDispatch(
         std::move(profile),
@@ -291,7 +292,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
         tracingStartTime,
         dispatchCallback,
         traceEventChunkSize,
-        profileChunkSize);
+        profileChunkSize,
+        maxUniqueNodesPerChunk);
   }
 }
 
@@ -303,7 +305,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
     const std::function<void(folly::dynamic&& traceEventsChunk)>&
         dispatchCallback,
     uint16_t traceEventChunkSize,
-    uint16_t profileChunkSize) {
+    uint16_t profileChunkSize,
+    uint16_t maxUniqueNodesPerChunk) {
   auto samples = std::move(profile.samples);
   if (samples.empty()) {
     return;
@@ -344,7 +347,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
     }
     auto& threadProfileState = threadProfileStateIterator->second;
 
-    if (threadProfileState.chunk.isFull()) {
+    if (threadProfileState.chunk.isFull() ||
+        threadProfileState.chunk.nodes.size() >= maxUniqueNodesPerChunk) {
       bufferProfileChunkTraceEvent(
           std::move(threadProfileState.chunk),
           threadProfileState.profileId,
