@@ -20,6 +20,11 @@ struct JTaskInterface : public jni::JavaClass<JTaskInterface> {
       "Lcom/facebook/react/interfaces/TaskInterface;";
 };
 
+struct JTracingState : public jni::JavaClass<JTracingState> {
+  static constexpr auto kJavaDescriptor =
+      "Lcom/facebook/react/devsupport/TracingState;";
+};
+
 struct JReactHostImpl : public jni::JavaClass<JReactHostImpl> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/runtime/ReactHostImpl;";
@@ -88,6 +93,14 @@ class JReactHostInspectorTarget
    * which will be emitted the next time CDP session is created.
    */
   void stopAndStashBackgroundTrace();
+  /**
+   * Get the state of the background trace: running, stopped, or disabled
+   * Background tracing will be disabled if there is no metro connection or if
+   * there is a CDP initiate trace in progress.
+   *
+   * \return the background trace state
+   */
+  jint tracingState();
   /**
    * Stops previously started trace recording and discards the captured trace.
    */

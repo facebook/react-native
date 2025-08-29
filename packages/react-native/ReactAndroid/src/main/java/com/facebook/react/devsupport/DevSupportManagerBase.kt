@@ -52,6 +52,7 @@ import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
+import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
@@ -64,6 +65,8 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.interfaces.TracingStateProvider
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
@@ -180,6 +183,7 @@ public abstract class DevSupportManagerBase(
         }
 
   private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
+  private var tracingStateProvider: TracingStateProvider? = null
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -356,6 +360,43 @@ public abstract class DevSupportManagerBase(
         disabledItemKeys.add(debuggerItemString)
       }
       options[debuggerItemString] = DevOptionHandler { this.openDebugger() }
+    }
+
+    if (ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+      val tracingState = tracingStateProvider?.getTracingState() ?: TracingState.DISABLED
+
+      val analyzePerformanceItemString =
+          when (tracingState) {
+            TracingState.ENABLEDINBACKGROUNDMODE ->
+                applicationContext.getString(R.string.catalyst_performance_background)
+            TracingState.ENABLEDINCDPMODE ->
+                applicationContext.getString(R.string.catalyst_performance_cdp)
+            TracingState.DISABLED ->
+                applicationContext.getString(R.string.catalyst_performance_disabled)
+          }
+
+      if (!isConnected || tracingState == TracingState.ENABLEDINCDPMODE) {
+        disabledItemKeys.add(analyzePerformanceItemString)
+      }
+
+      options[analyzePerformanceItemString] =
+          when (tracingState) {
+            TracingState.ENABLEDINBACKGROUNDMODE ->
+                DevOptionHandler {
+                  UiThreadUtil.runOnUiThread {
+                    if (reactInstanceDevHelper is PerfMonitorDevHelper)
+                        reactInstanceDevHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
+                  }
+                  openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
+                }
+            TracingState.DISABLED ->
+                DevOptionHandler {
+                  if (reactInstanceDevHelper is PerfMonitorDevHelper)
+                      reactInstanceDevHelper.inspectorTarget?.resumeBackgroundTrace()
+                }
+            TracingState.ENABLEDINCDPMODE -> DevOptionHandler {}
+          }
     }
 
     options[applicationContext.getString(R.string.catalyst_change_bundle_location)] =
@@ -940,6 +981,14 @@ public abstract class DevSupportManagerBase(
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {
     devSettings.packagerConnectionSettings.setAdditionalOptionForPackager(name, value)
+  }
+
+  /**
+   * Sets the background tracing state provider for bridgeless architecture. This is called
+   * internally by the ReactHost implementation.
+   */
+  internal fun setTracingStateProvider(provider: TracingStateProvider?) {
+    tracingStateProvider = provider
   }
 
   public companion object {

@@ -204,7 +204,14 @@ void JReactHostInspectorTarget::registerNatives() {
       makeNativeMethod(
           "stopAndDiscardBackgroundTrace",
           JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+      makeNativeMethod(
+          "tracingStateAsInt", JReactHostInspectorTarget::tracingState),
   });
+}
+
+jint JReactHostInspectorTarget::tracingState() {
+  auto state = inspectorTarget_->tracingState();
+  return static_cast<jint>(state);
 }
 
 } // namespace facebook::react

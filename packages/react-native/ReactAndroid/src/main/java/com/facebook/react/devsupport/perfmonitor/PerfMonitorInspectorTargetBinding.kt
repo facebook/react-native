@@ -12,5 +12,9 @@ package com.facebook.react.devsupport.perfmonitor
  * exposing actions for the V2 Perf Monitor.
  */
 internal interface PerfMonitorInspectorTargetBinding {
-  public fun pauseAndAnalyzeTrace()
+  /** Attempt to pause the current background performance trace, and open in DevTools. */
+  public fun pauseAndAnalyzeBackgroundTrace()
+
+  /** Attempt to start a new background performance trace. */
+  public fun resumeBackgroundTrace()
 }
