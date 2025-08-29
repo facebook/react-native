@@ -450,26 +450,29 @@ public abstract class DevSupportManagerBase(
       }
     }
 
-    val fpsDebugLabel =
-        if (devSettings.isFpsDebugEnabled)
-            applicationContext.getString(R.string.catalyst_perf_monitor_stop)
-        else applicationContext.getString(R.string.catalyst_perf_monitor)
-    options[fpsDebugLabel] = DevOptionHandler {
-      if (!devSettings.isFpsDebugEnabled) {
-        // Request overlay permission if needed when "Show Perf Monitor" option is selected
-        val context: Context? = reactInstanceDevHelper.currentActivity
-        if (context == null) {
-          FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
-        } else {
-          requestPermission(context)
+    // Do not show legacy performance overlay if V2 is enabled
+    if (!ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val fpsDebugLabel =
+          if (devSettings.isFpsDebugEnabled)
+              applicationContext.getString(R.string.catalyst_perf_monitor_stop)
+          else applicationContext.getString(R.string.catalyst_perf_monitor)
+      options[fpsDebugLabel] = DevOptionHandler {
+        if (!devSettings.isFpsDebugEnabled) {
+          // Request overlay permission if needed when "Show Perf Monitor" option is selected
+          val context: Context? = reactInstanceDevHelper.currentActivity
+          if (context == null) {
+            FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
+          } else {
+            requestPermission(context)
+          }
         }
+        devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
       }
-      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
-    }
-    options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
-      val intent = Intent(applicationContext, DevSettingsActivity::class.java)
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      applicationContext.startActivity(intent)
+      options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
+        val intent = Intent(applicationContext, DevSettingsActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        applicationContext.startActivity(intent)
+      }
     }
 
     if (customDevOptions.isNotEmpty()) {
