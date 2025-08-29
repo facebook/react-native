@@ -10,6 +10,9 @@
   <string name="catalyst_change_bundle_location_cancel" project="catalyst" translatable="false">Cancel</string>
   <string name="catalyst_open_debugger_error" project="catalyst" translatable="false">Failed to open DevTools. Please check that the dev server is running and reload the app.</string>
   <string name="catalyst_debug_open" project="catalyst" translatable="false">Open DevTools</string>
+  <string name="catalyst_performance_background" project="catalyst" translatable="false">Finish performance trace</string>
+  <string name="catalyst_performance_disabled" project="catalyst" translatable="false">Start performance trace</string>
+  <string name="catalyst_performance_cdp" project="catalyst" translatable="false">Performance tracing disabled</string>
   <string name="catalyst_debug_open_disabled" project="catalyst" translatable="false">Connect to the bundler to debug JavaScript</string>
   <string name="catalyst_debug_connecting" project="catalyst" translatable="false">Connecting to debugger...</string>
   <string name="catalyst_debug_error" project="catalyst" translatable="false">Failed to connect to debugger!</string>

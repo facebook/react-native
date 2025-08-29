@@ -26,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.interfaces.PerfMonitorOverlayManager
+import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTargetBinding
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.react.uimanager.DisplayMetricsHolder
@@ -66,6 +67,11 @@ internal class PerfMonitorOverlayViewManager(
       hasInteractionData = false
       hideOverlay()
     }
+  }
+
+  override fun onRecordingStateChanged(state: TracingState) {
+    // recordingState = state
+    // view?.updateRecordingState(state)
   }
 
   override fun onNewFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
@@ -148,6 +154,8 @@ internal class PerfMonitorOverlayViewManager(
     this.interactionDialog = dialog
   }
 
+  fun updateRecordingState(state: TracingState) {}
+
   private fun createButton(context: Context) {
     val buttonInner = createInnerLayout(context)
     buttonInner.addView(
@@ -177,7 +185,7 @@ internal class PerfMonitorOverlayViewManager(
               dpToPx(8f).toInt(),
           )
           addView(buttonInner)
-          setOnClickListener { inspectorTarget?.pauseAndAnalyzeTrace() }
+          setOnClickListener { inspectorTarget?.pauseAndAnalyzeBackgroundTrace() }
         }
     val dialog =
         createAnchoredDialog(context, dpToPx(0f), dpToPx(0f)).apply { setContentView(buttonView) }
