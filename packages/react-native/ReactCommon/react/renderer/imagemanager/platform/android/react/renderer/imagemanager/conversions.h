@@ -58,8 +58,10 @@ inline void serializeImageSource(
     MapBufferBuilder& builder,
     const ImageSource& imageSource) {
   builder.putString(IS_KEY_URI, imageSource.uri);
-  builder.putDouble(IS_KEY_VIEW_WIDTH, imageSource.size.width);
-  builder.putDouble(IS_KEY_VIEW_HEIGHT, imageSource.size.height);
+  builder.putInt(
+      IS_KEY_VIEW_WIDTH, static_cast<int32_t>(imageSource.size.width));
+  builder.putInt(
+      IS_KEY_VIEW_HEIGHT, static_cast<int32_t>(imageSource.size.height));
 }
 
 inline void serializeImageRequestParams(
@@ -69,7 +71,8 @@ inline void serializeImageRequestParams(
   builder.putString(
       IS_KEY_RESIZE_MODE, toString(imageRequestParams.resizeMode));
   builder.putString(IS_KEY_RESIZE_METHOD, imageRequestParams.resizeMethod);
-  builder.putDouble(IS_KEY_BLUR_RADIUS, imageRequestParams.blurRadius);
+  builder.putInt(
+      IS_KEY_BLUR_RADIUS, static_cast<int32_t>(imageRequestParams.blurRadius));
   builder.putDouble(
       IS_KEY_RESIZE_MULTIPLIER, imageRequestParams.resizeMultiplier);
   builder.putBool(
@@ -83,7 +86,9 @@ inline void serializeImageRequestParams(
     builder.putInt(
         IS_KEY_TINT_COLOR, toAndroidRepr(imageRequestParams.tintColor));
   }
-  builder.putDouble(IS_KEY_FADE_DURATION, imageRequestParams.fadeDuration);
+  builder.putInt(
+      IS_KEY_FADE_DURATION,
+      static_cast<int32_t>(imageRequestParams.fadeDuration));
   builder.putBool(
       IS_KEY_PROGRESSIVE_RENDERING_ENABLED,
       imageRequestParams.progressiveRenderingEnabled);
