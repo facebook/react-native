@@ -477,14 +477,18 @@ class JSI_EXPORT Runtime : public ICast {
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
+  virtual Value getProperty(const Object&, const Value& name);
   virtual bool hasProperty(const Object&, const PropNameID& name) = 0;
   virtual bool hasProperty(const Object&, const String& name) = 0;
+  virtual bool hasProperty(const Object&, const Value& name);
   virtual void setPropertyValue(
       const Object&,
       const PropNameID& name,
       const Value& value) = 0;
   virtual void
   setPropertyValue(const Object&, const String& name, const Value& value) = 0;
+  virtual void
+  setPropertyValue(const Object&, const Value& name, const Value& value);
 
   virtual void deleteProperty(const Object&, const PropNameID& name);
   virtual void deleteProperty(const Object&, const String& name);
@@ -958,6 +962,12 @@ class JSI_EXPORT Object : public Pointer {
   /// undefined value.
   Value getProperty(Runtime& runtime, const PropNameID& name) const;
 
+  /// \return the Property of the object with the given JS Value name. If the
+  /// name isn't a property on the object, returns the undefined value.This
+  /// attempts to convert the JS Value to convert to a property key. If the
+  /// conversion fails, this method may throw.
+  Value getProperty(Runtime& runtime, const Value& name) const;
+
   /// \return true if and only if the object has a property with the
   /// given ascii name.
   bool hasProperty(Runtime& runtime, const char* name) const;
@@ -969,6 +979,11 @@ class JSI_EXPORT Object : public Pointer {
   /// \return true if and only if the object has a property with the
   /// given PropNameID name.
   bool hasProperty(Runtime& runtime, const PropNameID& name) const;
+
+  /// \return true if and only if the object has a property with the given
+  /// JS Value name. This attempts to convert the JS Value to convert to a
+  /// property key. If the conversion fails, this method may throw.
+  bool hasProperty(Runtime& runtime, const Value& name) const;
 
   /// Sets the property value from a Value or anything which can be
   /// used to make one: nullptr_t, bool, double, int, const char*,
@@ -987,6 +1002,14 @@ class JSI_EXPORT Object : public Pointer {
   /// String, or Object.
   template <typename T>
   void setProperty(Runtime& runtime, const PropNameID& name, T&& value) const;
+
+  /// Sets the property value from a Value or anything which can be
+  /// used to make one: nullptr_t, bool, double, int, const char*,
+  /// String, or Object. This takes a JS Value as the property name, and
+  /// attempts to convert to a property key. If the conversion fails, this
+  /// method may throw.
+  template <typename T>
+  void setProperty(Runtime& runtime, const Value& name, T&& value) const;
 
   /// Delete the property with the given ascii name. Throws if the deletion
   /// failed.
@@ -1142,6 +1165,11 @@ class JSI_EXPORT Object : public Pointer {
       Runtime& runtime,
       const PropNameID& name,
       const Value& value) const {
+    return runtime.setPropertyValue(*this, name, value);
+  }
+
+  void setPropertyValue(Runtime& runtime, const Value& name, const Value& value)
+      const {
     return runtime.setPropertyValue(*this, name, value);
   }
 
