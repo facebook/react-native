@@ -160,7 +160,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
     YogaMeasureOutput.make(layoutWidth, layoutHeight)
   }
 
-  private val mTextBaselineFunction = YogaBaselineFunction { node, width, height ->
+  private val textBaselineFunction = YogaBaselineFunction { node, width, height ->
     val text =
         checkNotNull(preparedSpannableText) {
           "Spannable element has not been prepared in onBeforeLayout"
@@ -176,7 +176,7 @@ public constructor(reactTextViewManagerCallback: ReactTextViewManagerCallback? =
   private fun initMeasureFunction() {
     if (!isVirtual) {
       setMeasureFunction(textMeasureFunction)
-      setBaselineFunction(mTextBaselineFunction)
+      setBaselineFunction(textBaselineFunction)
     }
   }
 
