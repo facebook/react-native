@@ -35,6 +35,9 @@ public interface DevSupportManager : JSExceptionHandler {
   public val lastErrorCookie: Int
   public val currentActivity: Activity?
   public val currentReactContext: ReactContext?
+  public var devMenuEnabled: Boolean
+
+  public var shakeGestureEnabled: Boolean
 
   public var devSupportEnabled: Boolean
 

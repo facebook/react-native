@@ -129,6 +129,21 @@ public abstract class DevSupportManagerBase(
       reloadSettings()
     }
 
+  final override var devMenuEnabled: Boolean
+    get() = isDevMenuEnabled
+    set(isDevMenuEnabled) {
+      this.isDevMenuEnabled = isDevMenuEnabled
+    }
+
+  final override var shakeGestureEnabled: Boolean
+    get() = isShakeGestureEnabled
+    set(isShakeGestureEnabled) {
+      this.isShakeGestureEnabled = isShakeGestureEnabled
+      if (!isShakeGestureEnabled && isShakeDetectorStarted) {
+        stopShakeDetector()
+      }
+    }
+
   override val sourceMapUrl: String
     get() = jsAppBundleName?.let { devServerHelper.getSourceMapUrl(it) } ?: ""
 
@@ -172,6 +187,8 @@ public abstract class DevSupportManagerBase(
   private var isReceiverRegistered = false
   private var isShakeDetectorStarted = false
   private var isDevSupportEnabled = false
+  private var isDevMenuEnabled = true
+  private var isShakeGestureEnabled = true
   private var isPackagerConnected = false
   private val errorCustomizers: MutableList<ErrorCustomizer> = mutableListOf()
   private var packagerLocationCustomizer: PackagerLocationCustomizer? = null
@@ -330,7 +347,7 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun showDevOptionsDialog() {
-    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey()) {
+    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey() || !isDevMenuEnabled) {
       return
     }
     val options = LinkedHashMap<String, DevOptionHandler>()
@@ -801,6 +818,11 @@ public abstract class DevSupportManagerBase(
     }
   }
 
+  private fun stopShakeDetector() {
+    shakeDetector.stop()
+    isShakeDetectorStarted = false
+  }
+
   private fun reload() {
     UiThreadUtil.assertOnUiThread()
 
@@ -810,7 +832,7 @@ public abstract class DevSupportManagerBase(
       debugOverlayController?.setFpsDebugViewVisible(devSettings.isFpsDebugEnabled)
 
       // start shake gesture detector
-      if (!isShakeDetectorStarted) {
+      if (!isShakeDetectorStarted && isShakeGestureEnabled) {
         val sensorManager =
             applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         shakeDetector.start(sensorManager)
@@ -867,8 +889,7 @@ public abstract class DevSupportManagerBase(
 
       // stop shake gesture detector
       if (isShakeDetectorStarted) {
-        shakeDetector.stop()
-        isShakeDetectorStarted = false
+        stopShakeDetector()
       }
 
       // unregister app reload broadcast receiver

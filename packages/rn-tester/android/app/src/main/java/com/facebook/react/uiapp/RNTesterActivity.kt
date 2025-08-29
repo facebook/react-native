@@ -19,6 +19,7 @@ import com.facebook.react.FBRNTesterEndToEndHelper
 import com.facebook.react.ReactActivity
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.facebook.react.devsupport.DevMenuConfiguration
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
@@ -30,6 +31,8 @@ internal class RNTesterActivity : ReactActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
       // Get remote param before calling super which uses it
+
+
       val bundle = activity.intent?.extras
 
       if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
@@ -65,6 +68,14 @@ internal class RNTesterActivity : ReactActivity() {
 
     fullyDrawnReporter.addReporter()
     maybeUpdateBackgroundColor()
+
+    reactDelegate?.reactHost?.let { reactHost ->
+      val devMenuConfiguration = DevMenuConfiguration(
+        isDevMenuEnabled = true,
+        isShakeGestureEnabled = false,
+      )
+      reactHost.setDevMenuConfiguration(devMenuConfiguration)
+    }
 
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
