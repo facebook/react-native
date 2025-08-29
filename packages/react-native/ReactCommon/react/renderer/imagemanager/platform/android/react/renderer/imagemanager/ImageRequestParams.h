@@ -91,4 +91,11 @@ class ImageRequestParams {
   }
 };
 
+struct ImageRequestItem {
+  ImageSource imageSource;
+  SurfaceId surfaceId{};
+  ImageRequestParams imageRequestParams;
+  Tag tag{};
+};
+
 } // namespace facebook::react

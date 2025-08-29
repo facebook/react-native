@@ -9,7 +9,6 @@
 
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
-#include <utility>
 
 namespace facebook::react {
 
@@ -17,27 +16,24 @@ ImageRequest ImageFetcher::requestImage(
     const ImageSource& imageSource,
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
-    Tag tag) const {
+    Tag tag) {
+  items_.emplace_back(ImageRequestItem{
+      .imageSource = imageSource,
+      .surfaceId = surfaceId,
+      .imageRequestParams = imageRequestParams,
+      .tag = tag});
+
   auto fabricUIManager_ =
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
-  static auto requestImage =
+  static auto prefetchResources =
       fabricUIManager_->getClass()
-          ->getMethod<void(
-              std::string, SurfaceId, Tag, JReadableMapBuffer::javaobject)>(
-              "experimental_prefetchResource");
-
-  auto serializedImageRequest =
-      serializeImageRequest(imageSource, imageRequestParams);
+          ->getMethod<void(std::string, JReadableMapBuffer::javaobject)>(
+              "experimental_prefetchResources");
 
   auto readableMapBuffer =
-      JReadableMapBuffer::createWithContents(std::move(serializedImageRequest));
-
-  requestImage(
-      fabricUIManager_,
-      "RCTImageView",
-      surfaceId,
-      tag,
-      readableMapBuffer.get());
+      JReadableMapBuffer::createWithContents(serializeImageRequests(items_));
+  items_.clear();
+  prefetchResources(fabricUIManager_, "RCTImageView", readableMapBuffer.get());
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
