@@ -12,6 +12,14 @@
 
 namespace facebook::react {
 
+namespace {
+
+constexpr inline bool isInteger(const std::string& str) {
+  return str.find_first_not_of("0123456789") == std::string::npos;
+}
+
+} // namespace
+
 ImageManager::ImageManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
     : self_(new ImageFetcher(contextContainer)) {}
@@ -26,8 +34,10 @@ ImageRequest ImageManager::requestImage(
     const ImageRequestParams& imageRequestParams,
     Tag tag) const {
   if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
-    return static_cast<ImageFetcher*>(self_)->requestImage(
-        imageSource, surfaceId, imageRequestParams, tag);
+    if (!isInteger(imageSource.uri)) {
+      return static_cast<ImageFetcher*>(self_)->requestImage(
+          imageSource, surfaceId, imageRequestParams, tag);
+    }
   }
   return {imageSource, nullptr, {}};
 }
