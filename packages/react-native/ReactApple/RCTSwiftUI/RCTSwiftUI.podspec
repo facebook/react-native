@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
   # Swift-specific configuration
   s.pod_target_xcconfig    = {
     "SWIFT_VERSION" => "5.0",
+    "DEFINES_MODULE" => "YES",
   }
 
 end
