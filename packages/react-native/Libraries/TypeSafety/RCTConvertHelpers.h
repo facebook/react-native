@@ -67,7 +67,7 @@ template <typename T>
 facebook::react::LazyVector<T> RCTBridgingToVec(id value, T (^ctor)(id element))
 {
   NSArray *array = RCTBridgingToArray(value);
-  typedef typename facebook::react::LazyVector<T>::size_type _size_t;
+  using _size_t = typename facebook::react::LazyVector<T>::size_type;
   _size_t size = static_cast<_size_t>(array.count);
   return facebook::react::LazyVector<T>::fromUnsafeRawValue(array, size, ctor);
 }
