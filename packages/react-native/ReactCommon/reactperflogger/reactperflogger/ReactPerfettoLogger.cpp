@@ -18,6 +18,7 @@ namespace facebook::react {
 namespace {
 
 #if defined(WITH_PERFETTO)
+const HighResTimeStamp PROGRAM_INIT_TIME = HighResTimeStamp::now();
 const std::string PERFETTO_DEFAULT_TRACK_NAME = "# Web Performance";
 const std::string PERFETTO_TRACK_NAME_PREFIX = "# Web Performance: ";
 
@@ -70,6 +71,10 @@ int64_t getDeltaNanos(HighResTimeStamp jsTime) {
     const std::optional<std::string_view>& trackGroup) {
 #if defined(WITH_PERFETTO)
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
+    if (startTime < PROGRAM_INIT_TIME || endTime < PROGRAM_INIT_TIME) {
+      return;
+    }
+
     auto track = getPerfettoWebPerfTrackAsync(
         toPerfettoTrackName(trackName, trackGroup));
     TRACE_EVENT_BEGIN(
