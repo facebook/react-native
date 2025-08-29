@@ -21,7 +21,7 @@ const {execSync} = require('child_process');
 
 // Import functions from other scripts
 const {prepareAppDependenciesHeaders} = require('./prepare-app-dependencies-headers');
-const {createSymlinks: createSymlinksFunction} = require('./create-symlinks');
+const {createLinks: createLinksFunction} = require('./create-links');
 const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
 const codegenExecutor = require('../codegen/generate-artifacts-executor');
 
@@ -66,9 +66,9 @@ async function prepareApp(appPath = '../../private/helloworld', reactNativePath 
     console.log('\n⚙️  Step 3: Setting BUILD_FROM_SOURCE to true...');
     await setBuildFromSource(absoluteReactNativePath);
 
-    // Step 4: Create symlinks
-    console.log('\n🔗 Step 4: Creating symlinks...');
-    await createSymlinks(absoluteReactNativePath);
+    // Step 4: Create links for react-native
+    console.log('\n🔗 Step 4: Creating links for react-native...');
+    await createLinks(absoluteReactNativePath);
 
     // Step 5: Generate codegen artifacts
     console.log('\n🧬 Step 5: Generating codegen artifacts...');
@@ -171,15 +171,15 @@ async function setBuildFromSource(reactNativePath) {
 }
 
 /**
- * Create symlinks using the imported function
+ * Create links using the imported function
  */
-async function createSymlinks(reactNativePath) {
+async function createLinks(reactNativePath) {
   try {
-    console.log('Creating symlinks...');
-    const stats = await createSymlinksFunction(reactNativePath);
-    console.log(`✓ Symlinks created: ${stats.found} found, ${stats.notFound} not found, ${stats.errors} errors`);
+    console.log('Creating links...');
+    const stats = await createLinksFunction(reactNativePath);
+    console.log(`✓ Links created: ${stats.found} found, ${stats.notFound} not found, ${stats.errors} errors`);
   } catch (error) {
-    throw new Error(`Symlink creation failed: ${error.message}`);
+    throw new Error(`Link creation failed: ${error.message}`);
   }
 }
 
@@ -376,7 +376,6 @@ module.exports = {
   runPodDeintegrate,
   runIosPrebuild,
   setBuildFromSource,
-  createSymlinks,
   generateCodegenArtifacts,
   prepareHeaders,
   fixReactNativePath,

@@ -54,8 +54,24 @@ function buildHeaderMap(directory) {
  * @param {string} reactNativePath - Path to the React Native package directory
  * @returns {Promise<{found: number, notFound: number, errors: number}>} Statistics about the operation
  */
-async function createSymlinks(reactNativePath) {
-  console.log(`Creating symlinks for React Native at: ${reactNativePath}`);
+async function createLinks(reactNativePath) {
+  const reactStats = createReactLinks(reactNativePath);
+  const rctDeprecationStats = createRCTDeprecationLinks(reactNativePath);
+  const yogaStats = createYogaLinks(reactNativePath);
+
+  // Combine all statistics
+  const combinedStats = {
+    found: reactStats.found + rctDeprecationStats.found + yogaStats.found,
+    notFound:
+      reactStats.notFound + rctDeprecationStats.notFound + yogaStats.notFound,
+    errors: reactStats.errors + rctDeprecationStats.errors + yogaStats.errors,
+  };
+
+  return combinedStats;
+}
+
+function createReactLinks(reactNativePath) {
+  console.log(`Creating links for React Native at: ${reactNativePath}`);
 
   // Define paths based on the provided reactNativePath
   const REACT_DIR = path.join(reactNativePath, 'React');
@@ -120,13 +136,10 @@ async function createSymlinks(reactNativePath) {
           fs.unlinkSync(destPath);
         }
 
-        // Create relative symlink
-        const relativeSourcePath = path.relative(DESTINATION_DIR, sourcePath);
-        fs.symlinkSync(relativeSourcePath, destPath);
+        // Create hard link using absolute source path
+        console.log(sourcePath, '->', destPath);
+        fs.linkSync(sourcePath, destPath);
 
-        console.log(
-          `Created symlink: ${targetFilename} -> ${relativeSourcePath}`,
-        );
         found++;
       } else {
         console.warn(
@@ -172,6 +185,129 @@ async function createSymlinks(reactNativePath) {
   return {found, notFound, errors};
 }
 
+function createRCTDeprecationLinks(reactNativePath) {
+  console.log('Creating RCTDeprecation links...');
+
+  // Define paths
+  const SOURCE_DIR = path.join(
+    reactNativePath,
+    'ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
+  );
+  const DESTINATION_DIR = path.join(
+    reactNativePath,
+    'React/includes/RCTDeprecation',
+  );
+
+  // Validate that the source directory exists
+  if (!fs.existsSync(SOURCE_DIR)) {
+    console.warn(`RCTDeprecation source directory not found: ${SOURCE_DIR}`);
+    return {found: 0, notFound: 0, errors: 0};
+  }
+
+  // Ensure destination directory exists
+  if (!fs.existsSync(DESTINATION_DIR)) {
+    console.log(`Creating directory: ${DESTINATION_DIR}`);
+    fs.mkdirSync(DESTINATION_DIR, {recursive: true});
+  }
+
+  // Read all header files from source directory
+  const entries = fs.readdirSync(SOURCE_DIR, {withFileTypes: true});
+  const headerFiles = entries.filter(
+    entry => entry.isFile() && entry.name.endsWith('.h'),
+  );
+
+  console.log(`Found ${headerFiles.length} RCTDeprecation header files`);
+
+  let found = 0;
+  let errors = 0;
+
+  // Process each header file
+  headerFiles.forEach(entry => {
+    try {
+      const sourcePath = path.join(SOURCE_DIR, entry.name);
+      const destPath = path.join(DESTINATION_DIR, entry.name);
+
+      // Remove existing symlink/file if it exists
+      if (fs.existsSync(destPath)) {
+        fs.unlinkSync(destPath);
+      }
+
+      // Create hard link using absolute source path
+      fs.linkSync(sourcePath, destPath);
+
+      found++;
+    } catch (error) {
+      console.error(
+        `Error processing RCTDeprecation ${entry.name}: ${error.message}`,
+      );
+      errors++;
+    }
+  });
+
+  console.log(`RCTDeprecation links: ${found} created, ${errors} errors`);
+  return {found, notFound: 0, errors};
+}
+
+function createYogaLinks(reactNativePath) {
+  console.log('Creating Yoga links...');
+
+  // Define paths
+  const SOURCE_DIR = path.join(reactNativePath, 'ReactCommon/yoga/yoga');
+  const DESTINATION_DIR = path.join(reactNativePath, 'React/includes/yoga');
+
+  // Validate that the source directory exists
+  if (!fs.existsSync(SOURCE_DIR)) {
+    console.warn(`Yoga source directory not found: ${SOURCE_DIR}`);
+    return {found: 0, notFound: 0, errors: 0};
+  }
+
+  // Ensure destination directory exists
+  if (!fs.existsSync(DESTINATION_DIR)) {
+    console.log(`Creating directory: ${DESTINATION_DIR}`);
+    fs.mkdirSync(DESTINATION_DIR, {recursive: true});
+  }
+
+  // Build header map from source directory (only direct files, no nested folders)
+  const headerMap = new Map();
+  const entries = fs.readdirSync(SOURCE_DIR, {withFileTypes: true});
+
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.endsWith('.h')) {
+      const fullPath = path.join(SOURCE_DIR, entry.name);
+      headerMap.set(entry.name, fullPath);
+    }
+    // Ignore directories (nested folders) as per the requirement
+  }
+
+  console.log(`Found ${headerMap.size} Yoga header files`);
+
+  let found = 0;
+  let errors = 0;
+
+  // Process each header file
+  headerMap.forEach((sourcePath, filename) => {
+    try {
+      const destPath = path.join(DESTINATION_DIR, filename);
+
+      // Remove existing symlink/file if it exists
+      if (fs.existsSync(destPath)) {
+        fs.unlinkSync(destPath);
+      }
+
+      // Create hard link using absolute source path
+      fs.linkSync(sourcePath, destPath);
+
+      found++;
+    } catch (error) {
+      console.error(`Error processing Yoga ${filename}: ${error.message}`);
+      errors++;
+    }
+  });
+
+  console.log(`Yoga links: ${found} created, ${errors} errors`);
+  return {found, notFound: 0, errors};
+}
+
 // CLI usage
 if (require.main === module) {
   const args = process.argv.slice(2);
@@ -185,21 +321,21 @@ if (require.main === module) {
     reactNativePath = path.resolve(__dirname, '..');
   }
 
-  console.log('Usage: node create-symlinks.js [reactNativePath]');
+  console.log('Usage: node create-links.js [reactNativePath]');
   console.log(`Using React Native path: ${reactNativePath}`);
 
-  createSymlinks(reactNativePath)
-    .then((stats) => {
-      console.log('\n✅ Symlink creation completed successfully!');
+  createLinks(reactNativePath)
+    .then(() => {
+      console.log('\n✅ Link creation completed successfully!');
       process.exit(0);
     })
-    .catch((error) => {
-      console.error('\n❌ Symlink creation failed:', error.message);
+    .catch(error => {
+      console.error('\n❌ Link creation failed:', error.message);
       process.exit(1);
     });
 }
 
 module.exports = {
-  createSymlinks,
-  buildHeaderMap
+  createLinks,
+  buildHeaderMap,
 };
