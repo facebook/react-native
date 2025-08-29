@@ -16,7 +16,8 @@
 namespace facebook::react {
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
-struct MethodDescriptor {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] MethodDescriptor {
   std::string name;
   // type is one of js MessageQueue.MethodTypes
   std::string type;
@@ -29,7 +30,8 @@ struct MethodDescriptor {
 using MethodCallResult = std::optional<folly::dynamic>;
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
-class NativeModule {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] NativeModule {
  public:
   virtual ~NativeModule() = default;
   virtual std::string getName() = 0;

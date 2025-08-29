@@ -20,7 +20,9 @@ namespace facebook::react {
 class Instance;
 class MessageQueueThread;
 
-struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JMethodDescriptor
+    : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
 
@@ -30,7 +32,9 @@ struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   std::string getType() const;
 };
 
-struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JavaModuleWrapper
+    : jni::JavaClass<JavaModuleWrapper> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/JavaModuleWrapper;";
 
@@ -59,7 +63,9 @@ struct JavaModuleWrapper : jni::JavaClass<JavaModuleWrapper> {
   }
 };
 
-class JavaNativeModule : public NativeModule {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JavaNativeModule
+    : public NativeModule {
  public:
   JavaNativeModule(
       std::weak_ptr<Instance> instance,

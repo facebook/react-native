@@ -31,7 +31,8 @@ class RAMBundleRegistry;
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
-class ExecutorDelegate {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] ExecutorDelegate {
  public:
   virtual ~ExecutorDelegate() = default;
 
@@ -48,7 +49,8 @@ class ExecutorDelegate {
       folly::dynamic&& args) = 0;
 };
 
-class JSExecutorFactory {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSExecutorFactory {
  public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
@@ -56,7 +58,8 @@ class JSExecutorFactory {
   virtual ~JSExecutorFactory() = default;
 };
 
-class RN_EXPORT JSExecutor {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSExecutor {
  public:
   /**
    * Prepares the JS runtime for React Native by installing global variables.
