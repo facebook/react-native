@@ -135,8 +135,14 @@ async function prepareApp(
       appXcodeProject,
     );
 
-    // Step 9: Integrate SwiftPM packages in Xcode
-    console.log('\n📦 Step 9: Integrating SwiftPM packages in Xcode...');
+    // Step 9: Allow non-modular header imports in Xcode project
+    console.log(
+      '\n🔧 Step 9: Allowing non-modular header imports in Xcode project...',
+    );
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Step 10: Integrate SwiftPM packages in Xcode
+    console.log('\n📦 Step 10: Integrating SwiftPM packages in Xcode...');
     await integrateSwiftPMPackages(
       appIosPath,
       absoluteReactNativePath,
@@ -145,8 +151,8 @@ async function prepareApp(
       targetName,
     );
 
-    // Step 10: Open Xcode project
-    console.log('\n📱 Step 10: Opening Xcode project...');
+    // Step 11: Open Xcode project
+    console.log('\n📱 Step 11: Opening Xcode project...');
     await openXcodeProject(appIosPath, appXcodeProject);
 
     console.log('\n✅ App preparation completed successfully!');
@@ -251,7 +257,13 @@ async function configureAppForSwift(reactNativePath) {
     // 2. Generate module.modulemap file
     const reactIncludesPath = path.join(reactNativePath, 'React', 'includes');
     const moduleMapPath = path.join(reactIncludesPath, 'module.modulemap');
-    const absoluteUmbrellaPath = path.join(reactNativePath, 'React', 'includes', 'React', 'React-umbrella.h');
+    const absoluteUmbrellaPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+      'React-umbrella.h',
+    );
     const moduleMapContent = `framework module React {
   umbrella header "${absoluteUmbrellaPath}"
   export *
@@ -318,8 +330,14 @@ async function createHardlinks(reactNativePath) {
     console.log('✓ React Native hard links created in React/includes');
 
     console.log('Creating hard links for third-party dependencies...');
-    hardlinkThirdPartyDependenciesHeaders(reactNativePath, reactIncludesPath, 'includes');
-    console.log('✓ Third-party dependencies hard links created in React/includes');
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      reactIncludesPath,
+      'includes',
+    );
+    console.log(
+      '✓ Third-party dependencies hard links created in React/includes',
+    );
   } catch (error) {
     throw new Error(`Hard link creation failed: ${error.message}`);
   }
@@ -414,32 +432,140 @@ async function fixReactNativePath(
 
     // Calculate the relative path from iOS app to React Native package
     const relativePath = path.relative(appIosPath, reactNativePath);
-    const newReactNativePath = `"${relativePath}"`;
+    const newReactNativePathValue = `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`;
 
     // Read the project file
     let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundReactNativePath = false;
+    let modifiedLines = [];
 
-    // Apply the sed replacements
-    // Fix the first pattern (the incomplete one from the instructions)
-    content = content.replace(
-      /REACT_NATIVE_PATH = "\${PODS_ROOT}\/\.\.\/\.\.\/\.\.\/react-native";/g,
-      `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`,
-    );
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
 
-    // Fix the second pattern
-    content = content.replace(
-      /REACT_NATIVE_PATH = "\${PODS_ROOT}\/\.\.\/\.\.\/\.\.\/\.\.\/packages\/react-native";/g,
-      `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`,
-    );
+      // Check if line contains REACT_NATIVE_PATH = "
+      if (line.includes('REACT_NATIVE_PATH = "')) {
+        foundReactNativePath = true;
 
-    // Write the updated content back
-    fs.writeFileSync(projectPath, content, 'utf8');
+        // Check if line also contains {PODS_ROOT}
+        if (line.includes('{PODS_ROOT}')) {
+          // Replace the whole line with the new path
+          const indentation = line.match(/^\s*/)[0]; // Preserve indentation
+          modifiedLines.push(`${indentation}${newReactNativePathValue}`);
+        } else {
+          // Keep the line as is if it doesn't contain {PODS_ROOT}
+          modifiedLines.push(line);
+        }
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no REACT_NATIVE_PATH was found, add it after buildSettings = {
+    if (!foundReactNativePath) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add REACT_NATIVE_PATH on the next line with appropriate indentation
+          const indentation = line.match(/^\s*/)[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newReactNativePathValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
 
     console.log(
       `✓ REACT_NATIVE_PATH fixed to: \${PROJECT_DIR}/${relativePath}`,
     );
   } catch (error) {
     throw new Error(`Failed to fix REACT_NATIVE_PATH: ${error.message}`);
+  }
+}
+
+/**
+ * Allow non-modular header imports in Xcode project
+ */
+async function allowNonModularHeaderImport(appIosPath, appXcodeProject) {
+  const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Xcode project file not found: ${projectPath}`);
+  }
+
+  try {
+    console.log(
+      'Setting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES in Xcode project...',
+    );
+
+    const newClangSettingValue = `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;`;
+
+    // Read the project file
+    let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundClangSetting = false;
+    let modifiedLines = [];
+
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Check if line contains CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES =
+      if (
+        line.includes(
+          'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = ',
+        )
+      ) {
+        foundClangSetting = true;
+
+        // Replace the whole line with the new setting
+        const indentation = line.match(/^\s*/)[0]; // Preserve indentation
+        modifiedLines.push(`${indentation}${newClangSettingValue}`);
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES was found, add it after buildSettings = {
+    if (!foundClangSetting) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES on the next line with appropriate indentation
+          const indentation = line.match(/^\s*/)[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newClangSettingValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
+
+    console.log(
+      '✓ CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES set to YES',
+    );
+  } catch (error) {
+    throw new Error(
+      `Failed to set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES: ${error.message}`,
+    );
   }
 }
 
@@ -564,6 +690,7 @@ module.exports = {
   generateCodegenArtifacts,
   prepareHeaders,
   fixReactNativePath,
+  allowNonModularHeaderImport,
   integrateSwiftPMPackages,
   openXcodeProject,
 };
