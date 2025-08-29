@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-using Color = int32_t;
+using Color = uint32_t;
 
 namespace HostPlatformColor {
 constexpr facebook::react::Color UndefinedColor = 0;

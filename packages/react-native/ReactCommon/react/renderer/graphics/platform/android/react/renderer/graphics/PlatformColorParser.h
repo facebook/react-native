@@ -42,7 +42,7 @@ inline SharedColor parsePlatformColor(
     auto color =
         getColorFromJava(fabricUIManager, surfaceId, *javaResourcePaths);
 
-    auto argb = (int64_t)color;
+    auto argb = (uint32_t)color;
     auto ratio = 255.f;
     colorComponents.alpha = ((argb >> 24) & 0xFF) / ratio;
     colorComponents.red = ((argb >> 16) & 0xFF) / ratio;

@@ -27,8 +27,8 @@ class DevLoadingViewModule
   void showMessage(
       jsi::Runtime& rt,
       const std::string& message,
-      std::optional<int32_t> textColor,
-      std::optional<int32_t> backgroundColor);
+      std::optional<uint32_t> textColor,
+      std::optional<uint32_t> backgroundColor);
 
   void hide(jsi::Runtime& rt);
 
