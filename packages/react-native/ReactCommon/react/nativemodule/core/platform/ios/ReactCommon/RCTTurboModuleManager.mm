@@ -21,7 +21,6 @@
 #import <React/RCTCallInvoker.h>
 #import <React/RCTCallInvokerModule.h>
 #import <React/RCTConstants.h>
-#import <React/RCTCxxModule.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
@@ -29,7 +28,6 @@
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
-#import <ReactCommon/TurboCxxModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 
@@ -367,24 +365,12 @@ typedef struct {
   }
 
   /**
-   * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
-   * wraps CxxModule.
-   */
-  Class moduleClass = [module class];
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-    // Use TurboCxxModule compat class to wrap the CxxModule instance.
-    // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
-    _turboModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
-  /**
-   * Step 2e: Return an exact sub-class of ObjC TurboModule
+   * Step 3: Return an exact sub-class of ObjC TurboModule
    *
    * Use respondsToSelector: below to infer conformance to @protocol(RCTTurboModule). Using conformsToProtocol: is
    * expensive.
    */
+  Class moduleClass = [module class];
   if ([module respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
@@ -447,15 +433,6 @@ typedef struct {
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
       std::make_shared<LegacyModuleNativeMethodCallInvoker>(methodQueue, [self _requiresMainQueueSetup:moduleClass]);
 
-  // If module is a legacy cxx module, return TurboCxxModule
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-    // Use TurboCxxModule compat class to wrap the CxxModule instance.
-    // This is only for migration convenience, despite less performant.
-    auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
-    _legacyModuleCache.insert({moduleName, turboModule});
-    return turboModule;
-  }
-
   // Create interop module
   ObjCTurboModule::InitParams params = {
       .moduleName = moduleName,
@@ -476,7 +453,7 @@ typedef struct {
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
   Class moduleClass = [self _getModuleClassFromName:moduleName];
-  return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && isTurboModuleClass(moduleClass);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
@@ -487,7 +464,7 @@ typedef struct {
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
+  return moduleClass != nil && !isTurboModuleClass(moduleClass);
 }
 
 - (id<RCTModuleProvider>)_moduleProviderForName:(const char *)moduleName
