@@ -206,11 +206,18 @@ TEST_F(
       notificationCallback,
       10);
 
-  // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk]]
-  // Samples from different thread should never be grouped together in the same
-  // chunk.
-  ASSERT_EQ(notificationEvents_.size(), 2);
-  ASSERT_EQ(notificationEvents_[1].size(), 3);
+  /**
+   * [
+   *  ["Profile"],
+   *  ["Profile"],
+   *  ["ProfileChunk" for threadId1, "ProfileChunk" for threadId2]
+   * ]
+   *
+   * Samples from different thread should never be grouped together in the same
+   * chunk.
+   **/
+  ASSERT_EQ(notificationEvents_.size(), 3);
+  ASSERT_EQ(notificationEvents_[2].size(), 2);
 }
 
 TEST_F(
