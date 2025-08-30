@@ -57,4 +57,15 @@ class UIManagerCommitHook {
   virtual ~UIManagerCommitHook() noexcept = default;
 };
 
+constexpr std::string_view UIManagerCommitHookManagerKey =
+    "UIManagerCommitHookManager";
+
+class UIManagerCommitHookManager {
+ public:
+  virtual ~UIManagerCommitHookManager() = default;
+
+  virtual void registerCommitHook(UIManagerCommitHook& commitHook) = 0;
+  virtual void unregisterCommitHook(UIManagerCommitHook& commitHook) = 0;
+};
+
 } // namespace facebook::react
