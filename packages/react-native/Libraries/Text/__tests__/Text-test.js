@@ -127,6 +127,7 @@ describe('Text compat with web', () => {
 
     expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
+        accessibilityElementsHidden={true}
         accessibilityLabel="label"
         accessibilityState={
           Object {
@@ -152,7 +153,6 @@ describe('Text compat with web', () => {
         aria-errormessage="errormessage"
         aria-flowto="flowto"
         aria-haspopup={true}
-        aria-hidden={true}
         aria-invalid={true}
         aria-keyshortcuts="Cmd+S"
         aria-labelledby="labelledby"
@@ -180,6 +180,7 @@ describe('Text compat with web', () => {
         aria-valuetext="3"
         disabled={true}
         ellipsizeMode="tail"
+        importantForAccessibility="no-hide-descendants"
         role="main"
       />
     `);

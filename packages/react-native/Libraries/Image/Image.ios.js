@@ -153,6 +153,7 @@ let BaseImage: AbstractImageIOS = ({
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
     'aria-selected': ariaSelected,
+    'aria-hidden': ariaHidden,
     src,
     ...restProps
   } = props;
@@ -164,6 +165,10 @@ let BaseImage: AbstractImageIOS = ({
     expanded: ariaExpanded ?? props.accessibilityState?.expanded,
     selected: ariaSelected ?? props.accessibilityState?.selected,
   };
+
+  // In order for `aria-hidden` to work on iOS we must set `accessible` to false (`accessibilityElementsHidden` is not enough).
+  const accessible =
+    ariaHidden !== true && (props.alt !== undefined ? true : props.accessible);
   const accessibilityLabel = props['aria-label'] ?? props.accessibilityLabel;
 
   const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
@@ -175,7 +180,7 @@ let BaseImage: AbstractImageIOS = ({
           <ImageViewNativeComponent
             accessibilityState={_accessibilityState}
             {...restProps}
-            accessible={props.alt !== undefined ? true : props.accessible}
+            accessible={accessible}
             accessibilityLabel={accessibilityLabel ?? props.alt}
             ref={actualRef}
             style={style}
