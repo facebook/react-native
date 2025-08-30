@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {execSync} = require('child_process');
+const {spawnSync} = require('child_process');
 const fs = require('fs');
 const yargs = require('yargs');
 
@@ -67,7 +67,9 @@ function replaceRNCoreConfiguration(
   fs.mkdirSync(finalLocation, {recursive: true});
 
   console.log('Extracting the tarball', tarballURLPath);
-  execSync(`tar -xf ${tarballURLPath} -C ${finalLocation}`);
+  spawnSync('tar', ['-xf', tarballURLPath, '-C', finalLocation], {
+    stdio: 'inherit',
+  });
 }
 
 function updateLastBuildConfiguration(configuration /*: string */) {
