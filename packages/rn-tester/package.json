@@ -23,7 +23,8 @@
     "e2e-build-android": "../../gradlew :packages:rn-tester:android:app:installRelease -PreactNativeArchitectures=arm64-v8a",
     "e2e-build-ios": "./scripts/maestro-build-ios.sh",
     "e2e-test-android": "maestro test .maestro/ -e APP_ID=com.facebook.react.uiapp",
-    "e2e-test-ios": "./scripts/maestro-test-ios.sh"
+    "e2e-test-ios": "./scripts/maestro-test-ios.sh",
+    "prepare-with-swiftpm": "node ../../packages/react-native/scripts/swiftpm/prepare-app . ../react-native RNTesterPods.xcodeproj RNTester"
   },
   "dependencies": {
     "@react-native/new-app-screen": "0.82.0-main",
