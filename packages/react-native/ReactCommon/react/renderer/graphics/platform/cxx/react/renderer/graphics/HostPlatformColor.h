@@ -16,7 +16,7 @@ namespace facebook::react {
 using Color = uint32_t;
 
 namespace HostPlatformColor {
-constexpr facebook::react::Color UndefinedColor = 0;
+constexpr facebook::react::Color UndefinedColor = 0x00FFFFFF; // White with 0 opacity (transparent)
 }
 
 inline Color
