@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f1eb31a7412bff743a5c581224d71e2a>>
+ * @generated SignedSource<<2a7c278ab1dd4e01aaaf4f492aaba38d>>
  */
 
 /**
@@ -64,7 +64,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableModuleArgumentNSNullConversionIOS();
   bool enableNativeCSSParsing();
   bool enableNetworkEventReporting();
-  bool enableNewBackgroundAndBorderDrawables();
   bool enablePreparedTextLayout();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableResourceTimingAPI();
@@ -112,7 +111,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 68> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -146,7 +145,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableModuleArgumentNSNullConversionIOS_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNetworkEventReporting_;
-  std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
   std::atomic<std::optional<bool>> enablePreparedTextLayout_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableResourceTimingAPI_;

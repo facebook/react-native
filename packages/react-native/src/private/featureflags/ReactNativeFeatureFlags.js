@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85a053d6a79240a7b4e181d3054ecfd3>>
+ * @generated SignedSource<<6d3f1638ab167e175d421c0c08f2320b>>
  * @flow strict
  * @noformat
  */
@@ -81,7 +81,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableModuleArgumentNSNullConversionIOS: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNetworkEventReporting: Getter<boolean>,
-  enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResourceTimingAPI: Getter<boolean>,
@@ -322,10 +321,6 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
  * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
  */
 export const enableNetworkEventReporting: Getter<boolean> = createNativeFlagGetter('enableNetworkEventReporting', false);
-/**
- * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
- */
-export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', true);
 /**
  * Enables caching text layout artifacts for later reuse
  */

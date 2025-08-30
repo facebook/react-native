@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<392da016e0bf4193b72c44a508811e10>>
+ * @generated SignedSource<<b9e541c9817e3ef4555ace90b7dfe821>>
  */
 
 /**
@@ -52,7 +52,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
-  private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResourceTimingAPICache: Boolean? = null
@@ -374,15 +373,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableNetworkEventReporting()
       enableNetworkEventReportingCache = cached
-    }
-    return cached
-  }
-
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean {
-    var cached = enableNewBackgroundAndBorderDrawablesCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableNewBackgroundAndBorderDrawables()
-      enableNewBackgroundAndBorderDrawablesCache = cached
     }
     return cached
   }

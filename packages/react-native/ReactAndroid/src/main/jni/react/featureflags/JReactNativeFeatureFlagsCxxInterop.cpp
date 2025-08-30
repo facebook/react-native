@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16b12024bb363358ef09b9a42cb2fc97>>
+ * @generated SignedSource<<1b12c7b671d9093f5fe503dcd041e890>>
  */
 
 /**
@@ -228,12 +228,6 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableNetworkEventReporting() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNetworkEventReporting");
-    return method(javaProvider_);
-  }
-
-  bool enableNewBackgroundAndBorderDrawables() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNewBackgroundAndBorderDrawables");
     return method(javaProvider_);
   }
 
@@ -617,11 +611,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting(
   return ReactNativeFeatureFlags::enableNetworkEventReporting();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePreparedTextLayout();
@@ -929,9 +918,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableNetworkEventReporting",
         JReactNativeFeatureFlagsCxxInterop::enableNetworkEventReporting),
-      makeNativeMethod(
-        "enableNewBackgroundAndBorderDrawables",
-        JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables),
       makeNativeMethod(
         "enablePreparedTextLayout",
         JReactNativeFeatureFlagsCxxInterop::enablePreparedTextLayout),

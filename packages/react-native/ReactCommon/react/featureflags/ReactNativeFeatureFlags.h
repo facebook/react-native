@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eee81e4e9bb13ef5134d4e2d79876b38>>
+ * @generated SignedSource<<550c6084049b176c9b3c220962c04ed7>>
  */
 
 /**
@@ -198,11 +198,6 @@ class ReactNativeFeatureFlags {
    * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
    */
   RN_EXPORT static bool enableNetworkEventReporting();
-
-  /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
 
   /**
    * Enables caching text layout artifacts for later reuse

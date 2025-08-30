@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e2a5086e5586caf4c90ef503416a0e83>>
+ * @generated SignedSource<<cf56d285a0544fe94a517276f1694f72>>
  */
 
 /**
@@ -331,15 +331,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableNetworkEventReporting();
-  }
-
-  bool enableNewBackgroundAndBorderDrawables() override {
-    auto value = values_["enableNewBackgroundAndBorderDrawables"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableNewBackgroundAndBorderDrawables();
   }
 
   bool enablePreparedTextLayout() override {
