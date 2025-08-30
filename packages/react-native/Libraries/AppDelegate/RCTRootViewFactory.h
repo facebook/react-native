@@ -6,6 +6,7 @@
  */
 
 #import <React/RCTBridge.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 #import "RCTJSRuntimeConfiguratorProtocol.h"
@@ -204,6 +205,11 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  */
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
+                         launchOptions:(NSDictionary *__nullable)launchOptions
+                  devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
+
+- (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
+                     initialProperties:(NSDictionary *__nullable)initialProperties
                          launchOptions:(NSDictionary *__nullable)launchOptions;
 
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
@@ -220,7 +226,8 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  *
  * @parameter: launchOptions  - a dictionary with a set of options.
  */
-- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions
+                        devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 

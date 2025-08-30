@@ -7,6 +7,7 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
+#import <React/RCTDevMenu.h>
 #import <UIKit/UIKit.h>
 #import "RCTArchConfiguratorProtocol.h"
 #import "RCTDependencyProvider.h"
@@ -115,6 +116,8 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
 ;
 
 @property (nonatomic, weak) id<RCTReactNativeFactoryDelegate> delegate;
+
+@property (nonatomic, nullable) RCTDevMenuConfiguration *devMenuConfiguration;
 
 @end
 

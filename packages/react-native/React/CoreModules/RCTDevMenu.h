@@ -20,6 +20,16 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
 @class RCTDevMenuItem;
 
+@interface RCTDevMenuConfiguration : NSObject
+@property (nonatomic, readonly) BOOL isDevMenuEnabled;
+@property (nonatomic, readonly) BOOL isShakeGestureEnabled;
+@property (nonatomic, readonly) BOOL areKeyboardShortcutsEnabled;
+
+- (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
+                   shakeGestureEnabled:(BOOL)isShakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled;
+@end
+
 /**
  * Developer menu, useful for exposing extra functionality when debugging.
  */
@@ -50,6 +60,8 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  */
 @property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;
 
+@property (nonatomic, assign) BOOL isDevMenuEnabled;
+
 /**
  * Detect if actions sheet (development menu) is shown
  */
@@ -75,6 +87,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * when user selects the item.
  */
 - (void)addItem:(RCTDevMenuItem *)item;
+
+/**
+ * Disable the reload command (Cmd+R) in the simulator.
+ */
+- (void)disableReloadCommand;
 
 @end
 

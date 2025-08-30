@@ -29,6 +29,23 @@
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
+@interface RCTDevMenuConfiguration ()
+@end
+
+@implementation RCTDevMenuConfiguration
+- (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
+                   shakeGestureEnabled:(BOOL)isShakeGestureEnabled
+              keyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled
+{
+  if (self = [super init]) {
+    _isDevMenuEnabled = isDevMenuEnabled;
+    _isShakeGestureEnabled = isShakeGestureEnabled;
+    _areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled;
+  }
+  return self;
+}
+@end
+
 @implementation UIWindow (RCTDevMenu)
 
 - (void)RCT_motionEnded:(__unused UIEventSubtype)motion withEvent:(UIEvent *)event
@@ -102,6 +119,7 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
+@synthesize isDevMenuEnabled = _isDevMenuEnabled;
 
 RCT_EXPORT_MODULE()
 
@@ -162,7 +180,6 @@ RCT_EXPORT_MODULE()
 
   [commands unregisterKeyCommandWithInput:@"d" modifierFlags:UIKeyModifierCommand];
   [commands unregisterKeyCommandWithInput:@"i" modifierFlags:UIKeyModifierCommand];
-  [commands unregisterKeyCommandWithInput:@"n" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -172,10 +189,27 @@ RCT_EXPORT_MODULE()
   RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
 
   return [commands isKeyCommandRegisteredForInput:@"d" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand] &&
-      [commands isKeyCommandRegisteredForInput:@"n" modifierFlags:UIKeyModifierCommand];
+      [commands isKeyCommandRegisteredForInput:@"i" modifierFlags:UIKeyModifierCommand];
 #else
   return NO;
+#endif
+}
+
+- (BOOL)isReloadCommandRegistered
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  return [commands isKeyCommandRegisteredForInput:@"r" modifierFlags:UIKeyModifierCommand];
+#else
+  return NO;
+#endif
+}
+
+- (void)unregisterReloadCommand
+{
+#if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+  RCTKeyCommands *commands = [RCTKeyCommands sharedInstance];
+  [commands unregisterKeyCommandWithInput:@"r" modifierFlags:UIKeyModifierCommand];
 #endif
 }
 
@@ -379,7 +413,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || RCTRunningInAppExtension()) {
+  if (_actionSheet || RCTRunningInAppExtension() || !_isDevMenuEnabled) {
     return;
   }
 
@@ -427,7 +461,8 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  ((RCTDevSettings *)[_moduleRegistry moduleForName:"DevSettings"]).isShakeToShowDevMenuEnabled = shakeToShow;
+  RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
+  [devSettings setIsShakeToShowDevMenuEnabled:shakeToShow];
 }
 
 - (BOOL)shakeToShow
@@ -475,6 +510,13 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 - (BOOL)hotkeysEnabled
 {
   return [self isHotkeysRegistered];
+}
+
+- (void)disableReloadCommand
+{
+  if ([self isReloadCommandRegistered]) {
+    [self unregisterReloadCommand];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:

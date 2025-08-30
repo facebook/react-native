@@ -82,7 +82,8 @@ using namespace facebook::react;
 {
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
-                                                launchOptions:launchOptions];
+                                                launchOptions:launchOptions
+                                         devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;
