@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eee81e4e9bb13ef5134d4e2d79876b38>>
+ * @generated SignedSource<<be9f123a66e6fffb684b60be6796b782>>
  */
 
 /**
@@ -218,6 +218,11 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of network resource timings through `PerformanceObserver`.
    */
   RN_EXPORT static bool enableResourceTimingAPI();
+
+  /**
+   * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+   */
+  RN_EXPORT static bool enableSwiftUIBasedFilters();
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
