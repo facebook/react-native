@@ -11,6 +11,8 @@ end
 
 target 'HelloWorld' do
   config = use_native_modules!(['sh', '../scripts/config.sh'])
+  pod 'RNWorklets', :path => '../../../node_modules/react-native-worklets'
+  pod 'RNReanimated', :path => '../../../node_modules/react-native-reanimated'
 
   use_react_native!(
     :path => "../../../packages/react-native",

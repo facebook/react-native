@@ -18,11 +18,25 @@ import {
   useColorScheme,
 } from 'react-native';
 
+import Animated from 'react-native-reanimated';
+
 function App(): React.ReactNode {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaView>
+      <Animated.View
+        style={{
+          width: 100,
+          height: 100,
+          backgroundColor: 'red',
+          animationName: {
+            from: {opacity: 0},
+            to: {opacity: 1},
+          },
+          animationDuration: 1000,
+        }}
+      />
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View>

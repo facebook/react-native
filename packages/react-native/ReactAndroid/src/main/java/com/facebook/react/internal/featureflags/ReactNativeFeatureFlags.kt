@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34c12f5a31aab5bfb874953f1beefef1>>
+ * @generated SignedSource<<e54480bf977a527e6b31f57561255184>>
  */
 
 /**
@@ -419,6 +419,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useShadowNodeStateOnClone(): Boolean = accessor.useShadowNodeStateOnClone()
+
+  /**
+   * Use shared animation backend in C++ Animated
+   */
+  @JvmStatic
+  public fun useSharedAnimatedBackend(): Boolean = accessor.useSharedAnimatedBackend()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
