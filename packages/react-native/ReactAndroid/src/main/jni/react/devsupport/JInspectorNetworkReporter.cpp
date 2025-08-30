@@ -7,7 +7,7 @@
 
 #include "JInspectorNetworkReporter.h"
 
-#include <jsinspector-modern/network/NetworkReporter.h>
+#include <react/networking/NetworkReporter.h>
 
 #include <cstddef>
 #include <string>

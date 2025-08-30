@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include "NetworkTypes.h"
-
+#include <map>
 #include <string>
 
 namespace facebook::react::jsinspector_modern {
@@ -22,6 +21,7 @@ std::string httpReasonPhrase(uint16_t status);
  * Get the MIME type for a response based on the 'Content-Type' header. If
  * the header is not present, returns 'application/octet-stream'.
  */
-std::string mimeTypeFromHeaders(const Headers& headers);
+std::string mimeTypeFromHeaders(
+    const std::map<std::string, std::string>& headers);
 
 } // namespace facebook::react::jsinspector_modern
