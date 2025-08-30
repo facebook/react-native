@@ -80,7 +80,10 @@ local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(
   if (value.isNull()) {
     return {nullptr};
   } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     return JCxxCallbackImpl::newObjectCxxArgs(makeCallback(instance, value));
+#pragma clang diagnostic pop
   }
 }
 

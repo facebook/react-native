@@ -37,7 +37,9 @@ using fbsystrace::FbSystraceAsyncFlow;
 namespace facebook::react {
 
 // This class manages calls from JS to native code.
-class JsToNativeBridge : public react::ExecutorDelegate {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JsToNativeBridge
+    : public react::ExecutorDelegate {
  public:
   JsToNativeBridge(
       std::shared_ptr<ModuleRegistry> registry,

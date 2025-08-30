@@ -23,7 +23,9 @@
 
 namespace facebook::react {
 
-class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSIndexedRAMBundle
+    : public JSModulesUnbundle {
  public:
   static std::function<std::unique_ptr<JSModulesUnbundle>(std::string)>
   buildFactory();

@@ -23,7 +23,8 @@
 
 namespace facebook::react {
 
-class RN_EXPORT RAMBundleRegistry {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] RAMBundleRegistry {
  public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
