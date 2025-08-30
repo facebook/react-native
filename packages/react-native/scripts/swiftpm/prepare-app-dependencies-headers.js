@@ -114,6 +114,11 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 
     fs.mkdirSync(reactHeadersOutput, {recursive: true});
   }
 
+  // Define custom mappings for Libraries folder
+  const reactMappings = {
+    'FBReactNativeSpec/': path.join(headersOutput, 'FBReactNativeSpec'),
+  };
+
   // 1. Process React folder - flatten structure, exclude 'includes', 'headers', and 'tests' folders
   const reactPath = path.join(reactNativePath, 'React');
   if (fs.existsSync(reactPath)) {
@@ -123,6 +128,7 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 
       reactHeadersOutput,
       false,
       ['includes', 'headers', 'tests'],
+      reactMappings,
     );
     totalLinkedCount += reactCount;
     console.log(`Created ${reactCount} hard links from React folder`);
@@ -138,6 +144,7 @@ function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 
       'Required/': path.join(headersOutput, 'RCTRequired'),
       'TypeSafety/': path.join(headersOutput, 'RCTTypeSafety'),
       'FBLazyVector/': path.join(headersOutput, 'FBLazyVector'),
+      'FBReactNativeSpec/': path.join(headersOutput, 'FBReactNativeSpec'),
     };
 
     const librariesCount = hardlinkHeadersFromPath(

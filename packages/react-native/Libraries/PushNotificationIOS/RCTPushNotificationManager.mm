@@ -9,12 +9,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#if __has_include(<React/FBReactNativeSpec.h>)
-#import <React/FBReactNativeSpec.h>
-#else
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
-#endif
-
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTUtils.h>
