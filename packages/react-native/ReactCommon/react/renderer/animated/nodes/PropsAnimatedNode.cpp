@@ -14,6 +14,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/animated/NativeAnimatedNodesManager.h>
 #include <react/renderer/animated/nodes/ColorAnimatedNode.h>
+#include <react/renderer/animated/nodes/ObjectAnimatedNode.h>
 #include <react/renderer/animated/nodes/StyleAnimatedNode.h>
 #include <react/renderer/animated/nodes/ValueAnimatedNode.h>
 
@@ -124,6 +125,12 @@ void PropsAnimatedNode::update(bool forceFabricCommit) {
           if (const auto& styleNode =
                   manager_->getAnimatedNode<StyleAnimatedNode>(nodeTag)) {
             styleNode->collectViewUpdates(props_);
+          }
+        } break;
+        case AnimatedNodeType::Object: {
+          if (const auto objectNode =
+                  manager_->getAnimatedNode<ObjectAnimatedNode>(nodeTag)) {
+            objectNode->collectViewUpdates(propName, props_);
           }
         } break;
         case AnimatedNodeType::Props:

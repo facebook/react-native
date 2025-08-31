@@ -73,6 +73,8 @@ std::optional<AnimatedNodeType> AnimatedNode::getNodeTypeByName(
     return AnimatedNodeType::Tracking;
   } else if (nodeTypeName == "round") {
     return AnimatedNodeType::Round;
+  } else if (nodeTypeName == "object") {
+    return AnimatedNodeType::Object;
   } else {
     return std::nullopt;
   }

@@ -25,6 +25,7 @@
 #include <react/renderer/animated/nodes/InterpolationAnimatedNode.h>
 #include <react/renderer/animated/nodes/ModulusAnimatedNode.h>
 #include <react/renderer/animated/nodes/MultiplicationAnimatedNode.h>
+#include <react/renderer/animated/nodes/ObjectAnimatedNode.h>
 #include <react/renderer/animated/nodes/PropsAnimatedNode.h>
 #include <react/renderer/animated/nodes/RoundAnimatedNode.h>
 #include <react/renderer/animated/nodes/StyleAnimatedNode.h>
@@ -145,6 +146,8 @@ std::unique_ptr<AnimatedNode> NativeAnimatedNodesManager::animatedNode(
       return std::make_unique<DiffClampAnimatedNode>(tag, config, *this);
     case AnimatedNodeType::Round:
       return std::make_unique<RoundAnimatedNode>(tag, config, *this);
+    case AnimatedNodeType::Object:
+      return std::make_unique<ObjectAnimatedNode>(tag, config, *this);
     default:
       LOG(WARNING) << "Cannot create AnimatedNode of type " << typeName
                    << ", it's not implemented yet";
