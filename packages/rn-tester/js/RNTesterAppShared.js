@@ -13,7 +13,7 @@ import type {RNTesterModuleInfo, ScreenTypes} from './types/RNTesterTypes';
 import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import RNTesterModuleContainer from './components/RNTesterModuleContainer';
 import RNTesterModuleList from './components/RNTesterModuleList';
-import RNTesterNavBar, {navBarHeight} from './components/RNTesterNavbar';
+import RNTesterNavBar from './components/RNTesterNavbar';
 import {RNTesterThemeContext, themes} from './components/RNTesterTheme';
 import RNTTitleBar from './components/RNTTitleBar';
 import {title as PlaygroundTitle} from './examples/Playground/PlaygroundExample';
@@ -330,7 +330,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomNavbar: {
-    height: navBarHeight,
+    height: Platform.select({
+      android: 58,
+      ios: 68,
+    }),
   },
   hidden: {
     display: 'none',

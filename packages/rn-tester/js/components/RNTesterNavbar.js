@@ -28,7 +28,7 @@ const NavbarButton = ({
   iconStyle,
 }): React.Node => {
   const theme = useContext(RNTesterThemeContext);
-  const [isPressed, setPressed] = useState();
+  const [isPressed, setPressed] = useState(false);
 
   return (
     <Pressable
@@ -108,11 +108,6 @@ const RNTesterNavbar = ({
   );
 };
 
-export const navBarHeight = Platform.select({
-  android: 58,
-  ios: 68,
-});
-
 const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
@@ -129,7 +124,6 @@ const styles = StyleSheet.create({
   },
   navButton: {
     flex: 1,
-    height: navBarHeight,
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: Platform.select({
