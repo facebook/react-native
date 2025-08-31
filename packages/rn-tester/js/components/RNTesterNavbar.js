@@ -9,12 +9,11 @@
  */
 
 import type {ScreenTypes} from '../types/RNTesterTypes';
-import type {RNTesterTheme} from './RNTesterTheme';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
-import {useContext} from 'react';
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {useContext, useState} from 'react';
+import {Image, Platform, Pressable, StyleSheet, Text, View} from 'react-native';
 
 type NavBarOnPressHandler = ({screen: ScreenTypes}) => void;
 
@@ -22,99 +21,43 @@ type NavBarOnPressHandler = ({screen: ScreenTypes}) => void;
  * LTI update could not be added via codemod */
 const NavbarButton = ({
   testID,
-  theme,
   isActive,
-  activeImage,
-  inactiveImage,
+  icon,
   label,
   handlePress,
   iconStyle,
-}) => (
-  <Pressable
-    testID={testID}
-    onPress={handlePress}
-    style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
-    <View
-      style={[styles.pressableContent, isActive ? styles.activeBar : null]}
-      collapsable={false}>
-      <Image
-        style={iconStyle}
-        source={isActive ? activeImage : inactiveImage}
-      />
-      <Text
-        style={{
-          color: isActive
-            ? theme.NavBarLabelActiveColor
-            : theme.NavBarLabelInactiveColor,
-        }}>
-        {label}
-      </Text>
-    </View>
-  </Pressable>
-);
+}): React.Node => {
+  const theme = useContext(RNTesterThemeContext);
+  const [isPressed, setPressed] = useState();
 
-const ComponentTab = ({
-  isComponentActive,
-  handleNavBarPress,
-  theme,
-}: $ReadOnly<{
-  handleNavBarPress: NavBarOnPressHandler,
-  isComponentActive: boolean,
-  theme: RNTesterTheme,
-}>) => (
-  <NavbarButton
-    testID="components-tab"
-    label="Components"
-    handlePress={() => handleNavBarPress({screen: 'components'})}
-    activeImage={theme.NavBarComponentsActiveIcon}
-    inactiveImage={theme.NavBarComponentsInactiveIcon}
-    isActive={isComponentActive}
-    theme={theme}
-    iconStyle={styles.componentIcon}
-  />
-);
-
-const PlaygroundTab = ({
-  isComponentActive,
-  handleNavBarPress,
-  theme,
-}: $ReadOnly<{
-  handleNavBarPress: NavBarOnPressHandler,
-  isComponentActive: boolean,
-  theme: RNTesterTheme,
-}>) => (
-  <NavbarButton
-    testID="playground-tab"
-    label="Playground"
-    handlePress={() => handleNavBarPress({screen: 'playgrounds'})}
-    activeImage={theme.NavBarPlaygroundActiveIcon}
-    inactiveImage={theme.NavBarPlaygroundInactiveIcon}
-    isActive={isComponentActive}
-    theme={theme}
-    iconStyle={styles.componentIcon}
-  />
-);
-
-const APITab = ({
-  isAPIActive,
-  handleNavBarPress,
-  theme,
-}: $ReadOnly<{
-  handleNavBarPress: NavBarOnPressHandler,
-  isAPIActive: boolean,
-  theme: RNTesterTheme,
-}>) => (
-  <NavbarButton
-    testID="apis-tab"
-    label="APIs"
-    handlePress={() => handleNavBarPress({screen: 'apis'})}
-    activeImage={theme.NavBarAPIsActiveIcon}
-    inactiveImage={theme.NavBarAPIsInactiveIcon}
-    isActive={isAPIActive}
-    theme={theme}
-    iconStyle={styles.apiIcon}
-  />
-);
+  return (
+    <Pressable
+      testID={testID}
+      onPress={handlePress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={[styles.navButton, {backgroundColor: theme.BackgroundColor}]}>
+      <View
+        style={[
+          styles.pressableContent,
+          isPressed && {transform: 'scale(1.025)'},
+        ]}
+        collapsable={false}>
+        <Image
+          style={[styles.icon, iconStyle]}
+          tintColor={isActive ? theme.BrandColor : theme.TertiaryLabelColor}
+          source={icon}
+        />
+        <Text
+          style={{
+            color: isActive ? theme.LabelColor : theme.SecondaryLabelColor,
+          }}>
+          {label}
+        </Text>
+      </View>
+    </Pressable>
+  );
+};
 
 type Props = $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
@@ -134,60 +77,72 @@ const RNTesterNavbar = ({
   const isPlaygroundActive = screen === 'playgrounds';
 
   return (
-    <View>
-      <View style={styles.buttonContainer}>
-        <ComponentTab
-          isComponentActive={isComponentActive}
-          handleNavBarPress={handleNavBarPress}
-          theme={theme}
-        />
-        <PlaygroundTab
-          isComponentActive={isPlaygroundActive}
-          handleNavBarPress={handleNavBarPress}
-          theme={theme}
-        />
-        <APITab
-          isAPIActive={isAPIActive}
-          handleNavBarPress={handleNavBarPress}
-          theme={theme}
-        />
-      </View>
+    <View
+      style={[
+        styles.buttonContainer,
+        {borderTopColor: theme.QuaternaryLabelColor},
+      ]}>
+      <NavbarButton
+        testID="components-tab"
+        label="Components"
+        handlePress={() => handleNavBarPress({screen: 'components'})}
+        icon={require('../assets/bottom-nav-components-icon.png')}
+        isActive={isComponentActive}
+      />
+      <NavbarButton
+        testID="apis-tab"
+        label="APIs"
+        handlePress={() => handleNavBarPress({screen: 'apis'})}
+        icon={require('../assets/bottom-nav-apis-icon.png')}
+        isActive={isAPIActive}
+        iconStyle={styles.apiIcon}
+      />
+      <NavbarButton
+        testID="playground-tab"
+        label="Playground"
+        handlePress={() => handleNavBarPress({screen: 'playgrounds'})}
+        icon={require('../assets/bottom-nav-playgrounds-icon.png')}
+        isActive={isPlaygroundActive}
+      />
     </View>
   );
 };
 
-export const navBarHeight = 65;
+export const navBarHeight = Platform.select({
+  android: 58,
+  ios: 68,
+});
 
 const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
-  componentIcon: {
+  icon: {
     width: 20,
     height: 20,
     alignSelf: 'center',
   },
   apiIcon: {
     width: 30,
-    height: 20,
-    alignSelf: 'center',
-  },
-  activeBar: {
-    borderTopWidth: 2,
-    borderColor: '#005DFF',
   },
   navButton: {
     flex: 1,
     height: navBarHeight,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: Platform.select({
+      android: 0,
+      ios: 12,
+    }),
   },
   pressableContent: {
     flex: 1,
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
+    rowGap: 4,
   },
 });
 
