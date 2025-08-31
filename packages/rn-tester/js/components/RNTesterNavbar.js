@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: 20,
-    height: 20,
+    height: 21,
     alignSelf: 'center',
   },
   apiIcon: {
@@ -126,9 +126,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: Platform.select({
+      android: 10,
+      ios: 0,
+    }),
     paddingBottom: Platform.select({
       android: 0,
-      ios: 12,
+      ios: 10,
     }),
   },
   pressableContent: {

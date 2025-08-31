@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
   bottomNavbar: {
     height: Platform.select({
-      android: 58,
+      android: 56,
       ios: 68,
     }),
   },
