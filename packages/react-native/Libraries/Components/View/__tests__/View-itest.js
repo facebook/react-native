@@ -339,18 +339,30 @@ describe('<View>', () => {
       });
 
       describe('accessibilityElementsHidden', () => {
-        it('is not propagated to mounting layer, it is iOS only prop', () => {
+        it("is an iOS-only prop and ignored by Fantom (Android)'s BaseViewConfig", () => {
           const root = Fantom.createRoot();
 
           Fantom.runTask(() => {
-            root.render(<View accessibilityElementsHidden={true} />);
+            root.render(
+              <View accessibilityElementsHidden={true} collapsable={false} />,
+            );
           });
 
-          expect(
-            root
-              .getRenderedOutput({props: ['accessibilityElementsHidden']})
-              .toJSX(),
-          ).toEqual(null);
+          expect(root.getRenderedOutput().toJSX()).toEqual(<rn-view />);
+        });
+      });
+
+      describe('aria-hidden', () => {
+        it('is mapped to importantForAccessibility', () => {
+          const root = Fantom.createRoot();
+
+          Fantom.runTask(() => {
+            root.render(<View aria-hidden={true} collapsable={false} />);
+          });
+
+          expect(root.getRenderedOutput().toJSX()).toEqual(
+            <rn-view importantForAccessibility="no-hide-descendants" />,
+          );
         });
       });
 
