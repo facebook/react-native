@@ -10,10 +10,6 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
-
-setUpPerformanceObserver();
-
 describe('Performance', () => {
   it('does NOT allow creating instances of Performance directly', () => {
     expect(() => {
