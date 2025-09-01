@@ -116,3 +116,15 @@ export const PerformanceMeasure: typeof PerformanceMeasureTemplate =
 
 // $FlowExpectedError[prop-missing]
 PerformanceMeasure.prototype = PerformanceMeasureTemplate.prototype;
+
+export const PerformanceMeasure_public: typeof PerformanceMeasure =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceMeasure() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceMeasure': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceMeasure_public.prototype = PerformanceMeasure.prototype;

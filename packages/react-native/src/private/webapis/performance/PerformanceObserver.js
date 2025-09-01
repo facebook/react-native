@@ -57,6 +57,19 @@ export class PerformanceObserverEntryList {
   }
 }
 
+export const PerformanceObserverEntryList_public: typeof PerformanceObserverEntryList =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceObserverEntryList() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceObserverEntryList': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceObserverEntryList_public.prototype =
+  PerformanceObserverEntryList.prototype;
+
 export type PerformanceObserverCallbackOptions = {
   droppedEntriesCount: number,
 };

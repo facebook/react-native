@@ -191,4 +191,20 @@ describe('LongTasks API', () => {
       expect(entry.attribution).toEqual([]);
     });
   });
+
+  it('does NOT allow creating instances of PerformanceLongTaskTiming directly', () => {
+    expect(() => {
+      return new PerformanceLongTaskTiming();
+    }).toThrow(
+      "Failed to construct 'PerformanceLongTaskTiming': Illegal constructor",
+    );
+  });
+
+  it('does NOT allow creating instances of TaskAttributionTiming directly', () => {
+    expect(() => {
+      return new TaskAttributionTiming();
+    }).toThrow(
+      "Failed to construct 'TaskAttributionTiming': Illegal constructor",
+    );
+  });
 });
