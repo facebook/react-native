@@ -848,7 +848,7 @@ inline void fromRawValue(
   react_native_expect(false);
 }
 
-inline std::string toString(const PointerEventsMode& value) {
+inline std::string toString(PointerEventsMode value) {
   switch (value) {
     case PointerEventsMode::Auto:
       return "auto";
