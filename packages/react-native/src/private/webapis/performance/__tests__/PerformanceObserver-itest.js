@@ -10,11 +10,8 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import {PerformanceObserverEntryList_public} from '../PerformanceObserver';
 import * as Fantom from '@react-native/fantom';
-
-setUpPerformanceObserver();
 
 describe('PerformanceObserver', () => {
   it('receives notifications for marks and measures', () => {

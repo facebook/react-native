@@ -15,11 +15,8 @@ import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import {useState} from 'react';
 import {Text, View} from 'react-native';
-import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
 
 const NativePerformance = nullthrows(MaybeNativePerformance);
-
-setUpPerformanceObserver();
 
 function sleep(ms: number) {
   const end = performance.now() + ms;

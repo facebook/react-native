@@ -13,9 +13,6 @@ import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 import type {PerformanceObserverCallbackOptions} from '../PerformanceObserver';
 
 import * as Fantom from '@react-native/fantom';
-import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
-
-setUpPerformanceObserver();
 
 function ensurePerformanceLongTaskTiming(
   value: mixed,
