@@ -145,6 +145,22 @@ export class PerformanceObserver {
     NativePerformance.disconnect(this.#nativeObserverHandle);
   }
 
+  takeRecords(): PerformanceEntryList {
+    let entries: PerformanceEntryList = [];
+
+    if (this.#nativeObserverHandle != null) {
+      const rawEntries = NativePerformance.takeRecords(
+        this.#nativeObserverHandle,
+        true,
+      );
+      if (rawEntries && rawEntries.length > 0) {
+        entries = rawEntries.map(rawToPerformanceEntry);
+      }
+    }
+
+    return entries;
+  }
+
   #createNativeObserver(): OpaqueNativeObserverHandle | null {
     this.#calledAtLeastOnce = false;
 
@@ -154,7 +170,7 @@ export class PerformanceObserver {
           observerHandle,
           true, // sort records
         );
-        if (!rawEntries) {
+        if (!rawEntries || rawEntries.length === 0) {
           return;
         }
 
