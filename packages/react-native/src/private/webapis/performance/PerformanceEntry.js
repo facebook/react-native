@@ -28,24 +28,25 @@ export type PerformanceEntryJSON = {
   ...
 };
 
+export interface PerformanceEntryInit {
+  +name: string;
+  +startTime: DOMHighResTimeStamp;
+  +duration: DOMHighResTimeStamp;
+}
+
 export class PerformanceEntry {
   // We don't use private fields because they're significantly slower to
   // initialize on construction and to access.
   // We also need these to be protected so they can be initialized in subclasses
   // where we avoid calling `super()` for performance reasons.
-  __name: string;
   __entryType: PerformanceEntryType;
+  __name: string;
   __startTime: DOMHighResTimeStamp;
   __duration: DOMHighResTimeStamp;
 
-  constructor(init: {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: DOMHighResTimeStamp,
-    duration: DOMHighResTimeStamp,
-  }) {
+  constructor(entryType: PerformanceEntryType, init: PerformanceEntryInit) {
+    this.__entryType = entryType;
     this.__name = init.name;
-    this.__entryType = init.entryType;
     this.__startTime = init.startTime;
     this.__duration = init.duration;
   }
