@@ -443,4 +443,16 @@ export default class Performance {
   }
 }
 
+export const Performance_public: typeof Performance =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function Performance() {
+    throw new TypeError(
+      "Failed to construct 'Performance': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+Performance_public.prototype = Performance.prototype;
+
 setPlatformObject(Performance);

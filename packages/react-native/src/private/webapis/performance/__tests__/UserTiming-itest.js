@@ -44,6 +44,24 @@ describe('User Timing', () => {
     mockClock.uninstall();
   });
 
+  it('allows creating instances of PerformanceMark directly', () => {
+    const before = performance.now();
+    const entry = new PerformanceMark('mark-now');
+    const after = performance.now();
+
+    expect(entry).toBeInstanceOf(PerformanceMark);
+    expect(entry.startTime).toBeGreaterThanOrEqual(before);
+    expect(entry.startTime).toBeLessThanOrEqual(after);
+    expect(entry.duration).toBe(0);
+    expect(entry.detail).toBe(null);
+  });
+
+  it('does NOT allow creating instances of PerformanceMeasure directly', () => {
+    expect(() => {
+      return new PerformanceMeasure();
+    }).toThrow("Failed to construct 'PerformanceMeasure': Illegal constructor");
+  });
+
   describe('mark', () => {
     it('works with default timestamp', () => {
       mockClock.setTime(25);
