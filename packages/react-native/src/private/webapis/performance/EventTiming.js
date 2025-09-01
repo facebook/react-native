@@ -9,9 +9,9 @@
  */
 
 // flowlint unsafe-getters-setters:off
-
 import type {
   DOMHighResTimeStamp,
+  PerformanceEntryInit,
   PerformanceEntryJSON,
 } from './PerformanceEntry';
 
@@ -29,25 +29,20 @@ export type PerformanceEventTimingJSON = {
   ...
 };
 
+export interface PerformanceEventTimingInit extends PerformanceEntryInit {
+  +processingStart?: DOMHighResTimeStamp;
+  +processingEnd?: DOMHighResTimeStamp;
+  +interactionId?: number;
+}
+
 export class PerformanceEventTiming extends PerformanceEntry {
   #processingStart: DOMHighResTimeStamp;
   #processingEnd: DOMHighResTimeStamp;
   #interactionId: number;
 
-  constructor(init: {
-    name: string,
-    startTime?: DOMHighResTimeStamp,
-    duration?: DOMHighResTimeStamp,
-    processingStart?: DOMHighResTimeStamp,
-    processingEnd?: DOMHighResTimeStamp,
-    interactionId?: number,
-  }) {
-    super({
-      name: init.name,
-      entryType: 'event',
-      startTime: init.startTime ?? 0,
-      duration: init.duration ?? 0,
-    });
+  constructor(init: PerformanceEventTimingInit) {
+    super('event', init);
+
     this.#processingStart = init.processingStart ?? 0;
     this.#processingEnd = init.processingEnd ?? 0;
     this.#interactionId = init.interactionId ?? 0;
