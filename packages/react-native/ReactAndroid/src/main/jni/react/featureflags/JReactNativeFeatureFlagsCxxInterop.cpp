@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16b12024bb363358ef09b9a42cb2fc97>>
+ * @generated SignedSource<<f4ec3b7b6f99dd3409d872470872ece6>>
  */
 
 /**
@@ -300,6 +300,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableVirtualViewWindowFocusDetection() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableVirtualViewWindowFocusDetection");
+    return method(javaProvider_);
+  }
+
+  bool enableWebPerformanceAPIsByDefault() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableWebPerformanceAPIsByDefault");
     return method(javaProvider_);
   }
 
@@ -677,6 +683,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection(
   return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -965,6 +976,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableVirtualViewWindowFocusDetection",
         JReactNativeFeatureFlagsCxxInterop::enableVirtualViewWindowFocusDetection),
+      makeNativeMethod(
+        "enableWebPerformanceAPIsByDefault",
+        JReactNativeFeatureFlagsCxxInterop::enableWebPerformanceAPIsByDefault),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),

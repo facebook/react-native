@@ -304,6 +304,13 @@ let reactIdleCallbacksNativeModule = RNTarget(
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
 )
 
+/// React-webperformance.podspec
+let reactWebPerformanceNativeModule = RNTarget(
+  name: .reactWebPerformanceNativeModule,
+  path: "ReactCommon/react/nativemodule/webperformance",
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactTurboModuleCore, .reactPerformanceTimeline]
+)
+
 /// React-featureflagnativemodule.podspec
 let reactFeatureflagsNativemodule = RNTarget(
   name: .reactFeatureflagsNativemodule,
@@ -590,6 +597,7 @@ let targets = [
   reactTurboModuleCoreDefaults,
   reactTurboModuleCoreMicrotasks,
   reactIdleCallbacksNativeModule,
+  reactWebPerformanceNativeModule,
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
@@ -764,6 +772,7 @@ extension String {
   static let reactTurboModuleCoreDefaults = "ReactCommon/turbomodule/core/defaults"
   static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"
   static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
+  static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"
