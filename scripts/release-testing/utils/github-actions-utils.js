@@ -210,7 +210,7 @@ async function artifactURLForRNTesterAPK(
 }
 
 async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
-  return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
+  return getArtifactURL('RNTesterApp-NewArch-Debug');
 }
 
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
@@ -223,7 +223,9 @@ async function getArtifactURL(
   const filteredUrls = artifacts.artifacts.filter(a => a.name === artifactName);
 
   if (filteredUrls.length === 0) {
-    console.error(`No artifact found with name ${artifactName}`);
+    console.error(`
+      No artifact found with name ${artifactName}.\n\nAvailiable artifacts: ${artifacts.artifacts.map(a => a.name).join('  ')}
+    `);
     process.exit(1);
   }
   return filteredUrls[0].archive_download_url;
