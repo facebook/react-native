@@ -70,6 +70,18 @@ export class PerformanceEventTiming extends PerformanceEntry {
   }
 }
 
+export const PerformanceEventTiming_public: typeof PerformanceEventTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceEventTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceEventTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceEventTiming_public.prototype = PerformanceEventTiming.prototype;
+
 type EventCountsForEachCallbackType =
   | (() => void)
   | ((value: number) => void)
@@ -134,3 +146,15 @@ export class EventCounts {
     return getCachedEventCounts().values();
   }
 }
+
+export const EventCounts_public: typeof EventCounts =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function EventCounts() {
+    throw new TypeError(
+      "Failed to construct 'EventCounts': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+EventCounts_public.prototype = EventCounts.prototype;

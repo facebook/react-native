@@ -77,6 +77,18 @@ export class PerformanceEntry {
   }
 }
 
+export const PerformanceEntry_public: typeof PerformanceEntry =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceEntry() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceEntry': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceEntry_public.prototype = PerformanceEntry.prototype;
+
 setPlatformObject(PerformanceEntry);
 
 export type PerformanceEntryList = $ReadOnlyArray<PerformanceEntry>;
