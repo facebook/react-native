@@ -626,6 +626,22 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
   return resultRootShadowNode;
 }
 
+void UIManager::shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) const {
+  std::shared_lock lock(commitHookMutex_);
+
+  for (auto* commitHook : commitHooks_) {
+    commitHook->shadowTreeCommitSucceeded(commitOptions);
+  }
+}
+
+void UIManager::shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) const {
+  std::shared_lock lock(commitHookMutex_);
+
+  for (auto* commitHook : commitHooks_) {
+    commitHook->shadowTreeCommitFinalized(commitOptions);
+  }
+}
+
 void UIManager::shadowTreeDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) const {

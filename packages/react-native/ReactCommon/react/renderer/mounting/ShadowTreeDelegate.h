@@ -38,6 +38,11 @@ class ShadowTreeDelegate {
       std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const = 0;
 
+  // Called after a commit is known to succeed, however, still under the commit lock
+  virtual void shadowTreeCommitSucceeded(const ShadowTreeCommitOptions& commitOptions) const = 0;
+  // Will be called in each case once we are done with the current commit attempt
+  virtual void shadowTreeCommitFinalized(const ShadowTreeCommitOptions& commitOptions) const = 0;
+
   virtual ~ShadowTreeDelegate() noexcept = default;
 };
 
