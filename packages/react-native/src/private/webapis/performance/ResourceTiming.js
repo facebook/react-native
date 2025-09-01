@@ -104,3 +104,16 @@ export class PerformanceResourceTiming extends PerformanceEntry {
     };
   }
 }
+
+export const PerformanceResourceTiming_public: typeof PerformanceResourceTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceResourceTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceResourceTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceResourceTiming_public.prototype =
+  PerformanceResourceTiming.prototype;
