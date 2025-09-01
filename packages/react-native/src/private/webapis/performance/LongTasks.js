@@ -24,6 +24,18 @@ export type PerformanceLongTaskTimingJSON = {
 
 export class TaskAttributionTiming extends PerformanceEntry {}
 
+export const TaskAttributionTiming_public: typeof TaskAttributionTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function TaskAttributionTiming() {
+    throw new TypeError(
+      "Failed to construct 'TaskAttributionTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+TaskAttributionTiming_public.prototype = TaskAttributionTiming.prototype;
+
 const EMPTY_ATTRIBUTION: $ReadOnlyArray<TaskAttributionTiming> =
   Object.preventExtensions([]);
 
@@ -45,3 +57,16 @@ export class PerformanceLongTaskTiming extends PerformanceEntry {
     };
   }
 }
+
+export const PerformanceLongTaskTiming_public: typeof PerformanceLongTaskTiming =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceLongTaskTiming() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceLongTaskTiming': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceLongTaskTiming_public.prototype =
+  PerformanceLongTaskTiming.prototype;
