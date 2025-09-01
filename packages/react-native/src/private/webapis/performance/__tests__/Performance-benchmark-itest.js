@@ -10,11 +10,7 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from 'react-native/src/private/webapis/performance/Performance';
-
 import * as Fantom from '@react-native/fantom';
-
-declare var performance: Performance;
 
 const clearMarksAndMeasures = () => {
   performance.clearMarks();

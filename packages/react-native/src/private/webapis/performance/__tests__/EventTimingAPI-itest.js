@@ -10,23 +10,16 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from 'react-native/src/private/webapis/performance/Performance';
-import type {PerformanceObserverEntryList} from 'react-native/src/private/webapis/performance/PerformanceObserver';
-
 import MaybeNativePerformance from '../specs/NativePerformance';
 import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import {useState} from 'react';
 import {Text, View} from 'react-native';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
-import {PerformanceEventTiming} from 'react-native/src/private/webapis/performance/EventTiming';
-import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
 const NativePerformance = nullthrows(MaybeNativePerformance);
 
 setUpPerformanceObserver();
-
-declare var performance: Performance;
 
 function sleep(ms: number) {
   const end = performance.now() + ms;
