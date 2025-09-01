@@ -172,6 +172,7 @@ public abstract class DevSupportManagerBase(
   private var isShakeDetectorStarted = false
   private var isDevSupportEnabled = false
   private var isPackagerConnected = false
+  private var wasPackagerConnectedBefore = false
   private val errorCustomizers: MutableList<ErrorCustomizer> = mutableListOf()
   private var packagerLocationCustomizer: PackagerLocationCustomizer? = null
   private val jSExecutorDescription: String?
@@ -877,6 +878,11 @@ public abstract class DevSupportManagerBase(
           object : PackagerCommandListener {
             override fun onPackagerConnected() {
               isPackagerConnected = true
+              if (wasPackagerConnectedBefore) {
+                onPackagerReloadCommand()
+              } else {
+                wasPackagerConnectedBefore = true
+              }
               perfMonitorOverlayManager?.enable()
             }
 
