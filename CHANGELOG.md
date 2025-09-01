@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.81.1
+
+### Added
+
+
+#### iOS specific
+
+- **Prebuild:** Added setting SWIFT_ENABLE_EXPLICIT_MODULES=NO when using precompiled to support Xcode 26 ([939a75b5ce](https://github.com/facebook/react-native/commit/939a75b5ce2a580ece4a62689582ea81480c3e97) by [@chrfalch](https://github.com/chrfalch))
+
+### Fixed
+
+- **Infra:** Add missing Babel dependencies ([bf2c3af93b](https://github.com/facebook/react-native/commit/bf2c3af93b146943cb35866fa9badcd188e63f5b) by [@tido64](https://github.com/tido64))
+- **Accessibility:** fix `aria-label` on `TextInput` ([6965d57e75](https://github.com/facebook/react-native/commit/6965d57e75ed0cf9f265c6020d478ddb9af4bf10) by [@mdjastrzebski](https://github.com/mdjastrzebski))
+
+
+#### iOS specific
+
+- **TextInput:** Setting maxLength to 0 in TextInput now correctly blocks typing ([c5956da8c0](https://github.com/facebook/react-native/commit/c5956da8c0b735d47761af51019ed25b49001c00) by [@riteshshukla04](https://github.com/riteshshukla04))
+- **Switch:** Fix Switch layout to work with iOS 26 ([ba51aeaa90](https://github.com/facebook/react-native/commit/ba51aeaa9040014e1d77c93158c96e9bf09940cf) by [@cipolleschi](https://github.com/cipolleschi))
+- **C++:** Fix import RuntimeExecutor.h with USE_FRAMEWORKS ([dacd8f26fd](https://github.com/facebook/react-native/commit/dacd8f26fda61b16b52a4953267f2108181c3282) by [@sharifhh](https://github.com/sharifhh))
+- **Infra:** Fix scripts for paths containing whitespaces ([94623ca8ec](https://github.com/facebook/react-native/commit/94623ca8ec969f09d8ec430e7633c3bf49a3d71e) by [@kitten](https://github.com/kitten))
+- **Prebuild:** Fixed how we copy and build the Symbols folder when precompiling ReactNativeDependencies ([a843119ff1](https://github.com/facebook/react-native/commit/a843119ff1f0e2dfb1d3884ccf255784e3cea1a7) by [@chrfalch](https://github.com/chrfalch))
+- **Prebuild:** Fixed wrong jsi symbols in use when using React.xcframework ([8a2e7efe01](https://github.com/facebook/react-native/commit/8a2e7efe010c49a293c146654094b1cb5d6e6acd) by [@chrfalch](https://github.com/chrfalch))
+- **Prebuild:** Fixed copying bundles correctly to xcframeworks when precompiling ReactNativeDependencies.xcframework ([e3adf47214](https://github.com/facebook/react-native/commit/e3adf4721467557f19e6cd7a65c4e2314796bc17) by [@chrfalch](https://github.com/chrfalch))
+- **Prebuild:** Aligned Symbols folder in React.xcframework symbols with ReactNativeDependencies.xcframework symbols. ([8c444f773a](https://github.com/facebook/react-native/commit/8c444f773a44e8554745c9cfc1451083c12b00e3) by [@chrfalch](https://github.com/chrfalch))
+- **Prebuild:** Fix "file exists" error in `ReactNativeDependencies.podspec` ([4c570b5d31](https://github.com/facebook/react-native/commit/4c570b5d31ef46e04e5fa26fa92d7f7090bf15e2) by [@vonovak](https://github.com/vonovak))
+- **Prebuild:** added explicit handling of ReactCodegen ([6526a98d68](https://github.com/facebook/react-native/commit/6526a98d68dbc8578ea15cbf117c0a216c6e9af0) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.81.0
 
 ### Breaking
