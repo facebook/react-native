@@ -310,4 +310,51 @@ TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, ProfileChunkSizeLimit) {
   }
 }
 
+TEST_F(RuntimeSamplingProfileTraceEventSerializerTest, UniqueNodesThreshold) {
+  // Setup
+  auto notificationCallback = createNotificationCallback();
+  IdGenerator profileIdGenerator;
+  uint16_t traceEventChunkSize = 10;
+  uint16_t profileChunkSize = 10;
+  uint16_t maxUniqueNodesPerChunk = 3;
+
+  // Create samples with different function names to generate unique nodes
+  ThreadId threadId = 1;
+  uint64_t timestamp = 1000000;
+
+  std::vector<RuntimeSamplingProfile::Sample> samples;
+
+  // In total we would have 8 unique nodes, 5 of which are created here.
+  // Other 3 are (root), (program), (idle).
+  for (int i = 0; i < 5; i++) {
+    std::vector<RuntimeSamplingProfile::SampleCallStackFrame> callStack = {
+        createJSCallFrame(
+            "function" + std::to_string(i), 1, "test.js", 10 + i, 5)};
+    samples.push_back(createSample(timestamp + i * 1000, threadId, callStack));
+  }
+
+  auto profile = createProfileWithSamples(std::move(samples));
+  auto tracingStartTime = HighResTimeStamp::now();
+
+  // Execute
+  RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
+      std::move(profile),
+      profileIdGenerator,
+      tracingStartTime,
+      notificationCallback,
+      traceEventChunkSize,
+      profileChunkSize,
+      maxUniqueNodesPerChunk);
+
+  // [["Profile"], ["ProfileChunk", "ProfileChunk", "ProfileChunk"]]
+  ASSERT_EQ(notificationEvents_.size(), 2);
+  EXPECT_EQ(notificationEvents_[1].size(), 3);
+
+  // Verify that each chunk respects the unique nodes limit
+  for (auto& profileChunk : notificationEvents_[1]) {
+    auto& nodes = profileChunk["args"]["data"]["cpuProfile"]["nodes"];
+    EXPECT_LE(nodes.size(), maxUniqueNodesPerChunk);
+  }
+}
+
 } // namespace facebook::react::jsinspector_modern::tracing
