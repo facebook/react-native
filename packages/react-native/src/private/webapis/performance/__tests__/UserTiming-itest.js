@@ -11,11 +11,8 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import ensureInstance from '../../../__tests__/utilities/ensureInstance';
-import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import DOMException from '../../errors/DOMException';
 import * as Fantom from '@react-native/fantom';
-
-setUpPerformanceObserver();
 
 function getThrownError(fn: () => mixed): mixed {
   try {
