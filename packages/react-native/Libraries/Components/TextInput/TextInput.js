@@ -677,6 +677,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
+    const _accessibilityElementsHidden =
+      props['aria-hidden'] ?? props.accessibilityElementsHidden;
+
     textInput = (
       <RCTTextInputView
         // Figure out imperative + forward refs.
@@ -686,6 +689,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         acceptDragAndDropTypes={props.experimental_acceptDragAndDropTypes}
         accessibilityLabel={_accessibilityLabel}
         accessibilityState={_accessibilityState}
+        accessibilityElementsHidden={_accessibilityElementsHidden}
         accessible={accessible}
         submitBehavior={submitBehavior}
         caretHidden={caretHidden}
@@ -714,6 +718,10 @@ function InternalTextInput(props: TextInputProps): React.Node {
     const autoCapitalize = props.autoCapitalize || 'sentences';
     const _accessibilityLabelledBy =
       props?.['aria-labelledby'] ?? props?.accessibilityLabelledBy;
+    const _importantForAccessibility =
+      props['aria-hidden'] === true
+        ? ('no-hide-descendants' as const)
+        : undefined;
     const placeholder = props.placeholder ?? '';
     let children = props.children;
     const childCount = React.Children.count(children);
@@ -759,6 +767,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         children={children}
         disableFullscreenUI={props.disableFullscreenUI}
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
+        importantForAccessibility={_importantForAccessibility}
         mostRecentEventCount={mostRecentEventCount}
         nativeID={id ?? props.nativeID}
         numberOfLines={props.rows ?? props.numberOfLines}
