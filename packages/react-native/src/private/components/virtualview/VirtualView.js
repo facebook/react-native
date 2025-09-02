@@ -56,6 +56,7 @@ const VirtualViewNativeComponent: typeof VirtualViewClassicNativeComponent =
 
 type VirtualViewComponent = component(
   children?: React.Node,
+  hiddenStyle?: (targetRect: Rect) => ViewStyleProp,
   nativeID?: string,
   ref?: ?React.RefSetter<React.ElementRef<typeof VirtualViewNativeComponent>>,
   style?: ?ViewStyleProp,
@@ -63,16 +64,21 @@ type VirtualViewComponent = component(
   removeClippedSubviews?: boolean,
 );
 
-type HiddenHeight = number;
 const NotHidden = null;
+type HiddenStyle = Exclude<ViewStyleProp, typeof NotHidden>;
 
-type State = HiddenHeight | typeof NotHidden;
+type State = HiddenStyle | typeof NotHidden;
+
+function defaultHiddenStyle(targetRect: Rect): ViewStyleProp {
+  return {minHeight: targetRect.height, minWidth: targetRect.width};
+}
 
 function createVirtualView(initialState: State): VirtualViewComponent {
   const initialHidden = initialState !== NotHidden;
 
   component VirtualView(
     children?: React.Node,
+    hiddenStyle: (targetRect: Rect) => ViewStyleProp = defaultHiddenStyle,
     nativeID?: string,
     ref?: ?React.RefSetter<React.ElementRef<typeof VirtualViewNativeComponent>>,
     style?: ?ViewStyleProp,
@@ -112,9 +118,8 @@ function createVirtualView(initialState: State): VirtualViewComponent {
           });
         }
         VirtualViewMode.Hidden => {
-          const {height} = event.nativeEvent.targetRect;
           startTransition(() => {
-            setState(height as HiddenHeight);
+            setState(hiddenStyle(event.nativeEvent.targetRect) ?? {});
             emitModeChange?.();
           });
         }
@@ -134,9 +139,7 @@ function createVirtualView(initialState: State): VirtualViewComponent {
         }
         style={
           isHidden
-            ? StyleSheet.compose(style, {
-                height: Math.abs(nullthrows(state) as HiddenHeight),
-              })
+            ? StyleSheet.compose(style, nullthrows(state) as HiddenStyle)
             : style
         }
         onModeChange={handleModeChange}>
@@ -159,8 +162,10 @@ function createVirtualView(initialState: State): VirtualViewComponent {
 
 export default createVirtualView(NotHidden) as VirtualViewComponent;
 
-export function createHiddenVirtualView(height: number): VirtualViewComponent {
-  return createVirtualView(height as HiddenHeight);
+export function createHiddenVirtualView(
+  style: ViewStyleProp,
+): VirtualViewComponent {
+  return createVirtualView((style ?? {}) as HiddenStyle);
 }
 
 export const _logs: {states?: Array<State>} = {};
