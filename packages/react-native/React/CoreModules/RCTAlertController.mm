@@ -20,7 +20,12 @@
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithWindowScene:RCTKeyWindow().windowScene];
+    UIWindowScene *scene = RCTKeyWindow().windowScene;
+    if (scene != nil) {
+      _alertWindow = [[UIWindow alloc] initWithWindowScene:scene];
+    } else {
+      _alertWindow = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
+    }
 
     if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
