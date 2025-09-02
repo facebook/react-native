@@ -353,8 +353,11 @@ void ReactInstance::registerSegment(
     }
     LOG(WARNING) << "Starting to evaluate segment " << segmentId
                  << " in ReactInstance::registerSegment";
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     runtime.evaluateJavaScript(
         buffer, JSExecutor::getSyntheticBundlePath(segmentId, segmentPath));
+#pragma clang diagnostic pop
     LOG(WARNING) << "Finished evaluating segment " << segmentId
                  << " in ReactInstance::registerSegment";
     if (hasLogger) {

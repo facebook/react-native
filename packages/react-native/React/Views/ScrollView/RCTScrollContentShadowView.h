@@ -11,6 +11,7 @@
 
 #import <React/RCTShadowView.h>
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTScrollContentShadowView : RCTShadowView
 
 @end

@@ -15,6 +15,7 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
+import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.packagerconnection.RequestHandler
 
 /**
@@ -79,5 +80,9 @@ internal class BridgelessDevSupportManager(
     // dismiss redbox if exists
     hideRedboxDialog()
     reactInstanceDevHelper.reload("BridgelessDevSupportManager.handleReloadJS()")
+  }
+
+  fun tracingState(): TracingState {
+    return TracingState.DISABLED
   }
 }

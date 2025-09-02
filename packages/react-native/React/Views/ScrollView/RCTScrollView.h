@@ -17,7 +17,8 @@
 
 @protocol UIScrollViewDelegate;
 
-@interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTScrollView : RCTView<UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 

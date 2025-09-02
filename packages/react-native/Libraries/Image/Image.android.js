@@ -148,6 +148,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
     'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     accessibilityLabel,
@@ -302,6 +303,10 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
       };
     }
 
+    if (ariaHidden === true) {
+      nativeProps.importantForAccessibility = 'no-hide-descendants';
+    }
+
     const flattenedStyle_ = flattenStyle<ImageStyleProp>(style);
     const objectFit_ = convertObjectFitToResizeMode(flattenedStyle_?.objectFit);
     const resizeMode_ =
@@ -406,6 +411,10 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInImage()) {
         expanded: props['aria-expanded'] ?? props.accessibilityState?.expanded,
         selected: props['aria-selected'] ?? props.accessibilityState?.selected,
       },
+      importantForAccessibility:
+        props['aria-hidden'] === true
+          ? ('no-hide-descendants' as const)
+          : props.importantForAccessibility,
     };
 
     const flattenedStyle = flattenStyle<ImageStyleProp>(style);

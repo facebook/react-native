@@ -161,10 +161,7 @@ static BOOL CGRectOverlaps(CGRect rect1, CGRect rect2)
     RCTVirtualViewMode mode = RCTVirtualViewModeHidden;
     CGRect thresholdRect = _emptyRect;
 
-    if (CGRectIsEmpty(rect)) {
-      mode = RCTVirtualViewModeHidden;
-      thresholdRect = _emptyRect;
-    } else if (CGRectOverlaps(rect, visibleRect)) {
+    if (CGRectOverlaps(rect, visibleRect)) {
       thresholdRect = visibleRect;
       mode = RCTVirtualViewModeVisible;
     } else if (CGRectOverlaps(rect, _prerenderRect)) {

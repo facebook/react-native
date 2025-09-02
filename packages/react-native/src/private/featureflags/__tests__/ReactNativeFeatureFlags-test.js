@@ -61,7 +61,7 @@ describe('ReactNativeFeatureFlags', () => {
   it('should access and cache overridden JS-only flags', () => {
     const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
 
-    const jsOnlyTestFlagFn = jest.fn((defaultValue: boolean) => true);
+    const jsOnlyTestFlagFn = jest.fn(() => true);
     ReactNativeFeatureFlags.override({
       jsOnlyTestFlag: jsOnlyTestFlagFn,
     });
@@ -117,17 +117,24 @@ describe('ReactNativeFeatureFlags', () => {
     ).toThrow('Feature flags cannot be overridden more than once');
   });
 
-  it('should pass the default value of the feature flag to the function that provides its override', () => {
+  it('should evaluate to default value if the override returns null', () => {
     const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
 
     ReactNativeFeatureFlags.override({
-      jsOnlyTestFlag: (defaultValue: boolean) => {
-        expect(defaultValue).toBe(false);
-        return true;
-      },
+      jsOnlyTestFlag: () => null,
     });
 
-    expect(ReactNativeFeatureFlags.jsOnlyTestFlag()).toBe(true);
+    expect(ReactNativeFeatureFlags.jsOnlyTestFlag()).toBe(false);
+  });
+
+  it('should evaluate to default value if the override returns undefined', () => {
+    const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
+
+    ReactNativeFeatureFlags.override({
+      jsOnlyTestFlag: () => undefined,
+    });
+
+    expect(ReactNativeFeatureFlags.jsOnlyTestFlag()).toBe(false);
   });
 
   describe('when the native module is NOT available', () => {

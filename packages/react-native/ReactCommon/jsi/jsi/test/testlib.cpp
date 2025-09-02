@@ -176,6 +176,57 @@ TEST_P(JSITest, ObjectTest) {
   Array names = obj.getPropertyNames(rt);
   EXPECT_EQ(names.size(rt), 1);
   EXPECT_EQ(names.getValueAtIndex(rt, 0).getString(rt).utf8(rt), "a");
+
+  // This Runtime Decorator is used to test the default implementation of
+  // Runtime::has/get/setProperty with Value overload
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Value getProperty(const Object& object, const Value& name) override {
+      return Runtime::getProperty(object, name);
+    }
+
+    bool hasProperty(const Object& object, const Value& name) override {
+      return Runtime::hasProperty(object, name);
+    }
+
+    void setPropertyValue(
+        const Object& object,
+        const Value& name,
+        const Value& value) override {
+      Runtime::setPropertyValue(object, name, value);
+    }
+  };
+
+  RD rd = RD(rt);
+
+  obj = eval("const obj = {}; obj;").getObject(rd);
+  auto propVal = Value(123);
+  obj.setProperty(rd, propVal, 456);
+  EXPECT_TRUE(obj.hasProperty(rd, propVal));
+  auto getRes = obj.getProperty(rd, propVal);
+  EXPECT_EQ(getRes.getNumber(), 456);
+
+  /// The property is non-writable so it should fail
+  obj = eval(
+            "Object.defineProperty(obj, '456', {"
+            "  value: 10,"
+            "  writable: false,});")
+            .getObject(rd);
+  auto unwritableProp = Value(456);
+  EXPECT_THROW(obj.setProperty(rd, unwritableProp, 1), JSError);
+
+  auto badObjKey = eval(
+      "var badObj = {"
+      "    toString: function() {"
+      "        throw new Error('something went wrong');"
+      "    }"
+      "};"
+      "badObj;");
+  EXPECT_THROW(obj.setProperty(rd, badObjKey, 123), JSError);
+  EXPECT_THROW(obj.hasProperty(rd, badObjKey), JSError);
+  EXPECT_THROW(obj.getProperty(rd, badObjKey), JSError);
 }
 
 TEST_P(JSITest, HostObjectTest) {

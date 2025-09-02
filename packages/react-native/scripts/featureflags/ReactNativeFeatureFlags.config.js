@@ -818,6 +818,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableMaintainVisibleContentPosition: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-26',
+        description:
+          'Disable prop maintainVisibleContentPosition in ScrollView',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: true,
       metadata: {
@@ -898,6 +909,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    virtualViewActivityBehavior: {
+      defaultValue: 'no-activity',
+      metadata: {
+        dateAdded: '2025-08-27',
+        description: 'Changes whether and how `VirtualView` uses `Activity`.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

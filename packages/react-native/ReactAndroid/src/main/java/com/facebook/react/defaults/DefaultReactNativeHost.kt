@@ -122,7 +122,7 @@ protected constructor(
         context,
         packages,
         jsMainModuleName,
-        bundleAssetName ?: "index",
+        bundleAssetName ?: "index.android.bundle",
         jsBundleFile,
         concreteJSRuntimeFactory,
         useDeveloperSupport,

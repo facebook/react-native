@@ -15,7 +15,8 @@
 
 namespace facebook::react {
 
-class JSModulesUnbundle {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSModulesUnbundle {
   /**
    * Represents the set of JavaScript modules that the application consists of.
    * The source code of each module can be retrieved by module ID.

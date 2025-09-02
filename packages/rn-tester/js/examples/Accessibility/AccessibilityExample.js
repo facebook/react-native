@@ -30,6 +30,7 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
+  Text,
   TextInput,
   TouchableNativeFeedback,
   TouchableOpacity,
@@ -2136,6 +2137,91 @@ function LabelCooptingExample(): React.Node {
   );
 }
 
+function AriaHiddenExample(): React.Node {
+  const [ariaHidden, setAriaHidden] = useState(false);
+
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 40,
+        }}>
+        <RNTesterText variant="label" style={{flex: 1}}>
+          Enable aria-hidden
+        </RNTesterText>
+        <Switch
+          value={ariaHidden}
+          onValueChange={() => setAriaHidden(!ariaHidden)}
+          accessibilityLabel="Enable aria-hidden"
+        />
+      </View>
+
+      <View
+        accessible
+        aria-hidden={ariaHidden}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
+        style={styles.smallRedSquare}
+      />
+
+      <View
+        accessible
+        aria-hidden={ariaHidden}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }>
+        <Text>View with Text content</Text>
+      </View>
+
+      <Text aria-hidden={ariaHidden}>Regular Text</Text>
+
+      <TextInput
+        editable={false}
+        aria-hidden={ariaHidden}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
+        placeholder={`Non-editable TextInput`}
+      />
+
+      <TextInput
+        editable={false}
+        aria-hidden={ariaHidden}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
+        placeholder={`Non-editable multiline TextInput`}
+        multiline
+        numberOfLines={3}
+      />
+
+      <Pressable
+        aria-hidden={ariaHidden}
+        onPress={() => console.log('Pressed')}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
+        style={styles.button}>
+        <Text>Pressable with text content</Text>
+      </Pressable>
+
+      <Image
+        accessible
+        aria-hidden={ariaHidden}
+        aria-label={
+          ariaHidden ? 'This should be hidden' : 'This should be accessible'
+        }
+        source={require('../../assets/like.png')}
+        style={styles.button}
+      />
+    </View>
+  );
+}
+
 exports.title = 'Accessibility';
 exports.documentationURL = 'https://reactnative.dev/docs/accessibilityinfo';
 exports.description = 'Examples of using Accessibility APIs.';
@@ -2249,6 +2335,12 @@ exports.examples = [
     title: 'Label coopting',
     render(): React.MixedElement {
       return <LabelCooptingExample />;
+    },
+  },
+  {
+    title: 'aria-hidden',
+    render(): React.MixedElement {
+      return <AriaHiddenExample />;
     },
   },
 ] as Array<RNTesterModuleExample>;

@@ -32,9 +32,8 @@ Pod::Spec.new do |s|
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "GCC_WARN_PEDANTIC" => "YES" }
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.header_mappings_dir     = './'
-  end
+
+  resolve_use_frameworks(s, header_mappings_dir: './')
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)

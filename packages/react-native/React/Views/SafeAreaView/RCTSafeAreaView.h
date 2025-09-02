@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class RCTBridge;
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTSafeAreaView : RCTView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;

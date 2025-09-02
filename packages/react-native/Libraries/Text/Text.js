@@ -51,6 +51,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
     'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     children,
@@ -124,6 +125,13 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
           _accessibilityStateDisabled !== false))
     ) {
       _accessibilityState.disabled = _disabled;
+    }
+
+    if (ariaHidden !== undefined) {
+      processedProps.accessibilityElementsHidden = ariaHidden;
+      if (ariaHidden === true) {
+        processedProps.importantForAccessibility = 'no-hide-descendants';
+      }
     }
 
     const _accessible = Platform.select({
@@ -306,6 +314,8 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
   ) = ({
     ref: forwardedRef,
     accessible,
+    accessibilityElementsHidden,
+    importantForAccessibility,
     accessibilityLabel,
     accessibilityState,
     allowFontScaling,
@@ -313,6 +323,7 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
     'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
     children,
@@ -373,6 +384,13 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
 
     const _accessibilityStateDisabled = _accessibilityState?.disabled;
     const _disabled = disabled ?? _accessibilityStateDisabled;
+
+    let _accessibilityElementsHidden =
+      ariaHidden ?? accessibilityElementsHidden;
+    let _importantForAccessibility = importantForAccessibility;
+    if (ariaHidden === true) {
+      _importantForAccessibility = 'no-hide-descendants';
+    }
 
     const isPressable =
       (onPress != null ||
@@ -442,8 +460,10 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
             ref={forwardedRef}
             textProps={{
               ...restProps,
+              accessibilityElementsHidden: _accessibilityElementsHidden,
               accessibilityLabel: _accessibilityLabel,
               accessibilityState: _accessibilityState,
+              importantForAccessibility: _importantForAccessibility,
               nativeID: _nativeID,
               numberOfLines: _numberOfLines,
               selectable: _selectable,
@@ -473,8 +493,10 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       return (
         <NativeVirtualText
           {...restProps}
+          accessibilityElementsHidden={_accessibilityElementsHidden}
           accessibilityLabel={_accessibilityLabel}
           accessibilityState={_accessibilityState}
+          importantForAccessibility={_importantForAccessibility}
           nativeID={_nativeID}
           numberOfLines={_numberOfLines}
           ref={forwardedRef}
@@ -514,12 +536,14 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
           ref={forwardedRef}
           textProps={{
             ...restProps,
+            accessibilityElementsHidden: _accessibilityElementsHidden,
             accessibilityLabel: _accessibilityLabel,
             accessibilityState: _accessibilityState,
             accessible: _accessible,
             allowFontScaling: allowFontScaling !== false,
             disabled: _disabled,
             ellipsizeMode: ellipsizeMode ?? 'tail',
+            importantForAccessibility: _importantForAccessibility,
             nativeID: _nativeID,
             numberOfLines: _numberOfLines,
             selectable: _selectable,
@@ -547,12 +571,14 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       nativeText = (
         <NativeText
           {...restProps}
+          accessibilityElementsHidden={_accessibilityElementsHidden}
           accessibilityLabel={_accessibilityLabel}
           accessibilityState={_accessibilityState}
           accessible={_accessible}
           allowFontScaling={allowFontScaling !== false}
           disabled={_disabled}
           ellipsizeMode={ellipsizeMode ?? 'tail'}
+          importantForAccessibility={_importantForAccessibility}
           nativeID={_nativeID}
           numberOfLines={_numberOfLines}
           ref={forwardedRef}

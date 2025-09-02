@@ -14,18 +14,18 @@
 namespace facebook::react {
 
 struct DynamicColor {
-  int32_t lightColor = 0;
-  int32_t darkColor = 0;
-  int32_t highContrastLightColor = 0;
-  int32_t highContrastDarkColor = 0;
+  uint32_t lightColor = 0;
+  uint32_t darkColor = 0;
+  uint32_t highContrastLightColor = 0;
+  uint32_t highContrastDarkColor = 0;
 };
 
 struct Color {
-  Color(int32_t color);
+  Color(uint32_t color);
   Color(const DynamicColor& dynamicColor);
   Color(const ColorComponents& components);
   Color() : uiColor_(nullptr){};
-  int32_t getColor() const;
+  uint32_t getColor() const;
   std::size_t getUIColorHash() const;
 
   static Color createSemanticColor(std::vector<std::string>& semanticItems);
@@ -38,7 +38,7 @@ struct Color {
 
   ColorComponents getColorComponents() const {
     float ratio = 255;
-    int32_t primitiveColor = getColor();
+    uint32_t primitiveColor = getColor();
     return ColorComponents{
         .red = (float)((primitiveColor >> 16) & 0xff) / ratio,
         .green = (float)((primitiveColor >> 8) & 0xff) / ratio,
@@ -47,7 +47,7 @@ struct Color {
   }
   bool operator==(const Color& other) const;
   bool operator!=(const Color& other) const;
-  operator int32_t() const {
+  operator uint32_t() const {
     return getColor();
   }
 

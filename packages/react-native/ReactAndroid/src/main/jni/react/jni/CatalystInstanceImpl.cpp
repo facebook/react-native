@@ -45,7 +45,9 @@ namespace facebook::react {
 
 namespace {
 
-class InstanceCallbackImpl : public InstanceCallback {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] InstanceCallbackImpl
+    : public InstanceCallback {
  public:
   explicit InstanceCallbackImpl(alias_ref<JInstanceCallback::javaobject> jobj)
       : jobj_(make_global(jobj)) {}

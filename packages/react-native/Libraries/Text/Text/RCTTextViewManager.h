@@ -11,6 +11,7 @@
 
 #import "RCTBaseTextViewManager.h"
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTTextViewManager : RCTBaseTextViewManager
 
 @end

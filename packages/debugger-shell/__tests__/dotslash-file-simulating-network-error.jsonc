@@ -1,0 +1,59 @@
+#!/usr/bin/env dotslash
+
+{
+    "name": "React Native DevTools",
+    "platforms": {
+        "linux-aarch64": {
+            "size": 113510892,
+            "hash": "sha256",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "providers": [
+                {
+                    "type": "http",
+                    "url": "https://$HOST:$PORT/does-not-exist"
+                }
+            ],
+            "format": "tar.gz",
+            "path": "React Native DevTools-linux-arm64/React Native DevTools"
+        },
+        "linux-x86_64": {
+            "size": 113243910,
+            "hash": "sha256",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "providers": [
+                {
+                    "type": "http",
+                    "url": "https://$HOST:$PORT/does-not-exist"
+                }
+            ],
+            "format": "tar.gz",
+            "path": "React Native DevTools-linux-x64/React Native DevTools"
+        },
+        "macos-aarch64": {
+            "size": 108810433,
+            "hash": "sha256",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "providers": [
+                {
+                    "type": "http",
+                    "url": "https://$HOST:$PORT/does-not-exist"
+                }
+            ],
+            "format": "tar.gz",
+            "path": "React Native DevTools.app/Contents/MacOS/React Native DevTools"
+        },
+        "macos-x86_64": {
+            "size": 113769989,
+            "hash": "sha256",
+            "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "providers": [
+                {
+                    "type": "http",
+                    "url": "https://$HOST:$PORT/does-not-exist"
+                }
+            ],
+            "format": "tar.gz",
+            "path": "React Native DevTools.app/Contents/MacOS/React Native DevTools"
+        }
+    }
+}

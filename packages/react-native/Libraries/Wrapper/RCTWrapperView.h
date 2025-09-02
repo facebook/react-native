@@ -9,12 +9,14 @@
 
 #ifndef RCT_FIT_RM_OLD_COMPONENT
 
-typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize);
+typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
 @class RCTBridge;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTWrapperView : UIView
 
 @property (nonatomic, retain, nullable) UIView *contentView;

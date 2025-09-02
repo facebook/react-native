@@ -67,7 +67,9 @@ class BigStringBuffer : public jsi::Buffer {
   std::unique_ptr<const JSBigString> script_;
 };
 
-class JSIExecutor : public JSExecutor {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSIExecutor
+    : public JSExecutor {
  public:
   using RuntimeInstaller = std::function<void(jsi::Runtime& runtime)>;
 

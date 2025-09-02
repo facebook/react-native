@@ -34,14 +34,17 @@ class MessageQueueThread;
 class ModuleRegistry;
 class RAMBundleRegistry;
 
-struct InstanceCallback {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] InstanceCallback {
   virtual ~InstanceCallback() = default;
   virtual void onBatchComplete() {}
   virtual void incrementPendingJSCalls() {}
   virtual void decrementPendingJSCalls() {}
 };
 
-class RN_EXPORT Instance : private jsinspector_modern::InstanceTargetDelegate {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] Instance
+    : private jsinspector_modern::InstanceTargetDelegate {
  public:
   ~Instance() override;
   void initializeBridge(

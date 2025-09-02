@@ -310,7 +310,7 @@ static void updateBorderColorPropValue(
     const std::optional<SharedColor>& newColor,
     const std::optional<SharedColor>& oldColor) {
   if (newColor != oldColor) {
-    result[propName] = newColor.has_value() ? *newColor.value() : NULL;
+    result[propName] = *newColor.value_or(SharedColor());
   }
 }
 
@@ -618,21 +618,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (pointerEvents != oldProps->pointerEvents) {
-    std::string value;
-    switch (pointerEvents) {
-      case PointerEventsMode::BoxOnly:
-        result["pointerEvents"] = "box-only";
-        break;
-      case PointerEventsMode::BoxNone:
-        result["pointerEvents"] = "box-none";
-        break;
-      case PointerEventsMode::None:
-        result["pointerEvents"] = "none";
-        break;
-      default:
-        result["pointerEvents"] = "auto";
-        break;
-    }
+    result["pointerEvents"] = toString(pointerEvents);
   }
 
   if (hitSlop != oldProps->hitSlop) {
@@ -917,17 +903,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
-    switch (accessibilityLiveRegion) {
-      case AccessibilityLiveRegion::Assertive:
-        result["accessibilityLiveRegion"] = "assertive";
-        break;
-      case AccessibilityLiveRegion::Polite:
-        result["accessibilityLiveRegion"] = "polite";
-        break;
-      case AccessibilityLiveRegion::None:
-        result["accessibilityLiveRegion"] = "none";
-        break;
-    }
+    result["accessibilityLiveRegion"] = toString(accessibilityLiveRegion);
   }
 
   if (accessibilityHint != oldProps->accessibilityHint) {
@@ -1003,20 +979,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (importantForAccessibility != oldProps->importantForAccessibility) {
-    switch (importantForAccessibility) {
-      case ImportantForAccessibility::Auto:
-        result["importantForAccessibility"] = "auto";
-        break;
-      case ImportantForAccessibility::Yes:
-        result["importantForAccessibility"] = "yes";
-        break;
-      case ImportantForAccessibility::No:
-        result["importantForAccessibility"] = "no";
-        break;
-      case ImportantForAccessibility::NoHideDescendants:
-        result["importantForAccessibility"] = "noHideDescendants";
-        break;
-    }
+    result["importantForAccessibility"] = toString(importantForAccessibility);
   }
 
   return result;

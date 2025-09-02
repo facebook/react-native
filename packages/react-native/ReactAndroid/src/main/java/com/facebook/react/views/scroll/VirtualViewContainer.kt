@@ -104,6 +104,15 @@ internal class VirtualViewContainerState {
 
   private fun updateModes(virtualView: VirtualView? = null) {
     scrollView.getDrawingRect(visibleRect)
+
+    // This happens because ScrollView content isn't ready yet. The danger here is if ScrollView
+    // intentionally goes but curently ScrollView and v1 Fling use this check to determine if
+    // "content ready"
+    if (visibleRect.isEmpty()) {
+      debugLog("updateModes", { "scrollView visibleRect is empty" })
+      return
+    }
+
     prerenderRect.set(visibleRect)
     prerenderRect.inset(
         (-prerenderRect.width() * prerenderRatio).toInt(),
@@ -117,7 +126,6 @@ internal class VirtualViewContainerState {
       var mode = VirtualViewMode.Hidden
       var thresholdRect = emptyRect
       when {
-        rect.isEmpty -> {}
         rectsOverlap(rect, visibleRect) -> {
           thresholdRect = visibleRect
           if (onWindowFocusChangeListener != null) {

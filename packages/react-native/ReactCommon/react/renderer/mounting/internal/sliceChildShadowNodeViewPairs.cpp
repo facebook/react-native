@@ -80,9 +80,16 @@ static void sliceChildShadowNodeViewPairsRecursively(
           overflowInsetFrame =
               overflowInsetFrame * layoutableShadowNode->getTransform();
         }
+
+        // Embedded Text components can have an empty layout, while these still
+        // need to be mounted to set the correct react tags on the text
+        // fragments. These should not be culled.
+        auto hasLayout = overflowInsetFrame.size.width > 0 ||
+            overflowInsetFrame.size.height > 0;
+
         auto doesIntersect =
             Rect::intersect(cullingContext.frame, overflowInsetFrame) != Rect{};
-        if (!doesIntersect) {
+        if (hasLayout && !doesIntersect) {
           continue; // Culling.
         }
       }

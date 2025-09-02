@@ -37,10 +37,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_timing"
-    s.header_mappings_dir  = "./"
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_timing")
 
   add_dependency(s, "React-debug")
 end
