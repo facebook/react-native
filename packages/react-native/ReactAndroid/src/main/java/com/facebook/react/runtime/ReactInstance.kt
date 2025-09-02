@@ -76,7 +76,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
 import kotlin.collections.Collection
-import kotlin.jvm.JvmStatic
 
 /**
  * A replacement for [com.facebook.react.bridge.CatalystInstance] responsible for creating and
@@ -126,7 +125,7 @@ internal class ReactInstance(
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance())
     devSupportManager.startInspector()
 
-    val jsTimerExecutor = createJSTimerExecutor()
+    val jsTimerExecutor = JSTimerExecutor()
     javaTimerManager =
         JavaTimerManager(
             context,
@@ -182,7 +181,6 @@ internal class ReactInstance(
             getJSCallInvokerHolder(),
             getNativeMethodCallInvokerHolder(),
         )
-
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
 
     // Set up Fabric
@@ -633,7 +631,5 @@ internal class ReactInstance(
         SystraceMessage.endSection(Systrace.TRACE_TAG_REACT).flush()
       }
     }
-
-    @JvmStatic @DoNotStrip private external fun createJSTimerExecutor(): JSTimerExecutor
   }
 }
