@@ -51,6 +51,21 @@ async function getWithCurl(url /*: string */) /*: Promise<CurlResult> */ {
   }
 }
 
+function getTempDirPatternForTests() /*: RegExp */ {
+  return new RegExp(
+    escapeRegex(path.join(os.tmpdir(), 'get-with-curl-')) +
+      '.[^\\s' +
+      escapeRegex(path.sep) +
+      ']+',
+    'g',
+  );
+}
+
+function escapeRegex(str /*: string */) /*: string */ {
+  return str.replace(/[-[\]\\/{}()*+?.^$|]/g, '\\$&');
+}
+
 module.exports = {
   getWithCurl,
+  getTempDirPatternForTests,
 };
