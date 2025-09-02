@@ -29,9 +29,6 @@
 
 NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
-@interface RCTDevMenuConfiguration ()
-@end
-
 @implementation RCTDevMenuConfiguration
 - (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
                    shakeGestureEnabled:(BOOL)isShakeGestureEnabled
@@ -461,8 +458,7 @@ RCT_EXPORT_METHOD(show)
 
 - (void)setShakeToShow:(BOOL)shakeToShow
 {
-  RCTDevSettings *devSettings = [_moduleRegistry moduleForName:"DevSettings"];
-  [devSettings setIsShakeToShowDevMenuEnabled:shakeToShow];
+  [[_moduleRegistry moduleForName:"DevSettings"] setIsShakeToShowDevMenuEnabled:shakeToShow];
 }
 
 - (BOOL)shakeToShow
