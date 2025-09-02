@@ -14,7 +14,13 @@ const path = require('path');
 
 const config = {
   appPath: path.resolve(__dirname, '.'),
-  reactNativePath: path.resolve(__dirname, '..', '..', 'packages', 'react-native'),
+  reactNativePath: path.resolve(
+    __dirname,
+    '..',
+    '..',
+    'packages',
+    'react-native',
+  ),
   appXcodeProject: 'RNTesterPods.xcodeproj',
   targetName: 'RNTester',
   additionalPackages: [
@@ -27,6 +33,6 @@ const config = {
       targets: ['PushNotification'],
     },
   ],
-}
+};
 
 module.exports = config;

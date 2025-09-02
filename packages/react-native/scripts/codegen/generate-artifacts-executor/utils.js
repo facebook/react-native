@@ -461,10 +461,13 @@ function findDisabledLibrariesByPlatform(
   );
 }
 
-function findReactNativeRootPath(projectRoot /* : string */) /* : string */  {
-  const reactNativePackageJsonPath = require.resolve(path.join('react-native', 'package.json'), {
-    paths: [projectRoot],
-  });
+function findReactNativeRootPath(projectRoot /* : string */) /* : string */ {
+  const reactNativePackageJsonPath = require.resolve(
+    path.join('react-native', 'package.json'),
+    {
+      paths: [projectRoot],
+    },
+  );
 
   return path.dirname(reactNativePackageJsonPath);
 }

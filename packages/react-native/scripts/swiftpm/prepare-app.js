@@ -15,19 +15,18 @@
  * private/helloworld/ios/to-remove-instructions-to-build-from-source-with-spm
  */
 
-const fs = require('fs');
-const path = require('path');
-const {execSync} = require('child_process');
-
+const codegenExecutor = require('../codegen/generate-artifacts-executor');
 // Import functions from other scripts
 const {
-  prepareAppDependenciesHeaders,
   hardlinkReactNativeHeaders,
   hardlinkThirdPartyDependenciesHeaders,
+  prepareAppDependenciesHeaders,
 } = require('./prepare-app-dependencies-headers');
-const {createSymlinks: createSymlinksFunction} = require('./create-symlinks');
 const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
-const codegenExecutor = require('../codegen/generate-artifacts-executor');
+const {execSync} = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
 
 /**
  * Find the directory containing the Xcode project within the app path
@@ -642,7 +641,6 @@ async function openXcodeProject(appIosPath, appXcodeProject) {
 if (require.main === module) {
   const args = process.argv.slice(2);
 
-
   let appPath = '../../private/helloworld';
   let reactNativePath = '.';
   let appXcodeProject = 'HelloWorld.xcodeproj';
@@ -660,7 +658,6 @@ if (require.main === module) {
     appXcodeProject = swiftPMConfig.appXcodeProject;
     targetName = swiftPMConfig.targetName;
     additionalPackages = swiftPMConfig.additionalPackages;
-
   } catch {
     if (args.length >= 1) {
       appPath = args[0];
@@ -687,7 +684,13 @@ if (require.main === module) {
   console.log(`Using App Xcode project: ${appXcodeProject}`);
   console.log(`Using Target name: ${targetName}`);
 
-  prepareApp(appPath, reactNativePath, appXcodeProject, targetName, additionalPackages)
+  prepareApp(
+    appPath,
+    reactNativePath,
+    appXcodeProject,
+    targetName,
+    additionalPackages,
+  )
     .then(() => {
       console.log(
         '\n🎉 All done! Your app is ready for SwiftPM build from source.',
