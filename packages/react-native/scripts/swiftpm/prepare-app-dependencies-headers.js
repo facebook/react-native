@@ -461,40 +461,64 @@ function hardlinkReactCommonHeaders(
             isFlattened = true;
             console.log(`  -> ${headerName} (flattened to ReactCommon)`);
           } else if (relativePath.startsWith('react/')) {
-            // Handle platform-specific headers with pattern:
-            // react/renderer/components/view/platform/{cxx,android}/react/renderer/components/view/header.h
-            const platformMatch = relativePath.match(
-              /^(react\/.*?)\/platform\/([^\/]+)\/react\/(.*)$/,
-            );
-
-            if (platformMatch) {
-              const [, basePath, platform, remainingPath] = platformMatch;
-              const supportedPlatforms = ['ios', 'cxx'];
-              const ignoredPlatforms = ['android', 'windows', 'macos'];
-
-              if (supportedPlatforms.includes(platform)) {
-                // Flatten to headers/react/renderer/components/view/
-                destPath = path.join(headersOutput, 'react', remainingPath);
-                console.log(
-                  `  -> react/${remainingPath} (flattened from platform-specific ${platform})`,
-                );
-              } else if (ignoredPlatforms.includes(platform)) {
-                // Skip headers for ignored platforms
-                console.log(
-                  `  -> Skipping header for ignored platform: ${platform}`,
-                );
-                return; // Skip this header file
-              } else {
-                // Unknown platform, preserve the original structure
-                destPath = path.join(headersOutput, relativePath);
-                console.log(
-                  `  -> ${relativePath} (unknown platform: ${platform}, preserved structure)`,
-                );
+            // Handle Switch special case
+            if (relativePath.startsWith('react/renderer/components/switch')) {
+              if (relativePath.includes('androidswitch')) {
+                return;
               }
+
+              destPath = path.join(
+                headersOutput,
+                'react',
+                'renderer',
+                'components',
+                'switch',
+              );
+
+              // the header files are in the react/renderer/components/switch/iosswitch/react/renderer/components/switch
+              // we need the header file.
+              let headerFileName = path.basename(relativePath);
+              destPath = path.join(destPath, headerFileName);
+
+              console.log(
+                `  -> react/renderer/components/switch/${headerFileName} handling special switch case)`,
+              );
             } else {
-              // If path starts with 'react/' but doesn't match platform pattern, preserve the relative path under headers/
-              destPath = path.join(headersOutput, relativePath);
-              console.log(`  -> ${relativePath} (preserved under headers/)`);
+              // Handle platform-specific headers with pattern:
+              // react/renderer/components/view/platform/{cxx,android}/react/renderer/components/view/header.h
+              const platformMatch = relativePath.match(
+                /^(react\/.*?)\/platform\/([^\/]+)\/react\/(.*)$/,
+              );
+
+              if (platformMatch) {
+                const [, basePath, platform, remainingPath] = platformMatch;
+                const supportedPlatforms = ['ios', 'cxx'];
+                const ignoredPlatforms = ['android', 'windows', 'macos'];
+
+                if (supportedPlatforms.includes(platform)) {
+                  // Flatten to headers/react/renderer/components/view/
+                  destPath = path.join(headersOutput, 'react', remainingPath);
+                  console.log(
+                    `  -> react/${remainingPath} (flattened from platform-specific ${platform})`,
+                  );
+                } else if (ignoredPlatforms.includes(platform)) {
+                  // Skip headers for ignored platforms
+                  console.log(
+                    `  -> Skipping header for ignored platform: ${platform}`,
+                  );
+                  return; // Skip this header file
+                } else {
+                  // Unknown platform, preserve the original structure
+                  destPath = path.join(headersOutput, relativePath);
+                  console.log(
+                    `  -> ${relativePath} (unknown platform: ${platform}, preserved structure)`,
+                  );
+                }
+              } else {
+                // If path starts with 'react/' but doesn't match platform pattern, preserve the relative path under headers/
+                destPath = path.join(headersOutput, relativePath);
+                console.log(`  -> ${relativePath} (preserved under headers/)`);
+              }
             }
           } else {
             // Check for special mappings
