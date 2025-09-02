@@ -25,6 +25,8 @@ using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
 using StopOnRenderCallback = std::function<void()>;
 using DirectManipulationCallback =
     std::function<void(Tag, const folly::dynamic&)>;
+using FabricCommitCallback =
+    std::function<void(std::unordered_map<Tag, folly::dynamic>&)>;
 
 class AnimationBackend {
  public:
@@ -32,11 +34,13 @@ class AnimationBackend {
   const StartOnRenderCallback startOnRenderCallback_;
   const StopOnRenderCallback stopOnRenderCallback_;
   const DirectManipulationCallback directManipulationCallback_;
+  const FabricCommitCallback fabricCommitCallback_;
 
   AnimationBackend(
       StartOnRenderCallback&& startOnRenderCallback,
       StopOnRenderCallback&& stopOnRenderCallback,
-      DirectManipulationCallback&& directManipulationCallback);
+      DirectManipulationCallback&& directManipulationCallback,
+      FabricCommitCallback && fabricCommitCallback);
   void onAnimationFrame(double timestamp);
   void start(const Callback& callback);
   void stop();

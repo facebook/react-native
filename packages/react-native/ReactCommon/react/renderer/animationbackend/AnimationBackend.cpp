@@ -14,19 +14,22 @@ namespace facebook::react {
 AnimationBackend::AnimationBackend(
     StartOnRenderCallback&& startOnRenderCallback,
     StopOnRenderCallback&& stopOnRenderCallback,
-    DirectManipulationCallback&& directManipulationCallback)
+    DirectManipulationCallback&& directManipulationCallback,
+    FabricCommitCallback&& fabricCommitCallback)
     : startOnRenderCallback_(startOnRenderCallback),
       stopOnRenderCallback_(stopOnRenderCallback),
-      directManipulationCallback_(directManipulationCallback) {}
+      directManipulationCallback_(directManipulationCallback),
+      fabricCommitCallback_(fabricCommitCallback){}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
+  std::unordered_map<Tag, folly::dynamic> updates;
   for (auto& callback : callbacks) {
     auto muatations = callback(timestamp);
     for (auto& mutation : muatations) {
-      directManipulationCallback_(
-          mutation.tag, folly::dynamic::object("opacity", mutation.opacity));
+      updates[mutation.tag] = folly::dynamic::object("opacity", mutation.opacity);
     }
   }
+  fabricCommitCallback_(updates);
 }
 
 void AnimationBackend::start(const Callback& callback) {

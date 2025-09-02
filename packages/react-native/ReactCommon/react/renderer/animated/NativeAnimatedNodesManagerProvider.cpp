@@ -71,7 +71,8 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
       animationBackend_ = std::make_shared<AnimationBackend>(
           std::move(startOnRenderCallback_),
           std::move(stopOnRenderCallback_),
-          std::move(directManipulationCallback));
+          std::move(directManipulationCallback),
+          std::move(fabricCommitCallback));
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);

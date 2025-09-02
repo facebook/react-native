@@ -31,8 +31,8 @@ function App(): React.ReactNode {
           height: 100,
           backgroundColor: 'red',
           animationName: {
-            from: {opacity: 0},
-            to: {opacity: 1},
+            from: {opacity: 0, width: 10, height: 10},
+            to: {opacity: 1, width: 100, height: 100},
           },
           animationDuration: 1000,
           animationIterationCount: 'infinite',
