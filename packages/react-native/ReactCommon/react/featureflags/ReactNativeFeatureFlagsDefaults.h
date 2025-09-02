@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a76f1a1e8ba0d65b689b4b87d33d7ced>>
+ * @generated SignedSource<<ff7274b1b3e257087dd31c3aabb1303a>>
  */
 
 /**
@@ -168,6 +168,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableResourceTimingAPI() override {
+    return false;
+  }
+
+  bool enableSwiftUIBasedFilters() override {
     return false;
   }
 
