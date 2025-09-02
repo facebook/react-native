@@ -29,3 +29,12 @@ include(":packages:react-native:ReactAndroid:hermes-engine")
 
 project(":packages:react-native:ReactAndroid:hermes-engine").projectDir =
     file("ReactAndroid/hermes-engine/")
+
+// Since Gradle 9.0, all the projects in the path must have an existing folder.
+// As we build :packages:react-native:ReactAndroid, we need to declare the folders
+// for :packages and :packages:react-native as well as otherwise the build from
+// source will fail with a missing folder exception.
+
+project(":packages").projectDir = file("/tmp")
+
+project(":packages:react-native").projectDir = file("/tmp")
