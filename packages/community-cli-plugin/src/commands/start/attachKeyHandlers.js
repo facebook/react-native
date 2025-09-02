@@ -14,7 +14,7 @@ import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import invariant from 'invariant';
 import readline from 'readline';
 import {ReadStream} from 'tty';
-import {styleText} from 'util';
+import {compatibleStyleText} from '../../utils/styleConfig';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -77,7 +77,7 @@ export default function attachKeyHandlers({
     devServerUrl,
   });
 
-  process.stdin.on('keypress', (str: string, key: KeyEvent) => {
+  process.stdin.on('keypress', (str, key) => {
     if (openDebuggerKeyboardHandler.maybeHandleTargetSelection(key.name)) {
       return;
     }
@@ -117,9 +117,9 @@ export default function attachKeyHandlers({
     level: 'info',
     data: `Key commands available:
 
-  ${styleText(['bold', 'inverse'], ' r ')} - reload app(s)
-  ${styleText(['bold', 'inverse'], ' d ')} - open Dev Menu
-  ${styleText(['bold', 'inverse'], ' j ')} - open DevTools
+  ${compatibleStyleText(' r ', ['bold', 'inverse'])} - reload app(s)
+  ${compatibleStyleText(' d ', ['bold', 'inverse'])} - open Dev Menu
+  ${compatibleStyleText(' j ', ['bold', 'inverse'])} - open DevTools
 `,
   });
 }
