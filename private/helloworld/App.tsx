@@ -35,6 +35,8 @@ function App(): React.ReactNode {
             to: {opacity: 1},
           },
           animationDuration: 1000,
+          animationIterationCount: 'infinite',
+          animationDirection: 'alternate',
         }}
       />
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
