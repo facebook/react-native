@@ -31,8 +31,6 @@ internal class RNTesterActivity : ReactActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
       // Get remote param before calling super which uses it
-
-
       val bundle = activity.intent?.extras
 
       if (bundle != null && bundle.containsKey(PARAM_ROUTE)) {
