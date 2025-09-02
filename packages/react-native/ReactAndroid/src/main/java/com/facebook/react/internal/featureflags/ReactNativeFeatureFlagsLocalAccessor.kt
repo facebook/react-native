@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<594815ba6a984c460ab8bddd91c5cae2>>
+ * @generated SignedSource<<27863cb17bc858102575a96696b155e1>>
  */
 
 /**
@@ -89,6 +89,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useShadowNodeStateOnCloneCache: Boolean? = null
+  private var useSharedAnimatedBackendCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
   private var virtualViewHysteresisRatioCache: Double? = null
@@ -740,6 +741,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useShadowNodeStateOnClone()
       accessedFeatureFlags.add("useShadowNodeStateOnClone")
       useShadowNodeStateOnCloneCache = cached
+    }
+    return cached
+  }
+
+  override fun useSharedAnimatedBackend(): Boolean {
+    var cached = useSharedAnimatedBackendCache
+    if (cached == null) {
+      cached = currentProvider.useSharedAnimatedBackend()
+      accessedFeatureFlags.add("useSharedAnimatedBackend")
+      useSharedAnimatedBackendCache = cached
     }
     return cached
   }

@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "react": "19.1.1",
-    "react-native": "1000.0.0"
+    "react-native": "1000.0.0",
+    "react-native-reanimated": "4.0.3",
+    "react-native-worklets": "0.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

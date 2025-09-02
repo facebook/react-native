@@ -18,6 +18,8 @@
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSStable.h>
 #import <react/renderer/graphics/ColorComponents.h>
 #import "RCTAppSetupUtils.h"
+#import <react/renderer/animated/AnimatedModule.h>
+#import <react/renderer/animated/NativeAnimatedNodesManagerProvider.h>
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -40,6 +42,15 @@ using namespace facebook::react;
 @end
 
 @implementation RCTReactNativeFactory
+{
+  CADisplayLink *_displayLink;
+  std::function<void()> _onRender;
+}
+
+- (void)_onDiplayLinkTick
+{
+  _onRender();
+}
 
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate
 {
@@ -167,6 +178,24 @@ using namespace facebook::react;
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
+  if (name == AnimatedModule::kModuleName){
+    auto provider = std::make_shared<NativeAnimatedNodesManagerProvider>(
+    [self](std::function<void()> &&onRender){
+      _onRender = onRender;
+      if (_displayLink == nil) {
+        _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_onDiplayLinkTick)];
+        [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+      }
+    },
+    [self](){
+      if (_displayLink != nil) {
+        [_displayLink invalidate];
+        _displayLink = nil;
+        _onRender = {};
+      }
+    });
+    return std::make_shared<AnimatedModule>(std::move(jsInvoker), std::move(provider));
+  }
   if ([_delegate respondsToSelector:@selector(getTurboModule:jsInvoker:)]) {
     return [_delegate getTurboModule:name jsInvoker:jsInvoker];
   }

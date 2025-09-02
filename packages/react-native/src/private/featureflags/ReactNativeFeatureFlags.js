@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<85a053d6a79240a7b4e181d3054ecfd3>>
+ * @generated SignedSource<<31e7cd125455e1563f70390f0c1ee0f4>>
  * @flow strict
  * @noformat
  */
@@ -114,6 +114,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
   useShadowNodeStateOnClone: Getter<boolean>,
+  useSharedAnimatedBackend: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
   virtualViewHysteresisRatio: Getter<number>,
@@ -454,6 +455,10 @@ export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useR
  * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
  */
 export const useShadowNodeStateOnClone: Getter<boolean> = createNativeFlagGetter('useShadowNodeStateOnClone', false);
+/**
+ * Use shared animation backend in C++ Animated
+ */
+export const useSharedAnimatedBackend: Getter<boolean> = createNativeFlagGetter('useSharedAnimatedBackend', false);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

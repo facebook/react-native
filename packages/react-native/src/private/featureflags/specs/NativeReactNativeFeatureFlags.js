@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da22f4c43e3bdcd999e3dd1dd5896c63>>
+ * @generated SignedSource<<3425aa27197248b16734f9022d3c17c4>>
  * @flow strict
  * @noformat
  */
@@ -90,6 +90,7 @@ export interface Spec extends TurboModule {
   +useOptimizedEventBatchingOnAndroid?: () => boolean;
   +useRawPropsJsiValue?: () => boolean;
   +useShadowNodeStateOnClone?: () => boolean;
+  +useSharedAnimatedBackend?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
   +virtualViewHysteresisRatio?: () => number;

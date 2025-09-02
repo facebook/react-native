@@ -89,6 +89,10 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
   }
 }
 
+NativeAnimatedNodesManager::NativeAnimatedNodesManager(
+    std::shared_ptr<AnimationBackend> animationBackend) noexcept
+    : animationBackend_(animationBackend) {}
+
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
   stopRenderCallbackIfNeeded();
 }
@@ -490,6 +494,11 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    animationBackend_->start(
+        [this](float f) { return pullAnimationMutations(); });
+    return;
+  }
   // This method can be called from either the UI thread or JavaScript thread.
   // It ensures `startOnRenderCallback_` is called exactly once using atomic
   // operations. We use std::atomic_bool rather than std::mutex to avoid
@@ -507,6 +516,10 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
 }
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    animationBackend_->stop();
+    return;
+  }
   // When multiple threads reach this point, only one thread should call
   // stopOnRenderCallback_. This synchronization is primarily needed during
   // destruction of NativeAnimatedNodesManager. In normal operation,
@@ -814,6 +827,11 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     const folly::dynamic& props,
     bool layoutStyleUpdated,
     bool forceFabricCommit) noexcept {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    mergeObjects(updateViewProps_[viewTag], props);
+    return;
+  }
+
   // When fabricCommitCallback_ & directManipulationCallback_ are both
   // available, we commit layout props via Fabric and the other using direct
   // manipulation. If only fabricCommitCallback_ is available, we commit all
@@ -835,7 +853,122 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
   }
 }
 
+AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return {};
+  }
+  TraceSection s(
+      "NativeAnimatedNodesManager::pullAnimations",
+      "numActiveAnimations",
+      activeAnimations_.size());
+
+  isOnRenderThread_ = true;
+
+  // Run operations scheduled from AnimatedModule
+  std::vector<UiTask> operations;
+  {
+    std::lock_guard<std::mutex> lock(uiTasksMutex_);
+    std::swap(operations_, operations);
+  }
+
+  for (auto& task : operations) {
+    task();
+  }
+
+  AnimationMutations mutations;
+
+  // Step through the animation loop
+  if (isAnimationUpdateNeeded()) {
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+                            g_now().time_since_epoch())
+                            .count();
+
+    auto timestamp = static_cast<double>(microseconds) / 1000.0;
+    bool containsChange = false;
+    {
+      // copied from onAnimationFrame
+      // Run all active animations
+      auto hasFinishedAnimations = false;
+      std::set<int> finishedAnimationValueNodes;
+      for (const auto& [_id, driver] : activeAnimations_) {
+        driver->runAnimationStep(timestamp);
+
+        if (driver->getIsComplete()) {
+          hasFinishedAnimations = true;
+          const auto shouldRemoveJsSync =
+              ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() &&
+              !ReactNativeFeatureFlags::disableFabricCommitInCXXAnimated();
+          if (shouldRemoveJsSync) {
+            finishedAnimationValueNodes.insert(driver->getAnimatedValueTag());
+          }
+        }
+      }
+
+      // Update all animated nodes
+      updateNodes(finishedAnimationValueNodes);
+
+      // remove finished animations
+      if (hasFinishedAnimations) {
+        std::vector<int> finishedAnimations;
+        for (const auto& [animationId, driver] : activeAnimations_) {
+          if (driver->getIsComplete()) {
+            if (getAnimatedNode<ValueAnimatedNode>(
+                    driver->getAnimatedValueTag()) != nullptr) {
+              driver->stopAnimation();
+            }
+            finishedAnimations.emplace_back(animationId);
+          }
+        }
+        for (const auto& id : finishedAnimations) {
+          activeAnimations_.erase(id);
+        }
+      }
+
+      for (auto& [tag, props] : updateViewProps_) {
+        mutations.emplace_back(
+            AnimationMutation{tag, props["opacity"].asDouble()});
+        containsChange = true;
+      }
+    }
+
+    if (!containsChange) {
+      // The last animation tick didn't result in any changes to the UI.
+      // It is safe to assume any event animation that was in progress has
+      // completed.
+
+      // Step 1: gather all animations driven by events.
+      std::set<int> finishedAnimationValueNodes;
+      for (auto& [key, drivers] : eventDrivers_) {
+        for (auto& driver : drivers) {
+          finishedAnimationValueNodes.insert(driver->getAnimatedNodeTag());
+          if (auto node = getAnimatedNode<ValueAnimatedNode>(
+                  driver->getAnimatedNodeTag())) {
+            updatedNodeTags_.insert(node->tag());
+          }
+        }
+      }
+
+      // Step 2: update all nodes that are connected to the finished animations.
+      updateNodes(finishedAnimationValueNodes);
+
+      isEventAnimationInProgress_ = false;
+
+      for (auto& [tag, props] : updateViewProps_) {
+        mutations.emplace_back(
+            AnimationMutation{tag, props["opacity"].asDouble()});
+      }
+    }
+  } else {
+    // There is no active animation. Stop the render callback.
+    stopRenderCallbackIfNeeded();
+  }
+  return mutations;
+}
+
 void NativeAnimatedNodesManager::onRender() {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return;
+  }
   TraceSection s(
       "NativeAnimatedNodesManager::onRender",
       "numActiveAnimations",
