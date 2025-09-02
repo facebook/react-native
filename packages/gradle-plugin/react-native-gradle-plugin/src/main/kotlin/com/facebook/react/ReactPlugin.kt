@@ -18,6 +18,7 @@ import com.facebook.react.tasks.GenerateEntryPointTask
 import com.facebook.react.tasks.GeneratePackageListTask
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildConfigFieldsForLibraries
+import com.facebook.react.utils.AgpConfiguratorUtils.configureBuildTypesForApp
 import com.facebook.react.utils.AgpConfiguratorUtils.configureDevServerLocation
 import com.facebook.react.utils.AgpConfiguratorUtils.configureNamespaceForLibraries
 import com.facebook.react.utils.BackwardCompatUtils.configureBackwardCompatibilityReactMap
@@ -84,6 +85,7 @@ class ReactPlugin : Plugin<Project> {
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
       configureResources(project, extension)
+      configureBuildTypesForApp(project)
     }
 
     // Library Only Configuration

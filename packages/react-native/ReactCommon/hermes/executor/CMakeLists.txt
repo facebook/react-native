@@ -26,7 +26,7 @@ target_link_libraries(hermes_executor_common
 )
 
 target_compile_reactnative_options(hermes_executor_common PRIVATE)
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
         target_compile_options(
                 hermes_executor_common
                 PRIVATE
