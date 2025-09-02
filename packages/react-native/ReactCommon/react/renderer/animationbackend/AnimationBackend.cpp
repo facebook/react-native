@@ -6,6 +6,8 @@
  */
 
 #include "AnimationBackend.h"
+#include <chrono>
+
 
 namespace facebook::react {
 
@@ -30,7 +32,8 @@ void AnimationBackend::onAnimationFrame(double timestamp) {
 void AnimationBackend::start(const Callback& callback) {
   callbacks.push_back(callback);
   // startOnRenderCallback_ should provide the timestamp from the platform
-  startOnRenderCallback_([this]() { onAnimationFrame(0); });
+  startOnRenderCallback_([this]() { onAnimationFrame(std::chrono::steady_clock::now().time_since_epoch()
+    .count()/1000); });
 }
 void AnimationBackend::stop() {
   stopOnRenderCallback_();
