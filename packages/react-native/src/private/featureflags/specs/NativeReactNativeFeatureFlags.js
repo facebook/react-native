@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da22f4c43e3bdcd999e3dd1dd5896c63>>
+ * @generated SignedSource<<3185662f33b62ad8571fd5ec61d39063>>
  * @flow strict
  * @noformat
  */
@@ -57,7 +57,6 @@ export interface Spec extends TurboModule {
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
-  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;

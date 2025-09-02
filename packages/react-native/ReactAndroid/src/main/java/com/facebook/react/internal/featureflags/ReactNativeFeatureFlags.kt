@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34c12f5a31aab5bfb874953f1beefef1>>
+ * @generated SignedSource<<6a0977519362184efd85bd1807b2ad25>>
  */
 
 /**
@@ -221,12 +221,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableNetworkEventReporting(): Boolean = accessor.enableNetworkEventReporting()
-
-  /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  @JvmStatic
-  public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
 
   /**
    * Enables caching text layout artifacts for later reuse
