@@ -8,8 +8,8 @@
  * @format
  */
 
-const crypto = require('crypto');
 const {execSync} = require('child_process');
+const crypto = require('crypto');
 const fs = require('fs');
 
 /**
@@ -27,7 +27,7 @@ function generateXcodeObjectId() {
  */
 function convertXcodeProjectToJSON(projectPath) {
   const command = `plutil -convert json -o - "${projectPath}"`;
-  const jsonOutput = execSync(command, { encoding: 'utf8' });
+  const jsonOutput = execSync(command, {encoding: 'utf8'});
   return JSON.parse(jsonOutput);
 }
 
@@ -43,7 +43,9 @@ function updateXcodeProject(xcodeProjectJSON, projectPath) {
 
   // Group the objects in the JSON by their isa type
   const objectsByIsa = {};
-  for (const [objectId, objectData] of Object.entries(xcodeProjectJSON.objects)) {
+  for (const [objectId, objectData] of Object.entries(
+    xcodeProjectJSON.objects,
+  )) {
     const isaType = objectData.isa;
     if (!objectsByIsa[isaType]) {
       objectsByIsa[isaType] = {};
@@ -52,28 +54,26 @@ function updateXcodeProject(xcodeProjectJSON, projectPath) {
   }
 
   // Update the Project.pbxproj file with the sections that needs to be rewritten
-  textualProject = updateProjectFile(textualProject, xcodeProjectJSON, objectsByIsa);
+  textualProject = updateProjectFile(
+    textualProject,
+    xcodeProjectJSON,
+    objectsByIsa,
+  );
 
   // Update PBXProject.packagereference section
-  textualProject = updatePackageReferenceSection(textualProject, xcodeProjectJSON, objectsByIsa);
+  textualProject = updatePackageReferenceSection(
+    textualProject,
+    xcodeProjectJSON,
+    objectsByIsa,
+  );
 
   // Update the PBXFrameworksBuildPhase.files array
-  textualProject = updatePBXFrameworksBuildPhaseFiles(textualProject, xcodeProjectJSON);
+  textualProject = updatePBXFrameworksBuildPhaseFiles(
+    textualProject,
+    xcodeProjectJSON,
+  );
 
   return textualProject;
-}
-
-/**
- * Sort object keys with 'isa' first, then alphabetically
- * @param {Object} objectData - The object to get sorted keys for
- * @returns {Array<string>} Sorted array of keys
- */
-function sortKeys(objectData) {
-  return Object.keys(objectData).sort((a, b) => {
-    if (a === 'isa') return -1;
-    if (b === 'isa') return 1;
-    return a.localeCompare(b);
-  });
 }
 
 /**
@@ -87,22 +87,35 @@ function deintegrateSwiftPM(xcodeProject) {
   // Step 1: Find all PBXNativeTarget objects and clean up their SwiftPM dependencies
   for (const objectId in objects) {
     const object = objects[objectId];
-    if (object.isa !== "PBXNativeTarget") continue;
+    if (object.isa !== 'PBXNativeTarget') continue;
 
     // Find PBXFrameworksBuildPhase
     for (const buildPhaseId of object.buildPhases || []) {
       const buildPhaseObject = objects[buildPhaseId];
-      if (!buildPhaseObject || buildPhaseObject.isa !== "PBXFrameworksBuildPhase") continue;
+      if (
+        !buildPhaseObject ||
+        buildPhaseObject.isa !== 'PBXFrameworksBuildPhase'
+      )
+        continue;
 
       const filesToRemove = [];
 
       // Check each file in the build phase
       for (const fileId of buildPhaseObject.files || []) {
         const buildFileObject = objects[fileId];
-        if (!buildFileObject || buildFileObject.isa !== "PBXBuildFile" || !buildFileObject.productRef) continue;
+        if (
+          !buildFileObject ||
+          buildFileObject.isa !== 'PBXBuildFile' ||
+          !buildFileObject.productRef
+        )
+          continue;
 
         const productRefObject = objects[buildFileObject.productRef];
-        if (!productRefObject || productRefObject.isa !== "XCSwiftPackageProductDependency") continue;
+        if (
+          !productRefObject ||
+          productRefObject.isa !== 'XCSwiftPackageProductDependency'
+        )
+          continue;
 
         // Mark for removal: the product dependency, the build file, and remove from files list
         objectsToRemove.push(buildFileObject.productRef);
@@ -112,7 +125,9 @@ function deintegrateSwiftPM(xcodeProject) {
 
       // Remove files from the build phase
       if (filesToRemove.length > 0) {
-        buildPhaseObject.files = (buildPhaseObject.files || []).filter(fileId => !filesToRemove.includes(fileId));
+        buildPhaseObject.files = (buildPhaseObject.files || []).filter(
+          fileId => !filesToRemove.includes(fileId),
+        );
       }
     }
   }
@@ -120,14 +135,18 @@ function deintegrateSwiftPM(xcodeProject) {
   // Step 2: Find PBXProject and clean up packageReferences
   for (const objectId in objects) {
     const object = objects[objectId];
-    if (object.isa !== "PBXProject") continue;
+    if (object.isa !== 'PBXProject') continue;
 
     const packageReferencesToRemove = [];
 
     // Check each package reference
     for (const packageRefId of object.packageReferences || []) {
       const packageRefObject = objects[packageRefId];
-      if (!packageRefObject || packageRefObject.isa !== "XCLocalSwiftPackageReference") continue;
+      if (
+        !packageRefObject ||
+        packageRefObject.isa !== 'XCLocalSwiftPackageReference'
+      )
+        continue;
 
       // Mark for removal
       objectsToRemove.push(packageRefId);
@@ -136,7 +155,9 @@ function deintegrateSwiftPM(xcodeProject) {
 
     // Remove package references from the project
     if (packageReferencesToRemove.length > 0) {
-      object.packageReferences = (object.packageReferences || []).filter(refId => !packageReferencesToRemove.includes(refId));
+      object.packageReferences = (object.packageReferences || []).filter(
+        refId => !packageReferencesToRemove.includes(refId),
+      );
     }
 
     break;
@@ -147,7 +168,9 @@ function deintegrateSwiftPM(xcodeProject) {
     delete objects[objectId];
   }
 
-  console.log(`✓ Removed ${objectsToRemove.length} SwiftPM-related objects from Xcode project`);
+  console.log(
+    `✓ Removed ${objectsToRemove.length} SwiftPM-related objects from Xcode project`,
+  );
 }
 
 /**
@@ -161,15 +184,15 @@ function addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName) {
   // For the relative path: create XCLocalSwiftPackageReference
   const packageReferenceId = generateXcodeObjectId();
   xcodeProject.objects[packageReferenceId] = {
-    "isa": "XCLocalSwiftPackageReference",
-    "relativePath": relativePath
+    isa: 'XCLocalSwiftPackageReference',
+    relativePath: relativePath,
   };
 
   // Find PBXProject object and update packageReferences
   const objects = xcodeProject.objects;
   for (const objectId in objects) {
     const object = objects[objectId];
-    if (object.isa !== "PBXProject") continue;
+    if (object.isa !== 'PBXProject') continue;
 
     if (!object.packageReferences) {
       object.packageReferences = [];
@@ -183,26 +206,31 @@ function addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName) {
     // Generate XcodeID for XCSwiftPackageProductDependency
     const productDependencyId = generateXcodeObjectId();
     xcodeProject.objects[productDependencyId] = {
-      "isa": "XCSwiftPackageProductDependency",
-      "productName": productName
+      isa: 'XCSwiftPackageProductDependency',
+      productName: productName,
     };
 
     // Generate second XcodeID for PBXBuildFile
     const buildFileId = generateXcodeObjectId();
     xcodeProject.objects[buildFileId] = {
-      "isa": "PBXBuildFile",
-      "productRef": productDependencyId
+      isa: 'PBXBuildFile',
+      productRef: productDependencyId,
     };
 
     // Find PBXNativeTarget with matching name
     for (const objectId in objects) {
       const object = objects[objectId];
-      if (object.isa !== "PBXNativeTarget" || object.name !== targetName) continue;
+      if (object.isa !== 'PBXNativeTarget' || object.name !== targetName)
+        continue;
 
       // Iterate over buildPhases to find PBXFrameworksBuildPhase
       for (const buildPhaseId of object.buildPhases) {
         const buildPhaseObject = objects[buildPhaseId];
-        if (!buildPhaseObject || buildPhaseObject.isa !== "PBXFrameworksBuildPhase") continue;
+        if (
+          !buildPhaseObject ||
+          buildPhaseObject.isa !== 'PBXFrameworksBuildPhase'
+        )
+          continue;
 
         // Add buildFileId to the files array
         if (!buildPhaseObject.files) {
@@ -223,8 +251,11 @@ function addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName) {
  * @returns {string} Updated textual project the sections that needs to be rewritten.
  */
 function updateProjectFile(textualProject, xcodeProjectJSON, objectsByIsa) {
-
-  const sectionsToRewrite = {'PBXBuildFile' : printPBXBuildFile, 'XCLocalSwiftPackageReference' : printXCLocalSwiftPackageReference , 'XCSwiftPackageProductDependency': printXCSwiftPackageProductDependency};
+  const sectionsToRewrite = {
+    PBXBuildFile: printPBXBuildFile,
+    XCLocalSwiftPackageReference: printXCLocalSwiftPackageReference,
+    XCSwiftPackageProductDependency: printXCSwiftPackageProductDependency,
+  };
 
   // Track which sections exist and which need to be added
   const sectionsToAdd = [];
@@ -240,13 +271,21 @@ function updateProjectFile(textualProject, xcodeProjectJSON, objectsByIsa) {
     // Create replacement text using the appropriate print function
     let replacementText = '';
     for (const objectId of sortedObjectIds) {
-        const objectData = objectsOfType[objectId];
-        replacementText += printFn(objectId, objectData, xcodeProjectJSON.objects);
+      const objectData = objectsOfType[objectId];
+      replacementText += printFn(
+        objectId,
+        objectData,
+        xcodeProjectJSON.objects,
+      );
     }
 
     // Search for the section in textualProject and replace it
-    const sectionStartPattern = new RegExp(`/\\* Begin ${sectionType} section \\*/`);
-    const sectionEndPattern = new RegExp(`/\\* End ${sectionType} section \\*/`);
+    const sectionStartPattern = new RegExp(
+      `/\\* Begin ${sectionType} section \\*/`,
+    );
+    const sectionEndPattern = new RegExp(
+      `/\\* End ${sectionType} section \\*/`,
+    );
 
     const startMatch = textualProject.match(sectionStartPattern);
     const endMatch = textualProject.match(sectionEndPattern);
@@ -264,7 +303,7 @@ function updateProjectFile(textualProject, xcodeProjectJSON, objectsByIsa) {
       // Section doesn't exist but we have objects to add
       sectionsToAdd.push({
         sectionType,
-        replacementText: `/* Begin ${sectionType} section */\n${replacementText}/* End ${sectionType} section */\n`
+        replacementText: `/* Begin ${sectionType} section */\n${replacementText}/* End ${sectionType} section */\n`,
       });
     }
   }
@@ -277,7 +316,11 @@ function updateProjectFile(textualProject, xcodeProjectJSON, objectsByIsa) {
   return textualProject;
 }
 
-function updatePackageReferenceSection(textualProject, xcodeProjectJSON, objectsByIsa) {
+function updatePackageReferenceSection(
+  textualProject,
+  xcodeProjectJSON,
+  objectsByIsa,
+) {
   const lines = textualProject.split('\n');
   const processedLines = [];
   let inPBXProjectSection = false;
@@ -306,7 +349,9 @@ function updatePackageReferenceSection(textualProject, xcodeProjectJSON, objects
     // If we're in the PBXProject section
     if (inPBXProjectSection) {
       // Look for project object pattern: "objectId /* Project object */ = {"
-      const projectMatch = line.match(/^\s*([A-F0-9]+)\s*\/\*\s*Project object\s*\*\/\s*=\s*\{/);
+      const projectMatch = line.match(
+        /^\s*([A-F0-9]+)\s*\/\*\s*Project object\s*\*\/\s*=\s*\{/,
+      );
       if (projectMatch) {
         inProjectObject = true;
         projectBraceDepth = 1;
@@ -329,12 +374,18 @@ function updatePackageReferenceSection(textualProject, xcodeProjectJSON, objects
           processedLines.push(line);
 
           // Generate new packageReferences content
-          const projectObject = xcodeProjectJSON.objects[currentProjectObjectId];
+          const projectObject =
+            xcodeProjectJSON.objects[currentProjectObjectId];
           if (projectObject && projectObject.packageReferences) {
             for (const packageRefId of projectObject.packageReferences) {
               const packageRefObject = xcodeProjectJSON.objects[packageRefId];
-              if (packageRefObject && packageRefObject.isa === 'XCLocalSwiftPackageReference') {
-                processedLines.push(`\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`);
+              if (
+                packageRefObject &&
+                packageRefObject.isa === 'XCLocalSwiftPackageReference'
+              ) {
+                processedLines.push(
+                  `\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`,
+                );
               }
             }
           }
@@ -352,7 +403,12 @@ function updatePackageReferenceSection(textualProject, xcodeProjectJSON, objects
         }
 
         // Check if we need to insert packageReferences property
-        if (projectBraceDepth === 1 && !packageReferencesInserted && !line.includes('packageReferences') && line.trim().endsWith(';')) {
+        if (
+          projectBraceDepth === 1 &&
+          !packageReferencesInserted &&
+          !line.includes('packageReferences') &&
+          line.trim().endsWith(';')
+        ) {
           // Check if this is a property line we should insert packageReferences before
           // Insert packageReferences in alphabetical order (after 'mainGroup' but before 'projectDirPath')
           const propertyMatch = line.match(/^\s*(\w+)\s*=/);
@@ -361,13 +417,24 @@ function updatePackageReferenceSection(textualProject, xcodeProjectJSON, objects
 
             // Insert packageReferences before properties that come after 'p' alphabetically
             if (propertyName > 'packageReferences') {
-              const projectObject = xcodeProjectJSON.objects[currentProjectObjectId];
-              if (projectObject && projectObject.packageReferences && projectObject.packageReferences.length > 0) {
+              const projectObject =
+                xcodeProjectJSON.objects[currentProjectObjectId];
+              if (
+                projectObject &&
+                projectObject.packageReferences &&
+                projectObject.packageReferences.length > 0
+              ) {
                 processedLines.push('\t\t\tpackageReferences = (');
                 for (const packageRefId of projectObject.packageReferences) {
-                  const packageRefObject = xcodeProjectJSON.objects[packageRefId];
-                  if (packageRefObject && packageRefObject.isa === 'XCLocalSwiftPackageReference') {
-                    processedLines.push(`\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`);
+                  const packageRefObject =
+                    xcodeProjectJSON.objects[packageRefId];
+                  if (
+                    packageRefObject &&
+                    packageRefObject.isa === 'XCLocalSwiftPackageReference'
+                  ) {
+                    processedLines.push(
+                      `\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`,
+                    );
                   }
                 }
                 processedLines.push('\t\t\t);');
@@ -407,17 +474,21 @@ function printPBXBuildFile(objectId, objectData, allObjects) {
   // Handle productRef case for Swift Package dependencies
   if (objectData.productRef) {
     const productRefObject = allObjects[objectData.productRef];
-    const productName = productRefObject ? productRefObject.productName : 'Unknown';
+    const productName = productRefObject
+      ? productRefObject.productName
+      : 'Unknown';
     return `\t\t${objectId} /* ${productName} in Frameworks */ = {isa = PBXBuildFile; productRef = ${objectData.productRef} /* ${productName} */; };\n`;
   }
 
   // Handle fileRef case for regular files
   const referencedFile = allObjects[objectData.fileRef];
-  const filename = referencedFile ? (referencedFile.name || referencedFile.path || 'Unknown') : 'Unknown';
+  const filename = referencedFile
+    ? referencedFile.name || referencedFile.path || 'Unknown'
+    : 'Unknown';
 
   // Determine the type by searching build phases
   let type = 'Unknown';
-  for (const [phaseId, phaseObject] of Object.entries(allObjects)) {
+  for (const [, phaseObject] of Object.entries(allObjects)) {
     if (phaseObject.files && phaseObject.files.includes(objectId)) {
       // Check if the isa property ends up with "BuildPhase"
       if (phaseObject.isa.endsWith('BuildPhase')) {
@@ -443,7 +514,9 @@ function printXCLocalSwiftPackageReference(objectId, objectData, allObjects) {
   const relativePath = objectData.relativePath;
 
   // Escape path with quotes if it contains spaces
-  const escapedPath = relativePath.includes(' ') ? `"${relativePath}"` : relativePath;
+  const escapedPath = relativePath.includes(' ')
+    ? `"${relativePath}"`
+    : relativePath;
 
   return `\t\t${objectId} /* XCLocalSwiftPackageReference "${relativePath}" */ = {
 \t\t\tisa = XCLocalSwiftPackageReference;
@@ -459,7 +532,11 @@ function printXCLocalSwiftPackageReference(objectId, objectData, allObjects) {
  * @param {Object} allObjects - All objects for reference lookup
  * @returns {string} Formatted string for this object type
  */
-function printXCSwiftPackageProductDependency(objectId, objectData, allObjects) {
+function printXCSwiftPackageProductDependency(
+  objectId,
+  objectData,
+  allObjects,
+) {
   const productName = objectData.productName;
 
   return `\t\t${objectId} /* ${productName} */ = {
@@ -496,7 +573,11 @@ function printFilesForBuildPhase(objectId, objectData, allObjects) {
  */
 function addMissingSections(textualProject, sectionsToAdd) {
   // Define the order of sections - PBXBuildFile first, then XCLocalSwiftPackageReference, then XCSwiftPackageProductDependency
-  const sectionOrder = ['PBXBuildFile', 'XCLocalSwiftPackageReference', 'XCSwiftPackageProductDependency'];
+  const sectionOrder = [
+    'PBXBuildFile',
+    'XCLocalSwiftPackageReference',
+    'XCSwiftPackageProductDependency',
+  ];
 
   // Sort sections according to the defined order
   sectionsToAdd.sort((a, b) => {
@@ -510,7 +591,7 @@ function addMissingSections(textualProject, sectionsToAdd) {
   let insertionIndex = -1;
 
   for (const sectionToAdd of sectionsToAdd) {
-    const { sectionType, replacementText } = sectionToAdd;
+    const {sectionType, replacementText} = sectionToAdd;
 
     if (sectionType === 'PBXBuildFile') {
       // PBXBuildFile should be first in the objects array
@@ -526,7 +607,7 @@ function addMissingSections(textualProject, sectionsToAdd) {
       // Find the rootObject line and go back to find a good insertion point
       for (let i = lines.length - 1; i >= 0; i--) {
         if (lines[i].includes('rootObject =')) {
-          insertionIndex = i-1;
+          insertionIndex = i - 1;
           break;
         }
       }
@@ -534,7 +615,7 @@ function addMissingSections(textualProject, sectionsToAdd) {
       // Should be last before rootObject
       for (let i = lines.length - 1; i >= 0; i--) {
         if (lines[i].includes('rootObject =')) {
-          insertionIndex = i-1;
+          insertionIndex = i - 1;
           break;
         }
       }
@@ -562,7 +643,6 @@ function updatePBXFrameworksBuildPhaseFiles(textualProject, xcodeProjectJSON) {
   const processedLines = [];
   let inPBXFrameworksBuildPhase = false;
   let inFrameworksSection = false;
-  let inFilesSection = false;
   let frameworksBraceDepth = 0;
   let currentFrameworksBuildPhaseId = null;
 
@@ -586,7 +666,9 @@ function updatePBXFrameworksBuildPhaseFiles(textualProject, xcodeProjectJSON) {
     // If we're in the PBXFrameworksBuildPhase section
     if (inPBXFrameworksBuildPhase) {
       // Look for framework build phase pattern: "objectId /* Frameworks */ = {"
-      const frameworksMatch = line.match(/^\s*([A-F0-9]+)\s*\/\*\s*Frameworks\s*\*\/\s*=\s*\{/);
+      const frameworksMatch = line.match(
+        /^\s*([A-F0-9]+)\s*\/\*\s*Frameworks\s*\*\/\s*=\s*\{/,
+      );
       if (frameworksMatch) {
         inFrameworksSection = true;
         frameworksBraceDepth = 1;
@@ -604,16 +686,22 @@ function updatePBXFrameworksBuildPhaseFiles(textualProject, xcodeProjectJSON) {
 
         // Check if we found "files = ("
         if (line.includes('files = (')) {
-          inFilesSection = true;
           processedLines.push(line);
 
           // Generate new files content
-          const frameworksBuildPhase = xcodeProjectJSON.objects[currentFrameworksBuildPhaseId];
+          const frameworksBuildPhase =
+            xcodeProjectJSON.objects[currentFrameworksBuildPhaseId];
           if (frameworksBuildPhase && frameworksBuildPhase.files) {
             for (const fileId of frameworksBuildPhase.files) {
               const buildFileObject = xcodeProjectJSON.objects[fileId];
               if (buildFileObject) {
-                processedLines.push(printFilesForBuildPhase(fileId, buildFileObject, xcodeProjectJSON.objects));
+                processedLines.push(
+                  printFilesForBuildPhase(
+                    fileId,
+                    buildFileObject,
+                    xcodeProjectJSON.objects,
+                  ),
+                );
               }
             }
           }
@@ -627,7 +715,6 @@ function updatePBXFrameworksBuildPhaseFiles(textualProject, xcodeProjectJSON) {
           if (i < lines.length) {
             processedLines.push(lines[i]);
           }
-          inFilesSection = false;
           continue;
         }
 

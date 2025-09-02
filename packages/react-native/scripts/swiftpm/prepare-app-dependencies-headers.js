@@ -8,9 +8,9 @@
  * @format
  */
 
+const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const {execSync} = require('child_process');
 
 /**
  * Prepares app dependencies headers for SwiftPM integration
@@ -98,7 +98,11 @@ function prepareAppDependenciesHeaders(
  * @param {string} outputFolder - Path to the output folder
  * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
-function hardlinkReactNativeHeaders(reactNativePath, outputFolder, folderName = 'headers') {
+function hardlinkReactNativeHeaders(
+  reactNativePath,
+  outputFolder,
+  folderName = 'headers',
+) {
   console.log('Creating hard links for React Native headers...');
 
   const headersOutput = path.join(outputFolder, folderName);
@@ -426,7 +430,6 @@ function hardlinkReactCommonHeaders(
         const relativePath = path.relative(reactCommonPath, sourceHeaderPath);
 
         let destPath;
-        let isFlattened = false;
 
         // Check for ReactCommon/**/ReactCommon/header.h pattern
         // Since relativePath is calculated from ReactCommon base, any "ReactCommon" component
@@ -458,7 +461,6 @@ function hardlinkReactCommonHeaders(
             // Flatten to ReactCommon folder
             const headerName = path.basename(sourceHeaderPath);
             destPath = path.join(reactCommonHeadersOutput, headerName);
-            isFlattened = true;
             console.log(`  -> ${headerName} (flattened to ReactCommon)`);
           } else if (relativePath.startsWith('react/')) {
             // Handle Switch special case
@@ -487,11 +489,11 @@ function hardlinkReactCommonHeaders(
               // Handle platform-specific headers with pattern:
               // react/renderer/components/view/platform/{cxx,android}/react/renderer/components/view/header.h
               const platformMatch = relativePath.match(
-                /^(react\/.*?)\/platform\/([^\/]+)\/react\/(.*)$/,
+                /^(react\/.*?)\/platform\/([^/]+)\/react\/(.*)$/,
               );
 
               if (platformMatch) {
-                const [, basePath, platform, remainingPath] = platformMatch;
+                const [, , platform, remainingPath] = platformMatch;
                 const supportedPlatforms = ['ios', 'cxx'];
                 const ignoredPlatforms = ['android', 'windows', 'macos'];
 
@@ -523,16 +525,25 @@ function hardlinkReactCommonHeaders(
           } else {
             // Check for special mappings
             let specialCaseMatched = false;
-            for (const [prefix, destinationFolder] of Object.entries(specialMapping)) {
+            for (const [prefix, destinationFolder] of Object.entries(
+              specialMapping,
+            )) {
               if (relativePath.startsWith(prefix)) {
                 let mappedPath = relativePath;
 
                 // Special handling for yoga - remove duplicated yoga/ prefix
-                if (prefix === 'yoga/' && relativePath.startsWith('yoga/yoga/')) {
+                if (
+                  prefix === 'yoga/' &&
+                  relativePath.startsWith('yoga/yoga/')
+                ) {
                   mappedPath = relativePath.substring(5); // Remove 'yoga/' (5 characters)
                 }
 
-                destPath = path.join(headersOutput, destinationFolder, mappedPath.substring(prefix.length));
+                destPath = path.join(
+                  headersOutput,
+                  destinationFolder,
+                  mappedPath.substring(prefix.length),
+                );
                 console.log(
                   `  -> ${destinationFolder}/${mappedPath.substring(prefix.length)} (${prefix.slice(0, -1)} headers flattened, bypassing ReactCommon)`,
                 );
@@ -588,7 +599,11 @@ function hardlinkReactCommonHeaders(
  * @param {string} outputFolder - Path to the output folder
  * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
-function hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder, folderName = 'headers') {
+function hardlinkThirdPartyDependenciesHeaders(
+  reactNativePath,
+  outputFolder,
+  folderName = 'headers',
+) {
   console.log('Creating hard links for Third-Party Dependencies headers...');
 
   // Look for ReactNativeDependencies.xcframework/Headers folder specifically

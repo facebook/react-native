@@ -17,21 +17,26 @@
  * - Other project-specific configurations
  */
 
+const {
+  addLocalSwiftPM,
+  convertXcodeProjectToJSON,
+  deintegrateSwiftPM,
+  updateXcodeProject,
+} = require('./xcodeproj-utils');
 const fs = require('fs');
 const path = require('path');
-const {
-  convertXcodeProjectToJSON,
-  updateXcodeProject,
-  deintegrateSwiftPM,
-  addLocalSwiftPM
-} = require('./xcodeproj-utils');
+
 /**
  * Integrate Swift packages into Xcode project
  * @param {string} xcodeProjectPath - Path to the app.xcodeproj file
  * @param {Array<Object>} packageSwiftObjects - List of PackageSwift objects with relativePath and targets
  * @param {string} appTargetName - Name of the app target
  */
-function integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, appTargetName) {
+function integrateSwiftPackagesInXcode(
+  xcodeProjectPath,
+  packageSwiftObjects,
+  appTargetName,
+) {
   // Construct path to project.pbxproj
   const projectPbxprojPath = path.join(xcodeProjectPath, 'project.pbxproj');
 
@@ -51,12 +56,15 @@ function integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, ap
       packageSwift.relativePath,
       packageSwift.targets,
       xcodeProject,
-      appTargetName
+      appTargetName,
     );
   }
 
   // Convert back to text format and write to project.pbxproj file
-  fs.writeFileSync(projectPbxprojPath, updateXcodeProject(xcodeProject,projectPbxprojPath));
+  fs.writeFileSync(
+    projectPbxprojPath,
+    updateXcodeProject(xcodeProject, projectPbxprojPath),
+  );
 }
 
 // CLI usage
@@ -64,8 +72,12 @@ if (require.main === module) {
   const args = process.argv.slice(2);
 
   if (args.length < 3) {
-    console.log('Usage: node update-xcodeproject.js <xcodeProjectPath> <appTargetName> <packageSwiftObjectsJSON>');
-    console.log('Example: node update-xcodeproject.js ./MyApp.xcodeproj MyApp \'[{"relativePath":"../react-native","targets":["ReactCommon","React-Core"]}]\'');
+    console.log(
+      'Usage: node update-xcodeproject.js <xcodeProjectPath> <appTargetName> <packageSwiftObjectsJSON>',
+    );
+    console.log(
+      'Example: node update-xcodeproject.js ./MyApp.xcodeproj MyApp \'[{"relativePath":"../react-native","targets":["ReactCommon","React-Core"]}]\'',
+    );
     process.exit(1);
   }
 
@@ -75,7 +87,11 @@ if (require.main === module) {
 
   try {
     const packageSwiftObjects = JSON.parse(packageSwiftObjectsJSON);
-    integrateSwiftPackagesInXcode(xcodeProjectPath, packageSwiftObjects, appTargetName);
+    integrateSwiftPackagesInXcode(
+      xcodeProjectPath,
+      packageSwiftObjects,
+      appTargetName,
+    );
     console.log('✅ Successfully integrated Swift packages into Xcode project');
   } catch (error) {
     console.error('❌ Error:', error.message);
@@ -84,5 +100,5 @@ if (require.main === module) {
 }
 
 module.exports = {
-  integrateSwiftPackagesInXcode
+  integrateSwiftPackagesInXcode,
 };

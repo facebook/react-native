@@ -123,7 +123,10 @@ function execute(
         platform,
       );
 
-      const reactCodegenOutputPath = platform === 'android' ? outputPath : path.join(outputPath, 'ReactCodegen');
+      const reactCodegenOutputPath =
+        platform === 'android'
+          ? outputPath
+          : path.join(outputPath, 'ReactCodegen');
 
       if (runReactNativeCodegen) {
         const schemaInfos = generateSchemaInfos(libraries);
@@ -140,20 +143,31 @@ function execute(
       if (source === 'app' && platform !== 'android') {
         // These components are only required by apps, not by libraries and are Apple specific.
         generateRCTThirdPartyComponents(libraries, reactCodegenOutputPath);
-        generateRCTModuleProviders(projectRoot, pkgJson, libraries, reactCodegenOutputPath);
+        generateRCTModuleProviders(
+          projectRoot,
+          pkgJson,
+          libraries,
+          reactCodegenOutputPath,
+        );
         generateCustomURLHandlers(libraries, reactCodegenOutputPath);
         generateUnstableModulesRequiringMainQueueSetupProvider(
           libraries,
           reactCodegenOutputPath,
         );
-        generateAppDependencyProvider(path.join(outputPath, 'ReactAppDependencyProvider'));
+        generateAppDependencyProvider(
+          path.join(outputPath, 'ReactAppDependencyProvider'),
+        );
         generateReactCodegenPodspec(
           projectRoot,
           pkgJson,
           reactCodegenOutputPath,
           baseOutputPath,
         );
-        generatePackageSwift(projectRoot, outputPath, findReactNativeRootPath(projectRoot));
+        generatePackageSwift(
+          projectRoot,
+          outputPath,
+          findReactNativeRootPath(projectRoot),
+        );
       }
 
       cleanupEmptyFilesAndFolders(outputPath);

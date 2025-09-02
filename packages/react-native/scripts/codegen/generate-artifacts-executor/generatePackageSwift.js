@@ -10,9 +10,7 @@
 
 'use strict';
 const {TEMPLATES_FOLDER_PATH} = require('./constants');
-const {
-  codegenLog,
-} = require('./utils');
+const {codegenLog} = require('./utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -32,12 +30,15 @@ function generatePackageSwift(
   codegenLog('Generating Package.swift');
   const templateH = fs
     .readFileSync(PACKAGE_SWIFT_TEMPLATE_PATH, 'utf8')
-    .replace(/{reactNativePath}/, path.relative(fullOutputPath, reactNativePath));
+    .replace(
+      /{reactNativePath}/,
+      path.relative(fullOutputPath, reactNativePath),
+    );
   const finalPathH = path.join(outputDir, 'Package.swift');
   fs.writeFileSync(finalPathH, templateH);
   codegenLog(`Generated artifact: ${finalPathH}`);
 }
 
 module.exports = {
-  generatePackageSwift
+  generatePackageSwift,
 };
