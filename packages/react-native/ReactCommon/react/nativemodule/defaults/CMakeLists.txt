@@ -21,6 +21,7 @@ target_link_libraries(react_nativemodule_defaults
         react_nativemodule_featureflags
         react_nativemodule_microtasks
         react_nativemodule_idlecallbacks
+        react_nativemodule_webperformance
 )
 target_compile_reactnative_options(react_nativemodule_defaults PRIVATE)
 target_compile_options(react_nativemodule_defaults PRIVATE -Wpedantic)
