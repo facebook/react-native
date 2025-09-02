@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d3f1638ab167e175d421c0c08f2320b>>
+ * @generated SignedSource<<8ac45d7dfef86becd1f0a7ec7ba8e999>>
  * @flow strict
  * @noformat
  */
@@ -73,6 +73,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableIOSTextBaselineOffsetPerLine: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
+  enableImagePrefetchingOnUiThreadAndroid: Getter<boolean>,
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -289,6 +290,10 @@ export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGe
  * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
  */
 export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
+/**
+ * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+ */
+export const enableImagePrefetchingOnUiThreadAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingOnUiThreadAndroid', false);
 /**
  * Dispatches state updates for content offset changes synchronously on the main thread.
  */

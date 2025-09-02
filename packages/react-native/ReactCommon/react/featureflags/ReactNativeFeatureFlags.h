@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<550c6084049b176c9b3c220962c04ed7>>
+ * @generated SignedSource<<83c1c5b181d47f4a54cb097f8d31c48a>>
  */
 
 /**
@@ -158,6 +158,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
+
+  /**
+   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+   */
+  RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
 
   /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
