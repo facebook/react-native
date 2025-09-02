@@ -16,7 +16,7 @@ import type {NativeModeChangeEvent} from './VirtualViewNativeComponent';
 import StyleSheet from '../../../../Libraries/StyleSheet/StyleSheet';
 import * as ReactNativeFeatureFlags from '../../featureflags/ReactNativeFeatureFlags';
 import VirtualViewExperimentalNativeComponent from './VirtualViewExperimentalNativeComponent';
-import VirtualViewNativeComponent from './VirtualViewNativeComponent';
+import VirtualViewClassicNativeComponent from './VirtualViewNativeComponent';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 // $FlowFixMe[missing-export]
@@ -49,6 +49,11 @@ export type ModeChangeEvent = $ReadOnly<{
   target: HostInstance,
 }>;
 
+const VirtualViewNativeComponent: typeof VirtualViewClassicNativeComponent =
+  ReactNativeFeatureFlags.enableVirtualViewExperimental()
+    ? VirtualViewExperimentalNativeComponent
+    : VirtualViewClassicNativeComponent;
+
 type VirtualViewComponent = component(
   children?: React.Node,
   nativeID?: string,
@@ -63,15 +68,8 @@ const NotHidden = null;
 
 type State = HiddenHeight | typeof NotHidden;
 
-function createVirtualView(
-  initialState: State,
-  experimental: boolean,
-): VirtualViewComponent {
+function createVirtualView(initialState: State): VirtualViewComponent {
   const initialHidden = initialState !== NotHidden;
-
-  const NativeComponent = experimental
-    ? VirtualViewExperimentalNativeComponent
-    : VirtualViewNativeComponent;
 
   component VirtualView(
     children?: React.Node,
@@ -124,7 +122,7 @@ function createVirtualView(
     };
 
     return (
-      <NativeComponent
+      <VirtualViewNativeComponent
         initialHidden={initialHidden}
         nativeID={nativeID}
         ref={ref}
@@ -153,24 +151,16 @@ function createVirtualView(
             'no-activity' | _ => isHidden ? null : children,
           }
         }
-      </NativeComponent>
+      </VirtualViewNativeComponent>
     );
   }
   return VirtualView;
 }
 
-export default createVirtualView(NotHidden, false) as VirtualViewComponent;
+export default createVirtualView(NotHidden) as VirtualViewComponent;
 
-export const VirtualViewExperimental = createVirtualView(
-  NotHidden,
-  true,
-) as VirtualViewComponent;
-
-export function createHiddenVirtualView(
-  height: number,
-  experimental: boolean,
-): VirtualViewComponent {
-  return createVirtualView(height as HiddenHeight, experimental);
+export function createHiddenVirtualView(height: number): VirtualViewComponent {
+  return createVirtualView(height as HiddenHeight);
 }
 
 export const _logs: {states?: Array<State>} = {};
