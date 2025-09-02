@@ -18,7 +18,8 @@
 
 @protocol RCTModalHostViewInteractor;
 
-@interface RCTModalHostView : UIView <RCTInvalidating, UIAdaptivePresentationControllerDelegate>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTModalHostView : UIView<RCTInvalidating, UIAdaptivePresentationControllerDelegate>
 
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;

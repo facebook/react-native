@@ -440,6 +440,9 @@ public class ReactScrollView extends ScrollView
     if (mRemoveClippedSubviews) {
       updateClippingRect();
     }
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.updateState();
+    }
   }
 
   @Override

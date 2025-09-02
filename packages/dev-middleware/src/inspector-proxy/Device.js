@@ -970,7 +970,10 @@ export default class Device {
     socket: WS,
   ): void {
     const sendSuccessResponse = (scriptSource: string) => {
-      const result = {scriptSource};
+      const result: {
+        scriptSource: string,
+        bytecode?: string,
+      } = {scriptSource};
       const response: CDPResponse<'Debugger.getScriptSource'> = {
         id: req.id,
         result,

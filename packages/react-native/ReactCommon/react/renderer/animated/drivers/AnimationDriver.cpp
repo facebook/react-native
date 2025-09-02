@@ -53,7 +53,7 @@ void AnimationDriver::startAnimation() {
 void AnimationDriver::stopAnimation(bool /*ignoreCompletedHandlers*/) {
   if (auto node =
           manager_->getAnimatedNode<ValueAnimatedNode>(animatedValueTag_);
-      endCallback_) {
+      node != nullptr && endCallback_) {
     endCallback_.value().call(
         {.finished = true,
          .value = node->getRawValue(),

@@ -10,15 +10,18 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTInvalidating.h>
 
-typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
-typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
+typedef void (^RCTJavaScriptCompleteBlock)(NSError *__strong)
+    __deprecated_msg("This api will be removed along with the bridge.");
+typedef void (^RCTJavaScriptCallback)(__strong id, NSError *__strong)
+    __deprecated_msg("This api will be removed along with the bridge.");
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a
  * web view (for debugging purposes), or may be running code in a `JSContext`.
  */
-@protocol RCTJavaScriptExecutor <RCTInvalidating, RCTBridgeModule>
+__deprecated_msg("This api will be removed along with the bridge.")
+    @protocol RCTJavaScriptExecutor<RCTInvalidating, RCTBridgeModule>
 
 /**
  * Used to set up the executor after the bridge has been fully initialized.

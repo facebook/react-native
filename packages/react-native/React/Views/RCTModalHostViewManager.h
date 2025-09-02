@@ -15,9 +15,11 @@ typedef void (^RCTModalViewInteractionBlock)(
     UIViewController *reactViewController,
     UIViewController *viewController,
     BOOL animated,
-    dispatch_block_t completionBlock);
+    dispatch_block_t completionBlock)
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
-@interface RCTModalHostViewManager : RCTViewManager <RCTInvalidating>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTModalHostViewManager : RCTViewManager<RCTInvalidating>
 
 /**
  * `presentationBlock` and `dismissalBlock` allow you to control how a Modal interacts with your case,

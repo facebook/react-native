@@ -32,10 +32,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {  "HEADER_SEARCH_PATHS" => ["\"$(PODS_TARGET_SRCROOT)\""], "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = './'
-    s.module_name             = 'React_Mapbuffer'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: './', module_name: "React_Mapbuffer")
 
   add_dependency(s, "React-debug")
   add_rn_third_party_dependencies(s)

@@ -477,8 +477,10 @@ if (!NativeTiming) {
   ExportedJSTimers = ({
     callReactNativeMicrotasks: JSTimers.callReactNativeMicrotasks,
     queueReactNativeMicrotask: JSTimers.queueReactNativeMicrotask,
+    // $FlowFixMe[incompatible-variance]
   }: typeof JSTimers);
 } else {
+  // $FlowFixMe[incompatible-variance]
   ExportedJSTimers = JSTimers;
 }
 

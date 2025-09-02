@@ -45130,14 +45130,6 @@ class TaskDispatchThread {
 };
 } // namespace facebook::react
 
-/// @src {packages/react-native/ReactCxxPlatform/react/utils/EnumHelper.h}:
-namespace std {
-template <class Enum>
-constexpr auto to_underlying(Enum e) noexcept {
-  return static_cast<std::underlying_type_t<Enum>>(e);
-}
-} // namespace std
-
 /// @src {packages/react-native/ReactCxxPlatform/react/utils/PlatformRunLoopObserver.h}:
 namespace facebook::react {
 class PlatformRunLoopObserver : public RunLoopObserver {

@@ -95,6 +95,15 @@ TEST(MapBufferTest, testDoubleEntries) {
   EXPECT_EQ(map.getDouble(1), 432.1);
 }
 
+TEST(MapBufferTest, testStringEmpty) {
+  auto builder = MapBufferBuilder();
+
+  builder.putString(0, "");
+  auto map = builder.build();
+
+  EXPECT_EQ(map.getString(0), "");
+}
+
 TEST(MapBufferTest, testStringEntries) {
   auto builder = MapBufferBuilder();
 

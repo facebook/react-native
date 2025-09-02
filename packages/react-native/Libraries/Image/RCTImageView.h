@@ -14,6 +14,7 @@
 @class RCTBridge;
 @class RCTImageSource;
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTImageView : RCTView
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;

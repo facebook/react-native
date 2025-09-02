@@ -184,6 +184,7 @@ export {default as View} from './Libraries/Components/View/View';
 export type {
   ListRenderItemInfo,
   ListRenderItem,
+  ListViewToken,
   Separators,
   VirtualizedListProps,
 } from './Libraries/Lists/VirtualizedList';

@@ -44,7 +44,7 @@ public object DefaultReactHost {
    * @param jsMainModulePath the path to your app's main module on Metro. Usually `index` or
    *   `index.<platform>`
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
-   *   composed in a `asset://...` URL
+   *   composed in a `asset://...` URL. Usually `index.android.bundle`.
    * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
    *   `file://...` URL
    * @param jsRuntimeFactory the JS engine to use for executing [ReactHost], default to Hermes.
@@ -63,7 +63,7 @@ public object DefaultReactHost {
       context: Context,
       packageList: List<ReactPackage>,
       jsMainModulePath: String = "index",
-      jsBundleAssetPath: String = "index",
+      jsBundleAssetPath: String = "index.android.bundle",
       jsBundleFilePath: String? = null,
       jsRuntimeFactory: JSRuntimeFactory? = null,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,

@@ -31,7 +31,6 @@ class TextShadowNode : public ConcreteShadowNode<
     auto traits = ConcreteShadowNode::BaseTraits();
 #ifdef ANDROID
     traits.set(ShadowNodeTraits::Trait::FormsView);
-    traits.set(ShadowNodeTraits::Trait::Unstable_uncullableView);
 #endif
     return traits;
   }

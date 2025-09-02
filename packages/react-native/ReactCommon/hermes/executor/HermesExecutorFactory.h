@@ -13,7 +13,9 @@
 
 namespace facebook::react {
 
-class HermesExecutorFactory : public JSExecutorFactory {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] HermesExecutorFactory
+    : public JSExecutorFactory {
  public:
   explicit HermesExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
@@ -44,7 +46,9 @@ class HermesExecutorFactory : public JSExecutorFactory {
   std::string debuggerName_ = "Hermes React Native";
 };
 
-class HermesExecutor : public JSIExecutor {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] HermesExecutor
+    : public JSIExecutor {
  public:
   HermesExecutor(
       std::shared_ptr<jsi::Runtime> runtime,

@@ -63,7 +63,8 @@ public class I18nUtil private constructor() {
   private val isDevicePreferredLanguageRTL: Boolean
     // Check if the current device language is RTL
     get() {
-      val directionality = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault())
+      val directionality =
+          TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getAvailableLocales()[0])
       return directionality == View.LAYOUT_DIRECTION_RTL
     }
 

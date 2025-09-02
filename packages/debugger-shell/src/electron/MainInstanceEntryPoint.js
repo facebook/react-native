@@ -64,6 +64,8 @@ function handleLaunchArgs(argv: string[]) {
       // Icon for Linux
       icon: path.join(__dirname, 'resources', 'icon.png'),
     });
+    // Auto-hide the Windows/Linux menu bar
+    frontendWindow.setMenuBarVisibility(false);
   }
 
   // Open links in the default browser instead of in new Electron windows.

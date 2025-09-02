@@ -9,8 +9,8 @@
 
 namespace facebook::react {
 
-const int32_t DEFAULT_TEXT_COLOR = 0xFFFFFFFF;
-const int32_t DEFAULT_BACKGROUND_COLOR = 0xFF2584E8;
+const uint32_t DEFAULT_TEXT_COLOR = 0xFFFFFFFF;
+const uint32_t DEFAULT_BACKGROUND_COLOR = 0xFF2584E8;
 
 DevLoadingViewModule::DevLoadingViewModule(
     std::shared_ptr<CallInvoker> jsInvoker,
@@ -27,8 +27,8 @@ DevLoadingViewModule::~DevLoadingViewModule() {
 void DevLoadingViewModule::showMessage(
     jsi::Runtime& /*rt*/,
     const std::string& message,
-    std::optional<int32_t> textColor,
-    std::optional<int32_t> backgroundColor) {
+    std::optional<uint32_t> textColor,
+    std::optional<uint32_t> backgroundColor) {
   if (auto devUIDelegate = devUIDelegate_.lock()) {
     devUIDelegate->showLoadingView(
         message,

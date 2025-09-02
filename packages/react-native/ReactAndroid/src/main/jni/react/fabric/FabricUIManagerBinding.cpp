@@ -533,7 +533,7 @@ void FabricUIManagerBinding::installFabricUIManager(
           runtimeScheduler->scheduleWork(std::move(callback));
         };
     contextContainer->insert(
-        "RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
+        RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
   }
 
   EventBeat::Factory eventBeatFactory =

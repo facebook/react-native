@@ -44,7 +44,8 @@ static void installBindings(jsi::Runtime& runtime) {
   react::bindNativeLogger(runtime, &reactAndroidLoggingHook);
 }
 
-class HermesExecutorHolder
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] HermesExecutorHolder
     : public jni::HybridClass<HermesExecutorHolder, JavaScriptExecutorHolder> {
  public:
   static constexpr auto kJavaDescriptor =
@@ -110,6 +111,10 @@ class HermesExecutorHolder
 } // namespace facebook::react
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
-  return facebook::jni::initialize(
-      vm, [] { facebook::react::HermesExecutorHolder::registerNatives(); });
+  return facebook::jni::initialize(vm, [] {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    facebook::react::HermesExecutorHolder::registerNatives();
+#pragma clang diagnostic pop
+  });
 }

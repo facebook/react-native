@@ -1887,14 +1887,6 @@ public final class com/facebook/react/devsupport/BundleDownloader$BundleInfo$Com
 public final class com/facebook/react/devsupport/BundleDownloader$Companion {
 }
 
-public final class com/facebook/react/devsupport/ChromeDevToolsViewKeys : java/lang/Enum {
-	public static final field Performance Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public final fun getValue ()Ljava/lang/String;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
-	public static fun values ()[Lcom/facebook/react/devsupport/ChromeDevToolsViewKeys;
-}
-
 public final class com/facebook/react/devsupport/DefaultDevLoadingViewImplementation : com/facebook/react/devsupport/interfaces/DevLoadingViewManager {
 	public static final field Companion Lcom/facebook/react/devsupport/DefaultDevLoadingViewImplementation$Companion;
 	public fun <init> (Lcom/facebook/react/devsupport/ReactInstanceDevHelper;)V
@@ -1970,7 +1962,7 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun openDebugger ()V
+	public fun openDebugger (Ljava/lang/String;)V
 	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
@@ -2059,7 +2051,7 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun openDebugger ()V
+	public fun openDebugger (Ljava/lang/String;)V
 	public fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
@@ -2159,7 +2151,8 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 	public abstract fun onNewReactContextCreated (Lcom/facebook/react/bridge/ReactContext;)V
 	public abstract fun onReactInstanceDestroyed (Lcom/facebook/react/bridge/ReactContext;)V
-	public abstract fun openDebugger ()V
+	public abstract fun openDebugger (Ljava/lang/String;)V
+	public static synthetic fun openDebugger$default (Lcom/facebook/react/devsupport/interfaces/DevSupportManager;Ljava/lang/String;ILjava/lang/Object;)V
 	public abstract fun processErrorCustomizers (Landroid/util/Pair;)Landroid/util/Pair;
 	public abstract fun registerErrorCustomizer (Lcom/facebook/react/devsupport/interfaces/ErrorCustomizer;)V
 	public abstract fun reloadJSFromServer (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/BundleLoadCallback;)V
@@ -2228,6 +2221,15 @@ public abstract interface class com/facebook/react/devsupport/interfaces/StackFr
 	public abstract fun getMethod ()Ljava/lang/String;
 	public abstract fun isCollapsed ()Z
 	public abstract fun toJSON ()Lorg/json/JSONObject;
+}
+
+public final class com/facebook/react/devsupport/interfaces/TracingState : java/lang/Enum {
+	public static final field DISABLED Lcom/facebook/react/devsupport/interfaces/TracingState;
+	public static final field ENABLEDINBACKGROUNDMODE Lcom/facebook/react/devsupport/interfaces/TracingState;
+	public static final field ENABLEDINCDPMODE Lcom/facebook/react/devsupport/interfaces/TracingState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/devsupport/interfaces/TracingState;
+	public static fun values ()[Lcom/facebook/react/devsupport/interfaces/TracingState;
 }
 
 public final class com/facebook/react/fabric/ComponentFactory {
@@ -5351,18 +5353,25 @@ public final class com/facebook/react/views/image/ImageLoadEvent$Companion {
 
 public final class com/facebook/react/views/image/ImageResizeMethod : java/lang/Enum {
 	public static final field AUTO Lcom/facebook/react/views/image/ImageResizeMethod;
+	public static final field Companion Lcom/facebook/react/views/image/ImageResizeMethod$Companion;
 	public static final field NONE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field RESIZE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static final field SCALE Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static final fun parse (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 	public static fun values ()[Lcom/facebook/react/views/image/ImageResizeMethod;
+}
+
+public final class com/facebook/react/views/image/ImageResizeMethod$Companion {
+	public final fun parse (Ljava/lang/String;)Lcom/facebook/react/views/image/ImageResizeMethod;
 }
 
 public final class com/facebook/react/views/image/ImageResizeMode {
 	public static final field INSTANCE Lcom/facebook/react/views/image/ImageResizeMode;
 	public static final fun defaultTileMode ()Landroid/graphics/Shader$TileMode;
 	public static final fun defaultValue ()Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
+	public final synthetic fun fromInt (I)Ljava/lang/String;
 	public static final fun toScaleType (Ljava/lang/String;)Lcom/facebook/drawee/drawable/ScalingUtils$ScaleType;
 	public static final fun toTileMode (Ljava/lang/String;)Landroid/graphics/Shader$TileMode;
 }

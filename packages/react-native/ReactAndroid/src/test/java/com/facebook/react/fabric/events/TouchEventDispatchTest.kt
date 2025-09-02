@@ -514,7 +514,7 @@ class TouchEventDispatchTest {
     metrics.xdpi = 1f
     metrics.ydpi = 1f
     metrics.density = 1f
-    DisplayMetricsHolder.setWindowDisplayMetrics(metrics)
+    DisplayMetricsHolder.setScreenDisplayMetrics(metrics)
 
     val reactContext = ReactTestHelper.createCatalystContextForTest()
 

@@ -503,6 +503,33 @@ const void* Runtime::getRuntimeDataImpl(const UUID& uuid) {
   return nullptr;
 }
 
+Value Runtime::getProperty(const Object& object, const Value& name) {
+  auto getFn = global()
+                   .getPropertyAsObject(*this, "Reflect")
+                   .getPropertyAsFunction(*this, "get");
+  return getFn.call(*this, object, name);
+}
+
+bool Runtime::hasProperty(const Object& object, const Value& name) {
+  auto hasFn = global()
+                   .getPropertyAsObject(*this, "Reflect")
+                   .getPropertyAsFunction(*this, "has");
+  return hasFn.call(*this, object, name).getBool();
+}
+
+void Runtime::setPropertyValue(
+    const Object& object,
+    const Value& name,
+    const Value& value) {
+  auto setFn = global()
+                   .getPropertyAsObject(*this, "Reflect")
+                   .getPropertyAsFunction(*this, "set");
+  auto setResult = setFn.call(*this, object, name, value).getBool();
+  if (!setResult) {
+    throw JSError(*this, "Failed to set the property");
+  }
+}
+
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();

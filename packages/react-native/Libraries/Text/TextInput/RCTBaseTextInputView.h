@@ -20,7 +20,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTBaseTextInputView : RCTView <RCTBackedTextInputDelegate>
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
+@interface RCTBaseTextInputView : RCTView<RCTBackedTextInputDelegate>
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

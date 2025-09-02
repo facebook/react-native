@@ -13,8 +13,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName;
+extern NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
+    __attribute__((deprecated("This API will be removed along with the legacy architecture.")));
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTBaseTextShadowView : RCTShadowView {
  @protected
   NSAttributedString *_Nullable cachedAttributedText;

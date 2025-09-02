@@ -597,6 +597,20 @@ describe('<Image>', () => {
       });
     });
 
+    describe('aria-hidden', () => {
+      it('is is passed as importantForAccessibility', () => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(<Image aria-hidden={true} />);
+        });
+        expect(
+          root
+            .getRenderedOutput({props: ['importantForAccessibility']})
+            .toJSX(),
+        ).toEqual(<rn-image importantForAccessibility="no-hide-descendants" />);
+      });
+    });
+
     component TestComponent(testID?: ?string, ...props: AccessibilityProps) {
       return <Image {...props} testID={testID} source={LOGO_SOURCE} />;
     }

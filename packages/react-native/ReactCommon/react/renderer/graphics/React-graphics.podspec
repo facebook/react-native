@@ -34,11 +34,11 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/renderer/graphics"
   s.framework = "UIKit"
 
-  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
-    s.module_name            = "React_graphics"
-    s.header_mappings_dir  = "../../.."
+  if ENV['USE_FRAMEWORKS']
     header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/platform/ios\""]
   end
+
+  resolve_use_frameworks(s, header_mappings_dir: "../../..", module_name: "React_graphics")
 
   s.pod_target_xcconfig  = { "USE_HEADERMAP" => "NO",
                              "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),

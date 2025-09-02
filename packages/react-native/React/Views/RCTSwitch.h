@@ -11,6 +11,7 @@
 
 #import <React/RCTComponent.h>
 
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTSwitch : UISwitch
 
 @property (nonatomic, assign) BOOL wasOn;

@@ -331,23 +331,19 @@ internal class MountingManager(
    *
    * @param reactContext
    * @param componentName
-   * @param surfaceId surface ID
-   * @param reactTag reactTag that should be set as ID of the view instance
    * @param params prefetch request params defined in C++
    */
   @Suppress("FunctionName")
   @AnyThread
   @UnstableReactNativeAPI
-  fun experimental_prefetchResource(
+  fun experimental_prefetchResources(
       reactContext: ReactContext?,
       componentName: String?,
-      surfaceId: Int,
-      reactTag: Int,
       params: MapBuffer?,
   ) {
     viewManagerRegistry
         .get(checkNotNull(componentName))
-        .experimental_prefetchResource(reactContext, surfaceId, reactTag, params)
+        .experimental_prefetchResources(reactContext, params)
   }
 
   fun enqueuePendingEvent(

@@ -34,10 +34,7 @@ Pod::Spec.new do |s|
   s.source_files           = podspec_sources(source_files, "**/*.h")
   s.header_dir             = "react/renderer/imagemanager"
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "React_ImageManager"
-    s.header_mappings_dir  = "./"
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "./", module_name: "React_ImageManager")
 
   s.pod_target_xcconfig  = {
     "USE_HEADERMAP" => "NO",

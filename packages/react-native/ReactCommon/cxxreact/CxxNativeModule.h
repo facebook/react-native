@@ -23,11 +23,14 @@ class MessageQueueThread;
 
 typedef void (*WarnOnUsageLogger)(std::string message);
 
+[[deprecated("This API will be removed along with the legacy architecture.")]]
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
     const folly::dynamic& callbackId);
 
-class RN_EXPORT CxxNativeModule : public NativeModule {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] CxxNativeModule
+    : public NativeModule {
  public:
   CxxNativeModule(
       std::weak_ptr<Instance> instance,
