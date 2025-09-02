@@ -35,7 +35,7 @@ bool ReactNativeFeatureFlags::cdpInteractionMetricsEnabled() {
 }
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedEnabled() {
-  return getAccessor().cxxNativeAnimatedEnabled();
+  return true;
 }
 
 bool ReactNativeFeatureFlags::cxxNativeAnimatedRemoveJsSync() {
@@ -287,7 +287,7 @@ bool ReactNativeFeatureFlags::useShadowNodeStateOnClone() {
 }
 
 bool ReactNativeFeatureFlags::useSharedAnimatedBackend() {
-  return getAccessor().useSharedAnimatedBackend();
+  return true;
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {
