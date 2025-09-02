@@ -1,0 +1,151 @@
+diff --git a/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp b/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+index 87e4f130ac..b5e002da73 100644
+--- a/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
++++ b/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp
+@@ -631,6 +631,8 @@ double ReanimatedModuleProxy::getCssTimestamp() {
+ 
+ void ReanimatedModuleProxy::performOperations() {
+   ReanimatedSystraceSection s("ReanimatedModuleProxy::performOperations");
++  
++  return;
+ 
+   auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
+   for (const auto surfaceId : flushRequestsCopy) {
+@@ -1102,6 +1104,78 @@ void ReanimatedModuleProxy::performOperations() {
+   viewStylesRepository_->clearNodesCache();
+ }
+ 
++AnimationMutations ReanimatedModuleProxy::performOperationsForBackend() {
++  ReanimatedSystraceSection s("ReanimatedModuleProxy::performOperationsForBackend");
++
++  auto flushRequestsCopy = std::move(layoutAnimationFlushRequests_);
++  for (const auto surfaceId : flushRequestsCopy) {
++    uiManager_->getShadowTreeRegistry().visit(
++        surfaceId, [](const ShadowTree &shadowTree) {
++          shadowTree.notifyDelegatesOfUpdates();
++        });
++  }
++
++  jsi::Runtime &rt =
++      workletsModuleProxy_->getUIWorkletRuntime()->getJSIRuntime();
++
++  UpdatesBatch updatesBatch;
++  {
++    ReanimatedSystraceSection s2("ReanimatedModuleProxy::flushUpdates");
++
++    auto lock = updatesRegistryManager_->lock();
++
++    if (shouldUpdateCssAnimations_) {
++      currentCssTimestamp_ = getAnimationTimestamp_();
++      auto lock = cssTransitionsRegistry_->lock();
++      // Update CSS transitions and flush updates
++      cssTransitionsRegistry_->update(currentCssTimestamp_);
++      cssTransitionsRegistry_->flushUpdates(updatesBatch);
++    }
++
++    {
++      auto lock = animatedPropsRegistry_->lock();
++      // Flush all animated props updates
++      animatedPropsRegistry_->flushUpdates(updatesBatch);
++    }
++
++    if (shouldUpdateCssAnimations_) {
++      auto lock = cssAnimationsRegistry_->lock();
++      // Update CSS animations and flush updates
++      cssAnimationsRegistry_->update(currentCssTimestamp_);
++      cssAnimationsRegistry_->flushUpdates(updatesBatch);
++    }
++
++    shouldUpdateCssAnimations_ = false;
++
++//    if ((updatesBatch.size() > 0) &&
++//        updatesRegistryManager_->shouldReanimatedSkipCommit()) {
++//      updatesRegistryManager_->pleaseCommitAfterPause();
++//    }
++  }
++
++//  if (updatesRegistryManager_->shouldReanimatedSkipCommit()) {
++//    // It may happen that `performOperations` is called on the UI thread
++//    // while React Native tries to commit a new tree on the JS thread.
++//    // In this case, we should skip the commit here and let React Native do
++//    // it. The commit will include the current values from the updates manager
++//    // which will be applied in ReanimatedCommitHook.
++//    return;
++//  }
++
++//  commitUpdates(rt, updatesBatch);
++
++  // Clear the entire cache after the commit
++  // (we don't know if the view is updated from outside of Reanimated
++  // so we have to clear the entire cache)
++//  viewStylesRepository_->clearNodesCache();
++  
++  AnimationMutations mutations;
++  for (auto& [node, dynamic]: updatesBatch){
++    mutations.push_back(AnimationMutation{node->getTag(), dynamic["opacity"].asDouble()});
++  }
++  return mutations;
++}
++
+ void ReanimatedModuleProxy::requestFlushRegistry() {
+   requestRender_([weakThis = weak_from_this()](const double timestamp) {
+     if (auto strongThis = weakThis.lock()) {
+@@ -1115,6 +1189,7 @@ void ReanimatedModuleProxy::commitUpdates(
+     const UpdatesBatch &updatesBatch) {
+   ReanimatedSystraceSection s("ReanimatedModuleProxy::commitUpdates");
+   react_native_assert(uiManager_ != nullptr);
++  auto animationBackend = uiManager_->getAnimationBackend();
+   const auto &shadowTreeRegistry = uiManager_->getShadowTreeRegistry();
+ 
+   std::unordered_map<SurfaceId, PropsMap> propsMapBySurface;
+@@ -1261,6 +1336,20 @@ void ReanimatedModuleProxy::initializeFabric(
+     const std::shared_ptr<UIManager> &uiManager) {
+   uiManager_ = uiManager;
+   viewStylesRepository_->setUIManager(uiManager_);
++  requestRender_=[this](std::function<void(const double)> callback){
++    backendCallbacks_.push_back(callback);
++    if (backendCallbacks_.size() == 1){
++      uiManager_->getAnimationBackend()->start([this](double timestamp){
++        uiManager_->getAnimationBackend()->stop();
++        auto copy = std::move(backendCallbacks_);
++        for (auto& callback: copy){
++          callback(timestamp);
++        }
++        
++        return performOperationsForBackend();
++      });
++    }
++  };
+ 
+   initializeLayoutAnimationsProxy();
+ 
+diff --git a/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h b/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+index 6b633e9008..1b574f58e2 100644
+--- a/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
++++ b/packages/react-native-reanimated/Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h
+@@ -28,6 +28,7 @@
+ 
+ #include <react/renderer/core/ShadowNode.h>
+ #include <react/renderer/uimanager/UIManager.h>
++#include <react/renderer/animationbackend/AnimationBackend.h>
+ 
+ #include <memory>
+ #include <set>
+@@ -114,6 +115,7 @@ class ReanimatedModuleProxy
+   double getCssTimestamp();
+ 
+   void performOperations();
++        AnimationMutations performOperationsForBackend();
+ 
+   void setViewStyle(
+       jsi::Runtime &rt,
+@@ -217,7 +219,8 @@ class ReanimatedModuleProxy
+   std::shared_ptr<WorkletsModuleProxy> workletsModuleProxy_;
+ 
+   std::unique_ptr<EventHandlerRegistry> eventHandlerRegistry_;
+-  const RequestRenderFunction requestRender_;
++  RequestRenderFunction requestRender_;
++        std::vector<std::function<void(const double)>> backendCallbacks_;
+   std::vector<std::shared_ptr<jsi::Value>> frameCallbacks_;
+   volatile bool renderRequested_{false};
+   std::function<void(const double)> onRenderCallback_;
