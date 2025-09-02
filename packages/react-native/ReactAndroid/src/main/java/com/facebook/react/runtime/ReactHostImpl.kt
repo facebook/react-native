@@ -365,6 +365,7 @@ public class ReactHostImpl(
   override fun setDevMenuConfiguration(config: DevMenuConfiguration) {
     devSupportManager.devMenuEnabled = config.isDevMenuEnabled
     devSupportManager.shakeGestureEnabled = config.isShakeGestureEnabled
+    devSupportManager.keyboardShortcutsEnabled = config.areKeyboardShortcutsEnabled
   }
 
   /**

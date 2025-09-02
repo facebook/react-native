@@ -73,6 +73,7 @@ internal class RNTesterActivity : ReactActivity() {
       val devMenuConfiguration = DevMenuConfiguration(
         isDevMenuEnabled = true,
         isShakeGestureEnabled = false,
+        areKeyboardShortcutsEnabled = false,
       )
       reactHost.setDevMenuConfiguration(devMenuConfiguration)
     }

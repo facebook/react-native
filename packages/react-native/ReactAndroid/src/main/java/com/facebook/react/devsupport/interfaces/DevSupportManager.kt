@@ -39,6 +39,8 @@ public interface DevSupportManager : JSExceptionHandler {
 
   public var shakeGestureEnabled: Boolean
 
+  public var keyboardShortcutsEnabled: Boolean
+
   public var devSupportEnabled: Boolean
 
   public fun showNewJavaError(message: String?, e: Throwable)

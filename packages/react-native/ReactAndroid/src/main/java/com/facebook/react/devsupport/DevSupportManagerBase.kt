@@ -144,6 +144,12 @@ public abstract class DevSupportManagerBase(
       }
     }
 
+  final override var keyboardShortcutsEnabled: Boolean
+    get() = areKeyboardShortcutsEnabled
+    set(areKeyboardShortcutsEnabled) {
+      this.areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled
+    }
+
   override val sourceMapUrl: String
     get() = jsAppBundleName?.let { devServerHelper.getSourceMapUrl(it) } ?: ""
 
@@ -189,6 +195,7 @@ public abstract class DevSupportManagerBase(
   private var isDevSupportEnabled = false
   private var isDevMenuEnabled = true
   private var isShakeGestureEnabled = true
+  private var areKeyboardShortcutsEnabled = true
   private var isPackagerConnected = false
   private val errorCustomizers: MutableList<ErrorCustomizer> = mutableListOf()
   private var packagerLocationCustomizer: PackagerLocationCustomizer? = null

@@ -80,6 +80,10 @@ public open class ReleaseDevSupportManager : DevSupportManager {
     get() = false
     @Suppress("UNUSED_PARAMETER") set(isShakeGestureEnabled: Boolean): Unit = Unit
 
+  public override var keyboardShortcutsEnabled: Boolean
+    get() = false
+    @Suppress("UNUSED_PARAMETER") set(areKeyboardShortcutsEnabled: Boolean): Unit = Unit
+
   public override val devSettings: DeveloperSettings?
     get() = null
 
