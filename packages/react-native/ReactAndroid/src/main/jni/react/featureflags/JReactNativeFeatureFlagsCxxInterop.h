@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dae981c66bf0751fd2863937ecf255d8>>
+ * @generated SignedSource<<57f2dcf4b71512c6b15e8021258d6036>>
  */
 
 /**
@@ -184,6 +184,12 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useFabricInterop(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useNativeEqualsInNativeReadableArrayAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useNativeTransformHelperAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(

@@ -115,6 +115,11 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;
 
+  static Transform resolveTransform(
+      const Size& frameSize,
+      const Transform& transform,
+      const TransformOrigin& transformOrigin);
+
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const override;
 #endif

@@ -21,6 +21,10 @@ class NativeArray : public jni::HybridClass<NativeArray> {
 
   jni::local_ref<jstring> toString();
 
+  const folly::dynamic& getArray() const {
+    return array_;
+  }
+
   RN_EXPORT folly::dynamic consume();
 
   // Whether this array has been added to another array or map and no longer

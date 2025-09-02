@@ -8,10 +8,12 @@
 package com.facebook.react.uimanager
 
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 public object TransformHelper {
 
@@ -69,6 +71,14 @@ public object TransformHelper {
       transformOrigin: ReadableArray?,
       allowPercentageResolution: Boolean
   ) {
+    if (allowPercentageResolution &&
+        ReactNativeFeatureFlags.useNativeTransformHelperAndroid() &&
+        transforms is NativeArray &&
+        transformOrigin is NativeArray?) {
+      nativeProcessTransform(transforms, result, viewWidth, viewHeight, transformOrigin)
+      return
+    }
+
     val helperMatrix = helperMatrix.get()!!
     MatrixMathHelper.resetIdentityMatrix(result)
     val offsets =
@@ -220,4 +230,13 @@ public object TransformHelper {
 
     return doubleArrayOf(newTranslateX, newTranslateY, newTranslateZ)
   }
+
+  @JvmStatic
+  private external fun nativeProcessTransform(
+      transforms: NativeArray,
+      result: DoubleArray,
+      viewWidth: Float,
+      viewHeight: Float,
+      transformOrigin: NativeArray?
+  )
 }

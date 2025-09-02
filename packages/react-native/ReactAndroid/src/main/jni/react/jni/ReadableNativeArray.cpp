@@ -40,10 +40,16 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
   return jarray;
 }
 
+bool ReadableNativeArray::equals(
+    jni::alias_ref<ReadableNativeArray::javaobject> other) {
+  return array_ == other->cthis()->array_;
+}
+
 void ReadableNativeArray::registerNatives() {
   registerHybrid({
       makeNativeMethod("importArray", ReadableNativeArray::importArray),
       makeNativeMethod("importTypeArray", ReadableNativeArray::importTypeArray),
+      makeNativeMethod("nativeEquals", ReadableNativeArray::equals),
   });
 }
 
