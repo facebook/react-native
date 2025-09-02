@@ -106,10 +106,10 @@ function readGeneratedAutolinkingOutput(
     'build/generated/autolinking/autolinking.json',
   );
   if (fs.existsSync(autolinkingGeneratedPath)) {
-    /* $FlowFixMe */
+    // $FlowFixMe[unsupported-syntax]
     return require(autolinkingGeneratedPath);
   } else {
-    console.warn(
+    codegenLog(
       `Could not find generated autolinking output at: ${autolinkingGeneratedPath}`,
     );
     return null;
@@ -125,10 +125,10 @@ function readReactNativeConfig(
   if (autolinkingOutput) {
     return autolinkingOutput;
   } else if (fs.existsSync(rnConfigFilePath)) {
-    /* $FlowFixMe */
+    // $FlowFixMe[unsupported-syntax]
     return require(rnConfigFilePath);
   } else {
-    console.warn(`Could not find React Native config at: ${rnConfigFilePath}`);
+    codegenLog(`Could not find React Native config at: ${rnConfigFilePath}`);
     return {};
   }
 }
