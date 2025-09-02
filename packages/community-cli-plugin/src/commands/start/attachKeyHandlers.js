@@ -10,11 +10,11 @@
 
 import type {TerminalReporter} from 'metro';
 
+import {compatibleStyleText} from '../../utils/styleConfig';
 import OpenDebuggerKeyboardHandler from './OpenDebuggerKeyboardHandler';
 import invariant from 'invariant';
 import readline from 'readline';
 import {ReadStream} from 'tty';
-import {compatibleStyleText} from '../../utils/styleConfig';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -29,14 +29,6 @@ const throttle = (callback: () => void, timeout: number) => {
       callback();
     }
   };
-};
-
-type KeyEvent = {
-  sequence: string,
-  name: string,
-  ctrl: boolean,
-  meta: boolean,
-  shift: boolean,
 };
 
 export default function attachKeyHandlers({

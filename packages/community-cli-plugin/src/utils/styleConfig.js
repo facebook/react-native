@@ -8,8 +8,9 @@
  * @format
  */
 
+import type {BackgroundColors, ForegroundColors, Modifiers} from 'util';
+
 import { styleText } from 'util';
-import type { ForegroundColors, BackgroundColors, Modifiers } from 'util';
 
 export function compatibleStyleText(
   text: string,
