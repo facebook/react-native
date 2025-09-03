@@ -12,7 +12,6 @@
 
 const dotslash = require('fb-dotslash');
 const {promises: fs} = require('fs');
-// $FlowFixMe[untyped-import] TODO: add types for jsonc-parser
 const {applyEdits, modify, parse} = require('jsonc-parser');
 const os = require('os');
 const path = require('path');
