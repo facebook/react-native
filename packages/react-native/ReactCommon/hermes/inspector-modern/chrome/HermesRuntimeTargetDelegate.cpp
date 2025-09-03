@@ -50,9 +50,10 @@ class HermesRuntimeSamplingProfileDelegate {
   }
 
   tracing::RuntimeSamplingProfile collectSamplingProfile() {
+    sampling_profiler::Profile profile{{}, {}};
+    hermesRuntime_->dumpSampledTraceToProfile(profile);
     return tracing::HermesRuntimeSamplingProfileSerializer::
-        serializeToTracingSamplingProfile(
-            hermesRuntime_->dumpSampledTraceToProfile());
+        serializeToTracingSamplingProfile(std::move(profile));
   }
 
  private:
