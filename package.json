@@ -57,6 +57,7 @@
     "@expo/spawn-async": "^1.7.2",
     "@jest/create-cache-key-function": "^29.7.0",
     "@microsoft/api-extractor": "^7.52.2",
+    "@octokit/rest": "^22.0.0",
     "@react-native/metro-babel-transformer": "0.82.0-main",
     "@react-native/metro-config": "0.82.0-main",
     "@tsconfig/node22": "22.0.2",
