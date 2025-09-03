@@ -45,23 +45,23 @@ RCT_EXPORT_METHOD(show)
     __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong RCTLogBox *strongSelf = weakSelf;
-      if (!strongSelf) {
+      if (strongSelf == nullptr) {
         return;
       }
 
-      if (strongSelf->_view) {
+      if (strongSelf->_view != nullptr) {
         [strongSelf->_view show];
         return;
       }
 
-      if (strongSelf->_bridgelessSurfacePresenter) {
+      if (strongSelf->_bridgelessSurfacePresenter != nullptr) {
         strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                  surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
         [strongSelf->_view show];
       }
 #ifndef RCT_FIT_RM_OLD_RUNTIME
-      else if (strongSelf->_bridge && strongSelf->_bridge.valid) {
-        if (strongSelf->_bridge.surfacePresenter) {
+      else if ((strongSelf->_bridge != nullptr) && strongSelf->_bridge.valid) {
+        if (strongSelf->_bridge.surfacePresenter != nullptr) {
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
                                                    surfacePresenter:strongSelf->_bridge.surfacePresenter];
         } else {
@@ -80,7 +80,7 @@ RCT_EXPORT_METHOD(hide)
     __weak RCTLogBox *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
       __strong RCTLogBox *strongSelf = weakSelf;
-      if (!strongSelf) {
+      if (strongSelf == nullptr) {
         return;
       }
       [strongSelf->_view setHidden:YES];
