@@ -16,26 +16,20 @@ namespace facebook::react {
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
     : contextContainer_(std::move(contextContainer)) {
-  if (contextContainer_ != nullptr) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->registerCommitHook(*this);
-    }
+  if (auto uiManagerCommitHookManager =
+          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
+              std::string(UIManagerCommitHookManagerKey));
+      uiManagerCommitHookManager.has_value()) {
+    (*uiManagerCommitHookManager)->registerCommitHook(*this);
   }
 }
 
 ImageFetcher::~ImageFetcher() {
-  if (contextContainer_ != nullptr) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
-    }
+  if (auto uiManagerCommitHookManager =
+          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
+              std::string(UIManagerCommitHookManagerKey));
+      uiManagerCommitHookManager.has_value()) {
+    (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
   }
 }
 
