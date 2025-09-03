@@ -20,7 +20,6 @@ const {
 const {
   FIRST_PARTY_DOTSLASH_FILES,
 } = require('./write-dotslash-release-asset-urls');
-// $FlowFixMe[untyped-import] TODO: add types for @octokit/rest
 const {Octokit} = require('@octokit/rest');
 const nullthrows = require('nullthrows');
 const path = require('path');
@@ -28,11 +27,9 @@ const {parseArgs} = require('util');
 
 /*::
 import type {DotSlashProvider, DotSlashHttpProvider, DotSlashArtifactInfo} from './utils/dotslash-utils';
+import type {IOctokit} from './utils/octokit-utils';
 
-// $FlowFixMe[unclear-type] TODO: add types for @octokit/rest
-type OctokitInstance = any;
-
-type GitHubReleaseAsset = {id: number, ...};
+type GitHubReleaseAsset = {id: string, ...};
 type ReleaseAssetMap = $ReadOnlyMap<string, GitHubReleaseAsset>;
 
 type ReleaseInfo = $ReadOnly<{
@@ -138,7 +135,7 @@ async function getReleaseAssetMap(
   {releaseId} /*: {
   releaseId: string,
 } */,
-  octokit /*: OctokitInstance */,
+  octokit /*: IOctokit */,
 ) /*: Promise<ReleaseAssetMap> */ {
   const existingAssets = await octokit.repos.listReleaseAssets({
     owner: 'facebook',
@@ -157,7 +154,7 @@ async function uploadReleaseAssetsForDotSlashFile(
   filename /*: string */,
   releaseInfo /*: ReleaseInfo */,
   executionOptions /*: ExecutionOptions */,
-  octokit /*: OctokitInstance */,
+  octokit /*: IOctokit */,
 ) /*: Promise<void> */ {
   const fullPath = path.resolve(REPO_ROOT, filename);
   console.log(`Uploading assets for ${filename}...`);
@@ -201,7 +198,7 @@ async function fetchUpstreamAssetAndUploadToRelease(
 } */,
   releaseInfo /*: ReleaseInfo */,
   executionOptions /*: ExecutionOptions */,
-  octokit /*: OctokitInstance */,
+  octokit /*: IOctokit */,
 ) {
   const targetReleaseAssetInfo = providers
     .map(provider => parseReleaseAssetInfo(provider, releaseInfo.releaseTag))
@@ -297,7 +294,7 @@ async function maybeDeleteExistingReleaseAsset(
 }
 */,
   {dryRun} /*: ExecutionOptions */,
-  octokit /*: OctokitInstance */,
+  octokit /*: IOctokit */,
 ) /*: Promise<void> */ {
   if (!existingAsset) {
     return;
@@ -357,7 +354,7 @@ async function uploadAndVerifyReleaseAsset(
   dotslashFilename: string,
 }
 */,
-  octokit /*: OctokitInstance */,
+  octokit /*: IOctokit */,
 ) /*: Promise<void> */ {
   console.log(`[${name}] Uploading to release...`);
   const {

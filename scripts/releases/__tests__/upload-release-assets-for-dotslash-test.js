@@ -32,9 +32,11 @@ expect.addSnapshotSerializer(removeAnsiColors);
 expect.addSnapshotSerializer(removeCurlPaths);
 
 const mockAssets: Array<{
-  id: number,
+  id: string,
   ...
 }> = [];
+
+let nextAssetId = 1;
 
 const octokit = {
   repos: {
@@ -51,7 +53,10 @@ const octokit = {
       mockAssets.splice(index, 1);
     }),
     uploadReleaseAsset: jest.fn().mockImplementation(() => {
-      const assetId = Math.max(...mockAssets.map(asset => asset.id)) + 1;
+      let assetId;
+      do {
+        assetId = String(nextAssetId++);
+      } while (mockAssets.some(asset => asset.id === assetId));
       mockAssets.push({
         id: assetId,
       });
@@ -158,7 +163,7 @@ describe('uploadReleaseAssetsForDotSlashFile', () => {
 
   test('skips uploading the asset if already present', async () => {
     mockAssets.push({
-      id: 1,
+      id: '1',
       name: 'test.tar.gz',
     });
     await uploadReleaseAssetsForDotSlashFile(
@@ -182,7 +187,7 @@ describe('uploadReleaseAssetsForDotSlashFile', () => {
 
   test('deletes and reuploads the asset if force is true', async () => {
     mockAssets.push({
-      id: 1,
+      id: '1',
       name: 'test.tar.gz',
     });
     await uploadReleaseAssetsForDotSlashFile(
@@ -230,7 +235,7 @@ describe('uploadReleaseAssetsForDotSlashFile', () => {
 
   test('does not overwrite an existing asset if dryRun is true', async () => {
     mockAssets.push({
-      id: 1,
+      id: '1',
       name: 'test.tar.gz',
     });
     await uploadReleaseAssetsForDotSlashFile(
@@ -256,7 +261,7 @@ describe('uploadReleaseAssetsForDotSlashFile', () => {
     octokit.repos.uploadReleaseAsset.mockImplementationOnce(async () => {
       return {
         data: {
-          id: 1,
+          id: '1',
           browser_download_url: `https://github.com/facebook/react-native/releases/download/untagged-0b602d8af97c6d3b784c/test-renamed.tar.gz`,
         },
       };

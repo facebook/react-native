@@ -27,7 +27,7 @@ exports[`uploadReleaseAssetsForDotSlashFile deletes and reuploads the asset if f
 Array [
   Array [
     Object {
-      "asset_id": 1,
+      "asset_id": "1",
       "owner": "facebook",
       "repo": "react-native",
     },
