@@ -591,17 +591,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'experimental',
     },
-    releaseImageDataWhenConsumed: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-07-10',
-        description:
-          'Releases the cached image data when it is consumed by the observers.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
       metadata: {

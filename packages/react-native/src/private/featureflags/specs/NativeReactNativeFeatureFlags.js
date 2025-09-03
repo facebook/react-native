@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d699b7dc91fce5814db79d7f19ba511>>
+ * @generated SignedSource<<1e6f17de0ebb06a085d4cc563df1e32b>>
  * @flow strict
  * @noformat
  */
@@ -76,7 +76,6 @@ export interface Spec extends TurboModule {
   +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
-  +releaseImageDataWhenConsumed?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +sweepActiveTouchOnChildNativeGesturesAndroid?: () => boolean;

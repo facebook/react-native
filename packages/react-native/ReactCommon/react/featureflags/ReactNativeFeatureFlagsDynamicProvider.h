@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d89b539d4473bdc88ea28ea7deacde39>>
+ * @generated SignedSource<<027cef9dd44f14a71be7c0d1b90238b3>>
  */
 
 /**
@@ -502,15 +502,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
-  }
-
-  bool releaseImageDataWhenConsumed() override {
-    auto value = values_["releaseImageDataWhenConsumed"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::releaseImageDataWhenConsumed();
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1285e1c404d7a9554a5285ac3dc63cd1>>
+ * @generated SignedSource<<5f9c3ecf7887653fd5348a05391ab7d0>>
  */
 
 /**
@@ -228,10 +228,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool preventShadowTreeCommitExhaustion() override {
-    return false;
-  }
-
-  bool releaseImageDataWhenConsumed() override {
     return false;
   }
 
