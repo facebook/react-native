@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83c1c5b181d47f4a54cb097f8d31c48a>>
+ * @generated SignedSource<<3321d357fe5c74fa42c2d0b15a744f87>>
  */
 
 /**
@@ -293,11 +293,6 @@ class ReactNativeFeatureFlags {
    * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
    */
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
-
-  /**
-   * Releases the cached image data when it is consumed by the observers.
-   */
-  RN_EXPORT static bool releaseImageDataWhenConsumed();
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
