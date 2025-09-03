@@ -487,11 +487,13 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * <p>Subclasses can override this method to implement custom resource prefetching for the
    * ViewManager.
    *
+   * @param surfaceId surface ID
    * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
    * @param params {@link MapBuffer} prefetch request params defined in C++
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResources(ReactContext reactContext, MapBuffer params) {
+  public void experimental_prefetchResources(
+      int surfaceId, ReactContext reactContext, MapBuffer params) {
     return;
   }
 
