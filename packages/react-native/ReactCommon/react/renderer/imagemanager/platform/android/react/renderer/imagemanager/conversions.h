@@ -34,8 +34,7 @@ constexpr MapBuffer::Key IS_KEY_FADE_DURATION = 11;
 constexpr MapBuffer::Key IS_KEY_PROGRESSIVE_RENDERING_ENABLED = 12;
 constexpr MapBuffer::Key IS_KEY_LOADING_INDICATOR_SRC = 13;
 constexpr MapBuffer::Key IS_KEY_ANALYTIC_TAG = 14;
-constexpr MapBuffer::Key IS_KEY_SURFACE_ID = 15;
-constexpr MapBuffer::Key IS_KEY_TAG = 16;
+constexpr MapBuffer::Key IS_KEY_TAG = 15;
 
 inline void serializeImageSource(
     MapBufferBuilder& builder,
@@ -85,7 +84,6 @@ inline MapBuffer serializeImageRequest(const ImageRequestItem& item) {
   auto builder = MapBufferBuilder();
   serializeImageSource(builder, item.imageSource);
   serializeImageRequestParams(builder, item.imageRequestParams);
-  builder.putInt(IS_KEY_SURFACE_ID, item.surfaceId);
   builder.putInt(IS_KEY_TAG, item.tag);
   return builder.build();
 }

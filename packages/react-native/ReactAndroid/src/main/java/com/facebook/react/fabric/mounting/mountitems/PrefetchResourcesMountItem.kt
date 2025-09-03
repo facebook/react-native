@@ -7,28 +7,29 @@
 
 package com.facebook.react.fabric.mounting.mountitems
 
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 import com.facebook.react.fabric.mounting.MountingManager
 
 internal class PrefetchResourcesMountItem(
-    private val reactApplicationContext: ReactApplicationContext,
+    private val surfaceId: Int,
     private val componentName: String,
     private val params: ReadableMapBuffer,
 ) : MountItem {
 
   @OptIn(UnstableReactNativeAPI::class, FrameworkAPI::class)
   override fun execute(mountingManager: MountingManager) {
-    mountingManager.experimental_prefetchResources(
-        reactApplicationContext,
-        componentName,
-        params,
-    )
+    mountingManager
+        .getSurfaceManager(surfaceId)
+        ?.experimental_prefetchResources(
+            surfaceId,
+            componentName,
+            params,
+        )
   }
 
-  override fun getSurfaceId(): Int = -1 /* unused */
+  override fun getSurfaceId(): Int = surfaceId
 
   override fun toString(): String = "PrefetchResourcesMountItem"
 }

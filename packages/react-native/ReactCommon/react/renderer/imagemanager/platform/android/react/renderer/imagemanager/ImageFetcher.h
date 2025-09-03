@@ -13,6 +13,8 @@
 #include <react/renderer/mounting/ShadowTree.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/utils/ContextContainer.h>
+#include <unordered_map>
+#include <vector>
 
 namespace facebook::react {
 
@@ -43,7 +45,7 @@ class ImageFetcher : public UIManagerCommitHook {
       const ShadowTree::CommitOptions& commitOptions) noexcept override;
 
  private:
-  std::vector<ImageRequestItem> items_;
+  std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react
