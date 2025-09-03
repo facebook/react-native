@@ -1244,6 +1244,13 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
+"@expo/spawn-async@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@expo/spawn-async/-/spawn-async-1.7.2.tgz#fcfe66c3e387245e72154b1a7eae8cada6a47f58"
+  integrity sha512-QdWi16+CHB9JYP7gma19OVVg0BFkvU8zNj9GjWorYI8Iv8FUxjOCcYRuAmX4s/h91e4e7BPsskc8cSrZYho9Ew==
+  dependencies:
+    cross-spawn "^7.0.3"
+
 "@fastify/busboy@^2.0.0":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
