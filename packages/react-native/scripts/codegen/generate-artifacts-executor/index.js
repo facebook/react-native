@@ -86,10 +86,14 @@ function execute(
       buildCodegenIfNeeded();
     }
 
-    const reactNativeConfig = readReactNativeConfig(projectRoot);
+    const reactNativeConfig = readReactNativeConfig(
+      projectRoot,
+      baseOutputPath,
+    );
     const codegenEnabledLibraries = findCodegenEnabledLibraries(
       pkgJson,
       projectRoot,
+      baseOutputPath,
       reactNativeConfig,
     );
 
