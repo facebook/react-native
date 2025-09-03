@@ -516,6 +516,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
         .writeBasicBlockProfileTraceToFile(fileName);
   }
 
+  void dumpOpcodeStats(std::ostream& os) const override {
+    const_cast<Plain&>(plain()).instrumentation().dumpOpcodeStats(os);
+  }
+
   /// Dump external profiler symbols to the given file name.
   void dumpProfilerSymbolsToFile(const std::string& fileName) const override {
     const_cast<Plain&>(plain()).instrumentation().dumpProfilerSymbolsToFile(
