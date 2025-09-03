@@ -11,6 +11,7 @@
 
 struct SHUnit;
 struct SHRuntime;
+using SHUnitCreator = SHUnit* (*)();
 namespace hermes::vm {
 class GCExecTrace;
 }
@@ -131,7 +132,7 @@ class JSI_EXPORT IHermes : public jsi::ICast {
   /// Associate the SHUnit returned by \p shUnitCreator with this runtime and
   /// run its initialization code. The unit will be freed when the runtime is
   /// destroyed.
-  virtual jsi::Value evaluateSHUnit(SHUnit* (*shUnitCreator)()) = 0;
+  virtual jsi::Value evaluateSHUnit(SHUnitCreator shUnitCreator) = 0;
 
   /// Retrieve the underlying SHRuntime.
   virtual SHRuntime* getSHRuntime() noexcept = 0;
@@ -144,5 +145,24 @@ class JSI_EXPORT IHermes : public jsi::ICast {
 
  protected:
   ~IHermes() = default;
+};
+
+/// Interface for provide Hermes backend specific methods.
+class IHermesSHUnit : public jsi::ICast {
+ public:
+  static constexpr jsi::UUID uuid{
+      0x52a2d522,
+      0xcbc6,
+      0x4236,
+      0x8d5d,
+      0x2636c320ed65,
+  };
+
+  /// Get the unit creating function pointer which can be passed to
+  /// evaluateSHUnit() for evaluation.
+  virtual SHUnitCreator getSHUnitCreator() const = 0;
+
+ protected:
+  ~IHermesSHUnit() = default;
 };
 } // namespace facebook::hermes
