@@ -445,7 +445,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
 
             events.emplace_back(TraceEvent{
                 .id = eventId,
-                .name = std::move(event.name),
+                .name = event.name,
                 .cat = "blink.user_timing",
                 .ph = 'b',
                 .ts = event.start,
