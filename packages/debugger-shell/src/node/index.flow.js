@@ -152,11 +152,7 @@ function getShellBinaryAndArgs(
 ): [string, Array<string>] {
   switch (flavor) {
     case 'prebuilt':
-      return [
-        // $FlowFixMe[cannot-resolve-module] fb-dotslash includes Flow types but Flow does not pick them up
-        require('fb-dotslash'),
-        [DEVTOOLS_BINARY_DOTSLASH_FILE],
-      ];
+      return [require('fb-dotslash'), [DEVTOOLS_BINARY_DOTSLASH_FILE]];
     case 'dev':
       return [
         // NOTE: Internally at Meta, this is aliased to a workspace that is
