@@ -48,7 +48,6 @@ const Drawer = () => {
 
   return (
     <DrawerLayoutAndroid
-      /* $FlowFixMe */
       ref={drawer}
       accessibilityRole="drawerlayout"
       drawerWidth={300}

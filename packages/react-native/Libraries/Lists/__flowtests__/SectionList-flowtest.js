@@ -102,7 +102,6 @@ export function testBadSectionsShape(): React.MixedElement {
       ],
     },
   ];
-  // $FlowExpectedError - section missing `data` field
   return <SectionList renderItem={renderMyListItem} sections={sections} />;
 }
 
