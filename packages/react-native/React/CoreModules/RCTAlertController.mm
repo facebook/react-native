@@ -27,7 +27,7 @@
       _alertWindow = [[UIWindow alloc] initWithFrame:UIScreen.mainScreen.bounds];
     }
 
-    if (_alertWindow) {
+    if (_alertWindow != nullptr) {
       _alertWindow.rootViewController = [UIViewController new];
       _alertWindow.windowLevel = UIWindowLevelAlert + 1;
     }
@@ -41,7 +41,7 @@
   UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
   if (style == UIUserInterfaceStyleUnspecified) {
     UIUserInterfaceStyle overriddenStyle = RCTKeyWindow().overrideUserInterfaceStyle;
-    style = overriddenStyle ? overriddenStyle : UIUserInterfaceStyleUnspecified;
+    style = (overriddenStyle != 0) ? overriddenStyle : UIUserInterfaceStyleUnspecified;
   }
 
   self.overrideUserInterfaceStyle = style;
