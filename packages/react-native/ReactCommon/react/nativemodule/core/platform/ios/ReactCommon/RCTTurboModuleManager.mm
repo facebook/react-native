@@ -775,8 +775,12 @@ typedef struct {
   if ([module respondsToSelector:@selector(initialize)]) {
     [(id<RCTInitializing>)module initialize];
   }
+  
+#if RCT_DEV_MENU
 
   [_devMenuConfigurationDecorator decorate:module];
+
+#endif
 
   /**
    * Attach method queue to id<RCTBridgeModule> object.

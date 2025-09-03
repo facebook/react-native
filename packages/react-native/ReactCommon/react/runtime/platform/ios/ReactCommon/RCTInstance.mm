@@ -150,7 +150,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
     _devMenuConfigurationDecorator =
+#if RCT_DEV_MENU
         [[RCTDevMenuConfigurationDecorator alloc] initWithDevMenuConfiguration:devMenuConfiguration];
+#else
+        nil;
+#endif
 
     _parentInspectorTarget = parentInspectorTarget;
     {
@@ -333,7 +337,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
                                                                  jsInvoker:jsCallInvoker
-                                                      devMenuConfigurationDecorator:_devMenuConfigurationDecorator];
+                                             devMenuConfigurationDecorator:_devMenuConfigurationDecorator];
 
 #if RCT_DEV
   /**

@@ -12,15 +12,12 @@
 #import <React/RCTBridgeProxy.h>
 #import <React/RCTDefines.h>
 
-#if RCT_DEV_MENU
-
 RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 
-#endif
-
-@class RCTDevMenuItem;
-
 @interface RCTDevMenuConfiguration : NSObject
+
+#if RCT_DEV_MENU
+
 @property (nonatomic, readonly) BOOL isDevMenuEnabled;
 @property (nonatomic, readonly) BOOL isShakeGestureEnabled;
 @property (nonatomic, readonly) BOOL areKeyboardShortcutsEnabled;
@@ -28,7 +25,12 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 - (instancetype)initWithDevMenuEnabled:(BOOL)isDevMenuEnabled
                    shakeGestureEnabled:(BOOL)isShakeGestureEnabled
               keyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled;
+
+#endif
+
 @end
+
+@class RCTDevMenuItem;
 
 /**
  * Developer menu, useful for exposing extra functionality when debugging.

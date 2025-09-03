@@ -6,6 +6,9 @@
  */
 
 #import <RCTDevMenuConfigurationDecorator.h>
+
+#if RCT_DEV_MENU
+
 #import <React/RCTDevSettings.h>
 
 @implementation RCTDevMenuConfigurationDecorator
@@ -41,3 +44,13 @@
 }
 
 @end
+
+#else
+
+@implementation RCTDevMenuConfigurationDecorator : NSObject
+
+@end
+
+#endif
+
+

@@ -8,8 +8,14 @@
 #import <React/RCTDevMenu.h>
 
 @interface RCTDevMenuConfigurationDecorator : NSObject
+
+#if RCT_DEV_MENU
+
 @property (nonatomic, strong, readonly) RCTDevMenuConfiguration *devMenuConfiguration;
 
-- (instancetype)initWithDevMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration;
+- (instancetype)initWithDevMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
 - (void)decorate:(RCTDevMenu *)devMenuModule;
+
+#endif
+
 @end
