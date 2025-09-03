@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(setTextAndSelection
     RCTExecuteOnUIManagerQueue(^{
       RCTBaseTextInputShadowView *shadowView =
           (RCTBaseTextInputShadowView *)[self.bridge.uiManager shadowViewForReactTag:viewTag];
-      if (value) {
+      if (value != nullptr) {
         [shadowView setText:value];
       }
       [self.bridge.uiManager setNeedsLayout];
