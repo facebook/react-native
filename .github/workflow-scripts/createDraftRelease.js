@@ -118,7 +118,7 @@ async function createDraftRelease(version, latest, token) {
     version = version.substring(1);
   }
 
-  _verifyTagExists(version);
+  // _verifyTagExists(version);
   moveToChangelogBranch(version);
   const changelog = _extractChangelog(version);
   const body = _computeBody(version, changelog);
