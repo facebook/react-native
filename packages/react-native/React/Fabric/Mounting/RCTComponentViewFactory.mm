@@ -132,18 +132,18 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
 
   // Fallback 1: Call provider function for component view class.
   Class<RCTComponentViewProtocol> klass = RCTComponentViewClassWithName(name.c_str());
-  if (klass) {
+  if (klass != nullptr) {
     [self registerComponentViewClass:klass];
     return;
   }
 
   // Fallback 2: Ask the provider and check in the dictionary provided
-  if (self.thirdPartyFabricComponentsProvider) {
+  if (self.thirdPartyFabricComponentsProvider != nullptr) {
     // Test whether a provider has been passed to avoid potentially expensive conversions
     // between C++ and ObjC strings.
     NSString *objcName = [NSString stringWithCString:name.c_str() encoding:NSUTF8StringEncoding];
     klass = self.thirdPartyFabricComponentsProvider.thirdPartyFabricComponents[objcName];
-    if (klass) {
+    if (klass != nullptr) {
       [self registerComponentViewClass:klass];
       return;
     }
