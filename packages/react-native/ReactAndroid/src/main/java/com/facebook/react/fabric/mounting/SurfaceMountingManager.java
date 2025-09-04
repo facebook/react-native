@@ -10,6 +10,7 @@ package com.facebook.react.fabric.mounting;
 import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 
+import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -30,7 +31,9 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.mounting.MountingManager.MountItemExecutor;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
@@ -694,6 +697,25 @@ public class SurfaceMountingManager {
 
     Assertions.assertNotNull(viewState.mViewManager)
         .updateProperties(view, viewState.mCurrentProps);
+  }
+
+  /**
+   * This prefetch method is experimental, do not use it for production code. it will most likely
+   * change or be removed in the future.
+   *
+   * @param surfaceId surface ID
+   * @param componentName
+   * @param params prefetch request params defined in C++
+   */
+  @SuppressLint("FunctionName")
+  @AnyThread
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, MapBuffer params) {
+    mViewManagerRegistry
+        .get(componentName)
+        .experimental_prefetchResources(
+            surfaceId, Assertions.assertNotNull(mThemedReactContext), params);
   }
 
   @Deprecated

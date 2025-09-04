@@ -2607,3 +2607,35 @@ describe('horizontal ScrollView in RTL script', () => {
     ]);
   });
 });
+
+describe('Views with no layout', () => {
+  it('are not culled', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID={'viewWithLayout'} style={{height: 100, width: 100}} />
+          <View style={{height: 1000, width: 100}} />
+          <View
+            nativeID={'culledViewWithLayout'}
+            style={{height: 100, width: 100}}
+          />
+          <View nativeID={'viewWithoutLayout'} style={{height: 0, width: 0}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "viewWithLayout"}',
+      'Create {type: "View", nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "viewWithLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 1, nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+});

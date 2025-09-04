@@ -65,6 +65,7 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
+import com.facebook.react.fabric.mounting.mountitems.PrefetchResourcesMountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
@@ -984,9 +985,17 @@ public class FabricUIManager
    * by an ImageView.
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResources(String componentName, ReadableMapBuffer params) {
-    mMountingManager.experimental_prefetchResources(
-        mReactApplicationContext, componentName, params);
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, ReadableMapBuffer params) {
+    if (ReactNativeFeatureFlags.enableImagePrefetchingOnUiThreadAndroid()) {
+      mMountItemDispatcher.addMountItem(
+          new PrefetchResourcesMountItem(surfaceId, componentName, params));
+    } else {
+      SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+      if (surfaceMountingManager != null) {
+        surfaceMountingManager.experimental_prefetchResources(surfaceId, componentName, params);
+      }
+    }
   }
 
   void setBinding(FabricUIManagerBinding binding) {

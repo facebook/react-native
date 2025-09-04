@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<594815ba6a984c460ab8bddd91c5cae2>>
+ * @generated SignedSource<<9a18369464f81c3d03f2702716dfdb29>>
  */
 
 /**
@@ -48,6 +48,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableIOSTextBaselineOffsetPerLineCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableImagePrefetchingOnUiThreadAndroidCache: Boolean? = null
   private var enableImmediateUpdateModeForContentOffsetChangesCache: Boolean? = null
   private var enableInteropViewManagerClassLookUpOptimizationIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
@@ -56,7 +57,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableModuleArgumentNSNullConversionIOSCache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNetworkEventReportingCache: Boolean? = null
-  private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResourceTimingAPICache: Boolean? = null
@@ -75,7 +75,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
-  private var releaseImageDataWhenConsumedCache: Boolean? = null
   private var shouldPressibilityUseW3CPointerEventsForHoverCache: Boolean? = null
   private var skipActivityIdentityAssertionOnHostPauseCache: Boolean? = null
   private var sweepActiveTouchOnChildNativeGesturesAndroidCache: Boolean? = null
@@ -334,6 +333,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean {
+    var cached = enableImagePrefetchingOnUiThreadAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableImagePrefetchingOnUiThreadAndroid()
+      accessedFeatureFlags.add("enableImagePrefetchingOnUiThreadAndroid")
+      enableImagePrefetchingOnUiThreadAndroidCache = cached
+    }
+    return cached
+  }
+
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean {
     var cached = enableImmediateUpdateModeForContentOffsetChangesCache
     if (cached == null) {
@@ -410,16 +419,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableNetworkEventReporting()
       accessedFeatureFlags.add("enableNetworkEventReporting")
       enableNetworkEventReportingCache = cached
-    }
-    return cached
-  }
-
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean {
-    var cached = enableNewBackgroundAndBorderDrawablesCache
-    if (cached == null) {
-      cached = currentProvider.enableNewBackgroundAndBorderDrawables()
-      accessedFeatureFlags.add("enableNewBackgroundAndBorderDrawables")
-      enableNewBackgroundAndBorderDrawablesCache = cached
     }
     return cached
   }
@@ -600,16 +599,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.preventShadowTreeCommitExhaustion()
       accessedFeatureFlags.add("preventShadowTreeCommitExhaustion")
       preventShadowTreeCommitExhaustionCache = cached
-    }
-    return cached
-  }
-
-  override fun releaseImageDataWhenConsumed(): Boolean {
-    var cached = releaseImageDataWhenConsumedCache
-    if (cached == null) {
-      cached = currentProvider.releaseImageDataWhenConsumed()
-      accessedFeatureFlags.add("releaseImageDataWhenConsumed")
-      releaseImageDataWhenConsumedCache = cached
     }
     return cached
   }

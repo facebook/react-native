@@ -119,19 +119,19 @@ describe('mode changes', () => {
 });
 
 describe('styles', () => {
-  test('does not set height when visible', () => {
+  test('does not set styles when visible', () => {
     const root = Fantom.createRoot();
 
     Fantom.runTask(() => {
       root.render(<VirtualView />);
     });
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualView />);
   });
 
-  test('does not set height when prerendered', () => {
+  test('does not set styles when prerendered', () => {
     const root = Fantom.createRoot();
     const viewRef = createRef<React.RefOf<VirtualView>>();
 
@@ -141,12 +141,12 @@ describe('styles', () => {
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Prerender);
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualView />);
   });
 
-  test('sets height when hidden', () => {
+  test('sets styles when hidden', () => {
     const root = Fantom.createRoot();
     const viewRef = createRef<React.RefOf<VirtualView>>();
 
@@ -156,9 +156,9 @@ describe('styles', () => {
 
     dispatchModeChangeEvent(viewRef.current, VirtualViewMode.Hidden);
 
-    expect(root.getRenderedOutput({props: ['height']}).toJSX()).toEqual(
-      <rn-virtualView height="100.000000" />,
-    );
+    expect(
+      root.getRenderedOutput({props: ['minHeight', 'minWidth']}).toJSX(),
+    ).toEqual(<rn-virtualView minHeight="100.000000" minWidth="100.000000" />);
   });
 });
 

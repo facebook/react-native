@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<12a06ea04fc09c34f1fbdcbdf6046d81>>
+ * @generated SignedSource<<9a538d3ebb58173e7e4e34453b71454b>>
  */
 
 /**
@@ -122,6 +122,10 @@ bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
+  return getAccessor().enableImagePrefetchingOnUiThreadAndroid();
+}
+
 bool ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges() {
   return getAccessor().enableImmediateUpdateModeForContentOffsetChanges();
 }
@@ -152,10 +156,6 @@ bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
 
 bool ReactNativeFeatureFlags::enableNetworkEventReporting() {
   return getAccessor().enableNetworkEventReporting();
-}
-
-bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
-  return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
 bool ReactNativeFeatureFlags::enablePreparedTextLayout() {
@@ -228,10 +228,6 @@ double ReactNativeFeatureFlags::preparedTextCacheSize() {
 
 bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion() {
   return getAccessor().preventShadowTreeCommitExhaustion();
-}
-
-bool ReactNativeFeatureFlags::releaseImageDataWhenConsumed() {
-  return getAccessor().releaseImageDataWhenConsumed();
 }
 
 bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {

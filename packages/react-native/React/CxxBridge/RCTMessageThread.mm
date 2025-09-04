@@ -66,7 +66,7 @@ void RCTMessageThread::runSync(std::function<void()> func)
 void RCTMessageThread::tryFunc(const std::function<void()> &func)
 {
   NSError *error = tryAndReturnError(func);
-  if (error) {
+  if (error != nullptr) {
     m_errorBlock(error);
   }
 }

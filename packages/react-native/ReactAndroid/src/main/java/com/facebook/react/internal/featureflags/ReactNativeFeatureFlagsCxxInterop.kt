@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a0453230524ebca2bfb8fad656a6f54a>>
+ * @generated SignedSource<<9c0acc876e3205fe2ea181e71eb512c9>>
  */
 
 /**
@@ -76,6 +76,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
@@ -91,8 +93,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableNativeCSSParsing(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableNetworkEventReporting(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
@@ -129,8 +129,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun preparedTextCacheSize(): Double
 
   @DoNotStrip @JvmStatic public external fun preventShadowTreeCommitExhaustion(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun releaseImageDataWhenConsumed(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 

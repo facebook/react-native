@@ -17,7 +17,7 @@
 
 - (instancetype)init
 {
-  if (!(self = [super init])) {
+  if ((self = [super init]) == nullptr) {
     return nil;
   }
   _touchHandler = [RCTSurfaceTouchHandler new];
@@ -61,7 +61,7 @@
 {
   UIInterfaceOrientationMask appSupportedOrientationsMask =
       [RCTSharedApplication() supportedInterfaceOrientationsForWindow:RCTKeyWindow()];
-  if (!(_supportedInterfaceOrientations & appSupportedOrientationsMask)) {
+  if ((_supportedInterfaceOrientations & appSupportedOrientationsMask) == 0u) {
     RCTLogError(
         @"Modal was presented with 0x%x orientations mask but the application only supports 0x%x."
         @"Add more interface orientations to your app's Info.plist to fix this."

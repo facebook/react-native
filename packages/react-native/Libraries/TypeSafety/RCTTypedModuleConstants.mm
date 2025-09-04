@@ -16,7 +16,7 @@
 + (instancetype)newWithUnsafeDictionary:(NSDictionary<NSString *, id> *)dictionary
 {
   _RCTTypedModuleConstants *constants = [self new];
-  if (constants) {
+  if (constants != nullptr) {
     constants->_dictionary = dictionary;
   }
   return constants;

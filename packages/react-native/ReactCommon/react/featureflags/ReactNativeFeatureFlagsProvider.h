@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<feb44bb7ec97d29787eac070103f9e1b>>
+ * @generated SignedSource<<a78e171b87f70a1b2ab0de2f9e48012b>>
  */
 
 /**
@@ -49,6 +49,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableIOSTextBaselineOffsetPerLine() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableImagePrefetchingAndroid() = 0;
+  virtual bool enableImagePrefetchingOnUiThreadAndroid() = 0;
   virtual bool enableImmediateUpdateModeForContentOffsetChanges() = 0;
   virtual bool enableInteropViewManagerClassLookUpOptimizationIOS() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
@@ -57,7 +58,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableModuleArgumentNSNullConversionIOS() = 0;
   virtual bool enableNativeCSSParsing() = 0;
   virtual bool enableNetworkEventReporting() = 0;
-  virtual bool enableNewBackgroundAndBorderDrawables() = 0;
   virtual bool enablePreparedTextLayout() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableResourceTimingAPI() = 0;
@@ -76,7 +76,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool perfMonitorV2Enabled() = 0;
   virtual double preparedTextCacheSize() = 0;
   virtual bool preventShadowTreeCommitExhaustion() = 0;
-  virtual bool releaseImageDataWhenConsumed() = 0;
   virtual bool shouldPressibilityUseW3CPointerEventsForHover() = 0;
   virtual bool skipActivityIdentityAssertionOnHostPause() = 0;
   virtual bool sweepActiveTouchOnChildNativeGesturesAndroid() = 0;

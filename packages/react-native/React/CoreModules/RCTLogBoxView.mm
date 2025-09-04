@@ -19,7 +19,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-  if ((self = [super initWithFrame:frame])) {
+  if ((self = [super initWithFrame:frame]) != nullptr) {
     self.windowLevel = UIWindowLevelStatusBar - 1;
     self.backgroundColor = [UIColor clearColor];
   }

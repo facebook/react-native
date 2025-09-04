@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da22f4c43e3bdcd999e3dd1dd5896c63>>
+ * @generated SignedSource<<1e6f17de0ebb06a085d4cc563df1e32b>>
  * @flow strict
  * @noformat
  */
@@ -49,6 +49,7 @@ export interface Spec extends TurboModule {
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImagePrefetchingOnUiThreadAndroid?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
@@ -57,7 +58,6 @@ export interface Spec extends TurboModule {
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
-  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
@@ -76,7 +76,6 @@ export interface Spec extends TurboModule {
   +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
-  +releaseImageDataWhenConsumed?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +sweepActiveTouchOnChildNativeGesturesAndroid?: () => boolean;

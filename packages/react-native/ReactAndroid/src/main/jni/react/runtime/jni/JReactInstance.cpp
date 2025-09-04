@@ -168,12 +168,6 @@ JReactInstance::getNativeMethodCallInvokerHolder() {
   return nativeMethodCallInvokerHolder_;
 }
 
-jni::global_ref<JJSTimerExecutor::javaobject>
-JReactInstance::createJSTimerExecutor(
-    jni::alias_ref<jhybridobject> /* unused */) {
-  return jni::make_global(JJSTimerExecutor::newObjectCxxArgs());
-}
-
 void JReactInstance::callFunctionOnModule(
     const std::string& moduleName,
     const std::string& methodName,
@@ -217,8 +211,6 @@ void JReactInstance::unregisterFromInspector() {
 void JReactInstance::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", JReactInstance::initHybrid),
-      makeNativeMethod(
-          "createJSTimerExecutor", JReactInstance::createJSTimerExecutor),
       makeNativeMethod(
           "loadJSBundleFromAssets", JReactInstance::loadJSBundleFromAssets),
       makeNativeMethod(
