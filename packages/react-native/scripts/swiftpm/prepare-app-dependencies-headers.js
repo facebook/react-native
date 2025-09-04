@@ -12,6 +12,10 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/*::
+type RequiredHeaders = 'react-native' | 'codegen' | 'third-party-dependencies' | 'all';
+*/
+
 /**
  * Prepares app dependencies headers for SwiftPM integration
  * @param {string} reactNativePath - Path to the React Native directory
@@ -20,11 +24,11 @@ const path = require('path');
  * @param {string} requiredHeaders - Type of headers to include: 'react-native', 'codegen', 'third-party-dependencies', or 'all'
  */
 function prepareAppDependenciesHeaders(
-  reactNativePath,
-  iosAppPath,
-  outputFolder,
-  requiredHeaders,
-) {
+  reactNativePath /*: string */,
+  iosAppPath /*: string */,
+  outputFolder /*: string */,
+  requiredHeaders /*: RequiredHeaders */,
+) /*: void */ {
   // Validate parameters
   if (!reactNativePath || !iosAppPath || !outputFolder || !requiredHeaders) {
     throw new Error(
@@ -99,10 +103,10 @@ function prepareAppDependenciesHeaders(
  * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
 function hardlinkReactNativeHeaders(
-  reactNativePath,
-  outputFolder,
-  folderName = 'headers',
-) {
+  reactNativePath /*: string */,
+  outputFolder /*: string */,
+  folderName /*: string */ = 'headers',
+) /*: void */ {
   console.log('Creating hard links for React Native headers...');
 
   const headersOutput = path.join(outputFolder, folderName);
@@ -215,12 +219,12 @@ function hardlinkReactNativeHeaders(
  * @returns {number} Number of hard links created
  */
 function hardlinkHeadersFromPath(
-  sourcePath,
-  outputPath,
-  preserveStructure,
-  excludeFolders,
-  customMappings = {},
-) {
+  sourcePath /*: string */,
+  outputPath /*: string */,
+  preserveStructure /*: boolean */,
+  excludeFolders /*: Array<string> */,
+  customMappings /*: {[string]: string} */ = {},
+) /*: number */ {
   let linkedCount = 0;
 
   try {
@@ -299,7 +303,10 @@ function hardlinkHeadersFromPath(
  * @param {string} headersOutput - Base headers output directory
  * @returns {number} Number of hard links created
  */
-function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
+function hardlinkReactAppleHeaders(
+  reactApplePath /*: string */,
+  headersOutput /*: string */,
+) /*: number */ {
   let linkedCount = 0;
 
   console.log(`Searching for headers in: ${reactApplePath}`);
@@ -393,11 +400,11 @@ function hardlinkReactAppleHeaders(reactApplePath, headersOutput) {
  * @returns {number} Number of hard links created
  */
 function hardlinkReactCommonHeaders(
-  reactCommonPath,
-  headersOutput,
-  flattenPaths = [],
-  specialMapping = {},
-) {
+  reactCommonPath /*: string */,
+  headersOutput /*: string */,
+  flattenPaths /*: Array<string> */ = [],
+  specialMapping /*: {[string]: string} */ = {},
+) /*: number */ {
   let linkedCount = 0;
 
   console.log(`Searching for headers in: ${reactCommonPath}`);
@@ -600,10 +607,10 @@ function hardlinkReactCommonHeaders(
  * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
  */
 function hardlinkThirdPartyDependenciesHeaders(
-  reactNativePath,
-  outputFolder,
-  folderName = 'headers',
-) {
+  reactNativePath /*: string */,
+  outputFolder /*: string */,
+  folderName /*: string */ = 'headers',
+) /*: void */ {
   console.log('Creating hard links for Third-Party Dependencies headers...');
 
   // Look for ReactNativeDependencies.xcframework/Headers folder specifically
@@ -679,7 +686,11 @@ function hardlinkThirdPartyDependenciesHeaders(
 /**
  * Create hard links for Codegen headers in the output folder
  */
-function hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder) {
+function hardlinkCodegenHeaders(
+  reactNativePath /*: string */,
+  iosAppPath /*: string */,
+  outputFolder /*: string */,
+) /*: void */ {
   console.log('Creating hard links for Codegen headers...');
 
   // Look for ReactCodegen folder specifically
