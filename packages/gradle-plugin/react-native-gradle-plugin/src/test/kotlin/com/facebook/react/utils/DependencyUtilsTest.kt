@@ -271,11 +271,13 @@ class DependencyUtilsTest {
         .isEqualTo(2)
   }
 
+  // TODO: T236767053
+
   @Test
   fun configureDependencies_withEmptyVersion_doesNothing() {
     val project = createProject()
 
-    configureDependencies(project, "")
+    configureDependencies(project, DependencyUtils.Coordinates("", ""))
 
     assertThat(project.configurations.first().resolutionStrategy.forcedModules.isEmpty()).isTrue()
   }
@@ -284,7 +286,7 @@ class DependencyUtilsTest {
   fun configureDependencies_withVersionString_appliesResolutionStrategy() {
     val project = createProject()
 
-    configureDependencies(project, "1.2.3")
+    configureDependencies(project, DependencyUtils.Coordinates("1.2.3", "1.2.3"))
 
     val forcedModules = project.configurations.first().resolutionStrategy.forcedModules
     assertThat(forcedModules.any { it.toString() == "com.facebook.react:react-android:1.2.3" })
@@ -301,7 +303,7 @@ class DependencyUtilsTest {
     appProject.plugins.apply("com.android.application")
     libProject.plugins.apply("com.android.library")
 
-    configureDependencies(appProject, "1.2.3")
+    configureDependencies(appProject, DependencyUtils.Coordinates("1.2.3", "1.2.3"))
 
     val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
@@ -323,7 +325,10 @@ class DependencyUtilsTest {
     appProject.plugins.apply("com.android.application")
     libProject.plugins.apply("com.android.library")
 
-    configureDependencies(appProject, "1.2.3", "io.github.test")
+    configureDependencies(
+        appProject,
+        DependencyUtils.Coordinates("1.2.3", "1.2.3", "io.github.test"),
+    )
 
     val appForcedModules = appProject.configurations.first().resolutionStrategy.forcedModules
     val libForcedModules = libProject.configurations.first().resolutionStrategy.forcedModules
@@ -339,7 +344,8 @@ class DependencyUtilsTest {
 
   @Test
   fun getDependencySubstitutions_withDefaultGroup_substitutesCorrectly() {
-    val dependencySubstitutions = getDependencySubstitutions("0.42.0")
+    val dependencySubstitutions =
+        getDependencySubstitutions(DependencyUtils.Coordinates("0.42.0", "0.42.0"))
 
     assertThat("com.facebook.react:react-native").isEqualTo(dependencySubstitutions[0].first)
     assertThat("com.facebook.react:react-android:0.42.0")
@@ -359,7 +365,10 @@ class DependencyUtilsTest {
 
   @Test
   fun getDependencySubstitutions_withCustomGroup_substitutesCorrectly() {
-    val dependencySubstitutions = getDependencySubstitutions("0.42.0", "io.github.test")
+    val dependencySubstitutions =
+        getDependencySubstitutions(
+            DependencyUtils.Coordinates("0.42.0", "0.42.0", "io.github.test")
+        )
 
     assertThat("com.facebook.react:react-native").isEqualTo(dependencySubstitutions[0].first)
     assertThat("io.github.test:react-android:0.42.0").isEqualTo(dependencySubstitutions[0].second)
@@ -396,7 +405,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val versionString = readVersionAndGroupStrings(propertiesFile).first
+    val versionString = readVersionAndGroupStrings(propertiesFile).versionString
 
     assertThat(versionString).isEqualTo("1000.0.0")
   }
@@ -414,7 +423,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val versionString = readVersionAndGroupStrings(propertiesFile).first
+    val versionString = readVersionAndGroupStrings(propertiesFile).versionString
 
     assertThat(versionString).isEqualTo("0.0.0-20221101-2019-cfe811ab1-SNAPSHOT")
   }
@@ -431,7 +440,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val versionString = readVersionAndGroupStrings(propertiesFile).first
+    val versionString = readVersionAndGroupStrings(propertiesFile).versionString
     assertThat(versionString).isEqualTo("")
   }
 
@@ -448,7 +457,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val versionString = readVersionAndGroupStrings(propertiesFile).first
+    val versionString = readVersionAndGroupStrings(propertiesFile).versionString
     assertThat(versionString).isEqualTo("")
   }
 
@@ -465,7 +474,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val groupString = readVersionAndGroupStrings(propertiesFile).second
+    val groupString = readVersionAndGroupStrings(propertiesFile).reactGroupString
 
     assertThat(groupString).isEqualTo("io.github.test")
   }
@@ -482,7 +491,7 @@ class DependencyUtilsTest {
           )
         }
 
-    val groupString = readVersionAndGroupStrings(propertiesFile).second
+    val groupString = readVersionAndGroupStrings(propertiesFile).reactGroupString
 
     assertThat(groupString).isEqualTo("com.facebook.react")
   }
