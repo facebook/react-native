@@ -26,6 +26,13 @@ const {
 const fs = require('fs');
 const path = require('path');
 
+/*::
+type SwiftPackage = {
+  relativePath: string,
+  targets: Array<string>,
+};
+*/
+
 /**
  * Integrate Swift packages into Xcode project
  * @param {string} xcodeProjectPath - Path to the app.xcodeproj file
@@ -33,10 +40,10 @@ const path = require('path');
  * @param {string} appTargetName - Name of the app target
  */
 function integrateSwiftPackagesInXcode(
-  xcodeProjectPath,
-  packageSwiftObjects,
-  appTargetName,
-) {
+  xcodeProjectPath /*: string */,
+  packageSwiftObjects /*: Array<SwiftPackage> */,
+  appTargetName /*: string */,
+) /*: void */ {
   // Construct path to project.pbxproj
   const projectPbxprojPath = path.join(xcodeProjectPath, 'project.pbxproj');
 
