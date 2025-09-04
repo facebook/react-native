@@ -27,13 +27,20 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/*::
+type SwiftPackage = {
+  relativePath: string,
+  targets: Array<string>,
+};
+*/
+
 /**
  * Find the directory containing the Xcode project within the app path
  * @param {string} appPath - The root app path to search in
  * @param {string} xcodeProjectName - The name of the Xcode project file (e.g., 'HelloWorld.xcodeproj')
  * @returns {string} - The path to the directory containing the Xcode project
  */
-function findXcodeProjectDirectory(appPath, xcodeProjectName) {
+function findXcodeProjectDirectory(appPath /*: string */, xcodeProjectName /*: string */) /*: string */ {
   try {
     // Use find command to search for the Xcode project
     const findCommand = `find "${appPath}" -name "${xcodeProjectName}" -type d -print`;
@@ -62,12 +69,12 @@ function findXcodeProjectDirectory(appPath, xcodeProjectName) {
  * @param {string} targetName - Name of the app target (e.g., 'HelloWorld')
  */
 async function prepareApp(
-  appPath = '../../private/helloworld',
-  reactNativePath = '.',
-  appXcodeProject = 'HelloWorld.xcodeproj',
-  targetName = 'HelloWorld',
-  additionalPackages = [],
-) {
+  appPath /*: string */ = '../../private/helloworld',
+  reactNativePath /*: string */ = '.',
+  appXcodeProject /*: string */ = 'HelloWorld.xcodeproj',
+  targetName /*: string */ = 'HelloWorld',
+  additionalPackages /*: Array<SwiftPackage> */ = [],
+) /*: Promise<void> */ {
   console.log('🚀 Starting app preparation for SwiftPM build from source...');
 
   // Resolve absolute paths
@@ -165,7 +172,7 @@ async function prepareApp(
 /**
  * Run pod deintegrate from app directory
  */
-async function runPodDeintegrate(appIosPath) {
+async function runPodDeintegrate(appIosPath /*: string */) /*: Promise<void> */ {
   try {
     console.log(`Running pod deintegrate in: ${appIosPath}`);
     execSync('pod deintegrate', {
@@ -183,7 +190,7 @@ async function runPodDeintegrate(appIosPath) {
 /**
  * Run iOS prebuild with environment variables
  */
-async function runIosPrebuild(reactNativePath) {
+async function runIosPrebuild(reactNativePath /*: string */) /*: Promise<void> */ {
   console.log('Running iOS prebuild with nightly versions...');
 
   const env = {
@@ -207,7 +214,7 @@ async function runIosPrebuild(reactNativePath) {
 /**
  * Configure app for Swift integration
  */
-async function configureAppForSwift(reactNativePath) {
+async function configureAppForSwift(reactNativePath /*: string */) /*: Promise<void> */ {
   try {
     console.log('Configuring app for Swift integration...');
 
@@ -283,7 +290,7 @@ async function configureAppForSwift(reactNativePath) {
 /**
  * Set BUILD_FROM_SOURCE to true in Package.swift
  */
-async function setBuildFromSource(reactNativePath) {
+async function setBuildFromSource(reactNativePath /*: string */) /*: Promise<void> */ {
   const packageSwiftPath = path.join(reactNativePath, 'Package.swift');
 
   if (!fs.existsSync(packageSwiftPath)) {
@@ -322,7 +329,7 @@ async function setBuildFromSource(reactNativePath) {
 /**
  * Create hard links for React Native headers in React/includes
  */
-async function createHardlinks(reactNativePath) {
+async function createHardlinks(reactNativePath /*: string */) /*: Promise<void> */ {
   try {
     console.log('Creating hard links for React Native headers...');
     const reactIncludesPath = path.join(reactNativePath, 'React');
@@ -346,7 +353,7 @@ async function createHardlinks(reactNativePath) {
 /**
  * Generate codegen artifacts using the executor
  */
-async function generateCodegenArtifacts(reactNativePath, appPath, appIosPath) {
+async function generateCodegenArtifacts(reactNativePath /*: string */, appPath /*: string */, appIosPath /*: string */) /*: Promise<void> */ {
   try {
     console.log('Generating codegen artifacts...');
 
@@ -362,7 +369,7 @@ async function generateCodegenArtifacts(reactNativePath, appPath, appIosPath) {
 /**
  * Prepare app dependencies headers (3 separate calls)
  */
-async function prepareHeaders(reactNativePath, appIosPath) {
+async function prepareHeaders(reactNativePath /*: string */, appIosPath /*: string */) /*: Promise<void> */ {
   const outputFolder = path.join(
     appIosPath,
     'build',
@@ -417,10 +424,10 @@ async function prepareHeaders(reactNativePath, appIosPath) {
  * Fix REACT_NATIVE_PATH in Xcode project
  */
 async function fixReactNativePath(
-  appIosPath,
-  reactNativePath,
-  appXcodeProject,
-) {
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
   const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
 
   if (!fs.existsSync(projectPath)) {
@@ -451,7 +458,11 @@ async function fixReactNativePath(
         // Check if line also contains {PODS_ROOT}
         if (line.includes('{PODS_ROOT}')) {
           // Replace the whole line with the new path
-          const indentation = line.match(/^\s*/)[0]; // Preserve indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0]; // Preserve indentation
           modifiedLines.push(`${indentation}${newReactNativePathValue}`);
         } else {
           // Keep the line as is if it doesn't contain {PODS_ROOT}
@@ -473,7 +484,11 @@ async function fixReactNativePath(
         // Check if line contains buildSettings = {
         if (line.includes('buildSettings = {')) {
           // Add REACT_NATIVE_PATH on the next line with appropriate indentation
-          const indentation = line.match(/^\s*/)[0] + '\t'; // Add one more level of indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
           finalLines.push(`${indentation}${newReactNativePathValue}`);
         }
       }
@@ -496,7 +511,7 @@ async function fixReactNativePath(
 /**
  * Allow non-modular header imports in Xcode project
  */
-async function allowNonModularHeaderImport(appIosPath, appXcodeProject) {
+async function allowNonModularHeaderImport(appIosPath /*: string */, appXcodeProject /*: string */) /*: Promise<void> */ {
   const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
 
   if (!fs.existsSync(projectPath)) {
@@ -529,7 +544,11 @@ async function allowNonModularHeaderImport(appIosPath, appXcodeProject) {
         foundClangSetting = true;
 
         // Replace the whole line with the new setting
-        const indentation = line.match(/^\s*/)[0]; // Preserve indentation
+        const match = line.match(/^\s*/);
+        if (!match) {
+          continue;
+        }
+        const indentation = match[0]; // Preserve indentation
         modifiedLines.push(`${indentation}${newClangSettingValue}`);
       } else {
         modifiedLines.push(line);
@@ -547,7 +566,11 @@ async function allowNonModularHeaderImport(appIosPath, appXcodeProject) {
         // Check if line contains buildSettings = {
         if (line.includes('buildSettings = {')) {
           // Add CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES on the next line with appropriate indentation
-          const indentation = line.match(/^\s*/)[0] + '\t'; // Add one more level of indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
           finalLines.push(`${indentation}${newClangSettingValue}`);
         }
       }
@@ -573,13 +596,13 @@ async function allowNonModularHeaderImport(appIosPath, appXcodeProject) {
  * Integrate SwiftPM packages into Xcode project
  */
 async function integrateSwiftPMPackages(
-  appIosPath,
-  reactNativePath,
-  appPath,
-  appXcodeProject,
-  targetName,
-  additionalPackages,
-) {
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appXcodeProject /*: string */,
+  targetName /*: string */,
+  additionalPackages /*: Array<SwiftPackage> */,
+) /*: Promise<void> */ {
   try {
     console.log('Preparing SwiftPM package integrations...');
 
@@ -618,7 +641,7 @@ async function integrateSwiftPMPackages(
 /**
  * Open Xcode project
  */
-async function openXcodeProject(appIosPath, appXcodeProject) {
+async function openXcodeProject(appIosPath /*: string */, appXcodeProject /*: string */) /*: Promise<void> */ {
   const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
 
   if (!fs.existsSync(xcodeProjectPath)) {
@@ -644,12 +667,13 @@ if (require.main === module) {
   let reactNativePath = '.';
   let appXcodeProject = 'HelloWorld.xcodeproj';
   let targetName = 'HelloWorld';
-  let additionalPackages = [];
+  let additionalPackages /*: Array<SwiftPackage> */= [];
 
   // try to load args from the swiftpm.config.js file that is
   // in the app directory. Assumption: this script is invoked from the app directory
   try {
     const configJSFile = path.join(process.cwd(), 'swiftpm.config.js');
+    // $FlowFixMe[unsupported-syntax]
     const swiftPMConfig = require(configJSFile);
 
     appPath = swiftPMConfig.appPath;

@@ -249,7 +249,7 @@ function hardlinkHeadersFromPath(
     headerFiles.forEach(sourceHeaderPath => {
       if (fs.existsSync(sourceHeaderPath)) {
         const relativePath = path.relative(sourcePath, sourceHeaderPath);
-        let destPath;
+        let destPath = '';
         let mappedOutputPath = outputPath;
 
         // Check for custom mappings first
@@ -340,7 +340,7 @@ function hardlinkReactAppleHeaders(
           component => component === 'Exported',
         );
 
-        let destPath;
+        let destPath = '';
         const headerName = path.basename(sourceHeaderPath);
 
         if (exportedIndex !== -1 && exportedIndex > 0) {
@@ -436,7 +436,7 @@ function hardlinkReactCommonHeaders(
         // Calculate relative path from ReactCommon base
         const relativePath = path.relative(reactCommonPath, sourceHeaderPath);
 
-        let destPath;
+        let destPath = '';
 
         // Check for ReactCommon/**/ReactCommon/header.h pattern
         // Since relativePath is calculated from ReactCommon base, any "ReactCommon" component
@@ -739,7 +739,7 @@ function hardlinkCodegenHeaders(
         // Calculate relative path from ReactCodegen base
         const relativePath = path.relative(reactCodegenPath, sourcePath);
 
-        let destPath;
+        let destPath /*: string */ = '';
 
         // If relative path contains no subpath (just a filename), put it in ReactCodegen folder
         if (path.dirname(relativePath) === '.') {
@@ -792,14 +792,23 @@ if (require.main === module) {
     process.exit(1);
   }
 
+  const extractRequiredHeadersValue = (value /*: string */) /*: RequiredHeaders */ => {
+    const validValues /*: Array<RequiredHeaders> */ = ['react-native', 'codegen', 'third-party-dependencies', 'all'];
+    if (!validValues.includes(value)) {
+      throw new Error(`Invalid required-headers value: ${value}`);
+    }
+    return value;
+  }
+
   const [reactNativePath, iosAppPath, outputFolder, requiredHeaders] = args;
+  const requiredHeadersEnum /*: RequiredHeaders */ = extractRequiredHeadersValue(requiredHeaders);
 
   try {
     prepareAppDependenciesHeaders(
       reactNativePath,
       iosAppPath,
       outputFolder,
-      requiredHeaders,
+      requiredHeadersEnum,
     );
   } catch (error) {
     console.error('Error:', error.message);
