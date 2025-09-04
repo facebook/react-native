@@ -116,7 +116,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                   UIBezierPath *path = [UIBezierPath
                                                       bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2)
                                                                    cornerRadius:2];
-                                                  if (highlightPath) {
+                                                  if (highlightPath != nullptr) {
                                                     [highlightPath appendPath:path];
                                                   } else {
                                                     highlightPath = path;
@@ -159,7 +159,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                            id attribute = [textStorage attribute:key
                                                                          atIndex:characterRange.location - 1
                                                                   effectiveRange:nil];
-                                           if (attribute) {
+                                           if (attribute != nullptr) {
                                              [textStorage addAttribute:key value:attribute range:characterRange];
                                            }
                                          }
@@ -303,7 +303,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                           inRange:characterRange
                           options:0
                        usingBlock:^(NSString *value, NSRange range, BOOL *pause) {
-                         if (!value) {
+                         if (value == nullptr) {
                            return;
                          }
 
@@ -399,7 +399,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                  inRange:NSMakeRange(0, textStorage.length)
                  options:0
               usingBlock:^(NSTextAttachment *attachment, NSRange range, BOOL *stop) {
-                if (!attachment) {
+                if (attachment == nullptr) {
                   return;
                 }
 
