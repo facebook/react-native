@@ -67,15 +67,6 @@ internal class RNTesterActivity : ReactActivity() {
     fullyDrawnReporter.addReporter()
     maybeUpdateBackgroundColor()
 
-    reactDelegate?.reactHost?.let { reactHost ->
-      val devMenuConfiguration = DevMenuConfiguration(
-        isDevMenuEnabled = true,
-        isShakeGestureEnabled = false,
-        areKeyboardShortcutsEnabled = false,
-      )
-      reactHost.setDevMenuConfiguration(devMenuConfiguration)
-    }
-
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system
     // bars
     reactDelegate?.reactRootView?.let { rootView ->
