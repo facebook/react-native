@@ -27,7 +27,6 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-
 /**
  * Find the directory containing the Xcode project within the app path
  * @param {string} appPath - The root app path to search in
