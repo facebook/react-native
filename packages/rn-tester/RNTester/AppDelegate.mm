@@ -44,12 +44,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
 
-  RCTDevMenuConfiguration *devMenuConfiguration = [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:true
-                                                                                      shakeGestureEnabled:false
-                                                                                 keyboardShortcutsEnabled:false];
-
-  [self.reactNativeFactory setDevMenuConfiguration:devMenuConfiguration];
-
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 
   [self.reactNativeFactory startReactNativeWithModuleName:@"RNTesterApp"
