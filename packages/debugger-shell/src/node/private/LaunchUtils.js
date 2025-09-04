@@ -44,11 +44,11 @@ async function spawnAndGetStderr(
 async function prepareDebuggerShellFromDotSlashFile(
   filePath: string,
 ): Promise<DebuggerShellPreparationResult> {
-  const {code, stderr} = await spawnAndGetStderr(
-    // $FlowFixMe[cannot-resolve-module] fb-dotslash includes Flow types but Flow does not pick them up
-    require('fb-dotslash'),
-    ['--', 'fetch', filePath],
-  );
+  const {code, stderr} = await spawnAndGetStderr(require('fb-dotslash'), [
+    '--',
+    'fetch',
+    filePath,
+  ]);
   if (code === 0) {
     return {code: 'success'};
   }
