@@ -128,25 +128,22 @@ public abstract class DevSupportManagerBase(
       reloadSettings()
     }
 
-  final override var devMenuEnabled: Boolean
-    get() = isDevMenuEnabled
-    set(isDevMenuEnabled) {
-      this.isDevMenuEnabled = isDevMenuEnabled
-    }
-
   final override var shakeGestureEnabled: Boolean
     get() = isShakeGestureEnabled
     set(isShakeGestureEnabled) {
-      this.isShakeGestureEnabled = isShakeGestureEnabled
-      if (!isShakeGestureEnabled && isShakeDetectorStarted) {
-        stopShakeDetector()
+      if (this.shakeGestureEnabled == isShakeGestureEnabled) {
+        return
       }
-    }
 
-  final override var keyboardShortcutsEnabled: Boolean
-    get() = areKeyboardShortcutsEnabled
-    set(areKeyboardShortcutsEnabled) {
-      this.areKeyboardShortcutsEnabled = areKeyboardShortcutsEnabled
+      if (isShakeDetectorStarted) {
+        if (isShakeGestureEnabled) {
+          startShakeDetector()
+        } else {
+          stopShakeDetector()
+        }
+      }
+
+      this.isShakeGestureEnabled = isShakeGestureEnabled
     }
 
   override val sourceMapUrl: String
@@ -192,9 +189,7 @@ public abstract class DevSupportManagerBase(
   private var isReceiverRegistered = false
   private var isShakeDetectorStarted = false
   private var isDevSupportEnabled = false
-  private var isDevMenuEnabled = true
   private var isShakeGestureEnabled = true
-  private var areKeyboardShortcutsEnabled = true
   private var isPackagerConnected = false
   private val errorCustomizers: MutableList<ErrorCustomizer> = mutableListOf()
   private var packagerLocationCustomizer: PackagerLocationCustomizer? = null
@@ -208,6 +203,9 @@ public abstract class DevSupportManagerBase(
 
   private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
   private var tracingStateProvider: TracingStateProvider? = null
+
+  public override var keyboardShortcutsEnabled: Boolean = true
+  public override var devMenuEnabled: Boolean = true
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -354,7 +352,7 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun showDevOptionsDialog() {
-    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey() || !isDevMenuEnabled) {
+    if (devOptionsDialog != null || !isDevSupportEnabled || ActivityManager.isUserAMonkey() || !devMenuEnabled) {
       return
     }
     val options = LinkedHashMap<String, DevOptionHandler>()
@@ -865,6 +863,13 @@ public abstract class DevSupportManagerBase(
     }
   }
 
+  private fun startShakeDetector() {
+    val sensorManager =
+      applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    shakeDetector.start(sensorManager)
+    isShakeDetectorStarted = true
+  }
+
   private fun stopShakeDetector() {
     shakeDetector.stop()
     isShakeDetectorStarted = false
@@ -880,10 +885,7 @@ public abstract class DevSupportManagerBase(
 
       // start shake gesture detector
       if (!isShakeDetectorStarted && isShakeGestureEnabled) {
-        val sensorManager =
-            applicationContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        shakeDetector.start(sensorManager)
-        isShakeDetectorStarted = true
+        startShakeDetector()
       }
 
       // register reload app broadcast receiver
