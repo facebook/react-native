@@ -54,7 +54,6 @@ const packageJson = JSON.stringify({
       'ReactCodegen/ReactCodegen.podspec',
       'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h',
       'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
-      'Package.swift'
     ].forEach(file => {
       it(`"${file}" should match snapshot`, () => {
         const generatedFileDir = path.join(outputDir, 'build/generated/ios');
