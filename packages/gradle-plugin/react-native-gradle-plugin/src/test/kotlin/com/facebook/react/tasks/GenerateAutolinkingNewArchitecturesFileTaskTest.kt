@@ -34,9 +34,9 @@ class GenerateAutolinkingNewArchitecturesFileTaskTest {
     val inputFile = tempFolder.newFile("config.json")
 
     val task =
-        createTestTask<GenerateAutolinkingNewArchitecturesFileTask> {
-          it.generatedOutputDirectory.set(outputFolder)
-          it.autolinkInputFile.set(inputFile)
+        createTestTask<GenerateAutolinkingNewArchitecturesFileTask> { task ->
+          task.generatedOutputDirectory.set(outputFolder)
+          task.autolinkInputFile.set(inputFile)
         }
 
     assertThat(task.generatedOutputDirectory.get().asFile).isEqualTo(outputFolder)
