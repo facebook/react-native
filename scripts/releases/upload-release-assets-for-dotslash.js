@@ -328,12 +328,12 @@ async function fetchAndValidateUpstreamAsset(
   console.log(`[${name}] Downloading from ${url}...`);
   // NOTE: Using curl because we have seen issues with fetch() on GHA
   // and the Meta CDN. ¯\_(ツ)_/¯
-  const {data, headers} = await getWithCurl(url);
+  const {data, contentType} = await getWithCurl(url);
   console.log(`[${name}] Validating download...`);
   await validateDotSlashArtifactData(data, artifactInfo);
   return {
     data,
-    contentType: headers['content-type']?.[0] ?? 'application/octet-stream',
+    contentType: contentType ?? 'application/octet-stream',
   };
 }
 

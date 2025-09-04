@@ -50,9 +50,7 @@ describe('getWithCurl', () => {
   test('success', async () => {
     await expect(getWithCurl(serverUrl)).resolves.toEqual({
       data: Buffer.from('Hello World\n'),
-      headers: expect.objectContaining({
-        'content-type': ['text/plain'],
-      }),
+      contentType: 'text/plain',
     });
   });
 

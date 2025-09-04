@@ -138,7 +138,7 @@ Array [
 ]
 `;
 
-exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is unreachable 1`] = `"curl --silent --location --output <CURL_TEMP_DIR>/data <serverUrl>/error --write-out %{header_json} --fail exited with non-zero code: 22"`;
+exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is unreachable 1`] = `"curl --silent --location --output <CURL_TEMP_DIR>/data <serverUrl>/error --write-out %{content_type} --fail exited with non-zero code: 22"`;
 
 exports[`uploadReleaseAssetsForDotSlashFile fails loudly if the upstream asset is unreachable: console.log calls 1`] = `
 Array [

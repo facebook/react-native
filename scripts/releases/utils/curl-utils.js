@@ -18,7 +18,7 @@ const path = require('path');
 /*::
 type CurlResult = {
   data: Buffer,
-  headers: {[string]: Array<string>},
+  contentType?: string,
 };
 */
 
@@ -37,14 +37,17 @@ async function getWithCurl(url /*: string */) /*: Promise<CurlResult> */ {
         tempFile,
         url,
         '--write-out',
-        '%{header_json}',
+        '%{content_type}',
         '--fail',
       ],
       {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']},
     );
     const data = await fs.readFile(tempFile);
-    const headers = JSON.parse(curlStdout);
-    return {data, headers};
+    const contentType = curlStdout.trim();
+    if (contentType === '') {
+      return {data};
+    }
+    return {data, contentType};
   } finally {
     await fs.rm(tempDir, {recursive: true, force: true});
   }
