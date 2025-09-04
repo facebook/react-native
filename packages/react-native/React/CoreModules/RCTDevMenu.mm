@@ -116,7 +116,6 @@ typedef void (^RCTDevMenuAlertActionHandler)(UIAlertAction *action);
 @synthesize moduleRegistry = _moduleRegistry;
 @synthesize callableJSModules = _callableJSModules;
 @synthesize bundleManager = _bundleManager;
-@synthesize isDevMenuEnabled = _isDevMenuEnabled;
 
 RCT_EXPORT_MODULE()
 
@@ -141,7 +140,9 @@ RCT_EXPORT_MODULE()
                                                  name:RCTShowDevMenuNotification
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
-
+    
+    _areKeyboardShortcutsEnabled = true;
+    _isDevMenuEnabled = true;
     [self registerHotkeys];
   }
   return self;
@@ -269,6 +270,17 @@ RCT_EXPORT_MODULE()
 - (void)addItem:(RCTDevMenuItem *)item
 {
   [_extraMenuItems addObject:item];
+}
+
+-(void)setAreKeyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled
+{
+  if (_areKeyboardShortcutsEnabled != areKeyboardShortcutsEnabled) {
+    [self setHotkeysEnabled:areKeyboardShortcutsEnabled];
+    
+    if (areKeyboardShortcutsEnabled == false) {
+      [self disableReloadCommand];
+    }
+  }
 }
 
 - (void)setDefaultJSBundle

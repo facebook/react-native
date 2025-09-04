@@ -11,8 +11,8 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
-#import <React/RCTLinkingManager.h>
 #import <React/RCTDevMenu.h>
+#import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
@@ -43,8 +43,10 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 #if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
-  
-  RCTDevMenuConfiguration *devMenuConfiguration = [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:true shakeGestureEnabled:false keyboardShortcutsEnabled:false];
+
+  RCTDevMenuConfiguration *devMenuConfiguration = [[RCTDevMenuConfiguration alloc] initWithDevMenuEnabled:true
+                                                                                      shakeGestureEnabled:false
+                                                                                 keyboardShortcutsEnabled:false];
 
   [self.reactNativeFactory setDevMenuConfiguration:devMenuConfiguration];
 

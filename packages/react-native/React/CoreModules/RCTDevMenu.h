@@ -63,6 +63,11 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
 @property (nonatomic, assign) BOOL isDevMenuEnabled;
 
 /**
+ * Whether keyboard shortcuts are enabled.
+ */
+@property (nonatomic, assign) BOOL areKeyboardShortcutsEnabled;
+
+/**
  * Presented items in development menu
  */
 @property (nonatomic, copy, readonly) NSArray<RCTDevMenuItem *> *presentedItems;

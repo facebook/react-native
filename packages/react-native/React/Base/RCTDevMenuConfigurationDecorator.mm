@@ -24,22 +24,19 @@
 
 - (void)decorate:(id<RCTBridgeModule>)bridgeModule
 {
+  if (_devMenuConfiguration == nil) {
+    return;
+  }
+  
   if ([bridgeModule isKindOfClass:[RCTDevMenu class]]) {
     RCTDevMenu *devMenu = (RCTDevMenu *)bridgeModule;
     devMenu.isDevMenuEnabled = _devMenuConfiguration.isDevMenuEnabled;
-
-    if (_devMenuConfiguration.areKeyboardShortcutsEnabled == false) {
-      if ([devMenu hotkeysEnabled]) {
-        [devMenu setHotkeysEnabled:_devMenuConfiguration.areKeyboardShortcutsEnabled];
-      }
-
-      [devMenu disableReloadCommand];
-    }
+    devMenu.areKeyboardShortcutsEnabled = _devMenuConfiguration.areKeyboardShortcutsEnabled;
   }
 
   if ([bridgeModule isKindOfClass:[RCTDevSettings class]]) {
     RCTDevSettings *devSettings = (RCTDevSettings *)bridgeModule;
-    [devSettings setIsShakeToShowDevMenuEnabled:_devMenuConfiguration.isShakeGestureEnabled];
+    devSettings.isShakeGestureEnabled = _devMenuConfiguration.isShakeGestureEnabled;
   }
 }
 
