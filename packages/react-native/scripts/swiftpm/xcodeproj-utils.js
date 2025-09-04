@@ -45,7 +45,9 @@ function generateXcodeObjectId() /*: string */ {
  * @param {string} projectPath - Path to the project.pbxproj file
  * @returns {Object} Parsed JSON object of the Xcode project
  */
-function convertXcodeProjectToJSON(projectPath /*: string */) /*: XcodeProject */ {
+function convertXcodeProjectToJSON(
+  projectPath /*: string */,
+) /*: XcodeProject */ {
   const command = `plutil -convert json -o - "${projectPath}"`;
   const jsonOutput = execSync(command, {encoding: 'utf8'});
   return JSON.parse(jsonOutput);
@@ -58,7 +60,10 @@ function convertXcodeProjectToJSON(projectPath /*: string */) /*: XcodeProject *
  * @param {string} projectPath - Path to the project.pbxproj file
  * @returns {string} Text representation of the project.pbxproj file
  */
-function updateXcodeProject(xcodeProjectJSON /*: XcodeProject */, projectPath /*: string */) /*: string */ {
+function updateXcodeProject(
+  xcodeProjectJSON /*: XcodeProject */,
+  projectPath /*: string */,
+) /*: string */ {
   let textualProject = fs.readFileSync(projectPath, {encoding: 'utf8'});
 
   // Group the objects in the JSON by their isa type
@@ -200,7 +205,12 @@ function deintegrateSwiftPM(xcodeProject /*: XcodeProject */) /*: void */ {
  * @param {Object} xcodeProject - The xcode project converted in JSON format
  * @param {string} targetName - The name of the target to add dependencies to
  */
-function addLocalSwiftPM(relativePath /*: string */, productNames /*: Array<string> */, xcodeProject /*: XcodeProject */, targetName /*: string */) /*: void */ {
+function addLocalSwiftPM(
+  relativePath /*: string */,
+  productNames /*: Array<string> */,
+  xcodeProject /*: XcodeProject */,
+  targetName /*: string */,
+) /*: void */ {
   // For the relative path: create XCLocalSwiftPackageReference
   const packageReferenceId = generateXcodeObjectId();
   xcodeProject.objects[packageReferenceId] = {
@@ -270,15 +280,19 @@ function addLocalSwiftPM(relativePath /*: string */, productNames /*: Array<stri
  * @param {Object} xcodeProjectJSON - The JSON representation of the Xcode project
  * @returns {string} Updated textual project the sections that needs to be rewritten.
  */
-function updateProjectFile(textualProject /*: string */, xcodeProjectJSON /*: XcodeProject */, objectsByIsa /*: {[string]: {[string]: XcodeObject}} */) /*: string */ {
+function updateProjectFile(
+  textualProject /*: string */,
+  xcodeProjectJSON /*: XcodeProject */,
+  objectsByIsa /*: {[string]: {[string]: XcodeObject}} */,
+) /*: string */ {
   let workingProject = textualProject;
 
-  const sectionsToRewrite /*: {[string]: (objectId: string, objectData: XcodeObject, allObjects: {[string]: XcodeObject}) => string} */ = {
-    PBXBuildFile: printPBXBuildFile,
-    XCLocalSwiftPackageReference: printXCLocalSwiftPackageReference,
-    XCSwiftPackageProductDependency: printXCSwiftPackageProductDependency,
-
-  };
+  const sectionsToRewrite /*: {[string]: (objectId: string, objectData: XcodeObject, allObjects: {[string]: XcodeObject}) => string} */ =
+    {
+      PBXBuildFile: printPBXBuildFile,
+      XCLocalSwiftPackageReference: printXCLocalSwiftPackageReference,
+      XCSwiftPackageProductDependency: printXCSwiftPackageProductDependency,
+    };
 
   // Track which sections exist and which need to be added
   const sectionsToAdd = [];
@@ -493,7 +507,11 @@ function updatePackageReferenceSection(
  * @param {Object} allObjects - All objects for reference lookup
  * @returns {string} Formatted string for this object type
  */
-function printPBXBuildFile(objectId /*: string */, objectData /*: XcodeObject */, allObjects /*: {[string]: XcodeObject} */) /*: string */ {
+function printPBXBuildFile(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
   // Handle productRef case for Swift Package dependencies
   if (objectData.productRef) {
     const productRefObject = allObjects[objectData.productRef];
@@ -533,7 +551,11 @@ function printPBXBuildFile(objectId /*: string */, objectData /*: XcodeObject */
  * @param {Object} allObjects - All objects for reference lookup
  * @returns {string} Formatted string for this object type
  */
-function printXCLocalSwiftPackageReference(objectId /*: string */, objectData /*: XcodeObject */, allObjects /*: {[string]: XcodeObject} */) /*: string */ {
+function printXCLocalSwiftPackageReference(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
   const relativePath = objectData.relativePath;
 
   // Escape path with quotes if it contains spaces
@@ -569,7 +591,11 @@ function printXCSwiftPackageProductDependency(
 `;
 }
 
-function printFilesForBuildPhase(objectId /*: string */, objectData /*: XcodeObject */, allObjects /*: {[string]: XcodeObject} */) /*: string */ {
+function printFilesForBuildPhase(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
   // Get the product name from the productRef in the PBXBuildFile
   let productName = 'Unknown';
 
@@ -594,7 +620,10 @@ function printFilesForBuildPhase(objectId /*: string */, objectData /*: XcodeObj
  * @param {Array} sectionsToAdd - Array of sections to add with their content
  * @returns {string} Updated textual project with new sections added
  */
-function addMissingSections(textualProject /*: string */, sectionsToAdd /*: Array<SectionToAdd> */) /*: string */ {
+function addMissingSections(
+  textualProject /*: string */,
+  sectionsToAdd /*: Array<SectionToAdd> */,
+) /*: string */ {
   // Define the order of sections - PBXBuildFile first, then XCLocalSwiftPackageReference, then XCSwiftPackageProductDependency
   const sectionOrder = [
     'PBXBuildFile',
@@ -661,7 +690,10 @@ function addMissingSections(textualProject /*: string */, sectionsToAdd /*: Arra
  * @param {Object} xcodeProjectJSON - The JSON representation of the Xcode project
  * @returns {string} Updated textual project with new PBXFrameworksBuildPhase.files content
  */
-function updatePBXFrameworksBuildPhaseFiles(textualProject /*: string */, xcodeProjectJSON /*: XcodeProject */) /*: string */ {
+function updatePBXFrameworksBuildPhaseFiles(
+  textualProject /*: string */,
+  xcodeProjectJSON /*: XcodeProject */,
+) /*: string */ {
   const lines = textualProject.split('\n');
   const processedLines = [];
   let inPBXFrameworksBuildPhase = false;

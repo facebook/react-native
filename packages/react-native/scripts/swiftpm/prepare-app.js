@@ -40,7 +40,10 @@ type SwiftPackage = {
  * @param {string} xcodeProjectName - The name of the Xcode project file (e.g., 'HelloWorld.xcodeproj')
  * @returns {string} - The path to the directory containing the Xcode project
  */
-function findXcodeProjectDirectory(appPath /*: string */, xcodeProjectName /*: string */) /*: string */ {
+function findXcodeProjectDirectory(
+  appPath /*: string */,
+  xcodeProjectName /*: string */,
+) /*: string */ {
   try {
     // Use find command to search for the Xcode project
     const findCommand = `find "${appPath}" -name "${xcodeProjectName}" -type d -print`;
@@ -172,7 +175,9 @@ async function prepareApp(
 /**
  * Run pod deintegrate from app directory
  */
-async function runPodDeintegrate(appIosPath /*: string */) /*: Promise<void> */ {
+async function runPodDeintegrate(
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
   try {
     console.log(`Running pod deintegrate in: ${appIosPath}`);
     execSync('pod deintegrate', {
@@ -190,7 +195,9 @@ async function runPodDeintegrate(appIosPath /*: string */) /*: Promise<void> */ 
 /**
  * Run iOS prebuild with environment variables
  */
-async function runIosPrebuild(reactNativePath /*: string */) /*: Promise<void> */ {
+async function runIosPrebuild(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
   console.log('Running iOS prebuild with nightly versions...');
 
   const env = {
@@ -214,7 +221,9 @@ async function runIosPrebuild(reactNativePath /*: string */) /*: Promise<void> *
 /**
  * Configure app for Swift integration
  */
-async function configureAppForSwift(reactNativePath /*: string */) /*: Promise<void> */ {
+async function configureAppForSwift(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
   try {
     console.log('Configuring app for Swift integration...');
 
@@ -290,7 +299,9 @@ async function configureAppForSwift(reactNativePath /*: string */) /*: Promise<v
 /**
  * Set BUILD_FROM_SOURCE to true in Package.swift
  */
-async function setBuildFromSource(reactNativePath /*: string */) /*: Promise<void> */ {
+async function setBuildFromSource(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
   const packageSwiftPath = path.join(reactNativePath, 'Package.swift');
 
   if (!fs.existsSync(packageSwiftPath)) {
@@ -329,7 +340,9 @@ async function setBuildFromSource(reactNativePath /*: string */) /*: Promise<voi
 /**
  * Create hard links for React Native headers in React/includes
  */
-async function createHardlinks(reactNativePath /*: string */) /*: Promise<void> */ {
+async function createHardlinks(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
   try {
     console.log('Creating hard links for React Native headers...');
     const reactIncludesPath = path.join(reactNativePath, 'React');
@@ -353,7 +366,11 @@ async function createHardlinks(reactNativePath /*: string */) /*: Promise<void> 
 /**
  * Generate codegen artifacts using the executor
  */
-async function generateCodegenArtifacts(reactNativePath /*: string */, appPath /*: string */, appIosPath /*: string */) /*: Promise<void> */ {
+async function generateCodegenArtifacts(
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
   try {
     console.log('Generating codegen artifacts...');
 
@@ -369,7 +386,10 @@ async function generateCodegenArtifacts(reactNativePath /*: string */, appPath /
 /**
  * Prepare app dependencies headers (3 separate calls)
  */
-async function prepareHeaders(reactNativePath /*: string */, appIosPath /*: string */) /*: Promise<void> */ {
+async function prepareHeaders(
+  reactNativePath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
   const outputFolder = path.join(
     appIosPath,
     'build',
@@ -511,7 +531,10 @@ async function fixReactNativePath(
 /**
  * Allow non-modular header imports in Xcode project
  */
-async function allowNonModularHeaderImport(appIosPath /*: string */, appXcodeProject /*: string */) /*: Promise<void> */ {
+async function allowNonModularHeaderImport(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
   const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
 
   if (!fs.existsSync(projectPath)) {
@@ -641,7 +664,10 @@ async function integrateSwiftPMPackages(
 /**
  * Open Xcode project
  */
-async function openXcodeProject(appIosPath /*: string */, appXcodeProject /*: string */) /*: Promise<void> */ {
+async function openXcodeProject(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
   const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
 
   if (!fs.existsSync(xcodeProjectPath)) {
@@ -667,7 +693,7 @@ if (require.main === module) {
   let reactNativePath = '.';
   let appXcodeProject = 'HelloWorld.xcodeproj';
   let targetName = 'HelloWorld';
-  let additionalPackages /*: Array<SwiftPackage> */= [];
+  let additionalPackages /*: Array<SwiftPackage> */ = [];
 
   // try to load args from the swiftpm.config.js file that is
   // in the app directory. Assumption: this script is invoked from the app directory

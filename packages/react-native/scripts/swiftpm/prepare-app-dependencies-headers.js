@@ -792,16 +792,24 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  const extractRequiredHeadersValue = (value /*: string */) /*: RequiredHeaders */ => {
-    const validValues /*: Array<RequiredHeaders> */ = ['react-native', 'codegen', 'third-party-dependencies', 'all'];
+  const extractRequiredHeadersValue = (
+    value /*: string */,
+  ) /*: RequiredHeaders */ => {
+    const validValues /*: Array<RequiredHeaders> */ = [
+      'react-native',
+      'codegen',
+      'third-party-dependencies',
+      'all',
+    ];
     if (!validValues.includes(value)) {
       throw new Error(`Invalid required-headers value: ${value}`);
     }
     return value;
-  }
+  };
 
   const [reactNativePath, iosAppPath, outputFolder, requiredHeaders] = args;
-  const requiredHeadersEnum /*: RequiredHeaders */ = extractRequiredHeadersValue(requiredHeaders);
+  const requiredHeadersEnum /*: RequiredHeaders */ =
+    extractRequiredHeadersValue(requiredHeaders);
 
   try {
     prepareAppDependenciesHeaders(
