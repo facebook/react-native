@@ -14,4 +14,4 @@ public data class DevMenuConfiguration(
   val isDevMenuEnabled: Boolean = BuildConfig.DEBUG,
   val isShakeGestureEnabled: Boolean = true,
   val areKeyboardShortcutsEnabled: Boolean = true,
- )
+)
