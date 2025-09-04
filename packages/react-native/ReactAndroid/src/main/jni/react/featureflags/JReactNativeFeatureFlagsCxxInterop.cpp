@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d1dda9d6cd1c0179472fcc0631e46fcd>>
+ * @generated SignedSource<<f9c4f8d97edff1b016873b0a6121b76b>>
  */
 
 /**
@@ -264,6 +264,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableViewRecycling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecycling");
+    return method(javaProvider_);
+  }
+
+  bool enableViewRecyclingForImage() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForImage");
     return method(javaProvider_);
   }
 
@@ -641,6 +647,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecycling(
   return ReactNativeFeatureFlags::enableViewRecycling();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForImage(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForImage();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForScrollView(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewRecyclingForScrollView();
@@ -936,6 +947,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableViewRecycling",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecycling),
+      makeNativeMethod(
+        "enableViewRecyclingForImage",
+        JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForImage),
       makeNativeMethod(
         "enableViewRecyclingForScrollView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForScrollView),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a59b42b84160c18d214f8b2be76bc743>>
+ * @generated SignedSource<<92a6edded037a504fc1c2c8ae88deae1>>
  */
 
 /**
@@ -257,6 +257,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForImage(): Boolean = accessor.enableViewRecyclingForImage()
 
   /**
    * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.

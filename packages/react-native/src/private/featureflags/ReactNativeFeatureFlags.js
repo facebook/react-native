@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7de65fc90fa1275f89375fd214b94172>>
+ * @generated SignedSource<<2bef8486b596a7593bbc931da63b2682>>
  * @flow strict
  * @noformat
  */
@@ -88,6 +88,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableResourceTimingAPI: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
+  enableViewRecyclingForImage: Getter<boolean>,
   enableViewRecyclingForScrollView: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
@@ -351,6 +352,10 @@ export const enableViewCulling: Getter<boolean> = createNativeFlagGetter('enable
  * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
  */
 export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enableViewRecycling', false);
+/**
+ * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+ */
+export const enableViewRecyclingForImage: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForImage', true);
 /**
  * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
  */
