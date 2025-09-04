@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1e6f17de0ebb06a085d4cc563df1e32b>>
+ * @generated SignedSource<<1c61b3b4390b75dab658518201379081>>
  * @flow strict
  * @noformat
  */
@@ -63,6 +63,7 @@ export interface Spec extends TurboModule {
   +enableResourceTimingAPI?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
+  +enableViewRecyclingForImage?: () => boolean;
   +enableViewRecyclingForScrollView?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;

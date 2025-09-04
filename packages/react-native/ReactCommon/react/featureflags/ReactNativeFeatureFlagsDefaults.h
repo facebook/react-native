@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f9c3ecf7887653fd5348a05391ab7d0>>
+ * @generated SignedSource<<6d8adaa4b960407540afb1d6e42a3840>>
  */
 
 /**
@@ -177,6 +177,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableViewRecycling() override {
     return false;
+  }
+
+  bool enableViewRecyclingForImage() override {
+    return true;
   }
 
   bool enableViewRecyclingForScrollView() override {
