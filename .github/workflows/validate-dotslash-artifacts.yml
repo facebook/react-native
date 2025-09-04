@@ -7,6 +7,22 @@ on:
   push:
     branches:
       - main
+    paths:
+      - packages/debugger-shell/bin/react-native-devtools
+      - "scripts/releases/**"
+      - package.json
+      - yarn.lock
+  pull_request:
+    branches:
+      - main
+    paths:
+      - packages/debugger-shell/bin/react-native-devtools
+      - "scripts/releases/**"
+      - package.json
+      - yarn.lock
+  # Same time as the nightly build: 2:15 AM UTC
+  schedule:
+    - cron: "15 2 * * *"
 
 jobs:
   validate-dotslash-artifacts:
