@@ -54,7 +54,7 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
 NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
 {
   // For oss, insert core main queue setup modules here
-  return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
+  return (dependencyProvider != nullptr) ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
 }
 
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
@@ -65,11 +65,11 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDe
         NSArray<NSString *> *classNames = @[];
 
         if (protocol == @protocol(RCTImageURLLoader)) {
-          classNames = dependencyProvider ? dependencyProvider.imageURLLoaderClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.imageURLLoaderClassNames : @[];
         } else if (protocol == @protocol(RCTImageDataDecoder)) {
-          classNames = dependencyProvider ? dependencyProvider.imageDataDecoderClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.imageDataDecoderClassNames : @[];
         } else if (protocol == @protocol(RCTURLRequestHandler)) {
-          classNames = dependencyProvider ? dependencyProvider.URLRequestHandlerClassNames : @[];
+          classNames = (dependencyProvider != nullptr) ? dependencyProvider.URLRequestHandlerClassNames : @[];
         }
 
         NSMutableArray *modules = [NSMutableArray new];

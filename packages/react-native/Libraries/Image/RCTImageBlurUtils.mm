@@ -19,7 +19,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   }
 
   // convert to ARGB if it isn't
-  if (CGImageGetBitsPerPixel(imageRef) != 32 || !((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask))) {
+  if (CGImageGetBitsPerPixel(imageRef) != 32 || (((CGImageGetBitmapInfo(imageRef) & kCGBitmapAlphaInfoMask)) == 0u)) {
     UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
     rendererFormat.scale = inputImage.scale;
     UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:inputImage.size
@@ -36,11 +36,11 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
   buffer1.rowBytes = buffer2.rowBytes = CGImageGetBytesPerRow(imageRef);
   size_t bytes = buffer1.rowBytes * buffer1.height;
   buffer1.data = malloc(bytes);
-  if (!buffer1.data) {
+  if (buffer1.data == nullptr) {
     return inputImage;
   }
   buffer2.data = malloc(bytes);
-  if (!buffer2.data) {
+  if (buffer2.data == nullptr) {
     free(buffer1.data);
     return inputImage;
   }
@@ -60,7 +60,7 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
     return inputImage;
   }
   void *tempBuffer = malloc(tempBufferSize);
-  if (!tempBuffer) {
+  if (tempBuffer == nullptr) {
     free(buffer1.data);
     free(buffer2.data);
     return inputImage;
