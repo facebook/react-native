@@ -20,6 +20,7 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
+# TODO: T231755000 use the Hermes V1 version instead of React Native version
 version = package['version']
 
 source_type = hermes_source_type(version, react_native_path)
@@ -100,22 +101,24 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/cdp'
     end
 
-    spec.subspec 'inspector' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/*.h'
-      ss.header_dir = 'hermes/inspector'
-    end
-
-    spec.subspec 'inspector_chrome' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
-      ss.header_dir = 'hermes/inspector/chrome'
-    end
-
     spec.subspec 'Public' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'public/hermes/Public/*.h'
       ss.header_dir = 'hermes/Public'
+    end
+
+    if ENV['RCT_HERMES_V1_ENABLED'] != "1"
+      spec.subspec 'inspector' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/*.h'
+        ss.header_dir = 'hermes/inspector'
+      end
+
+      spec.subspec 'inspector_chrome' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+        ss.header_dir = 'hermes/inspector/chrome'
+      end
     end
 
     hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
