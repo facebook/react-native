@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eee81e4e9bb13ef5134d4e2d79876b38>>
+ * @generated SignedSource<<3321d357fe5c74fa42c2d0b15a744f87>>
  */
 
 /**
@@ -160,6 +160,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
+   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+   */
+  RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
+
+  /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
    */
   RN_EXPORT static bool enableImmediateUpdateModeForContentOffsetChanges();
@@ -198,11 +203,6 @@ class ReactNativeFeatureFlags {
    * Enable network event reporting hooks in each native platform through `NetworkReporter`. This flag should be combined with `enableResourceTimingAPI` and `fuseboxNetworkInspectionEnabled` to enable end-to-end reporting behaviour via the Web Performance API and CDP debugging respectively.
    */
   RN_EXPORT static bool enableNetworkEventReporting();
-
-  /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
 
   /**
    * Enables caching text layout artifacts for later reuse
@@ -293,11 +293,6 @@ class ReactNativeFeatureFlags {
    * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
    */
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
-
-  /**
-   * Releases the cached image data when it is consumed by the observers.
-   */
-  RN_EXPORT static bool releaseImageDataWhenConsumed();
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

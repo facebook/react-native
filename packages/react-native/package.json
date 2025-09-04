@@ -31,13 +31,11 @@
   "exports": {
     ".": {
       "react-native-strict-api": "./types_generated/index.d.ts",
-      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/index.d.ts",
       "types": "./types/index.d.ts",
       "default": "./index.js"
     },
     "./*": {
       "react-native-strict-api": null,
-      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/*.d.ts",
       "types": "./*.d.ts",
       "default": "./*.js"
     },
@@ -52,7 +50,6 @@
     "./scripts/*": "./scripts/*",
     "./src/*": {
       "react-native-strict-api": null,
-      "react-native-strict-api-UNSAFE-ALLOW-SUBPATHS": "./types_generated/src/*.d.ts",
       "default": "./src/*.js"
     },
     "./types/*.d.ts": {

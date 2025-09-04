@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<34c12f5a31aab5bfb874953f1beefef1>>
+ * @generated SignedSource<<a59b42b84160c18d214f8b2be76bc743>>
  */
 
 /**
@@ -175,6 +175,12 @@ public object ReactNativeFeatureFlags {
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
+   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = accessor.enableImagePrefetchingOnUiThreadAndroid()
+
+  /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
    */
   @JvmStatic
@@ -221,12 +227,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableNetworkEventReporting(): Boolean = accessor.enableNetworkEventReporting()
-
-  /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  @JvmStatic
-  public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
 
   /**
    * Enables caching text layout artifacts for later reuse
@@ -335,12 +335,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preventShadowTreeCommitExhaustion(): Boolean = accessor.preventShadowTreeCommitExhaustion()
-
-  /**
-   * Releases the cached image data when it is consumed by the observers.
-   */
-  @JvmStatic
-  public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks

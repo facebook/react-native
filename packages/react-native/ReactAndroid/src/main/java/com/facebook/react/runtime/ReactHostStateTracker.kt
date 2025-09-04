@@ -8,15 +8,14 @@
 package com.facebook.react.runtime
 
 import com.facebook.common.logging.FLog
-import java.util.Collections
 
-internal class BridgelessReactStateTracker(private val shouldTrackStates: Boolean) {
-  private val states = Collections.synchronizedList(mutableListOf<String>())
+internal class ReactHostStateTracker(private val id: Int) {
 
-  fun enterState(state: String) {
-    FLog.w(TAG, state)
-    if (shouldTrackStates) {
-      states.add(state)
+  fun enterState(method: String, message: String? = null) {
+    if (message == null) {
+      FLog.w(TAG, "ReactHost{%d}.%s", id, method)
+    } else {
+      FLog.w(TAG, "ReactHost{%d}.%s: %s", id, method, message)
     }
   }
 

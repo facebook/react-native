@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<719706a983a073b6c286c49d993f7f80>>
+ * @generated SignedSource<<05bfed9fc7131062c8b16246986fc999>>
  */
 
 /**
@@ -71,6 +71,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
 
+  override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
+
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
@@ -86,8 +88,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableNativeCSSParsing(): Boolean = false
 
   override fun enableNetworkEventReporting(): Boolean = false
-
-  override fun enableNewBackgroundAndBorderDrawables(): Boolean = true
 
   override fun enablePreparedTextLayout(): Boolean = false
 
@@ -124,8 +124,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun preparedTextCacheSize(): Double = 200.0
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = false
-
-  override fun releaseImageDataWhenConsumed(): Boolean = false
 
   override fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean = false
 

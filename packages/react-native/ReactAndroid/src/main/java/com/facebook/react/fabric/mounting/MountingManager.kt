@@ -19,8 +19,6 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.RetryableMountingLayerException
 import com.facebook.react.bridge.UiThreadUtil.assertOnUiThread
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.common.mapbuffer.MapBuffer
 import com.facebook.react.fabric.events.EventEmitterWrapper
 import com.facebook.react.fabric.mounting.mountitems.MountItem
 import com.facebook.react.touch.JSResponderHandler
@@ -324,27 +322,6 @@ internal class MountingManager(
               heightMode,
               attachmentsPositions,
           )
-
-  /**
-   * This prefetch method is experimental, do not use it for production code. it will most likely
-   * change or be removed in the future.
-   *
-   * @param reactContext
-   * @param componentName
-   * @param params prefetch request params defined in C++
-   */
-  @Suppress("FunctionName")
-  @AnyThread
-  @UnstableReactNativeAPI
-  fun experimental_prefetchResources(
-      reactContext: ReactContext?,
-      componentName: String?,
-      params: MapBuffer?,
-  ) {
-    viewManagerRegistry
-        .get(checkNotNull(componentName))
-        .experimental_prefetchResources(reactContext, params)
-  }
 
   fun enqueuePendingEvent(
       surfaceId: Int,

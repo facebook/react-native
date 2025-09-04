@@ -533,7 +533,9 @@ std::unordered_set<SurfaceId> ReactHost::getRunningSurfaces() const noexcept {
 
 void ReactHost::runOnScheduler(
     std::function<void(Scheduler& scheduler)>&& task) const {
-  task(*scheduler_);
+  if (!isReloadingReactInstance_) {
+    task(*scheduler_);
+  }
 }
 
 void ReactHost::runOnRuntimeScheduler(

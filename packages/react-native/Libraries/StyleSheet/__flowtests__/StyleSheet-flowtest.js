@@ -41,11 +41,7 @@ export function testBadCompose() {
   (StyleSheet.compose(textStyle, textStyle): ImageStyleProp);
 
   // $FlowExpectedError[incompatible-type]  - Incompatible type.
-  (StyleSheet.compose(
-    // $FlowExpectedError - Incompatible type.
-    [textStyle],
-    null,
-  ): ImageStyleProp);
+  (StyleSheet.compose([textStyle], null): ImageStyleProp);
 
   // $FlowExpectedError[incompatible-type]  - Incompatible type.
   (StyleSheet.compose(

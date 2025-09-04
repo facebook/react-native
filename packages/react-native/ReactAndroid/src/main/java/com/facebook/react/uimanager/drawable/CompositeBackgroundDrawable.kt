@@ -35,14 +35,6 @@ internal class CompositeBackgroundDrawable(
     /** Non-inset box shadows */
     val outerShadows: List<Drawable> = emptyList(),
 
-    /**
-     * CSS background layer and border rendering
-     *
-     * TODO: we should extract path logic from here, and fast-path to using simpler drawables like
-     *   ColorDrawable in the common cases
-     */
-    val cssBackground: CSSBackgroundDrawable? = null,
-
     /** Background rendering Layer */
     val background: BackgroundDrawable? = null,
 
@@ -68,7 +60,6 @@ internal class CompositeBackgroundDrawable(
         createLayersArray(
             originalBackground,
             outerShadows,
-            cssBackground,
             background,
             border,
             feedbackUnderlay,
@@ -84,28 +75,11 @@ internal class CompositeBackgroundDrawable(
     setPaddingMode(LayerDrawable.PADDING_MODE_STACK)
   }
 
-  fun withNewCssBackground(cssBackground: CSSBackgroundDrawable?): CompositeBackgroundDrawable {
-    return CompositeBackgroundDrawable(
-        context,
-        originalBackground,
-        outerShadows,
-        cssBackground,
-        background,
-        border,
-        feedbackUnderlay,
-        innerShadows,
-        outline,
-        borderInsets,
-        borderRadius,
-    )
-  }
-
   fun withNewBackground(background: BackgroundDrawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
-        cssBackground,
         background,
         border,
         feedbackUnderlay,
@@ -124,7 +98,6 @@ internal class CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
-        cssBackground,
         background,
         border,
         feedbackUnderlay,
@@ -140,7 +113,6 @@ internal class CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
-        cssBackground,
         background,
         border,
         feedbackUnderlay,
@@ -156,7 +128,6 @@ internal class CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
-        cssBackground,
         background,
         border,
         feedbackUnderlay,
@@ -172,7 +143,6 @@ internal class CompositeBackgroundDrawable(
         context,
         originalBackground,
         outerShadows,
-        cssBackground,
         background,
         border,
         newUnderlay,
@@ -230,7 +200,6 @@ internal class CompositeBackgroundDrawable(
     private fun createLayersArray(
         originalBackground: Drawable?,
         outerShadows: List<Drawable>,
-        cssBackground: CSSBackgroundDrawable?,
         background: BackgroundDrawable?,
         border: BorderDrawable?,
         feedbackUnderlay: Drawable?,
@@ -240,7 +209,6 @@ internal class CompositeBackgroundDrawable(
       val layers = mutableListOf<Drawable?>()
       originalBackground?.let { layers.add(it) }
       layers.addAll(outerShadows.asReversed())
-      cssBackground?.let { layers.add(it) }
       background?.let { layers.add(it) }
       border?.let { layers.add(it) }
       feedbackUnderlay?.let { layers.add(it) }

@@ -76,7 +76,7 @@ folly::dynamic RCTNativeModule::getConstants()
 void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int callId)
 {
   id<RCTBridgeMethod> method = m_moduleData.methods[methodId];
-  if (method) {
+  if (method != nullptr) {
     RCT_PROFILE_BEGIN_EVENT(
         RCTProfileTagAlways,
         @"[RCTNativeModule invoke]",
@@ -119,13 +119,13 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
   if (isSyncModule) {
     block();
     BridgeNativeModulePerfLogger::syncMethodCallReturnConversionEnd(moduleName, methodName);
-  } else if (queue) {
+  } else if (queue != nullptr) {
     BridgeNativeModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     dispatch_async(queue, block);
   }
 
 #ifdef RCT_DEV
-  if (!queue) {
+  if (queue == nullptr) {
     RCTLog(
         @"Attempted to invoke `%u` (method ID) on `%@` (NativeModule name) without a method queue.",
         methodId,
@@ -153,7 +153,7 @@ static MethodCallResult invokeInner(
     int callId,
     SchedulingContext context)
 {
-  if (!bridge || !bridge.valid || !moduleData) {
+  if ((bridge == nullptr) || !bridge.valid || (moduleData == nullptr)) {
     if (context == Sync) {
       /**
        * NOTE: moduleName and methodName are "". This shouldn't be an issue because there can only be one ongoing sync
@@ -166,7 +166,7 @@ static MethodCallResult invokeInner(
   }
 
   id<RCTBridgeMethod> method = moduleData.methods[methodId];
-  if (RCT_DEBUG && !method) {
+  if (RCT_DEBUG && (method == nullptr)) {
     RCTLogError(@"Unknown methodID: %ud for module: %@", methodId, moduleData.name);
   }
 

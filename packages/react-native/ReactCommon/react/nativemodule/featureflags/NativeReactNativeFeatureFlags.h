@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<320e69fa54228a352fad210e3a43b947>>
+ * @generated SignedSource<<228d7484ef89bb01fee8dcff2657c56a>>
  */
 
 /**
@@ -84,6 +84,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
+  bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
+
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
@@ -99,8 +101,6 @@ class NativeReactNativeFeatureFlags
   bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
   bool enableNetworkEventReporting(jsi::Runtime& runtime);
-
-  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
@@ -137,8 +137,6 @@ class NativeReactNativeFeatureFlags
   double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
-
-  bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 

@@ -30,7 +30,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithDelegate:(id<RCTExceptionsManagerDelegate>)delegate
 {
-  if ((self = [self init])) {
+  if ((self = [self init]) != nullptr) {
     _delegate = delegate;
   }
   return self;
@@ -46,7 +46,7 @@ RCT_EXPORT_MODULE()
     [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
-  if (_delegate) {
+  if (_delegate != nullptr) {
     [_delegate handleSoftJSExceptionWithMessage:message
                                           stack:stack
                                     exceptionId:[NSNumber numberWithDouble:exceptionId]
@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE()
     [redbox showErrorMessage:message withStack:stack errorCookie:(int)exceptionId];
   }
 
-  if (_delegate) {
+  if (_delegate != nullptr) {
     [_delegate handleFatalJSExceptionWithMessage:message
                                            stack:stack
                                      exceptionId:[NSNumber numberWithDouble:exceptionId]
@@ -107,13 +107,13 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
 {
   NSMutableDictionary<NSString *, id> *mutableErrorData = [NSMutableDictionary new];
   mutableErrorData[@"message"] = data.message();
-  if (data.originalMessage()) {
+  if (data.originalMessage() != nullptr) {
     mutableErrorData[@"originalMessage"] = data.originalMessage();
   }
-  if (data.name()) {
+  if (data.name() != nullptr) {
     mutableErrorData[@"name"] = data.name();
   }
-  if (data.componentStack()) {
+  if (data.componentStack() != nullptr) {
     mutableErrorData[@"componentStack"] = data.componentStack();
   }
 
@@ -141,7 +141,7 @@ RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData 
   mutableErrorData[@"id"] = @(data.id_());
   mutableErrorData[@"isFatal"] = @(data.isFatal());
 
-  if (data.extraData()) {
+  if (data.extraData() != nullptr) {
     mutableErrorData[@"extraData"] = data.extraData();
   }
 

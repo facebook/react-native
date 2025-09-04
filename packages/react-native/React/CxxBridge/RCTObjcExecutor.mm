@@ -41,7 +41,7 @@ class RCTObjcExecutor : public JSExecutor {
       : m_jse(jse), m_errorBlock(errorBlock), m_delegate(std::move(delegate)), m_jsThread(std::move(jsThread))
   {
     m_jsCallback = ^(id json, NSError *error) {
-      if (error) {
+      if (error != nullptr) {
         // Do not use "m_errorBlock" here as the bridge might be in the middle
         // of invalidation as a result of error handling and "this" can be
         // already deallocated.
@@ -81,7 +81,7 @@ class RCTObjcExecutor : public JSExecutor {
                          onComplete:^(NSError *error) {
                            RCTProfileEndFlowEvent();
 
-                           if (error) {
+                           if (error != nullptr) {
                              m_errorBlock(error);
                              return;
                            }

@@ -16,26 +16,20 @@ namespace facebook::react {
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
     : contextContainer_(std::move(contextContainer)) {
-  if (contextContainer_ != nullptr) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->registerCommitHook(*this);
-    }
+  if (auto uiManagerCommitHookManager =
+          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
+              std::string(UIManagerCommitHookManagerKey));
+      uiManagerCommitHookManager.has_value()) {
+    (*uiManagerCommitHookManager)->registerCommitHook(*this);
   }
 }
 
 ImageFetcher::~ImageFetcher() {
-  if (contextContainer_ != nullptr) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
-    }
+  if (auto uiManagerCommitHookManager =
+          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
+              std::string(UIManagerCommitHookManagerKey));
+      uiManagerCommitHookManager.has_value()) {
+    (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
   }
 }
 
@@ -44,9 +38,8 @@ ImageRequest ImageFetcher::requestImage(
     SurfaceId surfaceId,
     const ImageRequestParams& imageRequestParams,
     Tag tag) {
-  items_.emplace_back(ImageRequestItem{
+  items_[surfaceId].emplace_back(ImageRequestItem{
       .imageSource = imageSource,
-      .surfaceId = surfaceId,
       .imageRequestParams = imageRequestParams,
       .tag = tag});
 
@@ -68,13 +61,18 @@ RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
   static auto prefetchResources =
       fabricUIManager_->getClass()
-          ->getMethod<void(std::string, JReadableMapBuffer::javaobject)>(
+          ->getMethod<void(
+              SurfaceId, std::string, JReadableMapBuffer::javaobject)>(
               "experimental_prefetchResources");
 
-  auto readableMapBuffer =
-      JReadableMapBuffer::createWithContents(serializeImageRequests(items_));
+  for (auto& [surfaceId, surfaceImageRequests] : items_) {
+    auto readableMapBuffer = JReadableMapBuffer::createWithContents(
+        serializeImageRequests(surfaceImageRequests));
+    prefetchResources(
+        fabricUIManager_, surfaceId, "RCTImageView", readableMapBuffer.get());
+  }
+
   items_.clear();
-  prefetchResources(fabricUIManager_, "RCTImageView", readableMapBuffer.get());
 
   return newRootShadowNode;
 }

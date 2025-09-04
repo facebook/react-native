@@ -61,7 +61,7 @@ NSString *const RCTShowDevMenuNotification = @"RCTShowDevMenuNotification";
 
 - (instancetype)initWithTitleBlock:(RCTDevMenuItemTitleBlock)titleBlock handler:(dispatch_block_t)handler
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _titleBlock = [titleBlock copy];
     _handler = [handler copy];
   }
@@ -86,14 +86,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (void)callHandler
 {
-  if (_handler) {
+  if (_handler != nullptr) {
     _handler();
   }
 }
 
 - (NSString *)title
 {
-  if (_titleBlock) {
+  if (_titleBlock != nullptr) {
     return _titleBlock();
   }
   return nil;
@@ -135,7 +135,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(showOnShake)
                                                  name:RCTShowDevMenuNotification
@@ -245,7 +245,7 @@ RCT_EXPORT_MODULE()
   if (_actionSheet.isBeingPresented || _actionSheet.beingDismissed) {
     return;
   }
-  if (_actionSheet) {
+  if (_actionSheet != nullptr) {
     [_actionSheet dismissViewControllerAnimated:YES
                                      completion:^(void) {
                                        self->_actionSheet = nil;
@@ -410,7 +410,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(show)
 {
-  if (_actionSheet || RCTRunningInAppExtension() || !_isDevMenuEnabled) {
+  if ((_actionSheet != nullptr) || RCTRunningInAppExtension() || !_isDevMenuEnabled) {
     return;
   }
 
@@ -443,7 +443,7 @@ RCT_EXPORT_METHOD(show)
 - (RCTDevMenuAlertActionHandler)alertActionHandlerForDevItem:(RCTDevMenuItem *__nullable)item
 {
   return ^(__unused UIAlertAction *action) {
-    if (item) {
+    if (item != nullptr) {
       [item callHandler];
     }
 

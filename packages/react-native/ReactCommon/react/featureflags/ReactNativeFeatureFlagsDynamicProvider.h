@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e2a5086e5586caf4c90ef503416a0e83>>
+ * @generated SignedSource<<027cef9dd44f14a71be7c0d1b90238b3>>
  */
 
 /**
@@ -261,6 +261,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
   }
 
+  bool enableImagePrefetchingOnUiThreadAndroid() override {
+    auto value = values_["enableImagePrefetchingOnUiThreadAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingOnUiThreadAndroid();
+  }
+
   bool enableImmediateUpdateModeForContentOffsetChanges() override {
     auto value = values_["enableImmediateUpdateModeForContentOffsetChanges"];
     if (!value.isNull()) {
@@ -331,15 +340,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableNetworkEventReporting();
-  }
-
-  bool enableNewBackgroundAndBorderDrawables() override {
-    auto value = values_["enableNewBackgroundAndBorderDrawables"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableNewBackgroundAndBorderDrawables();
   }
 
   bool enablePreparedTextLayout() override {
@@ -502,15 +502,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::preventShadowTreeCommitExhaustion();
-  }
-
-  bool releaseImageDataWhenConsumed() override {
-    auto value = values_["releaseImageDataWhenConsumed"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::releaseImageDataWhenConsumed();
   }
 
   bool shouldPressibilityUseW3CPointerEventsForHover() override {

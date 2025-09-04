@@ -21,7 +21,7 @@ using ListenerBlock = void (^)(RCTInspectorNetworkListener *);
 - (instancetype)init
 {
   self = [super init];
-  if (self) {
+  if (self != nullptr) {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
     self.executorsByTaskId = [NSMutableDictionary new];
@@ -63,7 +63,7 @@ using ListenerBlock = void (^)(RCTInspectorNetworkListener *);
 - (void)withListenerForTask:(NSURLSessionTask *)task execute:(ListenerBlock)block
 {
   void (^executor)(ListenerBlock) = self.executorsByTaskId[@(task.taskIdentifier)];
-  if (executor) {
+  if (executor != nullptr) {
     executor(block);
   }
 }

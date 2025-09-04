@@ -18,6 +18,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.common.SystemClock.currentTimeMillis
 import com.facebook.react.common.SystemClock.nanoTime
 import com.facebook.react.common.SystemClock.uptimeMillis
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.jstasks.HeadlessJsTaskContext
 import com.facebook.react.jstasks.HeadlessJsTaskEventListener
@@ -110,6 +111,7 @@ public open class JavaTimerManager(
     clearChoreographerIdleCallback()
   }
 
+  @LegacyArchitecture
   private fun maybeSetChoreographerIdleCallback() {
     synchronized(idleCallbackGuard) {
       if (sendIdleEvents) {
@@ -118,6 +120,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private fun maybeIdleCallback() {
     if (isPaused.get() && !isRunningTasks.get()) {
       clearFrameCallback()
@@ -145,6 +148,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private fun setChoreographerIdleCallback() {
     if (!frameIdleCallbackPosted) {
       reactChoreographer.postFrameCallback(
@@ -155,6 +159,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private fun clearChoreographerIdleCallback() {
     if (frameIdleCallbackPosted) {
       reactChoreographer.removeFrameCallback(
@@ -235,6 +240,7 @@ public open class JavaTimerManager(
   }
 
   @DoNotStrip
+  @LegacyArchitecture
   public open fun setSendIdleEvents(sendIdleEvents: Boolean) {
     synchronized(idleCallbackGuard) { this.sendIdleEvents = sendIdleEvents }
     UiThreadUtil.runOnUiThread {
@@ -328,6 +334,7 @@ public open class JavaTimerManager(
     }
   }
 
+  @LegacyArchitecture
   private inner class IdleCallbackRunnable(private val frameStartTime: Long) : Runnable {
     @Volatile private var isCancelled = false
 
