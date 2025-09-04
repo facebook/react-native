@@ -9,7 +9,7 @@
 import PackageDescription
 import Foundation
 
-let BUILD_FROM_SOURCE = false
+let BUILD_FROM_SOURCE = true
 
 /**
  This is the `Package.swift` file that allows to build React Native core using Swift PM.
@@ -455,8 +455,8 @@ let reactFabricModal = RNTarget(
 
 let reactFabricSwitch = RNTarget(
   name: .reactFabricSwitch,
-  path: "ReactCommon/react/renderer/components/switch/iosswitch/react/renderer/components/switch",
-  excludedPaths: ["MacOSSwitchShadowNode.mm"],
+  path: "ReactCommon/react/renderer/components/switch/iosswitch",
+  excludedPaths: ["react/renderer/components/switch/MacOSSwitchShadowNode.mm"],
   dependencies: [.reactNativeDependencies, .reactCore, .reactJsiExecutor, .reactTurboModuleCore, .jsi, .logger, .reactDebug, .reactFeatureFlags, .reactUtils, .reactRuntimeScheduler, .reactCxxReact, .yoga, .reactRendererDebug, .reactGraphics, .reactFabric, .reactTurboModuleBridging]
 )
 
