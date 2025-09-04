@@ -618,7 +618,6 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   if (contentSensitivity != oldProps->contentSensitivity) {
-    std::string value;
     switch (contentSensitivity) {
       case ContentSensitivityMode::NotSensitive:
         result["contentSensitivity"] = "not-sensitive";
