@@ -22,6 +22,8 @@ file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
 file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
 file(TO_CMAKE_PATH "${REACT_COMMON_DIR}" REACT_COMMON_DIR)
 
+set(HERMES_V1_ENABLED OFF CACHE BOOL "Build with support for Hermes v1")
+
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
 if(CCACHE_FOUND)

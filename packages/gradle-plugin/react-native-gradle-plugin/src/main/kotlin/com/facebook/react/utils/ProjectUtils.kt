@@ -13,9 +13,11 @@ import com.facebook.react.utils.KotlinStdlibCompatUtils.lowercaseCompat
 import com.facebook.react.utils.KotlinStdlibCompatUtils.toBooleanStrictOrNullCompat
 import com.facebook.react.utils.PropertyUtils.EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.HERMES_ENABLED
+import com.facebook.react.utils.PropertyUtils.HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_EDGE_TO_EDGE_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_ENABLED
+import com.facebook.react.utils.PropertyUtils.SCOPED_HERMES_V1_ENABLED
 import com.facebook.react.utils.PropertyUtils.SCOPED_REACT_NATIVE_ARCHITECTURES
 import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
 import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
@@ -67,6 +69,13 @@ internal object ProjectUtils {
             project.property(USE_THIRD_PARTY_JSC).toString().toBoolean()) ||
             (project.hasProperty(SCOPED_USE_THIRD_PARTY_JSC) &&
                 project.property(SCOPED_USE_THIRD_PARTY_JSC).toString().toBoolean())
+
+  internal val Project.isHermesV1Enabled: Boolean
+    get() =
+        (project.hasProperty(HERMES_V1_ENABLED) &&
+            project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
+                project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
 
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)

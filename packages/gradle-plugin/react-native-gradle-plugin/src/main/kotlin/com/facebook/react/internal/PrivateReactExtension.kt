@@ -11,6 +11,7 @@ import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 
 /**
  * A private extension we set on the rootProject to make easier to share values at execution time
@@ -57,4 +58,6 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
 
   val codegenDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
+
+  val hermesV1Enabled: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 }
