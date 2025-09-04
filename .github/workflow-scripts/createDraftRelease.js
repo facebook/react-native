@@ -101,7 +101,11 @@ async function _createDraftReleaseOnGitHub(version, body, latest, token) {
   }
 
   const data = await response.json();
-  return data.html_url;
+  const {html_url, id} = data;
+  return {
+    html_url,
+    id,
+  };
 }
 
 function moveToChangelogBranch(version) {
@@ -114,7 +118,7 @@ async function createDraftRelease(version, latest, token) {
     version = version.substring(1);
   }
 
-  _verifyTagExists(version);
+  // _verifyTagExists(version);
   moveToChangelogBranch(version);
   const changelog = _extractChangelog(version);
   const body = _computeBody(version, changelog);
@@ -124,7 +128,8 @@ async function createDraftRelease(version, latest, token) {
     latest,
     token,
   );
-  log(`Created draft release: ${release}`);
+  log(`Created draft release: ${release.html_url}, ID ${release.id}`);
+  return release;
 }
 
 module.exports = {
