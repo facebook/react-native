@@ -135,13 +135,11 @@ public abstract class DevSupportManagerBase(
         return
       }
 
-      if (isShakeDetectorStarted) {
         if (isShakeGestureEnabled) {
           startShakeDetector()
         } else {
           stopShakeDetector()
         }
-      }
 
       this.isShakeGestureEnabled = isShakeGestureEnabled
     }
