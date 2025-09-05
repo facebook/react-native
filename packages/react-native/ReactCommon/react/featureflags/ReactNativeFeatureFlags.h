@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3cde1e9bcf234515551ba57ecf02e3a7>>
+ * @generated SignedSource<<8979be03db13b9f45d313018192c0c35>>
  */
 
 /**
@@ -283,6 +283,11 @@ class ReactNativeFeatureFlags {
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

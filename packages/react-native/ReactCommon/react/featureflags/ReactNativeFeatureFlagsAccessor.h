@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a449e9cf8f14bb7381d9779c764d0d7c>>
+ * @generated SignedSource<<f4faac6988510cde5066898603e2332e>>
  */
 
 /**
@@ -81,6 +81,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool hideOffscreenVirtualViewsOnIOS();
+  bool overrideBySynchronousMountPropsAtMountingAndroid();
   bool perfMonitorV2Enabled();
   double preparedTextCacheSize();
   bool preventShadowTreeCommitExhaustion();
@@ -112,7 +113,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 69> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 70> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -163,6 +164,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> hideOffscreenVirtualViewsOnIOS_;
+  std::atomic<std::optional<bool>> overrideBySynchronousMountPropsAtMountingAndroid_;
   std::atomic<std::optional<bool>> perfMonitorV2Enabled_;
   std::atomic<std::optional<double>> preparedTextCacheSize_;
   std::atomic<std::optional<bool>> preventShadowTreeCommitExhaustion_;

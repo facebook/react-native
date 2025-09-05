@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9c4f8d97edff1b016873b0a6121b76b>>
+ * @generated SignedSource<<846db2d7c3c6020dec04789fe2784f8a>>
  */
 
 /**
@@ -330,6 +330,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool hideOffscreenVirtualViewsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("hideOffscreenVirtualViewsOnIOS");
+    return method(javaProvider_);
+  }
+
+  bool overrideBySynchronousMountPropsAtMountingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("overrideBySynchronousMountPropsAtMountingAndroid");
     return method(javaProvider_);
   }
 
@@ -702,6 +708,11 @@ bool JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS(
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::perfMonitorV2Enabled();
@@ -980,6 +991,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "hideOffscreenVirtualViewsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::hideOffscreenVirtualViewsOnIOS),
+      makeNativeMethod(
+        "overrideBySynchronousMountPropsAtMountingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::overrideBySynchronousMountPropsAtMountingAndroid),
       makeNativeMethod(
         "perfMonitorV2Enabled",
         JReactNativeFeatureFlagsCxxInterop::perfMonitorV2Enabled),

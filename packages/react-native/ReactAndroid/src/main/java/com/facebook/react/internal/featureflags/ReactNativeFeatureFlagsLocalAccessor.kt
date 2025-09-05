@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f65e0e9066a8c2c35c44ea7c73dbedc>>
+ * @generated SignedSource<<57fca2370d6b3f1edf7045a0b4c94350>>
  */
 
 /**
@@ -73,6 +73,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
+  private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
@@ -580,6 +581,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.hideOffscreenVirtualViewsOnIOS()
       accessedFeatureFlags.add("hideOffscreenVirtualViewsOnIOS")
       hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean {
+    var cached = overrideBySynchronousMountPropsAtMountingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.overrideBySynchronousMountPropsAtMountingAndroid()
+      accessedFeatureFlags.add("overrideBySynchronousMountPropsAtMountingAndroid")
+      overrideBySynchronousMountPropsAtMountingAndroidCache = cached
     }
     return cached
   }
