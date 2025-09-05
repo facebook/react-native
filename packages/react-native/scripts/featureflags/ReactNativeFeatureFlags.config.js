@@ -570,6 +570,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    overrideBySynchronousMountPropsAtMountingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     perfMonitorV2Enabled: {
       defaultValue: false,
       metadata: {

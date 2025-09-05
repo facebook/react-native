@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92a6edded037a504fc1c2c8ae88deae1>>
+ * @generated SignedSource<<c217318f9f313103ca31d8e7698851d8>>
  */
 
 /**
@@ -323,6 +323,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  @JvmStatic
+  public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

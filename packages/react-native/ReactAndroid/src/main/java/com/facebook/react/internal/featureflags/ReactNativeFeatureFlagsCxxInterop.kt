@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4410628511f112f3eef22434a05fa757>>
+ * @generated SignedSource<<6c201de02071a834e411b6761d7f863b>>
  */
 
 /**
@@ -125,6 +125,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun perfMonitorV2Enabled(): Boolean
 
