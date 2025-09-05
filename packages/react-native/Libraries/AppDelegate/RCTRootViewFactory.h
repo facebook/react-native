@@ -6,7 +6,6 @@
  */
 
 #import <React/RCTBridge.h>
-#import <React/RCTDevMenu.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 #import "RCTJSRuntimeConfiguratorProtocol.h"
@@ -19,6 +18,7 @@
 @class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
+@class RCTDevMenuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 

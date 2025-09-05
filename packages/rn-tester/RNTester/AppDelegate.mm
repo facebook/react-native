@@ -11,7 +11,6 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
-#import <React/RCTDevMenu.h>
 #import <React/RCTLinkingManager.h>
 #import <ReactCommon/RCTSampleTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>

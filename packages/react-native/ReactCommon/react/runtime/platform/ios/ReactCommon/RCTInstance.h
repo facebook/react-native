@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTDefines.h>
-#import <React/RCTDevMenu.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <react/runtime/JSRuntimeFactory.h>
@@ -33,6 +32,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 @class RCTPerformanceLogger;
 @class RCTSource;
 @class RCTSurfacePresenter;
+@class RCTDevMenuConfiguration;
 
 @protocol RCTTurboModuleManagerDelegate;
 

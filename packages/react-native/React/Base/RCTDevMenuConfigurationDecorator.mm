@@ -10,10 +10,11 @@
 #if RCT_DEV_MENU
 
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevMenu.h>
 
 @implementation RCTDevMenuConfigurationDecorator
 
-- (instancetype)initWithDevMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
+- (instancetype)initWithDevMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration
 {
   if (self = [super init]) {
     _devMenuConfiguration = devMenuConfiguration;

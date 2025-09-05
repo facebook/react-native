@@ -27,6 +27,7 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTUtils.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
 #import <ReactCommon/TurboCxxModule.h>
@@ -278,6 +279,19 @@ typedef struct {
   return [self initWithBridge:bridge
                         bridgeProxy:nil
               bridgeModuleDecorator:[bridge bridgeModuleDecorator]
+                           delegate:delegate
+                          jsInvoker:jsInvoker
+      devMenuConfigurationDecorator:nil];
+}
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+{
+  return [self initWithBridge:nil
+                        bridgeProxy:bridgeProxy
+              bridgeModuleDecorator:bridgeModuleDecorator
                            delegate:delegate
                           jsInvoker:jsInvoker
       devMenuConfigurationDecorator:nil];
@@ -777,7 +791,7 @@ typedef struct {
   }
   
 #if RCT_DEV_MENU
-
+  
   [_devMenuConfigurationDecorator decorate:module];
 
 #endif

@@ -5,16 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <React/RCTDevMenu.h>
+#import "RCTBridgeModule.h"
+
+@class RCTDevMenuConfiguration;
 
 @interface RCTDevMenuConfigurationDecorator : NSObject
 
 #if RCT_DEV_MENU
 
-@property (nonatomic, strong, readonly) RCTDevMenuConfiguration *devMenuConfiguration;
+@property (nonatomic, strong, readonly) RCTDevMenuConfiguration *__nullable devMenuConfiguration;
 
 - (instancetype)initWithDevMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
-- (void)decorate:(RCTDevMenu *)devMenuModule;
+- (void)decorate:(id<RCTBridgeModule>)devMenuModule;
 
 #endif
 

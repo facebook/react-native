@@ -22,6 +22,7 @@
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <React/RCTDevMenu.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>

@@ -140,7 +140,7 @@ RCT_EXPORT_MODULE()
                                                  name:RCTShowDevMenuNotification
                                                object:nil];
     _extraMenuItems = [NSMutableArray new];
-    
+
     _areKeyboardShortcutsEnabled = true;
     _isDevMenuEnabled = true;
     [self registerHotkeys];
@@ -272,11 +272,11 @@ RCT_EXPORT_MODULE()
   [_extraMenuItems addObject:item];
 }
 
--(void)setAreKeyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled
+- (void)setAreKeyboardShortcutsEnabled:(BOOL)areKeyboardShortcutsEnabled
 {
   if (_areKeyboardShortcutsEnabled != areKeyboardShortcutsEnabled) {
     [self setHotkeysEnabled:areKeyboardShortcutsEnabled];
-    
+
     if (areKeyboardShortcutsEnabled == false) {
       [self disableReloadCommand];
     }
@@ -552,6 +552,10 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled : (BOOL)enabled)
 {
 }
 - (void)addItem:(RCTDevMenu *)item
+{
+}
+
+- (void)disableReloadCommand
 {
 }
 

@@ -7,7 +7,6 @@
 
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
-#import <React/RCTDevMenu.h>
 #import <UIKit/UIKit.h>
 #import "RCTArchConfiguratorProtocol.h"
 #import "RCTDependencyProvider.h"
@@ -25,6 +24,7 @@
 @class RCTBridge;
 @protocol RCTComponentViewProtocol;
 @class RCTSurfacePresenterBridgeAdapter;
+@class RCTDevMenuConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 

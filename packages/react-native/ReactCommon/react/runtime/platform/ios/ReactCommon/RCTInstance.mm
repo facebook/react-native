@@ -26,6 +26,8 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTLog.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>

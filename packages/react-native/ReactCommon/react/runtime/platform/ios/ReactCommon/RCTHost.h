@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTDefines.h>
-#import <React/RCTDevMenu.h>
 #import <react/renderer/core/ReactPrimitives.h>
 #import <react/runtime/JSRuntimeFactory.h>
 
@@ -19,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class RCTFabricSurface;
 @class RCTHost;
 @class RCTModuleRegistry;
+@class RCTDevMenuConfiguration;
 
 @protocol RCTTurboModuleManagerDelegate;
 

@@ -10,7 +10,6 @@
 #import <memory>
 
 #import <React/RCTBridgeModuleDecorator.h>
-#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTDefines.h>
 #import <React/RCTTurboModuleRegistry.h>
 #import <ReactCommon/RuntimeExecutor.h>
@@ -20,6 +19,7 @@
 
 @class RCTBridgeProxy;
 @class RCTTurboModuleManager;
+@class RCTDevMenuConfigurationDecorator;
 
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 
@@ -68,6 +68,11 @@
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+
+- (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
+              bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
+                           delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator

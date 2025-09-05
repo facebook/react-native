@@ -314,7 +314,6 @@ RCT_EXPORT_METHOD(setIsShakeToShowDevMenuEnabled : (BOOL)enabled)
 
 - (BOOL)isShakeToShowDevMenuEnabled
 {
-  BOOL x = [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
   return _isShakeGestureEnabled && [[self settingForKey:kRCTDevSettingShakeToShowDevMenu] boolValue];
 }
 
