@@ -51,7 +51,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
   std::vector<const RCTMethodInfo *> methodInfos;
 
   Class cls = moduleClass;
-  while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+  while ((cls != nullptr) && cls != [NSObject class] && cls != [NSProxy class]) {
     unsigned int methodCount;
     Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
 
@@ -482,7 +482,7 @@ void ObjCInteropTurboModule::setInvocationArg(
         return;
       }
 
-      if (arg) {
+      if (arg != nullptr) {
         [retainedObjectsForInvocation addObject:arg];
       }
       [inv setArgument:&arg atIndex:(index) + 2];
@@ -496,7 +496,7 @@ void ObjCInteropTurboModule::setInvocationArg(
       typeInvocation.target = [RCTConvert class];
 
       void *returnValue = malloc(typeSignature.methodReturnLength);
-      if (!returnValue) {
+      if (returnValue == nullptr) {
         // CWE - 391 : Unchecked error condition
         // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
         // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
@@ -519,7 +519,7 @@ void ObjCInteropTurboModule::setInvocationArg(
        * RCTModuleMethod doesn't actually call into RCTConvert in this case.
        */
       id arg = [objCArg copy];
-      if (arg) {
+      if (arg != nullptr) {
         [retainedObjectsForInvocation addObject:arg];
       }
       [inv setArgument:&arg atIndex:(index) + 2];
@@ -537,7 +537,7 @@ void ObjCInteropTurboModule::setInvocationArg(
 
     RCTResponseSenderBlock arg =
         (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
-    if (arg) {
+    if (arg != nullptr) {
       [retainedObjectsForInvocation addObject:arg];
     }
     [inv setArgument:&arg atIndex:(index) + 2];

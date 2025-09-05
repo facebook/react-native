@@ -63,13 +63,13 @@ static Class getViewManagerFromComponentName(const std::string &componentName)
   // 1. Try to get the manager with the RCT prefix.
   auto rctViewManagerName = "RCT" + viewManagerName;
   Class viewManagerClass = NSClassFromString(RCTNSStringFromString(rctViewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
   // 2. Try to get the manager without the prefix.
   viewManagerClass = NSClassFromString(RCTNSStringFromString(viewManagerName));
-  if (viewManagerClass) {
+  if (viewManagerClass != nullptr) {
     return viewManagerClass;
   }
 
