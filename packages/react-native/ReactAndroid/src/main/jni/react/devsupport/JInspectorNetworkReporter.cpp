@@ -60,7 +60,8 @@ static std::unordered_map<int, std::string> responseBuffers;
 
 /* static */ jboolean JInspectorNetworkReporter::isDebuggingEnabled(
     jni::alias_ref<jclass> /*unused*/) {
-  return NetworkReporter::getInstance().isDebuggingEnabled();
+  return static_cast<jboolean>(
+      NetworkReporter::getInstance().isDebuggingEnabled());
 }
 
 /* static */ void JInspectorNetworkReporter::reportRequestStart(
@@ -138,7 +139,7 @@ static std::unordered_map<int, std::string> responseBuffers;
     jint requestId,
     jboolean cancelled) {
   NetworkReporter::getInstance().reportRequestFailed(
-      std::to_string(requestId), cancelled);
+      std::to_string(requestId), cancelled != 0u);
 }
 
 /* static */ void JInspectorNetworkReporter::maybeStoreResponseBodyImpl(
