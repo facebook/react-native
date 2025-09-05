@@ -402,79 +402,79 @@ inline void fromRawValue(
 inline std::string toString(const FontVariant& fontVariant) {
   auto result = std::string{};
   auto separator = std::string{", "};
-  if ((int)fontVariant & (int)FontVariant::SmallCaps) {
+  if (((int)fontVariant & (int)FontVariant::SmallCaps) != 0) {
     result += "small-caps" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::OldstyleNums) {
+  if (((int)fontVariant & (int)FontVariant::OldstyleNums) != 0) {
     result += "oldstyle-nums" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::LiningNums) {
+  if (((int)fontVariant & (int)FontVariant::LiningNums) != 0) {
     result += "lining-nums" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::TabularNums) {
+  if (((int)fontVariant & (int)FontVariant::TabularNums) != 0) {
     result += "tabular-nums" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
+  if (((int)fontVariant & (int)FontVariant::ProportionalNums) != 0) {
     result += "proportional-nums" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticOne) {
+  if (((int)fontVariant & (int)FontVariant::StylisticOne) != 0) {
     result += "stylistic-one" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticTwo) {
+  if (((int)fontVariant & (int)FontVariant::StylisticTwo) != 0) {
     result += "stylistic-two" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticThree) {
+  if (((int)fontVariant & (int)FontVariant::StylisticThree) != 0) {
     result += "stylistic-three" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticFour) {
+  if (((int)fontVariant & (int)FontVariant::StylisticFour) != 0) {
     result += "stylistic-four" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticFive) {
+  if (((int)fontVariant & (int)FontVariant::StylisticFive) != 0) {
     result += "stylistic-five" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticSix) {
+  if (((int)fontVariant & (int)FontVariant::StylisticSix) != 0) {
     result += "stylistic-six" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticSeven) {
+  if (((int)fontVariant & (int)FontVariant::StylisticSeven) != 0) {
     result += "stylistic-seven" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticEight) {
+  if (((int)fontVariant & (int)FontVariant::StylisticEight) != 0) {
     result += "stylistic-eight" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticNine) {
+  if (((int)fontVariant & (int)FontVariant::StylisticNine) != 0) {
     result += "stylistic-nine" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticTen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticTen) != 0) {
     result += "stylistic-ten" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticEleven) {
+  if (((int)fontVariant & (int)FontVariant::StylisticEleven) != 0) {
     result += "stylistic-eleven" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticTwelve) {
+  if (((int)fontVariant & (int)FontVariant::StylisticTwelve) != 0) {
     result += "stylistic-twelve" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticThirteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticThirteen) != 0) {
     result += "stylistic-thirteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticFourteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticFourteen) != 0) {
     result += "stylistic-fourteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticFifteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticFifteen) != 0) {
     result += "stylistic-fifteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticSixteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticSixteen) != 0) {
     result += "stylistic-sixteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticSeventeen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticSeventeen) != 0) {
     result += "stylistic-seventeen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticEighteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticEighteen) != 0) {
     result += "stylistic-eighteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticNineteen) {
+  if (((int)fontVariant & (int)FontVariant::StylisticNineteen) != 0) {
     result += "stylistic-nineteen" + separator;
   }
-  if ((int)fontVariant & (int)FontVariant::StylisticTwenty) {
+  if (((int)fontVariant & (int)FontVariant::StylisticTwenty) != 0) {
     result += "stylistic-twenty" + separator;
   }
 

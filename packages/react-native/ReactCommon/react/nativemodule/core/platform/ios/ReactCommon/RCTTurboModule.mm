@@ -59,7 +59,7 @@ static jsi::Value convertNSNumberToJSINumber(jsi::Runtime &runtime, NSNumber *va
 
 static jsi::String convertNSStringToJSIString(jsi::Runtime &runtime, NSString *value)
 {
-  return jsi::String::createFromUtf8(runtime, [value UTF8String] ? [value UTF8String] : "");
+  return jsi::String::createFromUtf8(runtime, ([value UTF8String] != nullptr) ? [value UTF8String] : "");
 }
 
 static jsi::Object convertNSDictionaryToJSIObject(jsi::Runtime &runtime, NSDictionary *value)
@@ -124,7 +124,7 @@ static NSArray *convertJSIArrayToNSArray(
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
     id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
-    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
+    [result addObject:(convertedObject != nullptr) ? convertedObject : (id)kCFNull];
   }
   return result;
 }
@@ -142,7 +142,7 @@ static NSDictionary *convertJSIObjectToNSDictionary(
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
     id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
-    if (v) {
+    if (v != nullptr) {
       result[k] = v;
     }
   }
@@ -252,7 +252,7 @@ static jsi::Value convertJSErrorDetailsToJSRuntimeError(jsi::Runtime &runtime, N
 jsi::Value
 ObjCTurboModule::createPromise(jsi::Runtime &runtime, const std::string &methodName, PromiseInvocationBlock invoke)
 {
-  if (!invoke) {
+  if (invoke == nullptr) {
     return jsi::Value::undefined();
   }
 
@@ -388,7 +388,7 @@ id ObjCTurboModule::performMethodInvocation(
 
   void (^block)() = ^{
     id<RCTBridgeModule> strongModule = weakModule;
-    if (!strongModule) {
+    if (strongModule == nullptr) {
       return;
     }
 
@@ -457,7 +457,7 @@ void ObjCTurboModule::performVoidMethodInvocation(
 
   void (^block)() = ^{
     id<RCTBridgeModule> strongModule = weakModule;
-    if (!strongModule) {
+    if (strongModule == nullptr) {
       return;
     }
 
@@ -560,14 +560,14 @@ jsi::Value ObjCTurboModule::convertReturnIdToJSIValue(
  */
 NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *methodName, int argIndex)
 {
-  if (!methodArgumentTypeNames_) {
+  if (methodArgumentTypeNames_ == nullptr) {
     NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
 
     unsigned int numberOfMethods;
     Class cls = [instance_ class];
     Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
 
-    if (methods) {
+    if (methods != nullptr) {
       for (unsigned int i = 0; i < numberOfMethods; i++) {
         SEL s = method_getName(methods[i]);
         NSString *mName = NSStringFromSelector(s);
@@ -597,7 +597,7 @@ NSString *ObjCTurboModule::getArgumentTypeName(jsi::Runtime &runtime, NSString *
     methodArgumentTypeNames_ = methodArgumentTypeNames;
   }
 
-  if (methodArgumentTypeNames_[methodName]) {
+  if (methodArgumentTypeNames_[methodName] != nullptr) {
     assert([methodArgumentTypeNames_[methodName] count] > argIndex);
     return methodArgumentTypeNames_[methodName][argIndex];
   }
@@ -656,7 +656,7 @@ void ObjCTurboModule::setInvocationArg(
    */
   BOOL enableModuleArgumentNSNullConversionIOS = ReactNativeFeatureFlags::enableModuleArgumentNSNullConversionIOS();
   id objCArg = convertJSIValueToObjCObject(runtime, arg, jsInvoker_, enableModuleArgumentNSNullConversionIOS);
-  if (objCArg) {
+  if (objCArg != nullptr) {
     NSString *methodNameNSString = @(methodName);
 
     /**
@@ -678,7 +678,7 @@ void ObjCTurboModule::setInvocationArg(
           }
 
           [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
-          if (convertedObjCArg) {
+          if (convertedObjCArg != nullptr) {
             [retainedObjectsForInvocation addObject:convertedObjCArg];
           }
           return;
@@ -708,7 +708,7 @@ void ObjCTurboModule::setInvocationArg(
    * Insert converted args unmodified.
    */
   [inv setArgument:(void *)&objCArg atIndex:i + 2];
-  if (objCArg) {
+  if (objCArg != nullptr) {
     [retainedObjectsForInvocation addObject:objCArg];
   }
 }
@@ -848,7 +848,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
 
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, size_t argIndex)
 {
-  return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] &&
+  return (methodArgConversionSelectors_ != nullptr) && (methodArgConversionSelectors_[methodName] != nullptr) &&
       ![methodArgConversionSelectors_[methodName][argIndex] isEqual:(id)kCFNull];
 }
 
@@ -860,11 +860,11 @@ SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, size_t
 
 void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName)
 {
-  if (!methodArgConversionSelectors_) {
+  if (methodArgConversionSelectors_ == nullptr) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];
   }
 
-  if (!methodArgConversionSelectors_[methodName]) {
+  if (methodArgConversionSelectors_[methodName] == nullptr) {
     auto metaData = methodMap_.at([methodName UTF8String]);
     auto argCount = metaData.argCount;
 
