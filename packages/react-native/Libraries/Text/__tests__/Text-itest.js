@@ -18,9 +18,7 @@ import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {createRef} from 'react';
 import {Text} from 'react-native';
-import accessibilityPropsSuite, {
-  rolePropSuite,
-} from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
+import accessibilityPropsSuite from 'react-native/src/private/__tests__/utilities/accessibilityPropsSuite';
 import {testIDPropSuite} from 'react-native/src/private/__tests__/utilities/commonPropsSuite';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
@@ -443,7 +441,5 @@ describe('<Text>', () => {
     );
   }
   accessibilityPropsSuite(TestComponent, false);
-  rolePropSuite(TestComponent);
-
   testIDPropSuite(TestComponent);
 });
