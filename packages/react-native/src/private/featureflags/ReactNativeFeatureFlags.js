@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8b7c4c7178448a1ea3f55b4cdbe3b95e>>
+ * @generated SignedSource<<1a00c3c154cd9e8afac7ad9333152ac6>>
  * @flow strict
  * @noformat
  */
@@ -360,7 +360,7 @@ export const enableViewRecyclingForImage: Getter<boolean> = createNativeFlagGett
 /**
  * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
  */
-export const enableViewRecyclingForScrollView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForScrollView', true);
+export const enableViewRecyclingForScrollView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForScrollView', false);
 /**
  * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
  */
