@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a27c4788a4b87366ef1e3ee03da53ab6>>
+ * @generated SignedSource<<fe8e1bef9e0c34dc88b5edb604ded048>>
  */
 
 /**
@@ -133,6 +133,8 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
+
+  bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
 
   bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
