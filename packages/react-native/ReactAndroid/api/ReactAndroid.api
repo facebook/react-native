@@ -2354,12 +2354,14 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun sendAccessibilityEvent (II)V
 	public fun setJSResponder (IIZ)V
 	public fun stopSurface ()V
+	public fun storeSynchronousMountPropsOverride (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun sweepActiveTouchForTag (I)V
 	public fun updateEventEmitter (ILcom/facebook/react/fabric/events/EventEmitterWrapper;)V
 	public fun updateLayout (IIIIIIII)V
 	public fun updateOverflowInset (IIIII)V
 	public fun updatePadding (IIIII)V
 	public fun updateProps (ILcom/facebook/react/bridge/ReadableMap;)V
+	public fun updatePropsSynchronously (ILcom/facebook/react/bridge/ReadableMap;)V
 	public fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
 }
 

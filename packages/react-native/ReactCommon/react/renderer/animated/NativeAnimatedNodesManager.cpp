@@ -742,7 +742,8 @@ folly::dynamic NativeAnimatedNodesManager::managedProps(
     if (const auto node = getAnimatedNode<PropsAnimatedNode>(iter->second)) {
       return node->props();
     }
-  } else {
+  } else if (!ReactNativeFeatureFlags::
+                 overrideBySynchronousMountPropsAtMountingAndroid()) {
     std::lock_guard<std::mutex> lockUnsyncedDirectViewProps(
         unsyncedDirectViewPropsMutex_);
     if (auto it = unsyncedDirectViewProps_.find(tag);
@@ -761,7 +762,8 @@ bool NativeAnimatedNodesManager::hasManagedProps() const noexcept {
       return true;
     }
   }
-  {
+  if (!ReactNativeFeatureFlags::
+          overrideBySynchronousMountPropsAtMountingAndroid()) {
     std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
     if (!unsyncedDirectViewProps_.empty()) {
       return true;
@@ -771,10 +773,13 @@ bool NativeAnimatedNodesManager::hasManagedProps() const noexcept {
 }
 
 void NativeAnimatedNodesManager::onManagedPropsRemoved(Tag tag) noexcept {
-  std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
-  if (auto iter = unsyncedDirectViewProps_.find(tag);
-      iter != unsyncedDirectViewProps_.end()) {
-    unsyncedDirectViewProps_.erase(iter);
+  if (!ReactNativeFeatureFlags::
+          overrideBySynchronousMountPropsAtMountingAndroid()) {
+    std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
+    if (auto iter = unsyncedDirectViewProps_.find(tag);
+        iter != unsyncedDirectViewProps_.end()) {
+      unsyncedDirectViewProps_.erase(iter);
+    }
   }
 }
 
@@ -828,7 +833,8 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     mergeObjects(updateViewPropsDirect_[viewTag], props);
   } else if (!layoutStyleUpdated && directManipulationCallback_ != nullptr) {
     mergeObjects(updateViewPropsDirect_[viewTag], props);
-    {
+    if (!ReactNativeFeatureFlags::
+            overrideBySynchronousMountPropsAtMountingAndroid()) {
       std::lock_guard<std::mutex> lock(unsyncedDirectViewPropsMutex_);
       mergeObjects(unsyncedDirectViewProps_[viewTag], props);
     }

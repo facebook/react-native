@@ -791,7 +791,8 @@ public class FabricUIManager
           @Override
           public void execute(MountingManager mountingManager) {
             try {
-              mountingManager.updateProps(reactTag, props);
+              mountingManager.storeSynchronousMountPropsOverride(reactTag, props);
+              mountingManager.updatePropsSynchronously(reactTag, props);
             } catch (Exception ex) {
               // TODO T42943890: Fix animations in Fabric and remove this try/catch?
               // There might always be race conditions between surface teardown and
