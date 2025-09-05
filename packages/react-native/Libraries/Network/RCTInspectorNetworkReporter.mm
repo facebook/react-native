@@ -10,9 +10,9 @@
 #import "RCTNetworkConversions.h"
 
 #import <React/RCTLog.h>
-#import <jsinspector-modern/network/NetworkReporter.h>
+#import <react/networking/NetworkReporter.h>
 
-using namespace facebook::react::jsinspector_modern;
+using namespace facebook::react;
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 namespace {
