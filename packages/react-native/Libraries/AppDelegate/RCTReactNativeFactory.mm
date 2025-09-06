@@ -11,6 +11,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <React/RCTDevMenu.h>
 #import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSCanary.h>
@@ -82,7 +83,8 @@ using namespace facebook::react;
 {
   UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
                                             initialProperties:initialProperties
-                                                launchOptions:launchOptions];
+                                                launchOptions:launchOptions
+                                         devMenuConfiguration:self.devMenuConfiguration];
   UIViewController *rootViewController = [_delegate createRootViewController];
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;

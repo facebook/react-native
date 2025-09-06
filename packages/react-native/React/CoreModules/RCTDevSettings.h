@@ -81,6 +81,11 @@
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
 /**
+ * Whether shake gesture is enabled.
+ */
+@property (nonatomic, assign) BOOL isShakeGestureEnabled;
+
+/**
  * Toggle the element inspector.
  */
 - (void)toggleElementInspector;
