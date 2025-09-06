@@ -19,14 +19,14 @@ import type {
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
 import invariant from 'invariant';
 import * as React from 'react';
-import {isValidElement} from 'react';
 import {StyleSheet, View} from 'react-native';
 
 export type Props<ItemT> = {
   CellRendererComponent?: ?React.ComponentType<CellRendererProps<ItemT>>,
-  ItemSeparatorComponent: ?React.ComponentType<
-    any | {highlighted: boolean, leadingItem: ?ItemT},
-  >,
+  ItemSeparatorComponent?: ?(
+    | React.ComponentType<any | {highlighted: boolean, leadingItem: ?ItemT}>
+    | React.MixedElement
+  ),
   ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
@@ -194,13 +194,14 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
 
     // NOTE: that when this is a sticky header, `onLayout` will get automatically extracted and
     // called explicitly by `ScrollViewStickyHeader`.
-    const itemSeparator: React.Node = isValidElement(ItemSeparatorComponent)
-      ? // $FlowFixMe[incompatible-type]
+    const itemSeparator: ExactReactElement_DEPRECATED<any> =
+      ((React.isValidElement(ItemSeparatorComponent) ? (
         ItemSeparatorComponent
-      : // $FlowFixMe[incompatible-type]
-        ItemSeparatorComponent && (
-          <ItemSeparatorComponent {...this.state.separatorProps} />
-        );
+      ) : (
+        // $FlowFixMe[not-a-component]
+        // $FlowFixMe[incompatible-type]
+        <ItemSeparatorComponent {...this.state.separatorProps} />
+      )): any);
     const cellStyle = inversionStyle
       ? horizontal
         ? [styles.rowReverse, inversionStyle]
