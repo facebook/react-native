@@ -19,6 +19,7 @@ import com.facebook.react.FBRNTesterEndToEndHelper
 import com.facebook.react.ReactActivity
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.facebook.react.devsupport.DevMenuConfiguration
 import java.io.FileDescriptor
 import java.io.PrintWriter
 
