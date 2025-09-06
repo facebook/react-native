@@ -146,8 +146,9 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Linear Gradient
    */
-  experimental_backgroundImage: {process: processBackgroundImage},
-
+  experimental_backgroundImage: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? true
+    : {process: processBackgroundImage},
   /**
    * View
    */
