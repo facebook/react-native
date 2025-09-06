@@ -22,6 +22,9 @@
   <a href="https://twitter.com/intent/follow?screen_name=reactnative">
     <img src="https://img.shields.io/twitter/follow/reactnative.svg?label=Follow%20@reactnative" alt="Follow @reactnative" />
   </a>
+  <a href="https://bsky.app/profile/reactnative.dev">
+    <img src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff" alt="Follow @reactnative.dev" />
+  </a>
 </p>
 
 <h3 align="center">
