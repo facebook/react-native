@@ -27,15 +27,6 @@ folly::dynamic headersToDynamic(const std::optional<Headers>& headers) {
 
 } // namespace
 
-/* static */ Request Request::fromInputParams(const RequestInfo& requestInfo) {
-  return {
-      .url = requestInfo.url,
-      .method = requestInfo.httpMethod,
-      .headers = requestInfo.headers,
-      .postData = requestInfo.httpBody,
-  };
-}
-
 folly::dynamic Request::toDynamic() const {
   folly::dynamic result = folly::dynamic::object;
 
@@ -48,16 +39,16 @@ folly::dynamic Request::toDynamic() const {
 }
 
 /* static */ Response Response::fromInputParams(
-    const ResponseInfo& responseInfo,
+    const std::string& url,
+    uint16_t status,
+    const std::optional<Headers>& headers,
     int encodedDataLength) {
-  auto headers = responseInfo.headers.value_or(Headers());
-
   return {
-      .url = responseInfo.url,
-      .status = responseInfo.statusCode,
-      .statusText = httpReasonPhrase(responseInfo.statusCode),
+      .url = url,
+      .status = status,
+      .statusText = httpReasonPhrase(status),
       .headers = headers,
-      .mimeType = mimeTypeFromHeaders(headers),
+      .mimeType = mimeTypeFromHeaders(headers.value_or(Headers())),
       .encodedDataLength = encodedDataLength,
   };
 }
