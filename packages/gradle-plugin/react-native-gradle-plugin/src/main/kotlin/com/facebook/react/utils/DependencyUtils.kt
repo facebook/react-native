@@ -80,11 +80,11 @@ internal object DependencyUtils {
           }
         }
         repositories.google { repo ->
-          repo.content {
+          repo.content { content ->
             // We don't want to fetch JSC or React from Google
-            it.excludeGroup("org.webkit")
-            it.excludeGroup("io.github.react-native-community")
-            it.excludeGroup("com.facebook.react")
+            content.excludeGroup("org.webkit")
+            content.excludeGroup("io.github.react-native-community")
+            content.excludeGroup("com.facebook.react")
           }
         }
         if (shouldAddJitPack()) {
