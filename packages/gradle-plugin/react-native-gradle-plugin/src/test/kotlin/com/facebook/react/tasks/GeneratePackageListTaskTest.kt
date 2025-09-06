@@ -33,9 +33,9 @@ class GeneratePackageListTaskTest {
     val inputFile = tempFolder.newFile("config.json")
 
     val task =
-        createTestTask<GeneratePackageListTask> {
-          it.generatedOutputDirectory.set(outputFolder)
-          it.autolinkInputFile.set(inputFile)
+        createTestTask<GeneratePackageListTask> { task ->
+          task.generatedOutputDirectory.set(outputFolder)
+          task.autolinkInputFile.set(inputFile)
         }
 
     assertThat(task.inputs.files.singleFile).isEqualTo(inputFile)
