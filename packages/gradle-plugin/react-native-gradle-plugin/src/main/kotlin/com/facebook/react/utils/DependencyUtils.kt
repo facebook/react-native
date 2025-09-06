@@ -13,6 +13,7 @@ import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_PUBLISHING_GROUP
@@ -31,6 +32,7 @@ internal object DependencyUtils {
   internal data class Coordinates(
       val versionString: String,
       val hermesVersionString: String,
+      val hermesV1VersionString: String,
       val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
       val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
   )
@@ -133,7 +135,7 @@ internal object DependencyUtils {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
           configuration.resolutionStrategy.force(
-              "${coordinates.reactGroupString}:hermes-android:${coordinates.versionString}"
+              "${coordinates.hermesGroupString}:hermes-android:${if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString}"
           )
         }
       }
@@ -148,8 +150,8 @@ internal object DependencyUtils {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
     val hermesVersionString =
         if (hermesV1Enabled)
-            "${coordinates.hermesGroupString}:hermes-android:${coordinates.versionString}"
-        else "${coordinates.reactGroupString}:hermes-android:${coordinates.versionString}"
+            "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
+        else "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesVersionString}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
@@ -172,9 +174,11 @@ internal object DependencyUtils {
               "The react-android dependency was modified to use the correct Maven group.",
           )
       )
+    }
+    if (coordinates.hermesVersionString != DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
-              "com.facebook.react:hermes-android",
+              "com.facebook.hermes:hermes-android",
               hermesVersionString,
               "The hermes-android dependency was modified to use the correct Maven group.",
           )
@@ -191,12 +195,23 @@ internal object DependencyUtils {
     // hermes version
     val hermesVersionStringFromFile =
         (reactAndroidProperties[INTERNAL_HERMES_VERSION_NAME] as? String).orEmpty()
+    val hermesV1VersionStringFromFile =
+        (reactAndroidProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
     // If on a nightly, we need to fetch the -SNAPSHOT artifact from Sonatype.
     val versionString =
         if (versionStringFromFile.startsWith("0.0.0") || "-nightly-" in versionStringFromFile) {
           "$versionStringFromFile-SNAPSHOT"
         } else {
           versionStringFromFile
+        }
+    val hermesVersionString =
+        if (
+            hermesVersionStringFromFile.startsWith("0.0.0") ||
+                "-commitly-" in hermesVersionStringFromFile
+        ) {
+          "$hermesVersionStringFromFile-SNAPSHOT"
+        } else {
+          hermesVersionStringFromFile
         }
     // Returns Maven group for repos using different group for Maven artifacts
     val reactGroupString =
@@ -207,7 +222,8 @@ internal object DependencyUtils {
             ?: DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP
     return Coordinates(
         versionString,
-        hermesVersionStringFromFile,
+        hermesVersionString,
+        hermesV1VersionStringFromFile,
         reactGroupString,
         hermesGroupString,
     )

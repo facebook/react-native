@@ -81,4 +81,6 @@ object PropertyUtils {
   const val INTERNAL_VERSION_NAME = "VERSION_NAME"
   /** Internal property used to control the version name of Hermes Engine */
   const val INTERNAL_HERMES_VERSION_NAME = "HERMES_VERSION_NAME"
+  /** Internal property used to control the version name of Hermes V1 */
+  const val INTERNAL_HERMES_V1_VERSION_NAME = "HERMES_V1_VERSION_NAME"
 }
