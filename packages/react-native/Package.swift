@@ -211,6 +211,18 @@ let reactHermes = RNTarget(
   ]
 )
 
+/// React-networking.podspec
+let reactNetworking = RNTarget(
+  name: .reactNetworking,
+  path: "ReactCommon/react/networking",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactJsInspectorNetwork, .reactPerformanceTimeline],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
+)
+
 /// React-performancecdpmetrics.podspec
 let reactPerformanceCdpMetrics = RNTarget(
   name: .reactPerformanceCdpMetrics,
@@ -566,6 +578,7 @@ let targets = [
   reactNativeDependencies,
   hermesPrebuilt,
   reactJsiTooling,
+  reactNetworking,
   reactPerformanceCdpMetrics,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
@@ -737,6 +750,7 @@ extension String {
   static let hermesPrebuilt = "hermes-prebuilt"
 
   static let reactJsiTooling = "React-jsitooling"
+  static let reactNetworking = "React-networking"
   static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
   static let reactPerformanceTimeline = "React-performancetimeline"
   static let reactRuntimeScheduler = "React-runtimescheduler"

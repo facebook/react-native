@@ -19,31 +19,32 @@ end
 header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
-  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../..\""
+  header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../..\"" # this is needed to allow the feature flags access its own files
 end
 
-header_dir = 'jsinspector-modern/network'
-module_name = "jsinspector_modernnetwork"
-
 Pod::Spec.new do |s|
-  s.name                   = "React-jsinspectornetwork"
+  s.name                   = "React-networking"
   s.version                = version
-  s.summary                = "Network inspection for React Native DevTools"
+  s.summary                = "Common networking modules for React Native"
   s.homepage               = "https://reactnative.dev/"
   s.license                = package["license"]
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
-  s.header_dir             = header_dir
-  s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-    "DEFINES_MODULE" => "YES"}
+  s.header_dir             = "react/networking"
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
+                               "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
+                               "DEFINES_MODULE" => "YES" }
 
-  resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: module_name)
-
-  add_dependency(s, "React-jsinspectorcdp", :framework_name => 'jsinspector_moderncdp')
+  if ENV['USE_FRAMEWORKS'] && ReactNativeCoreUtils.build_rncore_from_source()
+    s.module_name            = "React_networking"
+    s.header_mappings_dir  = "../.."
+  end
+  add_dependency(s, "React-featureflags")
+  add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
+  s.dependency "React-performancetimeline"
+  s.dependency "React-timing"
 
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
