@@ -1341,7 +1341,6 @@ public class SurfaceMountingManager {
     final boolean mIsRoot;
     @Nullable ViewManager mViewManager = null;
     @Nullable ReactStylesDiffMap mCurrentProps = null;
-    @Nullable ReadableMap mCurrentLocalData = null;
     @Nullable StateWrapper mStateWrapper = null;
     @Nullable EventEmitterWrapper mEventEmitter = null;
 
@@ -1371,8 +1370,6 @@ public class SurfaceMountingManager {
           + mIsRoot
           + " - props: "
           + mCurrentProps
-          + " - localData: "
-          + mCurrentLocalData
           + " - viewManager: "
           + mViewManager
           + " - isLayoutOnly: "
