@@ -88,7 +88,7 @@ val hermesVersionProvider: Provider<String> =
       val hermesVersionFile =
           File(
               reactNativeRootDir,
-              if (hermesV1Enabled) "sdks/.hermesv1version" else "\"sdks/.hermesversion\"",
+              if (hermesV1Enabled) "sdks/.hermesv1version" else "sdks/.hermesversion",
           )
 
       if (hermesVersionFile.exists()) {
