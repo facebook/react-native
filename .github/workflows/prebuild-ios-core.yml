@@ -94,6 +94,17 @@ jobs:
         run: |
           cd packages/react-native
           node scripts/ios-prebuild.js -s -f "${{ matrix.flavor }}"
+      - name: Update React Native versions
+        shell: bash
+        if: steps.restore-ios-slice.outputs.cache-hit != 'true' && startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=$(echo "${GITHUB_REF#refs/tags/v}")
+          if [[ -z "$VERSION" ]]; then
+            # If no version defined, exit.
+            exit 0
+          fi
+
+          node scripts/releases/set-version.js $VERSION
       - name: Build React Native
         if: steps.restore-ios-slice.outputs.cache-hit != 'true'
         shell: bash
