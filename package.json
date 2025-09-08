@@ -100,7 +100,7 @@
     "jsonc-parser": "2.2.1",
     "markdownlint-cli2": "^0.17.2",
     "markdownlint-rule-relative-links": "^3.0.0",
-    "memfs": "^4.7.7",
+    "memfs": "^4.38.2",
     "metro-babel-register": "^0.83.1",
     "metro-transform-plugins": "^0.83.1",
     "micromatch": "^4.0.4",
