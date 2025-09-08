@@ -238,11 +238,11 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 - (void)interfaceOrientationDidChange
 {
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
-  UIApplication *application = RCTSharedApplication();
   UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
-
-  BOOL isRunningInFullScreen =
-      CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
+  UIWindow *delegateWindow = RCTKeyWindow();
+  
+  BOOL isRunningInFullScreen = delegateWindow ?
+      CGRectEqualToRect(delegateWindow.frame, delegateWindow.screen.bounds) : YES;
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen->
