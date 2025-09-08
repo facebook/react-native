@@ -1,0 +1,48 @@
+name: Validate DotSlash Artifacts
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+  push:
+    branches:
+      - main
+    paths:
+      - packages/debugger-shell/bin/react-native-devtools
+      - "scripts/releases/**"
+      - package.json
+      - yarn.lock
+  pull_request:
+    branches:
+      - main
+    paths:
+      - packages/debugger-shell/bin/react-native-devtools
+      - "scripts/releases/**"
+      - package.json
+      - yarn.lock
+  # Same time as the nightly build: 2:15 AM UTC
+  schedule:
+    - cron: "15 2 * * *"
+
+jobs:
+  validate-dotslash-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install dependencies
+        uses: ./.github/actions/yarn-install
+      - name: Configure Git
+        shell: bash
+        run: |
+          git config --local user.email "bot@reactnative.dev"
+          git config --local user.name "React Native Bot"
+      - name: Validate DotSlash artifacts
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const {validateDotSlashArtifacts} = require('./scripts/releases/validate-dotslash-artifacts.js');
+            await validateDotSlashArtifacts();
