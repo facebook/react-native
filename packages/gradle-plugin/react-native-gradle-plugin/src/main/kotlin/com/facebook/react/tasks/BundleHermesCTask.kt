@@ -7,6 +7,7 @@
 
 package com.facebook.react.tasks
 
+import com.facebook.react.internal.PrivateReactExtension
 import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.detectOSAwareHermesCommand
 import com.facebook.react.utils.moveTo
@@ -95,9 +96,10 @@ abstract class BundleHermesCTask : DefaultTask() {
 
     if (hermesEnabled.get()) {
       val hermesV1Enabled =
-          if (project.rootProject.hasProperty("hermesV1Enabled"))
-              project.rootProject.findProperty("hermesV1Enabled") == "true"
-          else false
+          project.rootProject.extensions
+              .getByType(PrivateReactExtension::class.java)
+              .hermesV1Enabled
+              .get()
       val detectedHermesCommand =
           detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get(), hermesV1Enabled)
       val bytecodeFile = File("${bundleFile}.hbc")
