@@ -1,6 +1,6 @@
 #!/usr/bin/env dotslash
 
-// @generated SignedSource<<e93d55b5e28943e44271f5d3738083e0>>
+// @generated SignedSource<<f413a95849f40718f06ee03ed49972bb>>
 
 
 {
@@ -11,6 +11,9 @@
             "hash": "sha256",
             "digest": "4352f1c9848ca919101ec628bd08b87a72a828d1ab55fa43a02098329fa452fa",
             "providers": [
+                {
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.82.0-rc.1/React.Native.DevTools-linux-aarch64.tar.gz"
+                },
                 {
                     "type": "http",
                     "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQM24LW0nPZRk0ypuIG9prz_72YjBJNcVlGSIEpO4zdlLXgw4dFNodH7MKg9eKNTnx7wrVDDBNACrnEPt_OfXOjZyZsV9Oaqu0-vNFRdlEyis4YqmpqGLtz3LvD-9R6fzcWxJI9zrhdPvOvlXP-3Syt1UNITaxXDVqIwAAYpCaAh0oLpupAFCc2yvYw"
@@ -25,6 +28,9 @@
             "digest": "11c7b07942928a6301b07fbf2bc77ce1229b2a52891f23541cdd9858b5250e64",
             "providers": [
                 {
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.82.0-rc.1/React.Native.DevTools-linux-x86_64.tar.gz"
+                },
+                {
                     "type": "http",
                     "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQNDwm7HZRhtNxHqMr1FfSb0afHFGrn1OHxH0gOiggrLrht9QRUgJ3GG5jj7huhQzMRogE-LCMsnxh1ioOZks-YYX4KRt6Kj1-whdWsGFc7lBhPOpk1ssbYFGN1NNyuyFRmH-3nCY3lBC4AmbCUkbDTUeCi9DidCtJeyc73CZJEu7M62rIzxR2yV"
                 }
@@ -37,6 +43,9 @@
             "hash": "sha256",
             "digest": "3cbe8b1b3d17e433347f1601435bb9a6cb758528a5c176a66fc52d9977223175",
             "providers": [
+                {
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.82.0-rc.1/React.Native.DevTools-macos-aarch64.tar.gz"
+                },
                 {
                     "type": "http",
                     "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQOmC2cqqSv4OrSJKJroYVg_NE8OE4O73AXqY7wXiYqiWQVkDt0Xnyw3ZeUpQT_Qb0-OoT5F8REKoFrB6eqwat8Ovkyina30peYTTwNUzmwnnGQEg7J0fOHNxLF4dkmU1FagXtsoWgex4dKgsK_VpcMsHj3Vp7diomkYvWBVTf_gPVEseYSN9oKq92qa"
@@ -51,6 +60,9 @@
             "digest": "6fb79bc2ba3008401b4c9c128248657b95b98581ccde60f8fadb622163779775",
             "providers": [
                 {
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.82.0-rc.1/React.Native.DevTools-macos-x86_64.tar.gz"
+                },
+                {
                     "type": "http",
                     "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQMMtGn-YGdfLfTVWC8zbQkQx65Asq6iArKt1t__cjZ8UY_s6-sX5XBHr8k1SaexAO21dFZENQVZ1jW_wn_gJ9ENvosQDG1KfWMViKsHli0xRzZ1HVsgPIj_KVXe907QZwwtJf2XhgH0HT8dfH-AQdDcd0_TB5DFUwOsHzhH0nBrHet7YFkbJtPTaA"
                 }
@@ -63,6 +75,9 @@
             "hash": "sha256",
             "digest": "579a5b0944c51c3b1b541ad5af66c1ffedf93cae2a891ecdf88cb7219fd9b096",
             "providers": [
+                {
+                    "url": "https://github.com/facebook/react-native/releases/download/v0.82.0-rc.1/React.Native.DevTools-windows-x86_64.tar.gz"
+                },
                 {
                     "type": "http",
                     "url": "https://scontent.xx.fbcdn.net/mci_ab/uap/?ab_b=m&ab_page=react_native_devtools_binaries&ab_entry=AQOQ3E8lBXqdVHbDPyVb5AOQMrDWjFrFV8fnLLBsygQvLWdpu6ixyG9PgWdwpi5jM-XcDdCHkhBdhaq-5dwT_tgRWKCAMsEBoAIUk0Xg77mGyHG2VF7bNfQ2qFBMuObrsTmrKy1nJ-UFDDm29pJD4GkFQW5NesiBwndJj8t3B8Ur8cczh_XR8rF5"
