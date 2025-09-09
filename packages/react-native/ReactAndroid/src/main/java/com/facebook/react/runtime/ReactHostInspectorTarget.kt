@@ -43,7 +43,7 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun tracingStateAsInt(): Int
 
-  fun tracingState(): TracingState {
+  override fun getTracingState(): TracingState {
     return TracingState.entries[tracingStateAsInt()]
   }
 

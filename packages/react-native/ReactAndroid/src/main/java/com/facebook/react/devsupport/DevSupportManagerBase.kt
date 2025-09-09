@@ -68,6 +68,7 @@ import com.facebook.react.devsupport.interfaces.StackFrame
 import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.devsupport.interfaces.TracingStateProvider
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
@@ -77,6 +78,7 @@ import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
+import javax.inject.Provider
 
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
@@ -182,7 +184,7 @@ public abstract class DevSupportManagerBase(
           null
         }
 
-  private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
+  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
   private var tracingStateProvider: TracingStateProvider? = null
 
   init {
@@ -215,19 +217,19 @@ public abstract class DevSupportManagerBase(
     if (
         ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
             ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
-            reactInstanceDevHelper is PerfMonitorDevHelper &&
-            perfMonitorOverlayManager == null
+            reactInstanceDevHelper is PerfMonitorDevHelper
     ) {
       perfMonitorOverlayManager =
-          PerfMonitorOverlayViewManager(
-              Supplier {
+          PerfMonitorOverlayManager(
+              reactInstanceDevHelper,
+              Provider {
                 val context = reactInstanceDevHelper.currentActivity
                 if (context == null || context.isFinishing) {
-                  return@Supplier null
+                  return@Provider null
                 }
                 context
               },
-              reactInstanceDevHelper.inspectorTarget,
+              { openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString()) },
           )
     }
   }
@@ -548,10 +550,11 @@ public abstract class DevSupportManagerBase(
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     resetCurrentContext(reactContext)
 
-    if (perfMonitorOverlayManager != null && reactInstanceDevHelper is PerfMonitorDevHelper) {
+    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
       }
+      perfMonitorOverlayManager?.enable()
     }
   }
 
@@ -882,6 +885,7 @@ public abstract class DevSupportManagerBase(
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
+              perfMonitorOverlayManager?.disable()
             }
 
             override fun onPackagerReloadCommand() {
