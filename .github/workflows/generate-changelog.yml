@@ -10,6 +10,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           fetch-depth: 0
           fetch-tags: true
       - name: Install dependencies
@@ -22,6 +23,7 @@ jobs:
       - name: Generate Changelog
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             const {generateChangelog} = require('./.github/workflow-scripts/generateChangelog');
             const version = '${{ github.ref_name }}';
