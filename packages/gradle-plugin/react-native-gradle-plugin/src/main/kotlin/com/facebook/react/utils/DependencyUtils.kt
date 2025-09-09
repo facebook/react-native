@@ -135,11 +135,7 @@ internal object DependencyUtils {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
           configuration.resolutionStrategy.force(
-              // TODO: T237406039 update coordinates
-              if (hermesV1Enabled)
-                  "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-              else
-                  "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+              "${coordinates.hermesGroupString}:hermes-android:${if (hermesV1Enabled) coordinates.hermesV1VersionString else coordinates.hermesVersionString}"
           )
         }
       }
@@ -152,10 +148,9 @@ internal object DependencyUtils {
   ): List<Triple<String, String, String>> {
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
     val hermesVersionString =
-        // TODO: T237406039 update coordinates
         if (hermesV1Enabled)
             "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-        else "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+        else "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesVersionString}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
@@ -182,9 +177,7 @@ internal object DependencyUtils {
     if (coordinates.hermesVersionString != DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
-              // TODO: T237406039 update coordinates
-              if (hermesV1Enabled) "com.facebook.hermes:hermes-android"
-              else "com.facebook.react:hermes-android",
+              "com.facebook.hermes:hermes-android",
               hermesVersionString,
               "The hermes-android dependency was modified to use the correct Maven group.",
           )
