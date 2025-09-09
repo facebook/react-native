@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport
+package com.facebook.react.devsupport.perfmonitor
 
 import android.app.Dialog
 import android.content.Context
@@ -20,107 +20,110 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.util.Supplier
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.react.R
-import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.interfaces.PerfMonitorOverlayManager
 import com.facebook.react.devsupport.interfaces.TracingState
-import com.facebook.react.devsupport.perfmonitor.PerfMonitorInspectorTargetBinding
-import com.facebook.react.devsupport.perfmonitor.PerfMonitorUpdateListener
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
 import java.util.Locale
 
-internal class PerfMonitorOverlayViewManager(
-    private val contextSupplier: Supplier<Context?>,
-    private val inspectorTarget: PerfMonitorInspectorTargetBinding?,
-) : PerfMonitorOverlayManager, PerfMonitorUpdateListener {
-  private var initialized: Boolean = false
-  private var enabled: Boolean = false
-  private var hasInteractionData: Boolean = false
-  private var interactionDialog: Dialog? = null
-  private var buttonDialog: Dialog? = null
-  private var durationLabel: TextView? = null
+internal class PerfMonitorOverlayView(
+    private val context: Context,
+    private val onButtonPress: () -> Unit,
+) {
+  private var hidden: Boolean = true
+  private var hasEventData: Boolean = false
+  private val metricsDialog: Dialog
+  private val toolbarDialog: Dialog
+  private val tooltipDialog: Dialog
+  private lateinit var buttonLabel: TextView
+  private lateinit var recordingStateLabel: TextView
+  private lateinit var durationLabel: TextView
+  private lateinit var tooltipLabel: TextView
   private var ttl: Int = 0
   private var hideAfterTimeoutHandler: Handler? = null
 
-  override fun enable() {
-    UiThreadUtil.runOnUiThread {
-      enabled = true
-      if (hasInteractionData) {
-        showOverlay()
-      }
-    }
-  }
-
-  override fun disable() {
-    UiThreadUtil.runOnUiThread {
-      enabled = false
-      hideOverlay()
-    }
-  }
-
-  override fun reset() {
-    UiThreadUtil.runOnUiThread {
-      hasInteractionData = false
-      hideOverlay()
-    }
-  }
-
-  override fun onRecordingStateChanged(state: TracingState) {
-    // recordingState = state
-    // view?.updateRecordingState(state)
-  }
-
-  override fun onNewFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
-    UiThreadUtil.runOnUiThread {
-      ensureInitialized()
-      durationLabel?.text = String.format(Locale.US, "%d ms", data.durationMs)
-      durationLabel?.setTextColor(getDurationHighlightColor(data.responsivenessScore))
-      hasInteractionData = true
-      ttl = data.ttl
-
-      hideAfterTimeoutHandler?.removeCallbacksAndMessages(null)
-
-      if (enabled) {
-        showOverlay()
-
-        // Schedule hiding overlay after ttl milliseconds
-        if (ttl > 0) {
-          if (hideAfterTimeoutHandler == null) {
-            hideAfterTimeoutHandler = Handler(Looper.getMainLooper())
-          }
-          hideAfterTimeoutHandler?.postDelayed({ hideOverlay() }, ttl.toLong())
-        }
-      }
-    }
-  }
-
-  private fun ensureInitialized() {
-    if (initialized) {
-      return
-    }
-    val context = contextSupplier.get() ?: return
+  init {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
-    createDialog(context)
-    createButton(context)
-    initialized = true
+    tooltipDialog = createTooltipDialog()
+    metricsDialog = createMetricsDialog()
+    toolbarDialog = createToolbarDialog()
   }
 
-  private fun showOverlay() {
-    interactionDialog?.show()
-    buttonDialog?.show()
+  fun show() {
+    toolbarDialog.show()
+    tooltipDialog.show()
+    if (hasEventData) {
+      toolbarDialog.window?.decorView?.post { updateMetricsDialogPosition() }
+      metricsDialog.show()
+    }
+    hidden = false
   }
 
-  private fun hideOverlay() {
-    interactionDialog?.hide()
-    buttonDialog?.hide()
+  fun hide() {
+    metricsDialog.hide()
+    toolbarDialog.hide()
+    tooltipDialog.hide()
+    hidden = true
   }
 
-  private fun createDialog(context: Context) {
-    val containerLayout = createInnerLayout(context)
+  fun resetState() {
+    hasEventData = false
+    metricsDialog.hide()
+  }
+
+  fun updateFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
+    durationLabel.text = String.format(Locale.US, "%d ms", data.durationMs)
+    durationLabel.setTextColor(getDurationHighlightColor(data.responsivenessScore))
+    hasEventData = true
+    ttl = data.ttl
+
+    hideAfterTimeoutHandler?.removeCallbacksAndMessages(null)
+
+    if (!hidden) {
+      metricsDialog.show()
+
+      // Schedule hiding metrics overlay after ttl milliseconds
+      if (ttl > 0) {
+        if (hideAfterTimeoutHandler == null) {
+          hideAfterTimeoutHandler = Handler(Looper.getMainLooper())
+        }
+        hideAfterTimeoutHandler?.postDelayed({ metricsDialog.hide() }, ttl.toLong())
+      }
+    }
+  }
+
+  fun updateRecordingState(state: TracingState) {
+    recordingStateLabel.text =
+        when (state) {
+          TracingState.ENABLEDINBACKGROUNDMODE -> "Profiling: ON"
+          TracingState.DISABLED -> "Profiling: OFF"
+          TracingState.ENABLEDINCDPMODE -> "Profiling: DISABLED"
+        }
+    buttonLabel.text =
+        when (state) {
+          TracingState.ENABLEDINBACKGROUNDMODE -> "Open ↗️"
+          TracingState.DISABLED -> "Start"
+          TracingState.ENABLEDINCDPMODE -> ""
+        }
+    tooltipLabel.text =
+        when (state) {
+          TracingState.ENABLEDINBACKGROUNDMODE -> "Dev Menu > Finish performance trace"
+          TracingState.DISABLED -> "Dev Menu > Start performance trace"
+          TracingState.ENABLEDINCDPMODE -> ""
+        }
+    if (state == TracingState.ENABLEDINCDPMODE) {
+      tooltipDialog.hide()
+    } else {
+      tooltipDialog.show()
+    }
+
+    toolbarDialog.window?.decorView?.post { updateMetricsDialogPosition() }
+  }
+
+  private fun createMetricsDialog(): Dialog {
+    val containerLayout = createInnerLayout()
     val longTaskLabel =
         TextView(context).apply {
           textSize = TEXT_SIZE_PRIMARY
@@ -138,7 +141,7 @@ internal class PerfMonitorOverlayViewManager(
     containerLayout.addView(durationLabel)
 
     val dialog =
-        createAnchoredDialog(context, dpToPx(140f), dpToPx(16f)).apply {
+        createAnchoredDialog(getMetricsDialogOffsetX(), dpToPx(16f)).apply {
           setContentView(containerLayout)
         }
     dialog.window?.apply {
@@ -151,30 +154,25 @@ internal class PerfMonitorOverlayViewManager(
           }
     }
 
-    this.interactionDialog = dialog
+    return dialog
   }
 
-  fun updateRecordingState(state: TracingState) {}
-
-  private fun createButton(context: Context) {
-    val buttonInner = createInnerLayout(context)
-    buttonInner.addView(
+  private fun createToolbarDialog(): Dialog {
+    val buttonInner = createInnerLayout()
+    recordingStateLabel =
         TextView(context).apply {
-          text = "Analyze"
           textSize = TEXT_SIZE_PRIMARY
           setTextColor(Color.WHITE)
           typeface = TYPEFACE_BOLD
         }
-    )
-    buttonInner.addView(
+    buttonInner.addView(recordingStateLabel)
+    buttonLabel =
         TextView(context).apply {
-          text = "cmd + A"
-          textSize = TEXT_SIZE_ACCESSORY
-          setTextColor(Color.WHITE)
-          alpha = 0.7f
+          textSize = TEXT_SIZE_PRIMARY
+          setTextColor(COLOR_TEXT_BLUE)
           typeface = TYPEFACE_BOLD
         }
-    )
+    buttonInner.addView(buttonLabel)
     val buttonView =
         LinearLayout(context).apply {
           orientation = LinearLayout.VERTICAL
@@ -185,19 +183,43 @@ internal class PerfMonitorOverlayViewManager(
               dpToPx(8f).toInt(),
           )
           addView(buttonInner)
-          setOnClickListener { inspectorTarget?.pauseAndAnalyzeBackgroundTrace() }
+          setOnClickListener { onButtonPress() }
         }
-    val dialog =
-        createAnchoredDialog(context, dpToPx(0f), dpToPx(0f)).apply { setContentView(buttonView) }
+
+    val dialog = createAnchoredDialog(dpToPx(0f), dpToPx(0f)).apply { setContentView(buttonView) }
     dialog.window?.apply {
       attributes =
           attributes?.apply { flags = flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE }
     }
 
-    this.buttonDialog = dialog
+    return dialog
   }
 
-  private fun createAnchoredDialog(context: Context, offsetX: Float, offsetY: Float): Dialog {
+  private fun createTooltipDialog(): Dialog {
+    val containerLayout = createInnerLayout()
+    tooltipLabel =
+        TextView(context).apply {
+          textSize = TEXT_SIZE_ACCESSORY
+          setTextColor(Color.WHITE)
+        }
+    containerLayout.addView(tooltipLabel)
+
+    val dialog =
+        createAnchoredDialog(dpToPx(16f), dpToPx(52f)).apply { setContentView(containerLayout) }
+    dialog.window?.apply {
+      attributes =
+          attributes?.apply {
+            flags =
+                flags or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+          }
+    }
+
+    return dialog
+  }
+
+  private fun createAnchoredDialog(offsetX: Float, offsetY: Float): Dialog {
     val dialog =
         Dialog(context, R.style.NoAnimationDialog).apply {
           requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -228,12 +250,12 @@ internal class PerfMonitorOverlayViewManager(
     return dialog
   }
 
-  private fun createInnerLayout(context: Context): LinearLayout {
+  private fun createInnerLayout(): LinearLayout {
     return LinearLayout(context).apply {
       orientation = LinearLayout.HORIZONTAL
       gravity = Gravity.CENTER_VERTICAL
       val paddingHorizontal = dpToPx(14f).toInt()
-      val paddingVertical = dpToPx(8f).toInt()
+      val paddingVertical = dpToPx(7f).toInt()
       setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
       layoutParams =
           LinearLayout.LayoutParams(
@@ -256,10 +278,21 @@ internal class PerfMonitorOverlayViewManager(
     }
   }
 
+  private fun getMetricsDialogOffsetX(): Float {
+    val toolbarWidth = toolbarDialog?.window?.decorView?.width ?: 0
+    return toolbarWidth.toFloat()
+  }
+
+  private fun updateMetricsDialogPosition() {
+    metricsDialog?.window?.apply {
+      attributes = attributes?.apply { x = getMetricsDialogOffsetX().toInt() }
+    }
+  }
+
   private fun getDurationHighlightColor(responsivenessScore: Int): Int {
     return when (responsivenessScore) {
-      3 -> COLOR_TEXT_RED
-      2 -> COLOR_TEXT_YELLOW
+      2 -> COLOR_TEXT_RED
+      1 -> COLOR_TEXT_YELLOW
       else -> COLOR_TEXT_GREEN
     }
   }
@@ -270,6 +303,7 @@ internal class PerfMonitorOverlayViewManager(
     private val COLOR_TEXT_GREEN = Color.parseColor("#4AEB2F")
     private val COLOR_TEXT_YELLOW = Color.parseColor("#FFAA00")
     private val COLOR_TEXT_RED = Color.parseColor("#FF0000")
+    private val COLOR_TEXT_BLUE = Color.parseColor("#00B0FF")
     private val COLOR_OVERLAY_BORDER = Color.parseColor("#6C6C6C")
     private val TEXT_SIZE_PRIMARY = 13f
     private val TEXT_SIZE_ACCESSORY = 9f
