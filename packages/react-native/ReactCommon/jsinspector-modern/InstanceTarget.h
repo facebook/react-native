@@ -24,6 +24,7 @@ namespace facebook::react::jsinspector_modern {
 class InstanceAgent;
 class InstanceTracingAgent;
 class HostTargetTraceRecording;
+class HostTargetDelegate;
 
 /**
  * Receives events from an InstanceTarget. This is a shared interface that
@@ -55,11 +56,14 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * \param executor An executor that may be used to call methods on this
    * InstanceTarget while it exists. \c create additionally guarantees that the
    * executor will not be called after the InstanceTarget is destroyed.
+   * \param hostTargetDelegate Reference to HostTargetDelegate for
+   * passing to RuntimeTarget.
    */
   static std::shared_ptr<InstanceTarget> create(
       std::shared_ptr<ExecutionContextManager> executionContextManager,
       InstanceTargetDelegate& delegate,
-      VoidExecutor executor);
+      VoidExecutor executor,
+      HostTargetDelegate& hostTargetDelegate);
 
   InstanceTarget(const InstanceTarget&) = delete;
   InstanceTarget(InstanceTarget&&) = delete;
@@ -109,10 +113,12 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
+   * \param hostTargetDelegate Reference to HostTargetDelegate.
    */
   InstanceTarget(
       std::shared_ptr<ExecutionContextManager> executionContextManager,
-      InstanceTargetDelegate& delegate);
+      InstanceTargetDelegate& delegate,
+      HostTargetDelegate& hostTargetDelegate);
 
   InstanceTargetDelegate& delegate_;
   std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
@@ -125,6 +131,11 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * session - HostTargetTraceRecording.
    */
   std::weak_ptr<InstanceTracingAgent> tracingAgent_;
+
+  /**
+   * Reference to HostTargetDelegate for passing to RuntimeTarget.
+   */
+  HostTargetDelegate& hostTargetDelegate_;
 };
 
 } // namespace facebook::react::jsinspector_modern

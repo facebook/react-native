@@ -35,9 +35,13 @@ std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
     const ExecutionContextDescription& executionContextDescription,
     RuntimeTargetDelegate& delegate,
     RuntimeExecutor jsExecutor,
-    VoidExecutor selfExecutor) {
+    VoidExecutor selfExecutor,
+    HostTargetDelegate& hostTargetDelegate) {
   std::shared_ptr<RuntimeTarget> runtimeTarget{new RuntimeTarget(
-      executionContextDescription, delegate, std::move(jsExecutor))};
+      executionContextDescription,
+      delegate,
+      std::move(jsExecutor),
+      hostTargetDelegate)};
   runtimeTarget->setExecutor(std::move(selfExecutor));
   runtimeTarget->installGlobals();
   return runtimeTarget;
@@ -46,14 +50,31 @@ std::shared_ptr<RuntimeTarget> RuntimeTarget::create(
 RuntimeTarget::RuntimeTarget(
     ExecutionContextDescription executionContextDescription,
     RuntimeTargetDelegate& delegate,
-    RuntimeExecutor jsExecutor)
+    RuntimeExecutor jsExecutor,
+    HostTargetDelegate& hostTargetDelegate)
     : executionContextDescription_(std::move(executionContextDescription)),
       delegate_(delegate),
-      jsExecutor_(std::move(jsExecutor)) {}
+      jsExecutor_(std::move(jsExecutor)),
+      hostTargetDelegate_(hostTargetDelegate) {}
+
+void RuntimeTarget::consoleTimestampCallback(
+    std::string_view label,
+    std::optional<tracing::ConsoleTimeStampEntry> start,
+    std::optional<tracing::ConsoleTimeStampEntry> end,
+    std::optional<std::string_view> trackName,
+    std::optional<std::string_view> trackGroup) {}
 
 void RuntimeTarget::installGlobals() {
   // NOTE: RuntimeTarget::installConsoleHandler is in RuntimeTargetConsole.cpp
-  installConsoleHandler();
+  installConsoleHandler([this](
+                            std::string_view label,
+                            std::optional<tracing::ConsoleTimeStampEntry> start,
+                            std::optional<tracing::ConsoleTimeStampEntry> end,
+                            std::optional<std::string_view> trackName,
+                            std::optional<std::string_view> trackGroup) {
+    consoleTimestampCallback(
+        label, std::move(start), std::move(end), trackName, trackGroup);
+  });
   installDebuggerSessionObserver();
 }
 
@@ -185,6 +206,10 @@ void RuntimeTargetController::disableSamplingProfiler() {
 tracing::RuntimeSamplingProfile
 RuntimeTargetController::collectSamplingProfile() {
   return target_.collectSamplingProfile();
+}
+
+HostTargetDelegate& RuntimeTargetController::getHostTargetDelegate() const {
+  return target_.hostTargetDelegate_;
 }
 
 void RuntimeTarget::enableSamplingProfiler() {
