@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.82.0-rc.1
+
+### Added
+
+#### Android specific
+
+- **Hermes V1:** Added opt-in to use the new Hermes ([3e9990f860](https://github.com/facebook/react-native/commit/3e9990f860eb9380837ef431ca02def32c4261ad) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### iOS specific
+
+- **Hermes V1:** Added opt-in to use the new Hermes ([e9cdc308b4](https://github.com/facebook/react-native/commit/e9cdc308b4c04753d85757e8877ac00c3c687b95) by [@j-piasecki](https://github.com/j-piasecki))
+
+### Changed
+
+- **Hermes V1:** Changed the source of hermesc binary to be an npm package ([2e0bd13a25](https://github.com/facebook/react-native/commit/2e0bd13a2533fe7ab64125a95b9215b806018c6e) by [@j-piasecki](https://github.com/j-piasecki))
+
+### Deprecated
+
+- **APIs:** Deprecate legacy javascript react native apis ([e7aeea26bd](https://github.com/facebook/react-native/commit/e7aeea26bde6e9cda0a3a0a55fc2a0421fb0c0e5) by [@RSNara](https://github.com/RSNara))
+
+### Fixed
+
+#### Android specific
+
+- **Build From Source:** Fix build from source due to missing folder error on Gradle 9.0 ([9fbce3eff1](https://github.com/facebook/react-native/commit/9fbce3eff18060f16e796badc415ba733ede19af) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **RCTAlertController:** Simplify RCTAlertController, don't create additional UIWindow ([05c4321b19](https://github.com/facebook/react-native/commit/05c4321b194c3d0e146b6085bcaccc75acd3fd67) by [@okwasniewski](https://github.com/okwasniewski))
+- **Prebuild:** Fix Node scripts related to prebuilt tarball extraction for paths containing whitespaces ([9731e8ebc5](https://github.com/facebook/react-native/commit/9731e8ebc5ea87526a91b9903172639e062cd920) by [@kitten](https://github.com/kitten))
+- **Prebuild:** Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source ([f170db412b](https://github.com/facebook/react-native/commit/f170db412b3ab46fd0894d5d66431d9c230cd3a8) by [@kitten](https://github.com/kitten))
+
 ## v0.82.0-rc.0
 
 ### Breaking
