@@ -63,6 +63,7 @@ const cachedReportMeasure = NativePerformance.reportMeasure;
 const cachedGetMarkTime = NativePerformance.getMarkTime;
 const cachedNativeClearMarks = NativePerformance.clearMarks;
 const cachedNativeClearMeasures = NativePerformance.clearMeasures;
+let cachedTimeOrigin: ?DOMHighResTimeStamp;
 
 const MARK_OPTIONS_REUSABLE_OBJECT: PerformanceMarkOptions = {
   startTime: 0,
@@ -137,6 +138,24 @@ export default class Performance {
       executeJavaScriptBundleEntryPointStart,
       executeJavaScriptBundleEntryPointEnd,
     });
+  }
+
+  /**
+   * Returns the high resolution timestamp that is used as the baseline for
+   * performance-related timestamps.
+   * https://developer.mozilla.org/en-US/docs/Web/API/Performance/timeOrigin
+   */
+  get timeOrigin(): DOMHighResTimeStamp {
+    if (cachedTimeOrigin == null) {
+      if (NativePerformance.timeOrigin) {
+        cachedTimeOrigin = NativePerformance?.timeOrigin();
+      } else {
+        // Very naive polyfill.
+        cachedTimeOrigin = Date.now() - getCurrentTimeStamp();
+      }
+    }
+
+    return cachedTimeOrigin;
   }
 
   mark(
