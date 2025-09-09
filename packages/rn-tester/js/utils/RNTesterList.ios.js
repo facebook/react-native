@@ -337,6 +337,16 @@ const APIs: Array<RNTesterModuleInfo> = ([
     key: 'XHRExample',
     module: require('../examples/XHR/XHRExample'),
   },
+  // Basic check to detect the availability of the modern Performance API.
+  ...(typeof performance.getEntries === 'function'
+    ? [
+        {
+          key: 'PerformanceApiExample',
+          category: 'Basic',
+          module: require('../examples/Performance/PerformanceApiExample'),
+        },
+      ]
+    : []),
   ...RNTesterListFbInternal.APIs,
 ]: Array<?RNTesterModuleInfo>).filter(Boolean);
 
