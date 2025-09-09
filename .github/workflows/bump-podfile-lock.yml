@@ -10,6 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           fetch-depth: 0
           fetch-tags: true
       - name: Install dependencies
