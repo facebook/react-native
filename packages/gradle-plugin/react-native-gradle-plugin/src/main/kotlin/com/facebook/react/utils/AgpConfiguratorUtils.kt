@@ -19,6 +19,7 @@ import java.net.Inet4Address
 import java.net.NetworkInterface
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
+import kotlin.plus
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.AppliedPlugin
@@ -26,6 +27,36 @@ import org.w3c.dom.Element
 
 @Suppress("UnstableApiUsage")
 internal object AgpConfiguratorUtils {
+
+  fun configureBuildTypesForApp(project: Project) {
+    val action =
+        Action<AppliedPlugin> {
+          project.extensions
+              .getByType(ApplicationAndroidComponentsExtension::class.java)
+              .finalizeDsl { ext ->
+                ext.buildTypes {
+                  val debug =
+                      getByName("debug").apply {
+                        manifestPlaceholders["usesCleartextTraffic"] = "true"
+                      }
+                  getByName("release").apply {
+                    manifestPlaceholders["usesCleartextTraffic"] = "false"
+                  }
+                  maybeCreate("debugOptimized").apply {
+                    manifestPlaceholders["usesCleartextTraffic"] = "true"
+                    initWith(debug)
+                    externalNativeBuild {
+                      cmake {
+                        arguments("-DCMAKE_BUILD_TYPE=Release")
+                        matchingFallbacks += listOf("release")
+                      }
+                    }
+                  }
+                }
+              }
+        }
+    project.pluginManager.withPlugin("com.android.application", action)
+  }
 
   fun configureBuildConfigFieldsForApp(project: Project, extension: ReactExtension) {
     val action =
