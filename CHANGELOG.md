@@ -2,18 +2,6 @@
 
 ## v0.81.2
 
-### Breaking
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
 ### Added
 
 
@@ -21,87 +9,16 @@
 #### Android specific
 
 - Create a debugOptimized buildType for Android ([5e3edafec6](https://github.com/facebook/react-native/commit/5e3edafec6c69558521061dced7a6bcd046576b0) by [@cortinico](https://github.com/cortinico))
-
-#### iOS specific
-
-
-
-### Changed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Deprecated
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Removed
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
+- Add `useNativeEqualsInNativeReadableArrayAndroid` and `useNativeTransformHelperAndroid` feature flag to the experimental channel. This should alleviate some of the perf issue users are seeing on Android + Reanimated + NewArch on 0.81([a346096da8](https://github.com/facebook/react-native/commit/a346096da81fccf5fbc82d83bfc128695e6ec3a5) by [@cortinico](https://github.com/cortinico))
 
 
 ### Fixed
 
 
-
-#### Android specific
-
-
-
 #### iOS specific
 
-
-
-### Security
-
-
-
-#### Android specific
-
-
-
-#### iOS specific
-
-
-
-### Unknown
-
-- Release 0.81.2 ([65119b0107](https://github.com/facebook/react-native/commit/65119b0107200115a31f084d4695891b6541762e) by [@react-native-bot](https://github.com/react-native-bot))
-- Release 0.81.1 ([277a075b71](https://github.com/facebook/react-native/commit/277a075b71989cc7ec1fdd9d668e03deae624d87) by [@react-native-bot](https://github.com/react-native-bot))
-
-#### Android Unknown
-
-
-
-#### iOS Unknown
-
-
-
-#### Failed to parse
-
-
+- Fix Node scripts related to prebuilt tarball extraction for paths containing whitespaces ([366f2ad505](https://github.com/facebook/react-native/commit/366f2ad5057ffecc1f5b211f6aae29567ae6b7e5) by [@kitten](https://github.com/kitten))
+- Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source ([a2eb29e5e7](https://github.com/facebook/react-native/commit/a2eb29e5e7aef8bbdf4c647c8467b5292b013b20) by [@kitten](https://github.com/kitten))
 
 
 ## v0.82.0-rc.1
