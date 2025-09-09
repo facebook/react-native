@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f73bbcd926a835c09b70d814c6662dbb>>
+ * @generated SignedSource<<2cabd888b74b84201ff027457efc6007>>
  */
 
 /**
@@ -232,6 +232,14 @@ bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
 
 bool ReactNativeFeatureFlags::useFabricInterop() {
   return getAccessor().useFabricInterop();
+}
+
+bool ReactNativeFeatureFlags::useNativeEqualsInNativeReadableArrayAndroid() {
+  return getAccessor().useNativeEqualsInNativeReadableArrayAndroid();
+}
+
+bool ReactNativeFeatureFlags::useNativeTransformHelperAndroid() {
+  return getAccessor().useNativeTransformHelperAndroid();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {

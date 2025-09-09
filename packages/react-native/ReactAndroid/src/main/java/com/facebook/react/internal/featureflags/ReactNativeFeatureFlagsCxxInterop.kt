@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ba62d616188ed439c85c66cfd055810d>>
+ * @generated SignedSource<<a5d9d11cc2a6529641243dc47a61f201>>
  */
 
 /**
@@ -131,6 +131,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useNativeTransformHelperAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
 

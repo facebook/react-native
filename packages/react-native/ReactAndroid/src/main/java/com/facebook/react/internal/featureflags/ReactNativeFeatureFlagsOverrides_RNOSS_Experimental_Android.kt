@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<58da46268043f086730132430735b720>>
+ * @generated SignedSource<<0bafb0a2fb79c4220d21f1736894af14>>
  */
 
 /**
@@ -24,4 +24,8 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android : 
   // but that is more expensive than just duplicating the defaults here.
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = true
+
+  override fun useNativeEqualsInNativeReadableArrayAndroid(): Boolean = true
+
+  override fun useNativeTransformHelperAndroid(): Boolean = true
 }

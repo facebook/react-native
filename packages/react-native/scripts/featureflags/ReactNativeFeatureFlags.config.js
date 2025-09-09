@@ -595,6 +595,27 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useNativeEqualsInNativeReadableArrayAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-15',
+        description:
+          'Use a native implementation of equals in NativeReadableArray.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
+    useNativeTransformHelperAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-15',
+        description: 'Use a native implementation of TransformHelper',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'experimental',
+    },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
       metadata: {
