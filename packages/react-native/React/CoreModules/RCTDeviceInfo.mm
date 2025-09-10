@@ -80,19 +80,31 @@ RCT_EXPORT_MODULE()
   _currentInterfaceDimensions = [self _exportedDimensions];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceOrientationDidChange)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
-                                               name:UIApplicationDidBecomeActiveNotification
-                                             object:nil];
+  if (@available(iOS 13.0, *)) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(interfaceOrientationDidChange)
+                                                 name:UISceneDidActivateNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(interfaceFrameDidChange)
+                                                 name:UISceneDidActivateNotification
+                                               object:nil];
+  } else {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(interfaceOrientationDidChange)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(interfaceFrameDidChange)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+  }
 
 #if TARGET_OS_IOS
 
@@ -138,10 +150,13 @@ RCT_EXPORT_MODULE()
                                                   name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                                 object:[_moduleRegistry moduleForName:"AccessibilityManager"]];
 
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+  if (@available(iOS 13.0, *)) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UISceneDidActivateNotification object:nil];
+  } else {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+  }
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTUserInterfaceStyleDidChangeNotification object:nil];
-
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
   [_applicationWindow removeObserver:self forKeyPath:kFrameKeyPath];
@@ -239,10 +254,10 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();
-  UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  UIWindow *keyWindow = RCTKeyWindow();
+  UIInterfaceOrientation nextOrientation = keyWindow.windowScene.interfaceOrientation;
 
-  BOOL isRunningInFullScreen =
-      CGRectEqualToRect(application.delegate.window.frame, application.delegate.window.screen.bounds);
+  BOOL isRunningInFullScreen = CGRectEqualToRect(keyWindow.frame, keyWindow.screen.bounds);
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen->

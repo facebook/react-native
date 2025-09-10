@@ -101,6 +101,29 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
                      initialProperties:(NSDictionary *_Nullable)initialProperties
                          launchOptions:(NSDictionary *_Nullable)launchOptions;
 
+/// This is a SceneDelegate entrypoint method to start a React Native instance with the specified module name, window
+/// and connection options for linking & user activity information. As it's usual for the typical deep-linking use case,
+/// only the first item in URLContexts from connectionOptions will be checked; the same applies to userActivities.
+/// @param moduleName name of the JS module to load
+/// @param window the window to launch in
+/// @param connectionOptions the scene's connection options
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions;
+
+/// This is a SceneDelegate entrypoint method to start a React Native instance with the specified module name, window
+/// and connection options for linking, initial properties & user activity information. As it's usual for the typical
+/// deep-linking use case, only the first item in URLContexts from connectionOptions will be checked; the same applies
+/// to userActivities.
+/// @param moduleName name of the JS module to load
+/// @param window the window to launch in
+/// @param initialProperties the initial root properties
+/// @param connectionOptions the scene's connection options
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions;
+
 @property (nonatomic, nullable) RCTBridge *bridge;
 @property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
 

@@ -7,6 +7,7 @@
 
 #import "AppDelegate.h"
 
+#if RNTESTER_USE_APPDELEGATE
 #import <UserNotifications/UserNotifications.h>
 
 #import <React/RCTBundleURLProvider.h>
@@ -162,3 +163,8 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 }
 
 @end
+#else
+@implementation AppDelegate
+
+@end
+#endif

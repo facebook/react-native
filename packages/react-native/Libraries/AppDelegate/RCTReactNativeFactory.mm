@@ -32,11 +32,30 @@
 
 using namespace facebook::react;
 
+@interface DeallocationNotifier : NSObject
+@property (nonatomic, copy) void (^onDealloc)(void);
+@end
+
+@implementation DeallocationNotifier
+- (void)dealloc
+{
+  if (self.onDealloc)
+    self.onDealloc();
+}
+@end
+
 @interface RCTReactNativeFactory () <
     RCTComponentViewFactoryComponentProvider,
     RCTHostDelegate,
     RCTJSRuntimeConfiguratorProtocol,
     RCTTurboModuleManagerDelegate>
+
+/// Adapter for SceneDelegate entrypoint's UISceneConnectionOptions that converts it to the AppDelegate-style
+/// NSDictionary for internal RN needs
+/// @param connectionOptions the scene's connection options
+/// @return an NSDictionary with proper UIApplicationLaunchOptions- keys set to values from connectionOptions
+- (NSDictionary *)convertConnectionOptionsToLaunchOptions:(UISceneConnectionOptions *)connectionOptions;
+
 @end
 
 @implementation RCTReactNativeFactory
@@ -87,6 +106,58 @@ using namespace facebook::react;
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
+}
+
+#pragma mark - UIScene.ConnectionOptions
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions
+{
+  [self startReactNativeWithModuleName:moduleName
+                              inWindow:window
+                     initialProperties:nil
+                         launchOptions:[self convertConnectionOptionsToLaunchOptions:connectionOptions]];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                     connectionOptions:(UISceneConnectionOptions *_Nullable)connectionOptions
+{
+  [self startReactNativeWithModuleName:moduleName
+                              inWindow:window
+                     initialProperties:initialProperties
+                         launchOptions:[self convertConnectionOptionsToLaunchOptions:connectionOptions]];
+}
+
+- (NSDictionary *)convertConnectionOptionsToLaunchOptions:(UISceneConnectionOptions *)connectionOptions
+{
+  NSMutableDictionary *launchOptions = [NSMutableDictionary dictionary];
+
+  // handle launch URL
+  if (connectionOptions.URLContexts.count > 0) {
+    UIOpenURLContext *urlContext = connectionOptions.URLContexts.allObjects.firstObject;
+
+    if (urlContext.URL) {
+      launchOptions[UIApplicationLaunchOptionsURLKey] = urlContext.URL;
+    }
+  }
+
+  // handle user activities
+  if (connectionOptions.userActivities.count > 0) {
+    NSUserActivity *activity = connectionOptions.userActivities.allObjects.firstObject;
+
+    if (activity) {
+      NSMutableDictionary *userActivityDict = [NSMutableDictionary dictionary];
+      userActivityDict[UIApplicationLaunchOptionsUserActivityTypeKey] = activity.activityType;
+      userActivityDict[@"UIApplicationLaunchOptionsUserActivityKey"] = activity;
+
+      launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey] = userActivityDict;
+    }
+  }
+
+  return launchOptions;
 }
 
 #pragma mark - RCTUIConfiguratorProtocol
@@ -188,7 +259,8 @@ using namespace facebook::react;
       return moduleInstance;
     }
   }
-  return RCTAppSetupDefaultModuleFromClass(moduleClass, self.delegate.dependencyProvider);
+  return RCTAppSetupDefaultModuleFromClass(
+      moduleClass, self.delegate.dependencyProvider);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge

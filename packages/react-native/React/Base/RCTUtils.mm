@@ -633,6 +633,24 @@ UIWindow *__nullable RCTKeyWindow(void)
   return nil;
 }
 
+BOOL RCTIsSceneDelegateApp(void)
+{
+  if (@available(iOS 13.0, *)) {
+    NSDictionary *sceneManifest = [[NSBundle mainBundle] infoDictionary][@"UIApplicationSceneManifest"];
+    
+    if (sceneManifest) {
+        NSDictionary *sceneConfigurations = sceneManifest[@"UIApplicationSceneConfigurations"];
+        if (sceneConfigurations && sceneConfigurations.count > 0) {
+            return YES;
+        }
+    }
+
+    return NO;
+  }
+
+  return NO;
+}
+
 UIStatusBarManager *__nullable RCTUIStatusBarManager(void)
 {
   return RCTKeyWindow().windowScene.statusBarManager;
