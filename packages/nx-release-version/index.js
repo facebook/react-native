@@ -76,22 +76,25 @@ const afterAllProjectsVersioned = async (cwd, opts) => {
   const changedFiles = [...baseResult.changedFiles];
   const deletedFiles = [...baseResult.deletedFiles];
 
-  try {
-    // Create the .rnm-publish file to indicate versioning has occurred
-    fs.writeFileSync(path.join(REPO_ROOT, '.rnm-publish'), '');
+  // Only update React Native artifacts if versioning actually happened
+  if (changedFiles.length > 0) {
+    try {
+      // Create the .rnm-publish file to indicate versioning has occurred
+      fs.writeFileSync(path.join(REPO_ROOT, '.rnm-publish'), '');
 
-    // Update React Native artifacts
-    const versionedFiles = await runSetVersion();
+      // Update React Native artifacts
+      const versionedFiles = await runSetVersion();
 
-    // Add the versioned files to changed files
-    changedFiles.push(...versionedFiles);
+      // Add the versioned files to changed files
+      changedFiles.push(...versionedFiles);
 
-    console.log('✅ Updated React Native artifacts');
-    console.table(versionedFiles.map(file => path.relative(REPO_ROOT, file)));
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`❌ Failed to update React Native artifacts: ${errorMessage}`);
-    throw error;
+      console.log('✅ Updated React Native artifacts');
+      console.table(versionedFiles.map(file => path.relative(REPO_ROOT, file)));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`❌ Failed to update React Native artifacts: ${errorMessage}`);
+      throw error;
+    }
   }
 
   return {
