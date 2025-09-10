@@ -22,6 +22,7 @@ const {
 } = require('./generateAppDependencyProvider');
 const {generateCustomURLHandlers} = require('./generateCustomURLHandlers');
 const {generateNativeCode} = require('./generateNativeCode');
+const {generatePackageSwift} = require('./generatePackageSwift');
 const {generateRCTModuleProviders} = require('./generateRCTModuleProviders');
 const {
   generateRCTThirdPartyComponents,
@@ -37,6 +38,7 @@ const {
   codegenLog,
   findCodegenEnabledLibraries,
   findDisabledLibrariesByPlatform,
+  findReactNativeRootPath,
   pkgJsonIncludesGeneratedCode,
   readPkgJsonInDirectory,
   readReactNativeConfig,
@@ -159,6 +161,11 @@ function execute(
           pkgJson,
           reactCodegenOutputPath,
           baseOutputPath,
+        );
+        generatePackageSwift(
+          projectRoot,
+          outputPath,
+          findReactNativeRootPath(projectRoot),
         );
       }
 
