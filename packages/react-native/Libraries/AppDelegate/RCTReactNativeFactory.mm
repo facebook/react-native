@@ -32,18 +32,6 @@
 
 using namespace facebook::react;
 
-@interface DeallocationNotifier : NSObject
-@property (nonatomic, copy) void (^onDealloc)(void);
-@end
-
-@implementation DeallocationNotifier
-- (void)dealloc
-{
-  if (self.onDealloc)
-    self.onDealloc();
-}
-@end
-
 @interface RCTReactNativeFactory () <
     RCTComponentViewFactoryComponentProvider,
     RCTHostDelegate,
