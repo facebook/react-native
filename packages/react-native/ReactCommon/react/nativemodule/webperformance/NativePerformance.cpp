@@ -131,7 +131,16 @@ NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
     : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 HighResTimeStamp NativePerformance::now(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is the duration from system boot to
+  // now, instead of from app startup to now.
+  // This should be carefully changed eventually.
   return HighResTimeStamp::now();
+}
+
+HighResDuration NativePerformance::timeOrigin(jsi::Runtime& /*rt*/) {
+  // This is not spec-compliant, as this is an approximation from Unix epoch to
+  // system boot, instead of a precise duration from Unix epoch to app startup.
+  return HighResTimeStamp::unsafeOriginFromUnixTimeStamp();
 }
 
 void NativePerformance::reportMark(
