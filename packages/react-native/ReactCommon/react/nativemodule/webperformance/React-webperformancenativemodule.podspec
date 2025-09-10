@@ -45,12 +45,14 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
+  s.dependency "React-cxxreact"
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
   add_rncore_dependency(s)
 
   s.dependency "ReactCommon/turbomodule/core"
+
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "React-performancetimeline")
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])

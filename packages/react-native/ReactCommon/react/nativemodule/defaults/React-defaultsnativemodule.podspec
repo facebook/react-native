@@ -47,9 +47,10 @@ Pod::Spec.new do |s|
   add_rncore_dependency(s)
 
   s.dependency "React-domnativemodule"
-  s.dependency "React-featureflagsnativemodule"
   s.dependency "React-microtasksnativemodule"
   s.dependency "React-idlecallbacksnativemodule"
   s.dependency "React-webperformancenativemodule"
   add_dependency(s, "React-RCTFBReactNativeSpec")
+  add_dependency(s, "React-featureflags")
+  add_dependency(s, "React-featureflagsnativemodule")
 end
