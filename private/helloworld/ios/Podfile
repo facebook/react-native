@@ -19,17 +19,28 @@ end
 
 target 'HelloWorld' do
   require 'pathname'
-config = nil
-begin
-  config = use_native_modules!(['sh', '../scripts/config.sh'])
-rescue => e
-  Pod::UI.warn "use_native_modules! failed: #{e}. Falling back to minimal config (no native module autolinking)."
-  rn_pkg_json = Pod::Executable.execute_command('node', ['-e', "process.stdout.write(require.resolve('react-native/package.json'))"]).strip
-  rn_dir = File.dirname(rn_pkg_json)
-  ios_project_root = Pod::Config.instance.installation_root
-  rn_rel = Pathname.new(rn_dir).relative_path_from(Pathname.new(ios_project_root)).to_s
-  config = { :reactNativePath => rn_rel }
-end
+  config = nil
+
+  # Preflight the autolinking config command to avoid hard exit inside autolinking.rb
+  begin
+    _json, _err, status = Pod::Executable.capture_command('bash', ['../scripts/config.sh'], capture: :both)
+    if status.success?
+      config = use_native_modules!(['bash', '../scripts/config.sh'])
+    else
+      raise "config command failed with status #{status.exitstatus}"
+    end
+  rescue => e
+    Pod::UI.warn "Autolinking preflight failed: #{e}. Falling back to minimal config (no native module autolinking)."
+    rn_pkg_json = Pod::Executable.execute_command('node', ['-e', "process.stdout.write(require.resolve('react-native/package.json'))"]).strip
+    rn_dir = File.dirname(rn_pkg_json)
+    ios_project_root = Pod::Config.instance.installation_root
+    rn_rel = Pathname.new(rn_dir).relative_path_from(Pathname.new(ios_project_root)).to_s
+    config = { :reactNativePath => rn_rel }
+  end
+
+  # Allow Yarn v1 to ignore engines during codegen to accommodate local Node versions
+  # CI should already use a compliant Node version, so this only aids local validation.
+  ENV['YARN_IGNORE_ENGINES'] = '1'
 
   use_react_native!(
     :path => "../../../packages/react-native",
