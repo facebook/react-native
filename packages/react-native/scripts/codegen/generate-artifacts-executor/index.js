@@ -99,7 +99,6 @@ function execute(
 
     if (codegenEnabledLibraries.length === 0) {
       codegenLog('No codegen-enabled libraries found.', true);
-      return;
     }
 
     let platforms =
@@ -113,10 +112,6 @@ function execute(
       const libraries = codegenEnabledLibraries.filter(
         ({name}) => !disabledLibraries.includes(name),
       );
-
-      if (!libraries.length) {
-        continue;
-      }
 
       const outputPath = computeOutputPath(
         projectRoot,
