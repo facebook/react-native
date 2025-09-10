@@ -21,6 +21,7 @@ jobs:
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
@@ -98,6 +99,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
+    if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 

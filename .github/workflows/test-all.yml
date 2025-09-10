@@ -11,6 +11,7 @@ on:
 jobs:
   set_release_type:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     outputs:
       RELEASE_TYPE: ${{ steps.set_release_type.outputs.RELEASE_TYPE }}
     env:
@@ -34,6 +35,7 @@ jobs:
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
@@ -112,6 +114,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
+    if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -594,6 +597,7 @@ jobs:
 
   test_js:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     strategy:
       fail-fast: false
       matrix:
@@ -608,6 +612,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
