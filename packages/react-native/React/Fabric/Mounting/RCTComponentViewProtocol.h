@@ -111,8 +111,9 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (void)prepareForRecycle;
 
-/**
- *
+/*
+ * Called for unmounted components that won't be moved to a recycle pool.
+ * Useful for releasing any associated resources.
  */
 - (void)invalidate;
 
