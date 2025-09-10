@@ -9,6 +9,8 @@
 
 @interface RCTAlertController : UIAlertController
 
++ (instancetype)alertControllerWithTitle:(NSString *)title inWindow:(UIWindow *)parentWindow;
+
 - (void)show:(BOOL)animated completion:(void (^)(void))completion;
 - (void)hide;
 

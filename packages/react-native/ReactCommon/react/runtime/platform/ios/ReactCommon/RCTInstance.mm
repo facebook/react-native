@@ -326,7 +326,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
-                                                                 jsInvoker:jsCallInvoker];
+                                                                 jsInvoker:jsCallInvoker
+                                                                 rnInstanceId:self];
 
 #if RCT_DEV
   /**

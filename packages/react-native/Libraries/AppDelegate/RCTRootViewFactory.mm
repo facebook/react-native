@@ -183,9 +183,11 @@
 
   std::shared_ptr<facebook::react::CallInvoker> callInvoker =
       std::make_shared<facebook::react::RuntimeSchedulerCallInvoker>(_runtimeScheduler);
-  RCTTurboModuleManager *turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                                   delegate:_turboModuleManagerDelegate
-                                                                                  jsInvoker:callInvoker];
+  RCTTurboModuleManager *turboModuleManager =
+      [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                           delegate:_turboModuleManagerDelegate
+                                          jsInvoker:callInvoker
+                                       rnInstanceId:[self.reactHost getRCTInstance]];
   _contextContainer->erase("RuntimeScheduler");
   _contextContainer->insert("RuntimeScheduler", _runtimeScheduler);
   return RCTAppSetupDefaultJsExecutorFactory(bridge, turboModuleManager, _runtimeScheduler);

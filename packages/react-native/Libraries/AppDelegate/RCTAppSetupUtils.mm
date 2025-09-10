@@ -57,7 +57,8 @@ NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDep
   return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
 }
 
-id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
+id<RCTTurboModule>
+RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider, id rnInstanceId)
 {
   // private block used to filter out modules depending on protocol conformance
   NSArray * (^extractModuleConformingToProtocol)(RCTModuleRegistry *, Protocol *) =
@@ -111,6 +112,12 @@ id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDe
           ] arrayByAddingObjectsFromArray:URLRequestHandlerModules];
         }];
   }
+
+  // attempt to initialize with initWithUniqueRNInstance, which require the RN instance id for multi-instance support
+  if ([moduleClass instancesRespondToSelector:@selector(initWithUniqueRNInstance:)]) {
+    return [[moduleClass alloc] initWithUniqueRNInstance:rnInstanceId];
+  }
+
   // No custom initializer here.
   return [moduleClass new];
 }

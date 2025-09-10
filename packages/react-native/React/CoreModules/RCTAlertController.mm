@@ -17,10 +17,31 @@
 
 @implementation RCTAlertController
 
+__weak UIWindow *weakParentWindow;
+
++ (instancetype)alertControllerWithTitle:(NSString *)title inWindow:(UIWindow *)parentWindow
+{
+  RCTAlertController *instance = [super alertControllerWithTitle:title
+                                                         message:nil
+                                                  preferredStyle:UIAlertControllerStyleAlert];
+
+  weakParentWindow = parentWindow;
+
+  return instance;
+}
+
++ (instancetype)alertControllerWithTitle:(NSString *)title
+                                 message:(NSString *)message
+                          preferredStyle:(UIAlertControllerStyle)preferredStyle
+{
+  RCTAssert(NO, @"Do not use +alertControllerWithTitle:inWindow: instead");
+  return nil;
+}
+
 - (UIWindow *)alertWindow
 {
   if (_alertWindow == nil) {
-    _alertWindow = [[UIWindow alloc] initWithWindowScene:RCTKeyWindow().windowScene];
+    _alertWindow = [[UIWindow alloc] initWithWindowScene:weakParentWindow.windowScene];
 
     if (_alertWindow) {
       _alertWindow.rootViewController = [UIViewController new];
@@ -35,7 +56,7 @@
 {
   UIUserInterfaceStyle style = self.overrideUserInterfaceStyle;
   if (style == UIUserInterfaceStyleUnspecified) {
-    UIUserInterfaceStyle overriddenStyle = RCTKeyWindow().overrideUserInterfaceStyle;
+    UIUserInterfaceStyle overriddenStyle = weakParentWindow.overrideUserInterfaceStyle;
     style = overriddenStyle ? overriddenStyle : UIUserInterfaceStyleUnspecified;
   }
 

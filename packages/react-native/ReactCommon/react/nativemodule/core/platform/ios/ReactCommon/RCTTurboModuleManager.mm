@@ -217,6 +217,7 @@ typedef struct {
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
 
   dispatch_queue_t _sharedModuleQueue;
+  id _rnInstanceId;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -224,6 +225,7 @@ typedef struct {
          bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                  rnInstanceId:(id)rnInstanceId
 {
   if (self = [super init]) {
     _jsInvoker = std::move(jsInvoker);
@@ -233,6 +235,7 @@ typedef struct {
     _bridgeModuleDecorator = bridgeModuleDecorator;
     _invalidating = false;
     _sharedModuleQueue = dispatch_queue_create("com.meta.react.turbomodulemanager.queue", DISPATCH_QUEUE_SERIAL);
+    _rnInstanceId = rnInstanceId;
 
     if (RCTTurboModuleInteropEnabled()) {
       // TODO(T174674274): Implement lazy loading of legacy modules in the new architecture.
@@ -271,24 +274,28 @@ typedef struct {
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                      jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                  rnInstanceId:(id)rnInstanceId
 {
   return [self initWithBridge:bridge
                   bridgeProxy:nil
         bridgeModuleDecorator:[bridge bridgeModuleDecorator]
                      delegate:delegate
-                    jsInvoker:jsInvoker];
+                    jsInvoker:jsInvoker
+                 rnInstanceId:rnInstanceId];
 }
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                            delegate:(id<RCTTurboModuleManagerDelegate>)delegate
                           jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
+                       rnInstanceId:(id)rnInstanceId
 {
   return [self initWithBridge:nil
                   bridgeProxy:bridgeProxy
         bridgeModuleDecorator:bridgeModuleDecorator
                      delegate:delegate
-                    jsInvoker:jsInvoker];
+                    jsInvoker:jsInvoker
+                 rnInstanceId:rnInstanceId];
 }
 
 /**
@@ -854,7 +861,11 @@ typedef struct {
   }
 
   if (_legacyEagerlyRegisteredModuleClasses && _legacyEagerlyRegisteredModuleClasses[moduleNameStr]) {
-    return [_legacyEagerlyRegisteredModuleClasses[moduleNameStr] new];
+    Class clazz = _legacyEagerlyRegisteredModuleClasses[moduleNameStr];
+    if ([clazz instancesRespondToSelector:@selector(initWithUniqueRNInstance:)]) {
+      return [[clazz alloc] initWithUniqueRNInstance:_rnInstanceId];
+    }
+    return [clazz new];
   }
 
   id<RCTBridgeModule> module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];

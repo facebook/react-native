@@ -8,6 +8,7 @@
 #import "RCTReactNativeFactory.h"
 #import <React/RCTColorSpaceUtils.h>
 #import <React/RCTLog.h>
+#import <React/RCTMultiWindowUtils.h>
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
@@ -31,18 +32,6 @@
 #import "RCTDependencyProvider.h"
 
 using namespace facebook::react;
-
-@interface DeallocationNotifier : NSObject
-@property (nonatomic, copy) void (^onDealloc)(void);
-@end
-
-@implementation DeallocationNotifier
-- (void)dealloc
-{
-  if (self.onDealloc)
-    self.onDealloc();
-}
-@end
 
 @interface RCTReactNativeFactory () <
     RCTComponentViewFactoryComponentProvider,
@@ -106,6 +95,7 @@ using namespace facebook::react;
   [_delegate setRootView:rootView toRootViewController:rootViewController];
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
+  [RCTMultiWindowRegistry registerWindow:window withRNInstance:[self.rootViewFactory.reactHost getRCTInstance]];
 }
 
 #pragma mark - UIScene.ConnectionOptions
@@ -260,7 +250,7 @@ using namespace facebook::react;
     }
   }
   return RCTAppSetupDefaultModuleFromClass(
-      moduleClass, self.delegate.dependencyProvider);
+      moduleClass, self.delegate.dependencyProvider, [self.rootViewFactory.reactHost getRCTInstance]);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge

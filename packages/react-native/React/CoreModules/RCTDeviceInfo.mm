@@ -30,8 +30,6 @@ using namespace facebook::react;
   BOOL _isFullscreen;
   std::atomic<BOOL> _invalidated;
   NSDictionary *_constants;
-
-  __weak UIWindow *_applicationWindow;
 }
 
 static NSString *const kFrameKeyPath = @"frame";
@@ -42,10 +40,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init
 {
-  if (self = [super init]) {
-    _applicationWindow = RCTKeyWindow();
-    [_applicationWindow addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
-  }
+  [self.windowForRNInstance addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
   return self;
 }
 
@@ -108,7 +103,7 @@ RCT_EXPORT_MODULE()
 
 #if TARGET_OS_IOS
 
-  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  _currentInterfaceOrientation = self.windowForRNInstance.windowScene.interfaceOrientation;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -159,7 +154,7 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTUserInterfaceStyleDidChangeNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
-  [_applicationWindow removeObserver:self forKeyPath:kFrameKeyPath];
+  [self.windowForRNInstance removeObserver:self forKeyPath:kFrameKeyPath];
 
 #if TARGET_OS_IOS
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -186,12 +181,23 @@ static BOOL RCTIsIPhoneNotched()
   return isIPhoneNotched;
 }
 
+/**
+ *
+ */
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
+{
+  return RCTExportedDimensions(fontScale);
+}
+
+static NSDictionary *RCTExportedDimensions(CGFloat fontScale, UIView *mainWindow)
 {
   RCTAssertMainQueue();
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
-  UIView *mainWindow = RCTKeyWindow();
+
+  if (!mainWindow) {
+    mainWindow = RCTKeyWindow();
+  }
 
   // We fallback to screen size if a key window is not found.
   CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
@@ -223,7 +229,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   // that accessibilityManager will eventually become available, js will eventually
   // be updated with the correct fontScale.
   CGFloat fontScale = accessibilityManager ? accessibilityManager.multiplier : 1.0;
-  return RCTExportedDimensions(fontScale);
+  return RCTExportedDimensions(fontScale, self.windowForRNInstance);
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
@@ -253,8 +259,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 - (void)interfaceOrientationDidChange
 {
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
-  UIApplication *application = RCTSharedApplication();
-  UIWindow *keyWindow = RCTKeyWindow();
+  UIWindow *keyWindow = self.windowForRNInstance;
   UIInterfaceOrientation nextOrientation = keyWindow.windowScene.interfaceOrientation;
 
   BOOL isRunningInFullScreen = CGRectEqualToRect(keyWindow.frame, keyWindow.screen.bounds);

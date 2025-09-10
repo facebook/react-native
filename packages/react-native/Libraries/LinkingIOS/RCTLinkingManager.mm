@@ -27,7 +27,10 @@ static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 /// Posts a URL notification that will be handled by the emitter to JS; this method is used to invoke instance methods
 /// of RCTLinkingManager from class methods via NSNotificationCenter.
 /// @param URL The URL to be emitted.
-+ (void)postNotificationWithURL:(NSURL *)URL;
+/// @param sender The sender object, which is critical to differentiate the recipient instance. It should be the
+/// RCTTurboModuleManagerDelegate instance that the event should be emitted to. Such design makes sure that only one RN
+/// instance is the recipient of this event.
++ (void)postNotificationWithURL:(NSURL *)URL sender:(id)sender;
 
 @end
 
@@ -35,10 +38,10 @@ static NSString *const kOpenURLNotification = @"RCTOpenURLNotification";
 
 RCT_EXPORT_MODULE()
 
-+ (void)postNotificationWithURL:(NSURL *)URL
++ (void)postNotificationWithURL:(NSURL *)URL sender:(id)sender
 {
   NSDictionary<NSString *, id> *payload = @{@"url" : URL.absoluteString};
-  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification object:nil userInfo:payload];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kOpenURLNotification object:sender userInfo:payload];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -53,7 +56,7 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleOpenURLNotification:)
                                                name:kOpenURLNotification
-                                             object:nil];
+                                             object:self.windowForRNInstance];
 }
 
 - (void)stopObserving
@@ -88,7 +91,7 @@ RCT_EXPORT_MODULE()
       restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler
 {
   if (!RCTIsSceneDelegateApp()) {
-    [RCTLinkingManager handleUserActivity:userActivity window:RCTKeyWindow()];
+    [RCTLinkingManager handleUserActivity:userActivity window:RCTKeyWindowFromApplication(application)];
     return YES;
   }
 
@@ -99,7 +102,7 @@ RCT_EXPORT_MODULE()
 
 + (void)scene:(UIScene *)scene continueUserActivity:(NSUserActivity *)userActivity
 {
-  [RCTLinkingManager handleUserActivity:userActivity window:RCTKeyWindow()];
+  [RCTLinkingManager handleUserActivity:userActivity window:RCTKeyWindowFromScene(scene)];
 }
 
 + (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts
@@ -109,7 +112,7 @@ RCT_EXPORT_MODULE()
   }
 
   NSURL *URL = URLContexts.allObjects.firstObject.URL;
-  [RCTLinkingManager postNotificationWithURL:URL];
+  [RCTLinkingManager postNotificationWithURL:URL sender:RCTKeyWindowFromScene(scene)];
 }
 
 #pragma mark - Common logic methods
@@ -118,14 +121,14 @@ RCT_EXPORT_MODULE()
 {
   // This can be nullish when launching an App Clip.
   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb] && userActivity.webpageURL != nil) {
-    [RCTLinkingManager postNotificationWithURL:userActivity.webpageURL];
+    [RCTLinkingManager postNotificationWithURL:userActivity.webpageURL sender:window];
   }
 }
 
 + (BOOL)handleAppDelegateURL:(NSURL *)URL app:(UIApplication *)app
 {
   if (!RCTIsSceneDelegateApp()) {
-    [RCTLinkingManager postNotificationWithURL:URL];
+    [RCTLinkingManager postNotificationWithURL:URL sender:RCTKeyWindowFromApplication(app)];
     return YES;
   }
 

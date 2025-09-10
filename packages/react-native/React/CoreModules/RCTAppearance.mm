@@ -82,7 +82,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    UITraitCollection *traitCollection = self.windowForRNInstance.traitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)

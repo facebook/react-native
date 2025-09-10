@@ -74,6 +74,8 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
+- (const RCTInstance *__nonnull)getRCTInstance;
+
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
 @property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;

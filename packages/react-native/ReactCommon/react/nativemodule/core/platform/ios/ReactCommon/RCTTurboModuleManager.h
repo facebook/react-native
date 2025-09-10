@@ -66,12 +66,14 @@
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+                     jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                  rnInstanceId:(id)rnInstanceId;
 
 - (instancetype)initWithBridgeProxy:(RCTBridgeProxy *)bridgeProxy
               bridgeModuleDecorator:(RCTBridgeModuleDecorator *)bridgeModuleDecorator
                            delegate:(id<RCTTurboModuleManagerDelegate>)delegate
-                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker;
+                          jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+                       rnInstanceId:(id)rnInstanceId;
 
 - (void)installJSBindings:(facebook::jsi::Runtime &)runtime;
 

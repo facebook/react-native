@@ -29,9 +29,8 @@ class RuntimeScheduler;
 RCT_EXTERN NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(
     id<RCTDependencyProvider> dependencyProvider);
 
-RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
-    Class moduleClass,
-    id<RCTDependencyProvider> dependencyProvider);
+RCT_EXTERN id<RCTTurboModule>
+RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider, id rnInstanceId);
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,

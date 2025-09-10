@@ -10,6 +10,7 @@
 
 #import <React/RCTDefines.h>
 #import <React/RCTJSThread.h>
+#import <React/RCTMultiWindowUtils.h>
 
 #import <RCTDeprecation/RCTDeprecation.h>
 
@@ -69,15 +70,32 @@ RCT_EXTERN_C_END
  * will be used as the JS module name. If omitted, the JS module name will
  * match the Objective-C class name.
  */
-#define RCT_EXPORT_MODULE(js_name)          \
-  RCT_EXTERN void RCTRegisterModule(Class); \
-  +(NSString *)moduleName                   \
-  {                                         \
-    return @ #js_name;                      \
-  }                                         \
-  +(void)load                               \
-  {                                         \
-    RCTRegisterModule(self);                \
+#define RCT_EXPORT_MODULE(js_name)                                                                              \
+  RCT_EXTERN void RCTRegisterModule(Class);                                                                     \
+  +(NSString *)moduleName                                                                                       \
+  {                                                                                                             \
+    return @ #js_name;                                                                                          \
+  }                                                                                                             \
+  +(void)load                                                                                                   \
+  {                                                                                                             \
+    RCTRegisterModule(self);                                                                                    \
+  }                                                                                                             \
+  @synthesize rnInstanceId = rnInstanceId;                                                                      \
+  -(UIWindow *)windowForRNInstance                                                                              \
+  {                                                                                                             \
+    return [RCTMultiWindowRegistry windowForRNInstance:self.rnInstanceId];                                      \
+  }                                                                                                             \
+  -(instancetype)initWithUniqueRNInstance : (id)instanceId                                                      \
+  {                                                                                                             \
+    /* for compatibility reasons, allow the init initializer to refer to the RN-instance-related properties, */ \
+    /* even if the self object would be re-written later */                                                     \
+    self.rnInstanceId = instanceId;                                                                             \
+    self = [self init];                                                                                         \
+    if (self) {                                                                                                 \
+      /* a different self might've been returned from the designated initializer init */                        \
+      self.rnInstanceId = instanceId;                                                                           \
+    }                                                                                                           \
+    return self;                                                                                                \
   }
 
 /**
@@ -283,11 +301,14 @@ RCT_EXTERN_C_END
 /**
  * Like RCT_EXTERN_MODULE, but allows setting a custom JavaScript name.
  */
-#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername)                      \
-  objc_name : objc_supername @end @interface objc_name(RCTExternModule)<RCTBridgeModule> \
-  @end                                                                                   \
-  @implementation objc_name (RCTExternModule)                                            \
+#define RCT_EXTERN_REMAP_MODULE(js_name, objc_name, objc_supername) \
+  objc_name:                                                        \
+  objc_supername @                                                  \
+  end @interface objc_name(RCTExternModule)<RCTBridgeModule>        \
+  @end                                                              \
+  @implementation objc_name (RCTExternModule)                       \
   RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)
+#import <React/RCTMultiWindowUtils.h>
 
 /**
  * Use this macro in accordance with RCT_EXTERN_MODULE to export methods
@@ -347,6 +368,22 @@ RCT_EXTERN_C_END
  * Notifies the module that a batch of JS method invocations has just completed.
  */
 - (void)batchDidComplete RCT_DEPRECATED;
+
+/// Convenience initializer that assigns the given `RCTInstance` as an instance property, which can be
+/// helpful to obtain an id usable for `NSNotificationSender` to address only recipients in the same RN instance.
+/// This initializer invokes the designated initializer `init` and assigns the instanceId both before and after calling
+/// init, meaning that init designated initializer is safe to access self.instanceId.
+- (instancetype)initWithUniqueRNInstance:(id)instanceId;
+
+/// Stores the `id` unique for this RN instance, in which this module is running.
+///
+/// This unique identifier is an implementation detail of this class and while currently it is an `RCTInstance`, it is
+/// not guaranteed to be stable.
+@property (weak, nonatomic) id rnInstanceId;
+
+/// Returns the `UIWindow` associated with the React Native instance this module is running in.
+/// @return The `UIWindow`; should never be null.
+- (UIWindow *)windowForRNInstance;
 
 @end
 

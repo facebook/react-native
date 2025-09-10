@@ -460,6 +460,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   }
 }
 
+- (const RCTInstance *)getRCTInstance
+{
+  return _instance;
+}
+
 #pragma mark - jsinspector_modern
 
 - (jsinspector_modern::HostTarget *)inspectorTarget

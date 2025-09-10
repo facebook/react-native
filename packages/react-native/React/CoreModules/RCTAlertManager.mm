@@ -105,9 +105,7 @@ RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback 
   }
 
   RCTExecuteOnMainQueue(^{
-    RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
-                                                                               message:nil
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
+    RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title inWindow:self.windowForRNInstance];
 
     alertController.overrideUserInterfaceStyle = userInterfaceStyle;
 
