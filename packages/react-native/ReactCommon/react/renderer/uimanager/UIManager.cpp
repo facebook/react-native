@@ -109,6 +109,12 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
     RawProps rawProps) const {
   TraceSection s(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
+      
+      auto d = rawProps.toDynamic();
+      LOG(INFO) << "props";
+      for (auto& key: d.keys()){
+        LOG(INFO) << key.asString() << std::endl;
+      }
 
   PropsParserContext propsParserContext{
       shadowNode.getFamily().getSurfaceId(), *contextContainer_.get()};

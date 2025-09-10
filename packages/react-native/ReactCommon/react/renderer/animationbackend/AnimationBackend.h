@@ -9,14 +9,18 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/ReactPrimitives.h>
+#include <react/renderer/uimanager/UIManager.h>
 #include <functional>
 #include <vector>
+#include "AnimatedProps.h"
+#include "AnimatedPropsBuilder.h"
 
 namespace facebook::react {
 
 struct AnimationMutation {
   Tag tag;
-  double opacity;
+  const ShadowNodeFamily* family;
+  AnimatedProps props;
 };
 
 using AnimationMutations = std::vector<AnimationMutation>;
@@ -35,12 +39,14 @@ class AnimationBackend {
   const StopOnRenderCallback stopOnRenderCallback_;
   const DirectManipulationCallback directManipulationCallback_;
   const FabricCommitCallback fabricCommitCallback_;
+  UIManager* uiManager_;
 
   AnimationBackend(
       StartOnRenderCallback&& startOnRenderCallback,
       StopOnRenderCallback&& stopOnRenderCallback,
       DirectManipulationCallback&& directManipulationCallback,
-      FabricCommitCallback && fabricCommitCallback);
+      FabricCommitCallback && fabricCommitCallback,
+      UIManager* uiManager);
   void onAnimationFrame(double timestamp);
   void start(const Callback& callback);
   void stop();

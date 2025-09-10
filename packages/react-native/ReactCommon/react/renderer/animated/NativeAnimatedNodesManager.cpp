@@ -922,8 +922,8 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       }
 
       for (auto& [tag, props] : updateViewProps_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
+//        mutations.emplace_back(
+//            AnimationMutation{tag, props["opacity"].asDouble()});
         containsChange = true;
       }
     }
@@ -951,8 +951,8 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       isEventAnimationInProgress_ = false;
 
       for (auto& [tag, props] : updateViewProps_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
+//        mutations.emplace_back(
+//            AnimationMutation{tag, props["opacity"].asDouble()});
       }
     }
   } else {
