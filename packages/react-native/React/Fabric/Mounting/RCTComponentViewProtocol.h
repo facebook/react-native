@@ -111,6 +111,11 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
  */
 - (void)prepareForRecycle;
 
+/**
+ *
+ */
+- (void)invalidate;
+
 /*
  * Read the last props used to update the view.
  */
