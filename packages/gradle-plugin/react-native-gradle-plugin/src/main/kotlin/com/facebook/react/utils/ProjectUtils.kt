@@ -23,6 +23,7 @@ import com.facebook.react.utils.PropertyUtils.SCOPED_USE_THIRD_PARTY_JSC
 import com.facebook.react.utils.PropertyUtils.USE_THIRD_PARTY_JSC
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 internal object ProjectUtils {
 
@@ -75,7 +76,11 @@ internal object ProjectUtils {
         (project.hasProperty(HERMES_V1_ENABLED) &&
             project.property(HERMES_V1_ENABLED).toString().toBoolean()) ||
             (project.hasProperty(SCOPED_HERMES_V1_ENABLED) &&
-                project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
+                project.property(SCOPED_HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.extraProperties.has(HERMES_V1_ENABLED) &&
+                project.extraProperties.get(HERMES_V1_ENABLED).toString().toBoolean()) ||
+            (project.extraProperties.has(SCOPED_HERMES_V1_ENABLED) &&
+                project.extraProperties.get(SCOPED_HERMES_V1_ENABLED).toString().toBoolean())
 
   internal fun Project.needsCodegenFromPackageJson(rootProperty: DirectoryProperty): Boolean {
     val parsedPackageJson = readPackageJsonFile(this, rootProperty)
