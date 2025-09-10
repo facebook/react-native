@@ -11,6 +11,7 @@
 #import <React/RCTViewManager.h>
 
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 
 @interface UpdatePropertiesExampleViewManager : RCTViewManager
 
@@ -39,10 +40,16 @@ RCT_EXPORT_MODULE();
   if (self) {
     _beige = YES;
 
+#if RNTESTER_USE_APPDELEGATE
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    RCTReactNativeFactory* reactNativeFactory = appDelegate.reactNativeFactory;
+#else
+    SceneDelegate *sceneDelegate = (SceneDelegate*)self.window.windowScene.delegate;
+    RCTReactNativeFactory* reactNativeFactory = sceneDelegate.reactNativeFactory;
+#endif
 
     _rootView =
-        (RCTRootView *)[appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
+        (RCTRootView *)[reactNativeFactory.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
                                                                         initialProperties:@{@"color" : @"beige"}];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];

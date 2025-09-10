@@ -13,6 +13,7 @@
 #import <React/RCTViewManager.h>
 
 #import "AppDelegate.h"
+#import "SceneDelegate.h"
 
 @interface FlexibleSizeExampleViewManager : RCTViewManager
 
@@ -44,9 +45,15 @@ RCT_EXPORT_MODULE();
   if ((self = [super initWithFrame:frame])) {
     _sizeUpdated = NO;
 
+#if RNTESTER_USE_APPDELEGATE
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    RCTReactNativeFactory* reactNativeFactory = appDelegate.reactNativeFactory;
+#else
+    SceneDelegate *sceneDelegate = (SceneDelegate*)self.window.windowScene.delegate;
+    RCTReactNativeFactory* reactNativeFactory = sceneDelegate.reactNativeFactory;
+#endif
 
-    _resizableRootView = (RCTRootView *)[appDelegate.reactNativeFactory.rootViewFactory
+    _resizableRootView = (RCTRootView *)[reactNativeFactory.rootViewFactory
         viewWithModuleName:@"RootViewSizeFlexibilityExampleApp"];
 
     [_resizableRootView setSizeFlexibility:RCTRootViewSizeFlexibilityHeight];
