@@ -45,7 +45,7 @@ class ScreenshotExample extends React.Component<{...}, $FlowFixMe> {
   takeScreenshot = () => {
     ScreenshotManager.takeScreenshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
       .then(uri => this.setState({uri}))
-      .catch(error => Alert.alert(error));
+      .catch(error => Alert.alert(error.toString()));
   };
 }
 
