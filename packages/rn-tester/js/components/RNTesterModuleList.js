@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -92,6 +92,7 @@ const RNTesterModuleList: React.ComponentType<any> = memo(
           hideFilterPills={true}
           render={({filteredSections}) => (
             <SectionList
+              stickySectionHeadersEnabled={true}
               sections={filteredSections}
               extraData={filteredSections}
               renderItem={renderListItem}
@@ -99,8 +100,7 @@ const RNTesterModuleList: React.ComponentType<any> = memo(
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
-              // eslint-disable-next-line react/no-unstable-nested-components
-              ListFooterComponent={() => <View style={{height: 80}} />}
+              contentContainerStyle={styles.sectionListContainer}
             />
           )}
         />
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
+    paddingHorizontal: 16,
   },
   topRowStyle: {
     flexDirection: 'row',
@@ -135,6 +136,9 @@ const styles = StyleSheet.create({
   imageStyle: {
     height: 25,
     width: 25,
+  },
+  sectionListContainer: {
+    paddingBottom: 8,
   },
 });
 

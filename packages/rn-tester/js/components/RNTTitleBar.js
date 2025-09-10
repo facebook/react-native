@@ -13,55 +13,6 @@ import {type RNTesterTheme} from './RNTesterTheme';
 import * as React from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
 
-const HeaderIOS = ({
-  children,
-  title,
-  documentationURL,
-  theme,
-}: {
-  children?: React.Node,
-  title: string,
-  documentationURL?: string,
-  theme: RNTesterTheme,
-}) => {
-  return (
-    <View
-      style={[styles.header, {backgroundColor: theme.SystemBackgroundColor}]}>
-      <View style={styles.headerCenter}>
-        <Text style={{...styles.title, color: theme.LabelColor}}>{title}</Text>
-        {documentationURL && (
-          <RNTesterDocumentationURL documentationURL={documentationURL} />
-        )}
-      </View>
-      {children != null && <View>{children}</View>}
-    </View>
-  );
-};
-
-const HeaderAndroid = ({
-  children,
-  title,
-  documentationURL,
-  theme,
-}: {
-  children?: React.Node,
-  title: string,
-  documentationURL?: string,
-  theme: RNTesterTheme,
-}) => {
-  return (
-    <View style={[styles.toolbar, {backgroundColor: theme.BackgroundColor}]}>
-      <View style={styles.toolbarCenter}>
-        <Text style={[styles.title, {color: theme.LabelColor}]}>{title}</Text>
-        {documentationURL && (
-          <RNTesterDocumentationURL documentationURL={documentationURL} />
-        )}
-      </View>
-      {children != null && <View>{children}</View>}
-    </View>
-  );
-};
-
 export default function RNTTitleBar({
   children,
   title,
@@ -72,22 +23,30 @@ export default function RNTTitleBar({
   title: string,
   documentationURL?: string,
   theme: RNTesterTheme,
-  ...
 }): React.Node {
-  return Platform.OS === 'ios' ? (
-    <HeaderIOS
-      documentationURL={documentationURL}
-      title={title}
-      children={children}
-      theme={theme}
-    />
-  ) : (
-    <HeaderAndroid
-      documentationURL={documentationURL}
-      title={title}
-      children={children}
-      theme={theme}
-    />
+  return (
+    <View
+      style={[
+        styles.header,
+        Platform.select({
+          android: {
+            ...styles.headerAndroid,
+            backgroundColor: theme.BackgroundColor,
+          },
+          ios: {
+            ...styles.headerIOS,
+            backgroundColor: theme.SystemBackgroundColor,
+          },
+        }),
+      ]}>
+      {children}
+      <View style={styles.headerCenter}>
+        <Text style={{...styles.title, color: theme.LabelColor}}>{title}</Text>
+        {documentationURL && (
+          <RNTesterDocumentationURL documentationURL={documentationURL} />
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -96,33 +55,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   header: {
-    height: 40,
+    alignItems: 'center',
     flexDirection: 'row',
-    marginTop: Platform.OS === 'ios' ? 50 : 0,
+  },
+  headerAndroid: {
+    height: 40,
+  },
+  headerIOS: {
+    height: 36,
+    marginTop: 36,
   },
   headerCenter: {
     flex: 1,
-    position: 'absolute',
-    top: 7,
-    left: 0,
-    right: 0,
     alignItems: 'center',
   },
   title: {
     fontSize: 19,
     fontWeight: '600',
     textAlign: 'center',
-  },
-  toolbar: {
-    height: 56,
-    flexDirection: 'row',
-  },
-  toolbarCenter: {
-    flex: 1,
-    position: 'absolute',
-    top: 12,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
   },
 });
