@@ -14,6 +14,7 @@ const {
   configureAppForSwift,
   createHardlinks,
   findXcodeProjectDirectory,
+  generateCodegenArtifacts,
   runIosPrebuild,
   runPodDeintegrate,
   setBuildFromSource,
@@ -30,6 +31,9 @@ jest.mock('../headers-utils');
 
 // Mock prepare-app-dependencies-headers module
 jest.mock('../prepare-app-dependencies-headers');
+
+// Mock codegen executor module
+jest.mock('../../codegen/generate-artifacts-executor');
 
 // Mock path module for absolute paths
 jest.mock('path', () => {
@@ -235,6 +239,127 @@ describe('createHardlinks', () => {
       reactNativePath,
       expectedReactIncludesPath,
       'includes',
+    );
+  });
+});
+
+describe('generateCodegenArtifacts', () => {
+  let mockCodegenExecutor;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockCodegenExecutor = require('../../codegen/generate-artifacts-executor');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockCodegenExecutor.execute = jest.fn();
+  });
+
+  it('should run codegen successfully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appIosPath = '/path/to/app/ios';
+
+    mockCodegenExecutor.execute.mockImplementation(() => {});
+
+    // Execute
+    await generateCodegenArtifacts(reactNativePath, appPath, appIosPath);
+
+    // Assert
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledWith(
+      appPath,
+      'ios',
+      appIosPath,
+      'app',
+    );
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledTimes(1);
+
+    // Verify console output
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Generating codegen artifacts...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ Codegen artifacts generated',
+    );
+  });
+
+  it('should throw error when codegen execution fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appIosPath = '/path/to/app/ios';
+    const originalError = new Error('Codegen failed to generate artifacts');
+
+    mockCodegenExecutor.execute.mockImplementation(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(
+      generateCodegenArtifacts(reactNativePath, appPath, appIosPath),
+    ).rejects.toThrow(
+      'Codegen generation failed: Codegen failed to generate artifacts',
+    );
+
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledWith(
+      appPath,
+      'ios',
+      appIosPath,
+      'app',
+    );
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledTimes(1);
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Generating codegen artifacts...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ Codegen artifacts generated',
+    );
+  });
+
+  it('should handle different paths correctly', async () => {
+    // Setup
+    const reactNativePath = '/Users/developer/react-native';
+    const appPath = '/Users/developer/MyApp';
+    const appIosPath = '/Users/developer/MyApp/ios';
+
+    mockCodegenExecutor.execute.mockImplementation(() => {});
+
+    // Execute
+    await generateCodegenArtifacts(reactNativePath, appPath, appIosPath);
+
+    // Assert
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledWith(
+      appPath,
+      'ios',
+      appIosPath,
+      'app',
+    );
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react native';
+    const appPath = '/path/to/my app';
+    const appIosPath = '/path/to/my app/ios folder';
+
+    mockCodegenExecutor.execute.mockImplementation(() => {});
+
+    // Execute
+    await generateCodegenArtifacts(reactNativePath, appPath, appIosPath);
+
+    // Assert
+    expect(mockCodegenExecutor.execute).toHaveBeenCalledWith(
+      appPath,
+      'ios',
+      appIosPath,
+      'app',
     );
   });
 });
