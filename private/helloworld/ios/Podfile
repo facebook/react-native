@@ -38,10 +38,6 @@ target 'HelloWorld' do
     config = { :reactNativePath => rn_rel }
   end
 
-  # Allow Yarn v1 to ignore engines during codegen to accommodate local Node versions
-  # CI should already use a compliant Node version, so this only aids local validation.
-  ENV['YARN_IGNORE_ENGINES'] = '1'
-
   use_react_native!(
     :path => "../../../packages/react-native",
     # An absolute path to your application root.
