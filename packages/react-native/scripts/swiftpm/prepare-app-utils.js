@@ -12,6 +12,7 @@ const codegenExecutor = require('../codegen/generate-artifacts-executor');
 const {hardlinkThirdPartyDependenciesHeaders} = require('./headers-utils');
 const {
   hardlinkReactNativeHeaders,
+  prepareAppDependenciesHeaders,
 } = require('./prepare-app-dependencies-headers');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -257,6 +258,63 @@ async function generateCodegenArtifacts(
   }
 }
 
+/**
+ * Prepare app dependencies headers (3 separate calls)
+ */
+async function prepareHeaders(
+  reactNativePath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  const outputFolder = path.join(
+    appIosPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactAppDependencyProvider',
+  );
+  const codegenOutputFolder = path.join(
+    appIosPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactCodegen',
+  );
+
+  try {
+    // 1. Prepare codegen headers
+    console.log('Preparing codegen headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      outputFolder,
+      'codegen',
+    );
+    console.log('✓ Codegen headers prepared');
+
+    // 2. Prepare react-native headers
+    console.log('Preparing react-native headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      codegenOutputFolder,
+      'react-native',
+    );
+    console.log('✓ React Native headers prepared');
+
+    // 3. Prepare third-party dependencies headers
+    console.log('Preparing third-party dependencies headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      codegenOutputFolder,
+      'third-party-dependencies',
+    );
+    console.log('✓ Third-party dependencies headers prepared');
+  } catch (error) {
+    throw new Error(`Header preparation failed: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -265,4 +323,5 @@ module.exports = {
   setBuildFromSource,
   createHardlinks,
   generateCodegenArtifacts,
+  prepareHeaders,
 };
