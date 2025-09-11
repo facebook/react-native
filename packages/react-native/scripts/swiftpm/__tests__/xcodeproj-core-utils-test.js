@@ -10,7 +10,10 @@
 
 'use strict';
 
-const {generateXcodeObjectId} = require('../xcodeproj-core-utils');
+const {
+  generateXcodeObjectId,
+  printFilesForBuildPhase,
+} = require('../xcodeproj-core-utils');
 
 // Mock crypto module
 jest.mock('crypto');
@@ -116,5 +119,76 @@ describe('generateXcodeObjectId', () => {
 
     // Execute & Assert
     expect(() => generateXcodeObjectId()).toThrow('Crypto error');
+  });
+});
+
+describe('printFilesForBuildPhase', () => {
+  it('should format build file with productRef correctly', () => {
+    // Setup
+    const objectId = 'BUILDFILE123';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      productRef: 'PRODUCT456',
+    };
+    const allObjects = {
+      PRODUCT456: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'Alamofire',
+      },
+    };
+
+    // Execute
+    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\t\t\tBUILDFILE123 /* Alamofire in Frameworks */,\n',
+    );
+  });
+
+  it('should format build file with fileRef correctly', () => {
+    // Setup
+    const objectId = 'BUILDFILE789';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      fileRef: 'FILEREF123',
+    };
+    const allObjects = {
+      FILEREF123: {
+        isa: 'PBXFileReference',
+        name: 'MyFramework.framework',
+      },
+    };
+
+    // Execute
+    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\t\t\tBUILDFILE789 /* MyFramework.framework in Frameworks */,\n',
+    );
+  });
+
+  it('should use file path when name is not available', () => {
+    // Setup
+    const objectId = 'BUILDFILE789';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      fileRef: 'FILEREF456',
+    };
+    const allObjects = {
+      FILEREF456: {
+        isa: 'PBXFileReference',
+        path: 'path/to/MyLib.framework',
+      },
+    };
+
+    // Execute
+    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\t\t\tBUILDFILE789 /* path/to/MyLib.framework in Frameworks */,\n',
+    );
   });
 });
