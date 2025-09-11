@@ -63,6 +63,8 @@ abstract class BundleHermesCTask : DefaultTask() {
 
   @get:Input abstract val hermesEnabled: Property<Boolean>
 
+  @get:Input abstract val hermesV1Enabled: Property<Boolean>
+
   @get:Input abstract val devEnabled: Property<Boolean>
 
   @get:Input abstract val extraPackagerArgs: ListProperty<String>
@@ -94,12 +96,8 @@ abstract class BundleHermesCTask : DefaultTask() {
     runCommand(bundleCommand)
 
     if (hermesEnabled.get()) {
-      val hermesV1Enabled =
-          if (project.rootProject.hasProperty("hermesV1Enabled"))
-              project.rootProject.findProperty("hermesV1Enabled") == "true"
-          else false
       val detectedHermesCommand =
-          detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get(), hermesV1Enabled)
+          detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get(), hermesV1Enabled.get())
       val bytecodeFile = File("${bundleFile}.hbc")
       val outputSourceMap = resolveOutputSourceMap(bundleAssetFilename)
       val compilerSourceMap = resolveCompilerSourceMap(bundleAssetFilename)
