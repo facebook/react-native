@@ -18,6 +18,17 @@ type XcodeProject = {
   // $FlowFixMe[unclear-type]
   [string]: any,
 };
+
+type XcodeObject = {
+  isa: string,
+  // $FlowFixMe[unclear-type]
+  [string]: any,
+};
+
+type SectionToAdd = {
+  sectionType: string,
+  replacementText: string,
+};
 */
 
 /**
@@ -138,8 +149,126 @@ function deintegrateSwiftPM(xcodeProject /*: XcodeProject */) /*: void */ {
   );
 }
 
+/**
+ * Print PBXBuildFile object
+ * @param {string} objectId - The object ID
+ * @param {Object} objectData - The object data
+ * @param {Object} allObjects - All objects for reference lookup
+ * @returns {string} Formatted string for this object type
+ */
+function printPBXBuildFile(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
+  // Handle productRef case for Swift Package dependencies
+  if (objectData.productRef) {
+    const productRefObject = allObjects[objectData.productRef];
+    const productName = productRefObject
+      ? productRefObject.productName
+      : 'Unknown';
+    return `\t\t${objectId} /* ${productName} in Frameworks */ = {isa = PBXBuildFile; productRef = ${objectData.productRef} /* ${productName} */; };\n`;
+  }
+
+  // Handle fileRef case for regular files
+  const referencedFile = allObjects[objectData.fileRef];
+  const filename = referencedFile
+    ? referencedFile.name || referencedFile.path || 'Unknown'
+    : 'Unknown';
+
+  // Determine the type by searching build phases
+  let type = 'Unknown';
+  for (const [, phaseObject] of Object.entries(allObjects)) {
+    if (phaseObject.files && phaseObject.files.includes(objectId)) {
+      // Check if the isa property ends up with "BuildPhase"
+      if (phaseObject.isa.endsWith('BuildPhase')) {
+        // remove the PBX prefix and the BuildPhase suffix
+        type = phaseObject.isa.substring(3, phaseObject.isa.length - 10);
+        break;
+      }
+    }
+  }
+
+  // Format the output as a single line
+  return `\t\t${objectId} /* ${filename} in ${type} */ = {isa = PBXBuildFile; fileRef = ${objectData.fileRef} /* ${filename} */; };\n`;
+}
+
+/**
+ * Print XCLocalSwiftPackageReference object
+ * @param {string} objectId - The object ID
+ * @param {Object} objectData - The object data
+ * @param {Object} allObjects - All objects for reference lookup
+ * @returns {string} Formatted string for this object type
+ */
+function printXCLocalSwiftPackageReference(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
+  const relativePath = objectData.relativePath;
+
+  // Escape path with quotes if it contains spaces
+  const escapedPath = relativePath.includes(' ')
+    ? `"${relativePath}"`
+    : relativePath;
+
+  return `\t\t${objectId} /* XCLocalSwiftPackageReference "${relativePath}" */ = {
+\t\t\tisa = XCLocalSwiftPackageReference;
+\t\t\trelativePath = ${escapedPath};
+\t\t};
+`;
+}
+
+/**
+ * Print XCSwiftPackageProductDependency object
+ * @param {string} objectId - The object ID
+ * @param {Object} objectData - The object data
+ * @param {Object} allObjects - All objects for reference lookup
+ * @returns {string} Formatted string for this object type
+ */
+function printXCSwiftPackageProductDependency(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
+  const productName = objectData.productName;
+
+  return `\t\t${objectId} /* ${productName} */ = {
+\t\t\tisa = XCSwiftPackageProductDependency;
+\t\t\tproductName = ${productName};
+\t\t};
+`;
+}
+
+function printFilesForBuildPhase(
+  objectId /*: string */,
+  objectData /*: XcodeObject */,
+  allObjects /*: {[string]: XcodeObject} */,
+) /*: string */ {
+  // Get the product name from the productRef in the PBXBuildFile
+  let productName = 'Unknown';
+
+  if (objectData.productRef) {
+    const productRefObject = allObjects[objectData.productRef];
+    if (productRefObject && productRefObject.productName) {
+      productName = productRefObject.productName;
+    }
+  } else if (objectData.fileRef) {
+    const fileRefObject = allObjects[objectData.fileRef];
+    if (fileRefObject) {
+      productName = fileRefObject.name || fileRefObject.path || 'Unknown';
+    }
+  }
+
+  return `\t\t\t\t${objectId} /* ${productName} in Frameworks */,\n`;
+}
+
 module.exports = {
   generateXcodeObjectId,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
+  printPBXBuildFile,
+  printFilesForBuildPhase,
+  printXCLocalSwiftPackageReference,
+  printXCSwiftPackageProductDependency,
 };
