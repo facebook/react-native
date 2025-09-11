@@ -238,7 +238,7 @@ import"../../ui/components/icon_button/icon_button.js";import"../../ui/component
                         <td>${e.method}</td>
                         <td>${e.params?d`<code>${JSON.stringify(e.params)}</code>`:""}</td>
                         <td>
-                          ${e.result?d`<code>${JSON.stringify(e.result)}</code>`:e.error?d`<code>${JSON.stringify(e.error)}</code>`:"(pending)"}
+                          ${e.result?d`<code>${JSON.stringify(e.result)}</code>`:e.error?d`<code>${JSON.stringify(e.error)}</code>`:"id"in e?"(pending)":""}
                         </td>
                         <td data-value=${e.elapsedTime||0}>
                           ${"id"in e?e.elapsedTime?U(A.sMs,{PH1:String(e.elapsedTime)}):"(pending)":""}
