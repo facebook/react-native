@@ -14,10 +14,24 @@ const {
   findXcodeProjectDirectory,
   runIosPrebuild,
   runPodDeintegrate,
+  configureAppForSwift,
 } = require('../prepare-app-utils');
 
 // Mock child_process module
 jest.mock('child_process');
+
+// Mock fs module
+jest.mock('fs');
+
+// Mock path module for absolute paths
+jest.mock('path', () => {
+  const actualPath = jest.requireActual('path');
+  return {
+    ...actualPath,
+    join: jest.fn((...args) => args.join('/')),
+    relative: jest.fn((from, to) => to.replace(from + '/', '')),
+  };
+});
 
 // Mock console methods - disable React Native's strict console checking
 const originalConsole = global.console;
@@ -465,6 +479,270 @@ describe('runPodDeintegrate', () => {
     );
     expect(mockConsoleWarn).toHaveBeenCalledWith(
       '⚠️  Pod deintegrate failed (this might be expected if no Podfile.lock exists)',
+    );
+  });
+});
+
+describe('configureAppForSwift', () => {
+  let mockFs;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockFs = require('fs');
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockFs.existsSync = jest.fn();
+    mockFs.mkdirSync = jest.fn();
+    mockFs.unlinkSync = jest.fn();
+    mockFs.linkSync = jest.fn();
+    mockFs.writeFileSync = jest.fn();
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+
+    // Mock path.relative to return realistic relative paths
+    mockPath.relative.mockImplementation((from, to) => {
+      // Simple implementation for tests
+      return to.replace(from + '/', '');
+    });
+  });
+
+  it('should configure app for Swift integration successfully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    // Mock file system calls
+    mockFs.existsSync
+      .mockReturnValueOnce(true) // reactIncludesReactPath exists
+      .mockReturnValueOnce(false) // destUmbrellaPath doesn't exist
+      .mockReturnValueOnce(true); // sourceUmbrellaPath exists
+
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await configureAppForSwift(reactNativePath);
+
+    // Assert file system calls
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/React/includes/React',
+    );
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/React/includes/React/React-umbrella.h',
+    );
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/scripts/ios-prebuild/React-umbrella.h',
+    );
+
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      '/path/to/react-native/scripts/ios-prebuild/React-umbrella.h',
+      '/path/to/react-native/React/includes/React/React-umbrella.h',
+    );
+
+    // Verify module.modulemap content
+    const expectedModuleMapContent = `framework module React {
+  umbrella header "/path/to/react-native/React/includes/React/React-umbrella.h"
+  export *
+  module * { export * }
+}
+`;
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/React/includes/module.modulemap',
+      expectedModuleMapContent,
+      'utf8',
+    );
+
+    // Verify console output
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Configuring app for Swift integration...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ Created hardlink: React-umbrella.h -> scripts/ios-prebuild/React-umbrella.h',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ Generated module.modulemap file',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ App configured for Swift integration',
+    );
+  });
+
+  it('should remove existing hardlink before creating new one', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true) // reactIncludesReactPath exists
+      .mockReturnValueOnce(true) // destUmbrellaPath exists (should be removed)
+      .mockReturnValueOnce(true); // sourceUmbrellaPath exists
+
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await configureAppForSwift(reactNativePath);
+
+    // Assert
+    expect(mockFs.unlinkSync).toHaveBeenCalledWith(
+      '/path/to/react-native/React/includes/React/React-umbrella.h',
+    );
+  });
+
+  it('should handle different React Native paths', async () => {
+    // Setup
+    const reactNativePath = '/Users/developer/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await configureAppForSwift(reactNativePath);
+
+    // Assert
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      '/Users/developer/react-native/scripts/ios-prebuild/React-umbrella.h',
+      '/Users/developer/react-native/React/includes/React/React-umbrella.h',
+    );
+  });
+
+  it('should throw error when source umbrella header does not exist', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true) // reactIncludesReactPath exists
+      .mockReturnValueOnce(false) // destUmbrellaPath doesn't exist
+      .mockReturnValueOnce(false); // sourceUmbrellaPath doesn't exist
+
+    // Execute & Assert
+    await expect(configureAppForSwift(reactNativePath)).rejects.toThrow(
+      'Swift configuration failed: Source umbrella header not found: /path/to/react-native/scripts/ios-prebuild/React-umbrella.h',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Configuring app for Swift integration...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ App configured for Swift integration',
+    );
+  });
+
+  it('should throw error when hardlink creation fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockFs.linkSync.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+
+    // Execute & Assert
+    await expect(configureAppForSwift(reactNativePath)).rejects.toThrow(
+      'Swift configuration failed: Permission denied',
+    );
+  });
+
+  it('should throw error when module.modulemap write fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {
+      throw new Error('Disk full');
+    });
+
+    // Execute & Assert
+    await expect(configureAppForSwift(reactNativePath)).rejects.toThrow(
+      'Swift configuration failed: Disk full',
+    );
+  });
+
+  it('should throw error when directory creation fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync.mockReturnValueOnce(false); // reactIncludesReactPath doesn't exist
+
+    mockFs.mkdirSync.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+
+    // Execute & Assert
+    await expect(configureAppForSwift(reactNativePath)).rejects.toThrow(
+      'Swift configuration failed: Permission denied',
+    );
+  });
+
+  it('should handle file unlink errors gracefully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(true) // destUmbrellaPath exists
+      .mockReturnValueOnce(true);
+
+    mockFs.unlinkSync.mockImplementation(() => {
+      throw new Error('File in use');
+    });
+
+    // Execute & Assert
+    await expect(configureAppForSwift(reactNativePath)).rejects.toThrow(
+      'Swift configuration failed: File in use',
+    );
+  });
+
+  it('should generate correct module.modulemap content with absolute path', async () => {
+    // Setup
+    const reactNativePath = '/custom/path/to/react-native';
+
+    mockFs.existsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await configureAppForSwift(reactNativePath);
+
+    // Assert module.modulemap content with correct absolute path
+    const expectedModuleMapContent = `framework module React {
+  umbrella header "/custom/path/to/react-native/React/includes/React/React-umbrella.h"
+  export *
+  module * { export * }
+}
+`;
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/custom/path/to/react-native/React/includes/module.modulemap',
+      expectedModuleMapContent,
+      'utf8',
     );
   });
 });
