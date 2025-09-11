@@ -283,15 +283,6 @@ NativePerformance::getReactNativeStartupTiming(jsi::Runtime& /*rt*/) {
         startupLogger.getRunJSBundleStartTime();
   }
 
-  if (!std::isnan(startupLogger.getRunJSBundleEndTime())) {
-    result["executeJavaScriptBundleEntryPointEnd"] =
-        startupLogger.getRunJSBundleEndTime();
-  }
-
-  if (!std::isnan(startupLogger.getInitReactRuntimeEndTime())) {
-    result["initializeRuntimeEnd"] = startupLogger.getInitReactRuntimeEndTime();
-  }
-
   if (!std::isnan(startupLogger.getAppStartupEndTime())) {
     result["endTime"] = startupLogger.getAppStartupEndTime();
   }

@@ -72,12 +72,6 @@ function StartupTimingExample(): React.Node {
             startUpTiming?.executeJavaScriptBundleEntryPointStart,
           )} ms`}
         </RNTesterText>
-        <RNTesterText>{`executeJavaScriptBundleEntryPointEnd: ${String(
-          startUpTiming?.executeJavaScriptBundleEntryPointEnd,
-        )} ms`}</RNTesterText>
-        <RNTesterText>{`initializeRuntimeEnd: ${String(
-          startUpTiming?.initializeRuntimeEnd,
-        )} ms`}</RNTesterText>
         <RNTesterText>{`endTime: ${String(startUpTiming?.endTime)} ms`}</RNTesterText>
       </View>
     </View>
