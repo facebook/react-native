@@ -140,6 +140,73 @@ async function prepareApp(
   }
 }
 
+// CLI usage
+if (require.main === module) {
+  const args = process.argv.slice(2);
+
+  let appPath = '../../private/helloworld';
+  let reactNativePath = '.';
+  let appXcodeProject = 'HelloWorld.xcodeproj';
+  let targetName = 'HelloWorld';
+  let additionalPackages /*: Array<SwiftPackage> */ = [];
+
+  // try to load args from the swiftpm.config.js file that is
+  // in the app directory. Assumption: this script is invoked from the app directory
+  try {
+    const configJSFile = path.join(process.cwd(), 'swiftpm.config.js');
+    // $FlowFixMe[unsupported-syntax]
+    const swiftPMConfig = require(configJSFile);
+
+    appPath = swiftPMConfig.appPath;
+    reactNativePath = swiftPMConfig.reactNativePath;
+    appXcodeProject = swiftPMConfig.appXcodeProject;
+    targetName = swiftPMConfig.targetName;
+    additionalPackages = swiftPMConfig.additionalPackages;
+  } catch {
+    if (args.length >= 1) {
+      appPath = args[0];
+    }
+
+    if (args.length >= 2) {
+      reactNativePath = args[1];
+    }
+
+    if (args.length >= 3) {
+      appXcodeProject = args[2];
+    }
+
+    if (args.length >= 4) {
+      targetName = args[3];
+    }
+
+    console.log(
+      'Usage: node prepare-app.js [appPath] [reactNativePath] [appXcodeProject] [targetName]',
+    );
+  }
+  console.log(`Using App path: ${appPath}`);
+  console.log(`Using React Native path: ${reactNativePath}`);
+  console.log(`Using App Xcode project: ${appXcodeProject}`);
+  console.log(`Using Target name: ${targetName}`);
+
+  prepareApp(
+    appPath,
+    reactNativePath,
+    appXcodeProject,
+    targetName,
+    additionalPackages,
+  )
+    .then(() => {
+      console.log(
+        '\n🎉 All done! Your app is ready for SwiftPM build from source.',
+      );
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error('\n💥 Preparation failed:', error.message);
+      process.exit(1);
+    });
+}
+
 module.exports = {
   prepareApp,
 };
