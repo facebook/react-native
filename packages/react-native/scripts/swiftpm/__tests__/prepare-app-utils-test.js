@@ -14,6 +14,7 @@ const {
   configureAppForSwift,
   createHardlinks,
   findXcodeProjectDirectory,
+  fixReactNativePath,
   generateCodegenArtifacts,
   prepareHeaders,
   runIosPrebuild,
@@ -240,6 +241,237 @@ describe('createHardlinks', () => {
       reactNativePath,
       expectedReactIncludesPath,
       'includes',
+    );
+  });
+});
+
+describe('fixReactNativePath', () => {
+  let mockFs;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockFs = require('fs');
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockFs.existsSync = jest.fn();
+    mockFs.readFileSync = jest.fn();
+    mockFs.writeFileSync = jest.fn();
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    // Mock path.relative to return realistic relative paths
+    mockPath.relative.mockImplementation((from, to) => {
+      // Simple implementation for tests - return a sensible relative path
+      return '../react-native';
+    });
+  });
+
+  it('should fix REACT_NATIVE_PATH with PODS_ROOT successfully', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				REACT_NATIVE_PATH = "\${PODS_ROOT}/../node_modules/react-native";
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    const expectedContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				REACT_NATIVE_PATH = "\${PROJECT_DIR}/../react-native";
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await fixReactNativePath(appIosPath, reactNativePath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+    );
+    expect(mockFs.readFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      'utf8',
+    );
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Fixing REACT_NATIVE_PATH in Xcode project...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ REACT_NATIVE_PATH fixed to: ${PROJECT_DIR}/../react-native',
+    );
+  });
+
+  it('should add REACT_NATIVE_PATH when not found', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    const expectedContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				REACT_NATIVE_PATH = "\${PROJECT_DIR}/../react-native";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await fixReactNativePath(appIosPath, reactNativePath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Fixing REACT_NATIVE_PATH in Xcode project...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ REACT_NATIVE_PATH fixed to: ${PROJECT_DIR}/../react-native',
+    );
+  });
+
+  it('should preserve REACT_NATIVE_PATH without PODS_ROOT', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				REACT_NATIVE_PATH = "\${PROJECT_DIR}/../react-native";
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await fixReactNativePath(appIosPath, reactNativePath, appXcodeProject);
+
+    // Assert - should not modify the content since it doesn't contain PODS_ROOT
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      mockProjectContent,
+      'utf8',
+    );
+  });
+
+  it('should throw error when project file does not exist', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(false);
+
+    // Execute & Assert
+    await expect(
+      fixReactNativePath(appIosPath, reactNativePath, appXcodeProject),
+    ).rejects.toThrow(
+      'Xcode project file not found: /path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+    );
+
+    expect(mockFs.readFileSync).not.toHaveBeenCalled();
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it('should handle multiple REACT_NATIVE_PATH occurrences with PODS_ROOT', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Debug configuration */
+		buildSettings = {
+			REACT_NATIVE_PATH = "\${PODS_ROOT}/../node_modules/react-native";
+		};
+		/* Release configuration */
+		buildSettings = {
+			REACT_NATIVE_PATH = "\${PODS_ROOT}/../node_modules/react-native";
+		};`;
+
+    const expectedContent = `/* Debug configuration */
+		buildSettings = {
+			REACT_NATIVE_PATH = "\${PROJECT_DIR}/../react-native";
+		};
+		/* Release configuration */
+		buildSettings = {
+			REACT_NATIVE_PATH = "\${PROJECT_DIR}/../react-native";
+		};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await fixReactNativePath(appIosPath, reactNativePath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
     );
   });
 });

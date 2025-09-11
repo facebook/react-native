@@ -315,6 +315,94 @@ async function prepareHeaders(
   }
 }
 
+/**
+ * Fix REACT_NATIVE_PATH in Xcode project
+ */
+async function fixReactNativePath(
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Xcode project file not found: ${projectPath}`);
+  }
+
+  try {
+    console.log('Fixing REACT_NATIVE_PATH in Xcode project...');
+
+    // Calculate the relative path from iOS app to React Native package
+    const relativePath = path.relative(appIosPath, reactNativePath);
+    const newReactNativePathValue = `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`;
+
+    // Read the project file
+    let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundReactNativePath = false;
+    let modifiedLines = [];
+
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Check if line contains REACT_NATIVE_PATH = "
+      if (line.includes('REACT_NATIVE_PATH = "')) {
+        foundReactNativePath = true;
+
+        // Check if line also contains {PODS_ROOT}
+        if (line.includes('{PODS_ROOT}')) {
+          // Replace the whole line with the new path
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0]; // Preserve indentation
+          modifiedLines.push(`${indentation}${newReactNativePathValue}`);
+        } else {
+          // Keep the line as is if it doesn't contain {PODS_ROOT}
+          modifiedLines.push(line);
+        }
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no REACT_NATIVE_PATH was found, add it after buildSettings = {
+    if (!foundReactNativePath) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add REACT_NATIVE_PATH on the next line with appropriate indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newReactNativePathValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
+
+    console.log(
+      `✓ REACT_NATIVE_PATH fixed to: \${PROJECT_DIR}/${relativePath}`,
+    );
+  } catch (error) {
+    throw new Error(`Failed to fix REACT_NATIVE_PATH: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -324,4 +412,5 @@ module.exports = {
   createHardlinks,
   generateCodegenArtifacts,
   prepareHeaders,
+  fixReactNativePath,
 };
