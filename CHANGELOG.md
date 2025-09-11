@@ -4,22 +4,17 @@
 
 ### Added
 
-
-
 #### Android specific
 
 - Create a debugOptimized buildType for Android ([5e3edafec6](https://github.com/facebook/react-native/commit/5e3edafec6c69558521061dced7a6bcd046576b0) by [@cortinico](https://github.com/cortinico))
 - Add `useNativeEqualsInNativeReadableArrayAndroid` and `useNativeTransformHelperAndroid` feature flag to the experimental channel. This should alleviate some of the perf issue users are seeing on Android + Reanimated + NewArch on 0.81([a346096da8](https://github.com/facebook/react-native/commit/a346096da81fccf5fbc82d83bfc128695e6ec3a5) by [@cortinico](https://github.com/cortinico))
 
-
 ### Fixed
-
 
 #### iOS specific
 
 - Fix Node scripts related to prebuilt tarball extraction for paths containing whitespaces ([366f2ad505](https://github.com/facebook/react-native/commit/366f2ad5057ffecc1f5b211f6aae29567ae6b7e5) by [@kitten](https://github.com/kitten))
 - Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source ([a2eb29e5e7](https://github.com/facebook/react-native/commit/a2eb29e5e7aef8bbdf4c647c8467b5292b013b20) by [@kitten](https://github.com/kitten))
-
 
 ## v0.82.0-rc.1
 
