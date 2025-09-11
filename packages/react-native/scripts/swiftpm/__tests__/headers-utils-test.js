@@ -13,10 +13,12 @@
 const {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
+  symlinkReactCommonHeaders,
 } = require('../headers-utils');
 
 // Mock all required modules
 jest.mock('../utils');
+jest.mock('../headers-mappings');
 jest.mock('fs');
 jest.mock('path');
 
@@ -555,7 +557,7 @@ describe('symlinkReactAppleHeaders', () => {
     }).toThrow('Link failed');
   });
 
-  it('should work correctly with the hardcoded mapping structure', () => {
+  it('should work correctly with the symcoded mapping structure', () => {
     // Setup
     const reactApplePath = '/path/to/ReactApple';
     const headersOutput = '/output/headers';
@@ -613,7 +615,7 @@ describe('symlinkReactAppleHeaders', () => {
     }).toThrow('Command failed');
   });
 
-  it('should work correctly with single hardcoded mapping', () => {
+  it('should work correctly with single symcoded mapping', () => {
     // Setup - Test the specific mapping defined in the function
     const reactApplePath = '/path/to/ReactApple';
     const headersOutput = '/output/headers';
@@ -627,7 +629,7 @@ describe('symlinkReactAppleHeaders', () => {
     // Execute
     const result = symlinkReactAppleHeaders(reactApplePath, headersOutput);
 
-    // Assert - Test the specific mapping that's hardcoded
+    // Assert - Test the specific mapping that's symcoded
     expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
       '/path/to/ReactApple/Libraries/RCTFoundation/RCTDeprecation/Exported',
       ['tests'],
@@ -637,5 +639,296 @@ describe('symlinkReactAppleHeaders', () => {
       '/output/headers/RCTDeprecation/RCTDeprecation.h',
     );
     expect(result).toBe(1);
+  });
+});
+
+describe('symlinkReactCommonHeaders', () => {
+  let mockUtils;
+  let mockReactCommonMappings;
+  let mockPath;
+  let originalConsoleWarn;
+  let originalConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockUtils = require('../utils');
+    mockReactCommonMappings =
+      require('../headers-mappings').reactCommonMappings;
+    mockPath = require('path');
+
+    // Mock path functions
+    mockPath.relative.mockImplementation((from, to) => {
+      return to.replace(from + '/', '');
+    });
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    mockPath.dirname.mockImplementation(filePath => {
+      const parts = filePath.split('/');
+      parts.pop();
+      return parts.join('/');
+    });
+    mockPath.basename.mockImplementation(filePath => {
+      return filePath.split('/').pop();
+    });
+    mockPath.sep = '/';
+
+    // Mock console methods to prevent test output noise
+    originalConsoleWarn = console.warn;
+    originalConsoleLog = console.log;
+    console.warn = jest.fn();
+    console.log = jest.fn();
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.warn = originalConsoleWarn;
+    console.log = originalConsoleLog;
+  });
+
+  it('should use reactCommonMappings and create symlinks for mapped directories', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon': {
+        destination: '/output/headers/ReactCommon',
+        excludeFolders: ['tests'],
+        preserveStructure: false,
+      },
+    };
+    const headerFiles = [
+      '/path/to/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/TurboModule.h',
+    ];
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockReactCommonMappings).toHaveBeenCalledWith(
+      reactCommonPath,
+      headersOutput,
+    );
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon',
+      ['tests'],
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/TurboModule.h',
+      '/output/headers/ReactCommon/TurboModule.h',
+    );
+    expect(result).toBe(1);
+  });
+
+  it('should handle multiple mappings with different configurations', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/renderer/core': {
+        destination: '/output/headers/react/renderer/core',
+        excludeFolders: ['tests'],
+        preserveStructure: true,
+      },
+      '/path/to/ReactCommon/turbomodule/core': {
+        destination: '/output/headers/ReactCommon',
+        excludeFolders: ['tests'],
+        preserveStructure: false,
+      },
+    };
+    const headerFiles1 = [
+      '/path/to/ReactCommon/react/renderer/core/Component.h',
+    ];
+    const headerFiles2 = [
+      '/path/to/ReactCommon/turbomodule/core/TurboModule.h',
+    ];
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder
+      .mockReturnValueOnce(headerFiles1)
+      .mockReturnValueOnce(headerFiles2);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledTimes(2);
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/react/renderer/core/Component.h',
+      '/output/headers/react/renderer/core/Component.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/turbomodule/core/TurboModule.h',
+      '/output/headers/ReactCommon/TurboModule.h',
+    );
+    expect(result).toBe(2);
+  });
+
+  it('should handle empty mappings from reactCommonMappings', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {}; // Empty mappings
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockReactCommonMappings).toHaveBeenCalledWith(
+      reactCommonPath,
+      headersOutput,
+    );
+    expect(mockUtils.listHeadersInFolder).not.toHaveBeenCalled();
+    expect(mockUtils.setupSymlink).not.toHaveBeenCalled();
+    expect(result).toBe(0);
+  });
+
+  it('should handle mapping with preserveStructure true', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/renderer/core': {
+        destination: '/output/headers/react/renderer/core',
+        excludeFolders: ['tests'],
+        preserveStructure: true,
+      },
+    };
+    const headerFiles = [
+      '/path/to/ReactCommon/react/renderer/core/subdir/Component.h',
+    ];
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/react/renderer/core/subdir/Component.h',
+      '/output/headers/react/renderer/core/subdir/Component.h',
+    );
+    expect(result).toBe(1);
+  });
+
+  it('should handle mapping with preserveStructure false (flattened)', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/turbomodule/core': {
+        destination: '/output/headers/ReactCommon',
+        excludeFolders: ['tests'],
+        preserveStructure: false,
+      },
+    };
+    const headerFiles = [
+      '/path/to/ReactCommon/turbomodule/core/subdir/TurboModule.h',
+    ];
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      '/path/to/ReactCommon/turbomodule/core/subdir/TurboModule.h',
+      '/output/headers/ReactCommon/TurboModule.h',
+    );
+    expect(result).toBe(1);
+  });
+
+  it('should handle listHeadersInFolder returning empty arrays for all mappings', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/renderer/core': {
+        destination: '/output/headers/react/renderer/core',
+        excludeFolders: ['tests'],
+        preserveStructure: true,
+      },
+      '/path/to/ReactCommon/turbomodule/core': {
+        destination: '/output/headers/ReactCommon',
+        excludeFolders: ['tests'],
+        preserveStructure: false,
+      },
+    };
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockReturnValue([]);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+
+    // Assert
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledTimes(2);
+    expect(mockUtils.setupSymlink).not.toHaveBeenCalled();
+    expect(result).toBe(0);
+  });
+
+  it('should handle setupSymlink throwing an error', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/renderer/core': {
+        destination: '/output/headers/react/renderer/core',
+        excludeFolders: ['tests'],
+        preserveStructure: true,
+      },
+    };
+    const headerFiles = [
+      '/path/to/ReactCommon/react/renderer/core/Component.h',
+    ];
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {
+      throw new Error('Setup failed');
+    });
+
+    // Execute and Assert - function should throw the error from setupSymlink
+    expect(() => {
+      symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+    }).toThrow('Setup failed');
+  });
+
+  it('should handle listHeadersInFolder throwing an error', () => {
+    // Setup
+    const reactCommonPath = '/path/to/ReactCommon';
+    const headersOutput = '/output/headers';
+    const mappings = {
+      '/path/to/ReactCommon/react/renderer/core': {
+        destination: '/output/headers/react/renderer/core',
+        excludeFolders: ['tests'],
+        preserveStructure: true,
+      },
+    };
+
+    mockReactCommonMappings.mockReturnValue(mappings);
+    mockUtils.listHeadersInFolder.mockImplementation(() => {
+      throw new Error('List failed');
+    });
+
+    // Execute and Assert - function should throw the error from listHeadersInFolder
+    expect(() => {
+      symlinkReactCommonHeaders(reactCommonPath, headersOutput);
+    }).toThrow('List failed');
   });
 });
