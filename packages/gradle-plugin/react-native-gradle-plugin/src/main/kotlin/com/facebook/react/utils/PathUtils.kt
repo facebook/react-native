@@ -153,6 +153,7 @@ internal fun detectOSAwareHermesCommand(
 
   // 3. If Hermes V1 is enabled, use hermes-compiler from npm, otherwise, if the
   // react-native contains a pre-built hermesc, use it.
+  // TODO: T237406039 use hermes-compiler from npm for both
   val hermesCPath = if (hermesV1Enabled) HERMES_COMPILER_NPM_DIR else HERMESC_IN_REACT_NATIVE_DIR
   val prebuiltHermesPath =
       hermesCPath
