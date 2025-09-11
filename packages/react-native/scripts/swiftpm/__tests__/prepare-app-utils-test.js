@@ -17,6 +17,7 @@ const {
   findXcodeProjectDirectory,
   fixReactNativePath,
   generateCodegenArtifacts,
+  integrateSwiftPMPackages,
   prepareHeaders,
   runIosPrebuild,
   runPodDeintegrate,
@@ -37,6 +38,9 @@ jest.mock('../prepare-app-dependencies-headers');
 
 // Mock codegen executor module
 jest.mock('../../codegen/generate-artifacts-executor');
+
+// Mock update-xcodeproject module
+jest.mock('../update-xcodeproject');
 
 // Mock path module for absolute paths
 jest.mock('path', () => {
@@ -1304,6 +1308,372 @@ beforeAll(() => {
 
 afterAll(() => {
   global.console = originalConsole;
+});
+
+describe('integrateSwiftPMPackages', () => {
+  let mockIntegrateSwiftPackagesInXcode;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    const updateXcodeprojectModule = require('../update-xcodeproject');
+    mockIntegrateSwiftPackagesInXcode =
+      updateXcodeprojectModule.integrateSwiftPackagesInXcode;
+
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+
+    // Mock path.relative for realistic relative path calculations
+    mockPath.relative.mockImplementation((from, to) => {
+      if (from === '/path/to/app/ios' && to === '/path/to/react-native') {
+        return '../../react-native';
+      }
+      if (from === '/path/to/app/ios' && to === '/path/to/app') {
+        return '..';
+      }
+      return '../react-native'; // default fallback
+    });
+  });
+
+  it('should integrate SwiftPM packages successfully with basic configuration', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const targetName = 'MyApp';
+    const additionalPackages = [];
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert
+    const expectedPackageSwiftObjects = [
+      {
+        relativePath: '../../react-native',
+        targets: ['React'],
+      },
+      {
+        relativePath: 'build/generated/ios',
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj',
+      expectedPackageSwiftObjects,
+      targetName,
+    );
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledTimes(1);
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing SwiftPM package integrations...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ SwiftPM packages integrated into Xcode project',
+    );
+  });
+
+  it('should integrate SwiftPM packages with additional packages', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const targetName = 'MyApp';
+    const additionalPackages = [
+      {
+        relativePath: '../third-party/firebase-sdk',
+        targets: ['FirebaseCore', 'FirebaseAuth'],
+      },
+      {
+        relativePath: '../libs/custom-sdk',
+        targets: ['CustomSDK'],
+      },
+    ];
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert
+    const expectedPackageSwiftObjects = [
+      {
+        relativePath: '../third-party/firebase-sdk',
+        targets: ['FirebaseCore', 'FirebaseAuth'],
+      },
+      {
+        relativePath: '../libs/custom-sdk',
+        targets: ['CustomSDK'],
+      },
+      {
+        relativePath: '../../react-native',
+        targets: ['React'],
+      },
+      {
+        relativePath: 'build/generated/ios',
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj',
+      expectedPackageSwiftObjects,
+      targetName,
+    );
+  });
+
+  it('should handle different Xcode project names', async () => {
+    // Setup
+    const appIosPath = '/Users/developer/MyCustomApp/ios';
+    const reactNativePath = '/Users/developer/react-native';
+    const appPath = '/Users/developer/MyCustomApp';
+    const appXcodeProject = 'MyCustomApp.xcodeproj';
+    const targetName = 'MyCustomApp';
+    const additionalPackages = [];
+
+    // Mock relative path calculation for this specific setup
+    mockPath.relative.mockImplementation((from, to) => {
+      if (
+        from === '/Users/developer/MyCustomApp/ios' &&
+        to === '/Users/developer/react-native'
+      ) {
+        return '../react-native';
+      }
+      return '../react-native';
+    });
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/Users/developer/MyCustomApp/ios/MyCustomApp.xcodeproj',
+      expect.arrayContaining([
+        {
+          relativePath: '../react-native',
+          targets: ['React'],
+        },
+        {
+          relativePath: 'build/generated/ios',
+          targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+        },
+      ]),
+      targetName,
+    );
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/my app/ios folder';
+    const reactNativePath = '/path/to/react native';
+    const appPath = '/path/to/my app';
+    const appXcodeProject = 'My App.xcodeproj';
+    const targetName = 'My App';
+    const additionalPackages = [];
+
+    // Mock relative path calculation for paths with spaces
+    mockPath.relative.mockImplementation((from, to) => {
+      if (
+        from === '/path/to/my app/ios folder' &&
+        to === '/path/to/react native'
+      ) {
+        return '../../react native';
+      }
+      return '../../react native';
+    });
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/path/to/my app/ios folder/My App.xcodeproj',
+      expect.arrayContaining([
+        {
+          relativePath: '../../react native',
+          targets: ['React'],
+        },
+        {
+          relativePath: 'build/generated/ios',
+          targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+        },
+      ]),
+      targetName,
+    );
+  });
+
+  it('should throw error when integrateSwiftPackagesInXcode fails', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const targetName = 'MyApp';
+    const additionalPackages = [];
+    const originalError = new Error('Xcode project integration failed');
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(
+      integrateSwiftPMPackages(
+        appIosPath,
+        reactNativePath,
+        appPath,
+        appXcodeProject,
+        targetName,
+        additionalPackages,
+      ),
+    ).rejects.toThrow(
+      'SwiftPM integration failed: Xcode project integration failed',
+    );
+
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledTimes(1);
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing SwiftPM package integrations...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ SwiftPM packages integrated into Xcode project',
+    );
+  });
+
+  it('should handle empty additional packages array', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const targetName = 'MyApp';
+    const additionalPackages = [];
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert - should only have the default React Native and generated packages
+    const expectedPackageSwiftObjects = [
+      {
+        relativePath: '../../react-native',
+        targets: ['React'],
+      },
+      {
+        relativePath: 'build/generated/ios',
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj',
+      expectedPackageSwiftObjects,
+      targetName,
+    );
+  });
+
+  it('should handle package with multiple targets', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const reactNativePath = '/path/to/react-native';
+    const appPath = '/path/to/app';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const targetName = 'MyApp';
+    const additionalPackages = [
+      {
+        relativePath: '../frameworks/multi-target-sdk',
+        targets: ['Core', 'UI', 'Analytics', 'Networking'],
+      },
+    ];
+
+    mockIntegrateSwiftPackagesInXcode.mockImplementation(() => {});
+
+    // Execute
+    await integrateSwiftPMPackages(
+      appIosPath,
+      reactNativePath,
+      appPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Assert
+    const expectedPackageSwiftObjects = [
+      {
+        relativePath: '../frameworks/multi-target-sdk',
+        targets: ['Core', 'UI', 'Analytics', 'Networking'],
+      },
+      {
+        relativePath: '../../react-native',
+        targets: ['React'],
+      },
+      {
+        relativePath: 'build/generated/ios',
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    expect(mockIntegrateSwiftPackagesInXcode).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj',
+      expectedPackageSwiftObjects,
+      targetName,
+    );
+  });
 });
 
 describe('findXcodeProjectDirectory', () => {
