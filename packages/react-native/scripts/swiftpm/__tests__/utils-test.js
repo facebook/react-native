@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {setupSymlink} = require('../utils');
+const {listHeadersInFolder, setupSymlink} = require('../utils');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -105,5 +105,137 @@ describe('setupSymlink', () => {
     expect(fs.existsSync(destFile)).toBe(true);
     expect(fs.lstatSync(destFile).isSymbolicLink()).toBe(true);
     expect(fs.readFileSync(destFile, 'utf8')).toBe('test content');
+  });
+});
+
+describe('listHeadersInFolder', () => {
+  let tempDir;
+
+  beforeEach(() => {
+    // Create a temporary directory for testing
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'headers-test-'));
+  });
+
+  afterEach(() => {
+    // Clean up temporary directory
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, {recursive: true, force: true});
+    }
+  });
+
+  it('should find both .h and .hpp header files', () => {
+    // Create mixed header files
+    fs.writeFileSync(path.join(tempDir, 'test1.h'), '// header file 1');
+    fs.writeFileSync(path.join(tempDir, 'test2.hpp'), '// header file 2');
+    fs.writeFileSync(path.join(tempDir, 'test3.h'), '// header file 3');
+
+    const result = listHeadersInFolder(tempDir, []);
+
+    expect(result).toHaveLength(3);
+    expect(result).toContain(path.join(tempDir, 'test1.h'));
+    expect(result).toContain(path.join(tempDir, 'test2.hpp'));
+    expect(result).toContain(path.join(tempDir, 'test3.h'));
+  });
+
+  it('should find header files in subdirectories', () => {
+    // Create subdirectories with header files
+    const subDir1 = path.join(tempDir, 'subdir1');
+    const subDir2 = path.join(tempDir, 'subdir2');
+    fs.mkdirSync(subDir1, {recursive: true});
+    fs.mkdirSync(subDir2, {recursive: true});
+
+    fs.writeFileSync(path.join(tempDir, 'root.h'), '// root header');
+    fs.writeFileSync(path.join(subDir1, 'sub1.h'), '// sub1 header');
+    fs.writeFileSync(path.join(subDir2, 'sub2.hpp'), '// sub2 header');
+
+    const result = listHeadersInFolder(tempDir, []);
+
+    expect(result).toHaveLength(3);
+    expect(result).toContain(path.join(tempDir, 'root.h'));
+    expect(result).toContain(path.join(subDir1, 'sub1.h'));
+    expect(result).toContain(path.join(subDir2, 'sub2.hpp'));
+  });
+
+  it('should exclude multiple specified subfolders', () => {
+    // Create subdirectories
+    const keepDir = path.join(tempDir, 'keep');
+    const excludeDir1 = path.join(tempDir, 'exclude1');
+    const excludeDir2 = path.join(tempDir, 'exclude2');
+    fs.mkdirSync(keepDir, {recursive: true});
+    fs.mkdirSync(excludeDir1, {recursive: true});
+    fs.mkdirSync(excludeDir2, {recursive: true});
+
+    // Create header files
+    fs.writeFileSync(path.join(keepDir, 'keep.h'), '// keep header');
+    fs.writeFileSync(
+      path.join(excludeDir1, 'exclude1.h'),
+      '// exclude1 header',
+    );
+    fs.writeFileSync(
+      path.join(excludeDir2, 'exclude2.h'),
+      '// exclude2 header',
+    );
+
+    const result = listHeadersInFolder(tempDir, ['exclude1', 'exclude2']);
+
+    expect(result).toHaveLength(1);
+    expect(result).toContain(path.join(keepDir, 'keep.h'));
+    expect(result).not.toContain(path.join(excludeDir1, 'exclude1.h'));
+    expect(result).not.toContain(path.join(excludeDir2, 'exclude2.h'));
+  });
+
+  it('should return empty array when no header files found', () => {
+    // Create non-header files
+    fs.writeFileSync(path.join(tempDir, 'test.txt'), 'text file');
+    fs.writeFileSync(path.join(tempDir, 'test.js'), 'javascript file');
+
+    const result = listHeadersInFolder(tempDir, []);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle empty folder', () => {
+    const result = listHeadersInFolder(tempDir, []);
+
+    expect(result).toHaveLength(0);
+  });
+
+  it('should handle nested exclusions correctly', () => {
+    // Create nested directory structure
+    const includeDir = path.join(tempDir, 'include');
+    const excludeDir = path.join(tempDir, 'exclude');
+    const nestedInclude = path.join(includeDir, 'nested');
+    const nestedExclude = path.join(excludeDir, 'nested');
+
+    fs.mkdirSync(nestedInclude, {recursive: true});
+    fs.mkdirSync(nestedExclude, {recursive: true});
+
+    // Create header files
+    fs.writeFileSync(path.join(includeDir, 'include.h'), '// include header');
+    fs.writeFileSync(
+      path.join(nestedInclude, 'nested_include.h'),
+      '// nested include header',
+    );
+    fs.writeFileSync(path.join(excludeDir, 'exclude.h'), '// exclude header');
+    fs.writeFileSync(
+      path.join(nestedExclude, 'nested_exclude.h'),
+      '// nested exclude header',
+    );
+
+    const result = listHeadersInFolder(tempDir, ['exclude']);
+
+    expect(result).toHaveLength(2);
+    expect(result).toContain(path.join(includeDir, 'include.h'));
+    expect(result).toContain(path.join(nestedInclude, 'nested_include.h'));
+    expect(result).not.toContain(path.join(excludeDir, 'exclude.h'));
+    expect(result).not.toContain(path.join(nestedExclude, 'nested_exclude.h'));
+  });
+
+  it('should throw error when folder does not exist', () => {
+    const nonExistentFolder = path.join(tempDir, 'nonexistent');
+
+    expect(() => {
+      listHeadersInFolder(nonExistentFolder, []);
+    }).toThrow();
   });
 });
