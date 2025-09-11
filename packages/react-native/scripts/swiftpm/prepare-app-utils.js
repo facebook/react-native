@@ -55,6 +55,7 @@ function findXcodeProjectDirectory(
     );
   }
 }
+
 /**
  * Run pod deintegrate from app directory
  */
