@@ -12,14 +12,11 @@
 
 const {
   addLocalSwiftPM,
-  addMissingSections,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
-  printPBXBuildFile,
-  printXCLocalSwiftPackageReference,
-  printXCSwiftPackageProductDependency,
   updatePackageReferenceSection,
   updatePBXFrameworksBuildPhaseFiles,
+  updateProjectFile,
 } = require('../xcodeproj-utils');
 
 // Mock child_process module
@@ -29,6 +26,10 @@ jest.mock('child_process');
 jest.mock('../xcodeproj-core-utils', () => ({
   generateXcodeObjectId: jest.fn(),
   printFilesForBuildPhase: jest.fn(),
+  printPBXBuildFile: jest.fn(),
+  printXCLocalSwiftPackageReference: jest.fn(),
+  printXCSwiftPackageProductDependency: jest.fn(),
+  addMissingSections: jest.fn(),
 }));
 
 describe('convertXcodeProjectToJSON', () => {
@@ -99,6 +100,353 @@ describe('convertXcodeProjectToJSON', () => {
 
     // Assert
     expect(result).toEqual(expectedResult);
+  });
+});
+
+describe('updateProjectFile', () => {
+  let mockPrintPBXBuildFile;
+  let mockPrintXCLocalSwiftPackageReference;
+  let mockPrintXCSwiftPackageProductDependency;
+  let mockAddMissingSections;
+
+  beforeEach(() => {
+    // Setup mocks for the print functions
+    const xcodeprjCoreUtils = require('../xcodeproj-core-utils');
+    mockPrintPBXBuildFile = xcodeprjCoreUtils.printPBXBuildFile;
+    mockPrintXCLocalSwiftPackageReference =
+      xcodeprjCoreUtils.printXCLocalSwiftPackageReference;
+    mockPrintXCSwiftPackageProductDependency =
+      xcodeprjCoreUtils.printXCSwiftPackageProductDependency;
+    mockAddMissingSections = xcodeprjCoreUtils.addMissingSections;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  it('should update existing sections with new content from objectsByIsa', () => {
+    // Setup
+    const textualProject = `{
+  objects = {
+/* Begin PBXBuildFile section */
+    A1B2C3D4 /* OldBuildFile */ = {isa = PBXBuildFile; fileRef = E5F6A7B8;};
+    B2C3D4E5 /* AnotherOldBuildFile */ = {isa = PBXBuildFile; fileRef = F6A7B8C9;};
+/* End PBXBuildFile section */
+
+/* Begin XCLocalSwiftPackageReference section */
+    C3D4E5F6 /* OldPackageReference */ = {isa = XCLocalSwiftPackageReference; relativePath = "../OldPackage";};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+    D4E5F6A7 /* OldProductDependency */ = {isa = XCSwiftPackageProductDependency; productName = OldProduct;};
+/* End XCSwiftPackageProductDependency section */
+  };
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        NEW_BUILD_FILE_1: {
+          isa: 'PBXBuildFile',
+          fileRef: 'FILE_REF_1',
+        },
+        NEW_BUILD_FILE_2: {
+          isa: 'PBXBuildFile',
+          fileRef: 'FILE_REF_2',
+        },
+        NEW_PACKAGE_REF_1: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage1',
+        },
+        NEW_PACKAGE_REF_2: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage2',
+        },
+        NEW_PRODUCT_DEPENDENCY_1: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewProduct1',
+        },
+        NEW_PRODUCT_DEPENDENCY_2: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewProduct2',
+        },
+      },
+    };
+
+    const objectsByIsa = {
+      PBXBuildFile: {
+        NEW_BUILD_FILE_1: xcodeProjectJSON.objects.NEW_BUILD_FILE_1,
+        NEW_BUILD_FILE_2: xcodeProjectJSON.objects.NEW_BUILD_FILE_2,
+      },
+      XCLocalSwiftPackageReference: {
+        NEW_PACKAGE_REF_1: xcodeProjectJSON.objects.NEW_PACKAGE_REF_1,
+        NEW_PACKAGE_REF_2: xcodeProjectJSON.objects.NEW_PACKAGE_REF_2,
+      },
+      XCSwiftPackageProductDependency: {
+        NEW_PRODUCT_DEPENDENCY_1:
+          xcodeProjectJSON.objects.NEW_PRODUCT_DEPENDENCY_1,
+        NEW_PRODUCT_DEPENDENCY_2:
+          xcodeProjectJSON.objects.NEW_PRODUCT_DEPENDENCY_2,
+      },
+    };
+
+    // Mock the print functions to return distinctive content
+    mockPrintPBXBuildFile
+      .mockReturnValueOnce(
+        '\t\tNEW_BUILD_FILE_1 /* BuildFile1 */ = {isa = PBXBuildFile;};\n',
+      )
+      .mockReturnValueOnce(
+        '\t\tNEW_BUILD_FILE_2 /* BuildFile2 */ = {isa = PBXBuildFile;};\n',
+      );
+
+    mockPrintXCLocalSwiftPackageReference
+      .mockReturnValueOnce(
+        '\t\tNEW_PACKAGE_REF_1 /* Package1 */ = {isa = XCLocalSwiftPackageReference;};\n',
+      )
+      .mockReturnValueOnce(
+        '\t\tNEW_PACKAGE_REF_2 /* Package2 */ = {isa = XCLocalSwiftPackageReference;};\n',
+      );
+
+    mockPrintXCSwiftPackageProductDependency
+      .mockReturnValueOnce(
+        '\t\tNEW_PRODUCT_DEPENDENCY_1 /* Product1 */ = {isa = XCSwiftPackageProductDependency;};\n',
+      )
+      .mockReturnValueOnce(
+        '\t\tNEW_PRODUCT_DEPENDENCY_2 /* Product2 */ = {isa = XCSwiftPackageProductDependency;};\n',
+      );
+
+    // Execute
+    const result = updateProjectFile(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert
+    expect(mockPrintPBXBuildFile).toHaveBeenCalledTimes(2);
+    expect(mockPrintPBXBuildFile).toHaveBeenCalledWith(
+      'NEW_BUILD_FILE_1',
+      xcodeProjectJSON.objects.NEW_BUILD_FILE_1,
+      xcodeProjectJSON.objects,
+    );
+    expect(mockPrintPBXBuildFile).toHaveBeenCalledWith(
+      'NEW_BUILD_FILE_2',
+      xcodeProjectJSON.objects.NEW_BUILD_FILE_2,
+      xcodeProjectJSON.objects,
+    );
+
+    expect(mockPrintXCLocalSwiftPackageReference).toHaveBeenCalledTimes(2);
+    expect(mockPrintXCLocalSwiftPackageReference).toHaveBeenCalledWith(
+      'NEW_PACKAGE_REF_1',
+      xcodeProjectJSON.objects.NEW_PACKAGE_REF_1,
+      xcodeProjectJSON.objects,
+    );
+    expect(mockPrintXCLocalSwiftPackageReference).toHaveBeenCalledWith(
+      'NEW_PACKAGE_REF_2',
+      xcodeProjectJSON.objects.NEW_PACKAGE_REF_2,
+      xcodeProjectJSON.objects,
+    );
+
+    expect(mockPrintXCSwiftPackageProductDependency).toHaveBeenCalledTimes(2);
+    expect(mockPrintXCSwiftPackageProductDependency).toHaveBeenCalledWith(
+      'NEW_PRODUCT_DEPENDENCY_1',
+      xcodeProjectJSON.objects.NEW_PRODUCT_DEPENDENCY_1,
+      xcodeProjectJSON.objects,
+    );
+    expect(mockPrintXCSwiftPackageProductDependency).toHaveBeenCalledWith(
+      'NEW_PRODUCT_DEPENDENCY_2',
+      xcodeProjectJSON.objects.NEW_PRODUCT_DEPENDENCY_2,
+      xcodeProjectJSON.objects,
+    );
+
+    expect(mockAddMissingSections).not.toHaveBeenCalled();
+
+    // Check that the sections were replaced with new content
+    expect(result).toContain('NEW_BUILD_FILE_1 /* BuildFile1 */');
+    expect(result).toContain('NEW_BUILD_FILE_2 /* BuildFile2 */');
+    expect(result).toContain('NEW_PACKAGE_REF_1 /* Package1 */');
+    expect(result).toContain('NEW_PACKAGE_REF_2 /* Package2 */');
+    expect(result).toContain('NEW_PRODUCT_DEPENDENCY_1 /* Product1 */');
+    expect(result).toContain('NEW_PRODUCT_DEPENDENCY_2 /* Product2 */');
+
+    // Check that old content was removed
+    expect(result).not.toContain('A1B2C3D4 /* OldBuildFile */');
+    expect(result).not.toContain('C3D4E5F6 /* OldPackageReference */');
+    expect(result).not.toContain('D4E5F6A7 /* OldProductDependency */');
+  });
+
+  it('should add missing sections when they do not exist in the textual project', () => {
+    // Setup
+    const textualProject = `{
+  objects = {
+/* Begin PBXProject section */
+    A1B2C3D4 /* Project object */ = {
+      isa = PBXProject;
+      name = MyProject;
+    };
+/* End PBXProject section */
+  };
+  rootObject = A1B2C3D4;
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        NEW_BUILD_FILE_1: {
+          isa: 'PBXBuildFile',
+          fileRef: 'FILE_REF_1',
+        },
+        NEW_PACKAGE_REF_1: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage',
+        },
+        NEW_PRODUCT_DEPENDENCY_1: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewProduct',
+        },
+      },
+    };
+
+    const objectsByIsa = {
+      PBXBuildFile: {
+        NEW_BUILD_FILE_1: xcodeProjectJSON.objects.NEW_BUILD_FILE_1,
+      },
+      XCLocalSwiftPackageReference: {
+        NEW_PACKAGE_REF_1: xcodeProjectJSON.objects.NEW_PACKAGE_REF_1,
+      },
+      XCSwiftPackageProductDependency: {
+        NEW_PRODUCT_DEPENDENCY_1:
+          xcodeProjectJSON.objects.NEW_PRODUCT_DEPENDENCY_1,
+      },
+    };
+
+    // Mock the print functions
+    mockPrintPBXBuildFile.mockReturnValueOnce(
+      '\t\tNEW_BUILD_FILE_1 /* BuildFile */ = {isa = PBXBuildFile;};\n',
+    );
+    mockPrintXCLocalSwiftPackageReference.mockReturnValueOnce(
+      '\t\tNEW_PACKAGE_REF_1 /* Package */ = {isa = XCLocalSwiftPackageReference;};\n',
+    );
+    mockPrintXCSwiftPackageProductDependency.mockReturnValueOnce(
+      '\t\tNEW_PRODUCT_DEPENDENCY_1 /* Product */ = {isa = XCSwiftPackageProductDependency;};\n',
+    );
+
+    // Mock addMissingSections to return a modified textual project
+    mockAddMissingSections.mockReturnValue('MODIFIED_TEXTUAL_PROJECT');
+
+    // Execute
+    const result = updateProjectFile(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert
+    expect(mockAddMissingSections).toHaveBeenCalledTimes(1);
+
+    const expectedSectionsToAdd = [
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText:
+          '/* Begin PBXBuildFile section */\n\t\tNEW_BUILD_FILE_1 /* BuildFile */ = {isa = PBXBuildFile;};\n/* End PBXBuildFile section */\n',
+      },
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText:
+          '/* Begin XCLocalSwiftPackageReference section */\n\t\tNEW_PACKAGE_REF_1 /* Package */ = {isa = XCLocalSwiftPackageReference;};\n/* End XCLocalSwiftPackageReference section */\n',
+      },
+      {
+        sectionType: 'XCSwiftPackageProductDependency',
+        replacementText:
+          '/* Begin XCSwiftPackageProductDependency section */\n\t\tNEW_PRODUCT_DEPENDENCY_1 /* Product */ = {isa = XCSwiftPackageProductDependency;};\n/* End XCSwiftPackageProductDependency section */\n',
+      },
+    ];
+
+    expect(mockAddMissingSections).toHaveBeenCalledWith(
+      textualProject,
+      expectedSectionsToAdd,
+    );
+
+    expect(result).toBe('MODIFIED_TEXTUAL_PROJECT');
+  });
+
+  it('should handle mix of existing and missing sections', () => {
+    // Setup
+    const textualProject = `{
+  objects = {
+/* Begin PBXBuildFile section */
+    OLD_BUILD_FILE /* Old file */ = {isa = PBXBuildFile;};
+/* End PBXBuildFile section */
+
+/* Begin PBXProject section */
+    A1B2C3D4 /* Project object */ = {
+      isa = PBXProject;
+      name = MyProject;
+    };
+/* End PBXProject section */
+  };
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        NEW_BUILD_FILE_1: {
+          isa: 'PBXBuildFile',
+          fileRef: 'FILE_REF_1',
+        },
+        NEW_PACKAGE_REF_1: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage',
+        },
+      },
+    };
+
+    const objectsByIsa = {
+      PBXBuildFile: {
+        NEW_BUILD_FILE_1: xcodeProjectJSON.objects.NEW_BUILD_FILE_1,
+      },
+      XCLocalSwiftPackageReference: {
+        NEW_PACKAGE_REF_1: xcodeProjectJSON.objects.NEW_PACKAGE_REF_1,
+      },
+    };
+
+    // Mock the print functions
+    mockPrintPBXBuildFile.mockReturnValueOnce(
+      '\t\tNEW_BUILD_FILE_1 /* BuildFile */ = {isa = PBXBuildFile;};\n',
+    );
+    mockPrintXCLocalSwiftPackageReference.mockReturnValueOnce(
+      '\t\tNEW_PACKAGE_REF_1 /* Package */ = {isa = XCLocalSwiftPackageReference;};\n',
+    );
+
+    // Mock addMissingSections
+    mockAddMissingSections.mockImplementation(
+      (project, sectionsToAdd) => project + '_WITH_MISSING_SECTIONS',
+    );
+
+    // Execute
+    const result = updateProjectFile(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert
+    // PBXBuildFile should be updated in place (existing section)
+    expect(mockPrintPBXBuildFile).toHaveBeenCalledTimes(1);
+    expect(mockPrintXCLocalSwiftPackageReference).toHaveBeenCalledTimes(1);
+
+    // addMissingSections should be called only for the missing section
+    expect(mockAddMissingSections).toHaveBeenCalledTimes(1);
+    const expectedSectionsToAdd = [
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText:
+          '/* Begin XCLocalSwiftPackageReference section */\n\t\tNEW_PACKAGE_REF_1 /* Package */ = {isa = XCLocalSwiftPackageReference;};\n/* End XCLocalSwiftPackageReference section */\n',
+      },
+    ];
+
+    expect(mockAddMissingSections).toHaveBeenCalledWith(
+      expect.stringContaining('NEW_BUILD_FILE_1 /* BuildFile */'),
+      expectedSectionsToAdd,
+    );
+
+    expect(result).toContain('_WITH_MISSING_SECTIONS');
   });
 });
 
@@ -278,194 +626,6 @@ describe('updatePackageReferenceSection', () => {
     expect(result).toContain(
       'B1C2D3E4 /* XCLocalSwiftPackageReference "../NewPackage" */,',
     );
-  });
-});
-
-describe('addMissingSections', () => {
-  it('should add multiple sections in the correct order', () => {
-    // Setup
-    const textualProject = `{
-	objects = {
-		EXISTING123 /* Some existing object */ = {
-			isa = PBXProject;
-		};
-	};
-	rootObject = ROOTOBJ123;
-}`;
-    const sectionsToAdd = [
-      {
-        sectionType: 'XCSwiftPackageProductDependency',
-        replacementText: `
-/* Begin XCSwiftPackageProductDependency section */
-		PRODUCT123 /* Library */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Library;
-		};
-/* End XCSwiftPackageProductDependency section */`,
-      },
-      {
-        sectionType: 'PBXBuildFile',
-        replacementText: `
-/* Begin PBXBuildFile section */
-		BUILDFILE123 /* Library in Frameworks */ = {isa = PBXBuildFile; productRef = PRODUCT123 /* Library */; };
-/* End PBXBuildFile section */`,
-      },
-      {
-        sectionType: 'XCLocalSwiftPackageReference',
-        replacementText: `
-/* Begin XCLocalSwiftPackageReference section */
-		PACKAGE123 /* XCLocalSwiftPackageReference "../MyPackage" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../MyPackage;
-		};
-/* End XCLocalSwiftPackageReference section */`,
-      },
-    ];
-
-    // Execute
-    const result = addMissingSections(textualProject, sectionsToAdd);
-
-    // Assert - Check that sections are in the correct order: PBXBuildFile, XCLocalSwiftPackageReference, XCSwiftPackageProductDependency
-    const pbxBuildFileIndex = result.indexOf(
-      '/* Begin PBXBuildFile section */',
-    );
-    const xcLocalIndex = result.indexOf(
-      '/* Begin XCLocalSwiftPackageReference section */',
-    );
-    const xcProductIndex = result.indexOf(
-      '/* Begin XCSwiftPackageProductDependency section */',
-    );
-
-    expect(pbxBuildFileIndex).toBeLessThan(xcLocalIndex);
-    expect(xcLocalIndex).toBeLessThan(xcProductIndex);
-    expect(xcProductIndex).toBeLessThan(result.indexOf('rootObject ='));
-  });
-
-  it('should handle empty sections array', () => {
-    // Setup
-    const textualProject = `{
-	objects = {
-		EXISTING123 /* Some existing object */ = {
-			isa = PBXProject;
-		};
-	};
-	rootObject = ROOTOBJ123;
-}`;
-    const sectionsToAdd = [];
-
-    // Execute
-    const result = addMissingSections(textualProject, sectionsToAdd);
-
-    // Assert - Should return the original project unchanged
-    expect(result).toBe(textualProject);
-  });
-
-  it('should find insertion point after objects opening brace for PBXBuildFile', () => {
-    // Setup
-    const textualProject = `{
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 56;
-	objects = {
-		EXISTING_OBJ /* PBXProject */ = {
-			isa = PBXProject;
-		};
-	};
-	rootObject = ROOTOBJ;
-}`;
-    const sectionsToAdd = [
-      {
-        sectionType: 'PBXBuildFile',
-        replacementText: '\t\t/* PBXBuildFile section */',
-      },
-    ];
-
-    // Execute
-    const result = addMissingSections(textualProject, sectionsToAdd);
-
-    // Assert - PBXBuildFile section should be inserted right after "objects = {"
-    const lines = result.split('\n');
-    const objectsLineIndex = lines.findIndex(line =>
-      line.includes('objects = {'),
-    );
-    const pbxSectionLineIndex = lines.findIndex(line =>
-      line.includes('/* PBXBuildFile section */'),
-    );
-
-    expect(pbxSectionLineIndex).toBe(objectsLineIndex + 1);
-  });
-
-  it('should find insertion point before rootObject for other section types', () => {
-    // Setup
-    const textualProject = `{
-	objects = {
-		EXISTING_OBJ /* PBXProject */ = {
-			isa = PBXProject;
-		};
-	};
-	rootObject = ROOTOBJ;
-}`;
-    const sectionsToAdd = [
-      {
-        sectionType: 'XCLocalSwiftPackageReference',
-        replacementText: '\t/* XCLocalSwiftPackageReference section */',
-      },
-    ];
-
-    // Execute
-    const result = addMissingSections(textualProject, sectionsToAdd);
-
-    // Assert - Section should be inserted before rootObject line
-    const lines = result.split('\n');
-    const rootObjectLineIndex = lines.findIndex(line =>
-      line.includes('rootObject ='),
-    );
-    const sectionLineIndex = lines.findIndex(line =>
-      line.includes('/* XCLocalSwiftPackageReference section */'),
-    );
-
-    expect(sectionLineIndex).toBe(rootObjectLineIndex - 2);
-  });
-
-  it('should update insertion index correctly when adding multiple sections', () => {
-    // Setup
-    const textualProject = `{
-	objects = {
-		EXISTING_OBJ = {isa = PBXProject;};
-	};
-	rootObject = ROOTOBJ;
-}`;
-    const sectionsToAdd = [
-      {
-        sectionType: 'PBXBuildFile',
-        replacementText: `/* Begin PBXBuildFile section */
-/* End PBXBuildFile section */`,
-      },
-      {
-        sectionType: 'XCLocalSwiftPackageReference',
-        replacementText: `/* Begin XCLocalSwiftPackageReference section */
-/* End XCLocalSwiftPackageReference section */`,
-      },
-    ];
-
-    // Execute
-    const result = addMissingSections(textualProject, sectionsToAdd);
-
-    // Assert - Both sections should be present and in correct order
-    expect(result).toContain('/* Begin PBXBuildFile section */');
-    expect(result).toContain(
-      '/* Begin XCLocalSwiftPackageReference section */',
-    );
-
-    const pbxIndex = result.indexOf('/* Begin PBXBuildFile section */');
-    const xcLocalIndex = result.indexOf(
-      '/* Begin XCLocalSwiftPackageReference section */',
-    );
-    const rootIndex = result.indexOf('rootObject =');
-
-    expect(pbxIndex).toBeLessThan(xcLocalIndex);
-    expect(xcLocalIndex).toBeLessThan(rootIndex);
   });
 });
 
@@ -842,216 +1002,6 @@ describe('deintegrateSwiftPM', () => {
     expect(consoleLogSpy).toHaveBeenCalledWith(
       '✓ Removed 2 SwiftPM-related objects from Xcode project',
     );
-  });
-});
-
-describe('printPBXBuildFile', () => {
-  it('should format PBXBuildFile with productRef correctly', () => {
-    // Setup
-    const objectId = 'BUILDFILE123';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      productRef: 'PRODUCT456',
-    };
-    const allObjects = {
-      PRODUCT456: {
-        isa: 'XCSwiftPackageProductDependency',
-        productName: 'Alamofire',
-      },
-    };
-
-    // Execute
-    const result = printPBXBuildFile(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\tBUILDFILE123 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = PRODUCT456 /* Alamofire */; };\n',
-    );
-  });
-
-  it('should format PBXBuildFile with fileRef correctly', () => {
-    // Setup
-    const objectId = 'BUILDFILE789';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      fileRef: 'FILEREF123',
-    };
-    const allObjects = {
-      FILEREF123: {
-        isa: 'PBXFileReference',
-        name: 'MyFramework.framework',
-      },
-      FRAMEWORKS_PHASE: {
-        isa: 'PBXFrameworksBuildPhase',
-        files: ['BUILDFILE789'],
-      },
-    };
-
-    // Execute
-    const result = printPBXBuildFile(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\tBUILDFILE789 /* MyFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FILEREF123 /* MyFramework.framework */; };\n',
-    );
-  });
-
-  it('should use file path when name is not available', () => {
-    // Setup
-    const objectId = 'BUILDFILE789';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      fileRef: 'FILEREF456',
-    };
-    const allObjects = {
-      FILEREF456: {
-        isa: 'PBXFileReference',
-        path: 'path/to/MyLib.framework',
-      },
-      SOURCES_PHASE: {
-        isa: 'PBXSourcesBuildPhase',
-        files: ['BUILDFILE789'],
-      },
-    };
-
-    // Execute
-    const result = printPBXBuildFile(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\tBUILDFILE789 /* path/to/MyLib.framework in Sources */ = {isa = PBXBuildFile; fileRef = FILEREF456 /* path/to/MyLib.framework */; };\n',
-    );
-  });
-
-  it('should identify different build phase types correctly', () => {
-    // Setup
-    const objectId = 'BUILDFILE999';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      fileRef: 'FILEREF999',
-    };
-    const allObjects = {
-      FILEREF999: {
-        isa: 'PBXFileReference',
-        name: 'Script.sh',
-      },
-      SHELL_PHASE: {
-        isa: 'PBXShellScriptBuildPhase',
-        files: ['BUILDFILE999'],
-      },
-    };
-
-    // Execute
-    const result = printPBXBuildFile(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\tBUILDFILE999 /* Script.sh in ShellScript */ = {isa = PBXBuildFile; fileRef = FILEREF999 /* Script.sh */; };\n',
-    );
-  });
-});
-
-describe('printXCLocalSwiftPackageReference', () => {
-  it('should format XCLocalSwiftPackageReference correctly', () => {
-    // Setup
-    const objectId = 'PACKAGE123';
-    const objectData = {
-      isa: 'XCLocalSwiftPackageReference',
-      relativePath: '../MySwiftPackage',
-    };
-    const allObjects = {};
-
-    // Execute
-    const result = printXCLocalSwiftPackageReference(
-      objectId,
-      objectData,
-      allObjects,
-    );
-
-    // Assert
-    const expected = `\t\tPACKAGE123 /* XCLocalSwiftPackageReference "../MySwiftPackage" */ = {
-\t\t\tisa = XCLocalSwiftPackageReference;
-\t\t\trelativePath = ../MySwiftPackage;
-\t\t};
-`;
-    expect(result).toBe(expected);
-  });
-
-  it('should escape path with quotes when it contains spaces', () => {
-    // Setup
-    const objectId = 'PACKAGE456';
-    const objectData = {
-      isa: 'XCLocalSwiftPackageReference',
-      relativePath: '../My Swift Package',
-    };
-    const allObjects = {};
-
-    // Execute
-    const result = printXCLocalSwiftPackageReference(
-      objectId,
-      objectData,
-      allObjects,
-    );
-
-    // Assert
-    const expected = `\t\tPACKAGE456 /* XCLocalSwiftPackageReference "../My Swift Package" */ = {
-\t\t\tisa = XCLocalSwiftPackageReference;
-\t\t\trelativePath = "../My Swift Package";
-\t\t};
-`;
-    expect(result).toBe(expected);
-  });
-
-  it('should handle absolute path', () => {
-    // Setup
-    const objectId = 'PACKAGE999';
-    const objectData = {
-      isa: 'XCLocalSwiftPackageReference',
-      relativePath: '/absolute/path/to/package',
-    };
-    const allObjects = {};
-
-    // Execute
-    const result = printXCLocalSwiftPackageReference(
-      objectId,
-      objectData,
-      allObjects,
-    );
-
-    // Assert
-    const expected = `\t\tPACKAGE999 /* XCLocalSwiftPackageReference "/absolute/path/to/package" */ = {
-\t\t\tisa = XCLocalSwiftPackageReference;
-\t\t\trelativePath = /absolute/path/to/package;
-\t\t};
-`;
-    expect(result).toBe(expected);
-  });
-});
-
-describe('printXCSwiftPackageProductDependency', () => {
-  it('should format XCSwiftPackageProductDependency correctly', () => {
-    // Setup
-    const objectId = 'PRODUCT123';
-    const objectData = {
-      isa: 'XCSwiftPackageProductDependency',
-      productName: 'Alamofire',
-    };
-    const allObjects = {};
-
-    // Execute
-    const result = printXCSwiftPackageProductDependency(
-      objectId,
-      objectData,
-      allObjects,
-    );
-
-    // Assert
-    const expected = `\t\tPRODUCT123 /* Alamofire */ = {
-\t\t\tisa = XCSwiftPackageProductDependency;
-\t\t\tproductName = Alamofire;
-\t\t};
-`;
-    expect(result).toBe(expected);
   });
 });
 
