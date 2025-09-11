@@ -11,8 +11,12 @@
 'use strict';
 
 const {
+  addMissingSections,
   generateXcodeObjectId,
   printFilesForBuildPhase,
+  printPBXBuildFile,
+  printXCLocalSwiftPackageReference,
+  printXCSwiftPackageProductDependency,
 } = require('../xcodeproj-core-utils');
 
 // Mock crypto module
@@ -122,6 +126,194 @@ describe('generateXcodeObjectId', () => {
   });
 });
 
+describe('addMissingSections', () => {
+  it('should add multiple sections in the correct order', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING123 /* Some existing object */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ123;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'XCSwiftPackageProductDependency',
+        replacementText: `
+/* Begin XCSwiftPackageProductDependency section */
+		PRODUCT123 /* Library */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Library;
+		};
+/* End XCSwiftPackageProductDependency section */`,
+      },
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: `
+/* Begin PBXBuildFile section */
+		BUILDFILE123 /* Library in Frameworks */ = {isa = PBXBuildFile; productRef = PRODUCT123 /* Library */; };
+/* End PBXBuildFile section */`,
+      },
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: `
+/* Begin XCLocalSwiftPackageReference section */
+		PACKAGE123 /* XCLocalSwiftPackageReference "../MyPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MyPackage;
+		};
+/* End XCLocalSwiftPackageReference section */`,
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Check that sections are in the correct order: PBXBuildFile, XCLocalSwiftPackageReference, XCSwiftPackageProductDependency
+    const pbxBuildFileIndex = result.indexOf(
+      '/* Begin PBXBuildFile section */',
+    );
+    const xcLocalIndex = result.indexOf(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+    const xcProductIndex = result.indexOf(
+      '/* Begin XCSwiftPackageProductDependency section */',
+    );
+
+    expect(pbxBuildFileIndex).toBeLessThan(xcLocalIndex);
+    expect(xcLocalIndex).toBeLessThan(xcProductIndex);
+    expect(xcProductIndex).toBeLessThan(result.indexOf('rootObject ='));
+  });
+
+  it('should handle empty sections array', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING123 /* Some existing object */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ123;
+}`;
+    const sectionsToAdd = [];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Should return the original project unchanged
+    expect(result).toBe(textualProject);
+  });
+
+  it('should find insertion point after objects opening brace for PBXBuildFile', () => {
+    // Setup
+    const textualProject = `{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		EXISTING_OBJ /* PBXProject */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: '\t\t/* PBXBuildFile section */',
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - PBXBuildFile section should be inserted right after "objects = {"
+    const lines = result.split('\n');
+    const objectsLineIndex = lines.findIndex(line =>
+      line.includes('objects = {'),
+    );
+    const pbxSectionLineIndex = lines.findIndex(line =>
+      line.includes('/* PBXBuildFile section */'),
+    );
+
+    expect(pbxSectionLineIndex).toBe(objectsLineIndex + 1);
+  });
+
+  it('should find insertion point before rootObject for other section types', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING_OBJ /* PBXProject */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: '\t/* XCLocalSwiftPackageReference section */',
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Section should be inserted before rootObject line
+    const lines = result.split('\n');
+    const rootObjectLineIndex = lines.findIndex(line =>
+      line.includes('rootObject ='),
+    );
+    const sectionLineIndex = lines.findIndex(line =>
+      line.includes('/* XCLocalSwiftPackageReference section */'),
+    );
+
+    expect(sectionLineIndex).toBe(rootObjectLineIndex - 2);
+  });
+
+  it('should update insertion index correctly when adding multiple sections', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING_OBJ = {isa = PBXProject;};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: `/* Begin PBXBuildFile section */
+/* End PBXBuildFile section */`,
+      },
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: `/* Begin XCLocalSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */`,
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Both sections should be present and in correct order
+    expect(result).toContain('/* Begin PBXBuildFile section */');
+    expect(result).toContain(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+
+    const pbxIndex = result.indexOf('/* Begin PBXBuildFile section */');
+    const xcLocalIndex = result.indexOf(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+    const rootIndex = result.indexOf('rootObject =');
+
+    expect(pbxIndex).toBeLessThan(xcLocalIndex);
+    expect(xcLocalIndex).toBeLessThan(rootIndex);
+  });
+});
+
 describe('printFilesForBuildPhase', () => {
   it('should format build file with productRef correctly', () => {
     // Setup
@@ -190,5 +382,215 @@ describe('printFilesForBuildPhase', () => {
     expect(result).toBe(
       '\t\t\t\tBUILDFILE789 /* path/to/MyLib.framework in Frameworks */,\n',
     );
+  });
+});
+
+describe('printPBXBuildFile', () => {
+  it('should format PBXBuildFile with productRef correctly', () => {
+    // Setup
+    const objectId = 'BUILDFILE123';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      productRef: 'PRODUCT456',
+    };
+    const allObjects = {
+      PRODUCT456: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'Alamofire',
+      },
+    };
+
+    // Execute
+    const result = printPBXBuildFile(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\tBUILDFILE123 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = PRODUCT456 /* Alamofire */; };\n',
+    );
+  });
+
+  it('should format PBXBuildFile with fileRef correctly', () => {
+    // Setup
+    const objectId = 'BUILDFILE789';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      fileRef: 'FILEREF123',
+    };
+    const allObjects = {
+      FILEREF123: {
+        isa: 'PBXFileReference',
+        name: 'MyFramework.framework',
+      },
+      FRAMEWORKS_PHASE: {
+        isa: 'PBXFrameworksBuildPhase',
+        files: ['BUILDFILE789'],
+      },
+    };
+
+    // Execute
+    const result = printPBXBuildFile(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\tBUILDFILE789 /* MyFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FILEREF123 /* MyFramework.framework */; };\n',
+    );
+  });
+
+  it('should use file path when name is not available', () => {
+    // Setup
+    const objectId = 'BUILDFILE789';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      fileRef: 'FILEREF456',
+    };
+    const allObjects = {
+      FILEREF456: {
+        isa: 'PBXFileReference',
+        path: 'path/to/MyLib.framework',
+      },
+      SOURCES_PHASE: {
+        isa: 'PBXSourcesBuildPhase',
+        files: ['BUILDFILE789'],
+      },
+    };
+
+    // Execute
+    const result = printPBXBuildFile(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\tBUILDFILE789 /* path/to/MyLib.framework in Sources */ = {isa = PBXBuildFile; fileRef = FILEREF456 /* path/to/MyLib.framework */; };\n',
+    );
+  });
+
+  it('should identify different build phase types correctly', () => {
+    // Setup
+    const objectId = 'BUILDFILE999';
+    const objectData = {
+      isa: 'PBXBuildFile',
+      fileRef: 'FILEREF999',
+    };
+    const allObjects = {
+      FILEREF999: {
+        isa: 'PBXFileReference',
+        name: 'Script.sh',
+      },
+      SHELL_PHASE: {
+        isa: 'PBXShellScriptBuildPhase',
+        files: ['BUILDFILE999'],
+      },
+    };
+
+    // Execute
+    const result = printPBXBuildFile(objectId, objectData, allObjects);
+
+    // Assert
+    expect(result).toBe(
+      '\t\tBUILDFILE999 /* Script.sh in ShellScript */ = {isa = PBXBuildFile; fileRef = FILEREF999 /* Script.sh */; };\n',
+    );
+  });
+});
+
+describe('printXCLocalSwiftPackageReference', () => {
+  it('should format XCLocalSwiftPackageReference correctly', () => {
+    // Setup
+    const objectId = 'PACKAGE123';
+    const objectData = {
+      isa: 'XCLocalSwiftPackageReference',
+      relativePath: '../MySwiftPackage',
+    };
+    const allObjects = {};
+
+    // Execute
+    const result = printXCLocalSwiftPackageReference(
+      objectId,
+      objectData,
+      allObjects,
+    );
+
+    // Assert
+    const expected = `\t\tPACKAGE123 /* XCLocalSwiftPackageReference "../MySwiftPackage" */ = {
+\t\t\tisa = XCLocalSwiftPackageReference;
+\t\t\trelativePath = ../MySwiftPackage;
+\t\t};
+`;
+    expect(result).toBe(expected);
+  });
+
+  it('should escape path with quotes when it contains spaces', () => {
+    // Setup
+    const objectId = 'PACKAGE456';
+    const objectData = {
+      isa: 'XCLocalSwiftPackageReference',
+      relativePath: '../My Swift Package',
+    };
+    const allObjects = {};
+
+    // Execute
+    const result = printXCLocalSwiftPackageReference(
+      objectId,
+      objectData,
+      allObjects,
+    );
+
+    // Assert
+    const expected = `\t\tPACKAGE456 /* XCLocalSwiftPackageReference "../My Swift Package" */ = {
+\t\t\tisa = XCLocalSwiftPackageReference;
+\t\t\trelativePath = "../My Swift Package";
+\t\t};
+`;
+    expect(result).toBe(expected);
+  });
+
+  it('should handle absolute path', () => {
+    // Setup
+    const objectId = 'PACKAGE999';
+    const objectData = {
+      isa: 'XCLocalSwiftPackageReference',
+      relativePath: '/absolute/path/to/package',
+    };
+    const allObjects = {};
+
+    // Execute
+    const result = printXCLocalSwiftPackageReference(
+      objectId,
+      objectData,
+      allObjects,
+    );
+
+    // Assert
+    const expected = `\t\tPACKAGE999 /* XCLocalSwiftPackageReference "/absolute/path/to/package" */ = {
+\t\t\tisa = XCLocalSwiftPackageReference;
+\t\t\trelativePath = /absolute/path/to/package;
+\t\t};
+`;
+    expect(result).toBe(expected);
+  });
+});
+
+describe('printXCSwiftPackageProductDependency', () => {
+  it('should format XCSwiftPackageProductDependency correctly', () => {
+    // Setup
+    const objectId = 'PRODUCT123';
+    const objectData = {
+      isa: 'XCSwiftPackageProductDependency',
+      productName: 'Alamofire',
+    };
+    const allObjects = {};
+
+    // Execute
+    const result = printXCSwiftPackageProductDependency(
+      objectId,
+      objectData,
+      allObjects,
+    );
+
+    // Assert
+    const expected = `\t\tPRODUCT123 /* Alamofire */ = {
+\t\t\tisa = XCSwiftPackageProductDependency;
+\t\t\tproductName = Alamofire;
+\t\t};
+`;
+    expect(result).toBe(expected);
   });
 });
