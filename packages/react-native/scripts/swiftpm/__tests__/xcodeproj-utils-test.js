@@ -18,6 +18,7 @@ const {
   printPBXBuildFile,
   printXCLocalSwiftPackageReference,
   printXCSwiftPackageProductDependency,
+  updatePackageReferenceSection,
   updatePBXFrameworksBuildPhaseFiles,
 } = require('../xcodeproj-utils');
 
@@ -98,6 +99,185 @@ describe('convertXcodeProjectToJSON', () => {
 
     // Assert
     expect(result).toEqual(expectedResult);
+  });
+});
+
+describe('updatePackageReferenceSection', () => {
+  it('should update existing packageReferences section with new content', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+    /* Begin PBXProject section */
+		AB123456 /* Project object */ = {
+			isa = PBXProject;
+			mainGroup = EF789012 /* Main group */;
+			packageReferences = (
+				CD345678 /* Old package reference */,
+				EF901234 /* Another old package reference */,
+			);
+			projectDirPath = "";
+		};
+    /* End PBXProject section */
+	};
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        AB123456: {
+          isa: 'PBXProject',
+          packageReferences: ['A1B2C3D4', 'E5F6A7B8'],
+        },
+        A1B2C3D4: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage1',
+        },
+        E5F6A7B8: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage2',
+        },
+      },
+    };
+
+    const objectsByIsa = {};
+
+    // Execute
+    const result = updatePackageReferenceSection(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert
+    expect(result).toContain('packageReferences = (');
+    expect(result).toContain(
+      'A1B2C3D4 /* XCLocalSwiftPackageReference "../NewPackage1" */,',
+    );
+    expect(result).toContain(
+      'E5F6A7B8 /* XCLocalSwiftPackageReference "../NewPackage2" */,',
+    );
+    expect(result).not.toContain('CD345678 /* Old package reference */');
+    expect(result).not.toContain(
+      'EF901234 /* Another old package reference */',
+    );
+  });
+
+  it('should insert packageReferences property in alphabetical order when missing', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+    /* Begin PBXProject section */
+		A1B2C3D4 /* Project object */ = {
+			isa = PBXProject;
+			mainGroup = EF789012 /* Main group */;
+			projectDirPath = "";
+			targets = (
+				F1E2D3C4 /* Target */,
+			);
+		};
+    /* End PBXProject section */
+	};
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        A1B2C3D4: {
+          isa: 'PBXProject',
+          packageReferences: ['E5F6A7B8'],
+        },
+        E5F6A7B8: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../MyPackage',
+        },
+      },
+    };
+
+    const objectsByIsa = {};
+
+    // Execute
+    const result = updatePackageReferenceSection(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert - packageReferences should be inserted before projectDirPath
+    const lines = result.split('\n');
+    const packageReferencesLineIndex = lines.findIndex(line =>
+      line.includes('packageReferences = ('),
+    );
+    const projectDirPathLineIndex = lines.findIndex(line =>
+      line.includes('projectDirPath = "'),
+    );
+
+    expect(packageReferencesLineIndex).toBeGreaterThan(-1);
+    expect(packageReferencesLineIndex).toBeLessThan(projectDirPathLineIndex);
+    expect(result).toContain(
+      'E5F6A7B8 /* XCLocalSwiftPackageReference "../MyPackage" */,',
+    );
+  });
+
+  it('should preserve content outside PBXProject sections', () => {
+    // Setup
+    const textualProject = `{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		F1E2D3C4 /* Some other object */ = {
+			isa = PBXFileReference;
+			path = "SomeFile.swift";
+		};
+
+/* Begin PBXProject section */
+		A1B2C3D4 /* Project object */ = {
+			isa = PBXProject;
+			packageReferences = (
+				CD345678 /* Old package */,
+			);
+			projectDirPath = "";
+		};
+/* End PBXProject section */
+
+		E5F6A7B8 /* Another object */ = {
+			isa = PBXNativeTarget;
+			name = "MyTarget";
+		};
+	};
+	rootObject = A1B2C3D4;
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        A1B2C3D4: {
+          isa: 'PBXProject',
+          packageReferences: ['B1C2D3E4'],
+        },
+        B1C2D3E4: {
+          isa: 'XCLocalSwiftPackageReference',
+          relativePath: '../NewPackage',
+        },
+      },
+    };
+
+    const objectsByIsa = {};
+
+    // Execute
+    const result = updatePackageReferenceSection(
+      textualProject,
+      xcodeProjectJSON,
+      objectsByIsa,
+    );
+
+    // Assert - All other content should be preserved
+    expect(result).toContain('archiveVersion = 1;');
+    expect(result).toContain('objectVersion = 56;');
+    expect(result).toContain('F1E2D3C4 /* Some other object */ = {');
+    expect(result).toContain('E5F6A7B8 /* Another object */ = {');
+    expect(result).toContain('rootObject = A1B2C3D4;');
+    expect(result).toContain(
+      'B1C2D3E4 /* XCLocalSwiftPackageReference "../NewPackage" */,',
+    );
   });
 });
 
