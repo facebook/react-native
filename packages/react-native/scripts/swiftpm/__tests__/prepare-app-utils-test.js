@@ -18,6 +18,7 @@ const {
   fixReactNativePath,
   generateCodegenArtifacts,
   integrateSwiftPMPackages,
+  openXcodeProject,
   prepareHeaders,
   runIosPrebuild,
   runPodDeintegrate,
@@ -247,6 +248,147 @@ describe('createHardlinks', () => {
       expectedReactIncludesPath,
       'includes',
     );
+  });
+});
+
+describe('openXcodeProject', () => {
+  let mockFs;
+  let mockExecSync;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockFs = require('fs');
+    const childProcess = require('child_process');
+    mockExecSync = childProcess.execSync;
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockFs.existsSync = jest.fn();
+    mockExecSync.mockImplementation(() => {});
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+  });
+
+  it('should open Xcode project successfully', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockExecSync.mockImplementation(() => {});
+
+    // Execute
+    await openXcodeProject(appIosPath, appXcodeProject);
+
+    // Assert
+    const expectedXcodeProjectPath = '/path/to/app/ios/MyApp.xcodeproj';
+
+    expect(mockFs.existsSync).toHaveBeenCalledWith(expectedXcodeProjectPath);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `open "${expectedXcodeProjectPath}"`,
+      {
+        stdio: 'inherit',
+      },
+    );
+    expect(mockExecSync).toHaveBeenCalledTimes(1);
+
+    // Verify console output
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      `Opening Xcode project: ${expectedXcodeProjectPath}`,
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Xcode project opened');
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/my app/ios folder';
+    const appXcodeProject = 'My App.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockExecSync.mockImplementation(() => {});
+
+    // Execute
+    await openXcodeProject(appIosPath, appXcodeProject);
+
+    // Assert
+    const expectedXcodeProjectPath =
+      '/path/to/my app/ios folder/My App.xcodeproj';
+
+    expect(mockFs.existsSync).toHaveBeenCalledWith(expectedXcodeProjectPath);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `open "${expectedXcodeProjectPath}"`,
+      {
+        stdio: 'inherit',
+      },
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      `Opening Xcode project: ${expectedXcodeProjectPath}`,
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Xcode project opened');
+  });
+
+  it('should throw error when Xcode project does not exist', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'NonExistent.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(false);
+
+    // Execute & Assert
+    await expect(openXcodeProject(appIosPath, appXcodeProject)).rejects.toThrow(
+      'Xcode project not found: /path/to/app/ios/NonExistent.xcodeproj',
+    );
+
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/NonExistent.xcodeproj',
+    );
+    expect(mockExecSync).not.toHaveBeenCalled();
+
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      'Opening Xcode project: /path/to/app/ios/NonExistent.xcodeproj',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith('✓ Xcode project opened');
+  });
+
+  it('should throw error when open command fails', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+    const originalError = new Error('No application available to open file');
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockExecSync.mockImplementation(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(openXcodeProject(appIosPath, appXcodeProject)).rejects.toThrow(
+      'Failed to open Xcode project: No application available to open file',
+    );
+
+    const expectedXcodeProjectPath = '/path/to/app/ios/MyApp.xcodeproj';
+
+    expect(mockFs.existsSync).toHaveBeenCalledWith(expectedXcodeProjectPath);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `open "${expectedXcodeProjectPath}"`,
+      {
+        stdio: 'inherit',
+      },
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      `Opening Xcode project: ${expectedXcodeProjectPath}`,
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith('✓ Xcode project opened');
   });
 });
 
