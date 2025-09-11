@@ -15,17 +15,20 @@ const {
   addMissingSections,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
-  printFilesForBuildPhase,
   printPBXBuildFile,
   printXCLocalSwiftPackageReference,
   printXCSwiftPackageProductDependency,
+  updatePBXFrameworksBuildPhaseFiles,
 } = require('../xcodeproj-utils');
 
 // Mock child_process module
 jest.mock('child_process');
 
 // Mock xcodeproj-core-utils module
-jest.mock('../xcodeproj-core-utils');
+jest.mock('../xcodeproj-core-utils', () => ({
+  generateXcodeObjectId: jest.fn(),
+  printFilesForBuildPhase: jest.fn(),
+}));
 
 describe('convertXcodeProjectToJSON', () => {
   let mockExecSync;
@@ -768,77 +771,6 @@ describe('printPBXBuildFile', () => {
   });
 });
 
-describe('printFilesForBuildPhase', () => {
-  it('should format build file with productRef correctly', () => {
-    // Setup
-    const objectId = 'BUILDFILE123';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      productRef: 'PRODUCT456',
-    };
-    const allObjects = {
-      PRODUCT456: {
-        isa: 'XCSwiftPackageProductDependency',
-        productName: 'Alamofire',
-      },
-    };
-
-    // Execute
-    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\t\t\tBUILDFILE123 /* Alamofire in Frameworks */,\n',
-    );
-  });
-
-  it('should format build file with fileRef correctly', () => {
-    // Setup
-    const objectId = 'BUILDFILE789';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      fileRef: 'FILEREF123',
-    };
-    const allObjects = {
-      FILEREF123: {
-        isa: 'PBXFileReference',
-        name: 'MyFramework.framework',
-      },
-    };
-
-    // Execute
-    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\t\t\tBUILDFILE789 /* MyFramework.framework in Frameworks */,\n',
-    );
-  });
-
-  it('should use file path when name is not available', () => {
-    // Setup
-    const objectId = 'BUILDFILE789';
-    const objectData = {
-      isa: 'PBXBuildFile',
-      fileRef: 'FILEREF456',
-    };
-    const allObjects = {
-      FILEREF456: {
-        isa: 'PBXFileReference',
-        path: 'path/to/MyLib.framework',
-      },
-    };
-
-    // Execute
-    const result = printFilesForBuildPhase(objectId, objectData, allObjects);
-
-    // Assert
-    expect(result).toBe(
-      '\t\t\t\tBUILDFILE789 /* path/to/MyLib.framework in Frameworks */,\n',
-    );
-  });
-});
-
 describe('printXCLocalSwiftPackageReference', () => {
   it('should format XCLocalSwiftPackageReference correctly', () => {
     // Setup
@@ -940,6 +872,331 @@ describe('printXCSwiftPackageProductDependency', () => {
 \t\t};
 `;
     expect(result).toBe(expected);
+  });
+});
+
+describe('updatePBXFrameworksBuildPhaseFiles', () => {
+  let mockPrintFilesForBuildPhase;
+
+  beforeEach(() => {
+    // Setup mock for printFilesForBuildPhase
+    const xcodeprjCoreUtils = require('../xcodeproj-core-utils');
+    mockPrintFilesForBuildPhase = xcodeprjCoreUtils.printFilesForBuildPhase;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  it('should update files in PBXFrameworksBuildPhase section correctly', () => {
+    // Setup
+    const textualProject = `{
+\tobjects = {
+\t\tA1B2C3D4 /* Some existing object */ = {
+\t\t\tisa = PBXProject;
+\t\t};
+
+/* Begin PBXFrameworksBuildPhase section */
+\t\tE5F6A7B8 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tbuildActionMask = 2147483647;
+\t\t\tfiles = (
+\t\t\t\tC9D0E1F2 /* OldLibrary in Frameworks */,
+\t\t\t\tA3B4C5D6 /* AnotherLibrary in Frameworks */,
+\t\t\t);
+\t\t\trunOnlyForDeploymentPostprocessing = 0;
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+
+\t\tA7B8C9D0 /* Other object */ = {
+\t\t\tisa = PBXNativeTarget;
+\t\t};
+\t};
+\trootObject = C3D4E5F6;
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        E5F6A7B8: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['F7E8D9C0', 'B1A2F3E4'],
+        },
+        F7E8D9C0: {
+          isa: 'PBXBuildFile',
+          productRef: 'D5C6B7A8',
+        },
+        B1A2F3E4: {
+          isa: 'PBXBuildFile',
+          productRef: 'E9F0A1B2',
+        },
+        D5C6B7A8: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewLibrary1',
+        },
+        E9F0A1B2: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewLibrary2',
+        },
+      },
+    };
+
+    mockPrintFilesForBuildPhase
+      .mockReturnValueOnce(
+        '\t\t\t\tF7E8D9C0 /* NewLibrary1 in Frameworks */,\n',
+      )
+      .mockReturnValueOnce(
+        '\t\t\t\tB1A2F3E4 /* NewLibrary2 in Frameworks */,\n',
+      );
+
+    // Execute
+    const result = updatePBXFrameworksBuildPhaseFiles(
+      textualProject,
+      xcodeProjectJSON,
+    );
+
+    // Assert
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledTimes(2);
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledWith(
+      'F7E8D9C0',
+      xcodeProjectJSON.objects.F7E8D9C0,
+      xcodeProjectJSON.objects,
+    );
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledWith(
+      'B1A2F3E4',
+      xcodeProjectJSON.objects.B1A2F3E4,
+      xcodeProjectJSON.objects,
+    );
+
+    // Check that the old files are replaced with new files
+    expect(result).toContain('F7E8D9C0 /* NewLibrary1 in Frameworks */');
+    expect(result).toContain('B1A2F3E4 /* NewLibrary2 in Frameworks */');
+    expect(result).not.toContain('C9D0E1F2 /* OldLibrary in Frameworks */');
+    expect(result).not.toContain('A3B4C5D6 /* AnotherLibrary in Frameworks */');
+  });
+
+  it('should handle multiple PBXFrameworksBuildPhase sections', () => {
+    // Setup
+    const textualProject = `{
+\tobjects = {
+/* Begin PBXFrameworksBuildPhase section */
+\t\tE5F6A7B8 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tfiles = (
+\t\t\t\tC9D0E1F2 /* OldLibrary in Frameworks */,
+\t\t\t);
+\t\t};
+\t\tD9C0B1A2 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tfiles = (
+\t\t\t\tA3B4C5D6 /* AnotherOldLibrary in Frameworks */,
+\t\t\t);
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+\t};
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        E5F6A7B8: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['F7E8D9C0'],
+        },
+        D9C0B1A2: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['B1A2F3E4'],
+        },
+        F7E8D9C0: {
+          isa: 'PBXBuildFile',
+          productRef: 'D5C6B7A8',
+        },
+        B1A2F3E4: {
+          isa: 'PBXBuildFile',
+          productRef: 'E9F0A1B2',
+        },
+        D5C6B7A8: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewLibrary1',
+        },
+        E9F0A1B2: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewLibrary2',
+        },
+      },
+    };
+
+    mockPrintFilesForBuildPhase
+      .mockReturnValueOnce(
+        '\t\t\t\tF7E8D9C0 /* NewLibrary1 in Frameworks */,\n',
+      )
+      .mockReturnValueOnce(
+        '\t\t\t\tB1A2F3E4 /* NewLibrary2 in Frameworks */,\n',
+      );
+
+    // Execute
+    const result = updatePBXFrameworksBuildPhaseFiles(
+      textualProject,
+      xcodeProjectJSON,
+    );
+
+    // Assert
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledTimes(2);
+    expect(result).toContain('F7E8D9C0 /* NewLibrary1 in Frameworks */');
+    expect(result).toContain('B1A2F3E4 /* NewLibrary2 in Frameworks */');
+    expect(result).not.toContain('C9D0E1F2 /* OldLibrary in Frameworks */');
+    expect(result).not.toContain(
+      'A3B4C5D6 /* AnotherOldLibrary in Frameworks */',
+    );
+  });
+
+  it('should skip non-existent build file objects', () => {
+    // Setup
+    const textualProject = `{
+\tobjects = {
+/* Begin PBXFrameworksBuildPhase section */
+\t\tE5F6A7B8 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tfiles = (
+\t\t\t\tC9D0E1F2 /* OldLibrary in Frameworks */,
+\t\t\t);
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+\t};
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        E5F6A7B8: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['E3F4A5B6', 'C7D8E9F0'],
+        },
+        E3F4A5B6: {
+          isa: 'PBXBuildFile',
+          productRef: 'D5C6B7A8',
+        },
+        D5C6B7A8: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'ExistingLibrary',
+        },
+        // C7D8E9F0 is not in objects
+      },
+    };
+
+    mockPrintFilesForBuildPhase.mockReturnValueOnce(
+      '\t\t\t\tE3F4A5B6 /* ExistingLibrary in Frameworks */,\n',
+    );
+
+    // Execute
+    const result = updatePBXFrameworksBuildPhaseFiles(
+      textualProject,
+      xcodeProjectJSON,
+    );
+
+    // Assert
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledTimes(1);
+    expect(mockPrintFilesForBuildPhase).toHaveBeenCalledWith(
+      'E3F4A5B6',
+      xcodeProjectJSON.objects.E3F4A5B6,
+      xcodeProjectJSON.objects,
+    );
+    expect(result).toContain('E3F4A5B6 /* ExistingLibrary in Frameworks */');
+  });
+
+  it('should handle empty files array in PBXFrameworksBuildPhase', () => {
+    // Setup
+    const textualProject = `{
+\tobjects = {
+/* Begin PBXFrameworksBuildPhase section */
+\t\tE5F6A7B8 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tfiles = (
+\t\t\t);
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+\t};
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        E5F6A7B8: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+      },
+    };
+
+    // Execute
+    const result = updatePBXFrameworksBuildPhaseFiles(
+      textualProject,
+      xcodeProjectJSON,
+    );
+
+    // Assert
+    expect(mockPrintFilesForBuildPhase).not.toHaveBeenCalled();
+    expect(result).toContain('files = (\n\t\t\t);');
+  });
+
+  it('should preserve content outside PBXFrameworksBuildPhase sections', () => {
+    // Setup
+    const textualProject = `{
+\tarchiveVersion = 1;
+\tclasses = {
+\t};
+\tobjects = {
+\t\tF1E2D3C4 /* Project object */ = {
+\t\t\tisa = PBXProject;
+\t\t\tname = MyProject;
+\t\t};
+
+/* Begin PBXFrameworksBuildPhase section */
+\t\tE5F6A7B8 /* Frameworks */ = {
+\t\t\tisa = PBXFrameworksBuildPhase;
+\t\t\tfiles = (
+\t\t\t\tC9D0E1F2 /* OldLibrary in Frameworks */,
+\t\t\t);
+\t\t};
+/* End PBXFrameworksBuildPhase section */
+
+\t\tB5A6F7E8 /* Target object */ = {
+\t\t\tisa = PBXNativeTarget;
+\t\t\tname = MyTarget;
+\t\t};
+\t};
+\trootObject = F1E2D3C4;
+}`;
+
+    const xcodeProjectJSON = {
+      objects: {
+        E5F6A7B8: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['F7E8D9C0'],
+        },
+        F7E8D9C0: {
+          isa: 'PBXBuildFile',
+          productRef: 'D5C6B7A8',
+        },
+        D5C6B7A8: {
+          isa: 'XCSwiftPackageProductDependency',
+          productName: 'NewLibrary',
+        },
+      },
+    };
+
+    mockPrintFilesForBuildPhase.mockReturnValueOnce(
+      '\t\t\t\tF7E8D9C0 /* NewLibrary in Frameworks */,\n',
+    );
+
+    // Execute
+    const result = updatePBXFrameworksBuildPhaseFiles(
+      textualProject,
+      xcodeProjectJSON,
+    );
+
+    // Assert
+    expect(result).toContain('archiveVersion = 1;');
+    expect(result).toContain('F1E2D3C4 /* Project object */ = {');
+    expect(result).toContain('B5A6F7E8 /* Target object */ = {');
+    expect(result).toContain('rootObject = F1E2D3C4;');
+    expect(result).toContain('F7E8D9C0 /* NewLibrary in Frameworks */');
+    expect(result).not.toContain('C9D0E1F2 /* OldLibrary in Frameworks */');
   });
 });
 

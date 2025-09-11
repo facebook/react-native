@@ -8,7 +8,10 @@
  * @format
  */
 
-const {generateXcodeObjectId} = require('./xcodeproj-core-utils');
+const {
+  generateXcodeObjectId,
+  printFilesForBuildPhase,
+} = require('./xcodeproj-core-utils');
 const {execSync} = require('child_process');
 
 /*::
@@ -308,29 +311,6 @@ function printXCSwiftPackageProductDependency(
 `;
 }
 
-function printFilesForBuildPhase(
-  objectId /*: string */,
-  objectData /*: XcodeObject */,
-  allObjects /*: {[string]: XcodeObject} */,
-) /*: string */ {
-  // Get the product name from the productRef in the PBXBuildFile
-  let productName = 'Unknown';
-
-  if (objectData.productRef) {
-    const productRefObject = allObjects[objectData.productRef];
-    if (productRefObject && productRefObject.productName) {
-      productName = productRefObject.productName;
-    }
-  } else if (objectData.fileRef) {
-    const fileRefObject = allObjects[objectData.fileRef];
-    if (fileRefObject) {
-      productName = fileRefObject.name || fileRefObject.path || 'Unknown';
-    }
-  }
-
-  return `\t\t\t\t${objectId} /* ${productName} in Frameworks */,\n`;
-}
-
 /**
  * Add missing sections to the textual project in the correct order
  * @param {string} textualProject - The textual representation of the Xcode project
@@ -401,13 +381,121 @@ function addMissingSections(
   return lines.join('\n');
 }
 
+/**
+ * Update the PBXFrameworksBuildPhase.files array in the textual project
+ * @param {string} textualProject - The textual representation of the Xcode project
+ * @param {Object} xcodeProjectJSON - The JSON representation of the Xcode project
+ * @returns {string} Updated textual project with new PBXFrameworksBuildPhase.files content
+ */
+function updatePBXFrameworksBuildPhaseFiles(
+  textualProject /*: string */,
+  xcodeProjectJSON /*: XcodeProject */,
+) /*: string */ {
+  const lines = textualProject.split('\n');
+  const processedLines = [];
+  let inPBXFrameworksBuildPhase = false;
+  let inFrameworksSection = false;
+  let frameworksBraceDepth = 0;
+  let currentFrameworksBuildPhaseId = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Check if we're starting the PBXFrameworksBuildPhase section
+    if (line.includes('/* Begin PBXFrameworksBuildPhase section */')) {
+      inPBXFrameworksBuildPhase = true;
+      processedLines.push(line);
+      continue;
+    }
+
+    // Check if we're ending the PBXFrameworksBuildPhase section
+    if (line.includes('/* End PBXFrameworksBuildPhase section */')) {
+      inPBXFrameworksBuildPhase = false;
+      processedLines.push(line);
+      continue;
+    }
+
+    // If we're in the PBXFrameworksBuildPhase section
+    if (inPBXFrameworksBuildPhase) {
+      // Look for framework build phase pattern: "objectId /* Frameworks */ = {"
+      const frameworksMatch = line.match(
+        /^\s*([A-F0-9]+)\s*\/\*\s*Frameworks\s*\*\/\s*=\s*\{/,
+      );
+      if (frameworksMatch) {
+        inFrameworksSection = true;
+        frameworksBraceDepth = 1;
+        currentFrameworksBuildPhaseId = frameworksMatch[1];
+        processedLines.push(line);
+        continue;
+      }
+
+      // If we're in a frameworks section
+      if (inFrameworksSection) {
+        // Track brace depth to know when the frameworks section ends
+        const openBraces = (line.match(/\{/g) || []).length;
+        const closeBraces = (line.match(/\}/g) || []).length;
+        frameworksBraceDepth += openBraces - closeBraces;
+
+        // Check if we found "files = ("
+        if (line.includes('files = (')) {
+          processedLines.push(line);
+
+          // Generate new files content
+
+          const frameworksBuildPhase = // $FlowFixMe[incompatible-type]
+            xcodeProjectJSON.objects[currentFrameworksBuildPhaseId];
+          if (frameworksBuildPhase && frameworksBuildPhase.files) {
+            for (const fileId of frameworksBuildPhase.files) {
+              const buildFileObject = xcodeProjectJSON.objects[fileId];
+              if (buildFileObject) {
+                processedLines.push(
+                  printFilesForBuildPhase(
+                    fileId,
+                    buildFileObject,
+                    xcodeProjectJSON.objects,
+                  ),
+                );
+              }
+            }
+          }
+
+          // Skip lines until we find the closing ");"
+          i++;
+          while (i < lines.length && !lines[i].includes(');')) {
+            i++;
+          }
+          // Add the closing ");" line
+          if (i < lines.length) {
+            processedLines.push(lines[i]);
+          }
+          continue;
+        }
+
+        // If we're at the end of the frameworks section
+        if (frameworksBraceDepth === 0) {
+          inFrameworksSection = false;
+          currentFrameworksBuildPhaseId = null;
+        }
+
+        processedLines.push(line);
+        continue;
+      }
+    }
+
+    // Default: just add the line as-is
+    processedLines.push(line);
+  }
+
+  return processedLines.join('\n');
+}
+
 module.exports = {
   addLocalSwiftPM,
   addMissingSections,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
   printPBXBuildFile,
-  printFilesForBuildPhase,
   printXCLocalSwiftPackageReference,
   printXCSwiftPackageProductDependency,
+  updatePBXFrameworksBuildPhaseFiles,
 };
