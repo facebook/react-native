@@ -15,6 +15,7 @@ const {
   createHardlinks,
   findXcodeProjectDirectory,
   generateCodegenArtifacts,
+  prepareHeaders,
   runIosPrebuild,
   runPodDeintegrate,
   setBuildFromSource,
@@ -360,6 +361,323 @@ describe('generateCodegenArtifacts', () => {
       'ios',
       appIosPath,
       'app',
+    );
+  });
+});
+
+describe('prepareHeaders', () => {
+  let mockPrepareAppDependenciesHeaders;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    const prepareAppDependenciesHeadersModule = require('../prepare-app-dependencies-headers');
+    mockPrepareAppDependenciesHeaders =
+      prepareAppDependenciesHeadersModule.prepareAppDependenciesHeaders;
+
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockPrepareAppDependenciesHeaders.mockImplementation(() => {});
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+  });
+
+  it('should prepare all three types of headers successfully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appIosPath = '/path/to/app/ios';
+
+    mockPrepareAppDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await prepareHeaders(reactNativePath, appIosPath);
+
+    // Assert
+    const expectedOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactAppDependencyProvider';
+    const expectedCodegenOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactCodegen';
+
+    // Verify all three calls with correct parameters
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(3);
+
+    // 1. Codegen headers
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      1,
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+
+    // 2. React Native headers
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      2,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'react-native',
+    );
+
+    // 3. Third-party dependencies headers
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      3,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'third-party-dependencies',
+    );
+
+    // Verify console output
+    expect(mockConsoleLog).toHaveBeenCalledWith('Preparing codegen headers...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Codegen headers prepared');
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing react-native headers...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ React Native headers prepared',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing third-party dependencies headers...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ Third-party dependencies headers prepared',
+    );
+  });
+
+  it('should throw error when codegen header preparation fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appIosPath = '/path/to/app/ios';
+    const originalError = new Error('Codegen header preparation failed');
+
+    mockPrepareAppDependenciesHeaders.mockImplementationOnce(() => {
+      throw originalError;
+    });
+
+    // Execute & Assert
+    await expect(prepareHeaders(reactNativePath, appIosPath)).rejects.toThrow(
+      'Header preparation failed: Codegen header preparation failed',
+    );
+
+    const expectedOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactAppDependencyProvider';
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(1);
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledWith(
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith('Preparing codegen headers...');
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ Codegen headers prepared',
+    );
+  });
+
+  it('should throw error when react-native header preparation fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appIosPath = '/path/to/app/ios';
+    const originalError = new Error('React Native header preparation failed');
+
+    mockPrepareAppDependenciesHeaders
+      .mockImplementationOnce(() => {}) // First call succeeds
+      .mockImplementationOnce(() => {
+        // Second call fails
+        throw originalError;
+      });
+
+    // Execute & Assert
+    await expect(prepareHeaders(reactNativePath, appIosPath)).rejects.toThrow(
+      'Header preparation failed: React Native header preparation failed',
+    );
+
+    const expectedOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactAppDependencyProvider';
+    const expectedCodegenOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactCodegen';
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(2);
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      1,
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      2,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'react-native',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith('Preparing codegen headers...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Codegen headers prepared');
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing react-native headers...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ React Native headers prepared',
+    );
+  });
+
+  it('should throw error when third-party dependencies header preparation fails', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const appIosPath = '/path/to/app/ios';
+    const originalError = new Error(
+      'Third-party dependencies header preparation failed',
+    );
+
+    mockPrepareAppDependenciesHeaders
+      .mockImplementationOnce(() => {}) // First call succeeds
+      .mockImplementationOnce(() => {}) // Second call succeeds
+      .mockImplementationOnce(() => {
+        // Third call fails
+        throw originalError;
+      });
+
+    // Execute & Assert
+    await expect(prepareHeaders(reactNativePath, appIosPath)).rejects.toThrow(
+      'Header preparation failed: Third-party dependencies header preparation failed',
+    );
+
+    const expectedOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactAppDependencyProvider';
+    const expectedCodegenOutputFolder =
+      '/path/to/app/ios/build/generated/ios/ReactCodegen';
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(3);
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      1,
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      2,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'react-native',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      3,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'third-party-dependencies',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith('Preparing codegen headers...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('✓ Codegen headers prepared');
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing react-native headers...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ React Native headers prepared',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Preparing third-party dependencies headers...',
+    );
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      '✓ Third-party dependencies headers prepared',
+    );
+  });
+
+  it('should handle different paths correctly', async () => {
+    // Setup
+    const reactNativePath = '/Users/developer/react-native';
+    const appIosPath = '/Users/developer/MyApp/ios';
+
+    mockPrepareAppDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await prepareHeaders(reactNativePath, appIosPath);
+
+    // Assert
+    const expectedOutputFolder =
+      '/Users/developer/MyApp/ios/build/generated/ios/ReactAppDependencyProvider';
+    const expectedCodegenOutputFolder =
+      '/Users/developer/MyApp/ios/build/generated/ios/ReactCodegen';
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(3);
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      1,
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      2,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'react-native',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      3,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'third-party-dependencies',
+    );
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react native';
+    const appIosPath = '/path/to/my app/ios folder';
+
+    mockPrepareAppDependenciesHeaders.mockImplementation(() => {});
+
+    // Execute
+    await prepareHeaders(reactNativePath, appIosPath);
+
+    // Assert
+    const expectedOutputFolder =
+      '/path/to/my app/ios folder/build/generated/ios/ReactAppDependencyProvider';
+    const expectedCodegenOutputFolder =
+      '/path/to/my app/ios folder/build/generated/ios/ReactCodegen';
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenCalledTimes(3);
+
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      1,
+      reactNativePath,
+      appIosPath,
+      expectedOutputFolder,
+      'codegen',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      2,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'react-native',
+    );
+    expect(mockPrepareAppDependenciesHeaders).toHaveBeenNthCalledWith(
+      3,
+      reactNativePath,
+      appIosPath,
+      expectedCodegenOutputFolder,
+      'third-party-dependencies',
     );
   });
 });
