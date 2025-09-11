@@ -279,12 +279,12 @@ internal class PerfMonitorOverlayView(
   }
 
   private fun getMetricsDialogOffsetX(): Float {
-    val toolbarWidth = toolbarDialog?.window?.decorView?.width ?: 0
+    val toolbarWidth = toolbarDialog.window?.decorView?.width ?: 0
     return toolbarWidth.toFloat()
   }
 
   private fun updateMetricsDialogPosition() {
-    metricsDialog?.window?.apply {
+    metricsDialog.window?.apply {
       attributes = attributes?.apply { x = getMetricsDialogOffsetX().toInt() }
     }
   }
