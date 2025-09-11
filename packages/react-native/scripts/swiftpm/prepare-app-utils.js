@@ -141,7 +141,7 @@ async function configureAppForSwift(
 
     // Create hardlink for umbrella header
     if (fs.existsSync(sourceUmbrellaPath)) {
-      fs.linkSync(sourceUmbrellaPath, destUmbrellaPath);
+      fs.symlinkSync(sourceUmbrellaPath, destUmbrellaPath);
       console.log(
         `✓ Created hardlink: React-umbrella.h -> ${path.relative(
           reactNativePath,

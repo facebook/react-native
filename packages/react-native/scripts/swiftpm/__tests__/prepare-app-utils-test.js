@@ -2503,7 +2503,7 @@ describe('configureAppForSwift', () => {
     mockFs.existsSync = jest.fn();
     mockFs.mkdirSync = jest.fn();
     mockFs.unlinkSync = jest.fn();
-    mockFs.linkSync = jest.fn();
+    mockFs.symlinkSync = jest.fn();
     mockFs.writeFileSync = jest.fn();
 
     // Mock path.join to return realistic paths
@@ -2527,7 +2527,7 @@ describe('configureAppForSwift', () => {
       .mockReturnValueOnce(true); // sourceUmbrellaPath exists
 
     mockFs.mkdirSync.mockImplementation(() => {});
-    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.symlinkSync.mockImplementation(() => {});
     mockFs.writeFileSync.mockImplementation(() => {});
 
     // Execute
@@ -2544,7 +2544,7 @@ describe('configureAppForSwift', () => {
       '/path/to/react-native/scripts/ios-prebuild/React-umbrella.h',
     );
 
-    expect(mockFs.linkSync).toHaveBeenCalledWith(
+    expect(mockFs.symlinkSync).toHaveBeenCalledWith(
       '/path/to/react-native/scripts/ios-prebuild/React-umbrella.h',
       '/path/to/react-native/React/includes/React/React-umbrella.h',
     );
@@ -2588,7 +2588,7 @@ describe('configureAppForSwift', () => {
 
     mockFs.mkdirSync.mockImplementation(() => {});
     mockFs.unlinkSync.mockImplementation(() => {});
-    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.symlinkSync.mockImplementation(() => {});
     mockFs.writeFileSync.mockImplementation(() => {});
 
     // Execute
@@ -2609,14 +2609,14 @@ describe('configureAppForSwift', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
-    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.symlinkSync.mockImplementation(() => {});
     mockFs.writeFileSync.mockImplementation(() => {});
 
     // Execute
     await configureAppForSwift(reactNativePath);
 
     // Assert
-    expect(mockFs.linkSync).toHaveBeenCalledWith(
+    expect(mockFs.symlinkSync).toHaveBeenCalledWith(
       '/Users/developer/react-native/scripts/ios-prebuild/React-umbrella.h',
       '/Users/developer/react-native/React/includes/React/React-umbrella.h',
     );
@@ -2653,7 +2653,7 @@ describe('configureAppForSwift', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
-    mockFs.linkSync.mockImplementation(() => {
+    mockFs.symlinkSync.mockImplementation(() => {
       throw new Error('Permission denied');
     });
 
@@ -2672,7 +2672,7 @@ describe('configureAppForSwift', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
-    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.symlinkSync.mockImplementation(() => {});
     mockFs.writeFileSync.mockImplementation(() => {
       throw new Error('Disk full');
     });
@@ -2727,7 +2727,7 @@ describe('configureAppForSwift', () => {
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(true);
 
-    mockFs.linkSync.mockImplementation(() => {});
+    mockFs.symlinkSync.mockImplementation(() => {});
     mockFs.writeFileSync.mockImplementation(() => {});
 
     // Execute
