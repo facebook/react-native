@@ -332,6 +332,9 @@ module.exports = {
   get useWindowDimensions() {
     return require('./Libraries/Utilities/useWindowDimensions').default;
   },
+  get useDebouncedState() {
+    return require('./Libraries/Utilities/DebouncedState/useDebouncedState').default;
+  },
   get UTFSequence() {
     return require('./Libraries/UTFSequence').default;
   },
