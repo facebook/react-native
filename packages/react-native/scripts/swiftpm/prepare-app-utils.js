@@ -9,6 +9,7 @@
  */
 
 const {execSync} = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 /**
@@ -85,8 +86,88 @@ async function runIosPrebuild(
     throw new Error(`iOS prebuild failed: ${error.message}`);
   }
 }
+
+/**
+ * Configure app for Swift integration
+ */
+async function configureAppForSwift(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Configuring app for Swift integration...');
+
+    // 1. Create hardlink from React-umbrella.h to React-umbrella.h
+    const sourceUmbrellaPath = path.join(
+      reactNativePath,
+      'scripts',
+      'ios-prebuild',
+      'React-umbrella.h',
+    );
+    const reactIncludesReactPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+    );
+    const destUmbrellaPath = path.join(
+      reactIncludesReactPath,
+      'React-umbrella.h',
+    );
+
+    // Ensure the React/includes/React directory exists
+    if (!fs.existsSync(reactIncludesReactPath)) {
+      fs.mkdirSync(reactIncludesReactPath, {recursive: true});
+    }
+
+    // Remove existing hardlink if it exists
+    if (fs.existsSync(destUmbrellaPath)) {
+      fs.unlinkSync(destUmbrellaPath);
+    }
+
+    // Create hardlink for umbrella header
+    if (fs.existsSync(sourceUmbrellaPath)) {
+      fs.linkSync(sourceUmbrellaPath, destUmbrellaPath);
+      console.log(
+        `✓ Created hardlink: React-umbrella.h -> ${path.relative(
+          reactNativePath,
+          sourceUmbrellaPath,
+        )}`,
+      );
+    } else {
+      throw new Error(
+        `Source umbrella header not found: ${sourceUmbrellaPath}`,
+      );
+    }
+
+    // 2. Generate module.modulemap file
+    const reactIncludesPath = path.join(reactNativePath, 'React', 'includes');
+    const moduleMapPath = path.join(reactIncludesPath, 'module.modulemap');
+    const absoluteUmbrellaPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+      'React-umbrella.h',
+    );
+    const moduleMapContent = `framework module React {
+  umbrella header "${absoluteUmbrellaPath}"
+  export *
+  module * { export * }
+}
+`;
+
+    fs.writeFileSync(moduleMapPath, moduleMapContent, 'utf8');
+    console.log('✓ Generated module.modulemap file');
+
+    console.log('✓ App configured for Swift integration');
+  } catch (error) {
+    throw new Error(`Swift configuration failed: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
   runIosPrebuild,
+  configureAppForSwift,
 };
