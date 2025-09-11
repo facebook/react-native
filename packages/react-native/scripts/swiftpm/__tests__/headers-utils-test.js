@@ -11,6 +11,7 @@
 'use strict';
 
 const {
+  hardlinkCodegenHeaders,
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
@@ -44,7 +45,8 @@ describe('symlinkHeadersFromPath', () => {
     mockPath.dirname.mockImplementation(filePath => {
       const parts = filePath.split('/');
       parts.pop();
-      return parts.join('/');
+      const result = parts.join('/');
+      return result === '' ? '.' : result;
     });
     mockPath.basename.mockImplementation(filePath => {
       return filePath.split('/').pop();
@@ -420,6 +422,593 @@ describe('symlinkHeadersFromPath', () => {
       '/custom/output/special/subdir/header1.h',
     );
     expect(result).toBe(1);
+  });
+});
+
+describe('hardlinkCodegenHeaders', () => {
+  let mockExecSync;
+  let mockFs;
+  let mockPath;
+  let originalConsoleWarn;
+  let originalConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockExecSync = require('child_process').execSync;
+    mockFs = require('fs');
+    mockPath = require('path');
+
+    // Mock path functions
+    mockPath.relative.mockImplementation((from, to) => {
+      return to.replace(from + '/', '');
+    });
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    mockPath.dirname.mockImplementation(filePath => {
+      const parts = filePath.split('/');
+      parts.pop();
+      const result = parts.join('/');
+      return result === '' ? '.' : result;
+    });
+    mockPath.basename.mockImplementation(filePath => {
+      return filePath.split('/').pop();
+    });
+
+    // Mock console methods to prevent test output noise
+    originalConsoleWarn = console.warn;
+    originalConsoleLog = console.log;
+    console.warn = jest.fn();
+    console.log = jest.fn();
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.warn = originalConsoleWarn;
+    console.log = originalConsoleLog;
+  });
+
+  it('should create hard links for codegen headers with conditional directory structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/ModuleProvider.h\n` +
+      `${reactCodegenPath}/react/renderer/components/MyComponent/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/react/renderer/components/MyComponent/EventEmitter.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(reactCodegenPath);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `find "${reactCodegenPath}" -name "*.h" -type f | grep -v "/headers/" | grep -v "/tests/"`,
+      {encoding: 'utf8', stdio: 'pipe'},
+    );
+    // Files with no subpath go to ReactCodegen folder
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ModuleProvider.h`,
+      '/output/folder/headers/ReactCodegen/ModuleProvider.h',
+    );
+    // Files with subpaths preserve structure under headers/
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/MyComponent/ComponentDescriptors.h`,
+      '/output/folder/headers/react/renderer/components/MyComponent/ComponentDescriptors.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/MyComponent/EventEmitter.h`,
+      '/output/folder/headers/react/renderer/components/MyComponent/EventEmitter.h',
+    );
+  });
+
+  it('should create headers output directory if it does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const headersOutput = '/output/folder/headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath === headersOutput) return false; // headers output doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.mkdirSync).toHaveBeenCalledWith(headersOutput, {
+      recursive: true,
+    });
+  });
+
+  it('should create ReactCodegen subdirectory if it does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const reactCodegenHeadersOutput = '/output/folder/headers/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath === reactCodegenHeadersOutput) return false; // ReactCodegen dir doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.mkdirSync).toHaveBeenCalledWith(reactCodegenHeadersOutput, {
+      recursive: true,
+    });
+  });
+
+  it('should warn and return early if ReactCodegen path does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return false; // ReactCodegen path doesn't exist
+      return false;
+    });
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      `ReactCodegen path does not exist: ${reactCodegenPath}`,
+    );
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+
+  it('should create destination subdirectories for nested header structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput = `${reactCodegenPath}/react/renderer/components/nested/deep/Component.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      if (
+        filePath ===
+        '/output/folder/headers/react/renderer/components/nested/deep'
+      )
+        return false; // subdirectory doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.mkdirSync).toHaveBeenCalledWith(
+      '/output/folder/headers/react/renderer/components/nested/deep',
+      {recursive: true},
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/nested/deep/Component.h`,
+      '/output/folder/headers/react/renderer/components/nested/deep/Component.h',
+    );
+  });
+
+  it('should remove existing hard links before creating new ones', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput = `${reactCodegenPath}/ComponentDescriptors.h\n`;
+
+    mockFs.existsSync.mockReturnValue(true); // All files and directories exist
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.unlinkSync).toHaveBeenCalledWith(
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+  });
+
+  it('should skip non-existent source header files', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/nonexistent.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath === `${reactCodegenPath}/ComponentDescriptors.h`)
+        return true;
+      if (filePath === `${reactCodegenPath}/nonexistent.h`) return false; // doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert - only the existing file should be linked
+    expect(mockFs.linkSync).toHaveBeenCalledTimes(1);
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+  });
+
+  it('should handle empty find command output', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.linkSync).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      'Created hard links for 0 Codegen headers with conditional directory structure',
+    );
+  });
+
+  it('should handle whitespace-only find command output', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('   \n  \n  ');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.linkSync).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      'Created hard links for 0 Codegen headers with conditional directory structure',
+    );
+  });
+
+  it('should handle execSync throwing an error', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const error = new Error('Command failed');
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      return false;
+    });
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockExecSync.mockImplementation(() => {
+      throw error;
+    });
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      'Failed to create hard links for codegen headers:',
+      'Command failed',
+    );
+  });
+
+  it('should exclude headers and tests directories from find command', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `find "${reactCodegenPath}" -name "*.h" -type f | grep -v "/headers/" | grep -v "/tests/"`,
+      {encoding: 'utf8', stdio: 'pipe'},
+    );
+  });
+
+  it('should differentiate between files with and without subpaths correctly', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/TopLevelHeader.h\n` +
+      `${reactCodegenPath}/subdir/SubdirHeader.h\n` +
+      `${reactCodegenPath}/react/renderer/ComponentDescriptor.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    // File with no subpath (dirname is '.') goes to ReactCodegen folder
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/TopLevelHeader.h`,
+      '/output/folder/headers/ReactCodegen/TopLevelHeader.h',
+    );
+    // Files with subpaths preserve structure under headers/
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/subdir/SubdirHeader.h`,
+      '/output/folder/headers/subdir/SubdirHeader.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/ComponentDescriptor.h`,
+      '/output/folder/headers/react/renderer/ComponentDescriptor.h',
+    );
+  });
+
+  it('should handle fs.linkSync throwing an error but continue processing', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/ModuleProvider.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+
+    // Make linkSync fail for the first file but succeed for the second
+    let callCount = 0;
+    mockFs.linkSync.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error('Link failed for first file');
+      }
+    });
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert - when fs.linkSync throws an error, the entire try-catch block fails
+    // and only the initial console.log and console.warn are called
+    expect(console.log).toHaveBeenCalledWith(
+      'Creating hard links for Codegen headers...',
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      'Failed to create hard links for codegen headers:',
+      'Link failed for first file',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledTimes(1);
+  });
+
+  it('should log creation message and success count', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/react/renderer/ComponentDescriptor.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(console.log).toHaveBeenCalledWith(
+      'Creating hard links for Codegen headers...',
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      'Created hard links for 2 Codegen headers with conditional directory structure',
+    );
+  });
+
+  it('should handle complex mixed file structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput =
+      `${reactCodegenPath}/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/ModuleProvider.h\n` +
+      `${reactCodegenPath}/RCTThirdPartyFabricComponentsProvider.h\n` +
+      `${reactCodegenPath}/react/renderer/components/image/ComponentDescriptors.h\n` +
+      `${reactCodegenPath}/react/renderer/components/text/EventEmitter.h\n` +
+      `${reactCodegenPath}/react/renderer/components/view/Props.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    // Files with no subpath go to ReactCodegen folder
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ModuleProvider.h`,
+      '/output/folder/headers/ReactCodegen/ModuleProvider.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/RCTThirdPartyFabricComponentsProvider.h`,
+      '/output/folder/headers/ReactCodegen/RCTThirdPartyFabricComponentsProvider.h',
+    );
+    // Files with subpaths preserve structure under headers/
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/image/ComponentDescriptors.h`,
+      '/output/folder/headers/react/renderer/components/image/ComponentDescriptors.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/text/EventEmitter.h`,
+      '/output/folder/headers/react/renderer/components/text/EventEmitter.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/view/Props.h`,
+      '/output/folder/headers/react/renderer/components/view/Props.h',
+    );
+  });
+
+  it('should handle edge case with deeply nested single file', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const findCommandOutput = `${reactCodegenPath}/very/deeply/nested/path/to/header/DeepHeader.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+
+    // Assert
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${reactCodegenPath}/very/deeply/nested/path/to/header/DeepHeader.h`,
+      '/output/folder/headers/very/deeply/nested/path/to/header/DeepHeader.h',
+    );
   });
 });
 

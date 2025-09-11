@@ -254,9 +254,105 @@ function hardlinkThirdPartyDependenciesHeaders(
   }
 }
 
+/**
+ * Create hard links for Codegen headers in the output folder
+ */
+function hardlinkCodegenHeaders(
+  reactNativePath /*: string */,
+  iosAppPath /*: string */,
+  outputFolder /*: string */,
+) /*: void */ {
+  console.log('Creating hard links for Codegen headers...');
+
+  // Look for ReactCodegen folder specifically
+  const reactCodegenPath = path.join(
+    iosAppPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactCodegen',
+  );
+
+  if (!fs.existsSync(reactCodegenPath)) {
+    console.warn(`ReactCodegen path does not exist: ${reactCodegenPath}`);
+    return;
+  }
+
+  const headersOutput = path.join(outputFolder, 'headers');
+  if (!fs.existsSync(headersOutput)) {
+    fs.mkdirSync(headersOutput, {recursive: true});
+  }
+
+  // Create ReactCodegen subdirectory for headers without subpaths
+  const reactCodegenHeadersOutput = path.join(headersOutput, 'ReactCodegen');
+  if (!fs.existsSync(reactCodegenHeadersOutput)) {
+    fs.mkdirSync(reactCodegenHeadersOutput, {recursive: true});
+  }
+
+  // Find all .h files recursively in ReactCodegen, excluding any 'headers' and 'tests' folders
+  try {
+    const result = execSync(
+      `find "${reactCodegenPath}" -name "*.h" -type f | grep -v "/headers/" | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
+
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
+    let linkedCount = 0;
+
+    headerFiles.forEach(sourcePath => {
+      if (fs.existsSync(sourcePath)) {
+        // Calculate relative path from ReactCodegen base
+        const relativePath = path.relative(reactCodegenPath, sourcePath);
+
+        let destPath /*: string */ = '';
+
+        // If relative path contains no subpath (just a filename), put it in ReactCodegen folder
+        if (path.dirname(relativePath) === '.') {
+          destPath = path.join(reactCodegenHeadersOutput, relativePath);
+        } else {
+          // Otherwise, preserve the structure under headers/
+          destPath = path.join(headersOutput, relativePath);
+        }
+
+        const destDir = path.dirname(destPath);
+
+        // Create destination directory if it doesn't exist
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, {recursive: true});
+        }
+
+        // Remove existing hard link if it exists
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+        }
+
+        // Create hard link
+        fs.linkSync(sourcePath, destPath);
+        linkedCount++;
+      }
+    });
+
+    console.log(
+      `Created hard links for ${linkedCount} Codegen headers with conditional directory structure`,
+    );
+  } catch (error) {
+    console.warn(
+      'Failed to create hard links for codegen headers:',
+      error.message,
+    );
+  }
+}
+
 module.exports = {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
   hardlinkThirdPartyDependenciesHeaders,
+  hardlinkCodegenHeaders,
 };
