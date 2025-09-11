@@ -10,7 +10,13 @@
 
 'use strict';
 
-const {generateXcodeObjectId} = require('../xcodeproj-utils');
+const {
+  convertXcodeProjectToJSON,
+  generateXcodeObjectId,
+} = require('../xcodeproj-utils');
+
+// Mock child_process module
+jest.mock('child_process');
 
 // Mock crypto module
 jest.mock('crypto');
@@ -116,5 +122,76 @@ describe('generateXcodeObjectId', () => {
 
     // Execute & Assert
     expect(() => generateXcodeObjectId()).toThrow('Crypto error');
+  });
+});
+
+describe('convertXcodeProjectToJSON', () => {
+  let mockExecSync;
+
+  beforeEach(() => {
+    // Setup mock
+    const childProcess = require('child_process');
+    mockExecSync = childProcess.execSync;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  it('should convert valid project file to JSON object', () => {
+    // Setup
+    const projectPath = '/path/to/project.pbxproj';
+    const mockJsonOutput =
+      '{"objects": {"123": {"isa": "PBXProject"}}, "archiveVersion": 1}';
+    const expectedResult = {
+      objects: {
+        '123': {
+          isa: 'PBXProject',
+        },
+      },
+      archiveVersion: 1,
+    };
+
+    mockExecSync.mockReturnValue(mockJsonOutput);
+
+    // Execute
+    const result = convertXcodeProjectToJSON(projectPath);
+
+    // Assert
+    expect(result).toEqual(expectedResult);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      'plutil -convert json -o - "/path/to/project.pbxproj"',
+      {encoding: 'utf8'},
+    );
+    expect(mockExecSync).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw error when JSON parsing fails', () => {
+    // Setup
+    const projectPath = '/path/to/project.pbxproj';
+    const invalidJsonOutput = '{"invalid": json}';
+
+    mockExecSync.mockReturnValue(invalidJsonOutput);
+
+    // Execute & Assert
+    expect(() => convertXcodeProjectToJSON(projectPath)).toThrow();
+    expect(mockExecSync).toHaveBeenCalledWith(
+      'plutil -convert json -o - "/path/to/project.pbxproj"',
+      {encoding: 'utf8'},
+    );
+  });
+
+  it('should handle empty JSON object', () => {
+    // Setup
+    const projectPath = '/path/to/project.pbxproj';
+    const mockJsonOutput = '{}';
+    const expectedResult = {};
+
+    mockExecSync.mockReturnValue(mockJsonOutput);
+
+    // Execute
+    const result = convertXcodeProjectToJSON(projectPath);
+
+    // Assert
+    expect(result).toEqual(expectedResult);
   });
 });
