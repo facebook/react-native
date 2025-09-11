@@ -72,6 +72,54 @@ function symlinkHeadersFromPath(
   return linkedCount;
 }
 
+/**
+ * Create symlinks for ReactApple headers with special path logic.
+ * ReactApple has a custom structure, which is:
+ *
+ * ReactApple
+ * ├── Libraries
+ * │   └── RCTFoundation
+ * │       ├── RCTDeprecation
+ * │       │   ├── BUCK
+ * │       │   ├── Exported
+ * │       │   │   └── RCTDeprecation.h
+ * │       │   ├── RCTDeprecation.m
+ * │       │   ├── RCTDeprecation.podspec
+ * │       │   └── README.md
+ * │       └── README.md
+ * └── README.md
+ *
+ * We need to create symlinks for the headers in the "Exported" folder to
+ * the headersOutput/<parent-of-Exported> folder.
+ * @param {string} reactApplePath - Path to ReactApple directory
+ * @param {string} headersOutput - Base headers output directory
+ * @returns {number} Number of symlinks created
+ */
+function symlinkReactAppleHeaders(
+  reactApplePath /*: string */,
+  headersOutput /*: string */,
+) /*: number */ {
+  let linkedCount = 0;
+
+  const mappings /*: {[string]: string } */ = {};
+  mappings[
+    `${reactApplePath}/Libraries/RCTFoundation/RCTDeprecation/Exported`
+  ] = `${headersOutput}/RCTDeprecation`;
+
+  // Iterate over the key-value pairs of the mappings object
+  for (const [sourceDir, destDir] of Object.entries(mappings)) {
+    const headerFiles = listHeadersInFolder(sourceDir, ['tests']);
+    headerFiles.forEach(sourceHeaderPath => {
+      const destFilePath = path.join(destDir, path.basename(sourceHeaderPath));
+      setupSymlink(sourceHeaderPath, destFilePath);
+      linkedCount++;
+    });
+  }
+
+  return linkedCount;
+}
+
 module.exports = {
   symlinkHeadersFromPath,
+  symlinkReactAppleHeaders,
 };
