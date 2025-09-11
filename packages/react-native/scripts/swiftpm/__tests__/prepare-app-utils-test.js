@@ -11,6 +11,7 @@
 'use strict';
 
 const {
+  allowNonModularHeaderImport,
   configureAppForSwift,
   createHardlinks,
   findXcodeProjectDirectory,
@@ -241,6 +242,382 @@ describe('createHardlinks', () => {
       reactNativePath,
       expectedReactIncludesPath,
       'includes',
+    );
+  });
+});
+
+describe('allowNonModularHeaderImport', () => {
+  let mockFs;
+  let mockPath;
+  let mockConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockFs = require('fs');
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockFs.existsSync = jest.fn();
+    mockFs.readFileSync = jest.fn();
+    mockFs.writeFileSync = jest.fn();
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+  });
+
+  it('should set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES to YES successfully', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    const expectedContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+    );
+    expect(mockFs.readFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      'utf8',
+    );
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Setting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES in Xcode project...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES set to YES',
+    );
+  });
+
+  it('should add CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES when not found', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    const expectedContent = `/* Begin XCBuildConfiguration section */
+		ABC123 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Setting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES in Xcode project...',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES set to YES',
+    );
+  });
+
+  it('should preserve indentation when replacing existing setting', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `buildSettings = {
+					ALWAYS_SEARCH_USER_PATHS = NO;
+					CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+					CLANG_ENABLE_OBJC_ARC = YES;
+				};`;
+
+    const expectedContent = `buildSettings = {
+					ALWAYS_SEARCH_USER_PATHS = NO;
+					CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+					CLANG_ENABLE_OBJC_ARC = YES;
+				};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+  });
+
+  it('should handle different paths correctly', async () => {
+    // Setup
+    const appIosPath = '/Users/developer/MyApp/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+			};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/Users/developer/MyApp/ios/MyApp.xcodeproj/project.pbxproj',
+    );
+  });
+
+  it('should handle paths with spaces correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/my app/ios folder';
+    const appXcodeProject = 'My App.xcodeproj';
+
+    const mockProjectContent = `buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+			};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/my app/ios folder/My App.xcodeproj/project.pbxproj',
+    );
+  });
+
+  it('should throw error when project file does not exist', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(false);
+
+    // Execute & Assert
+    await expect(
+      allowNonModularHeaderImport(appIosPath, appXcodeProject),
+    ).rejects.toThrow(
+      'Xcode project file not found: /path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+    );
+
+    expect(mockFs.readFileSync).not.toHaveBeenCalled();
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it('should throw error when file read fails', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockImplementation(() => {
+      throw new Error('Permission denied');
+    });
+
+    // Execute & Assert
+    await expect(
+      allowNonModularHeaderImport(appIosPath, appXcodeProject),
+    ).rejects.toThrow(
+      'Failed to set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES: Permission denied',
+    );
+
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it('should throw error when file write fails', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+			};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {
+      throw new Error('Disk full');
+    });
+
+    // Execute & Assert
+    await expect(
+      allowNonModularHeaderImport(appIosPath, appXcodeProject),
+    ).rejects.toThrow(
+      'Failed to set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES: Disk full',
+    );
+  });
+
+  it('should handle multiple buildSettings sections correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Debug configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+		};
+		/* Release configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+		};`;
+
+    const expectedContent = `/* Debug configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+		};
+		/* Release configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+		};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+  });
+
+  it('should handle mixed scenarios with some buildSettings having and some missing the setting', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `/* Debug configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
+		};
+		/* Release configuration */
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+		};`;
+
+    // The function only replaces existing settings, it doesn't add to all buildSettings sections
+    // So the second buildSettings section remains unchanged
+    const expectedContent = `/* Debug configuration */
+		buildSettings = {
+			CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+		};
+		/* Release configuration */
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+		};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
+    );
+  });
+
+  it('should handle different values for the setting correctly', async () => {
+    // Setup
+    const appIosPath = '/path/to/app/ios';
+    const appXcodeProject = 'MyApp.xcodeproj';
+
+    const mockProjectContent = `buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = "$(inherited)";
+			};`;
+
+    const expectedContent = `buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+			};`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockProjectContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Assert
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/app/ios/MyApp.xcodeproj/project.pbxproj',
+      expectedContent,
+      'utf8',
     );
   });
 });

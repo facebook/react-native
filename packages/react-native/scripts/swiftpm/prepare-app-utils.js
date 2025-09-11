@@ -403,6 +403,93 @@ async function fixReactNativePath(
   }
 }
 
+/**
+ * Allow non-modular header imports in Xcode project
+ */
+async function allowNonModularHeaderImport(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Xcode project file not found: ${projectPath}`);
+  }
+
+  try {
+    console.log(
+      'Setting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES in Xcode project...',
+    );
+
+    const newClangSettingValue = `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;`;
+
+    // Read the project file
+    let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundClangSetting = false;
+    let modifiedLines = [];
+
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Check if line contains CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES =
+      if (
+        line.includes(
+          'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = ',
+        )
+      ) {
+        foundClangSetting = true;
+
+        // Replace the whole line with the new setting
+        const match = line.match(/^\s*/);
+        if (!match) {
+          continue;
+        }
+        const indentation = match[0]; // Preserve indentation
+        modifiedLines.push(`${indentation}${newClangSettingValue}`);
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES was found, add it after buildSettings = {
+    if (!foundClangSetting) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES on the next line with appropriate indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newClangSettingValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
+
+    console.log(
+      '✓ CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES set to YES',
+    );
+  } catch (error) {
+    throw new Error(
+      `Failed to set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES: ${error.message}`,
+    );
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -413,4 +500,5 @@ module.exports = {
   generateCodegenArtifacts,
   prepareHeaders,
   fixReactNativePath,
+  allowNonModularHeaderImport,
 };
