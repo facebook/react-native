@@ -64,6 +64,8 @@ void mergeObjects(folly::dynamic& out, const folly::dynamic& objectToMerge) {
 
 } // namespace
 
+thread_local bool NativeAnimatedNodesManager::isOnRenderThread_{false};
+
 NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     DirectManipulationCallback&& directManipulationCallback,
     FabricCommitCallback&& fabricCommitCallback,
@@ -155,9 +157,28 @@ std::unique_ptr<AnimatedNode> NativeAnimatedNodesManager::animatedNode(
   }
 }
 
+void NativeAnimatedNodesManager::createAnimatedNodeAsync(
+    Tag tag,
+    const folly::dynamic& config) noexcept {
+  if (isOnRenderThread_) {
+    LOG(ERROR)
+        << "createAnimatedNodeAsync should not be called on render thread";
+    return;
+  }
+  auto node = animatedNode(tag, config);
+  if (node) {
+    std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
+    animatedNodesCreatedAsync_.emplace(tag, std::move(node));
+  }
+}
+
 void NativeAnimatedNodesManager::createAnimatedNode(
     Tag tag,
     const folly::dynamic& config) noexcept {
+  if (!isOnRenderThread_) {
+    LOG(ERROR) << "createAnimatedNode should only be called on render thread";
+    return;
+  }
   auto node = animatedNode(tag, config);
   if (node) {
     std::lock_guard<std::mutex> lock(connectedAnimatedNodesMutex_);
@@ -409,8 +430,6 @@ void NativeAnimatedNodesManager::removeAnimatedEventFromView(
     });
   }
 }
-
-static thread_local bool isOnRenderThread_{false};
 
 void NativeAnimatedNodesManager::handleAnimatedEvent(
     Tag viewTag,
@@ -848,6 +867,17 @@ void NativeAnimatedNodesManager::onRender() {
       activeAnimations_.size());
 
   isOnRenderThread_ = true;
+
+  {
+    // Flush async created animated nodes
+    std::lock_guard<std::mutex> lock(animatedNodesCreatedAsyncMutex_);
+    std::lock_guard<std::mutex> lockCreateAsync(connectedAnimatedNodesMutex_);
+    for (auto& [tag, node] : animatedNodesCreatedAsync_) {
+      animatedNodes_.insert({tag, std::move(node)});
+      updatedNodeTags_.insert(tag);
+    }
+    animatedNodesCreatedAsync_.clear();
+  }
 
   // Run operations scheduled from AnimatedModule
   std::vector<UiTask> operations;

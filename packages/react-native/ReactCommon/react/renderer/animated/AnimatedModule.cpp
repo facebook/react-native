@@ -51,7 +51,7 @@ void AnimatedModule::createAnimatedNode(
   if (auto it = configDynamic.find("disableBatchingForNativeCreate");
       it != configDynamic.items().end() && it->second == true) {
     if (nodesManager_) {
-      nodesManager_->createAnimatedNode(tag, configDynamic);
+      nodesManager_->createAnimatedNodeAsync(tag, configDynamic);
     }
   } else {
     operations_.emplace_back(

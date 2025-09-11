@@ -35,6 +35,7 @@ class AnimationTestsBase : public testing::Test {
             lastCommittedProps = nodesProps.begin()->second;
           }
         });
+    NativeAnimatedNodesManager::isOnRenderThread_ = true;
   }
 
   bool nodeNeedsUpdate(Tag nodeTag) const {
