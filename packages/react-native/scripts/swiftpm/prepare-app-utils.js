@@ -544,6 +544,30 @@ async function integrateSwiftPMPackages(
   }
 }
 
+/**
+ * Open Xcode project
+ */
+async function openXcodeProject(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+  if (!fs.existsSync(xcodeProjectPath)) {
+    throw new Error(`Xcode project not found: ${xcodeProjectPath}`);
+  }
+
+  try {
+    console.log(`Opening Xcode project: ${xcodeProjectPath}`);
+    execSync(`open "${xcodeProjectPath}"`, {
+      stdio: 'inherit',
+    });
+    console.log('✓ Xcode project opened');
+  } catch (error) {
+    throw new Error(`Failed to open Xcode project: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -556,4 +580,5 @@ module.exports = {
   fixReactNativePath,
   allowNonModularHeaderImport,
   integrateSwiftPMPackages,
+  openXcodeProject,
 };
