@@ -55,7 +55,7 @@ class ReactPlugin : Plugin<Project> {
                 project,
             )
 
-    if (project.rootProject.isHermesV1Enabled != rootExtension.hermesV1Enabled.get()) {
+    if (project.rootProject.isHermesV1Enabled) {
       rootExtension.hermesV1Enabled.set(project.rootProject.isHermesV1Enabled)
     }
 
@@ -72,10 +72,7 @@ class ReactPlugin : Plugin<Project> {
         val reactNativeDir = extension.reactNativeDir.get().asFile
         val propertiesFile = File(reactNativeDir, "ReactAndroid/gradle.properties")
         val versionAndGroupStrings = readVersionAndGroupStrings(propertiesFile)
-        val hermesV1Enabled =
-            if (project.rootProject.hasProperty("hermesV1Enabled"))
-                project.rootProject.findProperty("hermesV1Enabled") == "true"
-            else false
+        val hermesV1Enabled = rootExtension.hermesV1Enabled.get()
         configureDependencies(project, versionAndGroupStrings, hermesV1Enabled)
         configureRepositories(project)
       }
