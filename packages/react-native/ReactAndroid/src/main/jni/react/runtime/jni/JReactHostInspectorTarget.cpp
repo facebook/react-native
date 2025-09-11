@@ -120,17 +120,6 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
-void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
-    const PerfMonitorUpdateRequest& request) {
-  static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
-      "handleNativePerfMonitorMetricUpdate");
-  method(
-      jobj_,
-      request.activeInteraction.duration,
-      static_cast<jint>(request.activeInteraction.responsivenessScore),
-      request.activeInteraction.ttl);
-}
-
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<

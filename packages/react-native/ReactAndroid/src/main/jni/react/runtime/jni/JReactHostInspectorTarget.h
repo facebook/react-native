@@ -113,8 +113,6 @@ class JReactHostInspectorTarget
   void onReload(const PageReloadRequest& request) override;
   void onSetPausedInDebuggerMessage(
       const OverlaySetPausedInDebuggerMessageRequest& request) override;
-  void unstable_onPerfMonitorUpdate(
-      const jsinspector_modern::PerfMonitorUpdateRequest& request) override;
   void loadNetworkResource(
       const jsinspector_modern::LoadNetworkResourceRequest& params,
       jsinspector_modern::ScopedExecutor<
