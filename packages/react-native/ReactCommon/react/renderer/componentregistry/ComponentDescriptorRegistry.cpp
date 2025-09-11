@@ -17,6 +17,12 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <utility>
+#include <thread>
+
+#ifdef __ANDROID__
+#include <fbjni/fbjni.h>
+#endif
+
 
 namespace facebook::react {
 
@@ -27,6 +33,38 @@ ComponentDescriptorRegistry::ComponentDescriptorRegistry(
     : parameters_(std::move(parameters)),
       providerRegistry_(providerRegistry),
       contextContainer_(std::move(contextContainer)) {}
+
+void ComponentDescriptorRegistry::addMultipleAsync(
+    std::vector<ComponentDescriptorProvider> providers) const {
+  // Copy everything we need before the thread starts
+  auto parametersCopy = parameters_;
+  auto contextContainerCopy = contextContainer_;
+
+  // Start thread immediately
+  std::thread([this, providers = std::move(providers), parametersCopy, contextContainerCopy]() {
+    // Ensure this C++ thread is attached to the JVM before touching JNI
+    #ifdef __ANDROID__
+      facebook::jni::Environment::ensureCurrentThreadIsAttached();
+    #endif
+      std::unique_lock lock(mutex_);
+
+    for (const auto& provider : providers) {
+      auto componentDescriptor = provider.constructor(
+          {parametersCopy.eventDispatcher,
+           contextContainerCopy,
+           provider.flavor});
+
+      react_native_assert(componentDescriptor->getComponentHandle() == provider.handle);
+      react_native_assert(componentDescriptor->getComponentName() == provider.name);
+
+      auto sharedComponentDescriptor =
+          std::shared_ptr<const ComponentDescriptor>(std::move(componentDescriptor));
+
+      _registryByHandle[provider.handle] = sharedComponentDescriptor;
+      _registryByName[provider.name] = sharedComponentDescriptor;
+    }
+  }).detach();
+}
 
 void ComponentDescriptorRegistry::add(
     ComponentDescriptorProvider componentDescriptorProvider) const {

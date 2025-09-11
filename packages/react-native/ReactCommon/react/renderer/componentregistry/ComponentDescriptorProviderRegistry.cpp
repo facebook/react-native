@@ -9,6 +9,8 @@
 
 namespace facebook::react {
 
+static int8_t isBridgeless = -1;
+
 void ComponentDescriptorProviderRegistry::add(
     const ComponentDescriptorProvider& provider) const {
   std::unique_lock lock(mutex_);
@@ -68,11 +70,33 @@ ComponentDescriptorProviderRegistry::createComponentDescriptorRegistry(
     const ComponentDescriptorParameters& parameters) const {
   std::shared_lock lock(mutex_);
 
+  if (isBridgeless == -1) {
+    isBridgeless = ReactNativeFeatureFlags::enableBridgelessArchitecture() ? 1 : 0;
+  }
+
   auto registry = std::make_shared<const ComponentDescriptorRegistry>(
       parameters, *this, parameters.contextContainer);
 
+  if (!isBridgeless) {
+      // Eagerly add all
+     for (const auto& pair : componentDescriptorProviders_) {
+       registry->add(pair.second);
+     }
+  }
+
+  std::vector<ComponentDescriptorProvider> providers;
+  providers.reserve(componentDescriptorProviders_.size());
   for (const auto& pair : componentDescriptorProviders_) {
-    registry->add(pair.second);
+    if (isBridgeless) {
+      providers.push_back(pair.second);
+    } else {
+      registry->add(pair.second);
+    }
+  }
+
+  if (isBridgeless) {
+    // 2) enqueue async add
+    registry->addMultipleAsync(std::move(providers));
   }
 
   componentDescriptorRegistries_.push_back(registry);

@@ -584,6 +584,8 @@ android {
             "-DANDROID_TOOLCHAIN=clang",
             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DCMAKE_POLICY_DEFAULT_CMP0069=NEW")
+        cppFlags += "-flto"
+        cFlags   += "-flto"
 
         targets(
             "reactnative",
@@ -759,6 +761,18 @@ publishing {
   publications {
     getByName("release", MavenPublication::class) {
       artifactId = "react-android"
+    }
+  }
+}
+
+subprojects {
+  afterEvaluate {
+    if (project.extensions.findByName("android") != null) {
+      val androidExt = project.extensions.getByName("android") as com.android.build.gradle.BaseExtension
+      androidExt.defaultConfig.externalNativeBuild?.cmake?.apply {
+        cppFlags.add("-flto")
+        cFlags.add("-flto")
+      }
     }
   }
 }

@@ -29,7 +29,6 @@ import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT
 import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -1481,6 +1480,8 @@ public class ReactInstanceManager {
     // architecture so it will always be there.
     catalystInstance.getRuntimeScheduler();
 
+    TurboModuleManager turboModuleManager = null;
+
     if (ReactNativeNewArchitectureFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
       TurboModuleManagerDelegate tmmDelegate =
           mTMMDelegateBuilder
@@ -1488,7 +1489,7 @@ public class ReactInstanceManager {
               .setReactApplicationContext(reactContext)
               .build();
 
-      TurboModuleManager turboModuleManager =
+      turboModuleManager =
           new TurboModuleManager(
               catalystInstance.getRuntimeExecutor(),
               tmmDelegate,
@@ -1497,9 +1498,11 @@ public class ReactInstanceManager {
 
       catalystInstance.setTurboModuleRegistry(turboModuleManager);
 
-      // Eagerly initialize TurboModules
-      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
-        turboModuleManager.getModule(moduleName);
+      if (!reactContext.isBridgeless()) {
+        // Eagerly initialize TurboModules
+        for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+          turboModuleManager.getModule(moduleName);
+        }
       }
     }
 
@@ -1524,6 +1527,13 @@ public class ReactInstanceManager {
     Systrace.beginSection(TRACE_TAG_REACT, "runJSBundle");
     catalystInstance.runJSBundle();
     Systrace.endSection(TRACE_TAG_REACT);
+
+    if (reactContext.isBridgeless() && ReactNativeFeatureFlags.useTurboModules() && mTMMDelegateBuilder != null) {
+      // Eagerly initialize TurboModules
+      for (String moduleName : turboModuleManager.getEagerInitModuleNames()) {
+        turboModuleManager.getModule(moduleName);
+      }
+    }
 
     return reactContext;
   }
