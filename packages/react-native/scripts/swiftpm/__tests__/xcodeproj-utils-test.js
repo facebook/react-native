@@ -11,9 +11,9 @@
 'use strict';
 
 const {
+  addLocalSwiftPM,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
-  generateXcodeObjectId,
   printFilesForBuildPhase,
   printPBXBuildFile,
   printXCLocalSwiftPackageReference,
@@ -23,112 +23,8 @@ const {
 // Mock child_process module
 jest.mock('child_process');
 
-// Mock crypto module
-jest.mock('crypto');
-
-describe('generateXcodeObjectId', () => {
-  let mockCrypto;
-
-  beforeEach(() => {
-    // Setup mock
-    mockCrypto = require('crypto');
-
-    // Reset all mocks
-    jest.clearAllMocks();
-  });
-
-  it('should generate a 24-character uppercase hexadecimal string', () => {
-    // Setup - Mock crypto.randomBytes to return predictable data
-    mockCrypto.randomBytes.mockReturnValue(
-      Buffer.from([
-        0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67,
-      ]),
-    );
-
-    // Execute
-    const result = generateXcodeObjectId();
-
-    // Assert
-    expect(result).toBe('0123456789ABCDEF01234567');
-    expect(result).toHaveLength(24);
-    expect(result).toMatch(/^[0-9A-F]+$/);
-  });
-
-  it('should call crypto.randomBytes with 12 bytes', () => {
-    // Setup
-    mockCrypto.randomBytes.mockReturnValue(
-      Buffer.from([
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      ]),
-    );
-
-    // Execute
-    generateXcodeObjectId();
-
-    // Assert
-    expect(mockCrypto.randomBytes).toHaveBeenCalledWith(12);
-    expect(mockCrypto.randomBytes).toHaveBeenCalledTimes(1);
-  });
-
-  it('should convert to uppercase hexadecimal', () => {
-    // Setup - Mock with bytes that would produce lowercase hex
-    mockCrypto.randomBytes.mockReturnValue(
-      Buffer.from([
-        0xab, 0xcd, 0xef, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x11,
-      ]),
-    );
-
-    // Execute
-    const result = generateXcodeObjectId();
-
-    // Assert
-    expect(result).toBe('ABCDEF123456789ABCDEF011');
-    expect(result).not.toMatch(/[a-z]/); // Should not contain lowercase letters
-  });
-
-  it('should return a string type', () => {
-    // Setup
-    mockCrypto.randomBytes.mockReturnValue(
-      Buffer.from([
-        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
-      ]),
-    );
-
-    // Execute
-    const result = generateXcodeObjectId();
-
-    // Assert
-    expect(typeof result).toBe('string');
-  });
-
-  it('should not contain any non-hexadecimal characters', () => {
-    // Setup
-    mockCrypto.randomBytes.mockReturnValue(
-      Buffer.from([
-        0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x11, 0x22, 0x33, 0x44,
-      ]),
-    );
-
-    // Execute
-    const result = generateXcodeObjectId();
-
-    // Assert
-    expect(result).toMatch(/^[0-9A-F]{24}$/);
-    expect(result).not.toMatch(/[G-Z]/); // Should not contain letters beyond F
-    expect(result).not.toMatch(/[a-z]/); // Should not contain lowercase letters
-    expect(result).not.toMatch(/[\s\-_]/); // Should not contain whitespace or special chars
-  });
-
-  it('should handle crypto.randomBytes errors gracefully', () => {
-    // Setup
-    mockCrypto.randomBytes.mockImplementation(() => {
-      throw new Error('Crypto error');
-    });
-
-    // Execute & Assert
-    expect(() => generateXcodeObjectId()).toThrow('Crypto error');
-  });
-});
+// Mock xcodeproj-core-utils module
+jest.mock('../xcodeproj-core-utils');
 
 describe('convertXcodeProjectToJSON', () => {
   let mockExecSync;
@@ -855,5 +751,335 @@ describe('printXCSwiftPackageProductDependency', () => {
 \t\t};
 `;
     expect(result).toBe(expected);
+  });
+});
+
+describe('addLocalSwiftPM', () => {
+  let mockGenerateXcodeObjectId;
+
+  beforeEach(() => {
+    // Setup mock for generateXcodeObjectId
+    const xcodeprjCoreUtils = require('../xcodeproj-core-utils');
+    mockGenerateXcodeObjectId = xcodeprjCoreUtils.generateXcodeObjectId;
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  it('should add local SwiftPM package with single product to Xcode project', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          packageReferences: [],
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'MyApp',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['MyLibrary'];
+    const targetName = 'MyApp';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert
+    expect(mockGenerateXcodeObjectId).toHaveBeenCalledTimes(3);
+
+    expect(xcodeProject.objects).toEqual({
+      PROJECT1: {
+        isa: 'PBXProject',
+        packageReferences: ['GENERATED_ID_1'],
+      },
+      TARGET1: {
+        isa: 'PBXNativeTarget',
+        name: 'MyApp',
+        buildPhases: ['FRAMEWORKS_PHASE1'],
+      },
+      FRAMEWORKS_PHASE1: {
+        isa: 'PBXFrameworksBuildPhase',
+        files: ['GENERATED_ID_3'],
+      },
+      GENERATED_ID_1: {
+        isa: 'XCLocalSwiftPackageReference',
+        relativePath: '../MySwiftPackage',
+      },
+      GENERATED_ID_2: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'MyLibrary',
+      },
+      GENERATED_ID_3: {
+        isa: 'PBXBuildFile',
+        productRef: 'GENERATED_ID_2',
+      },
+    });
+  });
+
+  it('should add local SwiftPM package with multiple products to Xcode project', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          packageReferences: [],
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'MyApp',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['Library1', 'Library2', 'Library3'];
+    const targetName = 'MyApp';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert
+    expect(mockGenerateXcodeObjectId).toHaveBeenCalledTimes(7); // 1 package ref + 3 products + 3 build files
+
+    expect(xcodeProject.objects).toEqual({
+      PROJECT1: {
+        isa: 'PBXProject',
+        packageReferences: ['GENERATED_ID_1'],
+      },
+      TARGET1: {
+        isa: 'PBXNativeTarget',
+        name: 'MyApp',
+        buildPhases: ['FRAMEWORKS_PHASE1'],
+      },
+      FRAMEWORKS_PHASE1: {
+        isa: 'PBXFrameworksBuildPhase',
+        files: ['GENERATED_ID_3', 'GENERATED_ID_5', 'GENERATED_ID_7'],
+      },
+      GENERATED_ID_1: {
+        isa: 'XCLocalSwiftPackageReference',
+        relativePath: '../MySwiftPackage',
+      },
+      GENERATED_ID_2: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'Library1',
+      },
+      GENERATED_ID_3: {
+        isa: 'PBXBuildFile',
+        productRef: 'GENERATED_ID_2',
+      },
+      GENERATED_ID_4: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'Library2',
+      },
+      GENERATED_ID_5: {
+        isa: 'PBXBuildFile',
+        productRef: 'GENERATED_ID_4',
+      },
+      GENERATED_ID_6: {
+        isa: 'XCSwiftPackageProductDependency',
+        productName: 'Library3',
+      },
+      GENERATED_ID_7: {
+        isa: 'PBXBuildFile',
+        productRef: 'GENERATED_ID_6',
+      },
+    });
+  });
+
+  it('should create packageReferences array if it does not exist', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          // No packageReferences property
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'MyApp',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['MyLibrary'];
+    const targetName = 'MyApp';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert
+    expect(xcodeProject.objects.PROJECT1.packageReferences).toEqual([
+      'GENERATED_ID_1',
+    ]);
+  });
+
+  it('should create files array in build phase if it does not exist', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          packageReferences: [],
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'MyApp',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          // No files property
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['MyLibrary'];
+    const targetName = 'MyApp';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert
+    expect(xcodeProject.objects.FRAMEWORKS_PHASE1.files).toEqual([
+      'GENERATED_ID_3',
+    ]);
+  });
+
+  it('should add to existing packageReferences and files arrays', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          packageReferences: ['EXISTING_PACKAGE1'],
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'MyApp',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: ['EXISTING_FILE1'],
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['MyLibrary'];
+    const targetName = 'MyApp';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert
+    expect(xcodeProject.objects.PROJECT1.packageReferences).toEqual([
+      'EXISTING_PACKAGE1',
+      'GENERATED_ID_1',
+    ]);
+    expect(xcodeProject.objects.FRAMEWORKS_PHASE1.files).toEqual([
+      'EXISTING_FILE1',
+      'GENERATED_ID_3',
+    ]);
+  });
+
+  it('should handle target with specific name', () => {
+    // Setup
+    let idCounter = 0;
+    mockGenerateXcodeObjectId.mockImplementation(() => {
+      idCounter++;
+      return `GENERATED_ID_${idCounter}`;
+    });
+
+    const xcodeProject = {
+      objects: {
+        PROJECT1: {
+          isa: 'PBXProject',
+          packageReferences: [],
+        },
+        TARGET1: {
+          isa: 'PBXNativeTarget',
+          name: 'WrongTarget',
+          buildPhases: ['FRAMEWORKS_PHASE1'],
+        },
+        TARGET2: {
+          isa: 'PBXNativeTarget',
+          name: 'CorrectTarget',
+          buildPhases: ['FRAMEWORKS_PHASE2'],
+        },
+        FRAMEWORKS_PHASE1: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+        FRAMEWORKS_PHASE2: {
+          isa: 'PBXFrameworksBuildPhase',
+          files: [],
+        },
+      },
+    };
+
+    const relativePath = '../MySwiftPackage';
+    const productNames = ['MyLibrary'];
+    const targetName = 'CorrectTarget';
+
+    // Execute
+    addLocalSwiftPM(relativePath, productNames, xcodeProject, targetName);
+
+    // Assert - Only the correct target should be modified
+    expect(xcodeProject.objects.FRAMEWORKS_PHASE1.files).toEqual([]);
+    expect(xcodeProject.objects.FRAMEWORKS_PHASE2.files).toEqual([
+      'GENERATED_ID_3',
+    ]);
   });
 });
