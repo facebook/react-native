@@ -23,6 +23,16 @@ function AccessibilityManagerTest(): React.Node {
       "NativeAccessibilityManager doesn't exist",
     );
 
+    const subscription = DeviceEventEmitter.addListener(
+      'didUpdateDimensions',
+      update => {
+        // some of the updates may come from lifecycle methods, which would carry different values than the ones we set
+        if (update.window.fontScale === 4.0) {
+          TestModule.markTestPassed(true);
+        }
+      },
+    );
+
     NativeAccessibilityManager.setAccessibilityContentSizeMultipliers({
       extraSmall: 1.0,
       small: 2.0,
@@ -37,13 +47,6 @@ function AccessibilityManagerTest(): React.Node {
       accessibilityExtraExtraLarge: 11.0,
       accessibilityExtraExtraExtraLarge: 12.0,
     });
-
-    const subscription = DeviceEventEmitter.addListener(
-      'didUpdateDimensions',
-      update => {
-        TestModule.markTestPassed(update.window.fontScale === 4.0);
-      },
-    );
 
     return () => {
       subscription.remove();
