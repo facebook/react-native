@@ -17,6 +17,7 @@ const {
   printXCSwiftPackageProductDependency,
 } = require('./xcodeproj-core-utils');
 const {execSync} = require('child_process');
+const fs = require('fs');
 
 /*::
 type XcodeProject = {
@@ -49,6 +50,54 @@ function convertXcodeProjectToJSON(
   const command = `plutil -convert json -o - "${projectPath}"`;
   const jsonOutput = execSync(command, {encoding: 'utf8'});
   return JSON.parse(jsonOutput);
+}
+
+/**
+ * Reads the project at projectPath and updates it with the changes
+ * in the xcodeProjectJSON object.
+ * @param {Object} xcodeProjectJSON - The xcode project JSON object
+ * @param {string} projectPath - Path to the project.pbxproj file
+ * @returns {string} Text representation of the project.pbxproj file
+ */
+function updateXcodeProject(
+  xcodeProjectJSON /*: XcodeProject */,
+  projectPath /*: string */,
+) /*: string */ {
+  let textualProject = fs.readFileSync(projectPath, {encoding: 'utf8'});
+
+  // Group the objects in the JSON by their isa type
+  const objectsByIsa /*: {[string]: {[string]: XcodeObject}} */ = {};
+  for (const [objectId, objectData] of Object.entries(
+    xcodeProjectJSON.objects,
+  )) {
+    const isaType = objectData.isa;
+    if (!objectsByIsa[isaType]) {
+      objectsByIsa[isaType] = {};
+    }
+    objectsByIsa[isaType][objectId] = objectData;
+  }
+
+  // Update the Project.pbxproj file with the sections that needs to be rewritten
+  textualProject = updateProjectFile(
+    textualProject,
+    xcodeProjectJSON,
+    objectsByIsa,
+  );
+
+  // Update PBXProject.packagereference section
+  textualProject = updatePackageReferenceSection(
+    textualProject,
+    xcodeProjectJSON,
+    objectsByIsa,
+  );
+
+  // Update the PBXFrameworksBuildPhase.files array
+  textualProject = updatePBXFrameworksBuildPhaseFiles(
+    textualProject,
+    xcodeProjectJSON,
+  );
+
+  return textualProject;
 }
 
 /**
@@ -566,4 +615,5 @@ module.exports = {
   updatePBXFrameworksBuildPhaseFiles,
   updatePackageReferenceSection,
   updateProjectFile,
+  updateXcodeProject,
 };
