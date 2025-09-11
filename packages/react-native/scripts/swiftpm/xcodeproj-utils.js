@@ -220,6 +220,153 @@ function addLocalSwiftPM(
   }
 }
 
+function updatePackageReferenceSection(
+  textualProject /*: string */,
+  xcodeProjectJSON /*: XcodeProject */,
+  objectsByIsa /*: {[string]: {[string]: XcodeObject}} */,
+) /*: string */ {
+  const lines = textualProject.split('\n');
+  const processedLines = [];
+  let inPBXProjectSection = false;
+  let inProjectObject = false;
+  let projectBraceDepth = 0;
+  let currentProjectObjectId = null;
+  let packageReferencesInserted = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Check if we're starting the PBXProject section
+    if (line.includes('/* Begin PBXProject section */')) {
+      inPBXProjectSection = true;
+      processedLines.push(line);
+      continue;
+    }
+
+    // Check if we're ending the PBXProject section
+    if (line.includes('/* End PBXProject section */')) {
+      inPBXProjectSection = false;
+      processedLines.push(line);
+      continue;
+    }
+
+    // If we're in the PBXProject section
+    if (inPBXProjectSection) {
+      // Look for project object pattern: "objectId /* Project object */ = {"
+      const projectMatch = line.match(
+        /^\s*([A-F0-9]+)\s*\/\*\s*Project object\s*\*\/\s*=\s*\{/,
+      );
+      if (projectMatch) {
+        inProjectObject = true;
+        projectBraceDepth = 1;
+        currentProjectObjectId = projectMatch[1];
+        packageReferencesInserted = false; // Reset flag for each project object
+        processedLines.push(line);
+        continue;
+      }
+
+      // If we're in a project object
+      if (inProjectObject) {
+        // Track brace depth to know when the project section ends
+        const openBraces = (line.match(/\{/g) || []).length;
+        const closeBraces = (line.match(/\}/g) || []).length;
+        projectBraceDepth += openBraces - closeBraces;
+
+        // Check if we found "packageReferences = ("
+        if (line.includes('packageReferences = (')) {
+          packageReferencesInserted = true; // Mark as already present
+          processedLines.push(line);
+
+          // Generate new packageReferences content
+          const projectObject = // $FlowFixMe[incompatible-type]
+            xcodeProjectJSON.objects[currentProjectObjectId];
+          if (projectObject && projectObject.packageReferences) {
+            for (const packageRefId of projectObject.packageReferences) {
+              const packageRefObject = xcodeProjectJSON.objects[packageRefId];
+              if (
+                packageRefObject &&
+                packageRefObject.isa === 'XCLocalSwiftPackageReference'
+              ) {
+                processedLines.push(
+                  `\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`,
+                );
+              }
+            }
+          }
+
+          // Skip lines until we find the closing ");"
+          i++;
+          while (i < lines.length && !lines[i].includes(');')) {
+            i++;
+          }
+          // Add the closing ");" line
+          if (i < lines.length) {
+            processedLines.push(lines[i]);
+          }
+          continue;
+        }
+
+        // Check if we need to insert packageReferences property
+        if (
+          projectBraceDepth === 1 &&
+          !packageReferencesInserted &&
+          !line.includes('packageReferences') &&
+          line.trim().endsWith(';')
+        ) {
+          // Check if this is a property line we should insert packageReferences before
+          // Insert packageReferences in alphabetical order (after 'mainGroup' but before 'projectDirPath')
+          const propertyMatch = line.match(/^\s*(\w+)\s*=/);
+          if (propertyMatch) {
+            const propertyName = propertyMatch[1];
+
+            // Insert packageReferences before properties that come after 'p' alphabetically
+            if (propertyName > 'packageReferences') {
+              const projectObject = // $FlowFixMe[incompatible-type]
+                xcodeProjectJSON.objects[currentProjectObjectId];
+              if (
+                projectObject &&
+                projectObject.packageReferences &&
+                projectObject.packageReferences.length > 0
+              ) {
+                processedLines.push('\t\t\tpackageReferences = (');
+                for (const packageRefId of projectObject.packageReferences) {
+                  const packageRefObject =
+                    xcodeProjectJSON.objects[packageRefId];
+                  if (
+                    packageRefObject &&
+                    packageRefObject.isa === 'XCLocalSwiftPackageReference'
+                  ) {
+                    processedLines.push(
+                      `\t\t\t\t${packageRefId} /* XCLocalSwiftPackageReference "${packageRefObject.relativePath}" */,`,
+                    );
+                  }
+                }
+                processedLines.push('\t\t\t);');
+                packageReferencesInserted = true; // Mark as inserted
+              }
+            }
+          }
+        }
+
+        // If we're at the end of the project section
+        if (projectBraceDepth === 0) {
+          inProjectObject = false;
+          currentProjectObjectId = null;
+          packageReferencesInserted = false;
+        }
+
+        processedLines.push(line);
+        continue;
+      }
+    }
+
+    // Default: just add the line as-is
+    processedLines.push(line);
+  }
+
+  return processedLines.join('\n');
+}
+
 /**
  * Print PBXBuildFile object
  * @param {string} objectId - The object ID
@@ -498,4 +645,5 @@ module.exports = {
   printXCLocalSwiftPackageReference,
   printXCSwiftPackageProductDependency,
   updatePBXFrameworksBuildPhaseFiles,
+  updatePackageReferenceSection,
 };
