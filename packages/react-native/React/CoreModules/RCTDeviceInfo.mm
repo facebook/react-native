@@ -119,14 +119,16 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidateCachedInfo
 {
-  _info = @{
-    @"Dimensions" : [self _exportedDimensions],
-    // Note:
-    // This prop is deprecated and will be removed in a future release.
-    // Please use this only for a quick and temporary solution.
-    // Use <SafeAreaView> instead.
-    @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
-  };
+  RCTExecuteOnMainQueue(^{
+    _info = @{
+      @"Dimensions" : [self _exportedDimensions],
+      // Note:
+      // This prop is deprecated and will be removed in a future release.
+      // Please use this only for a quick and temporary solution.
+      // Use <SafeAreaView> instead.
+      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
+    };
+  });
 }
 
 - (void)invalidate
