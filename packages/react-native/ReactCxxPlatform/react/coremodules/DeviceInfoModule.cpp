@@ -22,4 +22,17 @@ DeviceInfoConstants DeviceInfoModule::getConstants(jsi::Runtime& /*rt*/) {
   };
 }
 
+DeviceInfoConstants DeviceInfoModule::getInfo(jsi::Runtime& /*rt*/) {
+  // TODO: Wire this to come from the actual app
+  // size (T161837708)
+  return DeviceInfoConstants{
+      .Dimensions =
+          {.window =
+               DisplayMetrics{
+                   1280,
+                   720,
+               }},
+  };
+}
+
 } // namespace facebook::react
