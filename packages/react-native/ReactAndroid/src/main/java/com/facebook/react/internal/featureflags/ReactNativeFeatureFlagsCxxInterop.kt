@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cf5b9f099846d4f954304905f77ebe17>>
+ * @generated SignedSource<<5fbbabfffca4f13066ad1ab7f9462c13>>
  */
 
 /**
@@ -47,6 +47,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableAccessibilityOrder(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableAndroidLinearText(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAndroidTextMeasurementOptimizations(): Boolean
 

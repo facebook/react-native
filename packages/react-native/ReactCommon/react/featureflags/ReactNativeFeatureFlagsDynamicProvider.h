@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e70173d99a68270c77447cd13c556f6d>>
+ * @generated SignedSource<<7f3aa6b2ab640df702ea9e8f248d1098>>
  */
 
 /**
@@ -133,6 +133,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
+  }
+
+  bool enableAndroidLinearText() override {
+    auto value = values_["enableAndroidLinearText"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableAndroidLinearText();
   }
 
   bool enableAndroidTextMeasurementOptimizations() override {

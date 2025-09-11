@@ -158,6 +158,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAndroidLinearText: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-09',
+        description:
+          'Enables linear text rendering on Android wherever subpixel text rendering is enabled',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAndroidTextMeasurementOptimizations: {
       defaultValue: false,
       metadata: {
