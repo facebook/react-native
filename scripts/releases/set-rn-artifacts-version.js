@@ -155,7 +155,7 @@ function updateTestFiles(
 async function updateGradleFile(version /*: string */) /*: Promise<void> */ {
   const contents = await fs.readFile(GRADLE_FILE_PATH, 'utf-8');
 
-  // TODO: T231755027 set HERMES_VERSION_NAME
+  // TODO: T231755027 set HERMES_VERSION_NAME and HERMES_V1_VERSION_NAME
 
   return fs.writeFile(
     GRADLE_FILE_PATH,

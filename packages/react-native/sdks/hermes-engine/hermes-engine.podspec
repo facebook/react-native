@@ -20,7 +20,7 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-# TODO: T231755000 use the Hermes V1 version instead of React Native version
+# TODO: T231755000 use the Hermes version instead of React Native version
 version = package['version']
 
 source_type = hermes_source_type(version, react_native_path)
@@ -64,9 +64,8 @@ Pod::Spec.new do |spec|
     end
 
     # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
-    # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
-    # TODO: T236142916 hermesc should be consumed from NPM even when not using Hermes V1
-    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL && ENV['RCT_HERMES_V1_ENABLED'] == "1"
+    # In other cases, the prebuilt versioned binaries can be used.
+    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
         'require.resolve(
         "hermes-compiler",
