@@ -165,9 +165,51 @@ async function configureAppForSwift(
   }
 }
 
+/**
+ * Set BUILD_FROM_SOURCE to true in Package.swift
+ */
+async function setBuildFromSource(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  const packageSwiftPath = path.join(reactNativePath, 'Package.swift');
+
+  if (!fs.existsSync(packageSwiftPath)) {
+    throw new Error(`Package.swift not found at: ${packageSwiftPath}`);
+  }
+
+  try {
+    console.log(`Updating BUILD_FROM_SOURCE in: ${packageSwiftPath}`);
+
+    const content = fs.readFileSync(packageSwiftPath, 'utf8');
+
+    // Check if BUILD_FROM_SOURCE = false exists and replace it with true
+    if (content.includes('let BUILD_FROM_SOURCE = false')) {
+      const updatedContent = content.replace(
+        /let BUILD_FROM_SOURCE = false/g,
+        'let BUILD_FROM_SOURCE = true',
+      );
+      fs.writeFileSync(packageSwiftPath, updatedContent, 'utf8');
+      console.log('✓ BUILD_FROM_SOURCE set to true in Package.swift');
+    } else if (content.includes('let BUILD_FROM_SOURCE = true')) {
+      console.log(
+        '✓ BUILD_FROM_SOURCE is already set to true in Package.swift',
+      );
+    } else {
+      console.warn(
+        '⚠️  BUILD_FROM_SOURCE declaration not found in Package.swift',
+      );
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to update BUILD_FROM_SOURCE in Package.swift: ${error.message}`,
+    );
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
   runIosPrebuild,
   configureAppForSwift,
+  setBuildFromSource,
 };
