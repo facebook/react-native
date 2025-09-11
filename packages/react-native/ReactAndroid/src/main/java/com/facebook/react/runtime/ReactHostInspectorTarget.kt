@@ -65,18 +65,6 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     }
   }
 
-  fun handleNativePerfMonitorMetricUpdate(
-      longTaskDurationMs: Int,
-      responsivenessScore: Int,
-      ttl: Int,
-  ) {
-    perfMonitorListeners.forEach { listener ->
-      listener.onNewFocusedEvent(
-          PerfMonitorUpdateListener.LongTaskEventData(longTaskDurationMs, responsivenessScore, ttl)
-      )
-    }
-  }
-
   override fun close() {
     mHybridData.resetNative()
   }

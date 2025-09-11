@@ -13,8 +13,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
@@ -26,186 +24,88 @@ import com.facebook.react.R
 import com.facebook.react.devsupport.interfaces.TracingState
 import com.facebook.react.uimanager.DisplayMetricsHolder
 import com.facebook.react.uimanager.PixelUtil
-import java.util.Locale
 
 internal class PerfMonitorOverlayView(
     private val context: Context,
-    private val onButtonPress: () -> Unit,
 ) {
-  private var hidden: Boolean = true
-  private var hasEventData: Boolean = false
-  private val metricsDialog: Dialog
-  private val toolbarDialog: Dialog
-  private val tooltipDialog: Dialog
-  private lateinit var buttonLabel: TextView
-  private lateinit var recordingStateLabel: TextView
-  private lateinit var durationLabel: TextView
+  private val dialog: Dialog
+  private lateinit var statusLabel: TextView
   private lateinit var tooltipLabel: TextView
-  private var ttl: Int = 0
-  private var hideAfterTimeoutHandler: Handler? = null
+  private lateinit var statusIndicator: TextView
 
   init {
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(context)
-    tooltipDialog = createTooltipDialog()
-    metricsDialog = createMetricsDialog()
-    toolbarDialog = createToolbarDialog()
+    dialog = createToolbarDialog()
   }
 
   fun show() {
-    toolbarDialog.show()
-    tooltipDialog.show()
-    if (hasEventData) {
-      toolbarDialog.window?.decorView?.post { updateMetricsDialogPosition() }
-      metricsDialog.show()
-    }
-    hidden = false
+    dialog.show()
   }
 
   fun hide() {
-    metricsDialog.hide()
-    toolbarDialog.hide()
-    tooltipDialog.hide()
-    hidden = true
-  }
-
-  fun resetState() {
-    hasEventData = false
-    metricsDialog.hide()
-  }
-
-  fun updateFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
-    durationLabel.text = String.format(Locale.US, "%d ms", data.durationMs)
-    durationLabel.setTextColor(getDurationHighlightColor(data.responsivenessScore))
-    hasEventData = true
-    ttl = data.ttl
-
-    hideAfterTimeoutHandler?.removeCallbacksAndMessages(null)
-
-    if (!hidden) {
-      metricsDialog.show()
-
-      // Schedule hiding metrics overlay after ttl milliseconds
-      if (ttl > 0) {
-        if (hideAfterTimeoutHandler == null) {
-          hideAfterTimeoutHandler = Handler(Looper.getMainLooper())
-        }
-        hideAfterTimeoutHandler?.postDelayed({ metricsDialog.hide() }, ttl.toLong())
-      }
-    }
+    dialog.hide()
   }
 
   fun updateRecordingState(state: TracingState) {
-    recordingStateLabel.text =
-        when (state) {
-          TracingState.ENABLEDINBACKGROUNDMODE -> "Profiling: ON"
-          TracingState.DISABLED -> "Profiling: OFF"
-          TracingState.ENABLEDINCDPMODE -> "Profiling: DISABLED"
-        }
-    buttonLabel.text =
-        when (state) {
-          TracingState.ENABLEDINBACKGROUNDMODE -> "Open ↗️"
-          TracingState.DISABLED -> "Start"
-          TracingState.ENABLEDINCDPMODE -> ""
-        }
-    tooltipLabel.text =
-        when (state) {
-          TracingState.ENABLEDINBACKGROUNDMODE -> "Dev Menu > Finish performance trace"
-          TracingState.DISABLED -> "Dev Menu > Start performance trace"
-          TracingState.ENABLEDINCDPMODE -> ""
-        }
     if (state == TracingState.ENABLEDINCDPMODE) {
-      tooltipDialog.hide()
+      dialog.hide()
+      return
+    }
+
+    if (state == TracingState.ENABLEDINBACKGROUNDMODE) {
+      (statusIndicator.background as GradientDrawable).setColor(Color.RED)
+      statusLabel.text = "Background Profiling Active"
+      tooltipLabel.text = "Press ☰ to open"
     } else {
-      tooltipDialog.show()
+      (statusIndicator.background as GradientDrawable).setColor(Color.GRAY)
+      statusLabel.text = "Background Profiling Stopped"
+      tooltipLabel.text = "Press ☰ to restart"
     }
-
-    toolbarDialog.window?.decorView?.post { updateMetricsDialogPosition() }
-  }
-
-  private fun createMetricsDialog(): Dialog {
-    val containerLayout = createInnerLayout()
-    val longTaskLabel =
-        TextView(context).apply {
-          textSize = TEXT_SIZE_PRIMARY
-          text = "Long Task"
-          setTextColor(Color.WHITE)
-          typeface = TYPEFACE_BOLD
-        }
-    durationLabel =
-        TextView(context).apply {
-          textSize = TEXT_SIZE_PRIMARY
-          setTextColor(COLOR_TEXT_GREEN)
-          typeface = TYPEFACE_BOLD
-        }
-    containerLayout.addView(longTaskLabel)
-    containerLayout.addView(durationLabel)
-
-    val dialog =
-        createAnchoredDialog(getMetricsDialogOffsetX(), dpToPx(16f)).apply {
-          setContentView(containerLayout)
-        }
-    dialog.window?.apply {
-      attributes =
-          attributes?.apply {
-            flags =
-                flags or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-          }
-    }
-
-    return dialog
+    dialog.show()
   }
 
   private fun createToolbarDialog(): Dialog {
-    val buttonInner = createInnerLayout()
-    recordingStateLabel =
+    statusIndicator =
+        TextView(context).apply {
+          width = dpToPx(12f).toInt()
+          height = dpToPx(12f).toInt()
+          background =
+              GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(Color.RED)
+              }
+        }
+
+    val textContainer =
+        LinearLayout(context).apply {
+          orientation = LinearLayout.VERTICAL
+          layoutParams =
+              LinearLayout.LayoutParams(
+                  LinearLayout.LayoutParams.WRAP_CONTENT,
+                  LinearLayout.LayoutParams.WRAP_CONTENT,
+              )
+        }
+    statusLabel =
         TextView(context).apply {
           textSize = TEXT_SIZE_PRIMARY
           setTextColor(Color.WHITE)
           typeface = TYPEFACE_BOLD
         }
-    buttonInner.addView(recordingStateLabel)
-    buttonLabel =
-        TextView(context).apply {
-          textSize = TEXT_SIZE_PRIMARY
-          setTextColor(COLOR_TEXT_BLUE)
-          typeface = TYPEFACE_BOLD
-        }
-    buttonInner.addView(buttonLabel)
-    val buttonView =
-        LinearLayout(context).apply {
-          orientation = LinearLayout.VERTICAL
-          setPadding(
-              dpToPx(8f).toInt(),
-              dpToPx(16f).toInt(),
-              dpToPx(16f).toInt(),
-              dpToPx(8f).toInt(),
-          )
-          addView(buttonInner)
-          setOnClickListener { onButtonPress() }
-        }
-
-    val dialog = createAnchoredDialog(dpToPx(0f), dpToPx(0f)).apply { setContentView(buttonView) }
-    dialog.window?.apply {
-      attributes =
-          attributes?.apply { flags = flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE }
-    }
-
-    return dialog
-  }
-
-  private fun createTooltipDialog(): Dialog {
-    val containerLayout = createInnerLayout()
     tooltipLabel =
         TextView(context).apply {
           textSize = TEXT_SIZE_ACCESSORY
           setTextColor(Color.WHITE)
+          typeface = TYPEFACE_BOLD
         }
-    containerLayout.addView(tooltipLabel)
+    textContainer.addView(statusLabel)
+    textContainer.addView(tooltipLabel)
+
+    val containerLayout = createInnerLayout()
+    containerLayout.addView(statusIndicator)
+    containerLayout.addView(textContainer)
 
     val dialog =
-        createAnchoredDialog(dpToPx(16f), dpToPx(52f)).apply { setContentView(containerLayout) }
+        createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
     dialog.window?.apply {
       attributes =
           attributes?.apply {
@@ -278,35 +178,12 @@ internal class PerfMonitorOverlayView(
     }
   }
 
-  private fun getMetricsDialogOffsetX(): Float {
-    val toolbarWidth = toolbarDialog?.window?.decorView?.width ?: 0
-    return toolbarWidth.toFloat()
-  }
-
-  private fun updateMetricsDialogPosition() {
-    metricsDialog?.window?.apply {
-      attributes = attributes?.apply { x = getMetricsDialogOffsetX().toInt() }
-    }
-  }
-
-  private fun getDurationHighlightColor(responsivenessScore: Int): Int {
-    return when (responsivenessScore) {
-      2 -> COLOR_TEXT_RED
-      1 -> COLOR_TEXT_YELLOW
-      else -> COLOR_TEXT_GREEN
-    }
-  }
-
   private fun dpToPx(dp: Float): Float = PixelUtil.toPixelFromDIP(dp)
 
   companion object {
-    private val COLOR_TEXT_GREEN = Color.parseColor("#4AEB2F")
-    private val COLOR_TEXT_YELLOW = Color.parseColor("#FFAA00")
-    private val COLOR_TEXT_RED = Color.parseColor("#FF0000")
-    private val COLOR_TEXT_BLUE = Color.parseColor("#00B0FF")
     private val COLOR_OVERLAY_BORDER = Color.parseColor("#6C6C6C")
-    private val TEXT_SIZE_PRIMARY = 13f
-    private val TEXT_SIZE_ACCESSORY = 9f
+    private val TEXT_SIZE_PRIMARY = 12f
+    private val TEXT_SIZE_ACCESSORY = 10f
     private val TYPEFACE_BOLD = Typeface.create("sans-serif", Typeface.BOLD)
   }
 }

@@ -15,12 +15,10 @@ import javax.inject.Provider
 internal class PerfMonitorOverlayManager(
     private val devHelper: PerfMonitorDevHelper,
     private val contextProvider: Provider<Context?>,
-    private val onRequestOpenDevTools: () -> Unit,
 ) : PerfMonitorUpdateListener {
   private var enabled: Boolean = false
   private var initialized: Boolean = false
   private var view: PerfMonitorOverlayView? = null
-  private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
 
   private fun init() {
     if (initialized || !enabled) {
@@ -29,7 +27,7 @@ internal class PerfMonitorOverlayManager(
 
     UiThreadUtil.runOnUiThread {
       val context = contextProvider.get() ?: return@runOnUiThread
-      view = PerfMonitorOverlayView(context, ::handleRecordingButtonPress)
+      view = PerfMonitorOverlayView(context)
 
       // Start background tracing
       devHelper.inspectorTarget?.resumeBackgroundTrace()
@@ -43,44 +41,24 @@ internal class PerfMonitorOverlayManager(
   fun enable() {
     enabled = true
     init()
-    UiThreadUtil.runOnUiThread { view?.show() }
   }
 
   /** Disable the Perf Monitor overlay. Will remain hidden when updates are received. */
   fun disable() {
     UiThreadUtil.runOnUiThread { view?.hide() }
+    view = null
     enabled = false
   }
 
   /** Reset the Perf Monitor overlay, e.g. after a reload. */
   fun reset() {
-    UiThreadUtil.runOnUiThread { view?.resetState() }
-
     // Update with current recording state
     onRecordingStateChanged(
         devHelper.inspectorTarget?.getTracingState() ?: TracingState.ENABLEDINCDPMODE
     )
   }
 
-  override fun onNewFocusedEvent(data: PerfMonitorUpdateListener.LongTaskEventData) {
-    view?.updateFocusedEvent(data)
-  }
-
   override fun onRecordingStateChanged(state: TracingState) {
-    tracingState = state
     view?.updateRecordingState(state)
-  }
-
-  private fun handleRecordingButtonPress() {
-    when (tracingState) {
-      TracingState.ENABLEDINBACKGROUNDMODE -> {
-        devHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
-        onRequestOpenDevTools()
-      }
-      TracingState.DISABLED -> {
-        devHelper.inspectorTarget?.resumeBackgroundTrace()
-      }
-      TracingState.ENABLEDINCDPMODE -> Unit
-    }
   }
 }

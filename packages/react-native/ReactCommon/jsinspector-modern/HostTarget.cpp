@@ -192,9 +192,6 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
-  if (InspectorFlags::getInstance().getPerfMonitorV2Enabled()) {
-    hostTarget->installPerfMetricsBinding();
-  }
   return hostTarget;
 }
 
@@ -277,17 +274,6 @@ void HostTarget::sendCommand(HostCommand command) {
     }
     self.commandSender_->sendCommand(command);
   });
-}
-
-void HostTarget::installPerfMetricsBinding() {
-  perfMonitorUpdateHandler_ =
-      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
-  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
-      *this, // Used immediately
-      "__chromium_devtools_metrics_reporter",
-      [this](const std::string& message) {
-        perfMonitorUpdateHandler_->handlePerfMetricsUpdate(message);
-      });
 }
 
 HostTargetController::HostTargetController(HostTarget& target)
