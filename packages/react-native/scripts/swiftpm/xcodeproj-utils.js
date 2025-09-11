@@ -331,8 +331,79 @@ function printFilesForBuildPhase(
   return `\t\t\t\t${objectId} /* ${productName} in Frameworks */,\n`;
 }
 
+/**
+ * Add missing sections to the textual project in the correct order
+ * @param {string} textualProject - The textual representation of the Xcode project
+ * @param {Array} sectionsToAdd - Array of sections to add with their content
+ * @returns {string} Updated textual project with new sections added
+ */
+function addMissingSections(
+  textualProject /*: string */,
+  sectionsToAdd /*: Array<SectionToAdd> */,
+) /*: string */ {
+  // Define the order of sections - PBXBuildFile first, then XCLocalSwiftPackageReference, then XCSwiftPackageProductDependency
+  const sectionOrder = [
+    'PBXBuildFile',
+    'XCLocalSwiftPackageReference',
+    'XCSwiftPackageProductDependency',
+  ];
+
+  // Sort sections according to the defined order
+  sectionsToAdd.sort((a, b) => {
+    const indexA = sectionOrder.indexOf(a.sectionType);
+    const indexB = sectionOrder.indexOf(b.sectionType);
+    return indexA - indexB;
+  });
+
+  // Find the insertion points for each section type
+  const lines = textualProject.split('\n');
+  let insertionIndex = -1;
+
+  for (const sectionToAdd of sectionsToAdd) {
+    const {sectionType, replacementText} = sectionToAdd;
+
+    if (sectionType === 'PBXBuildFile') {
+      // PBXBuildFile should be first in the objects array
+      // Find the first existing section after "objects = {"
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes('objects = {')) {
+          insertionIndex = i + 1;
+          break;
+        }
+      }
+    } else if (sectionType === 'XCLocalSwiftPackageReference') {
+      // Should be second-last before rootObject
+      // Find the rootObject line and go back to find a good insertion point
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].includes('rootObject =')) {
+          insertionIndex = i - 1;
+          break;
+        }
+      }
+    } else if (sectionType === 'XCSwiftPackageProductDependency') {
+      // Should be last before rootObject
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].includes('rootObject =')) {
+          insertionIndex = i - 1;
+          break;
+        }
+      }
+    }
+
+    // Insert the section at the determined index
+    if (insertionIndex !== -1) {
+      lines.splice(insertionIndex, 0, replacementText);
+      // Update insertion index for subsequent sections
+      insertionIndex += replacementText.split('\n').length;
+    }
+  }
+
+  return lines.join('\n');
+}
+
 module.exports = {
   addLocalSwiftPM,
+  addMissingSections,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
   printPBXBuildFile,
