@@ -14,9 +14,17 @@ const {
   hardlinkReactNativeHeaders,
   prepareAppDependenciesHeaders,
 } = require('./prepare-app-dependencies-headers');
+const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
+/*::
+type SwiftPackage = {
+  relativePath: string,
+  targets: Array<string>,
+};
+*/
 
 /**
  * Find the directory containing the Xcode project within the app path
@@ -490,6 +498,52 @@ async function allowNonModularHeaderImport(
   }
 }
 
+/**
+ * Integrate SwiftPM packages into Xcode project
+ */
+async function integrateSwiftPMPackages(
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appXcodeProject /*: string */,
+  targetName /*: string */,
+  additionalPackages /*: Array<SwiftPackage> */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Preparing SwiftPM package integrations...');
+
+    // Calculate relative paths from appIosPath
+    const relativeReactNativePath = path.relative(appIosPath, reactNativePath);
+    const relativeGeneratedPath = path.join('build', 'generated', 'ios');
+
+    // Create PackageSwift objects
+    const packageSwiftObjects = [
+      ...additionalPackages,
+      {
+        relativePath: relativeReactNativePath,
+        targets: ['React'],
+      },
+      {
+        relativePath: relativeGeneratedPath,
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+    // Call integrateSwiftPackagesInXcode function
+    integrateSwiftPackagesInXcode(
+      xcodeProjectPath,
+      packageSwiftObjects,
+      targetName,
+    );
+
+    console.log('✓ SwiftPM packages integrated into Xcode project');
+  } catch (error) {
+    throw new Error(`SwiftPM integration failed: ${error.message}`);
+  }
+}
+
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
@@ -501,4 +555,5 @@ module.exports = {
   prepareHeaders,
   fixReactNativePath,
   allowNonModularHeaderImport,
+  integrateSwiftPMPackages,
 };
