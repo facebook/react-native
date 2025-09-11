@@ -37,11 +37,11 @@ class PrepareBoostTaskTest {
     val project = createProject()
     val boostThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/boost/")
     val task =
-        createTestTask<PrepareBoostTask>(project = project) {
-          it.boostPath.setFrom(boostpath)
-          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
-          it.boostVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareBoostTask>(project = project) { task ->
+          task.boostPath.setFrom(boostpath)
+          task.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
+          task.boostVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(boostThirdPartyJniPath, "CMakeLists.txt").apply {
       parentFile.mkdirs()
