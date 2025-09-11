@@ -171,8 +171,92 @@ function symlinkReactCommonHeaders(
   return linkedCount;
 }
 
+/**
+ * Create hard links for third-party dependencies headers in the output folder
+ * @param {string} reactNativePath - Path to the React Native directory
+ * @param {string} outputFolder - Path to the output folder
+ * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
+ */
+function hardlinkThirdPartyDependenciesHeaders(
+  reactNativePath /*: string */,
+  outputFolder /*: string */,
+  folderName /*: string */ = 'headers',
+) /*: void */ {
+  console.log('Creating hard links for Third-Party Dependencies headers...');
+
+  // Look for ReactNativeDependencies.xcframework/Headers folder specifically
+  const thirdPartyHeadersPath = path.join(
+    reactNativePath,
+    'third-party',
+    'ReactNativeDependencies.xcframework',
+    'Headers',
+  );
+
+  if (!fs.existsSync(thirdPartyHeadersPath)) {
+    console.warn(
+      `Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`,
+    );
+    return;
+  }
+
+  const headersOutput = path.join(outputFolder, folderName);
+  if (!fs.existsSync(headersOutput)) {
+    fs.mkdirSync(headersOutput, {recursive: true});
+  }
+
+  // Find all .h and .hpp files recursively in third-party headers, exclude 'tests' folders
+  try {
+    const result = execSync(
+      `find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`,
+      {
+        encoding: 'utf8',
+        stdio: 'pipe',
+      },
+    );
+
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
+    let linkedCount = 0;
+
+    headerFiles.forEach(sourcePath => {
+      if (fs.existsSync(sourcePath)) {
+        // Calculate relative path from Headers base to preserve structure
+        const relativePath = path.relative(thirdPartyHeadersPath, sourcePath);
+        const destPath = path.join(headersOutput, relativePath);
+        const destDir = path.dirname(destPath);
+
+        // Create destination directory if it doesn't exist
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, {recursive: true});
+        }
+
+        // Remove existing hard link if it exists
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+        }
+
+        // Create hard link
+        fs.linkSync(sourcePath, destPath);
+        linkedCount++;
+      }
+    });
+
+    console.log(
+      `Created hard links for ${linkedCount} Third-Party Dependencies headers with preserved directory structure`,
+    );
+  } catch (error) {
+    console.warn(
+      'Failed to create hard links for third-party dependencies headers:',
+      error.message,
+    );
+  }
+}
+
 module.exports = {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
+  hardlinkThirdPartyDependenciesHeaders,
 };
