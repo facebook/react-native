@@ -40,7 +40,27 @@ function findXcodeProjectDirectory(
     );
   }
 }
+/**
+ * Run pod deintegrate from app directory
+ */
+async function runPodDeintegrate(
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log(`Running pod deintegrate in: ${appIosPath}`);
+    execSync('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    console.log('✓ Pod deintegrate completed');
+  } catch (error) {
+    console.warn(
+      '⚠️  Pod deintegrate failed (this might be expected if no Podfile.lock exists)',
+    );
+  }
+}
 
 module.exports = {
   findXcodeProjectDirectory,
+  runPodDeintegrate,
 };
