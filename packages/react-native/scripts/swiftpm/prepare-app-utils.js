@@ -60,7 +60,33 @@ async function runPodDeintegrate(
   }
 }
 
+/**
+ * Run iOS prebuild with environment variables
+ */
+async function runIosPrebuild(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  console.log('Running iOS prebuild with nightly versions...');
+
+  const env = {
+    ...process.env,
+    RN_DEP_VERSION: 'nightly',
+    HERMES_VERSION: 'nightly',
+  };
+
+  try {
+    execSync('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: env,
+      stdio: 'inherit',
+    });
+    console.log('✓ iOS prebuild completed');
+  } catch (error) {
+    throw new Error(`iOS prebuild failed: ${error.message}`);
+  }
+}
 module.exports = {
   findXcodeProjectDirectory,
   runPodDeintegrate,
+  runIosPrebuild,
 };
