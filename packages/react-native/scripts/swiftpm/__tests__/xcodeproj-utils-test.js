@@ -12,6 +12,7 @@
 
 const {
   addLocalSwiftPM,
+  addMissingSections,
   convertXcodeProjectToJSON,
   deintegrateSwiftPM,
   printFilesForBuildPhase,
@@ -94,6 +95,194 @@ describe('convertXcodeProjectToJSON', () => {
 
     // Assert
     expect(result).toEqual(expectedResult);
+  });
+});
+
+describe('addMissingSections', () => {
+  it('should add multiple sections in the correct order', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING123 /* Some existing object */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ123;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'XCSwiftPackageProductDependency',
+        replacementText: `
+/* Begin XCSwiftPackageProductDependency section */
+		PRODUCT123 /* Library */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Library;
+		};
+/* End XCSwiftPackageProductDependency section */`,
+      },
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: `
+/* Begin PBXBuildFile section */
+		BUILDFILE123 /* Library in Frameworks */ = {isa = PBXBuildFile; productRef = PRODUCT123 /* Library */; };
+/* End PBXBuildFile section */`,
+      },
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: `
+/* Begin XCLocalSwiftPackageReference section */
+		PACKAGE123 /* XCLocalSwiftPackageReference "../MyPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MyPackage;
+		};
+/* End XCLocalSwiftPackageReference section */`,
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Check that sections are in the correct order: PBXBuildFile, XCLocalSwiftPackageReference, XCSwiftPackageProductDependency
+    const pbxBuildFileIndex = result.indexOf(
+      '/* Begin PBXBuildFile section */',
+    );
+    const xcLocalIndex = result.indexOf(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+    const xcProductIndex = result.indexOf(
+      '/* Begin XCSwiftPackageProductDependency section */',
+    );
+
+    expect(pbxBuildFileIndex).toBeLessThan(xcLocalIndex);
+    expect(xcLocalIndex).toBeLessThan(xcProductIndex);
+    expect(xcProductIndex).toBeLessThan(result.indexOf('rootObject ='));
+  });
+
+  it('should handle empty sections array', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING123 /* Some existing object */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ123;
+}`;
+    const sectionsToAdd = [];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Should return the original project unchanged
+    expect(result).toBe(textualProject);
+  });
+
+  it('should find insertion point after objects opening brace for PBXBuildFile', () => {
+    // Setup
+    const textualProject = `{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		EXISTING_OBJ /* PBXProject */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: '\t\t/* PBXBuildFile section */',
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - PBXBuildFile section should be inserted right after "objects = {"
+    const lines = result.split('\n');
+    const objectsLineIndex = lines.findIndex(line =>
+      line.includes('objects = {'),
+    );
+    const pbxSectionLineIndex = lines.findIndex(line =>
+      line.includes('/* PBXBuildFile section */'),
+    );
+
+    expect(pbxSectionLineIndex).toBe(objectsLineIndex + 1);
+  });
+
+  it('should find insertion point before rootObject for other section types', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING_OBJ /* PBXProject */ = {
+			isa = PBXProject;
+		};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: '\t/* XCLocalSwiftPackageReference section */',
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Section should be inserted before rootObject line
+    const lines = result.split('\n');
+    const rootObjectLineIndex = lines.findIndex(line =>
+      line.includes('rootObject ='),
+    );
+    const sectionLineIndex = lines.findIndex(line =>
+      line.includes('/* XCLocalSwiftPackageReference section */'),
+    );
+
+    expect(sectionLineIndex).toBe(rootObjectLineIndex - 2);
+  });
+
+  it('should update insertion index correctly when adding multiple sections', () => {
+    // Setup
+    const textualProject = `{
+	objects = {
+		EXISTING_OBJ = {isa = PBXProject;};
+	};
+	rootObject = ROOTOBJ;
+}`;
+    const sectionsToAdd = [
+      {
+        sectionType: 'PBXBuildFile',
+        replacementText: `/* Begin PBXBuildFile section */
+/* End PBXBuildFile section */`,
+      },
+      {
+        sectionType: 'XCLocalSwiftPackageReference',
+        replacementText: `/* Begin XCLocalSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */`,
+      },
+    ];
+
+    // Execute
+    const result = addMissingSections(textualProject, sectionsToAdd);
+
+    // Assert - Both sections should be present and in correct order
+    expect(result).toContain('/* Begin PBXBuildFile section */');
+    expect(result).toContain(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+
+    const pbxIndex = result.indexOf('/* Begin PBXBuildFile section */');
+    const xcLocalIndex = result.indexOf(
+      '/* Begin XCLocalSwiftPackageReference section */',
+    );
+    const rootIndex = result.indexOf('rootObject =');
+
+    expect(pbxIndex).toBeLessThan(xcLocalIndex);
+    expect(xcLocalIndex).toBeLessThan(rootIndex);
   });
 });
 
