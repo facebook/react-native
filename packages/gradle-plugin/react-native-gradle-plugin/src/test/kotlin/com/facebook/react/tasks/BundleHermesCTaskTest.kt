@@ -419,9 +419,9 @@ class BundleHermesCTaskTest {
     val reactNativeDir = tempFolder.newFolder("node_modules/react-native")
     val composeSourceMapsFile = File(reactNativeDir, "scripts/compose-source-maps.js")
     val task =
-        createTestTask<BundleHermesCTask> {
-          it.root.set(tempFolder.root)
-          it.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
+        createTestTask<BundleHermesCTask> { task ->
+          task.root.set(tempFolder.root)
+          task.nodeExecutableAndArgs.set(listOf("node", "arg1", "arg2"))
         }
 
     val composeSourcemapCommand =
