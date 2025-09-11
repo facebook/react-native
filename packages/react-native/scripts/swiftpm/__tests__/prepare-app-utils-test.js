@@ -11,10 +11,11 @@
 'use strict';
 
 const {
+  configureAppForSwift,
   findXcodeProjectDirectory,
   runIosPrebuild,
   runPodDeintegrate,
-  configureAppForSwift,
+  setBuildFromSource,
 } = require('../prepare-app-utils');
 
 // Mock child_process module
@@ -185,6 +186,237 @@ describe('findXcodeProjectDirectory', () => {
     expect(mockExecSync).toHaveBeenCalledWith(
       `find "${appPath}" -name "${xcodeProjectName}" -type d -print`,
       {encoding: 'utf8'},
+    );
+  });
+});
+
+describe('setBuildFromSource', () => {
+  let mockFs;
+  let mockPath;
+  let mockConsoleLog;
+  let mockConsoleWarn;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockFs = require('fs');
+    mockPath = require('path');
+    mockConsoleLog = console.log;
+    mockConsoleWarn = console.warn;
+
+    // Clear and reset all mocks completely
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+
+    // Set up fresh mock implementations
+    mockFs.existsSync = jest.fn();
+    mockFs.readFileSync = jest.fn();
+    mockFs.writeFileSync = jest.fn();
+
+    // Mock path.join to return realistic paths
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+  });
+
+  it('should update BUILD_FROM_SOURCE from false to true successfully', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockPackageSwiftContent = `
+// Package.swift
+import PackageDescription
+
+let BUILD_FROM_SOURCE = false
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // rest of package
+)
+`;
+
+    const expectedUpdatedContent = `
+// Package.swift
+import PackageDescription
+
+let BUILD_FROM_SOURCE = true
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // rest of package
+)
+`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockPackageSwiftContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await setBuildFromSource(reactNativePath);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+    );
+    expect(mockFs.readFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+      'utf8',
+    );
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+      expectedUpdatedContent,
+      'utf8',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Updating BUILD_FROM_SOURCE in: /path/to/react-native/Package.swift',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ BUILD_FROM_SOURCE set to true in Package.swift',
+    );
+    expect(mockConsoleWarn).not.toHaveBeenCalled();
+  });
+
+  it('should handle when BUILD_FROM_SOURCE is already true', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockPackageSwiftContent = `
+// Package.swift
+import PackageDescription
+
+let BUILD_FROM_SOURCE = true
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // rest of package
+)
+`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockPackageSwiftContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await setBuildFromSource(reactNativePath);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+    );
+    expect(mockFs.readFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+      'utf8',
+    );
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled(); // Should not write when already true
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Updating BUILD_FROM_SOURCE in: /path/to/react-native/Package.swift',
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✓ BUILD_FROM_SOURCE is already set to true in Package.swift',
+    );
+    expect(mockConsoleWarn).not.toHaveBeenCalled();
+  });
+
+  it('should warn when BUILD_FROM_SOURCE declaration is not found', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockPackageSwiftContent = `
+// Package.swift
+import PackageDescription
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // rest of package without BUILD_FROM_SOURCE
+)
+`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockPackageSwiftContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await setBuildFromSource(reactNativePath);
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+    );
+    expect(mockFs.readFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+      'utf8',
+    );
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled(); // Should not write when declaration not found
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      'Updating BUILD_FROM_SOURCE in: /path/to/react-native/Package.swift',
+    );
+    expect(mockConsoleWarn).toHaveBeenCalledWith(
+      '⚠️  BUILD_FROM_SOURCE declaration not found in Package.swift',
+    );
+  });
+
+  it('should throw error when Package.swift does not exist', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+
+    mockFs.existsSync.mockReturnValue(false);
+
+    // Execute & Assert
+    await expect(setBuildFromSource(reactNativePath)).rejects.toThrow(
+      'Package.swift not found at: /path/to/react-native/Package.swift',
+    );
+
+    expect(mockFs.existsSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+    );
+    expect(mockFs.readFileSync).not.toHaveBeenCalled();
+    expect(mockFs.writeFileSync).not.toHaveBeenCalled();
+    expect(mockConsoleLog).not.toHaveBeenCalled();
+  });
+
+  it('should handle multiple BUILD_FROM_SOURCE occurrences', async () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const mockPackageSwiftContent = `
+// Package.swift
+import PackageDescription
+
+let BUILD_FROM_SOURCE = false
+// Some comment about BUILD_FROM_SOURCE = false
+let anotherVar = "BUILD_FROM_SOURCE = false in string"
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // Another BUILD_FROM_SOURCE = false comment
+)
+`;
+
+    const expectedUpdatedContent = `
+// Package.swift
+import PackageDescription
+
+let BUILD_FROM_SOURCE = true
+// Some comment about BUILD_FROM_SOURCE = false
+let anotherVar = "BUILD_FROM_SOURCE = false in string"
+
+let package = Package(
+    name: "ReactNative",
+    platforms: [.iOS(.v13)],
+    // Another BUILD_FROM_SOURCE = false comment
+)
+`;
+
+    mockFs.existsSync.mockReturnValue(true);
+    mockFs.readFileSync.mockReturnValue(mockPackageSwiftContent);
+    mockFs.writeFileSync.mockImplementation(() => {});
+
+    // Execute
+    await setBuildFromSource(reactNativePath);
+
+    // Assert - should replace only the declaration, not comments or strings
+    expect(mockFs.writeFileSync).toHaveBeenCalledWith(
+      '/path/to/react-native/Package.swift',
+      expectedUpdatedContent,
+      'utf8',
     );
   });
 });
