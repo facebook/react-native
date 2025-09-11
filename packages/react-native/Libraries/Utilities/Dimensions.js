@@ -116,13 +116,13 @@ class Dimensions {
   }
 }
 
-// Subscribe before calling getConstants to make sure we don't miss any updates in between.
+// Subscribe before calling getInfo to make sure we don't miss any updates in between.
 RCTDeviceEventEmitter.addListener(
   'didUpdateDimensions',
   (update: DimensionsPayload) => {
     Dimensions.set(update);
   },
 );
-Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
+Dimensions.set(NativeDeviceInfo.getInfo().Dimensions);
 
 export default Dimensions;

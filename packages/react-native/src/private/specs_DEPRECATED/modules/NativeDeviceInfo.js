@@ -34,7 +34,12 @@ export type DimensionsPayload = {
   screenPhysicalPixels?: DisplayMetricsAndroid,
 };
 
-export type DeviceInfoConstants = {
+/**
+ * @deprecated Use DeviceInfoResults instead; this will be removed in a future version of React Native.
+ */
+export type DeviceInfoConstants = DeviceInfoResults;
+
+export type DeviceInfoResults = {
   +Dimensions: DimensionsPayload,
   +isEdgeToEdge?: boolean,
   +isIPhoneX_deprecated?: boolean,
@@ -42,17 +47,22 @@ export type DeviceInfoConstants = {
 
 export interface Spec extends TurboModule {
   +getConstants: () => DeviceInfoConstants;
+  +getInfo: () => DeviceInfoConstants;
 }
 
 const NativeModule: Spec = TurboModuleRegistry.getEnforcing<Spec>('DeviceInfo');
-let constants: ?DeviceInfoConstants = null;
 
 const NativeDeviceInfo = {
+  /**
+   * Please note that on iOS, if the application is using SceneDelegate, the dimensions
+   * are not constant and may change, in which case calling this method will provide updated data.
+   * @deprecated Use getInfo() instead; this method will be removed in a future version of React Native.
+   */
   getConstants(): DeviceInfoConstants {
-    if (constants == null) {
-      constants = NativeModule.getConstants();
-    }
-    return constants;
+    return NativeModule.getConstants();
+  },
+  getInfo(): DeviceInfoResults {
+    return NativeModule.getInfo();
   },
 };
 

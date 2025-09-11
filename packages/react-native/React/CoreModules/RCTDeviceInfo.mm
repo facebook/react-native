@@ -29,7 +29,7 @@ using namespace facebook::react;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
   std::atomic<BOOL> _invalidated;
-  NSDictionary *_constants;
+  NSDictionary *_info;
 
   __weak UIWindow *_applicationWindow;
 }
@@ -114,7 +114,12 @@ RCT_EXPORT_MODULE()
                                                name:RCTBridgeWillInvalidateModulesNotification
                                              object:nil];
 
-  _constants = @{
+  [self invalidateCachedInfo];
+}
+
+- (void)invalidateCachedInfo
+{
+  _info = @{
     @"Dimensions" : [self _exportedDimensions],
     // Note:
     // This prop is deprecated and will be removed in a future release.
@@ -218,31 +223,39 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  return _constants;
+  return _info;
+}
+
+- (NSDictionary<NSString *, id> *)getInfo
+{
+  return _info;
 }
 
 - (void)didReceiveNewContentSizeMultiplier
 {
-  __weak __typeof(self) weakSelf = self;
+  [self invalidateCachedInfo];
+  NSDictionary *nextInterfaceDimensions = _info[@"Dimensions"]; // read the new value updated by the above instruction
+
   RCTModuleRegistry *moduleRegistry = _moduleRegistry;
   RCTExecuteOnMainQueue(^{
   // Report the event across the bridge.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
-                                                                         body:[weakSelf _exportedDimensions]];
+                                                                         body:nextInterfaceDimensions];
 #pragma clang diagnostic pop
   });
 }
 
 - (void)interfaceOrientationDidChange
 {
+  [self invalidateCachedInfo];
+
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIWindow *window = RCTKeyWindow();
   UIInterfaceOrientation nextOrientation = window.windowScene.interfaceOrientation;
 
-  BOOL isRunningInFullScreen =
-      CGRectEqualToRect(window.frame, window.screen.bounds);
+  BOOL isRunningInFullScreen = CGRectEqualToRect(window.frame, window.screen.bounds);
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen->
@@ -259,8 +272,10 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   if ((isOrientationChanging || isResizingOrChangingToFullscreen) && RCTIsAppActive()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    NSDictionary *nextInterfaceDimensions = _info[@"Dimensions"]; // read the new value updated by the call to
+                                                                  // invalidateCachedInfo at the top of this function
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"didUpdateDimensions"
-                                                                          body:[self _exportedDimensions]];
+                                                                          body:nextInterfaceDimensions];
     // We only want to track the current _currentInterfaceOrientation and _isFullscreen only
     // when it happens and only when it is published.
     _currentInterfaceOrientation = nextOrientation;
@@ -280,7 +295,8 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)_interfaceFrameDidChange
 {
-  NSDictionary *nextInterfaceDimensions = [self _exportedDimensions];
+  [self invalidateCachedInfo];
+  NSDictionary *nextInterfaceDimensions = _info[@"Dimensions"]; // read the new value updated by the above instruction
 
   // update and publish the even only when the app is in active state
   if (!([nextInterfaceDimensions isEqual:_currentInterfaceDimensions]) && RCTIsAppActive()) {
