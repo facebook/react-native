@@ -14,6 +14,7 @@ const {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
+  hardlinkThirdPartyDependenciesHeaders,
 } = require('../headers-utils');
 
 // Mock all required modules
@@ -419,6 +420,597 @@ describe('symlinkHeadersFromPath', () => {
       '/custom/output/special/subdir/header1.h',
     );
     expect(result).toBe(1);
+  });
+});
+
+describe('hardlinkThirdPartyDependenciesHeaders', () => {
+  let mockExecSync;
+  let mockFs;
+  let mockPath;
+  let originalConsoleWarn;
+  let originalConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockExecSync = require('child_process').execSync;
+    mockFs = require('fs');
+    mockPath = require('path');
+
+    // Mock path functions
+    mockPath.relative.mockImplementation((from, to) => {
+      return to.replace(from + '/', '');
+    });
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    mockPath.dirname.mockImplementation(filePath => {
+      const parts = filePath.split('/');
+      parts.pop();
+      return parts.join('/');
+    });
+    mockPath.basename.mockImplementation(filePath => {
+      return filePath.split('/').pop();
+    });
+
+    // Mock console methods to prevent test output noise
+    originalConsoleWarn = console.warn;
+    originalConsoleLog = console.log;
+    console.warn = jest.fn();
+    console.log = jest.fn();
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.warn = originalConsoleWarn;
+    console.log = originalConsoleLog;
+  });
+
+  it('should create hard links for third-party dependencies headers with preserved structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput =
+      `${thirdPartyHeadersPath}/boost/boost.h\n` +
+      `${thirdPartyHeadersPath}/glog/glog.h\n` +
+      `${thirdPartyHeadersPath}/fmt/format.h\n` +
+      `${thirdPartyHeadersPath}/folly/folly.hpp\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (
+        filePath.includes('third-party') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.hpp'))
+      )
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(thirdPartyHeadersPath);
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`,
+      {encoding: 'utf8', stdio: 'pipe'},
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/glog/glog.h`,
+      '/output/folder/headers/glog/glog.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/fmt/format.h`,
+      '/output/folder/headers/fmt/format.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/folly/folly.hpp`,
+      '/output/folder/headers/folly/folly.hpp',
+    );
+  });
+
+  it('should use default folder name when folderName parameter is not provided', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput = `${thirdPartyHeadersPath}/boost/boost.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute - without folderName parameter
+    hardlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder);
+
+    // Assert - should use default 'headers' folder
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+  });
+
+  it('should create headers output directory if it does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'custom-headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const headersOutput = '/output/folder/custom-headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath === headersOutput) return false; // headers output doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.mkdirSync).toHaveBeenCalledWith(headersOutput, {
+      recursive: true,
+    });
+  });
+
+  it('should create destination subdirectories for nested header structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput = `${thirdPartyHeadersPath}/boost/algorithm/string.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      if (filePath === '/output/folder/headers/boost/algorithm') return false; // subdirectory doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.mkdirSync).toHaveBeenCalledWith(
+      '/output/folder/headers/boost/algorithm',
+      {recursive: true},
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/algorithm/string.h`,
+      '/output/folder/headers/boost/algorithm/string.h',
+    );
+  });
+
+  it('should remove existing hard links before creating new ones', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput = `${thirdPartyHeadersPath}/boost/boost.h\n`;
+
+    mockFs.existsSync.mockReturnValue(true); // All files and directories exist
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.unlinkSync).toHaveBeenCalledWith(
+      '/output/folder/headers/boost/boost.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+  });
+
+  it('should skip non-existent source header files', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput =
+      `${thirdPartyHeadersPath}/boost/boost.h\n` +
+      `${thirdPartyHeadersPath}/nonexistent/header.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath === `${thirdPartyHeadersPath}/boost/boost.h`) return true;
+      if (filePath === `${thirdPartyHeadersPath}/nonexistent/header.h`)
+        return false; // doesn't exist
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert - only the existing file should be linked
+    expect(mockFs.linkSync).toHaveBeenCalledTimes(1);
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+  });
+
+  it('should warn and return early if third-party headers path does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return false; // third-party headers path doesn't exist
+      return false;
+    });
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      `Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`,
+    );
+    expect(mockExecSync).not.toHaveBeenCalled();
+  });
+
+  it('should handle empty find command output', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.linkSync).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      'Created hard links for 0 Third-Party Dependencies headers with preserved directory structure',
+    );
+  });
+
+  it('should handle whitespace-only find command output', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('   \n  \n  ');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.linkSync).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      'Created hard links for 0 Third-Party Dependencies headers with preserved directory structure',
+    );
+  });
+
+  it('should handle execSync throwing an error', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const error = new Error('Command failed');
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      return false;
+    });
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockExecSync.mockImplementation(() => {
+      throw error;
+    });
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      'Failed to create hard links for third-party dependencies headers:',
+      'Command failed',
+    );
+  });
+
+  it('should handle both .h and .hpp files', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput =
+      `${thirdPartyHeadersPath}/library1/header.h\n` +
+      `${thirdPartyHeadersPath}/library2/header.hpp\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (
+        filePath.includes('third-party') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.hpp'))
+      )
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`,
+      {encoding: 'utf8', stdio: 'pipe'},
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/library1/header.h`,
+      '/output/folder/headers/library1/header.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/library2/header.hpp`,
+      '/output/folder/headers/library2/header.hpp',
+    );
+  });
+
+  it('should exclude test directories from find command', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue('');
+    mockFs.mkdirSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith(
+      `find "${thirdPartyHeadersPath}" \\( -name "*.h" -o -name "*.hpp" \\) -type f | grep -v "/tests/"`,
+      {encoding: 'utf8', stdio: 'pipe'},
+    );
+  });
+
+  it('should log creation message and handle fs.linkSync errors gracefully', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput =
+      `${thirdPartyHeadersPath}/boost/boost.h\n` +
+      `${thirdPartyHeadersPath}/glog/glog.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+
+    // Make linkSync fail for the first file
+    let callCount = 0;
+    mockFs.linkSync.mockImplementation(() => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error('Link failed for first file');
+      }
+    });
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert - when fs.linkSync throws an error, the entire try-catch block fails
+    // and only the initial console.log and console.warn are called
+    expect(console.log).toHaveBeenCalledWith(
+      'Creating hard links for Third-Party Dependencies headers...',
+    );
+    expect(console.warn).toHaveBeenCalledWith(
+      'Failed to create hard links for third-party dependencies headers:',
+      'Link failed for first file',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle complex nested directory structures', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput =
+      `${thirdPartyHeadersPath}/boost/algorithm/string/trim.h\n` +
+      `${thirdPartyHeadersPath}/folly/container/F14Map.h\n` +
+      `${thirdPartyHeadersPath}/fmt/core.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert - all nested structures should be preserved
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/algorithm/string/trim.h`,
+      '/output/folder/headers/boost/algorithm/string/trim.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/folly/container/F14Map.h`,
+      '/output/folder/headers/folly/container/F14Map.h',
+    );
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/fmt/core.h`,
+      '/output/folder/headers/fmt/core.h',
+    );
+  });
+
+  it('should handle custom folder name parameter', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'custom-includes';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const findCommandOutput = `${thirdPartyHeadersPath}/boost/boost.h\n`;
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockExecSync.mockReturnValue(findCommandOutput);
+    mockFs.mkdirSync.mockImplementation(() => {});
+    mockFs.unlinkSync.mockImplementation(() => {});
+    mockFs.linkSync.mockImplementation(() => {});
+
+    // Execute
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.linkSync).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/custom-includes/boost/boost.h',
+    );
   });
 });
 
