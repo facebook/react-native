@@ -109,6 +109,21 @@ class PerformanceTracer {
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
 
   /**
+   * Record a "ResourceSendRequest"/"ResourceFinish" event pair - a labelled
+   * duration in the Performance timeline Network track. If not currently
+   * tracing, this is a no-op.
+   */
+  void reportResourceTiming(
+      const std::string& requestId,
+      const std::string& url,
+      HighResTimeStamp fetchStart,
+      HighResTimeStamp responseStart,
+      HighResTimeStamp responseEnd,
+      int statusCode,
+      const std::string& requestMethod,
+      const std::string& resourceType);
+
+  /**
    * Creates "Profile" Trace Event.
    *
    * Can be serialized to JSON with TraceEventSerializer::serialize.
@@ -181,12 +196,48 @@ class PerformanceTracer {
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
+  struct PerformanceTracerResourceWillSendRequest {
+    std::string requestId;
+    HighResTimeStamp start;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceSendRequest {
+    std::string requestId;
+    std::string url;
+    HighResTimeStamp start;
+    std::string requestMethod;
+    std::string resourceType;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceFinish {
+    std::string requestId;
+    HighResTimeStamp start;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceReceiveResponse {
+    std::string requestId;
+    HighResTimeStamp start;
+    int statusCode;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
   using PerformanceTracerEvent = std::variant<
       PerformanceTracerEventTimeStamp,
       PerformanceTracerEventEventLoopTask,
       PerformanceTracerEventEventLoopMicrotask,
       PerformanceTracerEventMark,
-      PerformanceTracerEventMeasure>;
+      PerformanceTracerEventMeasure,
+      PerformanceTracerResourceWillSendRequest,
+      PerformanceTracerResourceSendRequest,
+      PerformanceTracerResourceReceiveResponse,
+      PerformanceTracerResourceFinish>;
 
 #pragma mark - Private fields and methods
 

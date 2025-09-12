@@ -118,7 +118,10 @@ class PerformanceEntryReporter {
       std::optional<HighResTimeStamp> connectEnd,
       HighResTimeStamp responseStart,
       HighResTimeStamp responseEnd,
-      const std::optional<int>& responseStatus);
+      const std::optional<int>& responseStatus,
+      const std::optional<std::string>& devtoolsRequestId,
+      const std::optional<std::string>& requestMethod,
+      const std::optional<std::string>& resourceType);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
@@ -182,6 +185,11 @@ class PerformanceEntryReporter {
   void traceMeasure(
       const PerformanceMeasure& entry,
       UserTimingDetailProvider&& detailProvider) const;
+  void traceResourceTiming(
+      const PerformanceResourceTiming& entry,
+      const std::optional<std::string>& devtoolsRequestId,
+      const std::optional<std::string>& requestMethod,
+      const std::optional<std::string>& resourceType) const;
 };
 
 } // namespace facebook::react

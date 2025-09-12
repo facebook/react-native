@@ -55,6 +55,12 @@ struct TraceEvent {
   /** The ID for the process that output this event. */
   ProcessId pid;
 
+  /**
+   * The scope of the event, either global (g), process (p), or thread (t).
+   * Only applicable to instant events ("ph": "i").
+   */
+  std::optional<char> s;
+
   /** The ID for the thread that output this event. */
   ThreadId tid;
 

@@ -28,6 +28,8 @@ namespace facebook::react {
  */
 struct ResourceTimingData {
   std::string url;
+  std::string requestMethod;
+  std::optional<std::string> resourceType;
   HighResTimeStamp fetchStart;
   HighResTimeStamp requestStart;
   std::optional<HighResTimeStamp> connectStart;

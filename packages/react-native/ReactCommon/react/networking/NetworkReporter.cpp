@@ -8,7 +8,9 @@
 #include "NetworkReporter.h"
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-#include "jsinspector-modern/network/NetworkHandler.h"
+#include <jsinspector-modern/network/CdpNetwork.h>
+#include <jsinspector-modern/network/HttpUtils.h>
+#include <jsinspector-modern/network/NetworkHandler.h>
 #endif
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
@@ -43,6 +45,7 @@ void NetworkReporter::reportRequestStart(
           requestId,
           ResourceTimingData{
               .url = requestInfo.url,
+              .requestMethod = requestInfo.httpMethod,
               .fetchStart = now,
               .requestStart = now,
           });
@@ -108,6 +111,13 @@ void NetworkReporter::reportResponseStart(
         it->second.connectEnd = now;
         it->second.responseStart = now;
         it->second.responseStatus = responseInfo.statusCode;
+#ifdef REACT_NATIVE_DEBUGGER_ENABLED
+        // Debug build: Compute additional fields to send in CDP trace events
+        it->second.resourceType =
+            jsinspector_modern::cdp::network::resourceTypeFromMimeType(
+                jsinspector_modern::mimeTypeFromHeaders(
+                    responseInfo.headers.value_or(Headers{})));
+#endif
       }
     }
   }
@@ -155,7 +165,10 @@ void NetworkReporter::reportResponseEnd(
             eventData.connectEnd.value_or(now),
             eventData.responseStart.value_or(now),
             now,
-            eventData.responseStatus);
+            eventData.responseStatus,
+            requestId,
+            eventData.requestMethod,
+            eventData.resourceType);
         perfTimingsBuffer_.erase(requestId);
       }
     }

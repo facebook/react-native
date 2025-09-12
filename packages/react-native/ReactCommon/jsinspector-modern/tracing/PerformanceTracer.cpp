@@ -232,6 +232,50 @@ void PerformanceTracer::reportEventLoopMicrotasks(
   });
 }
 
+void PerformanceTracer::reportResourceTiming(
+    const std::string& requestId,
+    const std::string& url,
+    HighResTimeStamp fetchStart,
+    HighResTimeStamp responseStart,
+    HighResTimeStamp responseEnd,
+    int statusCode,
+    const std::string& requestMethod,
+    const std::string& resourceType) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  enqueueEvent(PerformanceTracerResourceWillSendRequest{
+      .requestId = requestId,
+      .start = fetchStart,
+      .threadId = getCurrentThreadId(),
+  });
+  enqueueEvent(PerformanceTracerResourceSendRequest{
+      .requestId = requestId,
+      .url = url,
+      .start = fetchStart,
+      .requestMethod = requestMethod,
+      .resourceType = resourceType,
+      .threadId = getCurrentThreadId(),
+  });
+  enqueueEvent(PerformanceTracerResourceReceiveResponse{
+      .requestId = requestId,
+      .start = responseStart,
+      .statusCode = statusCode,
+      .threadId = getCurrentThreadId(),
+  });
+  enqueueEvent(PerformanceTracerResourceFinish{
+      .requestId = requestId,
+      .start = responseEnd,
+      .threadId = getCurrentThreadId(),
+  });
+}
+
 /* static */ TraceEvent PerformanceTracer::constructRuntimeProfileTraceEvent(
     RuntimeProfileId profileId,
     ProcessId processId,
@@ -501,6 +545,73 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'I',
                 .ts = event.createdAt,
                 .pid = processId_,
+                .tid = event.threadId,
+                .args = folly::dynamic::object("data", std::move(data)),
+            });
+          },
+          [&](PerformanceTracerResourceWillSendRequest&& event) {
+            folly::dynamic data =
+                folly::dynamic::object("requestId", std::move(event.requestId));
+
+            events.emplace_back(TraceEvent{
+                .name = "ResourceWillSendRequest",
+                .cat = "devtools.timeline",
+                .ph = 'I',
+                .ts = event.start,
+                .pid = processId_,
+                .s = 't',
+                .tid = event.threadId,
+                .args = folly::dynamic::object("data", std::move(data)),
+            });
+          },
+          [&](PerformanceTracerResourceSendRequest&& event) {
+            folly::dynamic data =
+                folly::dynamic::object("initiator", folly::dynamic::object())(
+                    "renderBlocking", "non_blocking")(
+                    "requestId", std::move(event.requestId))(
+                    "requestMethod", std::move(event.requestMethod))(
+                    "resourceType", std::move(event.resourceType))(
+                    "url", std::move(event.url));
+
+            events.emplace_back(TraceEvent{
+                .name = "ResourceSendRequest",
+                .cat = "devtools.timeline",
+                .ph = 'I',
+                .ts = event.start,
+                .pid = processId_,
+                .s = 't',
+                .tid = event.threadId,
+                .args = folly::dynamic::object("data", std::move(data)),
+            });
+          },
+          [&](PerformanceTracerResourceReceiveResponse&& event) {
+            folly::dynamic data = folly::dynamic::object("protocol", "h2")(
+                "requestId", std::move(event.requestId))(
+                "statusCode", event.statusCode)(
+                "timing", folly::dynamic::object());
+
+            events.emplace_back(TraceEvent{
+                .name = "ResourceReceiveResponse",
+                .cat = "devtools.timeline",
+                .ph = 'I',
+                .ts = event.start,
+                .pid = processId_,
+                .s = 't',
+                .tid = event.threadId,
+                .args = folly::dynamic::object("data", std::move(data)),
+            });
+          },
+          [&](PerformanceTracerResourceFinish&& event) {
+            folly::dynamic data = folly::dynamic::object("didFail", false)(
+                "requestId", std::move(event.requestId));
+
+            events.emplace_back(TraceEvent{
+                .name = "ResourceFinish",
+                .cat = "devtools.timeline",
+                .ph = 'I',
+                .ts = event.start,
+                .pid = processId_,
+                .s = 't',
                 .tid = event.threadId,
                 .args = folly::dynamic::object("data", std::move(data)),
             });
