@@ -26,7 +26,7 @@ RCTHermesInstance::RCTHermesInstance(CrashManagerProvider crashManagerProvider, 
 std::unique_ptr<JSRuntime> RCTHermesInstance::createJSRuntime(
     std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept
 {
-  return _hermesInstance->createJSRuntime(
+  return facebook::react::HermesInstance::createJSRuntime(
       _crashManagerProvider ? _crashManagerProvider() : nullptr, std::move(msgQueueThread), _allocInOldGenBeforeTTI);
 }
 
