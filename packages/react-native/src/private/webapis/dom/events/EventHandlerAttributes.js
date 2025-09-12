@@ -40,28 +40,33 @@
  * ```
  */
 
+import type Event from './Event';
 import type EventTarget from './EventTarget';
-import type {EventCallback} from './EventTarget';
+import type {EventCallback, GenericEventMap} from './EventTarget';
 
-type EventHandler = $ReadOnly<{
-  handleEvent: EventCallback,
+type EventHandler<EventTypes: Event> = $ReadOnly<{
+  handleEvent: EventCallback<EventTypes>,
 }>;
-type EventHandlerAttributeMap = Map<string, EventHandler | null>;
+
+type EventHandlerAttributeMap<EventTypes: GenericEventMap> = Map<
+  $Keys<EventTypes>,
+  EventHandler<$Values<EventTypes>> | null,
+>;
 
 const EVENT_HANDLER_CONTENT_ATTRIBUTE_MAP_KEY = Symbol(
   'eventHandlerAttributeMap',
 );
 
-function getEventHandlerAttributeMap(
-  target: EventTarget,
-): ?EventHandlerAttributeMap {
+function getEventHandlerAttributeMap<EventTypes: GenericEventMap>(
+  target: EventTarget<EventTypes>,
+): ?EventHandlerAttributeMap<EventTypes> {
   // $FlowExpectedError[prop-missing]
   return target[EVENT_HANDLER_CONTENT_ATTRIBUTE_MAP_KEY];
 }
 
-function setEventHandlerAttributeMap(
-  target: EventTarget,
-  map: ?EventHandlerAttributeMap,
+function setEventHandlerAttributeMap<EventTypes: GenericEventMap>(
+  target: EventTarget<EventTypes>,
+  map: ?EventHandlerAttributeMap<EventTypes>,
 ) {
   // $FlowExpectedError[prop-missing]
   target[EVENT_HANDLER_CONTENT_ATTRIBUTE_MAP_KEY] = map;
@@ -73,10 +78,13 @@ function setEventHandlerAttributeMap(
  *
  * Should be used to get the current value for `target.on{type}`.
  */
-export function getEventHandlerAttribute(
-  target: EventTarget,
-  type: string,
-): EventCallback | null {
+export function getEventHandlerAttribute<
+  EventTypes: GenericEventMap,
+  EventType: $Keys<EventTypes>,
+>(
+  target: EventTarget<EventTypes>,
+  type: EventType,
+): EventCallback<EventTypes[EventType]> | null {
   const listener = getEventHandlerAttributeMap(target)?.get(type);
   return listener != null ? listener.handleEvent : null;
 }
@@ -87,10 +95,13 @@ export function getEventHandlerAttribute(
  *
  * Should be used to set a value for `target.on{type}`.
  */
-export function setEventHandlerAttribute(
-  target: EventTarget,
-  type: string,
-  callback: ?EventCallback,
+export function setEventHandlerAttribute<
+  EventTypes: GenericEventMap,
+  EventName: $Keys<EventTypes>,
+>(
+  target: EventTarget<EventTypes>,
+  type: EventName,
+  callback: ?EventCallback<EventTypes[EventName]>,
 ): void {
   let map = getEventHandlerAttributeMap(target);
   if (map != null) {
