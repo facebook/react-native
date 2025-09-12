@@ -9,7 +9,7 @@
  */
 
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
-const {BrowserWindow, app, shell, ipcMain} = require('electron') as any;
+const {BrowserWindow, Menu, app, shell, ipcMain} = require('electron') as any;
 const path = require('path');
 const util = require('util');
 
@@ -91,8 +91,37 @@ function handleLaunchArgs(argv: string[]) {
   frontendWindow.focus();
 }
 
+function configureAppMenu() {
+  const template = [
+    ...(process.platform === 'darwin' ? [{role: 'appMenu'}] : []),
+    {role: 'fileMenu'},
+    {role: 'editMenu'},
+    {role: 'viewMenu'},
+    {role: 'windowMenu'},
+    {
+      role: 'help',
+      submenu: [
+        {
+          label: 'React Native Website',
+          click: () => shell.openExternal('https://reactnative.dev'),
+        },
+        {
+          label: 'Release Notes',
+          click: () =>
+            shell.openExternal(
+              'https://github.com/facebook/react-native/releases',
+            ),
+        },
+      ],
+    },
+  ];
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 app.whenReady().then(() => {
   handleLaunchArgs(process.argv.slice(app.isPackaged ? 1 : 2));
+  configureAppMenu();
 
   app.on(
     'second-instance',
