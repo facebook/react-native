@@ -120,7 +120,7 @@ RCT_EXPORT_MODULE()
 - (void)invalidateCachedInfo
 {
   RCTExecuteOnMainQueue(^{
-    _info = @{
+    self->_info = @{
       @"Dimensions" : [self _exportedDimensions],
       // Note:
       // This prop is deprecated and will be removed in a future release.
