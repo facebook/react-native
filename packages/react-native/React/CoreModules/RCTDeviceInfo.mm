@@ -210,7 +210,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   RCTAssert(_moduleRegistry, @"Failed to get exported dimensions: RCTModuleRegistry is nil");
   RCTAccessibilityManager *accessibilityManager =
       (RCTAccessibilityManager *)[_moduleRegistry moduleForName:"AccessibilityManager"];
-  // TOOD(T225745315): For some reason, accessibilityManager is nil in some cases.
+  // TODO(T225745315): For some reason, accessibilityManager is nil in some cases.
   // We default the fontScale to 1.0 in this case. This should be okay: if we assume
   // that accessibilityManager will eventually become available, js will eventually
   // be updated with the correct fontScale.
