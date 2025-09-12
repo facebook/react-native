@@ -208,7 +208,7 @@ public class ReactVirtualViewExperimental(context: Context) :
   }
 
   private fun reportRectChangeToContainer() {
-    if (lastContainerRelativeRect == containerRelativeRect) {
+    if (lastContainerRelativeRect.equals(containerRelativeRect)) {
       debugLog("reportRectChangeToContainer") { "no rect change $containerRelativeRect" }
       return
     }
