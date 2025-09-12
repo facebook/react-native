@@ -229,6 +229,7 @@ public abstract class DevSupportManagerBase(
                 }
                 context
               },
+              { openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString()) },
           )
     }
   }

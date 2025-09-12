@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.PixelUtil
 
 internal class PerfMonitorOverlayView(
     private val context: Context,
+    private val onButtonPress: () -> Unit,
 ) {
   private val dialog: Dialog
   private lateinit var statusLabel: TextView
@@ -101,22 +102,11 @@ internal class PerfMonitorOverlayView(
     textContainer.addView(tooltipLabel)
 
     val containerLayout = createInnerLayout()
+    containerLayout.setOnClickListener { onButtonPress() }
     containerLayout.addView(statusIndicator)
     containerLayout.addView(textContainer)
 
-    val dialog =
-        createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
-    dialog.window?.apply {
-      attributes =
-          attributes?.apply {
-            flags =
-                flags or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-          }
-    }
-
-    return dialog
+    return createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
   }
 
   private fun createAnchoredDialog(offsetX: Float, offsetY: Float): Dialog {
