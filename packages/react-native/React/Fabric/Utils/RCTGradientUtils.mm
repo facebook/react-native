@@ -267,6 +267,10 @@ static std::vector<ProcessedColorStop> processColorTransitionHints(const std::ve
 + (std::vector<ProcessedColorStop>)getFixedColorStops:(const std::vector<ColorStop> &)colorStops
                                    gradientLineLength:(CGFloat)gradientLineLength
 {
+  if (colorStops.empty()) {
+    return {};
+  }
+
   std::vector<ProcessedColorStop> fixedColorStops(colorStops.size());
   bool hasNullPositions = false;
   auto maxPositionSoFar = resolveColorStopPosition(colorStops[0].position, gradientLineLength);
