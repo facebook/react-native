@@ -7,7 +7,7 @@ on:
 jobs:
   prepare_workspace:
     name: Prepare workspace
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
 
   build-apple-slices:
     name: Build Apple Slice
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: [prepare_workspace]
     strategy:
       fail-fast: false
@@ -114,7 +114,7 @@ jobs:
 
   create-xcframework:
     name: Prepare XCFramework
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: [build-apple-slices]
     strategy:
       fail-fast: false

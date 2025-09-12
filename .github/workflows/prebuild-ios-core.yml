@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-rn-slice:
-    runs-on: macos-14
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -123,7 +123,7 @@ jobs:
             packages/react-native/.build/headers
 
   compose-xcframework:
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: [build-rn-slice]
     strategy:
       fail-fast: false
