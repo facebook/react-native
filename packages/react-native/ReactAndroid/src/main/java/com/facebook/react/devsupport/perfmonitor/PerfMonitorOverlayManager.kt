@@ -15,10 +15,12 @@ import javax.inject.Provider
 internal class PerfMonitorOverlayManager(
     private val devHelper: PerfMonitorDevHelper,
     private val contextProvider: Provider<Context?>,
+    private val onRequestOpenDevTools: () -> Unit,
 ) : PerfMonitorUpdateListener {
   private var enabled: Boolean = false
   private var initialized: Boolean = false
   private var view: PerfMonitorOverlayView? = null
+  private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
 
   private fun init() {
     if (initialized || !enabled) {
@@ -27,7 +29,7 @@ internal class PerfMonitorOverlayManager(
 
     UiThreadUtil.runOnUiThread {
       val context = contextProvider.get() ?: return@runOnUiThread
-      view = PerfMonitorOverlayView(context)
+      view = PerfMonitorOverlayView(context, ::handleRecordingButtonPress)
 
       // Start background tracing
       devHelper.inspectorTarget?.resumeBackgroundTrace()
@@ -59,6 +61,20 @@ internal class PerfMonitorOverlayManager(
   }
 
   override fun onRecordingStateChanged(state: TracingState) {
+    tracingState = state
     view?.updateRecordingState(state)
+  }
+
+  private fun handleRecordingButtonPress() {
+    when (tracingState) {
+      TracingState.ENABLEDINBACKGROUNDMODE -> {
+        devHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
+        onRequestOpenDevTools()
+      }
+      TracingState.DISABLED -> {
+        devHelper.inspectorTarget?.resumeBackgroundTrace()
+      }
+      TracingState.ENABLEDINCDPMODE -> Unit
+    }
   }
 }
