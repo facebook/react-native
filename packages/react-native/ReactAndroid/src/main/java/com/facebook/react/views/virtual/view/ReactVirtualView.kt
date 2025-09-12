@@ -201,7 +201,7 @@ public class ReactVirtualView(context: Context) :
     clippingRect.intersect(targetRect)
     clippingRect.offset(-targetRect.left, -targetRect.top)
 
-    if (lastClippingRect == clippingRect) {
+    if (lastClippingRect.equals(clippingRect)) {
       return
     }
 
@@ -241,7 +241,7 @@ public class ReactVirtualView(context: Context) :
     updateClippingRect()
 
     if (checkRectChange) {
-      if (!lastRect.isEmpty && lastRect == targetRect) {
+      if (!lastRect.isEmpty && lastRect.equals(targetRect)) {
         debugLog("dispatchOnModeChangeIfNeeded") { "no rect change" }
         return
       }
