@@ -32,6 +32,7 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 @class RCTPerformanceLogger;
 @class RCTSource;
 @class RCTSurfacePresenter;
+@class RCTDevMenuConfiguration;
 
 @protocol RCTTurboModuleManagerDelegate;
 
@@ -71,7 +72,8 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(facebook::react::jsinspector_modern::HostTarget *)parentInspectorTarget
-                   launchOptions:(nullable NSDictionary *)launchOptions;
+                   launchOptions:(nullable NSDictionary *)launchOptions
+            devMenuConfiguration:(RCTDevMenuConfiguration *__nullable)devMenuConfiguration;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
 - (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &runtime)> &&)executor;
