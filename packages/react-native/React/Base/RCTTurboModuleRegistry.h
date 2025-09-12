@@ -22,5 +22,6 @@
  * TurboModules to TurboModules is complete.
  */
 - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
+- (id)getModulesConformingToProtocol:(Protocol *)protocol;
 - (BOOL)moduleIsInitialized:(const char *)moduleName;
 @end
