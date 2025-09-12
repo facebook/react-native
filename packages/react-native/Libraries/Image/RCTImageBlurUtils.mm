@@ -30,7 +30,8 @@ UIImage *RCTBlurredImageWithRadius(UIImage *inputImage, CGFloat radius)
                }].CGImage;
   }
 
-  vImage_Buffer buffer1, buffer2;
+  vImage_Buffer buffer1;
+  vImage_Buffer buffer2;
   buffer1.width = buffer2.width = CGImageGetWidth(imageRef);
   buffer1.height = buffer2.height = CGImageGetHeight(imageRef);
   buffer1.rowBytes = buffer2.rowBytes = CGImageGetBytesPerRow(imageRef);
