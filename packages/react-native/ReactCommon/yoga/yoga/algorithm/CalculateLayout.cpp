@@ -661,7 +661,8 @@ static float distributeFreeSpaceSecondPass(
         float childSize = YGUndefined;
 
         if (yoga::isDefined(flexLine.layout.totalFlexShrinkScaledFactors) &&
-            flexLine.layout.totalFlexShrinkScaledFactors == 0) {
+            yoga::inexactEquals(
+                flexLine.layout.totalFlexShrinkScaledFactors, 0.0f)) {
           childSize = childFlexBasis + flexShrinkScaledFactor;
         } else {
           childSize = childFlexBasis +
