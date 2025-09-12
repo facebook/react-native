@@ -16,9 +16,8 @@ const util = require('util');
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
 const {app} = require('electron') as any;
 
-// Set the app name and version early - these are used in --version as well as
-// in the User-Agent string.
-app.setName(pkg.name);
+// Set the application name and version
+app.setName(pkg.productName ?? pkg.name);
 app.setVersion(pkg.version + '-' + buildInfo.revision);
 
 // Handle global command line arguments which don't require a window
@@ -31,7 +30,7 @@ const {
   strict: false,
 });
 if (version) {
-  console.log(`${app.getName()} v${app.getVersion()}`);
+  console.log(`${pkg.name} v${app.getVersion()}`);
   // Not app.quit() - we want to exit immediately without initialising the graphical subsystem.
   app.exit(0);
 }
