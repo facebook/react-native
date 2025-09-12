@@ -80,6 +80,9 @@ class NativeAnimatedNodesManager {
 
 #pragma mark - Graph
 
+  // Called from JS thread
+  void createAnimatedNodeAsync(Tag tag, const folly::dynamic& config) noexcept;
+
   void createAnimatedNode(Tag tag, const folly::dynamic& config) noexcept;
 
   void connectAnimatedNodes(Tag parentTag, Tag childTag) noexcept;
@@ -203,6 +206,11 @@ class NativeAnimatedNodesManager {
       Tag tag,
       const folly::dynamic& config) noexcept;
 
+  static thread_local bool isOnRenderThread_;
+
+  std::mutex animatedNodesCreatedAsyncMutex_;
+  std::unordered_map<Tag, std::unique_ptr<AnimatedNode>>
+      animatedNodesCreatedAsync_;
   std::unordered_map<Tag, std::unique_ptr<AnimatedNode>> animatedNodes_;
   std::unordered_map<Tag, Tag> connectedAnimatedNodes_;
   std::unordered_map<int, std::unique_ptr<AnimationDriver>> activeAnimations_;
