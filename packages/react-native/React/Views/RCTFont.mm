@@ -6,6 +6,8 @@
  */
 
 #import "RCTFont.h"
+#import "RCTFont+Private.h"
+
 #import "RCTAssert.h"
 #import "RCTLog.h"
 
@@ -122,6 +124,15 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
   return @"regular";
 }
 
+UIFont *RCTGetLegacyDefaultFont(CGFloat size, UIFontWeight fontWeight)
+{
+  if (defaultFontHandler != nil) {
+    return defaultFontHandler(size, FontWeightDescriptionFromUIFontWeight(fontWeight));
+  } else {
+    return nil;
+  }
+}
+
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache<NSValue *, UIFont *> *fontCache = [NSCache new];
@@ -135,8 +146,8 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
   NSValue *cacheKey = [[NSValue alloc] initWithBytes:&key objCType:@encode(CacheKey)];
   UIFont *font = [fontCache objectForKey:cacheKey];
 
-  if (!font) {
-    if (defaultFontHandler) {
+  if (font == nil) {
+    if (defaultFontHandler != nil) {
       NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
       font = defaultFontHandler(size, fontWeightDescription);
     } else {
