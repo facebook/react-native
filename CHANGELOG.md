@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.81.3
+
+### Fixed
+
+#### iOS specific
+
+- Reverted "Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source" ([537e3ad930](https://github.com/facebook/react-native/commit/537e3ad93041c0cef959f0d20586fe97818900a6) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## v0.81.2
 
 ### Added
