@@ -98,11 +98,11 @@ class PrepareGlogTaskTest {
     val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareGlogTask> {
-          it.glogPath.setFrom(glogpath)
-          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
-          it.glogVersion.set("1.0.0")
-          it.outputDir.set(output)
+        createTestTask<PrepareGlogTask> { task ->
+          task.glogPath.setFrom(glogpath)
+          task.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
+          task.glogVersion.set("1.0.0")
+          task.outputDir.set(output)
         }
     File(glogpath, "glog-1.0.0/src/glog.h.in").apply {
       parentFile.mkdirs()
