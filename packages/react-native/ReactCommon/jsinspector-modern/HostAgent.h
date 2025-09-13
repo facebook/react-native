@@ -36,16 +36,13 @@ class HostAgent final {
    * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
    * \param executor A void executor to be used by async-aware handlers.
-   * \param traceRecordingToEmit If set, this is the trace that Host has
-   * requested to display in the Frontend.
    */
   HostAgent(
       const FrontendChannel& frontendChannel,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor,
-      std::optional<tracing::TraceRecordingState> traceRecordingToEmit);
+      VoidExecutor executor);
 
   HostAgent(const HostAgent&) = delete;
   HostAgent(HostAgent&&) = delete;
