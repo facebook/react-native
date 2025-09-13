@@ -83,4 +83,4 @@ function PromiseTest(): React.Node {
   return <View />;
 }
 
-export default PromiseTest;
+module.exports = PromiseTest;
