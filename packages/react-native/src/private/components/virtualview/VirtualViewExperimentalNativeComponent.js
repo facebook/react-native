@@ -80,6 +80,12 @@ type VirtualViewExperimentalNativeProps = $ReadOnly<{
   renderState: Int32,
 
   /**
+   * This was needed to get VirtualViewManagerDelegate to set this property.
+   * TODO: Investigate why spread ViewProps doesn't call setter
+   */
+  removeClippedSubviews?: boolean,
+
+  /**
    * See `NativeModeChangeEvent`.
    */
   onModeChange?: ?DirectEventHandler<NativeModeChangeEvent>,
