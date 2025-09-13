@@ -17,9 +17,11 @@
 
 #import <React/RCTPushNotificationManager.h>
 
-#import <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
+#import <NativeCxxModuleExample.h>
 #import <RNTMyNativeViewComponentView.h>
+#else
+#import <NativeCxxModuleExample/NativeCxxModuleExample.h>
 #endif
 
 #if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
