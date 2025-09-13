@@ -130,7 +130,22 @@ public class JavaOnlyArray : ReadableArray, WritableArray {
     backingList.add(null)
   }
 
-  override fun toArrayList(): ArrayList<Any?> = ArrayList(backingList)
+  internal fun toArrayListShallow(): ArrayList<Any?> = ArrayList(backingList)
+
+  override fun toArrayList(): ArrayList<Any?> {
+    val arrayList = ArrayList<Any?>()
+    repeat(size()) { i ->
+      when (getType(i)) {
+        ReadableType.Null -> arrayList.add(null)
+        ReadableType.Boolean -> arrayList.add(getBoolean(i))
+        ReadableType.Number -> arrayList.add(getDouble(i))
+        ReadableType.String -> arrayList.add(getString(i))
+        ReadableType.Map -> arrayList.add(getMap(i)?.toHashMap())
+        ReadableType.Array -> arrayList.add(getArray(i)?.toArrayList())
+      }
+    }
+    return arrayList
+  }
 
   override fun toString(): String = backingList.toString()
 
