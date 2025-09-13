@@ -119,7 +119,8 @@ internal class VirtualViewContainerState {
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
-    val virtualViewsIt = if (virtualView != null) listOf(virtualView) else virtualViews
+    val virtualViewsIt =
+        if (virtualView != null) listOf(virtualView) else virtualViews.toMutableSet()
     virtualViewsIt.forEach { vv ->
       val rect = vv.containerRelativeRect
 
