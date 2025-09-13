@@ -1,0 +1,5 @@
+framework module NativeCxxModuleExample {
+  header "NativeCxxModuleExample.h"
+  export *
+  module * { export * }
+}
