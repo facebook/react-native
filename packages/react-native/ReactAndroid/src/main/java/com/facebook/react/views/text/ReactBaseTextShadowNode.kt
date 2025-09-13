@@ -34,7 +34,6 @@ import com.facebook.react.views.text.ReactTypefaceUtils.parseFontStyle
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontVariant
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 import com.facebook.react.views.text.TextTransform.Companion.apply
-import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan
 import com.facebook.react.views.text.internal.span.CustomStyleSpan
@@ -523,6 +522,7 @@ public constructor(
       while (i < length) {
         val child: ReactShadowNode<*> = textShadowNode.getChildAt(i)
 
+        @Suppress("DEPRECATION")
         if (child is ReactRawTextShadowNode) {
           child.text?.let { sb.append(apply(it, textAttributes.textTransform)) }
         } else if (child is ReactBaseTextShadowNode) {
@@ -535,7 +535,7 @@ public constructor(
               inlineViews,
               sb.length,
           )
-        } else if (child is ReactTextInlineImageShadowNode) {
+        } else if (child is com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode) {
           // We make the image take up 1 character in the span and put a corresponding character
           // into the text so that the image doesn't run over any following text.
           sb.append(INLINE_VIEW_PLACEHOLDER)
