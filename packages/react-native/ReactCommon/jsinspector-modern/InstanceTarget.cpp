@@ -17,18 +17,21 @@ namespace facebook::react::jsinspector_modern {
 std::shared_ptr<InstanceTarget> InstanceTarget::create(
     std::shared_ptr<ExecutionContextManager> executionContextManager,
     InstanceTargetDelegate& delegate,
-    VoidExecutor executor) {
-  std::shared_ptr<InstanceTarget> instanceTarget{
-      new InstanceTarget(executionContextManager, delegate)};
+    VoidExecutor executor,
+    HostTargetDelegate& hostTargetDelegate) {
+  std::shared_ptr<InstanceTarget> instanceTarget{new InstanceTarget(
+      executionContextManager, delegate, hostTargetDelegate)};
   instanceTarget->setExecutor(std::move(executor));
   return instanceTarget;
 }
 
 InstanceTarget::InstanceTarget(
     std::shared_ptr<ExecutionContextManager> executionContextManager,
-    InstanceTargetDelegate& delegate)
+    InstanceTargetDelegate& delegate,
+    HostTargetDelegate& hostTargetDelegate)
     : delegate_(delegate),
-      executionContextManager_(std::move(executionContextManager)) {
+      executionContextManager_(std::move(executionContextManager)),
+      hostTargetDelegate_(hostTargetDelegate) {
   (void)delegate_;
 }
 
@@ -77,7 +80,8 @@ RuntimeTarget& InstanceTarget::registerRuntime(
           .uniqueId = std::nullopt},
       delegate,
       std::move(jsExecutor),
-      makeVoidExecutor(executorFromThis()));
+      makeVoidExecutor(executorFromThis()),
+      hostTargetDelegate_);
 
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {
     agent.setCurrentRuntime(currentRuntime);
