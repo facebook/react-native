@@ -41,18 +41,14 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor,
-      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
+      VoidExecutor executor)
       : frontendChannel_(frontendChannel),
         targetController_(targetController),
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(TracingAgent(
-            frontendChannel,
-            sessionState,
-            targetController,
-            std::move(traceRecordingToEmit))) {}
+        tracingAgent_(
+            TracingAgent(frontendChannel, sessionState, targetController)) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -200,6 +196,14 @@ class HostAgent::Impl final {
       frontendChannel_(cdp::jsonNotification(
           "ReactNativeApplication.metadataUpdated",
           createHostMetadataPayload(hostMetadata_)));
+
+      auto stashedTraceRecording =
+          targetController_.getDelegate()
+              .unstable_getTraceRecordingThatWillBeEmittedOnInitialization();
+      if (stashedTraceRecording.has_value()) {
+        tracingAgent_.emitExternalTraceRecording(
+            std::move(stashedTraceRecording.value()));
+      }
 
       return {
           .isFinishedHandlingRequest = true,
@@ -432,8 +436,7 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor,
-      std::optional<tracing::TraceRecordingState> traceRecordingToEmit) {}
+      VoidExecutor executor) {}
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
@@ -446,16 +449,14 @@ HostAgent::HostAgent(
     HostTargetController& targetController,
     HostTargetMetadata hostMetadata,
     SessionState& sessionState,
-    VoidExecutor executor,
-    std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
+    VoidExecutor executor)
     : impl_(std::make_unique<Impl>(
           *this,
           frontendChannel,
           targetController,
           std::move(hostMetadata),
           sessionState,
-          std::move(executor),
-          std::move(traceRecordingToEmit))) {}
+          std::move(executor))) {}
 
 HostAgent::~HostAgent() = default;
 

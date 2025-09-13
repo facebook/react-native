@@ -38,17 +38,10 @@ const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
-    HostTargetController& hostTargetController,
-    std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
+    HostTargetController& hostTargetController)
     : frontendChannel_(std::move(frontendChannel)),
       sessionState_(sessionState),
-      hostTargetController_(hostTargetController) {
-  if (traceRecordingToEmit.has_value()) {
-    frontendChannel_(
-        cdp::jsonNotification("ReactNativeApplication.traceRequested"));
-    emitTraceRecording(std::move(traceRecordingToEmit.value()));
-  }
-}
+      hostTargetController_(hostTargetController) {}
 
 TracingAgent::~TracingAgent() {
   // Agents are owned by the session. If the agent is destroyed, it means that
@@ -100,15 +93,22 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   return false;
 }
 
+void TracingAgent::emitExternalTraceRecording(
+    tracing::TraceRecordingState traceRecording) const {
+  frontendChannel_(
+      cdp::jsonNotification("ReactNativeApplication.traceRequested"));
+  emitTraceRecording(std::move(traceRecording));
+}
+
 void TracingAgent::emitTraceRecording(
-    tracing::TraceRecordingState state) const {
+    tracing::TraceRecordingState traceRecording) const {
   auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
     frontendChannel_(cdp::jsonNotification(
         "Tracing.dataCollected",
         folly::dynamic::object("value", std::move(eventsChunk))));
   };
   tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
-      std::move(state),
+      std::move(traceRecording),
       dataCollectedCallback,
       TRACE_EVENT_CHUNK_SIZE,
       PROFILE_TRACE_EVENT_CHUNK_SIZE);
