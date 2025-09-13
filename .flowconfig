@@ -75,8 +75,6 @@ module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
 
-experimental.error_code_migration=new
-
 ban_spread_key_props=true
 
 [lints]
@@ -100,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.279.0
+^0.281.0

@@ -11,6 +11,7 @@
 #include "TraceEventSerializer.h"
 
 #include <string_view>
+#include <unordered_map>
 
 namespace facebook::react::jsinspector_modern::tracing {
 
@@ -227,6 +228,51 @@ void sendBufferedTraceEvents(
   dispatchCallback(std::move(traceEventBuffer));
 }
 
+// Auxilliary struct that represents the state of the Profile for a single
+// thread. We record a single Profile for a single Thread.
+struct ThreadProfileState {
+  // The current chunk that is being built for this thread.
+  ProfileChunk chunk;
+
+  // The id of the Profile that is being built for this thread.
+  RuntimeProfileId profileId;
+
+  ProfileTreeRootNode rootNode;
+  ProfileTreeNode programNode;
+  ProfileTreeNode idleNode;
+
+  // The timestamp of the last sample that was captured on this thread.
+  HighResTimeStamp lastCapturedSampleTimestamp;
+
+  // IdGenerator for this Profile.
+  IdGenerator nodeIdGenerator;
+
+  ThreadProfileState(
+      ProcessId processId,
+      ThreadId threadId,
+      RuntimeProfileId profileId,
+      HighResTimeStamp profileTimestamp,
+      uint16_t chunkSize,
+      IdGenerator nodeIdGenerator)
+      : chunk(chunkSize, processId, threadId, profileTimestamp),
+        profileId(profileId),
+        rootNode(ProfileTreeRootNode{nodeIdGenerator.getNext()}),
+        programNode(*rootNode.addChild(
+            nodeIdGenerator.getNext(),
+            ProfileTreeNode::CodeType::Other,
+            createArtificialCallFrame(PROGRAM_FRAME_NAME))),
+        idleNode(*rootNode.addChild(
+            nodeIdGenerator.getNext(),
+            ProfileTreeNode::CodeType::Other,
+            createArtificialCallFrame(IDLE_FRAME_NAME))),
+        lastCapturedSampleTimestamp(profileTimestamp),
+        nodeIdGenerator(nodeIdGenerator) {
+    chunk.nodes.push_back(rootNode);
+    chunk.nodes.push_back(programNode);
+    chunk.nodes.push_back(idleNode);
+  }
+};
+
 } // namespace
 
 /* static */ void
@@ -237,7 +283,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
     const std::function<void(folly::dynamic&& traceEventsChunk)>&
         dispatchCallback,
     uint16_t traceEventChunkSize,
-    uint16_t profileChunkSize) {
+    uint16_t profileChunkSize,
+    uint16_t maxUniqueNodesPerChunk) {
   for (auto&& profile : profiles) {
     serializeAndDispatch(
         std::move(profile),
@@ -245,7 +292,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
         tracingStartTime,
         dispatchCallback,
         traceEventChunkSize,
-        profileChunkSize);
+        profileChunkSize,
+        maxUniqueNodesPerChunk);
   }
 }
 
@@ -257,7 +305,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
     const std::function<void(folly::dynamic&& traceEventsChunk)>&
         dispatchCallback,
     uint16_t traceEventChunkSize,
-    uint16_t profileChunkSize) {
+    uint16_t profileChunkSize,
+    uint16_t maxUniqueNodesPerChunk) {
   auto samples = std::move(profile.samples);
   if (samples.empty()) {
     return;
@@ -266,56 +315,50 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
   auto traceEventBuffer = folly::dynamic::array();
   traceEventBuffer.reserve(traceEventChunkSize);
 
-  ThreadId threadId = samples.front().threadId;
-  HighResTimeStamp previousSampleTimestamp = tracingStartTime;
-  HighResTimeStamp currentChunkTimestamp = tracingStartTime;
-  auto profileId = profileIdGenerator.getNext();
-
-  sendProfileTraceEvent(
-      profile.processId,
-      threadId,
-      profileId,
-      tracingStartTime,
-      dispatchCallback);
-
-  // There could be any number of new nodes in this chunk. Empty if all nodes
-  // are already emitted in previous chunks.
-  ProfileChunk chunk{
-      profileChunkSize, profile.processId, threadId, currentChunkTimestamp};
-
-  IdGenerator nodeIdGenerator{};
-  ProfileTreeRootNode rootNode(nodeIdGenerator.getNext());
-  chunk.nodes.push_back(rootNode);
-
-  ProfileTreeNode* programNode = rootNode.addChild(
-      nodeIdGenerator.getNext(),
-      ProfileTreeNode::CodeType::Other,
-      createArtificialCallFrame(PROGRAM_FRAME_NAME));
-  chunk.nodes.push_back(*programNode);
-
-  ProfileTreeNode* idleNode = rootNode.addChild(
-      nodeIdGenerator.getNext(),
-      ProfileTreeNode::CodeType::Other,
-      createArtificialCallFrame(IDLE_FRAME_NAME));
-  chunk.nodes.push_back(*idleNode);
-  uint32_t idleNodeId = idleNode->getId();
-
+  std::unordered_map<ThreadId, ThreadProfileState> threadProfiles;
   for (auto& sample : samples) {
     ThreadId currentSampleThreadId = sample.threadId;
     auto currentSampleTimestamp = getHighResTimeStampForSample(sample);
 
-    // We should not attempt to merge samples from different threads.
-    // From past observations, this only happens for GC nodes.
-    // We should group samples by thread id once we support executing JavaScript
-    // on different threads.
-    if (currentSampleThreadId != chunk.threadId || chunk.isFull()) {
+    auto threadProfileStateIterator =
+        threadProfiles.find(currentSampleThreadId);
+    if (threadProfileStateIterator == threadProfiles.end()) {
+      RuntimeProfileId nextProfileId = profileIdGenerator.getNext();
+      auto profileStartTime =
+          threadProfiles.empty() ? tracingStartTime : currentSampleTimestamp;
+
+      sendProfileTraceEvent(
+          profile.processId,
+          currentSampleThreadId,
+          nextProfileId,
+          profileStartTime,
+          dispatchCallback);
+
+      auto [emplacedThreadProfileStateIterator, _] = threadProfiles.emplace(
+          currentSampleThreadId,
+          ThreadProfileState{
+              profile.processId,
+              currentSampleThreadId,
+              nextProfileId,
+              profileStartTime,
+              profileChunkSize,
+              IdGenerator{}});
+      threadProfileStateIterator = emplacedThreadProfileStateIterator;
+    }
+    auto& threadProfileState = threadProfileStateIterator->second;
+
+    if (threadProfileState.chunk.isFull() ||
+        threadProfileState.chunk.nodes.size() >= maxUniqueNodesPerChunk) {
       bufferProfileChunkTraceEvent(
-          std::move(chunk), profileId, traceEventBuffer);
-      chunk = ProfileChunk{
+          std::move(threadProfileState.chunk),
+          threadProfileState.profileId,
+          traceEventBuffer);
+
+      threadProfileState.chunk = ProfileChunk{
           profileChunkSize,
           profile.processId,
           currentSampleThreadId,
-          currentChunkTimestamp};
+          tracingStartTime};
     }
 
     if (traceEventBuffer.size() == traceEventChunkSize) {
@@ -327,17 +370,22 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndDispatch(
 
     processCallStack(
         std::move(sample.callStack),
-        chunk,
-        rootNode,
-        idleNodeId,
-        currentSampleTimestamp - previousSampleTimestamp,
-        nodeIdGenerator);
+        threadProfileState.chunk,
+        threadProfileState.rootNode,
+        threadProfileState.idleNode.getId(),
+        currentSampleTimestamp - threadProfileState.lastCapturedSampleTimestamp,
+        threadProfileState.nodeIdGenerator);
 
-    previousSampleTimestamp = currentSampleTimestamp;
+    threadProfileState.lastCapturedSampleTimestamp = currentSampleTimestamp;
   }
 
-  if (!chunk.isEmpty()) {
-    bufferProfileChunkTraceEvent(std::move(chunk), profileId, traceEventBuffer);
+  for (auto& [threadId, threadState] : threadProfiles) {
+    if (!threadState.chunk.isEmpty()) {
+      bufferProfileChunkTraceEvent(
+          std::move(threadState.chunk),
+          threadState.profileId,
+          traceEventBuffer);
+    }
   }
 
   if (!traceEventBuffer.empty()) {

@@ -41,14 +41,18 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor)
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
       : frontendChannel_(frontendChannel),
         targetController_(targetController),
         hostMetadata_(std::move(hostMetadata)),
         sessionState_(sessionState),
         networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
-        tracingAgent_(
-            TracingAgent(frontendChannel, sessionState, targetController)) {}
+        tracingAgent_(TracingAgent(
+            frontendChannel,
+            sessionState,
+            targetController,
+            std::move(traceRecordingToEmit))) {}
 
   ~Impl() {
     if (isPausedInDebuggerOverlayVisible_) {
@@ -428,7 +432,8 @@ class HostAgent::Impl final {
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
       SessionState& sessionState,
-      VoidExecutor executor) {}
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit) {}
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
@@ -441,14 +446,16 @@ HostAgent::HostAgent(
     HostTargetController& targetController,
     HostTargetMetadata hostMetadata,
     SessionState& sessionState,
-    VoidExecutor executor)
+    VoidExecutor executor,
+    std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
     : impl_(std::make_unique<Impl>(
           *this,
           frontendChannel,
           targetController,
           std::move(hostMetadata),
           sessionState,
-          std::move(executor))) {}
+          std::move(executor),
+          std::move(traceRecordingToEmit))) {}
 
 HostAgent::~HostAgent() = default;
 

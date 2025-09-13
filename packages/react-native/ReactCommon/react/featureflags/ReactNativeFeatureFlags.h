@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b601a3c92cd80549ca2391ab0a123214>>
+ * @generated SignedSource<<f35eabad586b13eb735569c22e9ee2ce>>
  */
 
 /**
@@ -90,6 +90,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
+   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
+   */
+  RN_EXPORT static bool enableAndroidLinearText();
+
+  /**
    * Enables various optimizations throughout the path of measuring text on Android.
    */
   RN_EXPORT static bool enableAndroidTextMeasurementOptimizations();
@@ -160,6 +165,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
+   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+   */
+  RN_EXPORT static bool enableImagePrefetchingOnUiThreadAndroid();
+
+  /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
    */
   RN_EXPORT static bool enableImmediateUpdateModeForContentOffsetChanges();
@@ -200,11 +210,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableNetworkEventReporting();
 
   /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
-
-  /**
    * Enables caching text layout artifacts for later reuse
    */
   RN_EXPORT static bool enablePreparedTextLayout();
@@ -228,6 +233,16 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForImage();
+
+  /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForScrollView();
 
   /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
@@ -255,6 +270,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
+   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
+   */
+  RN_EXPORT static bool enableWebPerformanceAPIsByDefault();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -275,6 +295,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
 
   /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
+
+  /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool perfMonitorV2Enabled();
@@ -288,11 +313,6 @@ class ReactNativeFeatureFlags {
    * Enables a new mechanism in ShadowTree to prevent problems caused by multiple threads trying to commit concurrently. If a thread tries to commit a few times unsuccessfully, it will acquire a lock and try again.
    */
   RN_EXPORT static bool preventShadowTreeCommitExhaustion();
-
-  /**
-   * Releases the cached image data when it is consumed by the observers.
-   */
-  RN_EXPORT static bool releaseImageDataWhenConsumed();
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
@@ -368,6 +388,11 @@ class ReactNativeFeatureFlags {
    * When enabled, NativeModules will be executed by using the TurboModule system
    */
   RN_EXPORT static bool useTurboModules();
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  RN_EXPORT static double virtualViewHysteresisRatio();
 
   /**
    * Initial prerender ratio for VirtualView.

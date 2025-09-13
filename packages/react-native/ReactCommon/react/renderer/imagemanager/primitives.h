@@ -95,7 +95,7 @@ class ImageSource {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps(
-      const std::string prefix) const {
+      const std::string& prefix) const {
     ImageSource imageSource{};
 
     SharedDebugStringConvertibleList headersList;
@@ -162,13 +162,13 @@ inline folly::dynamic toDynamic(const ImageSource& imageSource) {
 
 using ImageSources = std::vector<ImageSource>;
 
-enum class ImageResizeMode {
-  Cover,
-  Contain,
-  Stretch,
-  Center,
-  Repeat,
-  None,
+enum class ImageResizeMode : int8_t {
+  Cover = 0,
+  Contain = 1,
+  Stretch = 2,
+  Center = 3,
+  Repeat = 4,
+  None = 5,
 };
 
 class ImageErrorInfo {

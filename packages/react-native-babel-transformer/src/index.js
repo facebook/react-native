@@ -218,7 +218,7 @@ const transform /*: BabelTransformer['transform'] */ = ({
 
     // The result from `transformFromAstSync` can be null (if the file is ignored)
     if (!result) {
-      /* $FlowFixMe BabelTransformer specifies that the `ast` can never be null but
+      /* $FlowFixMe[incompatible-type] BabelTransformer specifies that the `ast` can never be null but
        * the function returns here. Discovered when typing `BabelNode`. */
       return {ast: null};
     }

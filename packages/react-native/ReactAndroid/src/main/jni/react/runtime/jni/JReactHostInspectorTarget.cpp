@@ -80,15 +80,6 @@ void JReactHostInspectorTarget::sendDebuggerResumeCommand() {
   }
 }
 
-void JReactHostInspectorTarget::registerNatives() {
-  registerHybrid({
-      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
-      makeNativeMethod(
-          "sendDebuggerResumeCommand",
-          JReactHostInspectorTarget::sendDebuggerResumeCommand),
-  });
-}
-
 jsinspector_modern::HostTargetMetadata
 JReactHostInspectorTarget::getMetadata() {
   jsinspector_modern::HostTargetMetadata metadata = {
@@ -129,17 +120,6 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
-void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
-    const PerfMonitorUpdateRequest& request) {
-  static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
-      "handleNativePerfMonitorMetricUpdate");
-  method(
-      jobj_,
-      request.activeInteraction.duration,
-      static_cast<jint>(request.activeInteraction.responsivenessScore),
-      request.activeInteraction.ttl);
-}
-
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<
@@ -155,6 +135,72 @@ void JReactHostInspectorTarget::loadNetworkResource(
 
 HostTarget* JReactHostInspectorTarget::getInspectorTarget() {
   return inspectorTarget_ ? inspectorTarget_.get() : nullptr;
+}
+
+bool JReactHostInspectorTarget::startBackgroundTrace() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->startTracing(tracing::Mode::Background);
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot start Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
+  if (inspectorTarget_) {
+    return inspectorTarget_->stopTracing();
+  } else {
+    jni::throwNewJavaException(
+        "java/lang/IllegalStateException",
+        "Cannot stop Tracing session while the Fusebox backend is not enabled.");
+  }
+}
+
+void JReactHostInspectorTarget::stopAndStashBackgroundTrace() {
+  auto capturedTrace = inspectorTarget_->stopTracing();
+  stashTraceRecordingState(std::move(capturedTrace));
+}
+
+void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
+  inspectorTarget_->stopTracing();
+}
+
+void JReactHostInspectorTarget::stashTraceRecordingState(
+    tracing::TraceRecordingState&& state) {
+  stashedTraceRecordingState_ = std::move(state);
+}
+
+std::optional<tracing::TraceRecordingState> JReactHostInspectorTarget::
+    unstable_getTraceRecordingThatWillBeEmittedOnInitialization() {
+  auto state = std::move(stashedTraceRecordingState_);
+  stashedTraceRecordingState_.reset();
+  return state;
+}
+
+void JReactHostInspectorTarget::registerNatives() {
+  registerHybrid({
+      makeNativeMethod("initHybrid", JReactHostInspectorTarget::initHybrid),
+      makeNativeMethod(
+          "sendDebuggerResumeCommand",
+          JReactHostInspectorTarget::sendDebuggerResumeCommand),
+      makeNativeMethod(
+          "startBackgroundTrace",
+          JReactHostInspectorTarget::startBackgroundTrace),
+      makeNativeMethod(
+          "stopAndStashBackgroundTrace",
+          JReactHostInspectorTarget::stopAndStashBackgroundTrace),
+      makeNativeMethod(
+          "stopAndDiscardBackgroundTrace",
+          JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),
+      makeNativeMethod(
+          "tracingStateAsInt", JReactHostInspectorTarget::tracingState),
+  });
+}
+
+jint JReactHostInspectorTarget::tracingState() {
+  auto state = inspectorTarget_->tracingState();
+  return static_cast<jint>(state);
 }
 
 } // namespace facebook::react

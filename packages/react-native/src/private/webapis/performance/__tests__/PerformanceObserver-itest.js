@@ -10,19 +10,8 @@
 
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
-import type Performance from '../Performance';
-import type {
-  PerformanceObserver as PerformanceObserverT,
-  PerformanceObserverEntryList,
-} from '../PerformanceObserver';
-
-import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
+import {PerformanceObserverEntryList_public} from '../PerformanceObserver';
 import * as Fantom from '@react-native/fantom';
-
-setUpPerformanceObserver();
-
-declare var performance: Performance;
-declare var PerformanceObserver: Class<PerformanceObserverT>;
 
 describe('PerformanceObserver', () => {
   it('receives notifications for marks and measures', () => {
@@ -105,5 +94,34 @@ describe('PerformanceObserver', () => {
 
     expect(entries1.getEntries()[1]).toBe(measure);
     expect(entries2.getEntries()[1]).toBe(measure);
+  });
+
+  describe('takeRecords()', () => {
+    it('provides all buffered events and clears the buffer', () => {
+      const callback = jest.fn();
+      const observer = new PerformanceObserver(callback);
+      observer.observe({entryTypes: ['mark']});
+
+      Fantom.runTask(() => {
+        const entry = performance.mark('mark1');
+
+        const entries = observer.takeRecords();
+        expect(entries.length).toBe(1);
+        // This is not supported yet
+        // expect(entries[0]).toBe(entry);
+        expect(entries[0]).toEqual(entry);
+      });
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+  });
+
+  it('does NOT allow creating instances of PerformanceObserverEntryList directly', () => {
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      return new PerformanceObserverEntryList_public();
+    }).toThrow(
+      "Failed to construct 'PerformanceObserverEntryList': Illegal constructor",
+    );
   });
 });

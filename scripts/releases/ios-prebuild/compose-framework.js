@@ -63,17 +63,12 @@ async function createFramework(
   // Copy bundles into the framework
   copyBundles(scheme, dependencies, output, frameworkPaths);
 
-  // Copy headers to the framework - start by building the Header folder
-  await copyHeaders(scheme, dependencies, rootFolder);
+  // Copy Symbols to symbols folder - copy before headers since we're using the folders inside the xcframework
+  // to get the arch slices.
+  copySymbols(scheme, output, frameworkPaths);
 
-  // Copy Symbols to symbols folder
-  const symbolPaths = frameworkPaths.map(framework =>
-    path.join(framework, `${scheme}.framework.dSYM`),
-  );
-  console.log('Copying symbols to symbols folder...');
-  const symbolOutput = path.join(rootFolder, 'Symbols');
-  fs.mkdirSync(symbolOutput, {recursive: true});
-  symbolPaths.forEach(symbol => execSync(`cp -r ${symbol} ${symbolOutput}`));
+  // Copy headers to the framework - start by building the Header folder
+  copyHeaders(scheme, dependencies, rootFolder);
 
   if (identity) {
     signXCFramework(identity, output);
@@ -84,7 +79,7 @@ async function createFramework(
  * Copies headers needed from the package to a Header folder that we'll pass to
  * each framework arch type
  */
-async function copyHeaders(
+function copyHeaders(
   scheme /*: string */,
   dependencies /*: $ReadOnlyArray<Dependency> */,
   rootFolder /*: string */,
@@ -134,9 +129,15 @@ function copyBundles(
   // A bundle is the name of the framework + _ + target name + .bundle. We can
   // check if the target has a bundle by checking if it defines one or more resources.
   frameworkPaths.forEach(frameworkPath => {
-    const frameworkPlatforms = execSync(
-      `vtool -show-build ${path.join(frameworkPath, 'PackageFrameworks', scheme + '.framework', scheme)}|grep platform`,
-    ).toString();
+    const frameworkPlatforms = getArchsFromFramework(
+      path.join(
+        frameworkPath,
+        'PackageFrameworks',
+        scheme + '.framework',
+        scheme,
+      ),
+    );
+
     dependencies.forEach(dep => {
       const resources = dep.files.resources;
       if (!resources || resources.length === 0) {
@@ -147,29 +148,25 @@ function copyBundles(
       const sourceBundlePath = path.join(frameworkPath, bundleName);
       if (fs.existsSync(sourceBundlePath)) {
         // Target folder - needs to be copied to the resulting framework
-        let targetArchFolderFound = false;
-        targetArchFolders.forEach(targetArchFolder => {
-          const targetPlatforms = execSync(
-            `vtool -show-build ${path.join(targetArchFolder, scheme + '.framework', scheme)}|grep platform`,
-          ).toString();
+        const targetFolder = targetArchFolders.find(
+          targetArchFolder =>
+            getArchsFromFramework(
+              path.join(targetArchFolder, scheme + '.framework', scheme),
+            ) === frameworkPlatforms,
+        );
+        if (targetFolder) {
+          console.log(
+            `  ${path.relative(outputFolder, sourceBundlePath)} → ${path.basename(targetFolder)}`,
+          );
+          const targetBundlePath = path.join(
+            targetFolder,
+            `${scheme}.framework`,
+            bundleName,
+          );
 
-          if (targetPlatforms === frameworkPlatforms) {
-            console.log(
-              `  ${path.relative(outputFolder, sourceBundlePath)} → ${path.basename(targetArchFolder)}`,
-            );
-            const targetBundlePath = path.join(
-              targetArchFolder,
-              `${scheme}.framework`,
-              bundleName,
-            );
-
-            // A bundle is a directory, so we need to copy the whole directory
-            execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
-            targetArchFolderFound = true;
-          }
-        });
-
-        if (!targetArchFolderFound) {
+          // A bundle is a directory, so we need to copy the whole directory
+          execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
+        } else {
           throw Error(
             `Could not find target architecture for folder ${path.relative(outputFolder, frameworkPath)}. Expected to find ${frameworkPlatforms}`,
           );
@@ -179,6 +176,75 @@ function copyBundles(
       }
     });
   });
+}
+
+function copySymbols(
+  scheme /*: string */,
+  outputFolder /*:string*/,
+  frameworkPaths /*:Array<string>*/,
+) {
+  console.log('Copying dSym files...');
+
+  const targetArchFolders = fs
+    .readdirSync(outputFolder)
+    .map(p => path.join(outputFolder, p))
+    .filter(p => fs.statSync(p).isDirectory());
+
+  // For each framework (in frameworkPaths), copy the symbols from the source folder.
+  frameworkPaths.forEach(frameworkPath => {
+    const frameworkPlatforms = getArchsFromFramework(
+      path.join(
+        frameworkPath,
+        'PackageFrameworks',
+        scheme + '.framework',
+        scheme,
+      ),
+    );
+
+    // Find the correct target folder based on the current architectures
+    const targetFolder = targetArchFolders.find(
+      targetArchFolder =>
+        frameworkPlatforms ===
+        getArchsFromFramework(
+          path.join(targetArchFolder, scheme + '.framework', scheme),
+        ),
+    );
+
+    if (!targetFolder) {
+      throw new Error(`Could not find target folder for ${frameworkPath}`);
+    }
+    const sourceSymbolPath = path.join(
+      frameworkPath,
+      scheme + '.framework.dSYM',
+    );
+    if (!fs.existsSync(sourceSymbolPath)) {
+      throw new Error(`dSYM folder ${sourceSymbolPath} not found`);
+    }
+
+    const archName = path.basename(targetFolder);
+    console.log(
+      ` ${path.relative(outputFolder, sourceSymbolPath)} → ${archName}`,
+    );
+
+    const targetSymbolPath = path.join(
+      outputFolder,
+      '..',
+      'Symbols',
+      archName,
+      scheme + '.framework.dSYM',
+    );
+    fs.mkdirSync(targetSymbolPath, {recursive: true});
+    execSync(`cp -r "${sourceSymbolPath}/" "${targetSymbolPath}"`);
+  });
+}
+
+function getArchsFromFramework(frameworkPath /*:string*/) {
+  return execSync(`vtool -show-build ${frameworkPath}|grep platform`)
+    .toString()
+    .split('\n')
+    .map(p => p.trim().split(' ')[1])
+    .sort((a, b) => a.localeCompare(b))
+    .join(' ');
 }
 
 function signXCFramework(

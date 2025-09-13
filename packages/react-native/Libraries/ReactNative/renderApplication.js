@@ -76,6 +76,7 @@ export default function renderApplication<Props: Object>(
   if (useOffscreen && displayMode != null) {
     // $FlowFixMe[incompatible-type]
     // $FlowFixMe[prop-missing]
+    // $FlowFixMe[missing-export]
     const Activity: ActivityType = React.unstable_Activity;
 
     renderable = (

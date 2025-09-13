@@ -211,6 +211,18 @@ let reactHermes = RNTarget(
   ]
 )
 
+/// React-networking.podspec
+let reactNetworking = RNTarget(
+  name: .reactNetworking,
+  path: "ReactCommon/react/networking",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactJsInspectorNetwork, .reactPerformanceTimeline],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
+)
+
 /// React-performancecdpmetrics.podspec
 let reactPerformanceCdpMetrics = RNTarget(
   name: .reactPerformanceCdpMetrics,
@@ -302,6 +314,13 @@ let reactIdleCallbacksNativeModule = RNTarget(
   name: .reactIdleCallbacksNativeModule,
   path: "ReactCommon/react/nativemodule/idlecallbacks",
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
+)
+
+/// React-webperformance.podspec
+let reactWebPerformanceNativeModule = RNTarget(
+  name: .reactWebPerformanceNativeModule,
+  path: "ReactCommon/react/nativemodule/webperformance",
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactTurboModuleCore, .reactPerformanceTimeline]
 )
 
 /// React-featureflagnativemodule.podspec
@@ -566,6 +585,7 @@ let targets = [
   reactNativeDependencies,
   hermesPrebuilt,
   reactJsiTooling,
+  reactNetworking,
   reactPerformanceCdpMetrics,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
@@ -590,6 +610,7 @@ let targets = [
   reactTurboModuleCoreDefaults,
   reactTurboModuleCoreMicrotasks,
   reactIdleCallbacksNativeModule,
+  reactWebPerformanceNativeModule,
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
@@ -737,6 +758,7 @@ extension String {
   static let hermesPrebuilt = "hermes-prebuilt"
 
   static let reactJsiTooling = "React-jsitooling"
+  static let reactNetworking = "React-networking"
   static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
   static let reactPerformanceTimeline = "React-performancetimeline"
   static let reactRuntimeScheduler = "React-runtimescheduler"
@@ -764,6 +786,7 @@ extension String {
   static let reactTurboModuleCoreDefaults = "ReactCommon/turbomodule/core/defaults"
   static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"
   static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
+  static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"

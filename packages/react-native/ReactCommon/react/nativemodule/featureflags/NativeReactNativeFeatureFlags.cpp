@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c321b78f9d710e5f3dc3a73e56be298>>
+ * @generated SignedSource<<c5fd32fcb5f9241f8039ee983e2fc872>>
  */
 
 /**
@@ -94,6 +94,11 @@ bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableAndroidLinearText(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAndroidLinearText();
+}
+
 bool NativeReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations();
@@ -164,6 +169,11 @@ bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
 }
 
+bool NativeReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
@@ -204,11 +214,6 @@ bool NativeReactNativeFeatureFlags::enableNetworkEventReporting(
   return ReactNativeFeatureFlags::enableNetworkEventReporting();
 }
 
-bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
-}
-
 bool NativeReactNativeFeatureFlags::enablePreparedTextLayout(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enablePreparedTextLayout();
@@ -232,6 +237,16 @@ bool NativeReactNativeFeatureFlags::enableViewCulling(
 bool NativeReactNativeFeatureFlags::enableViewRecycling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableViewRecycling();
+}
+
+bool NativeReactNativeFeatureFlags::enableViewRecyclingForImage(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForImage();
+}
+
+bool NativeReactNativeFeatureFlags::enableViewRecyclingForScrollView(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForScrollView();
 }
 
 bool NativeReactNativeFeatureFlags::enableViewRecyclingForText(
@@ -259,6 +274,11 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
   return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
 }
 
+bool NativeReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault();
+}
+
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -279,6 +299,11 @@ bool NativeReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS(
   return ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS();
 }
 
+bool NativeReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
 bool NativeReactNativeFeatureFlags::perfMonitorV2Enabled(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::perfMonitorV2Enabled();
@@ -292,11 +317,6 @@ double NativeReactNativeFeatureFlags::preparedTextCacheSize(
 bool NativeReactNativeFeatureFlags::preventShadowTreeCommitExhaustion(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion();
-}
-
-bool NativeReactNativeFeatureFlags::releaseImageDataWhenConsumed(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::releaseImageDataWhenConsumed();
 }
 
 bool NativeReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover(
@@ -372,6 +392,11 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
 bool NativeReactNativeFeatureFlags::useTurboModules(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
+}
+
+double NativeReactNativeFeatureFlags::virtualViewHysteresisRatio(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
 }
 
 double NativeReactNativeFeatureFlags::virtualViewPrerenderRatio(

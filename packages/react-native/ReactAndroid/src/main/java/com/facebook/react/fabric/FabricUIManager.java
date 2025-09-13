@@ -65,6 +65,7 @@ import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
+import com.facebook.react.fabric.mounting.mountitems.PrefetchResourcesMountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
@@ -98,7 +99,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -737,11 +737,17 @@ public class FabricUIManager
    *     vertical insets.
    */
   private long getEncodedScreenSizeWithoutVerticalInsets(int surfaceId) {
-    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
-    Objects.requireNonNull(surfaceMountingManager);
-    ThemedReactContext context = Objects.requireNonNull(surfaceMountingManager.getContext());
-    return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
-        context.getCurrentActivity());
+    ThemedReactContext context =
+        mMountingManager
+            .getSurfaceManagerEnforced(surfaceId, "getEncodedScreenSizeWithoutVerticalInsets")
+            .getContext();
+    if (context == null) {
+      FLog.w(TAG, "Couldn't get context from SurfaceMountingManager for surfaceId %d", surfaceId);
+      return 0;
+    } else {
+      return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
+          context.getCurrentActivity());
+    }
   }
 
   @Override
@@ -790,7 +796,8 @@ public class FabricUIManager
           @Override
           public void execute(MountingManager mountingManager) {
             try {
-              mountingManager.updateProps(reactTag, props);
+              mountingManager.storeSynchronousMountPropsOverride(reactTag, props);
+              mountingManager.updatePropsSynchronously(reactTag, props);
             } catch (Exception ex) {
               // TODO T42943890: Fix animations in Fabric and remove this try/catch?
               // There might always be race conditions between surface teardown and
@@ -984,10 +991,17 @@ public class FabricUIManager
    * by an ImageView.
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
-    mMountingManager.experimental_prefetchResource(
-        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  public void experimental_prefetchResources(
+      int surfaceId, String componentName, ReadableMapBuffer params) {
+    if (ReactNativeFeatureFlags.enableImagePrefetchingOnUiThreadAndroid()) {
+      mMountItemDispatcher.addMountItem(
+          new PrefetchResourcesMountItem(surfaceId, componentName, params));
+    } else {
+      SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+      if (surfaceMountingManager != null) {
+        surfaceMountingManager.experimental_prefetchResources(surfaceId, componentName, params);
+      }
+    }
   }
 
   void setBinding(FabricUIManagerBinding binding) {
@@ -1372,6 +1386,7 @@ public class FabricUIManager
       // Collect surface IDs for all the mount items
       for (MountItem mountItem : mountItems) {
         if (mountItem != null
+            && mountItem.getSurfaceId() != View.NO_ID
             && !mSurfaceIdsWithPendingMountNotification.contains(mountItem.getSurfaceId())) {
           mSurfaceIdsWithPendingMountNotification.add(mountItem.getSurfaceId());
         }

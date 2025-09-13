@@ -96,8 +96,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
-  private final Rect mOverflowInset = new Rect();
+  private final Rect mTempRect = new Rect();
+  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
 
+  private Rect mOverflowInset = new Rect();
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
   private Overflow mOverflow = Overflow.SCROLL;
@@ -118,11 +120,10 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mSnapToEnd = true;
   private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
   private boolean mPagedArrowScrolling = false;
-  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+  private int mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+  private int mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper = null;
-  private final ReactScrollViewScrollState mReactScrollViewScrollState;
-  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollX", 0, 0);
+  private ReactScrollViewScrollState mReactScrollViewScrollState;
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;
   private int mScrollEventThrottle = 0;
@@ -130,8 +131,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart = 0;
   private int mFadingEdgeLengthEnd = 0;
-
-  private final Rect mTempRect = new Rect();
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -144,11 +143,66 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
 
     mScroller = getOverScrollerFromParent();
-    mReactScrollViewScrollState = new ReactScrollViewScrollState();
 
     setOnHierarchyChangeListener(this);
     setClipChildren(false);
+    initView();
   }
+
+  /**
+   * Set all default values here as opposed to in the constructor or field defaults. It is important
+   * that these properties are set during the constructor, but also on-demand whenever an existing
+   * ReactTextView is recycled.
+   */
+  private void initView() {
+    mOverflowInset = new Rect();
+    mActivelyScrolling = false;
+    mClippingRect = null;
+    mOverflow = Overflow.SCROLL;
+    mDragging = false;
+    mPagingEnabled = false;
+    mPostTouchRunnable = null;
+    mRemoveClippedSubviews = false;
+    mScrollEnabled = true;
+    mSendMomentumEvents = false;
+    mFpsListener = null;
+    mScrollPerfTag = null;
+    mEndBackground = null;
+    mEndFillColor = Color.TRANSPARENT;
+    mDisableIntervalMomentum = false;
+    mSnapInterval = 0;
+    mSnapOffsets = null;
+    mSnapToStart = true;
+    mSnapToEnd = true;
+    mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
+    mPagedArrowScrolling = false;
+    mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+    mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
+    mStateWrapper = null;
+    mReactScrollViewScrollState = new ReactScrollViewScrollState();
+
+    mPointerEvents = PointerEvents.AUTO;
+    mLastScrollDispatchTime = 0;
+    mScrollEventThrottle = 0;
+    mContentView = null;
+    mMaintainVisibleContentPositionHelper = null;
+    mFadingEdgeLengthStart = 0;
+    mFadingEdgeLengthEnd = 0;
+  }
+
+  /* package */ void recycleView() {
+    // Set default field values
+    initView();
+
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+    updateView();
+  }
+
+  private void updateView() {}
 
   @Override
   public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
@@ -441,9 +495,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       // If a "pending" content offset value has been set, we restore that value.
       // Upon call to scrollTo, the "pending" values will be re-set.
       int scrollToX =
-          pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+          mPendingContentOffsetX != UNSET_CONTENT_OFFSET ? mPendingContentOffsetX : getScrollX();
       int scrollToY =
-          pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+          mPendingContentOffsetY != UNSET_CONTENT_OFFSET ? mPendingContentOffsetY : getScrollY();
       scrollTo(scrollToX, scrollToY);
     }
 
@@ -1459,11 +1513,11 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     }
 
     if (isContentReady()) {
-      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {
-      pendingContentOffsetX = x;
-      pendingContentOffsetY = y;
+      mPendingContentOffsetX = x;
+      mPendingContentOffsetY = y;
     }
   }
 

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifdef HERMES_ENABLE_DEBUGGER
+#if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
 
 #include <memory>
 #include <mutex>
@@ -59,4 +59,4 @@ class ConnectionDemux {
 
 } // namespace facebook::hermes::inspector_modern::chrome
 
-#endif // HERMES_ENABLE_DEBUGGER
+#endif // defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)

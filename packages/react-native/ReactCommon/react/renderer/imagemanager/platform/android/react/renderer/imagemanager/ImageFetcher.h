@@ -7,24 +7,45 @@
 
 #pragma once
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
+#include <react/renderer/mounting/ShadowTree.h>
+#include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/utils/ContextContainer.h>
+#include <unordered_map>
+#include <vector>
 
 namespace facebook::react {
 
-class ImageFetcher {
+class ImageFetcher : public UIManagerCommitHook {
  public:
-  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer)
-      : contextContainer_(std::move(contextContainer)) {}
+  ImageFetcher(std::shared_ptr<const ContextContainer> contextContainer);
+  ~ImageFetcher() override;
+  ImageFetcher(const ImageFetcher&) = delete;
+  ImageFetcher& operator=(const ImageFetcher&) = delete;
+  ImageFetcher(ImageFetcher&&) = delete;
+  ImageFetcher& operator=(ImageFetcher&&) = delete;
 
   ImageRequest requestImage(
       const ImageSource& imageSource,
-      const ImageRequestParams& imageRequestParams,
       SurfaceId surfaceId,
-      Tag tag) const;
+      const ImageRequestParams& imageRequestParams,
+      Tag tag);
+
+  void commitHookWasRegistered(const UIManager& uiManager) noexcept override {}
+
+  void commitHookWasUnregistered(const UIManager& uiManager) noexcept override {
+  }
+
+  RootShadowNode::Unshared shadowTreeWillCommit(
+      const ShadowTree& shadowTree,
+      const RootShadowNode::Shared& oldRootShadowNode,
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& commitOptions) noexcept override;
 
  private:
+  std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
 } // namespace facebook::react

@@ -17,7 +17,8 @@
 
 namespace facebook::react {
 
-struct MethodCall {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] MethodCall {
   int moduleId;
   int methodId;
   folly::dynamic arguments;
@@ -31,6 +32,7 @@ struct MethodCall {
 };
 
 /// \throws std::invalid_argument
+[[deprecated("This API will be removed along with the legacy architecture.")]]
 std::vector<MethodCall> parseMethodCalls(folly::dynamic&& jsonData);
 
 } // namespace facebook::react

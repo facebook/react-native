@@ -23,8 +23,6 @@ const int SAMPLING_HZ = 100;
 
 int64_t hermesDeltaTime = 0;
 
-using perfetto::TrackEvent;
-
 uint64_t hermesToPerfettoTime(int64_t hermesTs) {
   if (hermesDeltaTime == 0) {
     hermesDeltaTime = TrackEvent::GetTraceTimeNs() -
@@ -113,7 +111,7 @@ void HermesPerfettoDataSource::OnStart(const StartArgs&) {
       "react-native",
       perfetto::DynamicString{"Profiling Started"},
       getPerfettoWebPerfTrackSync("JS Sampling"),
-      perfetto::TrackEvent::GetTraceTimeNs());
+      TrackEvent::GetTraceTimeNs());
 }
 
 void HermesPerfettoDataSource::OnFlush(const FlushArgs&) {

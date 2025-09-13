@@ -27,8 +27,6 @@ const std::string JS_SAMPLING_TRACK = "JS Sampling";
 
 const int SAMPLING_HZ = 1000;
 
-using perfetto::TrackEvent;
-
 #if defined(__ANDROID__)
 std::string getApplicationId() {
   pid_t pid = getpid();

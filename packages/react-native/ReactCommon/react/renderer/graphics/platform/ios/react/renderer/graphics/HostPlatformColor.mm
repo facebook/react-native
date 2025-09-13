@@ -29,7 +29,7 @@ bool UIColorIsP3ColorSpace(const std::shared_ptr<void> &uiColor)
 
   if (CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelRGB) {
     CFStringRef name = CGColorSpaceGetName(colorSpace);
-    if (name != NULL && CFEqual(name, kCGColorSpaceDisplayP3)) {
+    if (name != NULL && (CFEqual(name, kCGColorSpaceDisplayP3) != 0u)) {
       return true;
     }
   }
@@ -105,7 +105,7 @@ int32_t ColorFromUIColorForSpecificTraitCollection(
     UITraitCollection *traitCollection)
 {
   UIColor *color = (UIColor *)unwrapManagedObject(uiColor);
-  if (color) {
+  if (color != nullptr) {
     color = [color resolvedColorWithTraitCollection:traitCollection];
     return ColorFromUIColor(color);
   }
@@ -199,7 +199,7 @@ Color::Color(const ColorComponents &components)
 Color::Color(std::shared_ptr<void> uiColor)
 {
   UIColor *color = ((UIColor *)unwrapManagedObject(uiColor));
-  if (color) {
+  if (color != nullptr) {
     auto colorHash = hashFromUIColor(uiColor);
     uiColorHashValue_ = colorHash;
   }

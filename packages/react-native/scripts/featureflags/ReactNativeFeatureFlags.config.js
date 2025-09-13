@@ -158,6 +158,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAndroidLinearText: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-09',
+        description:
+          'Enables linear text rendering on Android wherever subpixel text rendering is enabled',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAndroidTextMeasurementOptimizations: {
       defaultValue: false,
       metadata: {
@@ -303,6 +314,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImagePrefetchingOnUiThreadAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-02',
+        description:
+          'When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableImmediateUpdateModeForContentOffsetChanges: {
       defaultValue: false,
       metadata: {
@@ -387,17 +409,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableNewBackgroundAndBorderDrawables: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-24',
-        description:
-          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enablePreparedTextLayout: {
       defaultValue: false,
       metadata: {
@@ -446,6 +457,28 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-31',
         description:
           'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForImage: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForScrollView: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-20',
+        description:
+          'Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -505,6 +538,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableWebPerformanceAPIsByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'canary',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -548,6 +591,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    overrideBySynchronousMountPropsAtMountingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     perfMonitorV2Enabled: {
       defaultValue: false,
       metadata: {
@@ -579,17 +633,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'experimental',
-    },
-    releaseImageDataWhenConsumed: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-07-10',
-        description:
-          'Releases the cached image data when it is consumed by the observers.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
     },
     shouldPressibilityUseW3CPointerEventsForHover: {
       defaultValue: false,
@@ -665,7 +708,7 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useNativeEqualsInNativeReadableArrayAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-07-15',
         description:
@@ -673,17 +716,17 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'stable',
     },
     useNativeTransformHelperAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2025-07-15',
         description: 'Use a native implementation of TransformHelper',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'experimental',
+      ossReleaseStage: 'stable',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -708,13 +751,12 @@ const definitions: FeatureFlagDefinitions = {
       ossReleaseStage: 'none',
     },
     useRawPropsJsiValue: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-12-02',
         description:
           'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
         expectedReleaseValue: true,
-        purpose: 'experimentation',
+        purpose: 'release',
       },
       ossReleaseStage: 'none',
     },
@@ -749,6 +791,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
+    },
+    virtualViewHysteresisRatio: {
+      defaultValue: 0,
+      metadata: {
+        dateAdded: '2025-08-22',
+        description:
+          'Sets a hysteresis window for transition between prerender and hidden modes.',
+        expectedReleaseValue: 1,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     virtualViewPrerenderRatio: {
       defaultValue: 5,
@@ -797,6 +850,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    disableMaintainVisibleContentPosition: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-26',
+        description:
+          'Disable prop maintainVisibleContentPosition in ScrollView',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: true,
       metadata: {
@@ -806,6 +870,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'stable',
+    },
+    enableVirtualViewExperimental: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-29',
+        description: 'Enables the experimental version of `VirtualView`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
     },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
@@ -877,6 +951,16 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    virtualViewActivityBehavior: {
+      defaultValue: 'no-activity',
+      metadata: {
+        dateAdded: '2025-08-27',
+        description: 'Changes whether and how `VirtualView` uses `Activity`.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

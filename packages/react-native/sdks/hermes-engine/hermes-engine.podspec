@@ -20,7 +20,13 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
+# TODO: T231755000 read hermes version from version.properties when consuming hermes
 version = package['version']
+
+if ENV['RCT_HERMES_V1_ENABLED'] == "1"
+  versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
+  version = versionProperties['HERMES_V1_VERSION_NAME']
+end
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
@@ -62,6 +68,21 @@ Pod::Spec.new do |spec|
       ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
     end
 
+    # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
+    # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
+    # TODO: T236142916 hermesc should be consumed from NPM even when not using Hermes V1
+    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL && ENV['RCT_HERMES_V1_ENABLED'] == "1"
+      hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+        'require.resolve(
+        "hermes-compiler",
+        {paths: [process.argv[1]]}
+        )', __dir__]).strip
+      )
+
+      spec.user_target_xcconfig = {
+        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/osx-bin/hermesc"
+      }
+    end
 
     # Right now, even reinstalling pods with the PRODUCTION flag turned on, does not change the version of hermes that is downloaded
     # To remove the PRODUCTION flag, we want to download the right version of hermes on the flight
@@ -100,22 +121,24 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/cdp'
     end
 
-    spec.subspec 'inspector' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/*.h'
-      ss.header_dir = 'hermes/inspector'
-    end
-
-    spec.subspec 'inspector_chrome' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
-      ss.header_dir = 'hermes/inspector/chrome'
-    end
-
     spec.subspec 'Public' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'public/hermes/Public/*.h'
       ss.header_dir = 'hermes/Public'
+    end
+
+    if ENV['RCT_HERMES_V1_ENABLED'] != "1"
+      spec.subspec 'inspector' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/*.h'
+        ss.header_dir = 'hermes/inspector'
+      end
+
+      spec.subspec 'inspector_chrome' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+        ss.header_dir = 'hermes/inspector/chrome'
+      end
     end
 
     hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"

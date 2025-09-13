@@ -190,6 +190,7 @@ void PerformanceTracer::reportTimeStamp(
       .trackName = std::move(trackName),
       .trackGroup = std::move(trackGroup),
       .color = std::move(color),
+      .threadId = getCurrentThreadId(),
   });
 }
 
@@ -399,7 +400,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'X',
                 .ts = event.start,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
                 .dur = event.end - event.start,
             });
           },
@@ -410,7 +411,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'X',
                 .ts = event.start,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
                 .dur = event.end - event.start,
             });
           },
@@ -429,7 +430,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'I',
                 .ts = event.start,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
                 .args = std::move(eventArgs),
             });
           },
@@ -444,12 +445,12 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
 
             events.emplace_back(TraceEvent{
                 .id = eventId,
-                .name = std::move(event.name),
+                .name = event.name,
                 .cat = "blink.user_timing",
                 .ph = 'b',
                 .ts = event.start,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
                 .args = std::move(beginEventArgs),
             });
             events.emplace_back(TraceEvent{
@@ -459,7 +460,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'e',
                 .ts = event.start + event.duration,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
             });
           },
           [&](PerformanceTracerEventTimeStamp&& event) {
@@ -500,7 +501,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .ph = 'I',
                 .ts = event.createdAt,
                 .pid = processId_,
-                .tid = getCurrentThreadId(),
+                .tid = event.threadId,
                 .args = folly::dynamic::object("data", std::move(data)),
             });
           },

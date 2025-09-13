@@ -58,12 +58,12 @@ export default class ReactFabricHostComponent implements NativeMethods {
   }
 
   blur() {
-    // $FlowFixMe - Error supressed during the migration of HostInstance to ReactNativeElement
+    // $FlowFixMe[incompatible-type] - Error supressed during the migration of HostInstance to ReactNativeElement
     TextInputState.blurTextInput(this);
   }
 
   focus() {
-    // $FlowFixMe - Error supressed during the migration of HostInstance to ReactNativeElement
+    // $FlowFixMe[incompatible-type] - Error supressed during the migration of HostInstance to ReactNativeElement
     TextInputState.focusTextInput(this);
   }
 

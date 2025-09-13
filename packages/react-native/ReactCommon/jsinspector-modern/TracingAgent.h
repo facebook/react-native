@@ -24,11 +24,18 @@ class TracingAgent {
   /**
    * \param frontendChannel A channel used to send responses to the
    * frontend.
+   * \param sessionState The state of the session that created this agent.
+   * \param hostTargetController An interface to the HostTarget that this agent
+   * is attached to. The caller is responsible for ensuring that the
+   * HostTargetDelegate and underlying HostTarget both outlive the agent.
+   * \param traceRecordingToEmit If set, this is the trace that Host has
+   * requested to display in the Frontend.
    */
   TracingAgent(
       FrontendChannel frontendChannel,
       SessionState& sessionState,
-      HostTargetController& hostTargetController);
+      HostTargetController& hostTargetController,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit);
 
   ~TracingAgent();
 
@@ -48,6 +55,12 @@ class TracingAgent {
   SessionState& sessionState_;
 
   HostTargetController& hostTargetController_;
+
+  /**
+   * Emits the captured Trace Recording state in a series of
+   * Tracing.dataCollected events, followed by a Tracing.tracingComplete event.
+   */
+  void emitTraceRecording(tracing::TraceRecordingState state) const;
 };
 
 } // namespace facebook::react::jsinspector_modern

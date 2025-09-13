@@ -415,7 +415,9 @@ CGSize RCTSwitchSize(void)
   static CGSize rctSwitchSize;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      rctSwitchSize = [UISwitch new].intrinsicContentSize;
+    });
   });
   return rctSwitchSize;
 }
@@ -737,13 +739,13 @@ NSData *__nullable RCTGzipData(NSData *__nullable input, float level)
 
   void *libz = dlopen("/usr/lib/libz.dylib", RTLD_LAZY);
 
-  typedef int (*DeflateInit2_)(z_streamp, int, int, int, int, int, const char *, int);
+  using DeflateInit2_ = int (*)(z_streamp, int, int, int, int, int, const char *, int);
   DeflateInit2_ deflateInit2_ = (DeflateInit2_)dlsym(libz, "deflateInit2_");
 
-  typedef int (*Deflate)(z_streamp, int);
+  using Deflate = int (*)(z_streamp, int);
   Deflate deflate = (Deflate)dlsym(libz, "deflate");
 
-  typedef int (*DeflateEnd)(z_streamp);
+  using DeflateEnd = int (*)(z_streamp);
   DeflateEnd deflateEnd = (DeflateEnd)dlsym(libz, "deflateEnd");
 
   z_stream stream;

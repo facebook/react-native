@@ -52,6 +52,7 @@ import com.facebook.react.devsupport.InspectorFlags.getFuseboxEnabled
 import com.facebook.react.devsupport.StackTraceHelper.convertJavaStackTrace
 import com.facebook.react.devsupport.StackTraceHelper.convertJsStackTrace
 import com.facebook.react.devsupport.interfaces.BundleLoadCallback
+import com.facebook.react.devsupport.interfaces.DebuggerFrontendPanelName
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevOptionHandler
@@ -64,7 +65,10 @@ import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.devsupport.interfaces.StackFrame
+import com.facebook.react.devsupport.interfaces.TracingState
+import com.facebook.react.devsupport.interfaces.TracingStateProvider
 import com.facebook.react.devsupport.perfmonitor.PerfMonitorDevHelper
+import com.facebook.react.devsupport.perfmonitor.PerfMonitorOverlayManager
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter
@@ -74,10 +78,7 @@ import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
-
-public enum class ChromeDevToolsViewKeys(public val value: String) {
-  Performance("timeline")
-}
+import javax.inject.Provider
 
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
@@ -183,7 +184,8 @@ public abstract class DevSupportManagerBase(
           null
         }
 
-  private var perfMonitorOverlayManager: PerfMonitorOverlayViewManager? = null
+  private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
+  private var tracingStateProvider: TracingStateProvider? = null
 
   init {
     // We store JS bundle loaded from dev server in a single destination in app's data dir.
@@ -215,19 +217,19 @@ public abstract class DevSupportManagerBase(
     if (
         ReactNativeNewArchitectureFeatureFlags.enableBridgelessArchitecture() &&
             ReactNativeFeatureFlags.perfMonitorV2Enabled() &&
-            reactInstanceDevHelper is PerfMonitorDevHelper &&
-            perfMonitorOverlayManager == null
+            reactInstanceDevHelper is PerfMonitorDevHelper
     ) {
       perfMonitorOverlayManager =
-          PerfMonitorOverlayViewManager(
-              Supplier {
+          PerfMonitorOverlayManager(
+              reactInstanceDevHelper,
+              Provider {
                 val context = reactInstanceDevHelper.currentActivity
                 if (context == null || context.isFinishing) {
-                  return@Supplier null
+                  return@Provider null
                 }
                 context
               },
-              reactInstanceDevHelper.inspectorTarget,
+              { openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString()) },
           )
     }
   }
@@ -362,6 +364,43 @@ public abstract class DevSupportManagerBase(
       options[debuggerItemString] = DevOptionHandler { this.openDebugger() }
     }
 
+    if (ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val isConnected = isPackagerConnected
+      val tracingState = tracingStateProvider?.getTracingState() ?: TracingState.DISABLED
+
+      val analyzePerformanceItemString =
+          when (tracingState) {
+            TracingState.ENABLEDINBACKGROUNDMODE ->
+                applicationContext.getString(R.string.catalyst_performance_background)
+            TracingState.ENABLEDINCDPMODE ->
+                applicationContext.getString(R.string.catalyst_performance_cdp)
+            TracingState.DISABLED ->
+                applicationContext.getString(R.string.catalyst_performance_disabled)
+          }
+
+      if (!isConnected || tracingState == TracingState.ENABLEDINCDPMODE) {
+        disabledItemKeys.add(analyzePerformanceItemString)
+      }
+
+      options[analyzePerformanceItemString] =
+          when (tracingState) {
+            TracingState.ENABLEDINBACKGROUNDMODE ->
+                DevOptionHandler {
+                  UiThreadUtil.runOnUiThread {
+                    if (reactInstanceDevHelper is PerfMonitorDevHelper)
+                        reactInstanceDevHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
+                  }
+                  openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
+                }
+            TracingState.DISABLED ->
+                DevOptionHandler {
+                  if (reactInstanceDevHelper is PerfMonitorDevHelper)
+                      reactInstanceDevHelper.inspectorTarget?.resumeBackgroundTrace()
+                }
+            TracingState.ENABLEDINCDPMODE -> DevOptionHandler {}
+          }
+    }
+
     options[applicationContext.getString(R.string.catalyst_change_bundle_location)] =
         DevOptionHandler {
           val context = reactInstanceDevHelper.currentActivity
@@ -413,26 +452,29 @@ public abstract class DevSupportManagerBase(
       }
     }
 
-    val fpsDebugLabel =
-        if (devSettings.isFpsDebugEnabled)
-            applicationContext.getString(R.string.catalyst_perf_monitor_stop)
-        else applicationContext.getString(R.string.catalyst_perf_monitor)
-    options[fpsDebugLabel] = DevOptionHandler {
-      if (!devSettings.isFpsDebugEnabled) {
-        // Request overlay permission if needed when "Show Perf Monitor" option is selected
-        val context: Context? = reactInstanceDevHelper.currentActivity
-        if (context == null) {
-          FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
-        } else {
-          requestPermission(context)
+    // Do not show legacy performance overlay if V2 is enabled
+    if (!ReactNativeFeatureFlags.perfMonitorV2Enabled()) {
+      val fpsDebugLabel =
+          if (devSettings.isFpsDebugEnabled)
+              applicationContext.getString(R.string.catalyst_perf_monitor_stop)
+          else applicationContext.getString(R.string.catalyst_perf_monitor)
+      options[fpsDebugLabel] = DevOptionHandler {
+        if (!devSettings.isFpsDebugEnabled) {
+          // Request overlay permission if needed when "Show Perf Monitor" option is selected
+          val context: Context? = reactInstanceDevHelper.currentActivity
+          if (context == null) {
+            FLog.e(ReactConstants.TAG, "Unable to get reference to react activity")
+          } else {
+            requestPermission(context)
+          }
         }
+        devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
       }
-      devSettings.isFpsDebugEnabled = !devSettings.isFpsDebugEnabled
-    }
-    options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
-      val intent = Intent(applicationContext, DevSettingsActivity::class.java)
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      applicationContext.startActivity(intent)
+      options[applicationContext.getString(R.string.catalyst_settings)] = DevOptionHandler {
+        val intent = Intent(applicationContext, DevSettingsActivity::class.java)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        applicationContext.startActivity(intent)
+      }
     }
 
     if (customDevOptions.isNotEmpty()) {
@@ -508,10 +550,11 @@ public abstract class DevSupportManagerBase(
   override fun onNewReactContextCreated(reactContext: ReactContext) {
     resetCurrentContext(reactContext)
 
-    if (perfMonitorOverlayManager != null && reactInstanceDevHelper is PerfMonitorDevHelper) {
+    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
       }
+      perfMonitorOverlayManager?.enable()
     }
   }
 
@@ -842,6 +885,7 @@ public abstract class DevSupportManagerBase(
 
             override fun onPackagerDisconnected() {
               isPackagerConnected = false
+              perfMonitorOverlayManager?.disable()
             }
 
             override fun onPackagerReloadCommand() {
@@ -923,11 +967,11 @@ public abstract class DevSupportManagerBase(
     }
   }
 
-  override fun openDebugger() {
+  override fun openDebugger(panel: String?) {
     devServerHelper.openDebugger(
         currentReactContext,
         applicationContext.getString(R.string.catalyst_open_debugger_error),
-        ChromeDevToolsViewKeys.Performance.value,
+        panel,
     )
   }
 
@@ -944,6 +988,14 @@ public abstract class DevSupportManagerBase(
 
   override fun setAdditionalOptionForPackager(name: String, value: String) {
     devSettings.packagerConnectionSettings.setAdditionalOptionForPackager(name, value)
+  }
+
+  /**
+   * Sets the background tracing state provider for bridgeless architecture. This is called
+   * internally by the ReactHost implementation.
+   */
+  internal fun setTracingStateProvider(provider: TracingStateProvider?) {
+    tracingStateProvider = provider
   }
 
   public companion object {

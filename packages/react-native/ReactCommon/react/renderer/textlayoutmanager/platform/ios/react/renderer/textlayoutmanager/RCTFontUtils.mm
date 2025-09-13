@@ -36,7 +36,7 @@ static RCTFontProperties RCTResolveFontProperties(
     RCTFontProperties fontProperties,
     RCTFontProperties baseFontProperties)
 {
-  fontProperties.family = fontProperties.family.length ? fontProperties.family : baseFontProperties.family;
+  fontProperties.family = (fontProperties.family.length != 0u) ? fontProperties.family : baseFontProperties.family;
   fontProperties.size = !isnan(fontProperties.size) ? fontProperties.size : baseFontProperties.size;
   fontProperties.weight = !isnan(fontProperties.weight) ? fontProperties.weight : baseFontProperties.weight;
   fontProperties.style =
@@ -50,7 +50,7 @@ static RCTFontStyle RCTGetFontStyle(UIFont *font)
 {
   NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
   UIFontDescriptorSymbolicTraits symbolicTraits = [traits[UIFontSymbolicTrait] unsignedIntValue];
-  if (symbolicTraits & UIFontDescriptorTraitItalic) {
+  if ((symbolicTraits & UIFontDescriptorTraitItalic) != 0u) {
     return RCTFontStyleItalic;
   }
 
@@ -167,79 +167,79 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
     };
   });
 
-  if (fontVariant & RCTFontVariantSmallCaps) {
+  if ((fontVariant & RCTFontVariantSmallCaps) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantSmallCaps]];
   }
-  if (fontVariant & RCTFontVariantOldstyleNums) {
+  if ((fontVariant & RCTFontVariantOldstyleNums) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantOldstyleNums]];
   }
-  if (fontVariant & RCTFontVariantLiningNums) {
+  if ((fontVariant & RCTFontVariantLiningNums) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantLiningNums]];
   }
-  if (fontVariant & RCTFontVariantTabularNums) {
+  if ((fontVariant & RCTFontVariantTabularNums) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantTabularNums]];
   }
-  if (fontVariant & RCTFontVariantProportionalNums) {
+  if ((fontVariant & RCTFontVariantProportionalNums) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantProportionalNums]];
   }
-  if (fontVariant & RCTFontVariantStylisticOne) {
+  if ((fontVariant & RCTFontVariantStylisticOne) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticOne]];
   }
-  if (fontVariant & RCTFontVariantStylisticTwo) {
+  if ((fontVariant & RCTFontVariantStylisticTwo) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticTwo]];
   }
-  if (fontVariant & RCTFontVariantStylisticThree) {
+  if ((fontVariant & RCTFontVariantStylisticThree) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticThree]];
   }
-  if (fontVariant & RCTFontVariantStylisticFour) {
+  if ((fontVariant & RCTFontVariantStylisticFour) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticFour]];
   }
-  if (fontVariant & RCTFontVariantStylisticFive) {
+  if ((fontVariant & RCTFontVariantStylisticFive) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticFive]];
   }
-  if (fontVariant & RCTFontVariantStylisticSix) {
+  if ((fontVariant & RCTFontVariantStylisticSix) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticSix]];
   }
-  if (fontVariant & RCTFontVariantStylisticSeven) {
+  if ((fontVariant & RCTFontVariantStylisticSeven) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticSeven]];
   }
-  if (fontVariant & RCTFontVariantStylisticEight) {
+  if ((fontVariant & RCTFontVariantStylisticEight) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticEight]];
   }
-  if (fontVariant & RCTFontVariantStylisticNine) {
+  if ((fontVariant & RCTFontVariantStylisticNine) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticNine]];
   }
-  if (fontVariant & RCTFontVariantStylisticTen) {
+  if ((fontVariant & RCTFontVariantStylisticTen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticTen]];
   }
-  if (fontVariant & RCTFontVariantStylisticEleven) {
+  if ((fontVariant & RCTFontVariantStylisticEleven) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticEleven]];
   }
-  if (fontVariant & RCTFontVariantStylisticTwelve) {
+  if ((fontVariant & RCTFontVariantStylisticTwelve) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticTwelve]];
   }
-  if (fontVariant & RCTFontVariantStylisticThirteen) {
+  if ((fontVariant & RCTFontVariantStylisticThirteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticThirteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticFourteen) {
+  if ((fontVariant & RCTFontVariantStylisticFourteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticFourteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticFifteen) {
+  if ((fontVariant & RCTFontVariantStylisticFifteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticFifteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticSixteen) {
+  if ((fontVariant & RCTFontVariantStylisticSixteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticSixteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticSeventeen) {
+  if ((fontVariant & RCTFontVariantStylisticSeventeen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticSeventeen]];
   }
-  if (fontVariant & RCTFontVariantStylisticEighteen) {
+  if ((fontVariant & RCTFontVariantStylisticEighteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticEighteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticNineteen) {
+  if ((fontVariant & RCTFontVariantStylisticNineteen) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticNineteen]];
   }
-  if (fontVariant & RCTFontVariantStylisticTwenty) {
+  if ((fontVariant & RCTFontVariantStylisticTwenty) != 0) {
     [fontFeatures addObject:mapping[RCTFontVariantStylisticTwenty]];
   }
 
@@ -258,13 +258,13 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
 
   {
     std::lock_guard<std::mutex> lock(fontCacheMutex);
-    if (!fontCache) {
+    if (fontCache == nullptr) {
       fontCache = [NSCache new];
     }
     font = [fontCache objectForKey:cacheKey];
   }
 
-  if (!font) {
+  if (font == nullptr) {
     font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
 
     if (fontProperties.style == RCTFontStyleItalic) {
@@ -308,7 +308,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
   CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
   UIFont *font;
   UIFontDescriptorSystemDesign design = RCTGetFontDescriptorSystemDesign([fontProperties.family lowercaseString]);
-  if (design) {
+  if (design != nullptr) {
     // Create a system font which `-fontDescriptorWithDesign:` asks for
     // (see:
     // https://developer.apple.com/documentation/uikit/uifontdescriptor/3151797-fontdescriptorwithdesign?language=objc)
@@ -328,9 +328,9 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
       // Gracefully handle being given a font name rather than font family, for
       // example: "Helvetica Light Oblique" rather than just "Helvetica".
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
-      if (font) {
+      if (font != nullptr) {
         fontNames = [UIFont fontNamesForFamilyName:font.familyName];
-        fontWeight = fontWeight ?: RCTGetFontWeight(font);
+        fontWeight = (fontWeight != 0.0) ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
@@ -354,7 +354,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         }
       }
 
-      if (!font) {
+      if (font == nullptr) {
         // If we still don't have a match at least return the first font in the
         // fontFamily This is to support built-in font Zapfino and other custom
         // single font families like Impact

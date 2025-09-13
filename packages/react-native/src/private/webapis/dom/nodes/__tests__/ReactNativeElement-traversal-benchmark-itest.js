@@ -11,6 +11,7 @@
 import '@react-native/fantom/src/setUpDefaultReactNativeEnvironment';
 
 import type {HostInstance} from 'react-native';
+import type {FnOptions} from 'tinybench';
 
 import ensureInstance from '../../../../__tests__/utilities/ensureInstance';
 import ReactNativeElement from '../ReactNativeElement';
@@ -21,7 +22,7 @@ import {View} from 'react-native';
 let root;
 let node;
 
-const commonOptions = {
+const commonOptions: FnOptions = {
   beforeAll: () => {
     root = Fantom.createRoot();
 

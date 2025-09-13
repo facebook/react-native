@@ -45,9 +45,15 @@ class ReactNativePodsUtils
     end
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+        if ENV['RCT_HERMES_V1_ENABLED'] == "1"
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1 HERMES_V1_ENABLED=1", "React-hermes", :debug)
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1 HERMES_V1_ENABLED=1", "React-RuntimeHermes", :debug)
+        else
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
+        end
+
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
     end
 
     def self.set_gcc_preprocessor_definition_for_debugger(installer)
@@ -258,7 +264,8 @@ class ReactNativePodsUtils
         search_paths = []
 
         # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
-        if ReactNativeCoreUtils.build_rncore_from_source()
+        # Except for when adding search path for ReactCodegen since it contains source code.
+        if ReactNativeCoreUtils.build_rncore_from_source() || pod_name === "ReactCodegen"
             platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
 
             if platforms.empty?() || platforms.length() == 1
@@ -699,6 +706,17 @@ class ReactNativePodsUtils
                     map[field].unshift("$(inherited)")
                 end
             end
+        end
+    end
+
+    def self.resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
+        return unless ENV['USE_FRAMEWORKS']
+        if module_name
+            spec.module_name = module_name
+        end
+
+        if header_mappings_dir != nil && ReactNativeCoreUtils.build_rncore_from_source()
+            spec.header_mappings_dir = header_mappings_dir
         end
     end
 end

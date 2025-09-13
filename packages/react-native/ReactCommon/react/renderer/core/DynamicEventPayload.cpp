@@ -27,10 +27,10 @@ std::optional<double> DynamicEventPayload::extractValue(
   auto dynamic = payload_;
   for (auto& key : path) {
     auto type = dynamic.type();
-    if ((type == folly::dynamic::Type::OBJECT ||
-         type == folly::dynamic::Type::ARRAY) &&
-        !dynamic.empty()) {
+    if (type == folly::dynamic::Type::OBJECT && !dynamic.empty()) {
       dynamic = folly::dynamic(dynamic[key]);
+    } else if (type == folly::dynamic::Type::ARRAY && !dynamic.empty()) {
+      dynamic = folly::dynamic(dynamic[std::stoi(key)]);
     }
   }
   if (dynamic.type() == folly::dynamic::Type::DOUBLE) {

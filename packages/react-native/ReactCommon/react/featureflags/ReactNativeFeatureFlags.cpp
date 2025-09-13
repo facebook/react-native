@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<392fdd6e857b7c8ae99329b927be6ae0>>
+ * @generated SignedSource<<2cbb1a339481d2ba6d3047c2f16d6d10>>
  */
 
 /**
@@ -66,6 +66,10 @@ bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableAndroidLinearText() {
+  return getAccessor().enableAndroidLinearText();
+}
+
 bool ReactNativeFeatureFlags::enableAndroidTextMeasurementOptimizations() {
   return getAccessor().enableAndroidTextMeasurementOptimizations();
 }
@@ -122,6 +126,10 @@ bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
 }
 
+bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
+  return getAccessor().enableImagePrefetchingOnUiThreadAndroid();
+}
+
 bool ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges() {
   return getAccessor().enableImmediateUpdateModeForContentOffsetChanges();
 }
@@ -154,10 +162,6 @@ bool ReactNativeFeatureFlags::enableNetworkEventReporting() {
   return getAccessor().enableNetworkEventReporting();
 }
 
-bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
-  return getAccessor().enableNewBackgroundAndBorderDrawables();
-}
-
 bool ReactNativeFeatureFlags::enablePreparedTextLayout() {
   return getAccessor().enablePreparedTextLayout();
 }
@@ -176,6 +180,14 @@ bool ReactNativeFeatureFlags::enableViewCulling() {
 
 bool ReactNativeFeatureFlags::enableViewRecycling() {
   return getAccessor().enableViewRecycling();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecyclingForImage() {
+  return getAccessor().enableViewRecyclingForImage();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecyclingForScrollView() {
+  return getAccessor().enableViewRecyclingForScrollView();
 }
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
@@ -198,6 +210,10 @@ bool ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection() {
   return getAccessor().enableVirtualViewWindowFocusDetection();
 }
 
+bool ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault() {
+  return getAccessor().enableWebPerformanceAPIsByDefault();
+}
+
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
@@ -214,6 +230,10 @@ bool ReactNativeFeatureFlags::hideOffscreenVirtualViewsOnIOS() {
   return getAccessor().hideOffscreenVirtualViewsOnIOS();
 }
 
+bool ReactNativeFeatureFlags::overrideBySynchronousMountPropsAtMountingAndroid() {
+  return getAccessor().overrideBySynchronousMountPropsAtMountingAndroid();
+}
+
 bool ReactNativeFeatureFlags::perfMonitorV2Enabled() {
   return getAccessor().perfMonitorV2Enabled();
 }
@@ -224,10 +244,6 @@ double ReactNativeFeatureFlags::preparedTextCacheSize() {
 
 bool ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion() {
   return getAccessor().preventShadowTreeCommitExhaustion();
-}
-
-bool ReactNativeFeatureFlags::releaseImageDataWhenConsumed() {
-  return getAccessor().releaseImageDataWhenConsumed();
 }
 
 bool ReactNativeFeatureFlags::shouldPressibilityUseW3CPointerEventsForHover() {
@@ -288,6 +304,10 @@ bool ReactNativeFeatureFlags::useTurboModuleInterop() {
 
 bool ReactNativeFeatureFlags::useTurboModules() {
   return getAccessor().useTurboModules();
+}
+
+double ReactNativeFeatureFlags::virtualViewHysteresisRatio() {
+  return getAccessor().virtualViewHysteresisRatio();
 }
 
 double ReactNativeFeatureFlags::virtualViewPrerenderRatio() {

@@ -78,7 +78,7 @@
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return self.dependencyProvider ? self.dependencyProvider.thirdPartyFabricComponents : @{};
+  return (self.dependencyProvider != nullptr) ? self.dependencyProvider.thirdPartyFabricComponents : @{};
 }
 
 - (void)hostDidStart:(RCTHost *)host
@@ -87,13 +87,15 @@
 
 - (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
 {
-  return self.dependencyProvider ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.dependencyProvider) : @[];
+  return (self.dependencyProvider != nullptr)
+      ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.dependencyProvider)
+      : @[];
 }
 
 - (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
 {
   NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
+  return (self.dependencyProvider != nullptr) ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name

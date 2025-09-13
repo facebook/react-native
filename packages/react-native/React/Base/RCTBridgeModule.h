@@ -69,6 +69,7 @@ RCT_EXTERN_C_END
  * will be used as the JS module name. If omitted, the JS module name will
  * match the Objective-C class name.
  */
+#ifndef RCT_FIT_RM_OLD_RUNTIME
 #define RCT_EXPORT_MODULE(js_name)          \
   RCT_EXTERN void RCTRegisterModule(Class); \
   +(NSString *)moduleName                   \
@@ -79,6 +80,17 @@ RCT_EXTERN_C_END
   {                                         \
     RCTRegisterModule(self);                \
   }
+
+#else
+
+#define RCT_EXPORT_MODULE(js_name)          \
+  RCT_EXTERN void RCTRegisterModule(Class); \
+  +(NSString *)moduleName                   \
+  {                                         \
+    return @ #js_name;                      \
+  }
+
+#endif // RCT_FIT_RM_OLD_RUNTIME
 
 /**
  * Same as RCT_EXPORT_MODULE, but uses __attribute__((constructor)) for module

@@ -126,6 +126,8 @@ static void calculateShadowViewMutations(
     const CullingContext& oldCullingContext = {},
     const CullingContext& newCullingContext = {});
 
+namespace {
+
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
   ShadowViewMutation::List deleteMutations{};
@@ -135,6 +137,8 @@ struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List downwardMutations{};
   ShadowViewMutation::List destructiveDownwardMutations{};
 };
+
+} // namespace
 
 static void updateMatchedPairSubtrees(
     ViewNodePairScope& scope,

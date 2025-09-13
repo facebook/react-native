@@ -257,7 +257,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getInfo)
   UIWindow *window = RCTKeyWindow();
   UIInterfaceOrientation nextOrientation = window.windowScene.interfaceOrientation;
 
-  BOOL isRunningInFullScreen = CGRectEqualToRect(window.frame, window.screen.bounds);
+  BOOL isRunningInFullScreen = window ? CGRectEqualToRect(window.frame, window.screen.bounds) : YES;
   // We are catching here two situations for multitasking view:
   // a) The app is in Split View and the container gets resized -> !isRunningInFullScreen
   // b) The app changes to/from fullscreen example: App runs in slide over mode and goes into fullscreen->

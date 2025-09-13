@@ -12,7 +12,9 @@
 
 namespace facebook::react {
 
-class RCTNativeModule : public NativeModule {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] RCTNativeModule
+    : public NativeModule {
  public:
   RCTNativeModule(RCTBridge* bridge, RCTModuleData* moduleData);
 

@@ -18,7 +18,7 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config
 {
-  if ((self = [super initWithTag:tag config:config])) {
+  if ((self = [super initWithTag:tag config:config]) != nullptr) {
     _propsDictionary = [NSMutableDictionary new];
   }
   return self;
@@ -36,11 +36,11 @@
   NSDictionary<NSString *, NSNumber *> *style = self.config[@"style"];
   [style enumerateKeysAndObjectsUsingBlock:^(NSString *property, NSNumber *nodeTag, __unused BOOL *stop) {
     RCTAnimatedNode *node = [self.parentNodes objectForKey:nodeTag];
-    if (node) {
+    if (node != nullptr) {
       if ([node isKindOfClass:[RCTValueAnimatedNode class]]) {
         RCTValueAnimatedNode *valueAnimatedNode = (RCTValueAnimatedNode *)node;
         id animatedObject = valueAnimatedNode.animatedObject;
-        if (animatedObject) {
+        if (animatedObject != nullptr) {
           _propsDictionary[property] = animatedObject;
         } else {
           _propsDictionary[property] = @(valueAnimatedNode.value);

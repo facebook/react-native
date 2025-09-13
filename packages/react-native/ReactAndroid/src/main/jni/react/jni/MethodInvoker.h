@@ -19,7 +19,9 @@ namespace facebook::react {
 
 class Instance;
 
-struct JReflectMethod : public jni::JavaClass<JReflectMethod> {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JReflectMethod
+    : public jni::JavaClass<JReflectMethod> {
   static constexpr auto kJavaDescriptor = "Ljava/lang/reflect/Method;";
 
   jmethodID getMethodID() {
@@ -29,12 +31,15 @@ struct JReflectMethod : public jni::JavaClass<JReflectMethod> {
   }
 };
 
-struct JBaseJavaModule : public jni::JavaClass<JBaseJavaModule> {
+struct [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JBaseJavaModule
+    : public jni::JavaClass<JBaseJavaModule> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/BaseJavaModule;";
 };
 
-class MethodInvoker {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] MethodInvoker {
  public:
   MethodInvoker(
       jni::alias_ref<JReflectMethod::javaobject> method,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<604963e3616f21f84b65b0291fecb182>>
+ * @generated SignedSource<<14e017052313836604a3150fa08a1ebe>>
  * @flow strict
  * @noformat
  */
@@ -35,6 +35,7 @@ export interface Spec extends TurboModule {
   +disableTextLayoutManagerCacheAndroid?: () => boolean;
   +enableAccessibilityOrder?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
+  +enableAndroidLinearText?: () => boolean;
   +enableAndroidTextMeasurementOptimizations?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
@@ -49,6 +50,7 @@ export interface Spec extends TurboModule {
   +enableIOSTextBaselineOffsetPerLine?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
+  +enableImagePrefetchingOnUiThreadAndroid?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
@@ -57,25 +59,27 @@ export interface Spec extends TurboModule {
   +enableModuleArgumentNSNullConversionIOS?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNetworkEventReporting?: () => boolean;
-  +enableNewBackgroundAndBorderDrawables?: () => boolean;
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
+  +enableViewRecyclingForImage?: () => boolean;
+  +enableViewRecyclingForScrollView?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
   +enableVirtualViewDebugFeatures?: () => boolean;
   +enableVirtualViewRenderState?: () => boolean;
   +enableVirtualViewWindowFocusDetection?: () => boolean;
+  +enableWebPerformanceAPIsByDefault?: () => boolean;
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +hideOffscreenVirtualViewsOnIOS?: () => boolean;
+  +overrideBySynchronousMountPropsAtMountingAndroid?: () => boolean;
   +perfMonitorV2Enabled?: () => boolean;
   +preparedTextCacheSize?: () => number;
   +preventShadowTreeCommitExhaustion?: () => boolean;
-  +releaseImageDataWhenConsumed?: () => boolean;
   +shouldPressibilityUseW3CPointerEventsForHover?: () => boolean;
   +skipActivityIdentityAssertionOnHostPause?: () => boolean;
   +sweepActiveTouchOnChildNativeGesturesAndroid?: () => boolean;
@@ -91,6 +95,7 @@ export interface Spec extends TurboModule {
   +useShadowNodeStateOnClone?: () => boolean;
   +useTurboModuleInterop?: () => boolean;
   +useTurboModules?: () => boolean;
+  +virtualViewHysteresisRatio?: () => number;
   +virtualViewPrerenderRatio?: () => number;
 }
 

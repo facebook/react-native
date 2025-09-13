@@ -123,7 +123,7 @@ jest.unmock('../TextInput');
         throw new Error('Expected `textInputElement` to be non-null');
       }
 
-      // $FlowFixMe
+      // $FlowFixMe[prop-missing]
       textInputElement.currentProps = textInputElement.props;
       expect(textInputElement.isFocused()).toBe(false);
 
@@ -432,6 +432,7 @@ jest.unmock('../TextInput');
 
       expect(instance.toJSON()).toMatchInlineSnapshot(`
       <RCTSinglelineTextInputView
+        accessibilityElementsHidden={true}
         accessibilityLabel="label"
         accessibilityState={
           Object {

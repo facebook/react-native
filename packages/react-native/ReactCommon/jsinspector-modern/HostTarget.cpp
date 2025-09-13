@@ -34,7 +34,8 @@ class HostTargetSession {
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      VoidExecutor executor)
+      VoidExecutor executor,
+      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -47,7 +48,8 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            std::move(executor)) {}
+            std::move(executor),
+            std::move(traceRecordingToEmit)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -190,9 +192,6 @@ std::shared_ptr<HostTarget> HostTarget::create(
     VoidExecutor executor) {
   std::shared_ptr<HostTarget> hostTarget{new HostTarget(delegate)};
   hostTarget->setExecutor(std::move(executor));
-  if (InspectorFlags::getInstance().getPerfMonitorV2Enabled()) {
-    hostTarget->installPerfMetricsBinding();
-  }
   return hostTarget;
 }
 
@@ -206,7 +205,8 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
       std::move(connectionToFrontend),
       controller_,
       delegate_.getMetadata(),
-      makeVoidExecutor(executorFromThis()));
+      makeVoidExecutor(executorFromThis()),
+      delegate_.unstable_getTraceRecordingThatWillBeEmittedOnInitialization());
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
@@ -217,6 +217,11 @@ HostTarget::~HostTarget() {
   // HostCommandSender owns a session, so we must release it for the assertion
   // below to be valid.
   commandSender_.reset();
+
+  // HostRuntimeBinding owns a connection, so we must release it for the
+  // assertion
+  perfMetricsBinding_.reset();
+
   // Sessions are owned by InspectorPackagerConnection, not by HostTarget, but
   // they hold a HostTarget& that we must guarantee is valid.
   assert(
@@ -269,17 +274,6 @@ void HostTarget::sendCommand(HostCommand command) {
     }
     self.commandSender_->sendCommand(command);
   });
-}
-
-void HostTarget::installPerfMetricsBinding() {
-  perfMonitorUpdateHandler_ =
-      std::make_unique<PerfMonitorUpdateHandler>(delegate_);
-  perfMetricsBinding_ = std::make_unique<HostRuntimeBinding>(
-      *this, // Used immediately
-      "__chromium_devtools_metrics_reporter",
-      [this](const std::string& message) {
-        perfMonitorUpdateHandler_->handlePerfMetricsUpdate(message);
-      });
 }
 
 HostTargetController::HostTargetController(HostTarget& target)

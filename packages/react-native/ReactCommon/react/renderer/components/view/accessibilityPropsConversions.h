@@ -14,6 +14,7 @@
 #include <react/renderer/components/view/AccessibilityPrimitives.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 
 #include <unordered_map>
 
@@ -781,5 +782,60 @@ inline void fromRawValue(
   // sane default for prod
   result = Role::None;
 }
+
+inline std::string toString(AccessibilityLiveRegion accessibilityLiveRegion) {
+  switch (accessibilityLiveRegion) {
+    case AccessibilityLiveRegion::None:
+      return "none";
+    case AccessibilityLiveRegion::Polite:
+      return "polite";
+    case AccessibilityLiveRegion::Assertive:
+      return "assertive";
+  }
+}
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+inline std::string toString(AccessibilityState::CheckedState state) {
+  switch (state) {
+    case AccessibilityState::Unchecked:
+      return "Unchecked";
+    case AccessibilityState::Checked:
+      return "Checked";
+    case AccessibilityState::Mixed:
+      return "Mixed";
+    case AccessibilityState::None:
+      return "None";
+  }
+}
+
+inline std::string toString(const AccessibilityAction& accessibilityAction) {
+  std::string result = accessibilityAction.name;
+  if (accessibilityAction.label.has_value()) {
+    result += ": '" + accessibilityAction.label.value() + "'";
+  }
+  return result;
+}
+
+inline std::string toString(
+    std::vector<AccessibilityAction> accessibilityActions) {
+  std::string result = "[";
+  for (size_t i = 0; i < accessibilityActions.size(); i++) {
+    result += toString(accessibilityActions[i]);
+    if (i < accessibilityActions.size() - 1) {
+      result += ", ";
+    }
+  }
+  result += "]";
+  return result;
+}
+
+inline std::string toString(const AccessibilityState& accessibilityState) {
+  return "{disabled:" + toString(accessibilityState.disabled) +
+      ",selected:" + toString(accessibilityState.selected) +
+      ",checked:" + toString(accessibilityState.checked) +
+      ",busy:" + toString(accessibilityState.busy) +
+      ",expanded:" + toString(accessibilityState.expanded) + "}";
+}
+#endif
 
 } // namespace facebook::react

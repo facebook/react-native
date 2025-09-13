@@ -57,7 +57,7 @@ function ManyPointersPropertiesExample(): React.Node {
       <View style={styles.container} onPointerMove={onPointerMove} />
       <View style={styles.properties}>
         {Object.entries(data).map(
-          //$FlowFixMe can't supply generic for Object.entries
+          //$FlowFixMe[incompatible-type] can't supply generic for Object.entries
           ([key, evt]: [string, PointerEvent['nativeEvent']]) => (
             <View style={styles.property} key={key}>
               <Text>PointerID: {evt.pointerId}</Text>

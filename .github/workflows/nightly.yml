@@ -23,6 +23,7 @@ jobs:
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
@@ -50,8 +51,8 @@ jobs:
       - name: Build HermesC Apple
         uses: ./.github/actions/build-hermesc-apple
         with:
-          hermes-version: ${{ needs.prepare_hermes_workspace.output.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.output.react-native-version }}
+          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
+          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   build_apple_slices_hermes:
     runs-on: macos-14
@@ -75,7 +76,7 @@ jobs:
         uses: ./.github/actions/build-apple-slices-hermes
         with:
           flavor: ${{ matrix.flavor }}
-          slice: ${{ matrix.slice}}
+          slice: ${{ matrix.slice }}
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
@@ -101,6 +102,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
+    if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -145,6 +147,7 @@ jobs:
 
   build_android:
     runs-on: 8-core-ubuntu
+    if: github.repository == 'facebook/react-native'
     needs: [set_release_type]
     container:
       image: reactnativecommunity/react-native-android:latest

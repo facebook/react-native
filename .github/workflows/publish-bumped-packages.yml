@@ -9,6 +9,7 @@ on:
 jobs:
   publish_bumped_packages:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       GHA_NPM_TOKEN: ${{ secrets.GHA_NPM_TOKEN }}
     steps:

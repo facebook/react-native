@@ -44,10 +44,9 @@ Pod::Spec.new do |s|
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
   } : {})
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name = module_name
-  end
+  resolve_use_frameworks(s, module_name: module_name)
 
+  add_dependency(s, "React-oscompat") # Needed for USE_FRAMEWORKS=dynamic
   s.dependency "React-featureflags"
   add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
   s.dependency "React-jsi"
@@ -55,6 +54,8 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
+  add_dependency(s, "React-oscompat")
+
   if use_hermes()
     s.dependency "hermes-engine"
   end

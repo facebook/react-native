@@ -186,9 +186,9 @@ class PreparePrefabHeadersTaskTest {
 
     val project = createProject(projectDir = tempFolder.root)
     val task =
-        createTestTask<PreparePrefabHeadersTask>(project = project) {
-          it.outputDir.set(outputDir)
-          it.input.set(listOf(PrefabPreprocessingEntry("sample_library", "boost/" to "")))
+        createTestTask<PreparePrefabHeadersTask>(project = project) { task ->
+          task.outputDir.set(outputDir)
+          task.input.set(listOf(PrefabPreprocessingEntry("sample_library", "boost/" to "")))
         }
 
     task.taskAction()

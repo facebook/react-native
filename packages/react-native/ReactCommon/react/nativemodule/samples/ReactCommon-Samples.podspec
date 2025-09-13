@@ -40,6 +40,8 @@ Pod::Spec.new do |s|
   s.framework = "UIKit"
 
   if ENV['USE_FRAMEWORKS']
+    # Do not use resolve_use_frameworks here - since we're including source files.
+    # Then it is not needed.
     s.header_mappings_dir     = './'
   end
 

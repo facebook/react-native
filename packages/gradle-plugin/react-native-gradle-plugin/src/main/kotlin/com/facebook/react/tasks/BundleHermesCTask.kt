@@ -34,15 +34,15 @@ abstract class BundleHermesCTask : DefaultTask() {
 
   @get:InputFiles
   val sources: ConfigurableFileTree =
-      project.fileTree(root) {
-        it.include("**/*.js")
-        it.include("**/*.jsx")
-        it.include("**/*.ts")
-        it.include("**/*.tsx")
-        it.exclude("**/android/**/*")
-        it.exclude("**/ios/**/*")
-        it.exclude("**/build/**/*")
-        it.exclude("**/node_modules/**/*")
+      project.fileTree(root) { fileTree ->
+        fileTree.include("**/*.js")
+        fileTree.include("**/*.jsx")
+        fileTree.include("**/*.ts")
+        fileTree.include("**/*.tsx")
+        fileTree.exclude("**/android/**/*")
+        fileTree.exclude("**/ios/**/*")
+        fileTree.exclude("**/build/**/*")
+        fileTree.exclude("**/node_modules/**/*")
       }
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
@@ -62,6 +62,8 @@ abstract class BundleHermesCTask : DefaultTask() {
   @get:Input abstract val minifyEnabled: Property<Boolean>
 
   @get:Input abstract val hermesEnabled: Property<Boolean>
+
+  @get:Input abstract val hermesV1Enabled: Property<Boolean>
 
   @get:Input abstract val devEnabled: Property<Boolean>
 
@@ -94,7 +96,8 @@ abstract class BundleHermesCTask : DefaultTask() {
     runCommand(bundleCommand)
 
     if (hermesEnabled.get()) {
-      val detectedHermesCommand = detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get())
+      val detectedHermesCommand =
+          detectOSAwareHermesCommand(root.get().asFile, hermesCommand.get(), hermesV1Enabled.get())
       val bytecodeFile = File("${bundleFile}.hbc")
       val outputSourceMap = resolveOutputSourceMap(bundleAssetFilename)
       val compilerSourceMap = resolveCompilerSourceMap(bundleAssetFilename)

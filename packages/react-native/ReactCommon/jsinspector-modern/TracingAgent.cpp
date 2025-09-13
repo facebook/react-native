@@ -38,10 +38,17 @@ const uint16_t PROFILE_TRACE_EVENT_CHUNK_SIZE = 1;
 TracingAgent::TracingAgent(
     FrontendChannel frontendChannel,
     SessionState& sessionState,
-    HostTargetController& hostTargetController)
+    HostTargetController& hostTargetController,
+    std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
     : frontendChannel_(std::move(frontendChannel)),
       sessionState_(sessionState),
-      hostTargetController_(hostTargetController) {}
+      hostTargetController_(hostTargetController) {
+  if (traceRecordingToEmit.has_value()) {
+    frontendChannel_(
+        cdp::jsonNotification("ReactNativeApplication.traceRequested"));
+    emitTraceRecording(std::move(traceRecordingToEmit.value()));
+  }
+}
 
 TracingAgent::~TracingAgent() {
   // Agents are owned by the session. If the agent is destroyed, it means that
@@ -86,25 +93,29 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
-    auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
-      frontendChannel_(cdp::jsonNotification(
-          "Tracing.dataCollected",
-          folly::dynamic::object("value", std::move(eventsChunk))));
-    };
-    tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
-        std::move(state),
-        dataCollectedCallback,
-        TRACE_EVENT_CHUNK_SIZE,
-        PROFILE_TRACE_EVENT_CHUNK_SIZE);
-
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.tracingComplete",
-        folly::dynamic::object("dataLossOccurred", false)));
-
+    emitTraceRecording(std::move(state));
     return true;
   }
 
   return false;
+}
+
+void TracingAgent::emitTraceRecording(
+    tracing::TraceRecordingState state) const {
+  auto dataCollectedCallback = [this](folly::dynamic&& eventsChunk) {
+    frontendChannel_(cdp::jsonNotification(
+        "Tracing.dataCollected",
+        folly::dynamic::object("value", std::move(eventsChunk))));
+  };
+  tracing::TraceRecordingStateSerializer::emitAsDataCollectedChunks(
+      std::move(state),
+      dataCollectedCallback,
+      TRACE_EVENT_CHUNK_SIZE,
+      PROFILE_TRACE_EVENT_CHUNK_SIZE);
+
+  frontendChannel_(cdp::jsonNotification(
+      "Tracing.tracingComplete",
+      folly::dynamic::object("dataLossOccurred", false)));
 }
 
 } // namespace facebook::react::jsinspector_modern

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<15625838a3b9e9ecf3e77940a5f019a6>>
+ * @generated SignedSource<<b5d49010286872a588ff74942fd22723>>
  */
 
 /**
@@ -56,6 +56,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
+  bool enableAndroidLinearText(jsi::Runtime& runtime);
+
   bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
@@ -84,6 +86,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
+  bool enableImagePrefetchingOnUiThreadAndroid(jsi::Runtime& runtime);
+
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
@@ -100,8 +104,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableNetworkEventReporting(jsi::Runtime& runtime);
 
-  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
-
   bool enablePreparedTextLayout(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
@@ -111,6 +113,10 @@ class NativeReactNativeFeatureFlags
   bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForImage(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForScrollView(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
@@ -122,6 +128,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 
+  bool enableWebPerformanceAPIsByDefault(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
@@ -130,13 +138,13 @@ class NativeReactNativeFeatureFlags
 
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
 
+  bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
+
   bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
   double preparedTextCacheSize(jsi::Runtime& runtime);
 
   bool preventShadowTreeCommitExhaustion(jsi::Runtime& runtime);
-
-  bool releaseImageDataWhenConsumed(jsi::Runtime& runtime);
 
   bool shouldPressibilityUseW3CPointerEventsForHover(jsi::Runtime& runtime);
 
@@ -167,6 +175,8 @@ class NativeReactNativeFeatureFlags
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
   bool useTurboModules(jsi::Runtime& runtime);
+
+  double virtualViewHysteresisRatio(jsi::Runtime& runtime);
 
   double virtualViewPrerenderRatio(jsi::Runtime& runtime);
 };

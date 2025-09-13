@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f162c19a6742ecadd171500ccb918f4b>>
+ * @generated SignedSource<<af10f4eea240ae4a228de9bbc4b78b7e>>
  */
 
 /**
@@ -91,6 +91,12 @@ public object ReactNativeFeatureFlags {
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
 
   /**
+   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
+   */
+  @JvmStatic
+  public fun enableAndroidLinearText(): Boolean = accessor.enableAndroidLinearText()
+
+  /**
    * Enables various optimizations throughout the path of measuring text on Android.
    */
   @JvmStatic
@@ -175,6 +181,12 @@ public object ReactNativeFeatureFlags {
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
+   * When enabled, Android will initiate image prefetch requested on ImageShadowNode::layout on the UI thread
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = accessor.enableImagePrefetchingOnUiThreadAndroid()
+
+  /**
    * Dispatches state updates for content offset changes synchronously on the main thread.
    */
   @JvmStatic
@@ -223,12 +235,6 @@ public object ReactNativeFeatureFlags {
   public fun enableNetworkEventReporting(): Boolean = accessor.enableNetworkEventReporting()
 
   /**
-   * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
-   */
-  @JvmStatic
-  public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
-
-  /**
    * Enables caching text layout artifacts for later reuse
    */
   @JvmStatic
@@ -257,6 +263,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForImage(): Boolean = accessor.enableViewRecyclingForImage()
+
+  /**
+   * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForScrollView(): Boolean = accessor.enableViewRecyclingForScrollView()
 
   /**
    * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
@@ -289,6 +307,12 @@ public object ReactNativeFeatureFlags {
   public fun enableVirtualViewWindowFocusDetection(): Boolean = accessor.enableVirtualViewWindowFocusDetection()
 
   /**
+   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
+   */
+  @JvmStatic
+  public fun enableWebPerformanceAPIsByDefault(): Boolean = accessor.enableWebPerformanceAPIsByDefault()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -313,6 +337,12 @@ public object ReactNativeFeatureFlags {
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
 
   /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  @JvmStatic
+  public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
+
+  /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.
    */
   @JvmStatic
@@ -329,12 +359,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun preventShadowTreeCommitExhaustion(): Boolean = accessor.preventShadowTreeCommitExhaustion()
-
-  /**
-   * Releases the cached image data when it is consumed by the observers.
-   */
-  @JvmStatic
-  public fun releaseImageDataWhenConsumed(): Boolean = accessor.releaseImageDataWhenConsumed()
 
   /**
    * Function used to enable / disable Pressibility from using W3C Pointer Events for its hover callbacks
@@ -425,6 +449,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useTurboModules(): Boolean = accessor.useTurboModules()
+
+  /**
+   * Sets a hysteresis window for transition between prerender and hidden modes.
+   */
+  @JvmStatic
+  public fun virtualViewHysteresisRatio(): Double = accessor.virtualViewHysteresisRatio()
 
   /**
    * Initial prerender ratio for VirtualView.

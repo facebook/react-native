@@ -136,6 +136,8 @@ function convertRawJsonToJSX(
   actualJSON: FantomJsonObject | $ReadOnlyArray<FantomJsonObject>,
 ): React.Node {
   let actualJSX;
+  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/5whu3i34. */
   if (actualJSON === null || typeof actualJSON === 'string') {
     actualJSX = actualJSON;
   } else if (Array.isArray(actualJSON)) {

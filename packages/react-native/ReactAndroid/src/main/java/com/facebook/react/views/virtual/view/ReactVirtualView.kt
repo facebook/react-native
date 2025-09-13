@@ -41,6 +41,7 @@ public class ReactVirtualView(context: Context) :
   internal var modeChangeEmitter: VirtualViewModeChangeEmitter? = null
   internal var prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
   internal val debugLogEnabled: Boolean = ReactNativeFeatureFlags.enableVirtualViewDebugFeatures()
+  private val hysteresisRatio: Double = ReactNativeFeatureFlags.virtualViewHysteresisRatio()
 
   private val onWindowFocusChangeListener =
       if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
@@ -188,7 +189,7 @@ public class ReactVirtualView(context: Context) :
     // If no ScrollView, or ScrollView has disabled removeClippedSubviews, use default behavior
     if (
         parentScrollView == null ||
-            !((parentScrollView as ReactClippingViewGroup)?.removeClippedSubviews ?: false)
+            !((parentScrollView as ReactClippingViewGroup).removeClippedSubviews ?: false)
     ) {
       super.updateClippingRect(excludedViews)
       return
@@ -222,6 +223,8 @@ public class ReactVirtualView(context: Context) :
         bottom + offsetY,
     )
     scrollView.getDrawingRect(thresholdRect)
+    val visibleHeight = thresholdRect.height()
+    val visibleWidth = thresholdRect.width()
 
     // TODO: Validate whether this is still the case and whether these checks are still needed.
     // updateRects will initially get called before the targetRect has any dimensions set, so if
@@ -260,16 +263,32 @@ public class ReactVirtualView(context: Context) :
       var prerender = false
       if (prerenderRatio > 0.0) {
         thresholdRect.inset(
-            (-thresholdRect.width() * prerenderRatio).toInt(),
-            (-thresholdRect.height() * prerenderRatio).toInt(),
+            (-visibleWidth * prerenderRatio).toInt(),
+            (-visibleHeight * prerenderRatio).toInt(),
         )
         prerender = rectsOverlap(targetRect, thresholdRect)
       }
       if (prerender) {
         newMode = VirtualViewMode.Prerender
       } else {
-        newMode = VirtualViewMode.Hidden
-        thresholdRect.setEmpty()
+        val _mode = mode // local variable so Kotlin knows its not nullable
+        if (_mode != null && hysteresisRatio > 0.0) {
+          thresholdRect.inset(
+              (-visibleWidth * hysteresisRatio).toInt(),
+              (-visibleHeight * hysteresisRatio).toInt(),
+          )
+          if (rectsOverlap(targetRect, thresholdRect)) {
+            // In hysteresis window, no change to mode
+            newMode = _mode
+            debugLog("dispatchOnModeChangeIfNeeded") { "hysteresis, mode=$newMode" }
+          } else {
+            newMode = VirtualViewMode.Hidden
+            thresholdRect.setEmpty()
+          }
+        } else {
+          newMode = VirtualViewMode.Hidden
+          thresholdRect.setEmpty()
+        }
       }
     }
     debugLog("dispatchOnModeChangeIfNeeded") {

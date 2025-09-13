@@ -16,7 +16,9 @@
 
 namespace facebook::react {
 
-class RCTObjcExecutorFactory : public JSExecutorFactory {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] RCTObjcExecutorFactory
+    : public JSExecutorFactory {
  public:
   RCTObjcExecutorFactory(
       id<RCTJavaScriptExecutor> jse,

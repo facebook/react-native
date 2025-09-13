@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4a1d4510264580e2f1436b05f1c2f0e>>
+ * @generated SignedSource<<5fbbabfffca4f13066ad1ab7f9462c13>>
  */
 
 /**
@@ -48,6 +48,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableAndroidLinearText(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableAndroidTextMeasurementOptimizations(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
@@ -76,6 +78,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingOnUiThreadAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean
@@ -92,8 +96,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableNetworkEventReporting(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableNewBackgroundAndBorderDrawables(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enablePreparedTextLayout(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
@@ -103,6 +105,10 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecycling(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecyclingForImage(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecyclingForScrollView(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForText(): Boolean
 
@@ -114,6 +120,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableVirtualViewWindowFocusDetection(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableWebPerformanceAPIsByDefault(): Boolean
+
   @DoNotStrip @JvmStatic public external fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
@@ -122,13 +130,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun hideOffscreenVirtualViewsOnIOS(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean
+
   @DoNotStrip @JvmStatic public external fun perfMonitorV2Enabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun preparedTextCacheSize(): Double
 
   @DoNotStrip @JvmStatic public external fun preventShadowTreeCommitExhaustion(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun releaseImageDataWhenConsumed(): Boolean
 
   @DoNotStrip @JvmStatic public external fun shouldPressibilityUseW3CPointerEventsForHover(): Boolean
 
@@ -159,6 +167,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModules(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun virtualViewHysteresisRatio(): Double
 
   @DoNotStrip @JvmStatic public external fun virtualViewPrerenderRatio(): Double
 

@@ -96,43 +96,41 @@ public class ReactScrollView extends ScrollView
   private final @Nullable OverScroller mScroller;
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mTempRect = new Rect();
-  private final Rect mOverflowInset = new Rect();
+  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
 
+  private Rect mOverflowInset;
   private @Nullable VirtualViewContainerState mVirtualViewContainerState;
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
-  private Overflow mOverflow = Overflow.SCROLL;
+  private Overflow mOverflow;
   private boolean mDragging;
-  private boolean mPagingEnabled = false;
+  private boolean mPagingEnabled;
   private @Nullable Runnable mPostTouchRunnable;
   private boolean mRemoveClippedSubviews;
-  private boolean mScrollEnabled = true;
+  private boolean mScrollEnabled;
   private boolean mSendMomentumEvents;
-  private @Nullable FpsListener mFpsListener = null;
+  private @Nullable FpsListener mFpsListener;
   private @Nullable String mScrollPerfTag;
   private @Nullable Drawable mEndBackground;
-  private int mEndFillColor = Color.TRANSPARENT;
-  private boolean mDisableIntervalMomentum = false;
-  private int mSnapInterval = 0;
+  private int mEndFillColor;
+  private boolean mDisableIntervalMomentum;
+  private int mSnapInterval;
   private @Nullable List<Integer> mSnapOffsets;
-  private boolean mSnapToStart = true;
-  private boolean mSnapToEnd = true;
-  private int mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
+  private boolean mSnapToStart;
+  private boolean mSnapToEnd;
+  private int mSnapToAlignment;
   private @Nullable View mContentView;
-  private @Nullable ReadableMap mCurrentContentOffset = null;
-  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
-  private @Nullable StateWrapper mStateWrapper = null;
-  private final ReactScrollViewScrollState mReactScrollViewScrollState =
-      new ReactScrollViewScrollState();
-  private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
-  private PointerEvents mPointerEvents = PointerEvents.AUTO;
-  private long mLastScrollDispatchTime = 0;
-  private int mScrollEventThrottle = 0;
-  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper =
-      null;
-  private int mFadingEdgeLengthStart = 0;
-  private int mFadingEdgeLengthEnd = 0;
+  private @Nullable ReadableMap mCurrentContentOffset;
+  private int mPendingContentOffsetX;
+  private int mPendingContentOffsetY;
+  private @Nullable StateWrapper mStateWrapper;
+  private ReactScrollViewScrollState mReactScrollViewScrollState;
+  private PointerEvents mPointerEvents;
+  private long mLastScrollDispatchTime;
+  private int mScrollEventThrottle;
+  private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
+  private int mFadingEdgeLengthStart;
+  private int mFadingEdgeLengthEnd;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -148,7 +146,63 @@ public class ReactScrollView extends ScrollView
     setClipChildren(false);
 
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
+    initView();
   }
+
+  /**
+   * Set all default values here as opposed to in the constructor or field defaults. It is important
+   * that these properties are set during the constructor, but also on-demand whenever an existing
+   * ReactTextView is recycled.
+   */
+  private void initView() {
+    mOverflowInset = new Rect();
+    mVirtualViewContainerState = null;
+    mActivelyScrolling = false;
+    mClippingRect = null;
+    mOverflow = Overflow.SCROLL;
+    mDragging = false;
+    mPagingEnabled = false;
+    mPostTouchRunnable = null;
+    mRemoveClippedSubviews = false;
+    mScrollEnabled = true;
+    mSendMomentumEvents = false;
+    mFpsListener = null;
+    mScrollPerfTag = null;
+    mEndBackground = null;
+    mEndFillColor = Color.TRANSPARENT;
+    mDisableIntervalMomentum = false;
+    mSnapInterval = 0;
+    mSnapOffsets = null;
+    mSnapToStart = true;
+    mSnapToEnd = true;
+    mSnapToAlignment = SNAP_ALIGNMENT_DISABLED;
+    mContentView = null;
+    mCurrentContentOffset = null;
+    mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+    mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
+    mStateWrapper = null;
+    mReactScrollViewScrollState = new ReactScrollViewScrollState();
+    mPointerEvents = PointerEvents.AUTO;
+    mLastScrollDispatchTime = 0;
+    mScrollEventThrottle = 0;
+    mMaintainVisibleContentPositionHelper = null;
+    mFadingEdgeLengthStart = 0;
+    mFadingEdgeLengthEnd = 0;
+  }
+
+  /* package */ void recycleView() {
+    // Set default field values
+    initView();
+
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+    updateView();
+  }
+
+  private void updateView() {}
 
   @Override
   public VirtualViewContainerState getVirtualViewContainerState() {
@@ -368,9 +422,9 @@ public class ReactScrollView extends ScrollView
       // If a "pending" content offset value has been set, we restore that value.
       // Upon call to scrollTo, the "pending" values will be re-set.
       int scrollToX =
-          pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+          mPendingContentOffsetX != UNSET_CONTENT_OFFSET ? mPendingContentOffsetX : getScrollX();
       int scrollToY =
-          pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+          mPendingContentOffsetY != UNSET_CONTENT_OFFSET ? mPendingContentOffsetY : getScrollY();
       scrollTo(scrollToX, scrollToY);
     }
 
@@ -385,6 +439,9 @@ public class ReactScrollView extends ScrollView
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
       updateClippingRect();
+    }
+    if (mVirtualViewContainerState != null) {
+      mVirtualViewContainerState.updateState();
     }
   }
 
@@ -1269,11 +1326,11 @@ public class ReactScrollView extends ScrollView
    */
   private void setPendingContentOffsets(int x, int y) {
     if (isContentReady()) {
-      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
-      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetX = UNSET_CONTENT_OFFSET;
+      mPendingContentOffsetY = UNSET_CONTENT_OFFSET;
     } else {
-      pendingContentOffsetX = x;
-      pendingContentOffsetY = y;
+      mPendingContentOffsetX = x;
+      mPendingContentOffsetY = y;
     }
   }
 
