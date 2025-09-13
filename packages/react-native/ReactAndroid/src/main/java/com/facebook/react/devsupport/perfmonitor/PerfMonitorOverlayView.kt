@@ -106,7 +106,14 @@ internal class PerfMonitorOverlayView(
     containerLayout.addView(statusIndicator)
     containerLayout.addView(textContainer)
 
-    return createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
+    val dialog =
+        createAnchoredDialog(dpToPx(12f), dpToPx(12f)).apply { setContentView(containerLayout) }
+    dialog.window?.apply {
+      attributes =
+          attributes?.apply { flags = flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE }
+    }
+
+    return dialog
   }
 
   private fun createAnchoredDialog(offsetX: Float, offsetY: Float): Dialog {
