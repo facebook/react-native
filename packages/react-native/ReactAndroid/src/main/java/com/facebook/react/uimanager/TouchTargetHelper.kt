@@ -19,6 +19,7 @@ import com.facebook.react.touch.ReactHitSlopView
 import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.common.ViewUtil
 import java.util.EnumSet
+import kotlin.math.abs
 
 /**
  * Class responsible for identifying which react view should handle a given {@link MotionEvent}. It
@@ -184,6 +185,11 @@ public object TouchTargetHelper {
       allowReturnTouchTargetTypes: EnumSet<TouchTargetReturnType>,
       pathAccumulator: MutableList<ViewTarget>?,
   ): View? {
+    // If this view has zero scale, it and its children should not be touchable
+    if (hasZeroScale(view)) {
+      return null
+    }
+    
     // We prefer returning a child, so we check for a child that can handle the touch first
     if (allowReturnTouchTargetTypes.contains(TouchTargetReturnType.CHILD) && view is ViewGroup) {
       val viewGroup = view
@@ -245,10 +251,34 @@ public object TouchTargetHelper {
   }
 
   /**
+   * Checks if a view has zero scale in any dimension, making it invisible and untouchable.
+   */
+  private fun hasZeroScale(view: View): Boolean {
+    val matrix = view.matrix
+    if (matrix.isIdentity) {
+      return false
+    }
+    
+    // Extract scale values from the matrix
+    val values = FloatArray(9)
+    matrix.getValues(values)
+    val scaleX = values[Matrix.MSCALE_X]
+    val scaleY = values[Matrix.MSCALE_Y]
+    
+    // Consider values very close to zero as zero (to handle floating point precision)
+    val epsilon = 0.00001f
+    return abs(scaleX) < epsilon || abs(scaleY) < epsilon
+  }
+
+  /**
    * Checks whether a touch at {@code x} and {@code y} are within the bounds of the View. Both
    * {@code x} and {@code y} must be relative to the top-left corner of the view.
    */
   private fun isTouchPointInView(x: Float, y: Float, view: View): Boolean {
+    // Views with zero scale should not be touchable
+    if (hasZeroScale(view)) {
+      return false
+    }
     val hitSlopRect = (view as? ReactHitSlopView)?.hitSlopRect
     if (hitSlopRect != null) {
       if (x >= -hitSlopRect.left &&
@@ -296,10 +326,13 @@ public object TouchTargetHelper {
       localXY[0] = localX
       localXY[1] = localY
       val inverseMatrix = inverseMatrix
-      matrix.invert(inverseMatrix)
-      inverseMatrix.mapPoints(localXY)
-      localX = localXY[0]
-      localY = localXY[1]
+      // Check if matrix can be inverted. If not, skip transform (happens with zero scale)
+      if (matrix.invert(inverseMatrix)) {
+        inverseMatrix.mapPoints(localXY)
+        localX = localXY[0]
+        localY = localXY[1]
+      }
+      // If matrix inversion fails, use the non-transformed coordinates
     }
     outLocalPoint.set(localX, localY)
   }
