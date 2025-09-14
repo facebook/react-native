@@ -39,7 +39,7 @@ fi
 MIN_XCODE_VERSION=9.4
 # Check that the correct version of Xcode is installed
 XCODE_VERSION="$(command xcodebuild -version | sed '$ d' | sed 's/[-/a-zA-Z]//g')"
-if (version_gt $MIN_XCODE_VERSION $XCODE_VERSION) && [ "$XCODE_VERSION" != "$MIN_XCODE_VERSION" ]; then
+if (version_gt $MIN_XCODE_VERSION "$XCODE_VERSION") && [ "$XCODE_VERSION" != "$MIN_XCODE_VERSION" ]; then
   echo "Xcode ${XCODE_VERSION} detected. React Native requires ${MIN_XCODE_VERSION} or newer."
   echo "Older versions of Xcode may cause cryptic build errors."
   echo "See https://reactnative.dev/docs/getting-started for instructions."

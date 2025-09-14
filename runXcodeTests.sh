@@ -6,8 +6,13 @@
 
 # This script should be run from the react-native root
 
-THIS_DIR=$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
-source "scripts/.tests.env"
+export THIS_DIR
+THIS_DIR="$(cd -P "$(dirname "$(realpath "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)"
+
+if [ -f "scripts/.tests.env" ]; then
+  # shellcheck source=scripts/.tests.env
+  source "scripts/.tests.env"
+fi
 
 if [ -n "$1" ]
   then
@@ -19,7 +24,7 @@ fi
 
 xcodebuild \
   -workspace "packages/rn-tester/RNTesterPods.xcworkspace" \
-  -scheme $SCHEME \
-  -sdk $SDK \
+  -scheme "$SCHEME" \
+  -sdk "$SDK" \
   -destination "$DESTINATION" \
   build test
