@@ -8,11 +8,13 @@
 package com.facebook.react.modules.deviceinfo
 
 import com.facebook.fbreact.specs.NativeDeviceInfoSpec
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getDisplayMetricsWritableMap
 import com.facebook.react.uimanager.DisplayMetricsHolder.initDisplayMetricsIfNotInitialized
@@ -30,16 +32,21 @@ internal class DeviceInfoModule(reactContext: ReactApplicationContext) :
     reactContext.addLifecycleEventListener(this)
   }
 
+  @Suppress("UNCHECKED_CAST")
   public override fun getTypedExportedConstants(): Map<String, Any> {
+    return this.getInfo().toHashMap().toMap() as Map<String, Any>
+  }
+
+  public override fun getInfo(): WritableMap {
     val displayMetrics = getDisplayMetricsWritableMap(fontScale.toDouble())
 
     // Cache the initial dimensions for later comparison in emitUpdateDimensionsEvent
     previousDisplayMetrics = displayMetrics.copy()
 
-    return mapOf(
-        "Dimensions" to displayMetrics.toHashMap(),
-        "isEdgeToEdge" to isEdgeToEdgeFeatureFlagOn,
-    )
+    return Arguments.createMap().apply {
+      putMap("Dimensions", displayMetrics)
+      putBoolean("isEdgeToEdge", isEdgeToEdgeFeatureFlagOn)
+    }
   }
 
   override fun onHostResume() {
