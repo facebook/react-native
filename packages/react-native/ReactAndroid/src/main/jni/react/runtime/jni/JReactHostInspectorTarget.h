@@ -83,17 +83,6 @@ class JReactHostInspectorTarget
   void sendDebuggerResumeCommand();
 
   /**
-   * Starts a background trace recording for this HostTarget.
-   *
-   * \return false if already tracing, true otherwise.
-   */
-  bool startBackgroundTrace();
-  /**
-   * Stops previously started trace recording and stashes the captured trace,
-   * which will be emitted the next time CDP session is created.
-   */
-  void stopAndStashBackgroundTrace();
-  /**
    * Get the state of the background trace: running, stopped, or disabled
    * Background tracing will be disabled if there is no metro connection or if
    * there is a CDP initiate trace in progress.
@@ -101,6 +90,20 @@ class JReactHostInspectorTarget
    * \return the background trace state
    */
   jint tracingState();
+  /**
+   * Starts a background trace recording for this HostTarget.
+   *
+   * \return false if already tracing, true otherwise.
+   */
+  bool startBackgroundTrace();
+  /**
+   * Stops previously started trace recording and:
+   *  - If there is an active CDP session with Fusebox client enabled, emits the
+   * trace and returns true.
+   *  - Otherwise, stashes the captured trace, that will be emitted when the CDP
+   * session is initialized. Returns false.
+   */
+  jboolean stopAndMaybeEmitBackgroundTrace();
   /**
    * Stops previously started trace recording and discards the captured trace.
    */

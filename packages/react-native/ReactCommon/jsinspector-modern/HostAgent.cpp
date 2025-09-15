@@ -340,6 +340,18 @@ class HostAgent::Impl final {
     }
   }
 
+  bool hasFuseboxClientConnected() const {
+    return fuseboxClientType_ == FuseboxClientType::Fusebox;
+  }
+
+  void emitExternalTraceRecording(
+      tracing::TraceRecordingState traceRecording) const {
+    assert(
+        hasFuseboxClientConnected() &&
+        "Attempted to emit a trace recording to a non-Fusebox client");
+    tracingAgent_.emitExternalTraceRecording(std::move(traceRecording));
+  }
+
  private:
   enum class FuseboxClientType { Unknown, Fusebox, NonFusebox };
 
@@ -440,6 +452,11 @@ class HostAgent::Impl final {
 
   void handleRequest(const cdp::PreparsedRequest& req) {}
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent) {}
+  bool hasFuseboxClientConnected() const {
+    return false;
+  }
+  void emitExternalTraceRecording(tracing::TraceRecordingState traceRecording) {
+  }
 };
 
 #endif // REACT_NATIVE_DEBUGGER_ENABLED
@@ -467,6 +484,15 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
   impl_->setCurrentInstanceAgent(std::move(instanceAgent));
+}
+
+bool HostAgent::hasFuseboxClientConnected() const {
+  return impl_->hasFuseboxClientConnected();
+}
+
+void HostAgent::emitExternalTraceRecording(
+    tracing::TraceRecordingState traceRecording) const {
+  impl_->emitExternalTraceRecording(std::move(traceRecording));
 }
 
 #pragma mark - Tracing

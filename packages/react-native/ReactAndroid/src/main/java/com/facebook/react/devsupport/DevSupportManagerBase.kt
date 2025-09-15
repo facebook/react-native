@@ -387,10 +387,14 @@ public abstract class DevSupportManagerBase(
             TracingState.ENABLEDINBACKGROUNDMODE ->
                 DevOptionHandler {
                   UiThreadUtil.runOnUiThread {
-                    if (reactInstanceDevHelper is PerfMonitorDevHelper)
-                        reactInstanceDevHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
+                    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
+                      reactInstanceDevHelper.inspectorTarget?.let {
+                        if (it.pauseAndAnalyzeBackgroundTrace()) {
+                          openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
+                        }
+                      }
+                    }
                   }
-                  openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString())
                 }
             TracingState.DISABLED ->
                 DevOptionHandler {

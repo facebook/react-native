@@ -68,8 +68,11 @@ internal class PerfMonitorOverlayManager(
   private fun handleRecordingButtonPress() {
     when (tracingState) {
       TracingState.ENABLEDINBACKGROUNDMODE -> {
-        devHelper.inspectorTarget?.pauseAndAnalyzeBackgroundTrace()
-        onRequestOpenDevTools()
+        devHelper.inspectorTarget?.let {
+          if (!it.pauseAndAnalyzeBackgroundTrace()) {
+            onRequestOpenDevTools()
+          }
+        }
       }
       TracingState.DISABLED -> {
         devHelper.inspectorTarget?.resumeBackgroundTrace()
