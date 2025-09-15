@@ -1,0 +1,768 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+/**
+ * Script to automatically prepare an app for building from source with SwiftPM
+ *
+ * This script automates the steps described in:
+ * private/helloworld/ios/to-remove-instructions-to-build-from-source-with-spm
+ */
+
+const codegenExecutor = require('../codegen/generate-artifacts-executor');
+// Import functions from other scripts
+const {
+  hardlinkReactNativeHeaders,
+  hardlinkThirdPartyDependenciesHeaders,
+  prepareAppDependenciesHeaders,
+} = require('./prepare-app-dependencies-headers');
+const {integrateSwiftPackagesInXcode} = require('./update-xcodeproject');
+const {execSync} = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+/*::
+type SwiftPackage = {
+  relativePath: string,
+  targets: Array<string>,
+};
+*/
+
+/**
+ * Find the directory containing the Xcode project within the app path
+ * @param {string} appPath - The root app path to search in
+ * @param {string} xcodeProjectName - The name of the Xcode project file (e.g., 'HelloWorld.xcodeproj')
+ * @returns {string} - The path to the directory containing the Xcode project
+ */
+function findXcodeProjectDirectory(
+  appPath /*: string */,
+  xcodeProjectName /*: string */,
+) /*: string */ {
+  try {
+    // Use find command to search for the Xcode project
+    const findCommand = `find "${appPath}" -name "${xcodeProjectName}" -type d -print`;
+    const result = execSync(findCommand, {encoding: 'utf8'}).trim();
+
+    if (!result) {
+      throw new Error(
+        `Xcode project '${xcodeProjectName}' not found in '${appPath}' or its subdirectories`,
+      );
+    }
+
+    // Return the directory containing the Xcode project (parent of the .xcodeproj file)
+    return path.dirname(result);
+  } catch (error) {
+    throw new Error(
+      `Failed to find Xcode project '${xcodeProjectName}': ${error.message}`,
+    );
+  }
+}
+
+/**
+ * Main function to prepare the app
+ * @param {string} appPath - Path to the app (e.g., '../../private/helloworld')
+ * @param {string} reactNativePath - Path to the React Native package (e.g., '.')
+ * @param {string} appXcodeProject - Name of the Xcode project (e.g., 'HelloWorld.xcodeproj')
+ * @param {string} targetName - Name of the app target (e.g., 'HelloWorld')
+ */
+async function prepareApp(
+  appPath /*: string */ = '../../private/helloworld',
+  reactNativePath /*: string */ = '.',
+  appXcodeProject /*: string */ = 'HelloWorld.xcodeproj',
+  targetName /*: string */ = 'HelloWorld',
+  additionalPackages /*: Array<SwiftPackage> */ = [],
+) /*: Promise<void> */ {
+  console.log('🚀 Starting app preparation for SwiftPM build from source...');
+
+  // Resolve absolute paths
+  const absoluteAppPath = path.resolve(appPath);
+  const absoluteReactNativePath = path.resolve(reactNativePath);
+
+  // Search for the Xcode project within the app path instead of assuming it's in 'ios' folder
+  const appIosPath = findXcodeProjectDirectory(
+    absoluteAppPath,
+    appXcodeProject,
+  );
+
+  console.log(`App path: ${absoluteAppPath}`);
+  console.log(`React Native path: ${absoluteReactNativePath}`);
+  console.log(`App iOS path: ${appIosPath}`);
+
+  // Validate paths exist
+  if (!fs.existsSync(absoluteAppPath)) {
+    throw new Error(`App path does not exist: ${absoluteAppPath}`);
+  }
+
+  if (!fs.existsSync(appIosPath)) {
+    throw new Error(`App iOS path does not exist: ${appIosPath}`);
+  }
+
+  try {
+    // Step 1: Pod deintegrate from app directory
+    console.log('\n📦 Step 1: Running pod deintegrate...');
+    await runPodDeintegrate(appIosPath);
+
+    // Step 2: Run iOS prebuild with environment variables
+    console.log('\n🏗️  Step 2: Running iOS prebuild...');
+    await runIosPrebuild(absoluteReactNativePath);
+
+    // Step 3: Configure app for Swift integration
+    console.log('\n🏗️  Step 3: Configuring app for Swift integration...');
+    await configureAppForSwift(absoluteReactNativePath);
+
+    // Step 4: Modify BUILD_FROM_SOURCE setting
+    console.log('\n⚙️  Step 4: Setting BUILD_FROM_SOURCE to true...');
+    await setBuildFromSource(absoluteReactNativePath);
+
+    // Step 5: Create hard links
+    console.log('\n🔗 Step 5: Creating hard links...');
+    await createHardlinks(absoluteReactNativePath);
+
+    // Step 6: Generate codegen artifacts
+    console.log('\n🧬 Step 6: Generating codegen artifacts...');
+    await generateCodegenArtifacts(
+      absoluteReactNativePath,
+      absoluteAppPath,
+      appIosPath,
+    );
+
+    // Step 7: Prepare app dependencies headers (3 times)
+    console.log('\n📂 Step 7: Preparing app dependencies headers...');
+    await prepareHeaders(absoluteReactNativePath, appIosPath);
+
+    // Step 8: Fix REACT_NATIVE_PATH in Xcode project
+    console.log('\n🔧 Step 8: Fixing REACT_NATIVE_PATH in Xcode project...');
+    await fixReactNativePath(
+      appIosPath,
+      absoluteReactNativePath,
+      appXcodeProject,
+    );
+
+    // Step 9: Allow non-modular header imports in Xcode project
+    console.log(
+      '\n🔧 Step 9: Allowing non-modular header imports in Xcode project...',
+    );
+    await allowNonModularHeaderImport(appIosPath, appXcodeProject);
+
+    // Step 10: Integrate SwiftPM packages in Xcode
+    console.log('\n📦 Step 10: Integrating SwiftPM packages in Xcode...');
+    await integrateSwiftPMPackages(
+      appIosPath,
+      absoluteReactNativePath,
+      absoluteAppPath,
+      appXcodeProject,
+      targetName,
+      additionalPackages,
+    );
+
+    // Step 11: Open Xcode project
+    console.log('\n📱 Step 11: Opening Xcode project...');
+    await openXcodeProject(appIosPath, appXcodeProject);
+
+    console.log('\n✅ App preparation completed successfully!');
+  } catch (error) {
+    console.error('\n❌ Error during app preparation:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Run pod deintegrate from app directory
+ */
+async function runPodDeintegrate(
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log(`Running pod deintegrate in: ${appIosPath}`);
+    execSync('pod deintegrate', {
+      cwd: appIosPath,
+      stdio: 'inherit',
+    });
+    console.log('✓ Pod deintegrate completed');
+  } catch (error) {
+    console.warn(
+      '⚠️  Pod deintegrate failed (this might be expected if no Podfile.lock exists)',
+    );
+  }
+}
+
+/**
+ * Run iOS prebuild with environment variables
+ */
+async function runIosPrebuild(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  console.log('Running iOS prebuild with nightly versions...');
+
+  const env = {
+    ...process.env,
+    RN_DEP_VERSION: 'nightly',
+    HERMES_VERSION: 'nightly',
+  };
+
+  try {
+    execSync('node scripts/ios-prebuild -s', {
+      cwd: reactNativePath,
+      env: env,
+      stdio: 'inherit',
+    });
+    console.log('✓ iOS prebuild completed');
+  } catch (error) {
+    throw new Error(`iOS prebuild failed: ${error.message}`);
+  }
+}
+
+/**
+ * Configure app for Swift integration
+ */
+async function configureAppForSwift(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Configuring app for Swift integration...');
+
+    // 1. Create hardlink from React-umbrella.h to React-umbrella.h
+    const sourceUmbrellaPath = path.join(
+      reactNativePath,
+      'scripts',
+      'ios-prebuild',
+      'React-umbrella.h',
+    );
+    const reactIncludesReactPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+    );
+    const destUmbrellaPath = path.join(
+      reactIncludesReactPath,
+      'React-umbrella.h',
+    );
+
+    // Ensure the React/includes/React directory exists
+    if (!fs.existsSync(reactIncludesReactPath)) {
+      fs.mkdirSync(reactIncludesReactPath, {recursive: true});
+    }
+
+    // Remove existing hardlink if it exists
+    if (fs.existsSync(destUmbrellaPath)) {
+      fs.unlinkSync(destUmbrellaPath);
+    }
+
+    // Create hardlink for umbrella header
+    if (fs.existsSync(sourceUmbrellaPath)) {
+      fs.linkSync(sourceUmbrellaPath, destUmbrellaPath);
+      console.log(
+        `✓ Created hardlink: React-umbrella.h -> ${path.relative(
+          reactNativePath,
+          sourceUmbrellaPath,
+        )}`,
+      );
+    } else {
+      throw new Error(
+        `Source umbrella header not found: ${sourceUmbrellaPath}`,
+      );
+    }
+
+    // 2. Generate module.modulemap file
+    const reactIncludesPath = path.join(reactNativePath, 'React', 'includes');
+    const moduleMapPath = path.join(reactIncludesPath, 'module.modulemap');
+    const absoluteUmbrellaPath = path.join(
+      reactNativePath,
+      'React',
+      'includes',
+      'React',
+      'React-umbrella.h',
+    );
+    const moduleMapContent = `framework module React {
+  umbrella header "${absoluteUmbrellaPath}"
+  export *
+  module * { export * }
+}
+`;
+
+    fs.writeFileSync(moduleMapPath, moduleMapContent, 'utf8');
+    console.log('✓ Generated module.modulemap file');
+
+    console.log('✓ App configured for Swift integration');
+  } catch (error) {
+    throw new Error(`Swift configuration failed: ${error.message}`);
+  }
+}
+
+/**
+ * Set BUILD_FROM_SOURCE to true in Package.swift
+ */
+async function setBuildFromSource(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  const packageSwiftPath = path.join(reactNativePath, 'Package.swift');
+
+  if (!fs.existsSync(packageSwiftPath)) {
+    throw new Error(`Package.swift not found at: ${packageSwiftPath}`);
+  }
+
+  try {
+    console.log(`Updating BUILD_FROM_SOURCE in: ${packageSwiftPath}`);
+
+    const content = fs.readFileSync(packageSwiftPath, 'utf8');
+
+    // Check if BUILD_FROM_SOURCE = false exists and replace it with true
+    if (content.includes('let BUILD_FROM_SOURCE = false')) {
+      const updatedContent = content.replace(
+        /let BUILD_FROM_SOURCE = false/g,
+        'let BUILD_FROM_SOURCE = true',
+      );
+      fs.writeFileSync(packageSwiftPath, updatedContent, 'utf8');
+      console.log('✓ BUILD_FROM_SOURCE set to true in Package.swift');
+    } else if (content.includes('let BUILD_FROM_SOURCE = true')) {
+      console.log(
+        '✓ BUILD_FROM_SOURCE is already set to true in Package.swift',
+      );
+    } else {
+      console.warn(
+        '⚠️  BUILD_FROM_SOURCE declaration not found in Package.swift',
+      );
+    }
+  } catch (error) {
+    throw new Error(
+      `Failed to update BUILD_FROM_SOURCE in Package.swift: ${error.message}`,
+    );
+  }
+}
+
+/**
+ * Create hard links for React Native headers in React/includes
+ */
+async function createHardlinks(
+  reactNativePath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Creating hard links for React Native headers...');
+    const reactIncludesPath = path.join(reactNativePath, 'React');
+    hardlinkReactNativeHeaders(reactNativePath, reactIncludesPath, 'includes');
+    console.log('✓ React Native hard links created in React/includes');
+
+    console.log('Creating hard links for third-party dependencies...');
+    hardlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      reactIncludesPath,
+      'includes',
+    );
+    console.log(
+      '✓ Third-party dependencies hard links created in React/includes',
+    );
+  } catch (error) {
+    throw new Error(`Hard link creation failed: ${error.message}`);
+  }
+}
+
+/**
+ * Generate codegen artifacts using the executor
+ */
+async function generateCodegenArtifacts(
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Generating codegen artifacts...');
+
+    // Use the codegen executor directly
+    codegenExecutor.execute(appPath, 'ios', appIosPath, 'app');
+
+    console.log('✓ Codegen artifacts generated');
+  } catch (error) {
+    throw new Error(`Codegen generation failed: ${error.message}`);
+  }
+}
+
+/**
+ * Prepare app dependencies headers (3 separate calls)
+ */
+async function prepareHeaders(
+  reactNativePath /*: string */,
+  appIosPath /*: string */,
+) /*: Promise<void> */ {
+  const outputFolder = path.join(
+    appIosPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactAppDependencyProvider',
+  );
+  const codegenOutputFolder = path.join(
+    appIosPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactCodegen',
+  );
+
+  try {
+    // 1. Prepare codegen headers
+    console.log('Preparing codegen headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      outputFolder,
+      'codegen',
+    );
+    console.log('✓ Codegen headers prepared');
+
+    // 2. Prepare react-native headers
+    console.log('Preparing react-native headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      codegenOutputFolder,
+      'react-native',
+    );
+    console.log('✓ React Native headers prepared');
+
+    // 3. Prepare third-party dependencies headers
+    console.log('Preparing third-party dependencies headers...');
+    prepareAppDependenciesHeaders(
+      reactNativePath,
+      appIosPath,
+      codegenOutputFolder,
+      'third-party-dependencies',
+    );
+    console.log('✓ Third-party dependencies headers prepared');
+  } catch (error) {
+    throw new Error(`Header preparation failed: ${error.message}`);
+  }
+}
+
+/**
+ * Fix REACT_NATIVE_PATH in Xcode project
+ */
+async function fixReactNativePath(
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Xcode project file not found: ${projectPath}`);
+  }
+
+  try {
+    console.log('Fixing REACT_NATIVE_PATH in Xcode project...');
+
+    // Calculate the relative path from iOS app to React Native package
+    const relativePath = path.relative(appIosPath, reactNativePath);
+    const newReactNativePathValue = `REACT_NATIVE_PATH = "\${PROJECT_DIR}/${relativePath}";`;
+
+    // Read the project file
+    let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundReactNativePath = false;
+    let modifiedLines = [];
+
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Check if line contains REACT_NATIVE_PATH = "
+      if (line.includes('REACT_NATIVE_PATH = "')) {
+        foundReactNativePath = true;
+
+        // Check if line also contains {PODS_ROOT}
+        if (line.includes('{PODS_ROOT}')) {
+          // Replace the whole line with the new path
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0]; // Preserve indentation
+          modifiedLines.push(`${indentation}${newReactNativePathValue}`);
+        } else {
+          // Keep the line as is if it doesn't contain {PODS_ROOT}
+          modifiedLines.push(line);
+        }
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no REACT_NATIVE_PATH was found, add it after buildSettings = {
+    if (!foundReactNativePath) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add REACT_NATIVE_PATH on the next line with appropriate indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newReactNativePathValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
+
+    console.log(
+      `✓ REACT_NATIVE_PATH fixed to: \${PROJECT_DIR}/${relativePath}`,
+    );
+  } catch (error) {
+    throw new Error(`Failed to fix REACT_NATIVE_PATH: ${error.message}`);
+  }
+}
+
+/**
+ * Allow non-modular header imports in Xcode project
+ */
+async function allowNonModularHeaderImport(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const projectPath = path.join(appIosPath, appXcodeProject, 'project.pbxproj');
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error(`Xcode project file not found: ${projectPath}`);
+  }
+
+  try {
+    console.log(
+      'Setting CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES in Xcode project...',
+    );
+
+    const newClangSettingValue = `CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;`;
+
+    // Read the project file
+    let content = fs.readFileSync(projectPath, 'utf8');
+    const lines = content.split('\n');
+    let foundClangSetting = false;
+    let modifiedLines = [];
+
+    // Process each line
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Check if line contains CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES =
+      if (
+        line.includes(
+          'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = ',
+        )
+      ) {
+        foundClangSetting = true;
+
+        // Replace the whole line with the new setting
+        const match = line.match(/^\s*/);
+        if (!match) {
+          continue;
+        }
+        const indentation = match[0]; // Preserve indentation
+        modifiedLines.push(`${indentation}${newClangSettingValue}`);
+      } else {
+        modifiedLines.push(line);
+      }
+    }
+
+    // If no CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES was found, add it after buildSettings = {
+    if (!foundClangSetting) {
+      const finalLines = [];
+
+      for (let i = 0; i < modifiedLines.length; i++) {
+        const line = modifiedLines[i];
+        finalLines.push(line);
+
+        // Check if line contains buildSettings = {
+        if (line.includes('buildSettings = {')) {
+          // Add CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES on the next line with appropriate indentation
+          const match = line.match(/^\s*/);
+          if (!match) {
+            continue;
+          }
+          const indentation = match[0] + '\t'; // Add one more level of indentation
+          finalLines.push(`${indentation}${newClangSettingValue}`);
+        }
+      }
+
+      modifiedLines = finalLines;
+    }
+
+    // Join lines back together and write to file
+    const updatedContent = modifiedLines.join('\n');
+    fs.writeFileSync(projectPath, updatedContent, 'utf8');
+
+    console.log(
+      '✓ CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES set to YES',
+    );
+  } catch (error) {
+    throw new Error(
+      `Failed to set CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES: ${error.message}`,
+    );
+  }
+}
+
+/**
+ * Integrate SwiftPM packages into Xcode project
+ */
+async function integrateSwiftPMPackages(
+  appIosPath /*: string */,
+  reactNativePath /*: string */,
+  appPath /*: string */,
+  appXcodeProject /*: string */,
+  targetName /*: string */,
+  additionalPackages /*: Array<SwiftPackage> */,
+) /*: Promise<void> */ {
+  try {
+    console.log('Preparing SwiftPM package integrations...');
+
+    // Calculate relative paths from appIosPath
+    const relativeReactNativePath = path.relative(appIosPath, reactNativePath);
+    const relativeGeneratedPath = path.join('build', 'generated', 'ios');
+
+    // Create PackageSwift objects
+    const packageSwiftObjects = [
+      ...additionalPackages,
+      {
+        relativePath: relativeReactNativePath,
+        targets: ['React'],
+      },
+      {
+        relativePath: relativeGeneratedPath,
+        targets: ['ReactCodegen', 'ReactAppDependencyProvider'],
+      },
+    ];
+
+    const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+    // Call integrateSwiftPackagesInXcode function
+    integrateSwiftPackagesInXcode(
+      xcodeProjectPath,
+      packageSwiftObjects,
+      targetName,
+    );
+
+    console.log('✓ SwiftPM packages integrated into Xcode project');
+  } catch (error) {
+    throw new Error(`SwiftPM integration failed: ${error.message}`);
+  }
+}
+
+/**
+ * Open Xcode project
+ */
+async function openXcodeProject(
+  appIosPath /*: string */,
+  appXcodeProject /*: string */,
+) /*: Promise<void> */ {
+  const xcodeProjectPath = path.join(appIosPath, appXcodeProject);
+
+  if (!fs.existsSync(xcodeProjectPath)) {
+    throw new Error(`Xcode project not found: ${xcodeProjectPath}`);
+  }
+
+  try {
+    console.log(`Opening Xcode project: ${xcodeProjectPath}`);
+    execSync(`open "${xcodeProjectPath}"`, {
+      stdio: 'inherit',
+    });
+    console.log('✓ Xcode project opened');
+  } catch (error) {
+    throw new Error(`Failed to open Xcode project: ${error.message}`);
+  }
+}
+
+// CLI usage
+if (require.main === module) {
+  const args = process.argv.slice(2);
+
+  let appPath = '../../private/helloworld';
+  let reactNativePath = '.';
+  let appXcodeProject = 'HelloWorld.xcodeproj';
+  let targetName = 'HelloWorld';
+  let additionalPackages /*: Array<SwiftPackage> */ = [];
+
+  // try to load args from the swiftpm.config.js file that is
+  // in the app directory. Assumption: this script is invoked from the app directory
+  try {
+    const configJSFile = path.join(process.cwd(), 'swiftpm.config.js');
+    // $FlowFixMe[unsupported-syntax]
+    const swiftPMConfig = require(configJSFile);
+
+    appPath = swiftPMConfig.appPath;
+    reactNativePath = swiftPMConfig.reactNativePath;
+    appXcodeProject = swiftPMConfig.appXcodeProject;
+    targetName = swiftPMConfig.targetName;
+    additionalPackages = swiftPMConfig.additionalPackages;
+  } catch {
+    if (args.length >= 1) {
+      appPath = args[0];
+    }
+
+    if (args.length >= 2) {
+      reactNativePath = args[1];
+    }
+
+    if (args.length >= 3) {
+      appXcodeProject = args[2];
+    }
+
+    if (args.length >= 4) {
+      targetName = args[3];
+    }
+
+    console.log(
+      'Usage: node prepare-app.js [appPath] [reactNativePath] [appXcodeProject] [targetName]',
+    );
+  }
+  console.log(`Using App path: ${appPath}`);
+  console.log(`Using React Native path: ${reactNativePath}`);
+  console.log(`Using App Xcode project: ${appXcodeProject}`);
+  console.log(`Using Target name: ${targetName}`);
+
+  prepareApp(
+    appPath,
+    reactNativePath,
+    appXcodeProject,
+    targetName,
+    additionalPackages,
+  )
+    .then(() => {
+      console.log(
+        '\n🎉 All done! Your app is ready for SwiftPM build from source.',
+      );
+      process.exit(0);
+    })
+    .catch(error => {
+      console.error('\n💥 Preparation failed:', error.message);
+      process.exit(1);
+    });
+}
+
+module.exports = {
+  prepareApp,
+  runPodDeintegrate,
+  runIosPrebuild,
+  configureAppForSwift,
+  setBuildFromSource,
+  createHardlinks,
+  generateCodegenArtifacts,
+  prepareHeaders,
+  fixReactNativePath,
+  allowNonModularHeaderImport,
+  integrateSwiftPMPackages,
+  openXcodeProject,
+};
