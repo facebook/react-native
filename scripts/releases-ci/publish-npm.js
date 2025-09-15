@@ -76,7 +76,6 @@ async function publishMonorepoPackages(tag /*: ?string */) {
     console.log(`Publishing ${packageInfo.name}...`);
     const result = publishPackage(packageInfo.path, {
       tags: [tag],
-      otp: process.env.NPM_CONFIG_OTP,
       access: 'public',
     });
 
@@ -122,7 +121,6 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {
     tags: [tag],
-    otp: process.env.NPM_CONFIG_OTP,
   });
 
   if (result.code) {
