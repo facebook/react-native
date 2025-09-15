@@ -11,6 +11,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
@@ -123,6 +124,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   std::vector<__weak RCTFabricSurface *> _attachedSurfaces;
 
   RCTModuleRegistry *_moduleRegistry;
+  RCTDevMenuConfiguration *_devMenuConfiguration;
 
   std::unique_ptr<RCTHostHostTargetDelegate> _inspectorHostDelegate;
   std::shared_ptr<jsinspector_modern::HostTarget> _inspectorTarget;
@@ -147,7 +149,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                     hostDelegate:hostDelegate
       turboModuleManagerDelegate:turboModuleManagerDelegate
                 jsEngineProvider:jsEngineProvider
-                   launchOptions:launchOptions];
+                   launchOptions:launchOptions
+            devMenuConfiguration:nil];
 }
 
 /**
@@ -159,6 +162,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                     devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -201,6 +205,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
+    _devMenuConfiguration = devMenuConfiguration;
   }
   return self;
 }
@@ -246,7 +251,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                               devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 }
 
@@ -449,7 +455,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                          turboModuleManagerDelegate:_turboModuleManagerDelegate
                                      moduleRegistry:_moduleRegistry
                               parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
+                                      launchOptions:_launchOptions
+                               devMenuConfiguration:_devMenuConfiguration];
   [_hostDelegate hostDidStart:self];
 
   for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
