@@ -252,8 +252,11 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
   static std::mutex fontCacheMutex;
 
   CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
-  NSString *cacheKey = [NSString
-      stringWithFormat:@"%.1f/%.2f/%ld", effectiveFontSize, fontProperties.weight, (long)fontProperties.style];
+  NSString *cacheKey = [NSString stringWithFormat:@"%@/%.1f/%.2f/%ld",
+                                                  fontProperties.family,
+                                                  effectiveFontSize,
+                                                  fontProperties.weight,
+                                                  (long)fontProperties.style];
   UIFont *font;
 
   {
@@ -267,11 +270,20 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
   if (font == nullptr) {
     font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
 
-    if (fontProperties.style == RCTFontStyleItalic) {
+    BOOL isItalicFont = fontProperties.style == RCTFontStyleItalic;
+    BOOL isCondensedFont = [fontProperties.family isEqualToString:@"SystemCondensed"];
+
+    if (isItalicFont || isCondensedFont) {
       UIFontDescriptor *fontDescriptor = [font fontDescriptor];
       UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
 
-      symbolicTraits |= UIFontDescriptorTraitItalic;
+      if (isItalicFont) {
+        symbolicTraits |= UIFontDescriptorTraitItalic;
+      }
+
+      if (isCondensedFont) {
+        symbolicTraits |= UIFontDescriptorTraitCondensed;
+      }
 
       fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
       font = [UIFont fontWithDescriptor:fontDescriptor size:effectiveFontSize];
@@ -333,7 +345,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         fontWeight = (fontWeight != 0.0) ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
-        font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+        font = RCTDefaultFontWithFontProperties(fontProperties);
       }
     }
 
