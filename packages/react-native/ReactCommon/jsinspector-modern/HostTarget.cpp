@@ -34,8 +34,7 @@ class HostTargetSession {
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      VoidExecutor executor,
-      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
+      VoidExecutor executor)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -48,8 +47,7 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            std::move(executor),
-            std::move(traceRecordingToEmit)) {}
+            std::move(executor)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -205,8 +203,7 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
       std::move(connectionToFrontend),
       controller_,
       delegate_.getMetadata(),
-      makeVoidExecutor(executorFromThis()),
-      delegate_.unstable_getTraceRecordingThatWillBeEmittedOnInitialization());
+      makeVoidExecutor(executorFromThis()));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
