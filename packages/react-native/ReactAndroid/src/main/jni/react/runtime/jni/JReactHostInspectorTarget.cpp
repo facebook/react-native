@@ -157,9 +157,16 @@ tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
   }
 }
 
-void JReactHostInspectorTarget::stopAndStashBackgroundTrace() {
+jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
   auto capturedTrace = inspectorTarget_->stopTracing();
+  if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
+    inspectorTarget_->emitTraceRecordingForFirstFuseboxClient(
+        std::move(capturedTrace));
+    return jboolean(true);
+  }
+
   stashTraceRecordingState(std::move(capturedTrace));
+  return jboolean(false);
 }
 
 void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
@@ -188,8 +195,8 @@ void JReactHostInspectorTarget::registerNatives() {
           "startBackgroundTrace",
           JReactHostInspectorTarget::startBackgroundTrace),
       makeNativeMethod(
-          "stopAndStashBackgroundTrace",
-          JReactHostInspectorTarget::stopAndStashBackgroundTrace),
+          "stopAndMaybeEmitBackgroundTrace",
+          JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace),
       makeNativeMethod(
           "stopAndDiscardBackgroundTrace",
           JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),

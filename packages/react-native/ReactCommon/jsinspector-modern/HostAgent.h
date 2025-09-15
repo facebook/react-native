@@ -66,6 +66,20 @@ class HostAgent final {
    */
   void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
 
+  /**
+   * Returns whether this HostAgent is part of the session that has an active
+   * Fusebox client connecte, i.e. with Chrome DevTools Frontend fork for React
+   * Native.
+   */
+  bool hasFuseboxClientConnected() const;
+
+  /**
+   * Emits the trace recording that was captured externally, not via the
+   * CDP-initiated request.
+   */
+  void emitExternalTraceRecording(
+      tracing::TraceRecordingState traceRecording) const;
+
  private:
   // We use the private implementation idiom to ensure this class has the same
   // layout regardless of whether REACT_NATIVE_DEBUGGER_ENABLED is defined. The

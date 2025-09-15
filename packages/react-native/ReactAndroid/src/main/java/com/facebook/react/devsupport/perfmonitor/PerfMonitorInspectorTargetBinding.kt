@@ -17,8 +17,11 @@ internal interface PerfMonitorInspectorTargetBinding {
   /** Get the current CDP or background performance tracing state. */
   public fun getTracingState(): TracingState
 
-  /** Attempt to pause the current background performance trace, and open in DevTools. */
-  public fun pauseAndAnalyzeBackgroundTrace()
+  /**
+   * Attempt to pause the current background performance trace, and open in DevTools. Returns true
+   * if there is an active session that can display the trace, false otherwise.
+   */
+  public fun pauseAndAnalyzeBackgroundTrace(): Boolean
 
   /** Attempt to start a new background performance trace. */
   public fun resumeBackgroundTrace()

@@ -297,6 +297,21 @@ class JSINSPECTOR_EXPORT HostTarget
    */
   tracing::TracingState tracingState() const;
 
+  /**
+   * Returns whether there is an active session with the Fusebox client, i.e.
+   * with Chrome DevTools Frontend fork for React Native.
+   */
+  bool hasActiveSessionWithFuseboxClient() const;
+
+  /**
+   * Emits the trace recording for the first active session with the Fusebox
+   * client.
+   *
+   * @see \c hasActiveFrontendSession
+   */
+  void emitTraceRecordingForFirstFuseboxClient(
+      tracing::TraceRecordingState traceRecording) const;
+
  private:
   /**
    * Constructs a new HostTarget.
