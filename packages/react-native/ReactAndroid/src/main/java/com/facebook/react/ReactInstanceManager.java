@@ -300,17 +300,19 @@ public class ReactInstanceManager {
     synchronized (mPackages) {
       PrinterHolder.getPrinter()
           .logMessage(ReactDebugOverlayTags.RN_CORE, "RNCore: Use Split Packages");
-      mPackages.add(
-          new CoreModulesPackage(
-              this,
-              new DefaultHardwareBackBtnHandler() {
-                @Override
-                public void invokeDefaultOnBackPressed() {
-                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
-                }
-              },
-              lazyViewManagersEnabled,
-              minTimeLeftInFrameForNonBatchedOperationMs));
+      // This code does not run in the bridgeless architecture
+      // Deleting code as part of deletion of CoreModulesPackage class in: D82235543
+      //      mPackages.add(
+      //          new CoreModulesPackage(
+      //              this,
+      //              new DefaultHardwareBackBtnHandler() {
+      //                @Override
+      //                public void invokeDefaultOnBackPressed() {
+      //                  ReactInstanceManager.this.invokeDefaultOnBackPressed();
+      //                }
+      //              },
+      //              lazyViewManagersEnabled,
+      //              minTimeLeftInFrameForNonBatchedOperationMs));
       if (mUseDeveloperSupport) {
         mPackages.add(new DebugCorePackage());
       }
