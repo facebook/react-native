@@ -13,7 +13,9 @@
 #import <react/renderer/components/AppSpecs/Props.h>
 #import <react/renderer/components/AppSpecs/RCTComponentViewHelpers.h>
 
+#ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #import "RCTFabricComponentsPlugins.h"
+#endif
 
 using namespace facebook::react;
 
