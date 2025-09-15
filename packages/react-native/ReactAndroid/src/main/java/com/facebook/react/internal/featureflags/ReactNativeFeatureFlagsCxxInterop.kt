@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5fbbabfffca4f13066ad1ab7f9462c13>>
+ * @generated SignedSource<<ba1e53d93b9fdaf298a034543bc44a57>>
  */
 
 /**
@@ -101,6 +101,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableResourceTimingAPI(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableSwiftUIBasedFilters(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
 

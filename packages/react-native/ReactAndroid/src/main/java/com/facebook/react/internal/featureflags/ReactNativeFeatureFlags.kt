@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<af10f4eea240ae4a228de9bbc4b78b7e>>
+ * @generated SignedSource<<f089964c958dfcac00f83c3371ccbefc>>
  */
 
 /**
@@ -251,6 +251,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
+
+  /**
+   * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+   */
+  @JvmStatic
+  public fun enableSwiftUIBasedFilters(): Boolean = accessor.enableSwiftUIBasedFilters()
 
   /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.

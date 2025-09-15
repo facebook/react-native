@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b3357ac501bc00f026a3a7ed90c83ba3>>
+ * @generated SignedSource<<92c9aa29df580c6d12faa14e60b00e4f>>
  */
 
 /**
@@ -258,6 +258,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableResourceTimingAPI() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableResourceTimingAPI");
+    return method(javaProvider_);
+  }
+
+  bool enableSwiftUIBasedFilters() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableSwiftUIBasedFilters");
     return method(javaProvider_);
   }
 
@@ -660,6 +666,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI(
   return ReactNativeFeatureFlags::enableResourceTimingAPI();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableViewCulling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewCulling();
@@ -977,6 +988,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableResourceTimingAPI",
         JReactNativeFeatureFlagsCxxInterop::enableResourceTimingAPI),
+      makeNativeMethod(
+        "enableSwiftUIBasedFilters",
+        JReactNativeFeatureFlagsCxxInterop::enableSwiftUIBasedFilters),
       makeNativeMethod(
         "enableViewCulling",
         JReactNativeFeatureFlagsCxxInterop::enableViewCulling),

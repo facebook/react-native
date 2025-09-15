@@ -440,6 +440,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableSwiftUIBasedFilters: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-30',
+        description:
+          'When enabled, it will use SwiftUI for filter effects like blur on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableViewCulling: {
       defaultValue: false,
       metadata: {
