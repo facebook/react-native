@@ -120,16 +120,16 @@ public object DefaultNewArchitectureEntryPoint {
   internal fun loadWithFeatureFlags(featureFlags: ReactNativeFeatureFlagsProvider) {
     ReactNativeFeatureFlags.override(featureFlags)
 
+    privateFabricEnabled = featureFlags.enableFabricRenderer()
+    privateTurboModulesEnabled = featureFlags.useTurboModules()
+    privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
+    privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
+
     val (isValid, errorMessage) =
         isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
     if (!isValid) {
       error(errorMessage)
     }
-
-    privateFabricEnabled = featureFlags.enableFabricRenderer()
-    privateTurboModulesEnabled = featureFlags.useTurboModules()
-    privateConcurrentReactEnabled = featureFlags.enableFabricRenderer()
-    privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     DefaultSoLoader.maybeLoadSoLibrary()
   }
