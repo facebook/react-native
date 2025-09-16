@@ -56,7 +56,7 @@ bool NetworkHandler::disable() {
   }
 
   enabled_.store(false, std::memory_order_release);
-  requestBodyBuffer_.clear();
+  responseBodyBuffer_.clear();
   return true;
 }
 
@@ -113,7 +113,10 @@ void NetworkHandler::onResponseReceived(
   }
 
   auto resourceType = cdp::network::resourceTypeFromMimeType(response.mimeType);
-  resourceTypeMap_.emplace(requestId, resourceType);
+  {
+    std::lock_guard<std::mutex> lock(resourceTypeMapMutex_);
+    resourceTypeMap_.emplace(requestId, resourceType);
+  }
 
   auto params = cdp::network::ResponseReceivedParams{
       .requestId = requestId,
@@ -166,23 +169,26 @@ void NetworkHandler::onLoadingFinished(
 
 void NetworkHandler::onLoadingFailed(
     const std::string& requestId,
-    bool cancelled) const {
+    bool cancelled) {
   if (!isEnabledNoSync()) {
     return;
   }
 
-  auto params = cdp::network::LoadingFailedParams{
-      .requestId = requestId,
-      .timestamp = getCurrentUnixTimestampSeconds(),
-      .type = resourceTypeMap_.find(requestId) != resourceTypeMap_.end()
-          ? resourceTypeMap_.at(requestId)
-          : "Other",
-      .errorText = cancelled ? "net::ERR_ABORTED" : "net::ERR_FAILED",
-      .canceled = cancelled,
-  };
+  {
+    std::lock_guard<std::mutex> lock(resourceTypeMapMutex_);
+    auto params = cdp::network::LoadingFailedParams{
+        .requestId = requestId,
+        .timestamp = getCurrentUnixTimestampSeconds(),
+        .type = resourceTypeMap_.find(requestId) != resourceTypeMap_.end()
+            ? resourceTypeMap_.at(requestId)
+            : "Other",
+        .errorText = cancelled ? "net::ERR_ABORTED" : "net::ERR_FAILED",
+        .canceled = cancelled,
+    };
 
-  frontendChannel_(
-      cdp::jsonNotification("Network.loadingFailed", params.toDynamic()));
+    frontendChannel_(
+        cdp::jsonNotification("Network.loadingFailed", params.toDynamic()));
+  }
 }
 
 void NetworkHandler::storeResponseBody(
@@ -190,13 +196,13 @@ void NetworkHandler::storeResponseBody(
     std::string_view body,
     bool base64Encoded) {
   std::lock_guard<std::mutex> lock(requestBodyMutex_);
-  requestBodyBuffer_.put(requestId, body, base64Encoded);
+  responseBodyBuffer_.put(requestId, body, base64Encoded);
 }
 
 std::optional<std::tuple<std::string, bool>> NetworkHandler::getResponseBody(
     const std::string& requestId) {
   std::lock_guard<std::mutex> lock(requestBodyMutex_);
-  auto responseBody = requestBodyBuffer_.get(requestId);
+  auto responseBody = responseBodyBuffer_.get(requestId);
 
   if (responseBody == nullptr) {
     return std::nullopt;

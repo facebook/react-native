@@ -100,7 +100,7 @@ class NetworkHandler {
   /**
    * @cdp Network.loadingFailed
    */
-  void onLoadingFailed(const std::string& requestId, bool cancelled) const;
+  void onLoadingFailed(const std::string& requestId, bool cancelled);
 
   /**
    * Store the fetched response body for a text or image network response.
@@ -139,8 +139,9 @@ class NetworkHandler {
   FrontendChannel frontendChannel_;
 
   std::map<std::string, std::string> resourceTypeMap_{};
+  std::mutex resourceTypeMapMutex_{};
 
-  BoundedRequestBuffer requestBodyBuffer_{};
+  BoundedRequestBuffer responseBodyBuffer_{};
   std::mutex requestBodyMutex_;
 };
 
