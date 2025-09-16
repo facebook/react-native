@@ -648,7 +648,7 @@ const VirtualizedSectionListComponent = VirtualizedSectionList as component<
     DefaultVirtualizedSectionT,
   > = DefaultVirtualizedSectionT,
 >(
-  ref: React.RefSetter<
+  ref?: React.RefSetter<
     interface {
       getListRef(): ?VirtualizedList,
       scrollToLocation(params: ScrollToLocationParamsType): void,

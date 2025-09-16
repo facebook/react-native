@@ -44,7 +44,7 @@ interface Instance extends React.ElementRef<typeof Animated.View> {
 }
 
 const ScrollViewStickyHeader: component(
-  ref: React.RefSetter<Instance>,
+  ref?: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
 ) = function ScrollViewStickyHeader({
   ref: forwardedRef,
@@ -282,7 +282,7 @@ const ScrollViewStickyHeader: component(
   const passthroughAnimatedPropExplicitValues =
     isFabric && translateY != null
       ? {
-          style: {transform: [{translateY: translateY}]},
+          style: {transform: [{translateY}]},
         }
       : null;
 
@@ -303,19 +303,19 @@ const ScrollViewStickyHeader: component(
         passthroughAnimatedPropExplicitValues
       }>
       {cloneElement(child, {
-        style: styles.fill, // We transfer the child style to the wrapper.
         onLayout: undefined, // we call this manually through our this._onLayout
+        style: styles.fill, // We transfer the child style to the wrapper.
       })}
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    zIndex: 10,
-  },
   fill: {
     flex: 1,
+  },
+  header: {
+    zIndex: 10,
   },
 });
 
