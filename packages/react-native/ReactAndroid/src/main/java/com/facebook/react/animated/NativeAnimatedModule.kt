@@ -196,11 +196,9 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
   private val nodesManagerRef = AtomicReference<NativeAnimatedNodesManager?>()
 
-  private var batchingControlledByJS = false // TODO T71377544: delete
+  @Volatile private var currentFrameNumber: Long = 0
 
-  @Volatile private var currentFrameNumber: Long = 0 // TODO T71377544: delete
-
-  @Volatile private var currentBatchNumber: Long = 0
+  @Volatile private var currentBatchNumber: Long = 0 // frame number at last operations dispatch
 
   private var initializedForFabric = false
   private var initializedForNonFabric = false
@@ -282,22 +280,19 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
 
     var batchNumber = currentBatchNumber - 1
 
-    // TODO T71377544: delete this when the JS method is confirmed safe
-    if (!batchingControlledByJS) {
-      // The problem we're trying to solve here: we could be in the middle of queueing
-      // a batch of related animation operations when Fabric flushes a batch of MountItems.
-      // It's visually bad if we execute half of the animation ops and then wait another frame
-      // (or more) to execute the rest.
-      // See mFrameNumber. If the dispatchedFrameNumber drifts too far - that
-      // is, if no MountItems are scheduled for a while, which can happen if a tree
-      // is committed but there are no changes - bring these counts back in sync and
-      // execute any queued operations. This number is arbitrary, but we want it low
-      // enough that the user shouldn't be able to see this delay in most cases.
-      currentFrameNumber++
-      if ((currentFrameNumber - currentBatchNumber) > 2) {
-        currentBatchNumber = currentFrameNumber
-        batchNumber = currentBatchNumber
-      }
+    // The problem we're trying to solve here: we could be in the middle of queueing
+    // a batch of related animation operations when Fabric flushes a batch of MountItems.
+    // It's visually bad if we execute half of the animation ops and then wait another frame
+    // (or more) to execute the rest.
+    // See mFrameNumber. If the dispatchedFrameNumber drifts too far - that
+    // is, if no MountItems are scheduled for a while, which can happen if a tree
+    // is committed but there are no changes - bring these counts back in sync and
+    // execute any queued operations. This number is arbitrary, but we want it low
+    // enough that the user shouldn't be able to see this delay in most cases.
+    currentFrameNumber++
+    if ((currentFrameNumber - currentBatchNumber) > 2) {
+      currentBatchNumber = currentFrameNumber
+      batchNumber = currentBatchNumber
     }
 
     preOperations.executeBatch(batchNumber, nodesManager)
@@ -484,14 +479,14 @@ public class NativeAnimatedModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  @Suppress("DEPRECATION")
   override fun startOperationBatch() {
-    batchingControlledByJS = true
-    currentBatchNumber++
+    // no-op
   }
 
+  @Suppress("DEPRECATION")
   override fun finishOperationBatch() {
-    batchingControlledByJS = false
-    currentBatchNumber++
+    // no-op
   }
 
   override fun createAnimatedNode(tagDouble: Double, config: ReadableMap) {
