@@ -80,7 +80,7 @@
 
 ### Added
 
-- **Animated:** `Animated.CompositeAnomation` is now exposed when using `"react-native-strict-api"` ([024d25794a](https://github.com/facebook/react-native/commit/024d25794a51c94c877c1dfa115a82ebbf559614) by [@huntie](https://github.com/huntie))
+- **Animated:** `Animated.CompositeAnimation` is now exposed when using `"react-native-strict-api"` ([024d25794a](https://github.com/facebook/react-native/commit/024d25794a51c94c877c1dfa115a82ebbf559614) by [@huntie](https://github.com/huntie))
 - **Animated:** Allow calling createAnimatedNode without batching ([d9d9a49e18](https://github.com/facebook/react-native/commit/d9d9a49e18f3c51caa18cf7da0a1fcd62f1ecf18) by [@zeyap](https://github.com/zeyap))
 - **Animated:** Allow filter usage with native animated driver. ([138d0eb01d](https://github.com/facebook/react-native/commit/138d0eb01dbe597261459a37d364d1780c3ef228) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - **API:** Expose NativeComponentRegistry API as JavaScript root export ([f936780cd5](https://github.com/facebook/react-native/commit/f936780cd5c0c17797f9d2bbc8f5cee81c2eefce) by [@zhongwuzw](https://github.com/zhongwuzw))
@@ -117,7 +117,7 @@
 
 - **AGP:** AGP to 8.12.0 ([742ef3d661](https://github.com/facebook/react-native/commit/742ef3d6615c8c1202e9f683e6127ac97d7a9e23) by [@cortinico](https://github.com/cortinico))
 - **DevSupportManager:** DevSupport `openDebugger()` methods now accept a `panel: String?` param. Frameworks directly implementing `DevSupportManager` will need to adjust call signatures. ([9dba7112cf](https://github.com/facebook/react-native/commit/9dba7112cfd09b02300869a77dba3dca16f49a28) by [@huntie](https://github.com/huntie))
-- **Kotlin:**Migrated TextAttributeProps to Kotlin. You might need to update your property access to use camelCase instead of Hungarian notation. ([fa921b3c7b](https://github.com/facebook/react-native/commit/fa921b3c7b289800a79196468f993a0eb0bf693f) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **Kotlin:** Migrated TextAttributeProps to Kotlin. You might need to update your property access to use camelCase instead of Hungarian notation. ([fa921b3c7b](https://github.com/facebook/react-native/commit/fa921b3c7b289800a79196468f993a0eb0bf693f) by [@mateoguzmana](https://github.com/mateoguzmana))
 - **Kotlin:** Migrated ReactBaseTextShadowNode to Kotlin. You might need to update your property access to use camelCase instead of Hungarian notation. ([8ccfff9a46](https://github.com/facebook/react-native/commit/8ccfff9a46f317fd78f478c8b3f180441535d1ca) by [@mateoguzmana](https://github.com/mateoguzmana))
 - **Kotlin:** Migrated com.facebook.react.bridge.Arguments to Kotlin. ([2534aeaddb](https://github.com/facebook/react-native/commit/2534aeaddb0490b69dfaba6b8d316616c7e10a9c) by [@mateoguzmana](https://github.com/mateoguzmana))
 - **Kotlin:** Migrate `YogaConfig` to Kotlin ([4d5caef76b](https://github.com/facebook/react-native/commit/4d5caef76b83eb7e983364ecc81abb6027e5f98e) by [@mateoguzmana](https://github.com/mateoguzmana))
