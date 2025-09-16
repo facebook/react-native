@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4feeb3c1789d8169dd93bee7ae1ff1ac>>
+ * @generated SignedSource<<dffc5db0f80501f6246f9d6087c6fb4a>>
  */
 
 /**
@@ -24,6 +24,8 @@ public open class ReactNativeFeatureFlagsOverrides_RNOSS_Experimental_Android : 
   // but that is more expensive than just duplicating the defaults here.
 
   override fun enableAccessibilityOrder(): Boolean = true
+
+  override fun enableSwiftUIBasedFilters(): Boolean = true
 
   override fun preventShadowTreeCommitExhaustion(): Boolean = true
 }

@@ -449,7 +449,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'experimental',
     },
     enableViewCulling: {
       defaultValue: false,
