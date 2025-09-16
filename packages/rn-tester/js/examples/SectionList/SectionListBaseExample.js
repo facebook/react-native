@@ -20,20 +20,20 @@ import {
 
 const DATA = [
   {
-    title: 'Main dishes',
     data: ['Pizza', 'Burger', 'Risotto'],
+    title: 'Main dishes',
   },
   {
-    title: 'Sides',
     data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
+    title: 'Sides',
   },
   {
-    title: 'Drinks',
     data: ['Water', 'Coke', 'Beer'],
+    title: 'Drinks',
   },
   {
-    title: 'Desserts',
     data: ['Cheesecake', 'Brownie'],
+    title: 'Desserts',
   },
 ];
 
@@ -75,7 +75,7 @@ type Props = $ReadOnly<{
 
 const SectionListBaseExample: component(
   // $FlowFixMe[unclear-type]
-  ref: React.RefSetter<SectionList<any>>,
+  ref?: React.RefSetter<SectionList<any>>,
   ...props: Props
 ) = ({
   ref,
@@ -122,33 +122,33 @@ const SectionListBaseExample: component(
 };
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
+  header: {
+    backgroundColor: 'white',
+    fontSize: 32,
+  },
   item: {
     backgroundColor: 'pink',
-    padding: 20,
     marginVertical: 8,
+    padding: 20,
   },
-  header: {
-    fontSize: 32,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-  },
-  testContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#f2f2f7ff',
-    height: 40,
+  list: {
+    flex: 1,
   },
   output: {
     flex: 1,
     fontSize: 12,
   },
-  list: {
-    flex: 1,
+  testContainer: {
+    alignItems: 'center',
+    backgroundColor: '#f2f2f7ff',
+    flexDirection: 'row',
+    height: 40,
+    justifyContent: 'space-between',
   },
-  container: {flex: 1},
+  title: {
+    fontSize: 24,
+  },
 });
 
 export default SectionListBaseExample;
