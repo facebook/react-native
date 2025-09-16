@@ -125,7 +125,6 @@ add_react_common_subdir(react/nativemodule/featureflags)
 add_react_common_subdir(react/nativemodule/microtasks)
 add_react_common_subdir(react/nativemodule/idlecallbacks)
 add_react_common_subdir(react/nativemodule/webperformance)
-add_react_common_subdir(react/networking)
 add_react_common_subdir(jserrorhandler)
 add_react_common_subdir(react/runtime)
 add_react_common_subdir(react/runtime/hermes)
@@ -193,7 +192,6 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_idlecallbacks>
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_nativemodule_webperformance>
-          $<TARGET_OBJECTS:react_networking>
           $<TARGET_OBJECTS:react_newarchdefaults>
           $<TARGET_OBJECTS:react_performance_cdpmetrics>
           $<TARGET_OBJECTS:react_performance_timeline>
@@ -284,7 +282,6 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_idlecallbacks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_nativemodule_webperformance,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_networking,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_cdpmetrics,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
