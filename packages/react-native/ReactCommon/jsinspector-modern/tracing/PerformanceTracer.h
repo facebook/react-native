@@ -65,7 +65,7 @@ class PerformanceTracer {
    * See https://w3c.github.io/user-timing/#mark-method.
    */
   void reportMark(
-      const std::string_view& name,
+      const std::string& name,
       HighResTimeStamp start,
       folly::dynamic&& detail = nullptr);
 
@@ -76,7 +76,7 @@ class PerformanceTracer {
    * See https://w3c.github.io/user-timing/#measure-method.
    */
   void reportMeasure(
-      const std::string_view& name,
+      const std::string& name,
       HighResTimeStamp start,
       HighResDuration duration,
       folly::dynamic&& detail = nullptr);
@@ -89,7 +89,7 @@ class PerformanceTracer {
    https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
    */
   void reportTimeStamp(
-      std::string name,
+      const std::string& name,
       std::optional<ConsoleTimeStampEntry> start = std::nullopt,
       std::optional<ConsoleTimeStampEntry> end = std::nullopt,
       std::optional<std::string> trackName = std::nullopt,

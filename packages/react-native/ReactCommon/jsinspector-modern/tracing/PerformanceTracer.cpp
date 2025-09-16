@@ -124,7 +124,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
 }
 
 void PerformanceTracer::reportMark(
-    const std::string_view& name,
+    const std::string& name,
     HighResTimeStamp start,
     folly::dynamic&& detail) {
   if (!tracingAtomic_) {
@@ -137,7 +137,7 @@ void PerformanceTracer::reportMark(
   }
 
   enqueueEvent(PerformanceTracerEventMark{
-      .name = std::string(name),
+      .name = name,
       .start = start,
       .detail = std::move(detail),
       .threadId = getCurrentThreadId(),
@@ -145,7 +145,7 @@ void PerformanceTracer::reportMark(
 }
 
 void PerformanceTracer::reportMeasure(
-    const std::string_view& name,
+    const std::string& name,
     HighResTimeStamp start,
     HighResDuration duration,
     folly::dynamic&& detail) {
@@ -159,7 +159,7 @@ void PerformanceTracer::reportMeasure(
   }
 
   enqueueEvent(PerformanceTracerEventMeasure{
-      .name = std::string(name),
+      .name = name,
       .start = start,
       .duration = duration,
       .detail = std::move(detail),
@@ -168,7 +168,7 @@ void PerformanceTracer::reportMeasure(
 }
 
 void PerformanceTracer::reportTimeStamp(
-    std::string name,
+    const std::string& name,
     std::optional<ConsoleTimeStampEntry> start,
     std::optional<ConsoleTimeStampEntry> end,
     std::optional<std::string> trackName,
@@ -184,7 +184,7 @@ void PerformanceTracer::reportTimeStamp(
   }
 
   enqueueEvent(PerformanceTracerEventTimeStamp{
-      .name = std::move(name),
+      .name = name,
       .start = std::move(start),
       .end = std::move(end),
       .trackName = std::move(trackName),
