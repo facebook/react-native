@@ -158,6 +158,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableAndroidLinearText: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-09',
+        description:
+          'Enables linear text rendering on Android wherever subpixel text rendering is enabled',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableAndroidTextMeasurementOptimizations: {
       defaultValue: false,
       metadata: {
@@ -429,6 +440,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableSwiftUIBasedFilters: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-07-30',
+        description:
+          'When enabled, it will use SwiftUI for filter effects like blur on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableViewCulling: {
       defaultValue: false,
       metadata: {
@@ -446,6 +468,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-31',
         description:
           'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForImage: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -516,6 +549,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableWebPerformanceAPIsByDefault: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      ossReleaseStage: 'canary',
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -554,6 +597,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-06-30',
         description:
           'Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    overrideBySynchronousMountPropsAtMountingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-09-04',
+        description:
+          'Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

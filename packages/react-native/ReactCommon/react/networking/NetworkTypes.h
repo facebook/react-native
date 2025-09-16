@@ -13,7 +13,7 @@
 
 // Defines generic input object types for NetworkReporter.
 
-namespace facebook::react::jsinspector_modern {
+namespace facebook::react {
 
 /**
  * A collection of parsed HTTP headers.
@@ -39,4 +39,4 @@ struct ResponseInfo {
   std::optional<Headers> headers;
 };
 
-} // namespace facebook::react::jsinspector_modern
+} // namespace facebook::react

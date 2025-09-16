@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a18369464f81c3d03f2702716dfdb29>>
+ * @generated SignedSource<<3a13f8e35423b634ed4ef46fbac3c1e9>>
  */
 
 /**
@@ -34,6 +34,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var disableTextLayoutManagerCacheAndroidCache: Boolean? = null
   private var enableAccessibilityOrderCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
+  private var enableAndroidLinearTextCache: Boolean? = null
   private var enableAndroidTextMeasurementOptimizationsCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
@@ -60,18 +61,22 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enablePreparedTextLayoutCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableResourceTimingAPICache: Boolean? = null
+  private var enableSwiftUIBasedFiltersCache: Boolean? = null
   private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
+  private var enableViewRecyclingForImageCache: Boolean? = null
   private var enableViewRecyclingForScrollViewCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
   private var enableVirtualViewDebugFeaturesCache: Boolean? = null
   private var enableVirtualViewRenderStateCache: Boolean? = null
   private var enableVirtualViewWindowFocusDetectionCache: Boolean? = null
+  private var enableWebPerformanceAPIsByDefaultCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var hideOffscreenVirtualViewsOnIOSCache: Boolean? = null
+  private var overrideBySynchronousMountPropsAtMountingAndroidCache: Boolean? = null
   private var perfMonitorV2EnabledCache: Boolean? = null
   private var preparedTextCacheSizeCache: Double? = null
   private var preventShadowTreeCommitExhaustionCache: Boolean? = null
@@ -189,6 +194,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableAndroidLinearText(): Boolean {
+    var cached = enableAndroidLinearTextCache
+    if (cached == null) {
+      cached = currentProvider.enableAndroidLinearText()
+      accessedFeatureFlags.add("enableAndroidLinearText")
+      enableAndroidLinearTextCache = cached
     }
     return cached
   }
@@ -453,6 +468,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableSwiftUIBasedFilters(): Boolean {
+    var cached = enableSwiftUIBasedFiltersCache
+    if (cached == null) {
+      cached = currentProvider.enableSwiftUIBasedFilters()
+      accessedFeatureFlags.add("enableSwiftUIBasedFilters")
+      enableSwiftUIBasedFiltersCache = cached
+    }
+    return cached
+  }
+
   override fun enableViewCulling(): Boolean {
     var cached = enableViewCullingCache
     if (cached == null) {
@@ -469,6 +494,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableViewRecycling()
       accessedFeatureFlags.add("enableViewRecycling")
       enableViewRecyclingCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForImage(): Boolean {
+    var cached = enableViewRecyclingForImageCache
+    if (cached == null) {
+      cached = currentProvider.enableViewRecyclingForImage()
+      accessedFeatureFlags.add("enableViewRecyclingForImage")
+      enableViewRecyclingForImageCache = cached
     }
     return cached
   }
@@ -533,6 +568,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
+  override fun enableWebPerformanceAPIsByDefault(): Boolean {
+    var cached = enableWebPerformanceAPIsByDefaultCache
+    if (cached == null) {
+      cached = currentProvider.enableWebPerformanceAPIsByDefault()
+      accessedFeatureFlags.add("enableWebPerformanceAPIsByDefault")
+      enableWebPerformanceAPIsByDefaultCache = cached
+    }
+    return cached
+  }
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean {
     var cached = fixMappingOfEventPrioritiesBetweenFabricAndReactCache
     if (cached == null) {
@@ -569,6 +614,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.hideOffscreenVirtualViewsOnIOS()
       accessedFeatureFlags.add("hideOffscreenVirtualViewsOnIOS")
       hideOffscreenVirtualViewsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean {
+    var cached = overrideBySynchronousMountPropsAtMountingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.overrideBySynchronousMountPropsAtMountingAndroid()
+      accessedFeatureFlags.add("overrideBySynchronousMountPropsAtMountingAndroid")
+      overrideBySynchronousMountPropsAtMountingAndroidCache = cached
     }
     return cached
   }

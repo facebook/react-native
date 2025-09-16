@@ -24,7 +24,8 @@ require_relative './cocoapods/rncore.rb'
 # Importing to expose use_native_modules!
 require_relative './cocoapods/autolinking.rb'
 
-$CODEGEN_OUTPUT_DIR = 'build/generated/ios'
+$CODEGEN_OUTPUT_DIR = 'build/generated/ios/ReactCodegen'
+$APP_DEPENDENCY_PROVIDER_OUTPUT_DIR = 'build/generated/ios/ReactAppDependencyProvider'
 $CODEGEN_COMPONENT_DIR = 'react/renderer/components'
 $CODEGEN_MODULE_DIR = '.'
 
@@ -142,6 +143,7 @@ def use_react_native! (
   pod 'React-featureflagsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/featureflags"
   pod 'React-microtasksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/microtasks"
   pod 'React-idlecallbacksnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/idlecallbacks"
+  pod 'React-webperformancenativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/webperformance"
   pod 'React-domnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/dom"
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
@@ -149,6 +151,8 @@ def use_react_native! (
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+  pod 'RCTSwiftUI', :path => "#{prefix}/ReactApple/RCTSwiftUI"
+  pod 'RCTSwiftUIWrapper', :path => "#{prefix}/ReactApple/RCTSwiftUIWrapper"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
@@ -162,6 +166,7 @@ def use_react_native! (
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
+  pod 'React-networking', :path => "#{prefix}/ReactCommon/react/networking"
   pod 'React-performancecdpmetrics', :path => "#{prefix}/ReactCommon/react/performance/cdpmetrics"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
@@ -198,7 +203,7 @@ def use_react_native! (
   end
 
   pod 'ReactCodegen', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
-  pod 'ReactAppDependencyProvider', :path => $CODEGEN_OUTPUT_DIR, :modular_headers => true
+  pod 'ReactAppDependencyProvider', :path => $APP_DEPENDENCY_PROVIDER_OUTPUT_DIR, :modular_headers => true
   # Not needed, but run_codegen expects this to be set.
   folly_config = get_folly_config()
   run_codegen!(

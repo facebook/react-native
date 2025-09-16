@@ -120,17 +120,6 @@ void JReactHostInspectorTarget::onSetPausedInDebuggerMessage(
   }
 }
 
-void JReactHostInspectorTarget::unstable_onPerfMonitorUpdate(
-    const PerfMonitorUpdateRequest& request) {
-  static auto method = javaClassStatic()->getMethod<void(jint, jint, jint)>(
-      "handleNativePerfMonitorMetricUpdate");
-  method(
-      jobj_,
-      request.activeInteraction.duration,
-      static_cast<jint>(request.activeInteraction.responsivenessScore),
-      request.activeInteraction.ttl);
-}
-
 void JReactHostInspectorTarget::loadNetworkResource(
     const jsinspector_modern::LoadNetworkResourceRequest& params,
     jsinspector_modern::ScopedExecutor<
@@ -168,9 +157,16 @@ tracing::TraceRecordingState JReactHostInspectorTarget::stopTracing() {
   }
 }
 
-void JReactHostInspectorTarget::stopAndStashBackgroundTrace() {
+jboolean JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace() {
   auto capturedTrace = inspectorTarget_->stopTracing();
+  if (inspectorTarget_->hasActiveSessionWithFuseboxClient()) {
+    inspectorTarget_->emitTraceRecordingForFirstFuseboxClient(
+        std::move(capturedTrace));
+    return jboolean(true);
+  }
+
   stashTraceRecordingState(std::move(capturedTrace));
+  return jboolean(false);
 }
 
 void JReactHostInspectorTarget::stopAndDiscardBackgroundTrace() {
@@ -199,8 +195,8 @@ void JReactHostInspectorTarget::registerNatives() {
           "startBackgroundTrace",
           JReactHostInspectorTarget::startBackgroundTrace),
       makeNativeMethod(
-          "stopAndStashBackgroundTrace",
-          JReactHostInspectorTarget::stopAndStashBackgroundTrace),
+          "stopAndMaybeEmitBackgroundTrace",
+          JReactHostInspectorTarget::stopAndMaybeEmitBackgroundTrace),
       makeNativeMethod(
           "stopAndDiscardBackgroundTrace",
           JReactHostInspectorTarget::stopAndDiscardBackgroundTrace),

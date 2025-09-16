@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3321d357fe5c74fa42c2d0b15a744f87>>
+ * @generated SignedSource<<40421ac664927693136a8e3197e3c07c>>
  */
 
 /**
@@ -88,6 +88,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Android will accumulate updates in rawProps to reduce the number of mounting instructions for cascading re-renders.
    */
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
+
+  /**
+   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
+   */
+  RN_EXPORT static bool enableAndroidLinearText();
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.
@@ -220,6 +225,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableResourceTimingAPI();
 
   /**
+   * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+   */
+  RN_EXPORT static bool enableSwiftUIBasedFilters();
+
+  /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
    */
   RN_EXPORT static bool enableViewCulling();
@@ -228,6 +238,11 @@ class ReactNativeFeatureFlags {
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForImage();
 
   /**
    * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
@@ -260,6 +275,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
 
   /**
+   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
+   */
+  RN_EXPORT static bool enableWebPerformanceAPIsByDefault();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -278,6 +298,11 @@ class ReactNativeFeatureFlags {
    * Hides offscreen VirtualViews on iOS by setting hidden = YES to avoid extra cost of views
    */
   RN_EXPORT static bool hideOffscreenVirtualViewsOnIOS();
+
+  /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  RN_EXPORT static bool overrideBySynchronousMountPropsAtMountingAndroid();
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

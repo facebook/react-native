@@ -50,11 +50,13 @@ private fun rectsOverlap(rect1: Rect, rect2: Rect): Boolean {
 internal class VirtualViewContainerState {
 
   private val prerenderRatio: Double = ReactNativeFeatureFlags.virtualViewPrerenderRatio()
+  private val hysteresisRatio: Double = ReactNativeFeatureFlags.virtualViewHysteresisRatio()
 
   private val virtualViews: MutableSet<VirtualView> = mutableSetOf()
   private val emptyRect: Rect = Rect()
   private val visibleRect: Rect = Rect()
   private val prerenderRect: Rect = Rect()
+  private val hysteresisRect: Rect = Rect()
   private val onWindowFocusChangeListener =
       if (ReactNativeFeatureFlags.enableVirtualViewWindowFocusDetection()) {
         ViewTreeObserver.OnWindowFocusChangeListener {
@@ -119,11 +121,12 @@ internal class VirtualViewContainerState {
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
-    val virtualViewsIt = if (virtualView != null) listOf(virtualView) else virtualViews
+    val virtualViewsIt =
+        if (virtualView != null) listOf(virtualView) else virtualViews.toMutableSet()
     virtualViewsIt.forEach { vv ->
       val rect = vv.containerRelativeRect
 
-      var mode = VirtualViewMode.Hidden
+      var mode: VirtualViewMode? = VirtualViewMode.Hidden
       var thresholdRect = emptyRect
       when {
         rectsOverlap(rect, visibleRect) -> {
@@ -142,14 +145,29 @@ internal class VirtualViewContainerState {
           mode = VirtualViewMode.Prerender
           thresholdRect = prerenderRect
         }
-        else -> {}
+        else -> {
+          if (hysteresisRatio > 0.0) {
+            hysteresisRect.set(prerenderRect)
+            hysteresisRect.inset(
+                (-visibleRect.width() * hysteresisRatio).toInt(),
+                (-visibleRect.height() * hysteresisRatio).toInt(),
+            )
+            if (rectsOverlap(rect, hysteresisRect)) {
+              mode = null
+            }
+          }
+        }
       }
 
-      debugLog(
-          "updateModes",
-          { "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect" },
-      )
-      vv.onModeChange(mode, thresholdRect)
+      if (mode != null) {
+        vv.onModeChange(mode, thresholdRect)
+        debugLog(
+            "updateModes",
+            {
+              "virtualView=${vv.virtualViewID} mode=$mode  rect=$rect thresholdRect=$thresholdRect"
+            },
+        )
+      }
     }
   }
 }

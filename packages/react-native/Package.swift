@@ -68,6 +68,17 @@ let reactOSCompat = RNTarget(
   path: "ReactCommon/oscompat"
 )
 
+let rctSwiftUI = RNTarget(
+  name: .rctSwiftUI,
+  path: "ReactApple/RCTSwiftUI"
+)
+
+let rctSwiftUIWrapper = RNTarget(
+  name: .rctSwiftUIWrapper,
+  path: "ReactApple/RCTSwiftUIWrapper",
+  dependencies: [.rctSwiftUI]
+)
+
 // React-rendererconsistency.podspec
 let reactRendererConsistency = RNTarget(
   name: .reactRendererConsistency,
@@ -211,6 +222,18 @@ let reactHermes = RNTarget(
   ]
 )
 
+/// React-networking.podspec
+let reactNetworking = RNTarget(
+  name: .reactNetworking,
+  path: "ReactCommon/react/networking",
+  excludedPaths: ["tests"],
+  dependencies: [.reactNativeDependencies, .reactJsInspectorNetwork, .reactPerformanceTimeline],
+  defines: [
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED", to: "1", .when(configuration: BuildConfiguration.debug)),
+    CXXSetting.define("REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY", to: "1", .when(configuration: BuildConfiguration.debug)),
+  ]
+)
+
 /// React-performancecdpmetrics.podspec
 let reactPerformanceCdpMetrics = RNTarget(
   name: .reactPerformanceCdpMetrics,
@@ -302,6 +325,13 @@ let reactIdleCallbacksNativeModule = RNTarget(
   name: .reactIdleCallbacksNativeModule,
   path: "ReactCommon/react/nativemodule/idlecallbacks",
   dependencies: [.reactNativeDependencies, .reactDebug, .reactFeatureFlags, .reactUtils, .reactPerfLogger, .reactCxxReact, .reactTurboModuleCore]
+)
+
+/// React-webperformance.podspec
+let reactWebPerformanceNativeModule = RNTarget(
+  name: .reactWebPerformanceNativeModule,
+  path: "ReactCommon/react/nativemodule/webperformance",
+  dependencies: [.reactNativeDependencies, .reactCxxReact, .reactTurboModuleCore, .reactPerformanceTimeline]
 )
 
 /// React-featureflagnativemodule.podspec
@@ -420,7 +450,7 @@ let reactFabric = RNTarget(
 let reactRCTFabric = RNTarget(
   name: .reactRCTFabric,
   path: "React/Fabric",
-  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricComponents, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage]
+  dependencies: [.reactNativeDependencies, .reactCore, .reactRCTImage, .yoga, .reactRCTText, .jsi, .reactFabricComponents, .reactGraphics, .reactImageManager, .reactDebug, .reactUtils, .reactPerformanceTimeline, .reactRendererDebug, .reactRendererConsistency, .reactRuntimeScheduler, .reactRCTAnimation, .reactJsInspector, .reactJsInspectorNetwork, .reactJsInspectorTracing, .reactFabric, .reactFabricImage, .rctSwiftUIWrapper]
 )
 
 /// React-FabricComponents.podspec
@@ -560,12 +590,15 @@ let targets = [
   reactCore,
   reactCoreRCTWebsocket,
   reactFabric,
+  rctSwiftUI,
+  rctSwiftUIWrapper,
   reactRCTFabric,
   reactFabricComponents,
   reactFabricImage,
   reactNativeDependencies,
   hermesPrebuilt,
   reactJsiTooling,
+  reactNetworking,
   reactPerformanceCdpMetrics,
   reactPerformanceTimeline,
   reactRuntimeScheduler,
@@ -590,6 +623,7 @@ let targets = [
   reactTurboModuleCoreDefaults,
   reactTurboModuleCoreMicrotasks,
   reactIdleCallbacksNativeModule,
+  reactWebPerformanceNativeModule,
   reactFeatureflagsNativemodule,
   reactNativeModuleDom,
   reactAppDelegate,
@@ -707,6 +741,9 @@ extension String {
   static let logger = "React-logger"
   static let mapbuffer = "React-Mapbuffer"
 
+  static let rctSwiftUI = "RCTSwiftUI"
+  static let rctSwiftUIWrapper = "RCTSwiftUIWrapper"
+
   static let rctDeprecation = "RCT-Deprecation"
   static let yoga = "Yoga"
   static let reactUtils = "React-utils"
@@ -737,6 +774,7 @@ extension String {
   static let hermesPrebuilt = "hermes-prebuilt"
 
   static let reactJsiTooling = "React-jsitooling"
+  static let reactNetworking = "React-networking"
   static let reactPerformanceCdpMetrics = "React-performancecdpmetrics"
   static let reactPerformanceTimeline = "React-performancetimeline"
   static let reactRuntimeScheduler = "React-runtimescheduler"
@@ -764,6 +802,7 @@ extension String {
   static let reactTurboModuleCoreDefaults = "ReactCommon/turbomodule/core/defaults"
   static let reactTurboModuleCoreMicrotasks = "ReactCommon/turbomodule/core/microtasks"
   static let reactIdleCallbacksNativeModule = "React-idlecallbacksnativemodule"
+  static let reactWebPerformanceNativeModule = "React-webperformancenativemodule"
   static let reactFeatureflagsNativemodule = "React-featureflagsnativemodule"
   static let reactNativeModuleDom = "React-domnativemodule"
   static let reactAppDelegate = "React-RCTAppDelegate"

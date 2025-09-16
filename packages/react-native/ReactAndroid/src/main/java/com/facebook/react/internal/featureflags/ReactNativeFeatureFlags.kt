@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a59b42b84160c18d214f8b2be76bc743>>
+ * @generated SignedSource<<f089964c958dfcac00f83c3371ccbefc>>
  */
 
 /**
@@ -89,6 +89,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
+
+  /**
+   * Enables linear text rendering on Android wherever subpixel text rendering is enabled
+   */
+  @JvmStatic
+  public fun enableAndroidLinearText(): Boolean = accessor.enableAndroidLinearText()
 
   /**
    * Enables various optimizations throughout the path of measuring text on Android.
@@ -247,6 +253,12 @@ public object ReactNativeFeatureFlags {
   public fun enableResourceTimingAPI(): Boolean = accessor.enableResourceTimingAPI()
 
   /**
+   * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+   */
+  @JvmStatic
+  public fun enableSwiftUIBasedFilters(): Boolean = accessor.enableSwiftUIBasedFilters()
+
+  /**
    * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
    */
   @JvmStatic
@@ -257,6 +269,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <Image> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForImage(): Boolean = accessor.enableViewRecyclingForImage()
 
   /**
    * Enables View Recycling for <ScrollView> via ReactViewGroup/ReactViewManager.
@@ -295,6 +313,12 @@ public object ReactNativeFeatureFlags {
   public fun enableVirtualViewWindowFocusDetection(): Boolean = accessor.enableVirtualViewWindowFocusDetection()
 
   /**
+   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
+   */
+  @JvmStatic
+  public fun enableWebPerformanceAPIsByDefault(): Boolean = accessor.enableWebPerformanceAPIsByDefault()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -317,6 +341,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun hideOffscreenVirtualViewsOnIOS(): Boolean = accessor.hideOffscreenVirtualViewsOnIOS()
+
+  /**
+   * Override props at mounting with synchronously mounted (i.e. direct manipulation) props from Native Animated.
+   */
+  @JvmStatic
+  public fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = accessor.overrideBySynchronousMountPropsAtMountingAndroid()
 
   /**
    * Enable the V2 in-app Performance Monitor. This flag is global and should not be changed across React Host lifetimes.

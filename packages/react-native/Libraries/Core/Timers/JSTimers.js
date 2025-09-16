@@ -6,6 +6,7 @@
  *
  * @flow
  * @format
+ * @deprecated
  */
 
 import NativeTiming from './NativeTiming';

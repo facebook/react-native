@@ -99,7 +99,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -738,11 +737,17 @@ public class FabricUIManager
    *     vertical insets.
    */
   private long getEncodedScreenSizeWithoutVerticalInsets(int surfaceId) {
-    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
-    Objects.requireNonNull(surfaceMountingManager);
-    ThemedReactContext context = Objects.requireNonNull(surfaceMountingManager.getContext());
-    return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
-        context.getCurrentActivity());
+    ThemedReactContext context =
+        mMountingManager
+            .getSurfaceManagerEnforced(surfaceId, "getEncodedScreenSizeWithoutVerticalInsets")
+            .getContext();
+    if (context == null) {
+      FLog.w(TAG, "Couldn't get context from SurfaceMountingManager for surfaceId %d", surfaceId);
+      return 0;
+    } else {
+      return DisplayMetricsHolder.getEncodedScreenSizeWithoutVerticalInsets(
+          context.getCurrentActivity());
+    }
   }
 
   @Override
@@ -791,7 +796,8 @@ public class FabricUIManager
           @Override
           public void execute(MountingManager mountingManager) {
             try {
-              mountingManager.updateProps(reactTag, props);
+              mountingManager.storeSynchronousMountPropsOverride(reactTag, props);
+              mountingManager.updatePropsSynchronously(reactTag, props);
             } catch (Exception ex) {
               // TODO T42943890: Fix animations in Fabric and remove this try/catch?
               // There might always be race conditions between surface teardown and

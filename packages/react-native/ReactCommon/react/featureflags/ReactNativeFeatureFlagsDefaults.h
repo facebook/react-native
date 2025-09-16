@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5f9c3ecf7887653fd5348a05391ab7d0>>
+ * @generated SignedSource<<b6da08857919846dda053b3635fb9702>>
  */
 
 /**
@@ -64,6 +64,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    return false;
+  }
+
+  bool enableAndroidLinearText() override {
     return false;
   }
 
@@ -171,12 +175,20 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableSwiftUIBasedFilters() override {
+    return false;
+  }
+
   bool enableViewCulling() override {
     return false;
   }
 
   bool enableViewRecycling() override {
     return false;
+  }
+
+  bool enableViewRecyclingForImage() override {
+    return true;
   }
 
   bool enableViewRecyclingForScrollView() override {
@@ -203,6 +215,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableWebPerformanceAPIsByDefault() override {
+    return false;
+  }
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {
     return false;
   }
@@ -216,6 +232,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool hideOffscreenVirtualViewsOnIOS() override {
+    return false;
+  }
+
+  bool overrideBySynchronousMountPropsAtMountingAndroid() override {
     return false;
   }
 

@@ -29,6 +29,16 @@ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
   supportedCommands: ['hotspotUpdate', 'setPressed'],
 });
 
+/**
+ * `ViewNativeComponent` is an internal React Native host component, and is
+ * exported to provide lower-level access for libraries.
+ *
+ * @warning `<unstable_NativeView>` provides no semver guarantees and is not
+ *   intended to be used in app code. Please use
+ *   [`<View>`](https://reactnative.dev/docs/view) instead.
+ */
+// Additional note: Our long term plan is to reduce the overhead of the <Text>
+// and <View> wrappers so that we no longer have any reason to export these APIs.
 export default ViewNativeComponent;
 
 export type ViewNativeComponentType = HostComponent<Props>;

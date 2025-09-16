@@ -297,16 +297,6 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
-
-  std::vector<PerformanceEntryReporterEventTimingListener*> listenersCopy;
-  {
-    std::shared_lock lock(listenersMutex_);
-    listenersCopy = eventTimingListeners_;
-  }
-
-  for (auto* listener : listenersCopy) {
-    listener->onLongTaskEntry(entry);
-  }
 }
 
 void PerformanceEntryReporter::reportResourceTiming(
@@ -317,7 +307,10 @@ void PerformanceEntryReporter::reportResourceTiming(
     std::optional<HighResTimeStamp> connectEnd,
     HighResTimeStamp responseStart,
     HighResTimeStamp responseEnd,
-    const std::optional<int>& responseStatus) {
+    const std::optional<int>& responseStatus,
+    const std::optional<std::string>& devtoolsRequestId,
+    const std::optional<std::string>& requestMethod,
+    const std::optional<std::string>& resourceType) {
   const auto entry = PerformanceResourceTiming{
       {.name = url, .startTime = fetchStart},
       fetchStart,
@@ -328,6 +321,8 @@ void PerformanceEntryReporter::reportResourceTiming(
       responseEnd,
       responseStatus,
   };
+
+  traceResourceTiming(entry, devtoolsRequestId, requestMethod, resourceType);
 
   // Add to buffers & notify observers
   {
@@ -377,6 +372,33 @@ void PerformanceEntryReporter::traceMeasure(
       performanceTracer.reportMeasure(
           entry.name, entry.startTime, entry.duration, std::move(detail));
     }
+  }
+}
+
+void PerformanceEntryReporter::traceResourceTiming(
+    const PerformanceResourceTiming& entry,
+    const std::optional<std::string>& devtoolsRequestId,
+    const std::optional<std::string>& requestMethod,
+    const std::optional<std::string>& resourceType) const {
+  if (!entry.responseStart.has_value() || !entry.responseEnd.has_value() ||
+      !entry.responseStatus.has_value() || !devtoolsRequestId.has_value() ||
+      !requestMethod.has_value() || !resourceType.has_value()) {
+    return;
+  }
+
+  auto& performanceTracer =
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
+
+  if (performanceTracer.isTracing()) {
+    performanceTracer.reportResourceTiming(
+        *devtoolsRequestId,
+        entry.name,
+        entry.fetchStart,
+        *entry.responseStart,
+        *entry.responseEnd,
+        *entry.responseStatus,
+        *requestMethod,
+        *resourceType);
   }
 }
 

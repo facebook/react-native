@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<05bfed9fc7131062c8b16246986fc999>>
+ * @generated SignedSource<<7601cbcde75ff19ef0fe67f6faef2549>>
  */
 
 /**
@@ -42,6 +42,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableAccessibilityOrder(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
+
+  override fun enableAndroidLinearText(): Boolean = false
 
   override fun enableAndroidTextMeasurementOptimizations(): Boolean = false
 
@@ -95,9 +97,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableResourceTimingAPI(): Boolean = false
 
+  override fun enableSwiftUIBasedFilters(): Boolean = false
+
   override fun enableViewCulling(): Boolean = false
 
   override fun enableViewRecycling(): Boolean = false
+
+  override fun enableViewRecyclingForImage(): Boolean = true
 
   override fun enableViewRecyclingForScrollView(): Boolean = false
 
@@ -111,6 +117,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableVirtualViewWindowFocusDetection(): Boolean = false
 
+  override fun enableWebPerformanceAPIsByDefault(): Boolean = false
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fuseboxEnabledRelease(): Boolean = false
@@ -118,6 +126,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun fuseboxNetworkInspectionEnabled(): Boolean = false
 
   override fun hideOffscreenVirtualViewsOnIOS(): Boolean = false
+
+  override fun overrideBySynchronousMountPropsAtMountingAndroid(): Boolean = false
 
   override fun perfMonitorV2Enabled(): Boolean = false
 

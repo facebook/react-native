@@ -65,7 +65,7 @@ class PerformanceTracer {
    * See https://w3c.github.io/user-timing/#mark-method.
    */
   void reportMark(
-      const std::string_view& name,
+      const std::string& name,
       HighResTimeStamp start,
       folly::dynamic&& detail = nullptr);
 
@@ -76,7 +76,7 @@ class PerformanceTracer {
    * See https://w3c.github.io/user-timing/#measure-method.
    */
   void reportMeasure(
-      const std::string_view& name,
+      const std::string& name,
       HighResTimeStamp start,
       HighResDuration duration,
       folly::dynamic&& detail = nullptr);
@@ -89,7 +89,7 @@ class PerformanceTracer {
    https://developer.chrome.com/docs/devtools/performance/extension#inject_your_data_with_consoletimestamp
    */
   void reportTimeStamp(
-      std::string name,
+      const std::string& name,
       std::optional<ConsoleTimeStampEntry> start = std::nullopt,
       std::optional<ConsoleTimeStampEntry> end = std::nullopt,
       std::optional<std::string> trackName = std::nullopt,
@@ -107,6 +107,21 @@ class PerformanceTracer {
    * "Run Microtasks" block under a task.
    */
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
+
+  /**
+   * Record a "ResourceSendRequest"/"ResourceFinish" event pair - a labelled
+   * duration in the Performance timeline Network track. If not currently
+   * tracing, this is a no-op.
+   */
+  void reportResourceTiming(
+      const std::string& requestId,
+      const std::string& url,
+      HighResTimeStamp fetchStart,
+      HighResTimeStamp responseStart,
+      HighResTimeStamp responseEnd,
+      int statusCode,
+      const std::string& requestMethod,
+      const std::string& resourceType);
 
   /**
    * Creates "Profile" Trace Event.
@@ -181,12 +196,48 @@ class PerformanceTracer {
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
+  struct PerformanceTracerResourceWillSendRequest {
+    std::string requestId;
+    HighResTimeStamp start;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceSendRequest {
+    std::string requestId;
+    std::string url;
+    HighResTimeStamp start;
+    std::string requestMethod;
+    std::string resourceType;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceFinish {
+    std::string requestId;
+    HighResTimeStamp start;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
+  struct PerformanceTracerResourceReceiveResponse {
+    std::string requestId;
+    HighResTimeStamp start;
+    int statusCode;
+    ThreadId threadId;
+    HighResTimeStamp createdAt = HighResTimeStamp::now();
+  };
+
   using PerformanceTracerEvent = std::variant<
       PerformanceTracerEventTimeStamp,
       PerformanceTracerEventEventLoopTask,
       PerformanceTracerEventEventLoopMicrotask,
       PerformanceTracerEventMark,
-      PerformanceTracerEventMeasure>;
+      PerformanceTracerEventMeasure,
+      PerformanceTracerResourceWillSendRequest,
+      PerformanceTracerResourceSendRequest,
+      PerformanceTracerResourceReceiveResponse,
+      PerformanceTracerResourceFinish>;
 
 #pragma mark - Private fields and methods
 

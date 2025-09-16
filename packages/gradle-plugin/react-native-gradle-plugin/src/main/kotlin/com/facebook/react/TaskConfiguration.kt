@@ -14,6 +14,7 @@ import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
+import com.facebook.react.utils.ProjectUtils.isHermesV1Enabled
 import com.facebook.react.utils.ProjectUtils.useThirdPartyJSC
 import com.facebook.react.utils.detectedCliFile
 import com.facebook.react.utils.detectedEntryFile
@@ -48,6 +49,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
       } else {
         isHermesEnabledInProject
       }
+  val isHermesV1Enabled = project.isHermesV1Enabled || rootProject.isHermesV1Enabled
   val isDebuggableVariant =
       config.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
   val useThirdPartyJSC = project.useThirdPartyJSC
@@ -78,6 +80,7 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
           task.jsBundleDir.set(jsBundleDir)
           task.resourcesDir.set(resourcesDir)
           task.hermesEnabled.set(isHermesEnabledInThisVariant)
+          task.hermesV1Enabled.set(isHermesV1Enabled)
           task.minifyEnabled.set(!isHermesEnabledInThisVariant)
           task.devEnabled.set(false)
           task.jsIntermediateSourceMapsDir.set(jsIntermediateSourceMapsDir)

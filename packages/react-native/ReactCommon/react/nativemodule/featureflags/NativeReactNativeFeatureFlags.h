@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<228d7484ef89bb01fee8dcff2657c56a>>
+ * @generated SignedSource<<b1583692e9e07ae68b946496cb94e3e9>>
  */
 
 /**
@@ -55,6 +55,8 @@ class NativeReactNativeFeatureFlags
   bool enableAccessibilityOrder(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
+
+  bool enableAndroidLinearText(jsi::Runtime& runtime);
 
   bool enableAndroidTextMeasurementOptimizations(jsi::Runtime& runtime);
 
@@ -108,9 +110,13 @@ class NativeReactNativeFeatureFlags
 
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
 
+  bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
+
   bool enableViewCulling(jsi::Runtime& runtime);
 
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForImage(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForScrollView(jsi::Runtime& runtime);
 
@@ -124,6 +130,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableVirtualViewWindowFocusDetection(jsi::Runtime& runtime);
 
+  bool enableWebPerformanceAPIsByDefault(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
@@ -131,6 +139,8 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool hideOffscreenVirtualViewsOnIOS(jsi::Runtime& runtime);
+
+  bool overrideBySynchronousMountPropsAtMountingAndroid(jsi::Runtime& runtime);
 
   bool perfMonitorV2Enabled(jsi::Runtime& runtime);
 
