@@ -3995,13 +3995,16 @@ declare class Process extends events$EventEmitter {
   initgroups?: (user: number | string, extra_group: number | string) => void;
   kill(pid: number, signal?: string | number): void;
   mainModule: Object;
-  memoryUsage(): {
-    arrayBuffers: number,
-    rss: number,
-    heapTotal: number,
-    heapUsed: number,
-    external: number,
-    ...
+  memoryUsage: {
+    (): {
+      arrayBuffers: number,
+      rss: number,
+      heapTotal: number,
+      heapUsed: number,
+      external: number,
+      ...
+    },
+    rss: () => number,
   };
   nextTick: <T>(cb: (...T) => mixed, ...T) => void;
   pid: number;
