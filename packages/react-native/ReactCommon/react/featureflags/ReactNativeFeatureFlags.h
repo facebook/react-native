@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eee81e4e9bb13ef5134d4e2d79876b38>>
+ * @generated SignedSource<<55cd4ef6cd8902af5c0959077336b0bb>>
  */
 
 /**
@@ -258,6 +258,11 @@ class ReactNativeFeatureFlags {
    * Enables window focus detection for prioritizing VirtualView events.
    */
   RN_EXPORT static bool enableVirtualViewWindowFocusDetection();
+
+  /**
+   * Enable Web Performance APIs (Performance Timeline, User Timings, etc.) by default.
+   */
+  RN_EXPORT static bool enableWebPerformanceAPIsByDefault();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

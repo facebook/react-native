@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9c36c1dbece9e27f7b71da7611cb747>>
+ * @generated SignedSource<<e95a083880ecb122d04f210bb05d404f>>
  */
 
 /**
@@ -262,6 +262,11 @@ bool NativeReactNativeFeatureFlags::enableVirtualViewRenderState(
 bool NativeReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableVirtualViewWindowFocusDetection();
+}
+
+bool NativeReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableWebPerformanceAPIsByDefault();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
