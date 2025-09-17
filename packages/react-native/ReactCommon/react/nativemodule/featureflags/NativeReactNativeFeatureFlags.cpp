@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5042321d7d0da40cc0436ffaeedda168>>
+ * @generated SignedSource<<c97db1f02897c99b61643cac10067c6d>>
  */
 
 /**
@@ -177,6 +177,11 @@ bool NativeReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid(
 bool NativeReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
+}
+
+bool NativeReactNativeFeatureFlags::enableImperativeFocus(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImperativeFocus();
 }
 
 bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS(
