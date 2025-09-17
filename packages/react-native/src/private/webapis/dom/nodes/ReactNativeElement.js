@@ -25,8 +25,10 @@ import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
+import {Commands as ViewCommands} from '../../../../../Libraries/Components/View/ViewNativeComponent';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {
   getNativeElementReference,
   getPublicInstanceFromInstanceHandle,
@@ -140,11 +142,25 @@ class ReactNativeElement extends ReadOnlyElement implements NativeMethods {
    */
 
   blur(): void {
-    TextInputState.blurTextInput(this);
+    // TextInputState uses the same editable prop to determine if the component is a TextInput
+    // Utilizing it here to keep the TextInput blur behavior intact.
+    // $FlowExpectedError[prop-missing] currentProps is available on the underlying instance
+    if (this.currentProps?.editable) {
+      TextInputState.blurTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.blur(this);
+    }
   }
 
   focus() {
-    TextInputState.focusTextInput(this);
+    // TextInputState uses the same editable prop to determine if the component is a TextInput
+    // Utilizing it here to keep the TextInput focus behavior intact.
+    // $FlowExpectedError[prop-missing] currentProps is available on the underlying instance
+    if (this.currentProps?.editable) {
+      TextInputState.focusTextInput(this);
+    } else if (ReactNativeFeatureFlags.enableImperativeFocus()) {
+      ViewCommands.focus(this);
+    }
   }
 
   measure(callback: MeasureOnSuccessCallback) {
