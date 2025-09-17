@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.82.0-rc.3
+
+### Added
+
+- **Hermes V1:** Added a dependency on hermes-compiler ([0caf8e70d5](https://github.com/facebook/react-native/commit/0caf8e70d53f611a73ad9b55879dfe0a5f036371) by [@j-piasecki](https://github.com/j-piasecki))
+
+### Fixed
+
+#### Android specific
+
+- **Hermes V1:** Changed the coordinates of hermes artifacts when using Hermes V1 ([d0fb33822d](https://github.com/facebook/react-native/commit/d0fb33822de38183895c8b3421f46966909beaf3) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### iOS specific
+
+- **Codegen:** Fix regression that skips artifacts code generation ([f6f5ea0b2e](https://github.com/facebook/react-native/commit/f6f5ea0b2eed894725d8f6e8bd045c99c3182026) by [@kitten](https://github.com/kitten))
+
 ## v0.81.3
 
 ### Fixed
