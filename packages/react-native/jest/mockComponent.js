@@ -28,7 +28,8 @@ export default function mockComponent<
   instanceMethods: ?interface {},
   isESModule: TIsESModule,
 ): TIsESModule extends true
-  ? ModuleDefault<TComponentModule & typeof instanceMethods>
+  ? // $FlowFixMe[incompatible-use]
+    ModuleDefault<TComponentModule & typeof instanceMethods>
   : TComponentModule & typeof instanceMethods {
   const RealComponent: TComponentType = isESModule
     ? // $FlowFixMe[prop-missing]
