@@ -7,7 +7,7 @@
 
 #include "CxxNativeModule.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include "Instance.h"
 
@@ -255,4 +255,4 @@ void CxxNativeModule::lazyInit() {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

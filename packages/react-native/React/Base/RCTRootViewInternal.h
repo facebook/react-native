@@ -7,7 +7,7 @@
 
 #import <React/RCTRootView.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 /**
  * The interface provides a set of functions that allow other internal framework
@@ -25,4 +25,4 @@ __deprecated_msg("This API will be removed along with the legacy architecture.")
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

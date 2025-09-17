@@ -7,7 +7,7 @@
 
 #import "RCTScrollView.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <UIKit/UIKit.h>
 
@@ -1167,4 +1167,4 @@ void RCTSendFakeScrollEvent(id<RCTEventDispatcherProtocol> eventDispatcher, NSNu
   [eventDispatcher sendEvent:fakeScrollEvent];
 }
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

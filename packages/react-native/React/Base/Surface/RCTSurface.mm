@@ -27,7 +27,7 @@
 #import "RCTUIManagerObserverCoordinator.h"
 #import "RCTUIManagerUtils.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 @interface RCTSurface () <RCTSurfaceRootShadowViewDelegate, RCTUIManagerObserver>
 @end
@@ -607,7 +607,7 @@
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTSurface
 @synthesize stage;
 @synthesize moduleName;
@@ -671,4 +671,4 @@
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

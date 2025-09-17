@@ -264,7 +264,7 @@ void RCTUIManagerSetDispatchAccessibilityManagerInitOntoMain(BOOL enabled)
   kDispatchAccessibilityManagerInitOntoMain = enabled;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
   RCTBridgeHostTargetDelegate(RCTBridge *bridge)
@@ -675,7 +675,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return _inspectorTarget.get();
 }
 @end
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTBridge
 - (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
@@ -781,4 +781,4 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
 }
 
 @end
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

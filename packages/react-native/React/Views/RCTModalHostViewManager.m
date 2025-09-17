@@ -7,7 +7,7 @@
 
 #import "RCTModalHostViewManager.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import "RCTBridge.h"
 #import "RCTModalHostView.h"
@@ -128,4 +128,4 @@ RCT_EXPORT_VIEW_PROPERTY(onDismiss, RCTDirectEventBlock)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

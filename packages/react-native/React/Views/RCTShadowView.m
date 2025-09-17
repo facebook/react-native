@@ -16,7 +16,7 @@
 #import "UIView+Private.h"
 #import "UIView+React.h"
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 typedef void (^RCTActionBlock)(RCTShadowView *shadowViewSelf, id value);
 typedef void (^RCTResetActionBlock)(RCTShadowView *shadowViewSelf);
@@ -738,7 +738,7 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 
 @end
 
-#else // RCT_FIT_RM_OLD_COMPONENT
+#else // RCT_REMOVE_LEGACY_ARCH
 @implementation RCTShadowView
 @synthesize reactTag = _reactTag;
 @synthesize rootTag = _rootTag;
@@ -826,4 +826,4 @@ RCT_STYLE_PROPERTY(AspectRatio, aspectRatio, AspectRatio, float)
 }
 
 @end
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

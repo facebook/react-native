@@ -7,7 +7,7 @@
 
 #import <React/RCTInputAccessoryViewManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTInputAccessoryShadowView.h>
 #import <React/RCTInputAccessoryView.h>
@@ -30,4 +30,4 @@ RCT_REMAP_VIEW_PROPERTY(backgroundColor, inputAccessoryView.backgroundColor, UIC
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

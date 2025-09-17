@@ -7,7 +7,7 @@
 
 #import <React/RCTUIManager.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import "RCTRefreshControl.h"
 #import "RCTRefreshControlManager.h"
@@ -44,4 +44,4 @@ RCT_EXPORT_METHOD(setNativeRefreshing : (nonnull NSNumber *)viewTag toRefreshing
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

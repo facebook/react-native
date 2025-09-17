@@ -15,7 +15,7 @@ typedef void (^RCTJavaScriptCompleteBlock)(NSError *__strong)
 typedef void (^RCTJavaScriptCallback)(__strong id, NSError *__strong)
     __deprecated_msg("This api will be removed along with the bridge.");
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a
  * web view (for debugging purposes), or may be running code in a `JSContext`.
@@ -82,4 +82,4 @@ __deprecated_msg("This api will be removed along with the bridge.")
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
 @end
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 __attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTActivityIndicatorView : UIActivityIndicatorView
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH
