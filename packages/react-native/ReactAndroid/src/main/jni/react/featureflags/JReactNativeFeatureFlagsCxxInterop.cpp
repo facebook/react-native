@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92c9aa29df580c6d12faa14e60b00e4f>>
+ * @generated SignedSource<<de817bc06ae5ef584db08d6a094c9d03>>
  */
 
 /**
@@ -198,6 +198,12 @@ class ReactNativeFeatureFlagsJavaProvider
   bool enableImmediateUpdateModeForContentOffsetChanges() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImmediateUpdateModeForContentOffsetChanges");
+    return method(javaProvider_);
+  }
+
+  bool enableImperativeFocus() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImperativeFocus");
     return method(javaProvider_);
   }
 
@@ -616,6 +622,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffs
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableImperativeFocus(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImperativeFocus();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
@@ -958,6 +969,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableImmediateUpdateModeForContentOffsetChanges",
         JReactNativeFeatureFlagsCxxInterop::enableImmediateUpdateModeForContentOffsetChanges),
+      makeNativeMethod(
+        "enableImperativeFocus",
+        JReactNativeFeatureFlagsCxxInterop::enableImperativeFocus),
       makeNativeMethod(
         "enableInteropViewManagerClassLookUpOptimizationIOS",
         JReactNativeFeatureFlagsCxxInterop::enableInteropViewManagerClassLookUpOptimizationIOS),

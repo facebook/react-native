@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<40421ac664927693136a8e3197e3c07c>>
+ * @generated SignedSource<<3446eebd26c1142fd78cd5413771569d>>
  */
 
 /**
@@ -173,6 +173,11 @@ class ReactNativeFeatureFlags {
    * Dispatches state updates for content offset changes synchronously on the main thread.
    */
   RN_EXPORT static bool enableImmediateUpdateModeForContentOffsetChanges();
+
+  /**
+   * Enable ref.focus() and ref.blur() for all views, not just TextInput.
+   */
+  RN_EXPORT static bool enableImperativeFocus();
 
   /**
    * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.

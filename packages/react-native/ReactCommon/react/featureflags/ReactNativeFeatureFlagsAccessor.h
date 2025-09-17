@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f05211b44f2be076b37ef9178e5ef43>>
+ * @generated SignedSource<<53981e017d681009b240ad6b5d09d4d8>>
  */
 
 /**
@@ -59,6 +59,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableImagePrefetchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
+  bool enableImperativeFocus();
   bool enableInteropViewManagerClassLookUpOptimizationIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
@@ -116,7 +117,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 73> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 74> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -145,6 +146,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
+  std::atomic<std::optional<bool>> enableImperativeFocus_;
   std::atomic<std::optional<bool>> enableInteropViewManagerClassLookUpOptimizationIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;

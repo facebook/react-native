@@ -1540,6 +1540,62 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  if ([commandName isEqualToString:@"focus"]) {
+    [self focus];
+    return;
+  }
+
+  if ([commandName isEqualToString:@"blur"]) {
+    [self blur];
+    return;
+  }
+}
+
+- (void)focus
+{
+  [self becomeFirstResponder];
+}
+
+- (void)blur
+{
+  [self resignFirstResponder];
+}
+
+#pragma mark - Focus Events
+
+- (BOOL)becomeFirstResponder
+{
+  if (![super becomeFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onFocus();
+  }
+
+  return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+  if (![super resignFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onBlur();
+  }
+
+  return YES;
+}
+
 @end
 
 #ifdef __cplusplus

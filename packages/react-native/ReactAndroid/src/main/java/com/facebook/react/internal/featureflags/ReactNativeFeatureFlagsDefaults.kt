@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7601cbcde75ff19ef0fe67f6faef2549>>
+ * @generated SignedSource<<4fa15189361a6c92bdd44bafc9356167>>
  */
 
 /**
@@ -76,6 +76,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableImagePrefetchingOnUiThreadAndroid(): Boolean = false
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
+
+  override fun enableImperativeFocus(): Boolean = false
 
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 

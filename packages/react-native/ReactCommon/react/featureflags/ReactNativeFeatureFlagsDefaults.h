@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b6da08857919846dda053b3635fb9702>>
+ * @generated SignedSource<<6c1c050029f105d0075fb83ca21aa48b>>
  */
 
 /**
@@ -132,6 +132,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImmediateUpdateModeForContentOffsetChanges() override {
+    return false;
+  }
+
+  bool enableImperativeFocus() override {
     return false;
   }
 

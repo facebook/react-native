@@ -336,6 +336,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableImperativeFocus: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable ref.focus() and ref.blur() for all views, not just TextInput.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableInteropViewManagerClassLookUpOptimizationIOS: {
       defaultValue: false,
       metadata: {
