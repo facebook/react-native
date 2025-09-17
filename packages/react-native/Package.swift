@@ -161,7 +161,7 @@ let reactJsInspectorTracing = RNTarget(
   name: .reactJsInspectorTracing,
   path: "ReactCommon/jsinspector-modern/tracing",
   excludedPaths: ["tests"],
-  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .jsi, .reactOSCompat]
+  dependencies: [.reactNativeDependencies, .reactFeatureFlags, .reactJsInspectorNetwork, .jsi, .reactOSCompat]
 )
 
 /// React-jsinspectornetwork.podspec
