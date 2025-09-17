@@ -1540,6 +1540,34 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   }
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
+- (void)handleCommand:(const NSString *)commandName args:(const NSArray *)args
+{
+  if ([commandName isEqualToString:@"focus"]) {
+    [self focus];
+    return;
+  }
+
+  if ([commandName isEqualToString:@"blur"]) {
+    [self blur];
+    return;
+  }
+}
+
+- (void)focus
+{
+  [self becomeFirstResponder];
+}
+
+- (void)blur
+{
+  [self resignFirstResponder];
+}
+
 @end
 
 #ifdef __cplusplus
