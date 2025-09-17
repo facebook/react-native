@@ -18,7 +18,7 @@ function Playground() {
   return (
     <View style={styles.container}>
       <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
+        Nothing needs to change. its in the default template
       </RNTesterText>
     </View>
   );
