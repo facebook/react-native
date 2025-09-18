@@ -242,7 +242,7 @@ internal fun readPackageJsonFile(
   return packageJson?.let { JsonUtils.fromPackageJson(it) }
 }
 
-private const val HERMES_COMPILER_NPM_DIR = "node_modules/hermes-compiler/%OS-BIN%/"
+private const val HERMES_COMPILER_NPM_DIR = "node_modules/hermes-compiler/hermesc/%OS-BIN%/"
 private const val HERMESC_IN_REACT_NATIVE_DIR = "node_modules/react-native/sdks/hermesc/%OS-BIN%/"
 private const val HERMESC_BUILT_FROM_SOURCE_DIR =
     "node_modules/react-native/ReactAndroid/hermes-engine/build/hermes/bin/"

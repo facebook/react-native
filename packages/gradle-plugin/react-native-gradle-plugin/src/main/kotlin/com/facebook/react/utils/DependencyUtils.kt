@@ -191,6 +191,14 @@ internal object DependencyUtils {
               "The hermes-android dependency was modified to use the correct Maven group.",
           )
       )
+    } else if (hermesV1Enabled) {
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:hermes-android",
+              hermesVersionString,
+              "The hermes-android dependency was modified to use Hermes V1.",
+          )
+      )
     }
     return dependencySubstitution
   }

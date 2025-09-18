@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
       )
 
       spec.user_target_xcconfig = {
-        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/osx-bin/hermesc"
+        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
       }
     end
 
