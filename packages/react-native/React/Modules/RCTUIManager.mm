@@ -246,9 +246,6 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNewArchitectureValidation(
-      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
-
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
@@ -1624,8 +1621,6 @@ static UIView *_jsResponder;
 
 + (UIView *)JSResponder
 {
-  RCTErrorNewArchitectureValidation(
-      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
 }
 
