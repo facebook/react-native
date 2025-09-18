@@ -59,7 +59,7 @@ function IsIPhoneXExample(): React.Node {
     <View>
       <RNTesterText>
         Is this an iPhone X:{' '}
-        {DeviceInfo.getInfo()?.isIPhoneX_deprecated === true
+        {DeviceInfo.getConstants()?.isIPhoneX_deprecated === true
           ? 'Yeah!'
           : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
       </RNTesterText>
