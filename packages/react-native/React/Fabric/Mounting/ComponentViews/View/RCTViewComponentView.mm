@@ -1568,6 +1568,34 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   [self resignFirstResponder];
 }
 
+#pragma mark - Focus Events
+
+- (BOOL)becomeFirstResponder
+{
+  if (![super becomeFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onFocus();
+  }
+
+  return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+  if (![super resignFirstResponder]) {
+    return NO;
+  }
+
+  if (_eventEmitter && ReactNativeFeatureFlags::enableImperativeFocus()) {
+    _eventEmitter->onBlur();
+  }
+
+  return YES;
+}
+
 @end
 
 #ifdef __cplusplus
