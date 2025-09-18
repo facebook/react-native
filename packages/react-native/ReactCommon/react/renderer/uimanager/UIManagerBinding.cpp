@@ -470,7 +470,7 @@ jsi::Value UIManagerBinding::get(
               surfaceId,
               shadowNodeList,
               {.enableStateReconciliation = true,
-               .mountSynchronously = isWithinFirst5s,
+               .mountSynchronously = isWithinFirst5s, // make sure we push first render as soon as possible otherwise we observe 200ms delay
                .source = ShadowTree::CommitSource::React});
 
           return jsi::Value::undefined();
