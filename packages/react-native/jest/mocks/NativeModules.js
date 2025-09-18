@@ -52,24 +52,6 @@ const NativeModules = {
         },
       };
     },
-    getInfo(): $FlowFixMe {
-      return {
-        Dimensions: {
-          window: {
-            fontScale: 2,
-            height: 1334,
-            scale: 2,
-            width: 750,
-          },
-          screen: {
-            fontScale: 2,
-            height: 1334,
-            scale: 2,
-            width: 750,
-          },
-        },
-      };
-    },
   },
   DevSettings: {
     addMenuItem: jest.fn() as JestMockFn<$FlowFixMe, $FlowFixMe>,
