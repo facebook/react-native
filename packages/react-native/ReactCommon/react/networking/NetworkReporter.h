@@ -33,7 +33,10 @@ struct ResourceTimingData {
   std::optional<HighResTimeStamp> connectStart;
   std::optional<HighResTimeStamp> connectEnd;
   std::optional<HighResTimeStamp> responseStart;
-  std::optional<int> responseStatus;
+  int responseStatus = 0;
+  std::string contentType;
+  int encodedBodySize = 0;
+  int decodedBodySize = 0;
 };
 
 /**
