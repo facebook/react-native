@@ -67,11 +67,6 @@
                BlueprintName = "RNTesterUnitTests"
                ReferencedContainer = "container:RNTesterPods.xcodeproj">
             </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "RCTBundleURLProviderTests">
-               </Test>
-            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">
