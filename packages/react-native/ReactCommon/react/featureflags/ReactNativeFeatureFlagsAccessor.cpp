@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<891375f88b3f48b324de29e31c8936cf>>
+ * @generated SignedSource<<1f6e71c3c02ca5df3ce8675fb9198a3c>>
  */
 
 /**
@@ -1325,6 +1325,24 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
   return flagValue.value();
 }
 
+double ReactNativeFeatureFlagsAccessor::viewCullingOutsetRatio() {
+  auto flagValue = viewCullingOutsetRatio_.load();
+
+  if (!flagValue.has_value()) {
+    // This block is not exclusive but it is not necessary.
+    // If multiple threads try to initialize the feature flag, we would only
+    // be accessing the provider multiple times but the end state of this
+    // instance and the returned flag value would be the same.
+
+    markFlagAsAccessed(72, "viewCullingOutsetRatio");
+
+    flagValue = currentProvider_->viewCullingOutsetRatio();
+    viewCullingOutsetRatio_ = flagValue;
+  }
+
+  return flagValue.value();
+}
+
 double ReactNativeFeatureFlagsAccessor::virtualViewHysteresisRatio() {
   auto flagValue = virtualViewHysteresisRatio_.load();
 
@@ -1334,7 +1352,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewHysteresisRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(72, "virtualViewHysteresisRatio");
+    markFlagAsAccessed(73, "virtualViewHysteresisRatio");
 
     flagValue = currentProvider_->virtualViewHysteresisRatio();
     virtualViewHysteresisRatio_ = flagValue;
@@ -1352,7 +1370,7 @@ double ReactNativeFeatureFlagsAccessor::virtualViewPrerenderRatio() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(73, "virtualViewPrerenderRatio");
+    markFlagAsAccessed(74, "virtualViewPrerenderRatio");
 
     flagValue = currentProvider_->virtualViewPrerenderRatio();
     virtualViewPrerenderRatio_ = flagValue;
