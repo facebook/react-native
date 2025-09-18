@@ -328,6 +328,15 @@ public class ReactInstanceManager {
     }
 
     registerCxxErrorHandlerFunc();
+
+    // Using `if (true)` just to prevent tests / lint errors.
+    if (true) {
+      // Legacy architecture of React Native is deprecated and can't be initialized anymore.
+      // More details on:
+      // https://github.com/react-native-community/discussions-and-proposals/blob/nc/legacy-arch-removal/proposals/0929-legacy-architecture-removal.md
+      throw new UnsupportedOperationException(
+          "ReactInstanceManager.createReactContext is unsupported.");
+    }
   }
 
   private ReactInstanceDevHelper createDevHelperInterface() {
@@ -1446,6 +1455,7 @@ public class ReactInstanceManager {
    */
   private ReactApplicationContext createReactContext(
       JavaScriptExecutor jsExecutor, JSBundleLoader jsBundleLoader) {
+
     FLog.d(ReactConstants.TAG, "ReactInstanceManager.createReactContext()");
     ReactMarker.logMarker(CREATE_REACT_CONTEXT_START, jsExecutor.getName());
 
