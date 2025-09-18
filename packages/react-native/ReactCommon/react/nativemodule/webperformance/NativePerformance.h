@@ -68,6 +68,9 @@ struct NativePerformanceEntry {
   std::optional<HighResTimeStamp> responseStart;
   std::optional<HighResTimeStamp> responseEnd;
   std::optional<int> responseStatus;
+  std::optional<std::string> contentType;
+  std::optional<int> encodedBodySize;
+  std::optional<int> decodedBodySize;
 };
 
 template <>

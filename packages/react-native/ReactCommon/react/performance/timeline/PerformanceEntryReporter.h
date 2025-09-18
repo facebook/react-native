@@ -118,7 +118,10 @@ class PerformanceEntryReporter {
       std::optional<HighResTimeStamp> connectEnd,
       HighResTimeStamp responseStart,
       HighResTimeStamp responseEnd,
-      const std::optional<int>& responseStatus);
+      int responseStatus,
+      const std::string& contentType,
+      int encodedBodySize,
+      int decodedBodySize);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;
