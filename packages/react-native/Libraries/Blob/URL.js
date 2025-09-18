@@ -76,7 +76,6 @@ export class URL {
     // Do nothing.
   }
 
-  // $FlowFixMe[missing-local-annot]
   constructor(url: string, base?: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {

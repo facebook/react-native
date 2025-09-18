@@ -24,9 +24,6 @@ const {VirtualizedList} = require('@react-native/virtualized-lists').default;
 
 export type ReactTestInstance = ReactTestRendererType['root'];
 export type Predicate = (node: ReactTestInstance) => boolean;
-/* $FlowFixMe[value-as-type] (>=0.125.1 site=react_native_fb) This comment
- * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
- * delete this comment and run Flow. */
 export type ReactTestRendererJSON =
   /* $FlowFixMe[prop-missing] (>=0.125.1 site=react_native_fb) This comment
    * suppresses an error found when Flow v0.125.1 was deployed. To see the error,
@@ -38,21 +35,13 @@ function byClickable(): Predicate {
     node =>
       // note: <Text /> lazy-mounts press handlers after the first press,
       //       so this is a workaround for targeting text nodes.
-      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === Text &&
         node.props &&
         typeof node.props.onPress === 'function') ||
       // note: Special casing <Switch /> since it doesn't use touchable
-      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === Switch && node.props && node.props.disabled !== true) ||
-      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === View &&
         node?.props?.onStartShouldSetResponder?.testOnly_pressabilityConfig) ||
-      /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-       * roll out. See https://fburl.com/workplace/4oq3zi07. */
       (node.type === TouchableWithoutFeedback &&
         node.props &&
         typeof node.props.onPress === 'function') ||
@@ -182,12 +171,8 @@ function renderWithStrictMode(element: React.Node): ReactTestRendererType {
 
 function tap(instance: ReactTestInstance) {
   const touchable = instance.find(byClickable());
-  /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-   * roll out. See https://fburl.com/workplace/4oq3zi07. */
   if (touchable.type === Text && touchable.props && touchable.props.onPress) {
     touchable.props.onPress();
-    /* $FlowFixMe[invalid-compare] Error discovered during Constant Condition
-     * roll out. See https://fburl.com/workplace/4oq3zi07. */
   } else if (touchable.type === Switch && touchable.props) {
     const value = !touchable.props.value;
     const {onChange, onValueChange} = touchable.props;

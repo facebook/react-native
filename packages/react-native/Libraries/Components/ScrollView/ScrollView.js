@@ -656,8 +656,6 @@ type ScrollViewBaseProps = $ReadOnly<{
    *
    * See [RefreshControl](docs/refreshcontrol.html).
    */
-  /* $FlowFixMe[unclear-type] - how to handle generic type without existential
-   * operator? */
   refreshControl?: ?React.MixedElement,
   children?: React.Node,
   /**
@@ -1648,14 +1646,10 @@ class ScrollView extends React.Component<ScrollViewProps, ScrollViewState> {
       this.props.contentContainerStyle,
     ];
     if (__DEV__ && this.props.style !== undefined) {
-      // $FlowFixMe[underconstrained-implicit-instantiation]
       const style = flattenStyle(this.props.style);
       const childLayoutProps = (
         ['alignItems', 'justifyContent'] as const
-      ).filter(
-        // $FlowFixMe[incompatible-use]
-        prop => style && style[prop] !== undefined,
-      );
+      ).filter(prop => style && style[prop] !== undefined);
       invariant(
         childLayoutProps.length === 0,
         'ScrollView child layout (' +

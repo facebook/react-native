@@ -739,9 +739,7 @@ describe('Pressability', () => {
         handlers.onResponderMove(
           createMockPressEvent({
             registrationName: 'onResponderMove',
-            // $FlowFixMe[unsafe-addition]
             pageX: mockRegion.width + mockSlop.right / 2,
-            // $FlowFixMe[unsafe-addition]
             pageY: mockRegion.height + mockSlop.bottom / 2,
           }),
         );
@@ -775,9 +773,7 @@ describe('Pressability', () => {
         handlers.onResponderMove(
           createMockPressEvent({
             registrationName: 'onResponderMove',
-            // $FlowFixMe[unsafe-addition]
             pageX: mockRegion.width + mockSlop.right / 2,
-            // $FlowFixMe[unsafe-addition]
             pageY: mockRegion.height + mockSlop.bottom / 2,
           }),
         );

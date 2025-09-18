@@ -196,7 +196,6 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       }
 
       if (overrides != null) {
-        // $FlowFixMe[incompatible-type]
         _style = [_style, overrides];
       }
     }
@@ -445,7 +444,6 @@ if (ReactNativeFeatureFlags.reduceDefaultPropsInText()) {
       }
 
       if (overrides != null) {
-        // $FlowFixMe[incompatible-type]
         _style = [_style, overrides];
       }
     }

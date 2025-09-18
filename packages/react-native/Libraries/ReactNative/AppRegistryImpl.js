@@ -222,7 +222,6 @@ export function registerHeadlessTask(
   taskKey: string,
   taskProvider: TaskProvider,
 ): void {
-  // $FlowFixMe[object-this-reference]
   registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
     /* Cancel is no-op */
   });

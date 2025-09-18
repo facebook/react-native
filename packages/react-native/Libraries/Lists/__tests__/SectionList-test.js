@@ -40,9 +40,7 @@ describe('SectionList', () => {
           <defaultItemSeparator v={propStr(props)} />
         )}
         ListEmptyComponent={props => <empty v={propStr(props)} />}
-        // $FlowFixMe[incompatible-type]
         ListFooterComponent={props => <footer v={propStr(props)} />}
-        // $FlowFixMe[incompatible-type]
         ListHeaderComponent={props => <header v={propStr(props)} />}
         SectionSeparatorComponent={props => (
           <sectionSeparator v={propStr(props)} />

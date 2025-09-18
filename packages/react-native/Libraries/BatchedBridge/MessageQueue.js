@@ -163,8 +163,6 @@ class MessageQueue {
 
   getCallableModule(name: string): {...} | null {
     const getValue = this._lazyCallableModules[name];
-    /* $FlowFixMe[constant-condition] Error discovered during Constant
-     * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
     return getValue ? getValue() : null;
   }
 
@@ -469,8 +467,6 @@ class MessageQueue {
       const profileName = debug
         ? '<callback for ' + module + '.' + method + '>'
         : cbID;
-      /* $FlowFixMe[constant-condition] Error discovered during Constant
-       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (callback && this.__spy) {
         this.__spy({type: TO_JS, module: null, method: profileName, args});
       }

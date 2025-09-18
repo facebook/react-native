@@ -311,11 +311,6 @@ function checkInfiniteRange<OutputT: number | string>(
   invariant(arr.length >= 2, name + ' must have at least 2 elements');
   invariant(
     arr.length !== 2 || arr[0] !== -Infinity || arr[1] !== Infinity,
-    /* $FlowFixMe[incompatible-type] (>=0.13.0) - In the addition expression
-     * below this comment, one or both of the operands may be something that
-     * doesn't cleanly convert to a string, like undefined, null, and object,
-     * etc. If you really mean this implicit string conversion, you can do
-     * something like String(myThing) */
     // $FlowFixMe[unsafe-addition]
     name + 'cannot be ]-infinity;+infinity[ ' + arr,
   );

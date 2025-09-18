@@ -30,18 +30,12 @@ const ReactFiberErrorDialog = {
     // Typically, `errorValue` should be an error. However, other values such as
     // strings (or even null) are sometimes thrown.
     if (errorValue instanceof Error) {
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
       // $FlowFixMe[incompatible-type]
       error = (errorValue: ExtendedError);
     } else if (typeof errorValue === 'string') {
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
       // $FlowFixMe[incompatible-type]
       error = (new SyntheticError(errorValue): ExtendedError);
     } else {
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
       // $FlowFixMe[incompatible-type]
       error = (new SyntheticError('Unspecified error'): ExtendedError);
     }

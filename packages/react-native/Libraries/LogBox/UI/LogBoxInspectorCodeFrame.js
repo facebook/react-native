@@ -30,13 +30,11 @@ type Props = $ReadOnly<{
 
 function CodeFrameDisplay({codeFrame}: {codeFrame: CodeFrame}): React.Node {
   function getFileName() {
-    // $FlowFixMe[incompatible-use]
     const matches = /[^/]*$/.exec(codeFrame.fileName);
     if (matches && matches.length > 0) {
       return matches[0];
     }
 
-    // $FlowFixMe[incompatible-use]
     return codeFrame.fileName;
   }
 

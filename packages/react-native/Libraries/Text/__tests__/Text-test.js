@@ -121,7 +121,6 @@ describe('Text compat with web', () => {
       'aria-valuetext': '3',
     };
 
-    // $FlowFixMe[prop-missing]
     // $FlowFixMe[incompatible-type]
     const instance = await create(<Text {...props} />);
 
@@ -196,7 +195,6 @@ describe('Text compat with web', () => {
       verticalAlign: 'middle',
     };
 
-    // $FlowFixMe[prop-missing]
     // $FlowFixMe[incompatible-type]
     const instance = await create(<Text style={style} />);
 

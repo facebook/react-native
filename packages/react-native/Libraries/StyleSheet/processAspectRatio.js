@@ -19,8 +19,6 @@ function processAspectRatio(aspectRatio?: number | string): ?number {
   if (typeof aspectRatio !== 'string') {
     if (__DEV__) {
       invariant(
-        /* $FlowFixMe[constant-condition] Error discovered during Constant
-         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         !aspectRatio,
         'aspectRatio must either be a number, a ratio string or `auto`. You passed: %s',
         aspectRatio,

@@ -42,9 +42,7 @@ function flattenStyle<
     if (computedStyle) {
       // $FlowFixMe[invalid-in-rhs]
       for (const key in computedStyle) {
-        // $FlowFixMe[incompatible-use]
         // $FlowFixMe[invalid-computed-prop]
-        // $FlowFixMe[prop-missing]
         result[key] = computedStyle[key];
       }
     }

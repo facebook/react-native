@@ -440,8 +440,6 @@ export function withSubscription(
     }
 
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
       // $FlowFixMe[incompatible-type]
       reportLogBoxError(err, errorInfo.componentStack);
     }

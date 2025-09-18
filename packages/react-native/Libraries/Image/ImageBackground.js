@@ -68,7 +68,6 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
       ...props
     } = this.props;
 
-    // $FlowFixMe[underconstrained-implicit-instantiation]
     const flattenedStyle = flattenStyle(style);
     return (
       <View
@@ -90,9 +89,7 @@ class ImageBackground extends React.Component<ImageBackgroundProps> {
               // So, we have to proxy/reapply these styles explicitly for actual <Image> component.
               // This workaround should be removed after implementing proper support of
               // intrinsic content size of the <Image>.
-              // $FlowFixMe[prop-missing]
               width: flattenedStyle?.width,
-              // $FlowFixMe[prop-missing]
               height: flattenedStyle?.height,
             },
             imageStyle,

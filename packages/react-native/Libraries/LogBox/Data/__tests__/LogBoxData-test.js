@@ -669,8 +669,6 @@ describe('LogBoxData', () => {
 
   it('reportLogBoxError creates a native redbox with a componentStack', () => {
     LogBoxData.reportLogBoxError(
-      /* $FlowFixMe[class-object-subtyping] added when improving typing for
-       * this parameters */
       // $FlowFixMe[incompatible-type]
       new Error('Simulated Error'),
       '    in Component (file.js:1)',
@@ -684,8 +682,6 @@ describe('LogBoxData', () => {
   });
 
   it('reportLogBoxError creates a native redbox without a componentStack', () => {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-     * parameters */
     // $FlowFixMe[incompatible-type]
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
@@ -697,8 +693,6 @@ describe('LogBoxData', () => {
   });
 
   it('reportLogBoxError creates an error message that is also ignored', () => {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-     * parameters */
     // $FlowFixMe[incompatible-type]
     LogBoxData.reportLogBoxError(new Error('Simulated Error'));
 
