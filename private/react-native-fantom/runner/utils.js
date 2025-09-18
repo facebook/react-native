@@ -146,7 +146,7 @@ export function runCommand(
       encoding: 'utf8',
       env: {
         ...process.env,
-        PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+        PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
       },
     },
   );
@@ -186,7 +186,7 @@ export function runCommandSync(
     encoding: 'utf8',
     env: {
       ...process.env,
-      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+      PATH: `/usr/local/bin:/usr/bin:${process.env.PATH ?? ''}`,
     },
   });
 
