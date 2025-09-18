@@ -228,7 +228,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
   return _info;
 }
 
-RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getInfo)
+- (NSDictionary<NSString *, id> *)getInfo
 {
   return _info;
 }
