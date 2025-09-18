@@ -9,10 +9,10 @@
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
 #include <jsinspector-modern/network/CdpNetwork.h>
-#include <jsinspector-modern/network/HttpUtils.h>
 #include <jsinspector-modern/network/NetworkHandler.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #endif
+#include <jsinspector-modern/network/HttpUtils.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 
@@ -110,6 +110,7 @@ void NetworkReporter::reportResponseStart(
     const ResponseInfo& responseInfo,
     int encodedDataLength) {
   auto now = HighResTimeStamp::now();
+  auto headers = responseInfo.headers.value_or(Headers{});
 
   if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     // All builds: Annotate PerformanceResourceTiming metadata
@@ -117,16 +118,18 @@ void NetworkReporter::reportResponseStart(
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
       auto it = perfTimingsBuffer_.find(requestId);
       if (it != perfTimingsBuffer_.end()) {
+        auto contentType = jsinspector_modern::mimeTypeFromHeaders(headers);
         it->second.connectEnd = now;
         it->second.responseStart = now;
         it->second.responseStatus = responseInfo.statusCode;
+        it->second.contentType = contentType;
+        it->second.encodedBodySize = encodedDataLength;
+        it->second.decodedBodySize = encodedDataLength;
       }
     }
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  auto headers = responseInfo.headers.value_or(Headers{});
-
   // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onResponseReceived(
       requestId,
@@ -174,7 +177,10 @@ void NetworkReporter::reportResponseEnd(
             eventData.connectEnd.value_or(now),
             eventData.responseStart.value_or(now),
             now,
-            eventData.responseStatus);
+            eventData.responseStatus,
+            eventData.contentType,
+            eventData.encodedBodySize,
+            eventData.decodedBodySize);
         perfTimingsBuffer_.erase(requestId);
       }
     }
