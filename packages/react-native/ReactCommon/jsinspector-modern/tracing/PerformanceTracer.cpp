@@ -238,25 +238,6 @@ void PerformanceTracer::reportEventLoopMicrotasks(
   });
 }
 
-void PerformanceTracer::reportResourceWillSendRequest(
-    const std::string& devtoolsRequestId,
-    HighResTimeStamp start) {
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  std::lock_guard<std::mutex> lock(mutex_);
-  if (!tracingAtomic_) {
-    return;
-  }
-
-  enqueueEvent(PerformanceTracerResourceWillSendRequest{
-      .requestId = devtoolsRequestId,
-      .start = start,
-      .threadId = getCurrentThreadId(),
-  });
-}
-
 void PerformanceTracer::reportResourceSendRequest(
     const std::string& devtoolsRequestId,
     HighResTimeStamp start,
@@ -290,7 +271,8 @@ void PerformanceTracer::reportResourceReceiveResponse(
     HighResTimeStamp start,
     int statusCode,
     const Headers& headers,
-    int encodedDataLength) {
+    int encodedDataLength,
+    folly::dynamic timingData) {
   if (!tracingAtomic_) {
     return;
   }
@@ -308,13 +290,16 @@ void PerformanceTracer::reportResourceReceiveResponse(
       .mimeType = jsinspector_modern::mimeTypeFromHeaders(headers),
       .protocol = "h2",
       .statusCode = statusCode,
+      .timing = std::move(timingData),
       .threadId = getCurrentThreadId(),
   });
 }
 
 void PerformanceTracer::reportResourceFinish(
     const std::string& devtoolsRequestId,
-    HighResTimeStamp start) {
+    HighResTimeStamp start,
+    int encodedDataLength,
+    int decodedBodyLength) {
   if (!tracingAtomic_) {
     return;
   }
@@ -327,6 +312,8 @@ void PerformanceTracer::reportResourceFinish(
   enqueueEvent(PerformanceTracerResourceFinish{
       .requestId = devtoolsRequestId,
       .start = start,
+      .encodedDataLength = encodedDataLength,
+      .decodedBodyLength = decodedBodyLength,
       .threadId = getCurrentThreadId(),
   });
 }
@@ -604,21 +591,6 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 .args = folly::dynamic::object("data", std::move(data)),
             });
           },
-          [&](PerformanceTracerResourceWillSendRequest&& event) {
-            folly::dynamic data =
-                folly::dynamic::object("requestId", std::move(event.requestId));
-
-            events.emplace_back(TraceEvent{
-                .name = "ResourceWillSendRequest",
-                .cat = "devtools.timeline",
-                .ph = 'I',
-                .ts = event.start,
-                .pid = processId_,
-                .s = 't',
-                .tid = event.threadId,
-                .args = folly::dynamic::object("data", std::move(data)),
-            });
-          },
           [&](PerformanceTracerResourceSendRequest&& event) {
             folly::dynamic data =
                 folly::dynamic::object("initiator", folly::dynamic::object())(
@@ -651,7 +623,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 "protocol", event.protocol)(
                 "requestId", std::move(event.requestId))(
                 "statusCode", event.statusCode)(
-                "timing", folly::dynamic::object());
+                "timing", std::move(event.timing));
 
             events.emplace_back(TraceEvent{
                 .name = "ResourceReceiveResponse",
@@ -665,7 +637,9 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             });
           },
           [&](PerformanceTracerResourceFinish&& event) {
-            folly::dynamic data = folly::dynamic::object("didFail", false)(
+            folly::dynamic data = folly::dynamic::object(
+                "decodedBodyLength", event.decodedBodyLength)("didFail", false)(
+                "encodedDataLength", event.encodedDataLength)(
                 "requestId", std::move(event.requestId));
 
             events.emplace_back(TraceEvent{
