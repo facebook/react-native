@@ -100,6 +100,7 @@ internal object AgpConfiguratorUtils {
           project.extensions
               .getByType(ApplicationAndroidComponentsExtension::class.java)
               .finalizeDsl { ext ->
+                ext.buildFeatures.resValues = true
                 ext.defaultConfig.resValue(
                     "string",
                     "react_native_dev_server_ip",
