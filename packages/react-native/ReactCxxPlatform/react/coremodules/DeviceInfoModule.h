@@ -55,7 +55,6 @@ class DeviceInfoModule : public NativeDeviceInfoCxxSpec<DeviceInfoModule> {
       : NativeDeviceInfoCxxSpec(jsInvoker) {}
 
   DeviceInfoConstants getConstants(jsi::Runtime& rt);
-  DeviceInfoConstants getInfo(jsi::Runtime& rt);
 };
 
 } // namespace facebook::react
