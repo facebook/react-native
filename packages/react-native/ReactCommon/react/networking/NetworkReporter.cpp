@@ -38,18 +38,16 @@ void NetworkReporter::reportRequestStart(
     const std::optional<ResponseInfo>& redirectResponse) {
   auto now = HighResTimeStamp::now();
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      perfTimingsBuffer_.emplace(
-          requestId,
-          ResourceTimingData{
-              .url = requestInfo.url,
-              .fetchStart = now,
-              .requestStart = now,
-          });
-    }
+  // All builds: Annotate PerformanceResourceTiming metadata
+  {
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    perfTimingsBuffer_.emplace(
+        requestId,
+        ResourceTimingData{
+            .url = requestInfo.url,
+            .fetchStart = now,
+            .requestStart = now,
+        });
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
@@ -76,7 +74,6 @@ void NetworkReporter::reportRequestStart(
   // Debugger enabled: Add trace events to Performance timeline
   auto& performanceTracer =
       jsinspector_modern::tracing::PerformanceTracer::getInstance();
-  performanceTracer.reportResourceWillSendRequest(requestId, now);
   performanceTracer.reportResourceSendRequest(
       requestId, now, requestInfo.url, requestInfo.httpMethod, headers);
 #endif
@@ -87,14 +84,12 @@ void NetworkReporter::reportConnectionTiming(
     const std::optional<Headers>& headers) {
   auto now = HighResTimeStamp::now();
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        it->second.connectStart = now;
-      }
+  // All builds: Annotate PerformanceResourceTiming metadata
+  {
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end()) {
+      it->second.connectStart = now;
     }
   }
 
@@ -112,20 +107,18 @@ void NetworkReporter::reportResponseStart(
   auto now = HighResTimeStamp::now();
   auto headers = responseInfo.headers.value_or(Headers{});
 
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    // All builds: Annotate PerformanceResourceTiming metadata
-    {
-      std::lock_guard<std::mutex> lock(perfTimingsMutex_);
-      auto it = perfTimingsBuffer_.find(requestId);
-      if (it != perfTimingsBuffer_.end()) {
-        auto contentType = jsinspector_modern::mimeTypeFromHeaders(headers);
-        it->second.connectEnd = now;
-        it->second.responseStart = now;
-        it->second.responseStatus = responseInfo.statusCode;
-        it->second.contentType = contentType;
-        it->second.encodedBodySize = encodedDataLength;
-        it->second.decodedBodySize = encodedDataLength;
-      }
+  // All builds: Annotate PerformanceResourceTiming metadata
+  {
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end()) {
+      auto contentType = jsinspector_modern::mimeTypeFromHeaders(headers);
+      it->second.connectEnd = now;
+      it->second.responseStart = now;
+      it->second.responseStatus = responseInfo.statusCode;
+      it->second.contentType = contentType;
+      it->second.encodedBodySize = encodedDataLength;
+      it->second.decodedBodySize = encodedDataLength;
     }
   }
 
@@ -140,9 +133,34 @@ void NetworkReporter::reportResponseStart(
           encodedDataLength));
 
   // Debugger enabled: Add trace event to Performance timeline
-  jsinspector_modern::tracing::PerformanceTracer::getInstance()
-      .reportResourceReceiveResponse(
-          requestId, now, responseInfo.statusCode, headers, encodedDataLength);
+  {
+    folly::dynamic timingData = folly::dynamic::object();
+
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end()) {
+      // TODO(T238364329): All relative values in timingData should be based on
+      // fetchStart, once implemented.
+      auto requestStart = it->second.requestStart;
+      timingData["requestTime"] = requestStart.toDOMHighResTimeStamp() / 1000;
+      timingData["sendStart"] = 0;
+      timingData["sendEnd"] =
+          (*it->second.connectStart - requestStart).toDOMHighResTimeStamp();
+      timingData["receiveHeadersStart"] =
+          (*it->second.connectStart - requestStart).toDOMHighResTimeStamp();
+      timingData["receiveHeadersEnd"] =
+          (now - requestStart).toDOMHighResTimeStamp();
+    }
+
+    jsinspector_modern::tracing::PerformanceTracer::getInstance()
+        .reportResourceReceiveResponse(
+            requestId,
+            now,
+            responseInfo.statusCode,
+            headers,
+            encodedDataLength,
+            std::move(timingData));
+  }
 #endif
 }
 
@@ -192,8 +210,20 @@ void NetworkReporter::reportResponseEnd(
       requestId, encodedDataLength);
 
   // Debugger enabled: Add trace event to Performance timeline
-  jsinspector_modern::tracing::PerformanceTracer::getInstance()
-      .reportResourceFinish(requestId, now);
+  {
+    int decodedBodyLength = 0;
+
+    std::lock_guard<std::mutex> lock(perfTimingsMutex_);
+    auto it = perfTimingsBuffer_.find(requestId);
+    if (it != perfTimingsBuffer_.end() &&
+        it->second.contentType.starts_with("image/")) {
+      decodedBodyLength = it->second.decodedBodySize;
+    }
+
+    jsinspector_modern::tracing::PerformanceTracer::getInstance()
+        .reportResourceFinish(
+            requestId, now, encodedDataLength, decodedBodyLength);
+  }
 #endif
 }
 

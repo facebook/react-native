@@ -148,7 +148,8 @@ class PerformanceTracer {
       HighResTimeStamp start,
       int statusCode,
       const Headers& headers,
-      int encodedDataLength);
+      int encodedDataLength,
+      folly::dynamic timingData);
 
   /**
    * Record a "ResourceFinish" event. Paired with other "Resource*" events,
@@ -158,7 +159,9 @@ class PerformanceTracer {
    */
   void reportResourceFinish(
       const std::string& devtoolsRequestId,
-      HighResTimeStamp start);
+      HighResTimeStamp start,
+      int encodedDataLength,
+      int decodedBodyLength);
 
   /**
    * Creates "Profile" Trace Event.
@@ -233,13 +236,6 @@ class PerformanceTracer {
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
 
-  struct PerformanceTracerResourceWillSendRequest {
-    std::string requestId;
-    HighResTimeStamp start;
-    ThreadId threadId;
-    HighResTimeStamp createdAt = HighResTimeStamp::now();
-  };
-
   struct PerformanceTracerResourceSendRequest {
     std::string requestId;
     std::string url;
@@ -253,6 +249,8 @@ class PerformanceTracer {
   struct PerformanceTracerResourceFinish {
     std::string requestId;
     HighResTimeStamp start;
+    int encodedDataLength;
+    int decodedBodyLength;
     ThreadId threadId;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
@@ -265,6 +263,7 @@ class PerformanceTracer {
     std::string mimeType;
     std::string protocol;
     int statusCode;
+    folly::dynamic timing;
     ThreadId threadId;
     HighResTimeStamp createdAt = HighResTimeStamp::now();
   };
@@ -275,7 +274,6 @@ class PerformanceTracer {
       PerformanceTracerEventEventLoopMicrotask,
       PerformanceTracerEventMark,
       PerformanceTracerEventMeasure,
-      PerformanceTracerResourceWillSendRequest,
       PerformanceTracerResourceSendRequest,
       PerformanceTracerResourceReceiveResponse,
       PerformanceTracerResourceFinish>;
