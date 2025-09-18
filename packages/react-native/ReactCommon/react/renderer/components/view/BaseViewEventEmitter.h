@@ -32,6 +32,10 @@ class BaseViewEventEmitter : public TouchEventEmitter {
 
   void onLayout(const LayoutMetrics& layoutMetrics) const;
 
+#pragma mark - Focus
+  void onFocus() const;
+  void onBlur() const;
+
  private:
   /*
    * Contains the most recent `frame` and a `mutex` protecting access to it.
