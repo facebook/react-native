@@ -14,6 +14,7 @@ import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
@@ -139,11 +140,7 @@ internal object DependencyUtils {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
           configuration.resolutionStrategy.force(
-              // TODO: T237406039 update coordinates
-              if (hermesV1Enabled)
-                  "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-              else
-                  "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+              "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
           )
         }
       }
@@ -154,13 +151,11 @@ internal object DependencyUtils {
       coordinates: Coordinates,
       hermesV1Enabled: Boolean = false,
   ): List<Triple<String, String, String>> {
-    // TODO: T231755027 update coordinates and versioning
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
-    // TODO: T237406039 update coordinates
     val hermesVersionString =
         if (hermesV1Enabled)
             "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
-        else "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+        else "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesVersionString}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
@@ -183,12 +178,20 @@ internal object DependencyUtils {
               "The react-android dependency was modified to use the correct Maven group.",
           )
       )
-      // TODO: T237406039 update coordinates
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
               hermesVersionString,
               "The hermes-android dependency was modified to use the correct Maven group.",
+          )
+      )
+    } else if (hermesV1Enabled) {
+      // TODO: remove this?
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:hermes-android",
+              hermesVersionString,
+              "The hermes-android dependency was modified to use Hermes V1.",
           )
       )
     }
@@ -213,11 +216,21 @@ internal object DependencyUtils {
     val hermesGroupString =
         reactAndroidProperties[INTERNAL_HERMES_PUBLISHING_GROUP] as? String
             ?: DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP
-    // TODO: T237406039 read both versions from the same file
+
     val hermesVersionProperties = Properties()
     hermesVersionFile.inputStream().use { hermesVersionProperties.load(it) }
 
-    val hermesVersion = versionString
+    // TODO: Should this logic related to adding -SNAPSHOT be kept, or should that be set
+    // explicitly in the version string? Remember to also update the logic for iOS
+    val hermesVersionString =
+        (hermesVersionProperties[INTERNAL_HERMES_VERSION_NAME] as? String).orEmpty()
+    val hermesVersion =
+        if (hermesVersionString.startsWith("0.0.0") || "-commitly-" in hermesVersionString) {
+          "$hermesVersionString-SNAPSHOT"
+        } else {
+          hermesVersionString
+        }
+
     val hermesV1Version =
         (hermesVersionProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
 

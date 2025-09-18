@@ -20,12 +20,14 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
-# TODO: T231755000 read hermes version from version.properties when consuming hermes
-version = package['version']
+versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
 
+# TODO: Should this include the logic related to adding -SNAPSHOT, or should that be set
+# explicitly in the version string? Remember to also update the logic for Android
 if ENV['RCT_HERMES_V1_ENABLED'] == "1"
-  versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
   version = versionProperties['HERMES_V1_VERSION_NAME']
+else
+  version = versionProperties['HERMES_VERSION_NAME']
 end
 
 source_type = hermes_source_type(version, react_native_path)
@@ -70,8 +72,7 @@ Pod::Spec.new do |spec|
 
     # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
     # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
-    # TODO: T236142916 hermesc should be consumed from NPM even when not using Hermes V1
-    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL && ENV['RCT_HERMES_V1_ENABLED'] == "1"
+    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL
       hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
         'require.resolve(
         "hermes-compiler",
@@ -80,7 +81,7 @@ Pod::Spec.new do |spec|
       )
 
       spec.user_target_xcconfig = {
-        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/osx-bin/hermesc"
+        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
       }
     end
 

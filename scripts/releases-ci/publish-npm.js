@@ -15,9 +15,16 @@ import type {BuildType} from '../releases/utils/version-utils';
 */
 
 const {
+  updateHermesCompilerVersion,
+  updateHermesRuntimeDependenciesVersions,
+} = require('../releases/set-hermes-versions');
+const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
+const {
+  getLatestHermesNightlyVersion,
+} = require('../releases/utils/hermes-utils');
 const {getNpmInfo, publishPackage} = require('../releases/utils/npm-utils');
 const {
   publishAndroidArtifactsToMaven,
@@ -95,6 +102,14 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
 
   // For stable releases, ci job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly'].includes(buildType)) {
+    // Set hermes versions to latest available
+    const hermesVersions = await getLatestHermesNightlyVersion();
+    await updateHermesCompilerVersion(hermesVersions.compilerVersion);
+    await updateHermesRuntimeDependenciesVersions(
+      hermesVersions.runtimeVersion,
+      hermesVersions.runtimeV1Version,
+    );
+
     if (buildType === 'nightly') {
       // Set same version for all monorepo packages
       await setVersion(version);
