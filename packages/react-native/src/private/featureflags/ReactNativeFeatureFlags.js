@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<054add14ea0c9a96d3c3e32af8995437>>
+ * @generated SignedSource<<e460eec2e7fe00ccc67bfef14f07b8c5>>
  * @flow strict
  * @noformat
  */
@@ -77,6 +77,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableImagePrefetchingOnUiThreadAndroid: Getter<boolean>,
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
+  enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
@@ -312,6 +313,10 @@ export const enableImagePrefetchingOnUiThreadAndroid: Getter<boolean> = createNa
  * Dispatches state updates for content offset changes synchronously on the main thread.
  */
 export const enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean> = createNativeFlagGetter('enableImmediateUpdateModeForContentOffsetChanges', false);
+/**
+ * Enable ref.focus() and ref.blur() for all views, not just TextInput.
+ */
+export const enableImperativeFocus: Getter<boolean> = createNativeFlagGetter('enableImperativeFocus', false);
 /**
  * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
  */

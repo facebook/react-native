@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42bea10b4b62a91dce8fde7674f76ceb>>
+ * @generated SignedSource<<50f81f60d4c2d2e08fde98f4a2d841ea>>
  */
 
 /**
@@ -132,6 +132,10 @@ bool ReactNativeFeatureFlags::enableImagePrefetchingOnUiThreadAndroid() {
 
 bool ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges() {
   return getAccessor().enableImmediateUpdateModeForContentOffsetChanges();
+}
+
+bool ReactNativeFeatureFlags::enableImperativeFocus() {
+  return getAccessor().enableImperativeFocus();
 }
 
 bool ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS() {

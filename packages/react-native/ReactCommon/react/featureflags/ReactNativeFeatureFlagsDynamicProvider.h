@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<737e882a924b2730d0c67cc8dc27c8a7>>
+ * @generated SignedSource<<0bef63a074aa6b67787c2ca30706a847>>
  */
 
 /**
@@ -286,6 +286,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableImmediateUpdateModeForContentOffsetChanges();
+  }
+
+  bool enableImperativeFocus() override {
+    auto value = values_["enableImperativeFocus"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableImperativeFocus();
   }
 
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {

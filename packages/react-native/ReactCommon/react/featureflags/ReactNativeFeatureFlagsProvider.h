@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4045a760f000400d47117728119f0d21>>
+ * @generated SignedSource<<40ea902a1d376324f75680d651f3eff6>>
  */
 
 /**
@@ -52,6 +52,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableImagePrefetchingAndroid() = 0;
   virtual bool enableImagePrefetchingOnUiThreadAndroid() = 0;
   virtual bool enableImmediateUpdateModeForContentOffsetChanges() = 0;
+  virtual bool enableImperativeFocus() = 0;
   virtual bool enableInteropViewManagerClassLookUpOptimizationIOS() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
   virtual bool enableLayoutAnimationsOnIOS() = 0;
