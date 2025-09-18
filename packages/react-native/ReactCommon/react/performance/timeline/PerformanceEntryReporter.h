@@ -118,10 +118,7 @@ class PerformanceEntryReporter {
       std::optional<HighResTimeStamp> connectEnd,
       HighResTimeStamp responseStart,
       HighResTimeStamp responseEnd,
-      const std::optional<int>& responseStatus,
-      const std::optional<std::string>& devtoolsRequestId,
-      const std::optional<std::string>& requestMethod,
-      const std::optional<std::string>& resourceType);
+      const std::optional<int>& responseStatus);
 
  private:
   std::unique_ptr<PerformanceObserverRegistry> observerRegistry_;

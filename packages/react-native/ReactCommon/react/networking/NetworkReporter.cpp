@@ -11,6 +11,7 @@
 #include <jsinspector-modern/network/CdpNetwork.h>
 #include <jsinspector-modern/network/HttpUtils.h>
 #include <jsinspector-modern/network/NetworkHandler.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 #endif
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
@@ -35,9 +36,9 @@ void NetworkReporter::reportRequestStart(
     const RequestInfo& requestInfo,
     int encodedDataLength,
     const std::optional<ResponseInfo>& redirectResponse) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = HighResTimeStamp::now();
+  auto now = HighResTimeStamp::now();
 
+  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     // All builds: Annotate PerformanceResourceTiming metadata
     {
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
@@ -45,7 +46,6 @@ void NetworkReporter::reportRequestStart(
           requestId,
           ResourceTimingData{
               .url = requestInfo.url,
-              .requestMethod = requestInfo.httpMethod,
               .fetchStart = now,
               .requestStart = now,
           });
@@ -53,13 +53,15 @@ void NetworkReporter::reportRequestStart(
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  auto headers = requestInfo.headers.value_or(Headers{});
+
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onRequestWillBeSent(
       requestId,
       {
           .url = requestInfo.url,
           .method = requestInfo.httpMethod,
-          .headers = requestInfo.headers,
+          .headers = headers,
           .postData = requestInfo.httpBody,
       },
       redirectResponse.has_value()
@@ -67,18 +69,25 @@ void NetworkReporter::reportRequestStart(
                 jsinspector_modern::cdp::network::Response::fromInputParams(
                     redirectResponse->url,
                     redirectResponse->statusCode,
-                    redirectResponse->headers,
+                    redirectResponse->headers.value_or(Headers{}),
                     encodedDataLength))
           : std::nullopt);
+
+  // Debugger enabled: Add trace events to Performance timeline
+  auto& performanceTracer =
+      jsinspector_modern::tracing::PerformanceTracer::getInstance();
+  performanceTracer.reportResourceWillSendRequest(requestId, now);
+  performanceTracer.reportResourceSendRequest(
+      requestId, now, requestInfo.url, requestInfo.httpMethod, headers);
 #endif
 }
 
 void NetworkReporter::reportConnectionTiming(
     const std::string& requestId,
     const std::optional<Headers>& headers) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = HighResTimeStamp::now();
+  auto now = HighResTimeStamp::now();
 
+  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     // All builds: Annotate PerformanceResourceTiming metadata
     {
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
@@ -90,7 +99,7 @@ void NetworkReporter::reportConnectionTiming(
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance()
       .onRequestWillBeSentExtraInfo(requestId, headers.value_or(Headers{}));
 #endif
@@ -100,9 +109,9 @@ void NetworkReporter::reportResponseStart(
     const std::string& requestId,
     const ResponseInfo& responseInfo,
     int encodedDataLength) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = HighResTimeStamp::now();
+  auto now = HighResTimeStamp::now();
 
+  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     // All builds: Annotate PerformanceResourceTiming metadata
     {
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
@@ -111,26 +120,26 @@ void NetworkReporter::reportResponseStart(
         it->second.connectEnd = now;
         it->second.responseStart = now;
         it->second.responseStatus = responseInfo.statusCode;
-#ifdef REACT_NATIVE_DEBUGGER_ENABLED
-        // Debug build: Compute additional fields to send in CDP trace events
-        it->second.resourceType =
-            jsinspector_modern::cdp::network::resourceTypeFromMimeType(
-                jsinspector_modern::mimeTypeFromHeaders(
-                    responseInfo.headers.value_or(Headers{})));
-#endif
       }
     }
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  auto headers = responseInfo.headers.value_or(Headers{});
+
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onResponseReceived(
       requestId,
       jsinspector_modern::cdp::network::Response::fromInputParams(
           responseInfo.url,
           responseInfo.statusCode,
-          responseInfo.headers,
+          headers,
           encodedDataLength));
+
+  // Debugger enabled: Add trace event to Performance timeline
+  jsinspector_modern::tracing::PerformanceTracer::getInstance()
+      .reportResourceReceiveResponse(
+          requestId, now, responseInfo.statusCode, headers, encodedDataLength);
 #endif
 }
 
@@ -139,7 +148,7 @@ void NetworkReporter::reportDataReceived(
     int dataLength,
     const std::optional<int>& encodedDataLength) {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onDataReceived(
       requestId, dataLength, encodedDataLength.value_or(dataLength));
 #endif
@@ -148,9 +157,9 @@ void NetworkReporter::reportDataReceived(
 void NetworkReporter::reportResponseEnd(
     const std::string& requestId,
     int encodedDataLength) {
-  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
-    auto now = HighResTimeStamp::now();
+  auto now = HighResTimeStamp::now();
 
+  if (ReactNativeFeatureFlags::enableResourceTimingAPI()) {
     // All builds: Report PerformanceResourceTiming event
     {
       std::lock_guard<std::mutex> lock(perfTimingsMutex_);
@@ -165,19 +174,20 @@ void NetworkReporter::reportResponseEnd(
             eventData.connectEnd.value_or(now),
             eventData.responseStart.value_or(now),
             now,
-            eventData.responseStatus,
-            requestId,
-            eventData.requestMethod,
-            eventData.resourceType);
+            eventData.responseStatus);
         perfTimingsBuffer_.erase(requestId);
       }
     }
   }
 
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onLoadingFinished(
       requestId, encodedDataLength);
+
+  // Debugger enabled: Add trace event to Performance timeline
+  jsinspector_modern::tracing::PerformanceTracer::getInstance()
+      .reportResourceFinish(requestId, now);
 #endif
 }
 
@@ -185,7 +195,7 @@ void NetworkReporter::reportRequestFailed(
     const std::string& requestId,
     bool cancelled) const {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: CDP event handling
+  // Debugger enabled: CDP event handling
   jsinspector_modern::NetworkHandler::getInstance().onLoadingFailed(
       requestId, cancelled);
 #endif
@@ -196,7 +206,7 @@ void NetworkReporter::storeResponseBody(
     std::string_view body,
     bool base64Encoded) {
 #ifdef REACT_NATIVE_DEBUGGER_ENABLED
-  // Debug build: Store fetched response body for later CDP retrieval
+  // Debugger enabled: Store fetched response body for later CDP retrieval
   jsinspector_modern::NetworkHandler::getInstance().storeResponseBody(
       requestId, body, base64Encoded);
 #endif

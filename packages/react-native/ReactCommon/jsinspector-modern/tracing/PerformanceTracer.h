@@ -15,6 +15,7 @@
 
 #include <folly/dynamic.h>
 #include <atomic>
+#include <map>
 #include <mutex>
 #include <optional>
 #include <vector>
@@ -23,6 +24,8 @@ namespace facebook::react::jsinspector_modern::tracing {
 
 // TODO: Review how this API is integrated into jsinspector_modern (singleton
 // design is copied from earlier FuseboxTracer prototype).
+
+using Headers = std::map<std::string, std::string>;
 
 /**
  * [Experimental] An interface for logging performance trace events to the
@@ -109,19 +112,53 @@ class PerformanceTracer {
   void reportEventLoopMicrotasks(HighResTimeStamp start, HighResTimeStamp end);
 
   /**
-   * Record a "ResourceSendRequest"/"ResourceFinish" event pair - a labelled
-   * duration in the Performance timeline Network track. If not currently
-   * tracing, this is a no-op.
+   * Record a "ResourceWillSendRequest" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
    */
-  void reportResourceTiming(
-      const std::string& requestId,
+  void reportResourceWillSendRequest(
+      const std::string& devtoolsRequestId,
+      HighResTimeStamp start);
+
+  /**
+   * Record a "ResourceSendRequest" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceSendRequest(
+      const std::string& devtoolsRequestId,
+      HighResTimeStamp start,
       const std::string& url,
-      HighResTimeStamp fetchStart,
-      HighResTimeStamp responseStart,
-      HighResTimeStamp responseEnd,
-      int statusCode,
       const std::string& requestMethod,
-      const std::string& resourceType);
+      const Headers& headers);
+
+  /**
+   * Record a "ResourceReceiveResponse" event. Paired with other "Resource*"
+   * events, renders a network request timeline in the Performance panel Network
+   * track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceReceiveResponse(
+      const std::string& devtoolsRequestId,
+      HighResTimeStamp start,
+      int statusCode,
+      const Headers& headers,
+      int encodedDataLength);
+
+  /**
+   * Record a "ResourceFinish" event. Paired with other "Resource*" events,
+   * renders a network request timeline in the Performance panel Network track.
+   *
+   * If not currently tracing, this is a no-op.
+   */
+  void reportResourceFinish(
+      const std::string& devtoolsRequestId,
+      HighResTimeStamp start);
 
   /**
    * Creates "Profile" Trace Event.
@@ -223,6 +260,10 @@ class PerformanceTracer {
   struct PerformanceTracerResourceReceiveResponse {
     std::string requestId;
     HighResTimeStamp start;
+    int encodedDataLength;
+    Headers headers;
+    std::string mimeType;
+    std::string protocol;
     int statusCode;
     ThreadId threadId;
     HighResTimeStamp createdAt = HighResTimeStamp::now();

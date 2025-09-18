@@ -9,6 +9,8 @@
 #include "Timing.h"
 #include "TraceEventSerializer.h"
 
+#include <jsinspector-modern/network/CdpNetwork.h>
+#include <jsinspector-modern/network/HttpUtils.h>
 #include <oscompat/OSCompat.h>
 #include <react/timing/primitives.h>
 
@@ -16,9 +18,12 @@
 
 #include <mutex>
 
+using namespace facebook::react;
+
 namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
+
 /**
  * Instead of validating that the indicated duration is positive, we can ensure
  * the value is sensible (less than 1 seccond doesn't make much sense).
@@ -31,6 +36,7 @@ ThreadId getCurrentThreadId() {
       oscompat::getCurrentThreadId();
   return CURRENT_THREAD_ID;
 }
+
 } // namespace
 
 PerformanceTracer& PerformanceTracer::getInstance() {
@@ -232,15 +238,9 @@ void PerformanceTracer::reportEventLoopMicrotasks(
   });
 }
 
-void PerformanceTracer::reportResourceTiming(
-    const std::string& requestId,
-    const std::string& url,
-    HighResTimeStamp fetchStart,
-    HighResTimeStamp responseStart,
-    HighResTimeStamp responseEnd,
-    int statusCode,
-    const std::string& requestMethod,
-    const std::string& resourceType) {
+void PerformanceTracer::reportResourceWillSendRequest(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start) {
   if (!tracingAtomic_) {
     return;
   }
@@ -251,27 +251,82 @@ void PerformanceTracer::reportResourceTiming(
   }
 
   enqueueEvent(PerformanceTracerResourceWillSendRequest{
-      .requestId = requestId,
-      .start = fetchStart,
+      .requestId = devtoolsRequestId,
+      .start = start,
       .threadId = getCurrentThreadId(),
   });
+}
+
+void PerformanceTracer::reportResourceSendRequest(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start,
+    const std::string& url,
+    const std::string& requestMethod,
+    const Headers& headers) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  auto resourceType =
+      jsinspector_modern::cdp::network::resourceTypeFromMimeType(
+          jsinspector_modern::mimeTypeFromHeaders(headers));
   enqueueEvent(PerformanceTracerResourceSendRequest{
-      .requestId = requestId,
+      .requestId = devtoolsRequestId,
       .url = url,
-      .start = fetchStart,
+      .start = start,
       .requestMethod = requestMethod,
       .resourceType = resourceType,
       .threadId = getCurrentThreadId(),
   });
+}
+
+void PerformanceTracer::reportResourceReceiveResponse(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start,
+    int statusCode,
+    const Headers& headers,
+    int encodedDataLength) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
   enqueueEvent(PerformanceTracerResourceReceiveResponse{
-      .requestId = requestId,
-      .start = responseStart,
+      .requestId = devtoolsRequestId,
+      .start = start,
+      .encodedDataLength = encodedDataLength,
+      .headers = headers,
+      .mimeType = jsinspector_modern::mimeTypeFromHeaders(headers),
+      .protocol = "h2",
       .statusCode = statusCode,
       .threadId = getCurrentThreadId(),
   });
+}
+
+void PerformanceTracer::reportResourceFinish(
+    const std::string& devtoolsRequestId,
+    HighResTimeStamp start) {
+  if (!tracingAtomic_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracingAtomic_) {
+    return;
+  }
+
   enqueueEvent(PerformanceTracerResourceFinish{
-      .requestId = requestId,
-      .start = responseEnd,
+      .requestId = devtoolsRequestId,
+      .start = start,
       .threadId = getCurrentThreadId(),
   });
 }
@@ -567,7 +622,7 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
           [&](PerformanceTracerResourceSendRequest&& event) {
             folly::dynamic data =
                 folly::dynamic::object("initiator", folly::dynamic::object())(
-                    "renderBlocking", "non_blocking")(
+                    "priority", "VeryHigh")("renderBlocking", "non_blocking")(
                     "requestId", std::move(event.requestId))(
                     "requestMethod", std::move(event.requestMethod))(
                     "resourceType", std::move(event.resourceType))(
@@ -585,7 +640,15 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             });
           },
           [&](PerformanceTracerResourceReceiveResponse&& event) {
-            folly::dynamic data = folly::dynamic::object("protocol", "h2")(
+            folly::dynamic headersEntries = folly::dynamic::array;
+            for (const auto& [key, value] : event.headers) {
+              headersEntries.push_back(
+                  folly::dynamic::object("name", key)("value", value));
+            }
+            folly::dynamic data = folly::dynamic::object(
+                "encodedDataLength", event.encodedDataLength)(
+                "headers", headersEntries)("mimeType", event.mimeType)(
+                "protocol", event.protocol)(
                 "requestId", std::move(event.requestId))(
                 "statusCode", event.statusCode)(
                 "timing", folly::dynamic::object());
