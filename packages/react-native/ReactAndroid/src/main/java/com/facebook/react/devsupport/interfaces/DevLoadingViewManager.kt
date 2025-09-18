@@ -9,7 +9,7 @@ package com.facebook.react.devsupport.interfaces
 
 /** Interface to display loading messages on top of the screen. */
 public interface DevLoadingViewManager {
-  public fun showMessage(message: String)
+  public fun showMessage(message: String, color: Double? = null, backgroundColor: Double? = null)
 
   public fun updateProgress(status: String?, done: Int?, total: Int?)
 
