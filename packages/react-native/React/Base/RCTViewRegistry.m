@@ -13,17 +13,17 @@
 
 @implementation RCTViewRegistry {
   RCTBridgelessComponentViewProvider _bridgelessComponentViewProvider;
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   __weak RCTBridge *_bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
 }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 - (void)setBridgelessComponentViewProvider:(RCTBridgelessComponentViewProvider)bridgelessComponentViewProvider
 {
@@ -34,12 +34,12 @@
 {
   UIView *view = nil;
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   RCTBridge *bridge = _bridge;
   if (bridge) {
     view = [bridge.uiManager viewForReactTag:reactTag];
   }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
   if (view == nil && _bridgelessComponentViewProvider) {
     view = _bridgelessComponentViewProvider(reactTag);
@@ -55,7 +55,7 @@
   }
 
   __weak __typeof(self) weakSelf = self;
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   if (_bridge) {
     [_bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
       __typeof(self) strongSelf = weakSelf;
@@ -72,7 +72,7 @@
     if (strongSelf) {
       block(strongSelf);
     }
-  }); // RCT_FIT_RM_OLD_RUNTIME
+  }); // RCT_REMOVE_LEGACY_ARCH
 }
 
 @end

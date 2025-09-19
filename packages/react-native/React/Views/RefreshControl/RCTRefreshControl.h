@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTComponent.h>
 #import <React/RCTScrollableProtocol.h>
@@ -21,4 +21,4 @@ __attribute__((deprecated("This API will be removed along with the legacy archit
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH

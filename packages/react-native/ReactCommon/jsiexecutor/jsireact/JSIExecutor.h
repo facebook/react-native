@@ -82,9 +82,9 @@ class [[deprecated(
   void loadBundle(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
   void callFunction(
@@ -113,7 +113,7 @@ class [[deprecated(
   void flush() override;
 
  private:
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
   class NativeModuleProxy;
 
   void bindBridge();
@@ -134,7 +134,7 @@ class [[deprecated(
   std::optional<jsi::Function> callFunctionReturnFlushedQueue_;
   std::optional<jsi::Function> invokeCallbackAndReturnFlushedQueue_;
   std::optional<jsi::Function> flushedQueue_;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 };
 
 using Logger =
