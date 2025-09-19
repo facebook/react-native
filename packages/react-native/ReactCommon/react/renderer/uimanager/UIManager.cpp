@@ -678,6 +678,15 @@ void UIManager::setNativeAnimatedDelegate(
   nativeAnimatedDelegate_ = delegate;
 }
 
+void UIManager::setAnimationBackend(
+    std::shared_ptr<AnimationBackend> animationBackend) {
+  animationBackend_ = animationBackend;
+}
+
+std::shared_ptr<AnimationBackend> UIManager::getAnimationBackend() {
+  return animationBackend_;
+}
+
 void UIManager::animationTick() const {
   if (animationDelegate_ != nullptr &&
       animationDelegate_->shouldAnimateFrame()) {
