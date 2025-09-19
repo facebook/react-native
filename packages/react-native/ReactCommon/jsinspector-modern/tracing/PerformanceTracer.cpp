@@ -551,11 +551,8 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
             });
           },
           [&](PerformanceTracerEventTimeStamp&& event) {
-            // `name` takes precedence over `message` in Chrome DevTools
-            // Frontend, no need
-            // to record both.
-            folly::dynamic data =
-                folly::dynamic::object("name", std::move(event.name));
+            folly::dynamic data = folly::dynamic::object("name", event.name)(
+                "message", std::move(event.name));
             if (event.start) {
               if (std::holds_alternative<HighResTimeStamp>(*event.start)) {
                 data["start"] = highResTimeStampToTracingClockTimeStamp(
