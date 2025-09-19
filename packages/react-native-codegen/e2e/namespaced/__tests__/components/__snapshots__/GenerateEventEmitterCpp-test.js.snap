@@ -153,29 +153,29 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange ev
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
-  auto location_1 = jsi::Object(runtime);
+  auto location_codegen1 = jsi::Object(runtime);
   {
-    auto source_2 = jsi::Object(runtime);
-    source_2.setProperty(runtime, \\"url\\", event.location.source.url);
-    location_1.setProperty(runtime, \\"source\\", source_2);
+    auto source_codegen2 = jsi::Object(runtime);
+    source_codegen2.setProperty(runtime, \\"url\\", event.location.source.url);
+    location_codegen1.setProperty(runtime, \\"source\\", source_codegen2);
   }
-  location_1.setProperty(runtime, \\"x\\", event.location.x);
-  location_1.setProperty(runtime, \\"y\\", event.location.y);
+  location_codegen1.setProperty(runtime, \\"x\\", event.location.x);
+  location_codegen1.setProperty(runtime, \\"y\\", event.location.y);
 
-      auto arrayOfObjects_3 = jsi::Array(runtime, event.location.arrayOfObjects.size());
-      size_t arrayOfObjectsIndex_4 = 0;
-      for (auto arrayOfObjectsValue_5 : event.location.arrayOfObjects) {
-        auto arrayOfObjectsObject_6 = jsi::Object(runtime);
+      auto arrayOfObjects_codegen3 = jsi::Array(runtime, event.location.arrayOfObjects.size());
+      size_t arrayOfObjectsIndex_codegen4 = 0;
+      for (auto arrayOfObjectsValue_codegen5 : event.location.arrayOfObjects) {
+        auto arrayOfObjectsObject_codegen6 = jsi::Object(runtime);
         {
-    auto value_7 = jsi::Object(runtime);
-    value_7.setProperty(runtime, \\"str\\", arrayOfObjectsValue_5.value.str);
-    arrayOfObjectsObject_6.setProperty(runtime, \\"value\\", value_7);
+    auto value_codegen7 = jsi::Object(runtime);
+    value_codegen7.setProperty(runtime, \\"str\\", arrayOfObjectsValue_codegen5.value.str);
+    arrayOfObjectsObject_codegen6.setProperty(runtime, \\"value\\", value_codegen7);
   }
-        arrayOfObjects_3.setValueAtIndex(runtime, arrayOfObjectsIndex_4++, arrayOfObjectsObject_6);
+        arrayOfObjects_codegen3.setValueAtIndex(runtime, arrayOfObjectsIndex_codegen4++, arrayOfObjectsObject_codegen6);
       }
-      location_1.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects_3);
+      location_codegen1.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects_codegen3);
     
-  payload.setProperty(runtime, \\"location\\", location_1);
+  payload.setProperty(runtime, \\"location\\", location_codegen1);
 }
     return payload;
   });

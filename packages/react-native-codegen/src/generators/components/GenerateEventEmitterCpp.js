@@ -157,7 +157,7 @@ function variable(name: string, context: {variableSuffix: number}): string {
   // Prevents C++ variable name collisions for properties with the same name.
   // See: https://github.com/facebook/react-native/issues/53839
   context.variableSuffix++;
-  return `${name}_${context.variableSuffix}`;
+  return `${name}_codegen${context.variableSuffix}`;
 }
 
 function generateArraySetter(
