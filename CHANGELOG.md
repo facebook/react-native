@@ -82,6 +82,7 @@
 - **Error Handling:** Unhandled promises are now handled by ExceptionsManager.handleException, instead of being swallowed as Logbox Warnings. ([c4082c9ce2](https://github.com/facebook/react-native/commit/c4082c9ce208a324c2d011823ca2ba432411aafc) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - **`shouldEmitW3CPointerEvents`:** Migrate `shouldPressibilityUseW3CPointerEventsForHover` to common private feature flags and remove `shouldEmitW3CPointerEvents` flag. ([fb4587780e](https://github.com/facebook/react-native/commit/fb4587780e8d6111139d73598a9a26ff392dee28) by [@coado](https://github.com/coado))
 - **TurboModuleUtils:** Remove unused ReactCommon/TurboModuleUtils functions #deepCopyJSIObject and #deepCopyJSIArray ([ead669ade3](https://github.com/facebook/react-native/commit/ead669ade31ee703c407f96c0ce98d8f2991bdc8) by [@christophpurrer](https://github.com/christophpurrer))
+- **TurboModules:** Delete old location of CallbackWrapper.h / LongLivedObject.h by ([cb94e71](https://github.com/facebook/react-native/commit/cb94e71845259ae7fa823eb4d21cde74fccd7435) [@christophpurrer](https://github.com/christophpurrer))
 
 #### Android specific
 
