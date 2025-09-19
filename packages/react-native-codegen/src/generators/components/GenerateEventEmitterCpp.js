@@ -167,7 +167,7 @@ function generateArraySetter(
   elementType: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ): string {
   const eventChain = usingEvent
     ? `event.${[...propertyParts, propertyName].join('.')}`
@@ -204,7 +204,7 @@ function handleArrayElementType(
   propertyParts: $ReadOnlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ): string {
   switch (elementType.type) {
     case 'BooleanTypeAnnotation':
@@ -271,7 +271,7 @@ function convertObjectTypeArray(
   propertyParts: $ReadOnlyArray<string>,
   objectTypeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ): string {
   const variableName = variable(`${propertyName}Object`, context);
   return `auto ${variableName} = jsi::Object(runtime);
@@ -296,7 +296,7 @@ function convertArrayTypeArray(
   eventTypeAnnotation: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ): string {
   if (eventTypeAnnotation.type !== 'ArrayTypeAnnotation') {
     throw new Error(
