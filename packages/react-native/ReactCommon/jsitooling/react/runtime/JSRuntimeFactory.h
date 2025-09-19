@@ -9,12 +9,12 @@
 
 #ifdef __cplusplus
 
-#include <ReactCommon/RuntimeExecutor.h>
-#include <cxxreact/MessageQueueThread.h>
 #include <jsi/jsi.h>
 #include <jsinspector-modern/ReactCdp.h>
 
 namespace facebook::react {
+
+class MessageQueueThread;
 
 /**
  * An interface that represents an instance of a JS VM
