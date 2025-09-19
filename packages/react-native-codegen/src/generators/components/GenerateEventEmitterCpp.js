@@ -100,7 +100,7 @@ function generateSetter(
   propertyName: string,
   propertyParts: $ReadOnlyArray<string>,
   usingEvent: boolean,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
   valueMapper: string => string = value => value,
 ) {
   const eventChain = usingEvent
@@ -118,7 +118,7 @@ function generateObjectSetter(
   typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ) {
   const objectVariable = variable(`${propertyName}`, context);
   return `
@@ -152,7 +152,7 @@ function setValueAtIndex(
   )});`;
 }
 
-function variable(name: string, context: { variableSuffix: number }): string {
+function variable(name: string, context: {variableSuffix: number}): string {
   // Ensure variable names are unique by adding a suffix.
   // Prevents C++ variable name collisions for properties with the same name.
   // See: https://github.com/facebook/react-native/issues/53839
@@ -167,7 +167,7 @@ function generateArraySetter(
   elementType: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ): string {
   const eventChain = usingEvent
     ? `event.${[...propertyParts, propertyName].join('.')}`
@@ -204,7 +204,7 @@ function handleArrayElementType(
   propertyParts: $ReadOnlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ): string {
   switch (elementType.type) {
     case 'BooleanTypeAnnotation':
@@ -271,7 +271,7 @@ function convertObjectTypeArray(
   propertyParts: $ReadOnlyArray<string>,
   objectTypeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ): string {
   const variableName = variable(`${propertyName}Object`, context);
   return `auto ${variableName} = jsi::Object(runtime);
@@ -282,7 +282,7 @@ function convertObjectTypeArray(
         [].concat([loopLocalVariable]),
         extraIncludes,
         false,
-        context
+        context,
       )}
       ${setValueAtIndex(arrayVariable, indexVariable, variableName)}`;
 }
@@ -296,7 +296,7 @@ function convertArrayTypeArray(
   eventTypeAnnotation: EventTypeAnnotation,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ): string {
   if (eventTypeAnnotation.type !== 'ArrayTypeAnnotation') {
     throw new Error(
@@ -329,7 +329,7 @@ function generateSetters(
   propertyParts: $ReadOnlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean = true,
-  context: { variableSuffix: number },
+  context: {variableSuffix: number},
 ): string {
   const propSetters = properties
     .map(eventProperty => {
@@ -415,7 +415,7 @@ function generateEvent(
       : `${event.name[2].toLowerCase()}${event.name.slice(3)}`;
 
   if (event.typeAnnotation.argument) {
-    const context = { variableSuffix: 0 };
+    const context = {variableSuffix: 0};
     const variableName = 'payload';
     const implementation = `
     auto ${variableName} = jsi::Object(runtime);
