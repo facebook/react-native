@@ -98,13 +98,7 @@ public object DefaultNewArchitectureEntryPoint {
         ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Canary_Android())
       }
       ReleaseLevel.STABLE -> {
-        ReactNativeFeatureFlags.override(
-            ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android(
-                fabricEnabled,
-                bridgelessEnabled,
-                turboModulesEnabled,
-            )
-        )
+        ReactNativeFeatureFlags.override(ReactNativeFeatureFlagsOverrides_RNOSS_Stable_Android())
       }
     }
 
