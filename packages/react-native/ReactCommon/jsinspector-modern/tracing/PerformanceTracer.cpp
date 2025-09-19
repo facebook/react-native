@@ -90,6 +90,7 @@ std::optional<std::vector<TraceEvent>> PerformanceTracer::stopTracing() {
     tracingAtomic_ = false;
     performanceMeasureCount_ = 0;
 
+    alreadyEmittedEntryForComponentsTrackOrdering_ = false;
     events = collectEventsAndClearBuffers(currentTraceEndTime);
   }
 
@@ -571,6 +572,34 @@ void PerformanceTracer::enqueueTraceEventsFromPerformanceTracerEvent(
                 data["end"] = std::move(std::get<std::string>(*event.end));
               }
             }
+
+            // We add a custom synthetic entry here to manually put Components
+            // track right under the Scheduler track. Will be removed once CDT
+            // Frontend preserves track ordering and we upgrade the fork.
+            if (!alreadyEmittedEntryForComponentsTrackOrdering_ &&
+                event.trackName && !event.trackGroup) {
+              if (*event.trackName == "Components \u269B") {
+                alreadyEmittedEntryForComponentsTrackOrdering_ = true;
+                // React is using 0.003 for Scheduler sub-tracks.
+                auto timestamp = highResTimeStampToTracingClockTimeStamp(
+                    HighResTimeStamp::fromDOMHighResTimeStamp(0.004));
+                events.emplace_back(TraceEvent{
+                    .name = "TimeStamp",
+                    .cat = "devtools.timeline",
+                    .ph = 'I',
+                    .ts = event.createdAt,
+                    .pid = processId_,
+                    .tid = event.threadId,
+                    .args = folly::dynamic::object(
+                        "data",
+                        folly::dynamic::object(
+                            "name", "ReactNative-ComponentsTrack")(
+                            "start", timestamp)("end", timestamp)(
+                            "track", *event.trackName)),
+                });
+              }
+            }
+
             if (event.trackName) {
               data["track"] = std::move(*event.trackName);
             }

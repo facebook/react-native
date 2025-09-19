@@ -310,6 +310,10 @@ class PerformanceTracer {
   std::vector<PerformanceTracerEvent>* previousBuffer_{};
   HighResTimeStamp currentBufferStartTime_;
 
+  // A flag that is used to ensure we only emit one auxiliary entry for the
+  // ordering of Scheduler / Component tracks.
+  bool alreadyEmittedEntryForComponentsTrackOrdering_ = false;
+
   /**
    * Protects data members of this class for concurrent access, including
    * the tracingAtomic_, in order to eliminate potential "logic" races.
