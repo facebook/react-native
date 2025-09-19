@@ -22,6 +22,8 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTConstants.h>
 #import <React/RCTCxxUtils.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTDevMenuConfigurationDecorator.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
@@ -119,6 +121,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   // APIs supporting interop with native modules and view managers
   RCTBridgeModuleDecorator *_bridgeModuleDecorator;
+  RCTDevMenuConfigurationDecorator *_devMenuConfigurationDecorator;
 
   jsinspector_modern::HostTarget *_parentInspectorTarget;
 }
@@ -132,6 +135,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions
+            devMenuConfiguration:(RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self = [super init]) {
     _performanceLogger = [RCTPerformanceLogger new];
@@ -142,10 +146,18 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
+
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
                                                                   callableJSModules:[RCTCallableJSModules new]];
+    _devMenuConfigurationDecorator =
+#if RCT_DEV_MENU
+        [[RCTDevMenuConfigurationDecorator alloc] initWithDevMenuConfiguration:devMenuConfiguration];
+#else
+        nil;
+#endif
+
     _parentInspectorTarget = parentInspectorTarget;
     {
       __weak __typeof(self) weakSelf = self;
@@ -326,7 +338,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridgeProxy:bridgeProxy
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
-                                                                 jsInvoker:jsCallInvoker];
+                                                                 jsInvoker:jsCallInvoker
+                                             devMenuConfigurationDecorator:_devMenuConfigurationDecorator];
 
 #if RCT_DEV
   /**
