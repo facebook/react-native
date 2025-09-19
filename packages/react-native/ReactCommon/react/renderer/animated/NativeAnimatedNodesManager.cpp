@@ -89,11 +89,13 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     LOG(ERROR)
         << "C++ Animated was setup without a way to update UI. Animations will not work.";
   }
-  // shouldn't be initialized here, but it's convenient for now
-  animationBackend_ = std::make_shared<AnimationBackend>(
-      startOnRenderCallback_,
-      stopOnRenderCallback_,
-      directManipulationCallback_);
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    // shouldn't be initialized here, but it's convenient for now
+    animationBackend_ = std::make_shared<AnimationBackend>(
+        startOnRenderCallback_,
+        stopOnRenderCallback_,
+        directManipulationCallback_);
+  }
 }
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
@@ -875,6 +877,9 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
 }
 
 AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
+  if (!ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return {};
+  }
   TraceSection s(
       "NativeAnimatedNodesManager::pullAnimations",
       "numActiveAnimations",
