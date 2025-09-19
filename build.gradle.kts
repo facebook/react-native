@@ -135,8 +135,7 @@ if (project.findProperty("react.internal.useHermesNightly")?.toString()?.toBoole
     configurations.all {
       resolutionStrategy.dependencySubstitution {
         substitute(project(":packages:react-native:ReactAndroid:hermes-engine"))
-            // TODO: T237406039 update coordinates
-            .using(module("com.facebook.react:hermes-android:0.+"))
+            .using(module("com.facebook.hermes:hermes-android:0.+"))
             .because("Users opted to use hermes from nightly")
       }
     }
