@@ -227,8 +227,6 @@ internal object DependencyUtils {
     val hermesVersionProperties = Properties()
     hermesVersionFile.inputStream().use { hermesVersionProperties.load(it) }
 
-    // TODO: Should this logic related to adding -SNAPSHOT be kept, or should that be set
-    // explicitly in the version string? Remember to also update the logic for iOS
     val hermesVersionString =
         (hermesVersionProperties[INTERNAL_HERMES_VERSION_NAME] as? String).orEmpty()
     val hermesVersion =
