@@ -509,6 +509,9 @@ NativeAnimatedNodesManager::ensureEventEmitterListener() noexcept {
 }
 
 void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return;
+  }
   // This method can be called from either the UI thread or JavaScript thread.
   // It ensures `startOnRenderCallback_` is called exactly once using atomic
   // operations. We use std::atomic_bool rather than std::mutex to avoid
@@ -526,6 +529,9 @@ void NativeAnimatedNodesManager::startRenderCallbackIfNeeded() {
 }
 
 void NativeAnimatedNodesManager::stopRenderCallbackIfNeeded() noexcept {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return;
+  }
   // When multiple threads reach this point, only one thread should call
   // stopOnRenderCallback_. This synchronization is primarily needed during
   // destruction of NativeAnimatedNodesManager. In normal operation,
@@ -861,6 +867,9 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
 }
 
 void NativeAnimatedNodesManager::onRender() {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    return;
+  }
   TraceSection s(
       "NativeAnimatedNodesManager::onRender",
       "numActiveAnimations",
