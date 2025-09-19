@@ -153,6 +153,9 @@ function setValueAtIndex(
 }
 
 function variable(name: string, context: { variableSuffix: number }): string {
+  // Ensure variable names are unique by adding a suffix.
+  // Prevents C++ variable name collisions for properties with the same name.
+  // See: https://github.com/facebook/react-native/issues/53839
   context.variableSuffix++;
   return `${name}_${context.variableSuffix}`;
 }
