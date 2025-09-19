@@ -67,9 +67,9 @@ NativeAnimatedNodesManagerProvider::getOrCreate(
 
     if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
       animationBackend_ = std::make_shared<AnimationBackend>(
-          startOnRenderCallback_,
-          stopOnRenderCallback_,
-          directManipulationCallback);
+          std::move(startOnRenderCallback_),
+          std::move(stopOnRenderCallback_),
+          std::move(directManipulationCallback));
 
       nativeAnimatedNodesManager_ =
           std::make_shared<NativeAnimatedNodesManager>(animationBackend_);
