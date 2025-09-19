@@ -89,6 +89,7 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     LOG(ERROR)
         << "C++ Animated was setup without a way to update UI. Animations will not work.";
   }
+  // shouldn't be initialized here, but it's convenient for now
   animationBackend_ = std::make_shared<AnimationBackend>(
       startOnRenderCallback_,
       stopOnRenderCallback_,

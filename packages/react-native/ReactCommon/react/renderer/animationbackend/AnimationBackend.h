@@ -20,7 +20,6 @@ struct AnimationMutation {
 };
 
 using AnimationMutations = std::vector<AnimationMutation>;
-
 using Callback = std::function<AnimationMutations(float)>;
 using StartOnRenderCallback = std::function<void(std::function<void()>&&)>;
 using StopOnRenderCallback = std::function<void()>;
@@ -38,7 +37,7 @@ class AnimationBackend {
       const StartOnRenderCallback& startOnRenderCallback,
       const StopOnRenderCallback& stopOnRenderCallback,
       const DirectManipulationCallback& directManipulationCallback);
-  void onTick();
+  void onAnimationFrame(double timestamp);
   void start(const Callback& callback);
   void stop();
 };

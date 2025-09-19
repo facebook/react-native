@@ -17,12 +17,10 @@ AnimationBackend::AnimationBackend(
       stopOnRenderCallback_(stopOnRenderCallback),
       directManipulationCallback_(directManipulationCallback) {}
 
-void AnimationBackend::onTick() {
-  // std::unordered_map<Tag, folly::dynamic> updates;
+void AnimationBackend::onAnimationFrame(double timestamp) {
   for (auto& callback : callbacks) {
-    auto muatations = callback(0.0);
+    auto muatations = callback(timestamp);
     for (auto& mutation : muatations) {
-      // updates[mutation.tag] =
       directManipulationCallback_(
           mutation.tag, folly::dynamic::object("opacity", mutation.opacity));
     }
@@ -31,7 +29,8 @@ void AnimationBackend::onTick() {
 
 void AnimationBackend::start(const Callback& callback) {
   callbacks.push_back(callback);
-  startOnRenderCallback_([this]() { onTick(); });
+  // startOnRenderCallback_ should provide the timestamp from the platform
+  startOnRenderCallback_([this]() { onAnimationFrame(0); });
 }
 void AnimationBackend::stop() {
   stopOnRenderCallback_();
