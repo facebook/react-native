@@ -153,29 +153,29 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange ev
   dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
-  auto location = jsi::Object(runtime);
+  auto location_1 = jsi::Object(runtime);
   {
-    auto source = jsi::Object(runtime);
-    source.setProperty(runtime, \\"url\\", event.location.source.url);
-    location.setProperty(runtime, \\"source\\", source);
+    auto source_2 = jsi::Object(runtime);
+    source_2.setProperty(runtime, \\"url\\", event.location.source.url);
+    location_1.setProperty(runtime, \\"source\\", source_2);
   }
-  location.setProperty(runtime, \\"x\\", event.location.x);
-  location.setProperty(runtime, \\"y\\", event.location.y);
+  location_1.setProperty(runtime, \\"x\\", event.location.x);
+  location_1.setProperty(runtime, \\"y\\", event.location.y);
 
-      auto arrayOfObjects = jsi::Array(runtime, event.location.arrayOfObjects.size());
-      size_t arrayOfObjectsIndex = 0;
-      for (auto arrayOfObjectsValue : event.location.arrayOfObjects) {
-        auto arrayOfObjectsObject = jsi::Object(runtime);
+      auto arrayOfObjects_3 = jsi::Array(runtime, event.location.arrayOfObjects.size());
+      size_t arrayOfObjectsIndex_4 = 0;
+      for (auto arrayOfObjectsValue_5 : event.location.arrayOfObjects) {
+        auto arrayOfObjectsObject_6 = jsi::Object(runtime);
         {
-    auto value = jsi::Object(runtime);
-    value.setProperty(runtime, \\"str\\", arrayOfObjectsValue.value.str);
-    arrayOfObjectsObject.setProperty(runtime, \\"value\\", value);
+    auto value_7 = jsi::Object(runtime);
+    value_7.setProperty(runtime, \\"str\\", arrayOfObjectsValue_5.value.str);
+    arrayOfObjectsObject_6.setProperty(runtime, \\"value\\", value_7);
   }
-        arrayOfObjects.setValueAtIndex(runtime, arrayOfObjectsIndex++, arrayOfObjectsObject);
+        arrayOfObjects_3.setValueAtIndex(runtime, arrayOfObjectsIndex_4++, arrayOfObjectsObject_6);
       }
-      location.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects);
+      location_1.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects_3);
     
-  payload.setProperty(runtime, \\"location\\", location);
+  payload.setProperty(runtime, \\"location\\", location_1);
 }
     return payload;
   });
