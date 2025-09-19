@@ -7,6 +7,12 @@ on:
         description: "The version of React Native we want to release. For example 0.75.0-rc.0"
         required: true
         type: string
+      hermes-version:
+        description: "The version of Hermes to be used in this release. For example 0.14.0"
+        required: true
+      hermes-v1-version:
+        description: "The version of Hermes V1 to be used in this release. For example 250829098.0.0"
+        required: true
       is-latest-on-npm:
         description: "Whether we want to tag this release as latest on NPM"
         required: true
@@ -53,5 +59,7 @@ jobs:
         uses: ./.github/actions/create-release
         with:
           version: ${{ inputs.version }}
+          hermes-version: ${{ inputs.hermes-version }}
+          hermes-v1-version: ${{ inputs.hermes-v1-version }}
           is-latest-on-npm: ${{ inputs.is-latest-on-npm }}
           dry-run: ${{ inputs.dry-run }}
