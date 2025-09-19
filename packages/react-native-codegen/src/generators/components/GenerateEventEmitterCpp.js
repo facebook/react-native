@@ -100,7 +100,7 @@ function generateSetter(
   propertyName: string,
   propertyParts: $ReadOnlyArray<string>,
   usingEvent: boolean,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
   valueMapper: string => string = value => value,
 ) {
   const eventChain = usingEvent
@@ -118,13 +118,15 @@ function generateObjectSetter(
   typeAnnotation: ObjectTypeAnnotation<EventTypeAnnotation>,
   extraIncludes: Set<string>,
   usingEvent: boolean,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ) {
+  const objectVariable = variable(`${propertyName}`, context);
   return `
 {
-  auto ${propertyName} = jsi::Object(runtime);
+  auto ${objectVariable} = jsi::Object(runtime);
   ${indent(
     generateSetters(
+      objectVariable,
       propertyName,
       typeAnnotation.properties,
       propertyParts.concat([propertyName]),
@@ -134,7 +136,7 @@ function generateObjectSetter(
     ),
     2,
   )}
-  ${variableName}.setProperty(runtime, "${propertyName}", ${propertyName});
+  ${variableName}.setProperty(runtime, "${propertyName}", ${objectVariable});
 }
 `.trim();
 }
@@ -150,6 +152,11 @@ function setValueAtIndex(
   )});`;
 }
 
+function variable(name: string, context: { variableSuffix: number }): string {
+  context.variableSuffix++;
+  return `${name}_${context.variableSuffix}`;
+}
+
 function generateArraySetter(
   variableName: string,
   propertyName: string,
@@ -162,9 +169,9 @@ function generateArraySetter(
   const eventChain = usingEvent
     ? `event.${[...propertyParts, propertyName].join('.')}`
     : [...propertyParts, propertyName].join('.');
-  const arrayVariable = propertyName;
-  const indexVar = `${propertyName}Index`;
-  const innerLoopVar = `${propertyName}Value`;
+  const arrayVariable = variable(propertyName, context);
+  const indexVar = variable(`${propertyName}Index`, context);
+  const innerLoopVar = variable(`${propertyName}Value`, context);
   return `
     auto ${arrayVariable} = jsi::Array(runtime, ${eventChain}.size());
     size_t ${indexVar} = 0;
@@ -263,10 +270,11 @@ function convertObjectTypeArray(
   extraIncludes: Set<string>,
   context: { numberOfVariables: number },
 ): string {
-  const variableName = `${propertyName}Object`;
+  const variableName = variable(`${propertyName}Object`, context);
   return `auto ${variableName} = jsi::Object(runtime);
       ${generateSetters(
         variableName,
+        `${propertyName}Object`,
         objectTypeAnnotation.properties,
         [].concat([loopLocalVariable]),
         extraIncludes,
@@ -292,7 +300,7 @@ function convertArrayTypeArray(
       `Inconsistent eventTypeAnnotation received. Expected type = 'ArrayTypeAnnotation'; received = ${eventTypeAnnotation.type}`,
     );
   }
-  const nestedArrayVariable = `${propertyName}Array`;
+  const nestedArrayVariable = variable(`${propertyName}Array`, context);
   return `auto ${nestedArrayVariable} = jsi::Array(runtime, ${loopLocalVariable}.size());
       size_t ${indexVariable}Internal = 0;
       for (auto ${loopLocalVariable}Internal : ${loopLocalVariable}) {
@@ -312,12 +320,13 @@ function convertArrayTypeArray(
 }
 
 function generateSetters(
+  variableName: string,
   parentPropertyName: string,
   properties: $ReadOnlyArray<NamedShape<EventTypeAnnotation>>,
   propertyParts: $ReadOnlyArray<string>,
   extraIncludes: Set<string>,
   usingEvent: boolean = true,
-  context: { numberOfVariables: number },
+  context: { variableSuffix: number },
 ): string {
   const propSetters = properties
     .map(eventProperty => {
@@ -329,7 +338,7 @@ function generateSetters(
         case 'DoubleTypeAnnotation':
         case 'FloatTypeAnnotation':
           return generateSetter(
-            parentPropertyName,
+            variableName,
             eventProperty.name,
             propertyParts,
             usingEvent,
@@ -338,7 +347,7 @@ function generateSetters(
         case 'MixedTypeAnnotation':
           extraIncludes.add('#include <jsi/JSIDynamic.h>');
           return generateSetter(
-            parentPropertyName,
+            variableName,
             eventProperty.name,
             propertyParts,
             usingEvent,
@@ -347,7 +356,7 @@ function generateSetters(
           );
         case 'StringLiteralUnionTypeAnnotation':
           return generateSetter(
-            parentPropertyName,
+            variableName,
             eventProperty.name,
             propertyParts,
             usingEvent,
@@ -356,7 +365,7 @@ function generateSetters(
           );
         case 'ObjectTypeAnnotation':
           return generateObjectSetter(
-            parentPropertyName,
+            variableName,
             eventProperty.name,
             propertyParts,
             typeAnnotation,
@@ -366,7 +375,7 @@ function generateSetters(
           );
         case 'ArrayTypeAnnotation':
           return generateArraySetter(
-            parentPropertyName,
+            variableName,
             eventProperty.name,
             propertyParts,
             typeAnnotation.elementType,
@@ -403,18 +412,20 @@ function generateEvent(
       : `${event.name[2].toLowerCase()}${event.name.slice(3)}`;
 
   if (event.typeAnnotation.argument) {
-    const context = { numberOfVariables: 0 };
+    const context = { variableSuffix: 0 };
+    const variableName = 'payload';
     const implementation = `
-    auto payload = jsi::Object(runtime);
+    auto ${variableName} = jsi::Object(runtime);
     ${generateSetters(
       'payload',
+      variableName,
       event.typeAnnotation.argument.properties,
       [],
       extraIncludes,
       true,
       context,
     )}
-    return payload;
+    return ${variableName};
   `.trim();
 
     if (!event.name.startsWith('on')) {
