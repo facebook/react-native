@@ -4820,10 +4820,10 @@ flow-api-translator@0.32.0:
     hermes-transform "0.32.0"
     typescript "5.3.2"
 
-flow-bin@^0.283.0:
-  version "0.283.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.283.0.tgz#82d7a03f6995f9d8ecebdd638dc2be4bdba0ab0e"
-  integrity sha512-WUjOZdJYi/gNZnKLRdId7K64vqXznKboNR4qi2d5HBbW+MRvbxoAKjbQkV0UAxuophHYyDrpi7CdLFUscyTpVA==
+flow-bin@^0.284.0:
+  version "0.284.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.284.0.tgz#5d9b3320e025172a0f3156df1f3c0107965069a5"
+  integrity sha512-5fVOWUYUWdZoPreg/9AeJZBZgRDT97+nk5WGkeHGrVLfd/itClaJHMRjp8elrUoicUTB/qE57Opmnu+wlXiJtw==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
