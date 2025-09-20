@@ -45,6 +45,8 @@ class ImageFetcher : public UIManagerCommitHook {
       const ShadowTree::CommitOptions& commitOptions) noexcept override;
 
  private:
+  void flushImageRequests();
+
   std::unordered_map<SurfaceId, std::vector<ImageRequestItem>> items_;
   std::shared_ptr<const ContextContainer> contextContainer_;
 };
