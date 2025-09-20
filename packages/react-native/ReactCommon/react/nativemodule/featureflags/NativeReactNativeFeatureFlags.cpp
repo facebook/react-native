@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c97db1f02897c99b61643cac10067c6d>>
+ * @generated SignedSource<<ca3c4545c5a5ecce18d36e5c61f35a25>>
  */
 
 /**
@@ -392,6 +392,11 @@ bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
 bool NativeReactNativeFeatureFlags::useShadowNodeStateOnClone(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useShadowNodeStateOnClone();
+}
+
+bool NativeReactNativeFeatureFlags::useSharedAnimatedBackend(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useSharedAnimatedBackend();
 }
 
 bool NativeReactNativeFeatureFlags::useTurboModuleInterop(

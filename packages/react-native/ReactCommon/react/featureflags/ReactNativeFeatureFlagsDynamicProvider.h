@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0bef63a074aa6b67787c2ca30706a847>>
+ * @generated SignedSource<<083a5bee5a82dad07db642c86dada152>>
  */
 
 /**
@@ -673,6 +673,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useShadowNodeStateOnClone();
+  }
+
+  bool useSharedAnimatedBackend() override {
+    auto value = values_["useSharedAnimatedBackend"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useSharedAnimatedBackend();
   }
 
   bool useTurboModuleInterop() override {
