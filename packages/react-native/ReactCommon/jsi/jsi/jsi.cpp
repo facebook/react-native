@@ -284,6 +284,8 @@ HostObject::~HostObject() {}
 
 NativeState::~NativeState() {}
 
+Serialized::~Serialized() {}
+
 Runtime::~Runtime() {}
 
 ICast* Runtime::castInterface(const UUID& /*interfaceUUID*/) {
