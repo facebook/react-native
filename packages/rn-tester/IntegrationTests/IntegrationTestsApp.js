@@ -35,7 +35,7 @@ const TESTS = [
 
 TESTS.forEach(test =>
   AppRegistry.registerComponent(
-    test.displayName || test.name || '',
+    (test as React.ComponentType<any>).displayName || test.name || '',
     /* $FlowFixMe[incompatible-type] (>=0.54.0 site=react_native_fb,react_native_
      * oss) This comment suppresses an error found when Flow v0.54 was deployed.
      * To see the error delete this comment and run Flow. */
@@ -83,7 +83,7 @@ class IntegrationTestsApp extends React.Component<{...}, $FlowFixMe> {
                */
               style={styles.row}>
               <Text style={styles.testName}>
-                {test.displayName || test.name}
+                {(test as React.ComponentType<any>).displayName || test.name}
               </Text>
             </TouchableOpacity>,
             <View style={styles.separator} />,
