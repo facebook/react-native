@@ -24,7 +24,7 @@ using Headers = std::map<std::string, std::string>;
 struct Request {
   std::string url;
   std::string method;
-  std::optional<Headers> headers;
+  Headers headers;
   std::optional<std::string> postData;
 
   folly::dynamic toDynamic() const;
@@ -37,7 +37,7 @@ struct Response {
   std::string url;
   uint16_t status;
   std::string statusText;
-  std::optional<Headers> headers;
+  Headers headers;
   std::string mimeType;
   int encodedDataLength;
 
@@ -48,7 +48,7 @@ struct Response {
   static Response fromInputParams(
       const std::string& url,
       uint16_t status,
-      const std::optional<Headers>& headers,
+      const Headers& headers,
       int encodedDataLength);
 
   folly::dynamic toDynamic() const;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<680ccef60b08f17fcbfd718087d30955>>
+ * @generated SignedSource<<6c1c050029f105d0075fb83ca21aa48b>>
  */
 
 /**
@@ -135,6 +135,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableImperativeFocus() override {
+    return false;
+  }
+
   bool enableInteropViewManagerClassLookUpOptimizationIOS() override {
     return false;
   }
@@ -172,6 +176,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableResourceTimingAPI() override {
+    return false;
+  }
+
+  bool enableSwiftUIBasedFilters() override {
     return false;
   }
 

@@ -86,7 +86,7 @@
     "eslint-plugin-relay": "^1.8.3",
     "fb-dotslash": "0.5.8",
     "flow-api-translator": "0.32.0",
-    "flow-bin": "^0.281.0",
+    "flow-bin": "^0.284.0",
     "glob": "^7.1.1",
     "hermes-eslint": "0.32.0",
     "hermes-transform": "0.32.0",
@@ -117,7 +117,7 @@
     "temp-dir": "^2.0.0",
     "tinybench": "^4.1.0",
     "typescript": "5.8.3",
-    "ws": "^6.2.3"
+    "ws": "^7.5.10"
   },
   "resolutions": {
     "eslint-plugin-react-hooks": "6.1.0-canary-12bc60f5-20250613",

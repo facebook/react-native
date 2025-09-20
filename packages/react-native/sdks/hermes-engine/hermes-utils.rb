@@ -228,8 +228,8 @@ def release_tarball_url(version, build_type)
     if hermes_v1_enabled()
         namespace = "com/facebook/hermes"
         # Sample url from Maven:
-        # https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/0.14.0/hermes-ios-0.14.0-debug.tar.gz
-        return "#{maven_repo_url}/#{namespace}/hermes-ios/#{version}/hermes-ios-#{version}-#{build_type.to_s}.tar.gz"
+        # https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/0.14.0/hermes-ios-0.14.0-hermes-ios-debug.tar.gz
+        return "#{maven_repo_url}/#{namespace}/hermes-ios/#{version}/hermes-ios-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
     else
         namespace = "com/facebook/react"
         # Sample url from Maven:

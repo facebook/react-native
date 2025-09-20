@@ -416,6 +416,14 @@ public open class ReactViewGroup public constructor(context: Context?) :
     updateClippingToRect(clippingRect, excludedViews)
   }
 
+  internal fun requestFocusFromJS() {
+    super.requestFocus(FOCUS_DOWN, null)
+  }
+
+  internal fun clearFocusFromJS() {
+    super.clearFocus()
+  }
+
   override fun endViewTransition(view: View) {
     super.endViewTransition(view)
     childrenRemovedWhileTransitioning?.remove(view.id)

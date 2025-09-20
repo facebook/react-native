@@ -94,6 +94,9 @@ PODS:
     - glog
   - RCTDeprecation (1000.0.0)
   - RCTRequired (1000.0.0)
+  - RCTSwiftUI (1000.0.0)
+  - RCTSwiftUIWrapper (1000.0.0):
+    - RCTSwiftUI
   - RCTTypeSafety (1000.0.0):
     - FBLazyVector (= 1000.0.0)
     - RCTRequired (= 1000.0.0)
@@ -579,6 +582,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -621,6 +625,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -646,6 +651,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -671,6 +677,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -696,6 +703,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -721,6 +729,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -746,6 +755,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -775,6 +785,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -800,6 +811,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -825,6 +837,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -850,6 +863,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -877,6 +891,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -902,6 +917,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -927,6 +943,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -952,6 +969,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -977,6 +995,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1002,6 +1021,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1027,6 +1047,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1053,6 +1074,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1078,6 +1100,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1106,6 +1129,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1131,6 +1155,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1156,6 +1181,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -1183,6 +1209,7 @@ PODS:
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
+    - RCTSwiftUIWrapper
     - RCTTypeSafety
     - React-Core
     - React-cxxreact
@@ -2505,6 +2532,8 @@ DEPENDENCIES:
   - RCT-Folly (from `../react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../react-native/Libraries/Required`)
+  - RCTSwiftUI (from `../react-native/ReactApple/RCTSwiftUI`)
+  - RCTSwiftUIWrapper (from `../react-native/ReactApple/RCTSwiftUIWrapper`)
   - RCTTypeSafety (from `../react-native/Libraries/TypeSafety`)
   - React (from `../react-native/`)
   - React-callinvoker (from `../react-native/ReactCommon/callinvoker`)
@@ -2607,6 +2636,10 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   RCTRequired:
     :path: "../react-native/Libraries/Required"
+  RCTSwiftUI:
+    :path: "../react-native/ReactApple/RCTSwiftUI"
+  RCTSwiftUIWrapper:
+    :path: "../react-native/ReactApple/RCTSwiftUIWrapper"
   RCTTypeSafety:
     :path: "../react-native/Libraries/TypeSafety"
   React:

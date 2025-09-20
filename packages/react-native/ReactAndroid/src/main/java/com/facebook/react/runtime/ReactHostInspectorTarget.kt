@@ -37,7 +37,7 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
 
   external fun startBackgroundTrace(): Boolean
 
-  external fun stopAndStashBackgroundTrace()
+  external fun stopAndMaybeEmitBackgroundTrace(): Boolean
 
   external fun stopAndDiscardBackgroundTrace()
 
@@ -51,11 +51,13 @@ internal class ReactHostInspectorTarget(reactHostImpl: ReactHostImpl) :
     perfMonitorListeners.add(listener)
   }
 
-  override fun pauseAndAnalyzeBackgroundTrace() {
-    stopAndStashBackgroundTrace()
+  override fun pauseAndAnalyzeBackgroundTrace(): Boolean {
+    val emitted = stopAndMaybeEmitBackgroundTrace()
     perfMonitorListeners.forEach { listener ->
       listener.onRecordingStateChanged(TracingState.DISABLED)
     }
+
+    return emitted
   }
 
   override fun resumeBackgroundTrace() {

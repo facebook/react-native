@@ -166,7 +166,6 @@ public class ReactScrollView extends ScrollView
     mRemoveClippedSubviews = false;
     mScrollEnabled = true;
     mSendMomentumEvents = false;
-    mFpsListener = null;
     mScrollPerfTag = null;
     mEndBackground = null;
     mEndFillColor = Color.TRANSPARENT;
