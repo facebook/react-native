@@ -821,6 +821,9 @@ public class SurfaceMountingManager {
   @UnstableReactNativeAPI
   public void experimental_prefetchResources(
       int surfaceId, String componentName, MapBuffer params) {
+    if (isStopped()) {
+      return;
+    }
     mViewManagerRegistry
         .get(componentName)
         .experimental_prefetchResources(
