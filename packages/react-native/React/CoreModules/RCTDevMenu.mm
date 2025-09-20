@@ -365,11 +365,14 @@ RCT_EXPORT_MODULE()
                                                                         handler:^(__unused UIAlertAction *action) {
                                                                           [weakSelf setDefaultJSBundle];
                                                                         }]];
-                      [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                                                          style:UIAlertActionStyleCancel
-                                                                        handler:^(__unused UIAlertAction *action) {
-                                                                          return;
-                                                                        }]];
+                      UIAlertAction *configCancelAction =
+                          [UIAlertAction actionWithTitle:@"Cancel"
+                                                   style:UIAlertActionStyleCancel
+                                                 handler:^(__unused UIAlertAction *action) {
+                                                   return;
+                                                 }];
+                      [configCancelAction setValue:[UIColor systemRedColor] forKey:@"titleTextColor"];
+                      [alertController addAction:configCancelAction];
                       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
                     }]];
 
@@ -390,6 +393,11 @@ RCT_EXPORT_METHOD(show)
 
   _actionSheet = [UIAlertController alertControllerWithTitle:@"React Native Dev Menu" message:nil preferredStyle:style];
 
+  NSAttributedString *title =
+      [[NSAttributedString alloc] initWithString:@"React Native Dev Menu"
+                                      attributes:@{NSFontAttributeName : [UIFont boldSystemFontOfSize:17]}];
+  [_actionSheet setValue:title forKey:@"_attributedTitle"];
+
   NSArray<RCTDevMenuItem *> *items = [self _menuItemsToPresent];
   for (RCTDevMenuItem *item in items) {
     UIAlertAction *action = [UIAlertAction actionWithTitle:item.title
@@ -399,9 +407,11 @@ RCT_EXPORT_METHOD(show)
     [_actionSheet addAction:action];
   }
 
-  [_actionSheet addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                                   style:UIAlertActionStyleCancel
-                                                 handler:[self alertActionHandlerForDevItem:nil]]];
+  UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:[self alertActionHandlerForDevItem:nil]];
+  [cancelAction setValue:[UIColor systemRedColor] forKey:@"titleTextColor"];
+  [_actionSheet addAction:cancelAction];
 
   _presentedItems = items;
   [RCTPresentedViewController() presentViewController:_actionSheet animated:YES completion:nil];
