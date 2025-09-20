@@ -8,6 +8,7 @@
  * @format
  */
 
+const {setHermesVersions} = require('../releases/set-hermes-versions');
 const {setVersion} = require('../releases/set-version');
 const {getBranchName} = require('../releases/utils/scm-utils');
 const {
@@ -21,6 +22,16 @@ async function main() {
   const argv = await yargs
     .option('reactNativeVersion', {
       describe: 'The new React Native version.',
+      type: 'string',
+      required: true,
+    })
+    .option('hermesVersion', {
+      describe: 'Version of Hermes to use in this release.',
+      type: 'string',
+      required: true,
+    })
+    .option('hermesV1Version', {
+      describe: 'Version of Hermes V1 to use in this release.',
       type: 'string',
       required: true,
     })
@@ -38,6 +49,8 @@ async function main() {
 
   const buildType = 'release';
   const version = argv.reactNativeVersion;
+  const hermesVersion = argv.hermesVersion;
+  const hermesV1Version = argv.hermesV1Version;
   const latest = argv.tagAsLatestRelease;
   const dryRun = argv.dryRun;
   const branch = getBranchName();
@@ -51,6 +64,9 @@ async function main() {
 
   console.info('Setting version for monorepo packages and react-native');
   await setVersion(version, false); // version, skip-react-native
+
+  console.info('Setting Hermes versions');
+  await setHermesVersions(hermesVersion, hermesV1Version);
 
   console.info('Writing release asset URLs to DotSlash files');
   await writeReleaseAssetUrlsToDotSlashFiles(version);
