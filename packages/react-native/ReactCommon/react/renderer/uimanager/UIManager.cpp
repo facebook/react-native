@@ -615,10 +615,14 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     const ShadowTree::CommitOptions& commitOptions) const {
   TraceSection s("UIManager::shadowTreeWillCommit");
 
-  std::shared_lock lock(commitHookMutex_);
+  std::vector<UIManagerCommitHook*> commitHooks;
+  {
+    std::shared_lock lock(commitHookMutex_);
+    commitHooks = commitHooks_;
+  }
 
   auto resultRootShadowNode = newRootShadowNode;
-  for (auto* commitHook : commitHooks_) {
+  for (auto* commitHook : commitHooks) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
         shadowTree, oldRootShadowNode, resultRootShadowNode, commitOptions);
   }
