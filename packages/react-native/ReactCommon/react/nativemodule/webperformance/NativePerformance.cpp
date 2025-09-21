@@ -75,6 +75,9 @@ NativePerformanceEntry toNativePerformanceEntry(const PerformanceEntry& entry) {
     nativeEntry.responseStart = resourceEntry.responseStart;
     nativeEntry.responseEnd = resourceEntry.responseEnd;
     nativeEntry.responseStatus = resourceEntry.responseStatus;
+    nativeEntry.contentType = resourceEntry.contentType;
+    nativeEntry.encodedBodySize = resourceEntry.encodedBodySize;
+    nativeEntry.decodedBodySize = resourceEntry.decodedBodySize;
   }
 
   return nativeEntry;

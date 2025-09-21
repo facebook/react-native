@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5d49010286872a588ff74942fd22723>>
+ * @generated SignedSource<<ae105f2906573a4f8955c086d3441389>>
  */
 
 /**
@@ -90,6 +90,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableImmediateUpdateModeForContentOffsetChanges(jsi::Runtime& runtime);
 
+  bool enableImperativeFocus(jsi::Runtime& runtime);
+
   bool enableInteropViewManagerClassLookUpOptimizationIOS(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
@@ -109,6 +111,8 @@ class NativeReactNativeFeatureFlags
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableResourceTimingAPI(jsi::Runtime& runtime);
+
+  bool enableSwiftUIBasedFilters(jsi::Runtime& runtime);
 
   bool enableViewCulling(jsi::Runtime& runtime);
 

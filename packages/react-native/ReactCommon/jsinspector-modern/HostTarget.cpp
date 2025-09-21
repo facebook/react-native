@@ -34,8 +34,7 @@ class HostTargetSession {
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      VoidExecutor executor,
-      std::optional<tracing::TraceRecordingState> traceRecordingToEmit)
+      VoidExecutor executor)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -48,8 +47,7 @@ class HostTargetSession {
             targetController,
             std::move(hostMetadata),
             state_,
-            std::move(executor),
-            std::move(traceRecordingToEmit)) {}
+            std::move(executor)) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -101,6 +99,19 @@ class HostTargetSession {
     } else {
       hostAgent_.setCurrentInstanceAgent(nullptr);
     }
+  }
+
+  /**
+   * Returns whether the ReactNativeApplication CDP domain is enabled.
+   *
+   * Chrome DevTools Frontend enables this domain as a client.
+   */
+  bool hasFuseboxClient() const {
+    return hostAgent_.hasFuseboxClientConnected();
+  }
+
+  void emitTraceRecording(tracing::TraceRecordingState traceRecording) const {
+    hostAgent_.emitExternalTraceRecording(std::move(traceRecording));
   }
 
  private:
@@ -205,8 +216,7 @@ std::unique_ptr<ILocalConnection> HostTarget::connect(
       std::move(connectionToFrontend),
       controller_,
       delegate_.getMetadata(),
-      makeVoidExecutor(executorFromThis()),
-      delegate_.unstable_getTraceRecordingThatWillBeEmittedOnInitialization());
+      makeVoidExecutor(executorFromThis()));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
@@ -345,6 +355,34 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
   }
 
   return result;
+}
+
+bool HostTarget::hasActiveSessionWithFuseboxClient() const {
+  bool hasActiveFuseboxSession = false;
+  sessions_.forEach([&](HostTargetSession& session) {
+    hasActiveFuseboxSession |= session.hasFuseboxClient();
+  });
+  return hasActiveFuseboxSession;
+}
+
+void HostTarget::emitTraceRecordingForFirstFuseboxClient(
+    tracing::TraceRecordingState traceRecording) const {
+  bool emitted = false;
+  sessions_.forEach([&](HostTargetSession& session) {
+    if (emitted) {
+      /**
+       * TraceRecordingState object is not copiable for performance reasons,
+       * because it could contain large Runtime sampling profile object.
+       *
+       * This approach would not work with multi-client debugger setup.
+       */
+      return;
+    }
+    if (session.hasFuseboxClient()) {
+      session.emitTraceRecording(std::move(traceRecording));
+      emitted = true;
+    }
+  });
 }
 
 } // namespace facebook::react::jsinspector_modern

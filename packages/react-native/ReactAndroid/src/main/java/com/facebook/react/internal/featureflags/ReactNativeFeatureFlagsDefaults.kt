@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bcad5baef5d072b71afba69bffabdb41>>
+ * @generated SignedSource<<4fa15189361a6c92bdd44bafc9356167>>
  */
 
 /**
@@ -77,6 +77,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableImmediateUpdateModeForContentOffsetChanges(): Boolean = false
 
+  override fun enableImperativeFocus(): Boolean = false
+
   override fun enableInteropViewManagerClassLookUpOptimizationIOS(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
@@ -96,6 +98,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableResourceTimingAPI(): Boolean = false
+
+  override fun enableSwiftUIBasedFilters(): Boolean = false
 
   override fun enableViewCulling(): Boolean = false
 

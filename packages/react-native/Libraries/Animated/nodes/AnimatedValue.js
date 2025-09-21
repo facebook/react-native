@@ -18,7 +18,6 @@ import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
-import InteractionManager from '../../Interaction/InteractionManager';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
@@ -312,10 +311,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
    * See https://reactnative.dev/docs/animatedvalue#animate
    */
   animate(animation: Animation, callback: ?EndCallback): void {
-    let handle = null;
-    if (animation.__isInteraction) {
-      handle = InteractionManager.createInteractionHandle();
-    }
     const previousAnimation = this._animation;
     this._animation && this._animation.stop();
     this._animation = animation;
@@ -328,9 +323,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
       },
       result => {
         this._animation = null;
-        if (handle !== null) {
-          InteractionManager.clearInteractionHandle(handle);
-        }
         callback && callback(result);
       },
       previousAnimation,

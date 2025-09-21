@@ -33,7 +33,10 @@ struct ResourceTimingData {
   std::optional<HighResTimeStamp> connectStart;
   std::optional<HighResTimeStamp> connectEnd;
   std::optional<HighResTimeStamp> responseStart;
-  std::optional<int> responseStatus;
+  int responseStatus = 0;
+  std::string contentType;
+  int encodedBodySize = 0;
+  int decodedBodySize = 0;
 };
 
 /**
@@ -54,7 +57,8 @@ class NetworkReporter {
   /**
    * Report a network request that is about to be sent.
    *
-   * - Corresponds to `Network.requestWillBeSent` in CDP.
+   * - Corresponds to `Network.requestWillBeSent` and the
+   *   "ResourceWillSendRequest" trace event in CDP.
    * - Corresponds to `PerformanceResourceTiming.requestStart` (specifically,
    *   marking when the native request was initiated).
    *
@@ -70,7 +74,8 @@ class NetworkReporter {
    * Report timestamp for sending the network request, and (in a debug build)
    * provide final headers to be reported via CDP.
    *
-   * - Corresponds to `Network.requestWillBeSentExtraInfo` in CDP.
+   * - Corresponds to `Network.requestWillBeSentExtraInfo` and the
+   *   "ResourceSendRequest" trace event in CDP.
    * - Corresponds to `PerformanceResourceTiming.domainLookupStart`,
    *   `PerformanceResourceTiming.connectStart`. Defined as "immediately before
    *   the browser starts to establish the connection to the server".
@@ -85,7 +90,8 @@ class NetworkReporter {
    * Report when HTTP response headers have been received, corresponding to
    * when the first byte of the response is available.
    *
-   * - Corresponds to `Network.responseReceived` in CDP.
+   * - Corresponds to `Network.responseReceived` and the
+   *   "ResourceReceiveResponse" trace event in CDP.
    * - Corresponds to `PerformanceResourceTiming.responseStart`.
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responsestart
@@ -110,7 +116,8 @@ class NetworkReporter {
    * Report when a network request is complete and we are no longer receiving
    * response data.
    *
-   * - Corresponds to `Network.loadingFinished` in CDP.
+   * - Corresponds to `Network.loadingFinished` and the "ResourceFinish" trace
+   *   event in CDP.
    * - Corresponds to `PerformanceResourceTiming.responseEnd`.
    *
    * https://w3c.github.io/resource-timing/#dom-performanceresourcetiming-responseend

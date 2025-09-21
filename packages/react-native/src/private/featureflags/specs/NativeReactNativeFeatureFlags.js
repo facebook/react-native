@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14e017052313836604a3150fa08a1ebe>>
+ * @generated SignedSource<<a132956fa9481beddb6d94e7d6acfd7c>>
  * @flow strict
  * @noformat
  */
@@ -52,6 +52,7 @@ export interface Spec extends TurboModule {
   +enableImagePrefetchingAndroid?: () => boolean;
   +enableImagePrefetchingOnUiThreadAndroid?: () => boolean;
   +enableImmediateUpdateModeForContentOffsetChanges?: () => boolean;
+  +enableImperativeFocus?: () => boolean;
   +enableInteropViewManagerClassLookUpOptimizationIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
@@ -62,6 +63,7 @@ export interface Spec extends TurboModule {
   +enablePreparedTextLayout?: () => boolean;
   +enablePropsUpdateReconciliationAndroid?: () => boolean;
   +enableResourceTimingAPI?: () => boolean;
+  +enableSwiftUIBasedFilters?: () => boolean;
   +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForImage?: () => boolean;

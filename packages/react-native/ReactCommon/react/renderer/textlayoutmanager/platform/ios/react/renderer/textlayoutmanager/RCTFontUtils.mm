@@ -6,7 +6,9 @@
  */
 
 #import "RCTFontUtils.h"
+
 #import <CoreText/CoreText.h>
+#import <React/RCTFont+Private.h>
 #import <React/RCTFont.h>
 
 #import <algorithm>
@@ -246,32 +248,61 @@ static NSArray *RCTFontFeatures(RCTFontVariant fontVariant)
   return fontFeatures;
 }
 
-static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties)
+static RCTDefaultFontResolver defaultFontResolver;
+
+void RCTSetDefaultFontResolver(RCTDefaultFontResolver handler)
+{
+  defaultFontResolver = handler;
+}
+
+static UIFont *RCTDefaultFontWithFontProperties(const RCTFontProperties &fontProperties)
 {
   static NSCache *fontCache;
   static std::mutex fontCacheMutex;
 
   CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
-  NSString *cacheKey = [NSString
-      stringWithFormat:@"%.1f/%.2f/%ld", effectiveFontSize, fontProperties.weight, (long)fontProperties.style];
+  NSString *cacheKey = [NSString stringWithFormat:@"%@/%.1f/%.2f/%ld",
+                                                  fontProperties.family,
+                                                  effectiveFontSize,
+                                                  fontProperties.weight,
+                                                  (long)fontProperties.style];
   UIFont *font;
 
   {
     std::lock_guard<std::mutex> lock(fontCacheMutex);
-    if (fontCache == nullptr) {
+    if (fontCache == nil) {
       fontCache = [NSCache new];
     }
     font = [fontCache objectForKey:cacheKey];
   }
 
-  if (font == nullptr) {
-    font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+  if (font == nil) {
+    if (defaultFontResolver != nil) {
+      font = defaultFontResolver(fontProperties);
+    }
 
-    if (fontProperties.style == RCTFontStyleItalic) {
+    if (font == nil) {
+      font = RCTGetLegacyDefaultFont(effectiveFontSize, fontProperties.weight);
+    }
+
+    if (font == nil) {
+      font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+    }
+
+    BOOL isItalicFont = fontProperties.style == RCTFontStyleItalic;
+    BOOL isCondensedFont = [fontProperties.family isEqualToString:@"SystemCondensed"];
+
+    if (isItalicFont || isCondensedFont) {
       UIFontDescriptor *fontDescriptor = [font fontDescriptor];
       UIFontDescriptorSymbolicTraits symbolicTraits = fontDescriptor.symbolicTraits;
 
-      symbolicTraits |= UIFontDescriptorTraitItalic;
+      if (isItalicFont) {
+        symbolicTraits |= UIFontDescriptorTraitItalic;
+      }
+
+      if (isCondensedFont) {
+        symbolicTraits |= UIFontDescriptorTraitCondensed;
+      }
 
       fontDescriptor = [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
       font = [UIFont fontWithDescriptor:fontDescriptor size:effectiveFontSize];
@@ -333,7 +364,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         fontWeight = (fontWeight != 0.0) ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
-        font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
+        font = RCTDefaultFontWithFontProperties(fontProperties);
       }
     }
 
@@ -354,7 +385,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         }
       }
 
-      if (font == nullptr) {
+      if (font == nil) {
         // If we still don't have a match at least return the first font in the
         // fontFamily This is to support built-in font Zapfino and other custom
         // single font families like Impact

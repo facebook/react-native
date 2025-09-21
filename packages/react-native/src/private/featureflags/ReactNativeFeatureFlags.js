@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b1ab664114aa99d0f674d049c81bdc67>>
+ * @generated SignedSource<<e460eec2e7fe00ccc67bfef14f07b8c5>>
  * @flow strict
  * @noformat
  */
@@ -77,6 +77,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableImagePrefetchingOnUiThreadAndroid: Getter<boolean>,
   enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean>,
+  enableImperativeFocus: Getter<boolean>,
   enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
@@ -87,6 +88,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enablePreparedTextLayout: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableResourceTimingAPI: Getter<boolean>,
+  enableSwiftUIBasedFilters: Getter<boolean>,
   enableViewCulling: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForImage: Getter<boolean>,
@@ -312,6 +314,10 @@ export const enableImagePrefetchingOnUiThreadAndroid: Getter<boolean> = createNa
  */
 export const enableImmediateUpdateModeForContentOffsetChanges: Getter<boolean> = createNativeFlagGetter('enableImmediateUpdateModeForContentOffsetChanges', false);
 /**
+ * Enable ref.focus() and ref.blur() for all views, not just TextInput.
+ */
+export const enableImperativeFocus: Getter<boolean> = createNativeFlagGetter('enableImperativeFocus', false);
+/**
  * This is to fix the issue with interop view manager where component descriptor lookup is causing ViewManager to preload.
  */
 export const enableInteropViewManagerClassLookUpOptimizationIOS: Getter<boolean> = createNativeFlagGetter('enableInteropViewManagerClassLookUpOptimizationIOS', false);
@@ -351,6 +357,10 @@ export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNat
  * Enables the reporting of network resource timings through `PerformanceObserver`.
  */
 export const enableResourceTimingAPI: Getter<boolean> = createNativeFlagGetter('enableResourceTimingAPI', false);
+/**
+ * When enabled, it will use SwiftUI for filter effects like blur on iOS.
+ */
+export const enableSwiftUIBasedFilters: Getter<boolean> = createNativeFlagGetter('enableSwiftUIBasedFilters', false);
 /**
  * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
  */

@@ -383,8 +383,7 @@ jobs:
     runs-on: 8-core-ubuntu
     needs: [set_release_type]
     container:
-      # Version is pinned to v18.0 to unblock `run_fantom_tests` - see https://github.com/react-native-community/docker-android/pull/242#issuecomment-3280029122
-      image: reactnativecommunity/react-native-android:v18.0
+      image: reactnativecommunity/react-native-android:latest
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c5fd32fcb5f9241f8039ee983e2fc872>>
+ * @generated SignedSource<<c97db1f02897c99b61643cac10067c6d>>
  */
 
 /**
@@ -179,6 +179,11 @@ bool NativeReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetCha
   return ReactNativeFeatureFlags::enableImmediateUpdateModeForContentOffsetChanges();
 }
 
+bool NativeReactNativeFeatureFlags::enableImperativeFocus(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImperativeFocus();
+}
+
 bool NativeReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableInteropViewManagerClassLookUpOptimizationIOS();
@@ -227,6 +232,11 @@ bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
 bool NativeReactNativeFeatureFlags::enableResourceTimingAPI(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableResourceTimingAPI();
+}
+
+bool NativeReactNativeFeatureFlags::enableSwiftUIBasedFilters(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableSwiftUIBasedFilters();
 }
 
 bool NativeReactNativeFeatureFlags::enableViewCulling(

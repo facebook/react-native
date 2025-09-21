@@ -13,13 +13,11 @@ namespace facebook::react::jsinspector_modern::cdp::network {
 
 namespace {
 
-folly::dynamic headersToDynamic(const std::optional<Headers>& headers) {
+folly::dynamic headersToDynamic(const Headers& headers) {
   folly::dynamic result = folly::dynamic::object;
 
-  if (headers) {
-    for (const auto& [key, value] : *headers) {
-      result[key] = value;
-    }
+  for (const auto& [key, value] : headers) {
+    result[key] = value;
   }
 
   return result;
@@ -41,14 +39,14 @@ folly::dynamic Request::toDynamic() const {
 /* static */ Response Response::fromInputParams(
     const std::string& url,
     uint16_t status,
-    const std::optional<Headers>& headers,
+    const Headers& headers,
     int encodedDataLength) {
   return {
       .url = url,
       .status = status,
       .statusText = httpReasonPhrase(status),
       .headers = headers,
-      .mimeType = mimeTypeFromHeaders(headers.value_or(Headers())),
+      .mimeType = mimeTypeFromHeaders(headers),
       .encodedDataLength = encodedDataLength,
   };
 }

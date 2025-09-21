@@ -37,6 +37,9 @@ export type RawPerformanceEntry = {
   responseStart?: number,
   responseEnd?: number,
   responseStatus?: number,
+  contentType?: string,
+  encodedBodySize?: number,
+  decodedBodySize?: number,
 };
 
 export opaque type OpaqueNativeObserverHandle = mixed;
