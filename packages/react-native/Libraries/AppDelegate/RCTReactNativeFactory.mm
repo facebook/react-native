@@ -67,6 +67,16 @@ using namespace facebook::react;
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
 
+  // check if the application is running with multiple scenes capability enabled in scene manifest (Info.plist),
+  // which is unsupported by RN at the moment, and warn in such case
+  NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+  NSDictionary *sceneManifest = infoDict ? infoDict[@"UIApplicationSceneManifest"] : nil;
+  BOOL supportsMultipleScenes = sceneManifest ? [sceneManifest[@"UIApplicationSupportsMultipleScenes"] boolValue] : false;
+
+  if (supportsMultipleScenes) {
+    NSLog(@"RCTReactNativeFactory: (WARNING - UNSUPPORTED RN APP CONFIGURATION) Your application is running with the Info.plist UIApplicationSceneManifest.UIApplicationSupportsMultipleScenes key set to true, which is NOT supported by React Native at the moment. Allowing the user to run multiple windows of a RN application means allowing to run multiple instances of it (and React Native) in the same process, which may cause ALL SORTS OF PROBLEMS in implementations which use singletons or static storage lifetime variables.");
+  }
+
   return self;
 }
 
@@ -247,8 +257,7 @@ using namespace facebook::react;
       return moduleInstance;
     }
   }
-  return RCTAppSetupDefaultModuleFromClass(
-      moduleClass, self.delegate.dependencyProvider);
+  return RCTAppSetupDefaultModuleFromClass(moduleClass, self.delegate.dependencyProvider);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
