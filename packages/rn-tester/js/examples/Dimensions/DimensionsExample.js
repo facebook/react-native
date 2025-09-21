@@ -12,7 +12,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import React, {useEffect, useState} from 'react';
-import {Button, Dimensions, useWindowDimensions, View} from 'react-native';
+import {Button, Dimensions, View, useWindowDimensions} from 'react-native';
 
 type Props = {dim: string};
 
