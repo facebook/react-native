@@ -129,11 +129,13 @@ export function getWithFallback_DEPRECATED<Config: {...}>(
     // `getRuntimeConfig == null` when static view configs are disabled
     // If `setRuntimeConfigProvider` is not configured, use native reflection.
     if (hasNativeViewConfig(name)) {
+      /* $FlowFixMe[incompatible-type] Extra ref prop */
       return get<Config>(name, viewConfigProvider);
     }
   } else {
     // If there is no runtime config, then the native component is unavailable.
     if (getRuntimeConfig(name) != null) {
+      /* $FlowFixMe[incompatible-type] Extra ref prop */
       return get<Config>(name, viewConfigProvider);
     }
   }
