@@ -214,9 +214,69 @@ function symlinkThirdPartyDependenciesHeaders(
   return linkedCount;
 }
 
+/**
+ * Create symlinks for Codegen headers in the output folder
+ */
+function symlinkCodegenHeaders(
+  reactNativePath /*: string */,
+  iosAppPath /*: string */,
+  outputFolder /*: string */,
+) /*: number */ {
+  console.log('Creating symlinks for Codegen headers...');
+
+  // Look for ReactCodegen folder specifically
+  const reactCodegenPath = path.join(
+    iosAppPath,
+    'build',
+    'generated',
+    'ios',
+    'ReactCodegen',
+  );
+
+  if (!fs.existsSync(reactCodegenPath)) {
+    console.warn(`ReactCodegen path does not exist: ${reactCodegenPath}`);
+    return 0;
+  }
+
+  const headersOutput = path.join(outputFolder, 'headers');
+  const reactCodegenHeadersOutput = path.join(headersOutput, 'ReactCodegen');
+  let linkedCount = 0;
+
+  // No custom mappings needed for codegen headers
+  const headerFiles = listHeadersInFolder(reactCodegenPath, [
+    'headers',
+    'tests',
+  ]);
+  headerFiles.forEach(sourcePath => {
+    if (fs.existsSync(sourcePath)) {
+      // Calculate relative path from ReactCodegen base
+      const relativePath = path.relative(reactCodegenPath, sourcePath);
+
+      let destPath /*: string */ = '';
+
+      // If relative path contains no subpath (just a filename), put it in ReactCodegen folder
+      if (path.dirname(relativePath) === '.') {
+        destPath = path.join(reactCodegenHeadersOutput, relativePath);
+      } else {
+        // Otherwise, preserve the structure under headers/
+        destPath = path.join(headersOutput, relativePath);
+      }
+
+      setupSymlink(sourcePath, destPath);
+      linkedCount++;
+    }
+  });
+
+  console.log(
+    `Created symlinks for ${linkedCount} Codegen headers with conditional directory structure`,
+  );
+  return linkedCount;
+}
+
 module.exports = {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
   symlinkThirdPartyDependenciesHeaders,
+  symlinkCodegenHeaders,
 };
