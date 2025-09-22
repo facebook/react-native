@@ -10,12 +10,98 @@
 
 const {librariesMappings, reactMappings} = require('./headers-mappings');
 const {
+  symlinkCodegenHeaders,
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
+  symlinkThirdPartyDependenciesHeaders,
 } = require('./headers-utils');
 const fs = require('fs');
 const path = require('path');
+
+/*::
+type RequiredHeaders = 'react-native' | 'codegen' | 'third-party-dependencies' | 'all';
+*/
+
+/**
+ * Prepares app dependencies headers for SwiftPM integration
+ * @param {string} reactNativePath - Path to the React Native directory
+ * @param {string} iosAppPath - Path to the iOS app directory
+ * @param {string} outputFolder - Path to the output folder where headers will be hard linked
+ * @param {string} requiredHeaders - Type of headers to include: 'react-native', 'codegen', 'third-party-dependencies', or 'all'
+ */
+function prepareAppDependenciesHeaders(
+  reactNativePath /*: string */,
+  iosAppPath /*: string */,
+  outputFolder /*: string */,
+  requiredHeaders /*: RequiredHeaders */,
+) /*: void */ {
+  // Validate parameters
+  if (!reactNativePath || !iosAppPath || !outputFolder || !requiredHeaders) {
+    throw new Error(
+      'Missing required parameters. Usage: prepareAppDependenciesHeaders(reactNativePath, iosAppPath, outputFolder, requiredHeaders)',
+    );
+  }
+
+  if (
+    !['react-native', 'codegen', 'third-party-dependencies', 'all'].includes(
+      requiredHeaders,
+    )
+  ) {
+    throw new Error(
+      "requiredHeaders must be one of: 'react-native', 'codegen', 'third-party-dependencies', 'all'",
+    );
+  }
+
+  // Validate paths exist
+  if (!fs.existsSync(reactNativePath)) {
+    throw new Error(`React Native path does not exist: ${reactNativePath}`);
+  }
+
+  if (!fs.existsSync(iosAppPath)) {
+    throw new Error(`iOS app path does not exist: ${iosAppPath}`);
+  }
+
+  // Create output folder if it doesn't exist
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, {recursive: true});
+    console.log(`Created output folder: ${outputFolder}`);
+  }
+
+  console.log('Preparing app dependencies headers...');
+  console.log(`React Native path: ${reactNativePath}`);
+  console.log(`iOS app path: ${iosAppPath}`);
+  console.log(`Output folder: ${outputFolder}`);
+  console.log(`Required headers: ${requiredHeaders}`);
+
+  try {
+    switch (requiredHeaders) {
+      case 'react-native':
+        symlinkReactNativeHeaders(reactNativePath, outputFolder);
+        break;
+      case 'codegen':
+        symlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+        break;
+      case 'third-party-dependencies':
+        symlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder);
+        break;
+      case 'all':
+        symlinkReactNativeHeaders(reactNativePath, outputFolder);
+        symlinkCodegenHeaders(reactNativePath, iosAppPath, outputFolder);
+        symlinkThirdPartyDependenciesHeaders(reactNativePath, outputFolder);
+        break;
+      default:
+        throw new Error(
+          `Unsupported requiredHeaders value: ${requiredHeaders}`,
+        );
+    }
+
+    console.log('Successfully prepared app dependencies headers');
+  } catch (error) {
+    console.error('Error preparing app dependencies headers:', error.message);
+    throw error;
+  }
+}
 
 /**
  * Create symlinks for React Native headers in the output folder.
@@ -100,4 +186,5 @@ function symlinkReactNativeHeaders(
 
 module.exports = {
   symlinkReactNativeHeaders,
+  prepareAppDependenciesHeaders,
 };
