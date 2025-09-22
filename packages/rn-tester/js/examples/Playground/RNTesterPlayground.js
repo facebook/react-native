@@ -12,14 +12,24 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, ScrollView} from 'react-native';
 
 function Playground() {
   return (
     <View style={styles.container}>
       <RNTesterText>
-        Edit "RNTesterPlayground.js" to change this file
+        RefreshControl size prop crash test
       </RNTesterText>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={true}
+            size={80} // only crashes when actually native compiling; see pr
+          />
+        }
+      >
+        <Text>Pull to refresh - this crashes on android with size as number (indicated by TS hint) when docs specify "default" or "large"</Text>
+      </ScrollView>
     </View>
   );
 }
