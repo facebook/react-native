@@ -92,6 +92,58 @@ function reactCommonMappings(
   return mappings;
 }
 
+function reactMappings(
+  reactNativePath /*: string */,
+  headersOutput /*: string */,
+) /*: { [string]: MappingOption } */ {
+  let mappings /*: { [string]: MappingOption } */ = {};
+  mappings[`${reactNativePath}/React`] = {
+    destination: path.join(headersOutput, 'React'),
+    excludeFolders: ['includes', 'headers', 'tests'],
+    preserveStructure: false,
+  };
+
+  mappings[`${reactNativePath}/React/FBReactNativeSpec`] = {
+    destination: headersOutput,
+    excludeFolders: ['tests'],
+    preserveStructure: true,
+  };
+  return mappings;
+}
+
+function librariesMappings(
+  reactNativePath /*: string */,
+  headersOutput /*: string */,
+) /*: { [string]: MappingOption } */ {
+  let mappings /*: { [string]: MappingOption } */ = {};
+  mappings[`${reactNativePath}/Libraries`] = {
+    destination: path.join(headersOutput, 'React'),
+    excludeFolders: ['tests'],
+    preserveStructure: false,
+  };
+
+  mappings[`${reactNativePath}/Libraries/FBLazyVector`] = {
+    destination: path.join(headersOutput, 'FBLazyVector'),
+    excludeFolders: ['tests'],
+    preserveStructure: false,
+  };
+
+  mappings[`${reactNativePath}/Libraries/Required`] = {
+    destination: path.join(headersOutput, 'RCTRequired'),
+    excludeFolders: ['tests'],
+    preserveStructure: false,
+  };
+
+  mappings[`${reactNativePath}/Libraries/TypeSafety`] = {
+    destination: path.join(headersOutput, 'RCTTypeSafety'),
+    excludeFolders: ['tests'],
+    preserveStructure: false,
+  };
+  return mappings;
+}
+
 module.exports = {
+  librariesMappings,
   reactCommonMappings,
+  reactMappings,
 };

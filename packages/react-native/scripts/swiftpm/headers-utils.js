@@ -19,7 +19,6 @@ const path = require('path');
  * @param {string} outputPath - Default output directory for symlinks
  * @param {boolean} preserveStructure - Whether to preserve directory structure
  * @param {Array<string>} excludeFolders - Folder names to exclude
- * @param {Object} customMappings - Custom path mappings (prefix -> output path)
  * @returns {number} Number of symlinks created
  */
 function symlinkHeadersFromPath(
@@ -27,7 +26,6 @@ function symlinkHeadersFromPath(
   outputPath /*: string */,
   preserveStructure /*: boolean */,
   excludeFolders /*: Array<string> */,
-  customMappings /*: {[string]: string} */ = {},
 ) /*: number */ {
   let linkedCount = 0;
 
@@ -39,15 +37,6 @@ function symlinkHeadersFromPath(
         const relativePath = path.relative(sourcePath, sourceHeaderPath);
         let destPath = '';
         let mappedOutputPath = outputPath;
-
-        // Check for custom mappings first
-        for (const [prefix, customOutput] of Object.entries(customMappings)) {
-          if (relativePath.startsWith(prefix)) {
-            mappedOutputPath = customOutput;
-            console.log(`  Custom mapping: ${prefix} -> ${customOutput}`);
-            break;
-          }
-        }
 
         if (preserveStructure) {
           // Preserve directory structure
