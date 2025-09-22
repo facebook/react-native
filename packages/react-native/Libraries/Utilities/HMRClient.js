@@ -232,8 +232,6 @@ Error: ${e.message}`;
     });
 
     client.on('error', data => {
-      DevLoadingView.hide();
-
       if (data.type === 'GraphNotFoundError') {
         client.close();
         setHMRUnavailableReason(
@@ -253,8 +251,6 @@ Error: ${e.message}`;
     });
 
     client.on('close', closeEvent => {
-      DevLoadingView.hide();
-
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
       // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.1.5
       const isNormalOrUnsetCloseReason =
@@ -296,10 +292,17 @@ function setHMRUnavailableReason(reason: string) {
   }
   hmrUnavailableReason = reason;
 
+  const DevLoadingView = require('./DevLoadingView').default;
+  DevLoadingView.hide();
+
   // We only want to show a warning if Fast Refresh is on *and* if we ever
   // previously managed to connect successfully. We don't want to show
   // the warning to native engineers who use cached bundles without Metro.
   if (hmrClient.isEnabled() && didConnect) {
+    DevLoadingView.showMessage(
+      'Fast Refresh disconnected. Reload app to reconnect.',
+      'error',
+    );
     console.warn(reason);
     // (Not using the `warning` module to prevent a Buck cycle.)
   }
