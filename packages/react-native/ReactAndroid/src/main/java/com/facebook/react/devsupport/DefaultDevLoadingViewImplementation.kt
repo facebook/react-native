@@ -33,10 +33,14 @@ public class DefaultDevLoadingViewImplementation(
   private var devLoadingPopup: PopupWindow? = null
 
   override fun showMessage(message: String) {
+    showMessage(message, color = null, backgroundColor = null)
+  }
+
+  override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
     if (!isEnabled) {
       return
     }
-    UiThreadUtil.runOnUiThread { showInternal(message) }
+    UiThreadUtil.runOnUiThread { showInternal(message, color, backgroundColor) }
   }
 
   override fun updateProgress(status: String?, done: Int?, total: Int?) {
@@ -59,7 +63,7 @@ public class DefaultDevLoadingViewImplementation(
     }
   }
 
-  private fun showInternal(message: String) {
+  private fun showInternal(message: String, color: Double?, backgroundColor: Double?) {
     if (devLoadingPopup?.isShowing == true) {
       // already showing
       return
@@ -84,6 +88,12 @@ public class DefaultDevLoadingViewImplementation(
           currentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
       val view = inflater.inflate(R.layout.dev_loading_view, null) as TextView
       view.text = message
+      if (color != null) {
+        view.setTextColor(color.toInt())
+      }
+      if (backgroundColor != null) {
+        view.setBackgroundColor(backgroundColor.toInt())
+      }
       val popup =
           PopupWindow(
               view,
