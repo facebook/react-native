@@ -11,6 +11,7 @@
 'use strict';
 
 const {
+  symlinkCodegenHeaders,
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
@@ -44,7 +45,8 @@ describe('symlinkHeadersFromPath', () => {
     mockPath.dirname.mockImplementation(filePath => {
       const parts = filePath.split('/');
       parts.pop();
-      return parts.join('/');
+      const result = parts.join('/');
+      return result === '' ? '.' : result;
     });
     mockPath.basename.mockImplementation(filePath => {
       return filePath.split('/').pop();
@@ -290,6 +292,169 @@ describe('symlinkHeadersFromPath', () => {
     expect(console.warn).toHaveBeenCalledWith(
       'Failed to process headers from /source/path:',
       'Link failed',
+    );
+    expect(result).toBe(0);
+  });
+});
+
+describe('symlinkCodegenHeaders', () => {
+  let mockUtils;
+  let mockFs;
+  let mockPath;
+  let originalConsoleWarn;
+  let originalConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockUtils = require('../utils');
+    mockFs = require('fs');
+    mockPath = require('path');
+
+    // Mock path functions
+    mockPath.relative.mockImplementation((from, to) => {
+      return to.replace(from + '/', '');
+    });
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    mockPath.dirname.mockImplementation(filePath => {
+      const parts = filePath.split('/');
+      parts.pop();
+      const result = parts.join('/');
+      return result === '' ? '.' : result;
+    });
+    mockPath.basename.mockImplementation(filePath => {
+      return filePath.split('/').pop();
+    });
+
+    // Mock console methods to prevent test output noise
+    originalConsoleWarn = console.warn;
+    originalConsoleLog = console.log;
+    console.warn = jest.fn();
+    console.log = jest.fn();
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.warn = originalConsoleWarn;
+    console.log = originalConsoleLog;
+  });
+
+  it('should create symlinks for codegen headers with conditional directory structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+    const headerFiles = [
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      `${reactCodegenPath}/ModuleProvider.h`,
+      `${reactCodegenPath}/react/renderer/components/MyComponent/ComponentDescriptors.h`,
+      `${reactCodegenPath}/react/renderer/components/MyComponent/EventEmitter.h`,
+    ];
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      if (filePath.includes('ReactCodegen') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkCodegenHeaders(
+      reactNativePath,
+      iosAppPath,
+      outputFolder,
+    );
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(reactCodegenPath);
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
+      reactCodegenPath,
+      ['headers', 'tests'],
+    );
+    // Files with no subpath go to ReactCodegen folder
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ComponentDescriptors.h`,
+      '/output/folder/headers/ReactCodegen/ComponentDescriptors.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${reactCodegenPath}/ModuleProvider.h`,
+      '/output/folder/headers/ReactCodegen/ModuleProvider.h',
+    );
+    // Files with subpaths preserve structure under headers/
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/MyComponent/ComponentDescriptors.h`,
+      '/output/folder/headers/react/renderer/components/MyComponent/ComponentDescriptors.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${reactCodegenPath}/react/renderer/components/MyComponent/EventEmitter.h`,
+      '/output/folder/headers/react/renderer/components/MyComponent/EventEmitter.h',
+    );
+    expect(result).toBe(4);
+  });
+
+  it('should warn and return 0 if ReactCodegen path does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return false; // ReactCodegen path doesn't exist
+      return false;
+    });
+
+    // Execute
+    const result = symlinkCodegenHeaders(
+      reactNativePath,
+      iosAppPath,
+      outputFolder,
+    );
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      `ReactCodegen path does not exist: ${reactCodegenPath}`,
+    );
+    expect(mockUtils.listHeadersInFolder).not.toHaveBeenCalled();
+    expect(result).toBe(0);
+  });
+
+  it('should return 0 if no header files exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const iosAppPath = '/path/to/ios-app';
+    const outputFolder = '/output/folder';
+    const reactCodegenPath =
+      '/path/to/ios-app/build/generated/ios/ReactCodegen';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === reactCodegenPath) return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue([]);
+
+    // Execute
+    const result = symlinkCodegenHeaders(
+      reactNativePath,
+      iosAppPath,
+      outputFolder,
+    );
+
+    // Assert
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
+      reactCodegenPath,
+      ['headers', 'tests'],
+    );
+    expect(mockUtils.setupSymlink).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith(
+      'Created symlinks for 0 Codegen headers with conditional directory structure',
     );
     expect(result).toBe(0);
   });
