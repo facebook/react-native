@@ -28,7 +28,7 @@ function Playground() {
           />
         }
       >
-        <Text>Pull to refresh - this crashes on android with size as number (indicated by TS hint) when docs specify "default" or "large"</Text>
+        <Text>Pull to refresh: this crashes on android with size as number (indicated by TS hint) when docs specify "default" or "large"</Text>
       </ScrollView>
     </View>
   );
