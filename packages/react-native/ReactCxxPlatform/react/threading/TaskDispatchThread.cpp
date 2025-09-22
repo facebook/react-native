@@ -90,11 +90,7 @@ void TaskDispatchThread::quit() noexcept {
   running_ = false;
   loopCv_.notify_one();
   if (thread_.joinable()) {
-    if (!isOnThread()) {
-      thread_.join();
-    } else {
-      thread_.detach();
-    }
+    thread_.join();
   }
 }
 
