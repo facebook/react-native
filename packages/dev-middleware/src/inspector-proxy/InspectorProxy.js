@@ -372,12 +372,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         this.#devices.set(deviceId, newDevice);
 
-        this.#logger?.info(
-          "Connection established to app='%s' on device='%s'.",
-          appName,
-          deviceName,
-        );
-
         debug(
           "Got new device connection: name='%s', app=%s, device=%s, via=%s",
           deviceName,
@@ -450,7 +444,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         );
 
         socket.on('close', (code: number, reason: string) => {
-          this.#logger?.info(
+          debug(
             "Connection closed to device='%s' for app='%s' with code='%s' and reason='%s'.",
             deviceName,
             appName,
@@ -526,7 +520,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error(INTERNAL_ERROR_MESSAGES.UNREGISTERED_DEVICE);
         }
 
-        this.#logger?.info(
+        debug(
           "Connection established to DevTools for app='%s' on device='%s'.",
           device.getApp() || 'unknown',
           device.getName() || 'unknown',
@@ -594,7 +588,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('close', (code: number, reason: string) => {
-          this.#logger?.info(
+          debug(
             "Connection closed to DevTools for app='%s' on device='%s' with code='%s' and reason='%s'.",
             device.getApp() || 'unknown',
             device.getName() || 'unknown',
