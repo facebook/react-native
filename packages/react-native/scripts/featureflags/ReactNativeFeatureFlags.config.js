@@ -793,6 +793,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useSharedAnimatedBackend: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-08-2',
+        description: 'Use shared animation backend in C++ Animated',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {
