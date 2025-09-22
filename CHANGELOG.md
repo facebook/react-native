@@ -1,5 +1,110 @@
 # Changelog
 
+## v0.82.0-rc.4
+
+### Breaking
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Added
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Changed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Deprecated
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Removed
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Fixed
+
+- Fixed coordinates for Hermes V1 artifacts ([674fb77d93](https://github.com/facebook/react-native/commit/674fb77d93dfe67a5fe90449dc71b195b1851e13) by [@j-piasecki](https://github.com/j-piasecki))
+
+#### Android specific
+
+
+
+#### iOS specific
+
+- Fix Switch layout to work with iOS26 ([91d427fe52](https://github.com/facebook/react-native/commit/91d427fe52a307f9aa8579912ef956d61808dad2) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Security
+
+
+
+#### Android specific
+
+
+
+#### iOS specific
+
+
+
+### Unknown
+
+- Release 0.82.0-rc.4 ([a70e817da5](https://github.com/facebook/react-native/commit/a70e817da551408df3e115b870bffb4a90b3cd24) by [@react-native-bot](https://github.com/react-native-bot))
+- Bump Podfile.lock ([3a0a7365ff](https://github.com/facebook/react-native/commit/3a0a7365ff2dbd50e8b67a81bf34f36c0d5b3189) by [@react-native-bot](https://github.com/react-native-bot))
+- Release 0.82.0-rc.3 ([45439b0119](https://github.com/facebook/react-native/commit/45439b0119c79d8b5bbd16a12f14548794c77300) by [@react-native-bot](https://github.com/react-native-bot))
+
+#### Android Unknown
+
+
+
+#### iOS Unknown
+
+
+
+#### Failed to parse
+
+
+
+
 ## v0.82.0-rc.3
 
 ### Added
