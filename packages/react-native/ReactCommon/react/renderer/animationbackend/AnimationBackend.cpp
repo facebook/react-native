@@ -10,9 +10,9 @@
 namespace facebook::react {
 
 AnimationBackend::AnimationBackend(
-    const StartOnRenderCallback& startOnRenderCallback,
-    const StopOnRenderCallback& stopOnRenderCallback,
-    const DirectManipulationCallback& directManipulationCallback)
+    StartOnRenderCallback&& startOnRenderCallback,
+    StopOnRenderCallback&& stopOnRenderCallback,
+    DirectManipulationCallback&& directManipulationCallback)
     : startOnRenderCallback_(startOnRenderCallback),
       stopOnRenderCallback_(stopOnRenderCallback),
       directManipulationCallback_(directManipulationCallback) {}
