@@ -160,8 +160,63 @@ function symlinkReactCommonHeaders(
   return linkedCount;
 }
 
+/**
+ * Create symlinks for third-party dependencies headers in the output folder
+ * @param {string} reactNativePath - Path to the React Native directory
+ * @param {string} outputFolder - Path to the output folder
+ * @param {string} folderName - Name of the folder where headers will be created (default: 'headers')
+ * @returns {number} Number of symlinks created
+ */
+function symlinkThirdPartyDependenciesHeaders(
+  reactNativePath /*: string */,
+  outputFolder /*: string */,
+  folderName /*: string */ = 'headers',
+) /*: number */ {
+  console.log('Creating symlinks for Third-Party Dependencies headers...');
+
+  // Look for ReactNativeDependencies.xcframework/Headers folder specifically
+  const thirdPartyHeadersPath = path.join(
+    reactNativePath,
+    'third-party',
+    'ReactNativeDependencies.xcframework',
+    'Headers',
+  );
+
+  if (!fs.existsSync(thirdPartyHeadersPath)) {
+    console.warn(
+      `Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`,
+    );
+    return 0;
+  }
+
+  const headersOutput = path.join(outputFolder, folderName);
+  let linkedCount = 0;
+
+  // No custom mappings needed for third-party dependencies
+  const headerFiles = listHeadersInFolder(thirdPartyHeadersPath, ['tests']);
+  headerFiles.forEach(sourceHeaderPath => {
+    if (fs.existsSync(sourceHeaderPath)) {
+      // Calculate relative path from Headers base to preserve structure
+      const relativePath = path.relative(
+        thirdPartyHeadersPath,
+        sourceHeaderPath,
+      );
+      const destPath = path.join(headersOutput, relativePath);
+
+      setupSymlink(sourceHeaderPath, destPath);
+      linkedCount++;
+    }
+  });
+
+  console.log(
+    `Created symlinks for ${linkedCount} Third-Party Dependencies headers with preserved directory structure`,
+  );
+  return linkedCount;
+}
+
 module.exports = {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
+  symlinkThirdPartyDependenciesHeaders,
 };

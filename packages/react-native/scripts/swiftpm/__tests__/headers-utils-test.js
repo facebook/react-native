@@ -14,6 +14,7 @@ const {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
   symlinkReactCommonHeaders,
+  symlinkThirdPartyDependenciesHeaders,
 } = require('../headers-utils');
 
 // Mock all required modules
@@ -291,6 +292,244 @@ describe('symlinkHeadersFromPath', () => {
       'Link failed',
     );
     expect(result).toBe(0);
+  });
+});
+
+describe('symlinkThirdPartyDependenciesHeaders', () => {
+  let mockUtils;
+  let mockFs;
+  let mockPath;
+  let originalConsoleWarn;
+  let originalConsoleLog;
+
+  beforeEach(() => {
+    // Setup mocks
+    mockUtils = require('../utils');
+    mockFs = require('fs');
+    mockPath = require('path');
+
+    // Mock path functions
+    mockPath.relative.mockImplementation((from, to) => {
+      return to.replace(from + '/', '');
+    });
+    mockPath.join.mockImplementation((...args) => args.join('/'));
+    mockPath.dirname.mockImplementation(filePath => {
+      const parts = filePath.split('/');
+      parts.pop();
+      return parts.join('/');
+    });
+    mockPath.basename.mockImplementation(filePath => {
+      return filePath.split('/').pop();
+    });
+
+    // Mock console methods to prevent test output noise
+    originalConsoleWarn = console.warn;
+    originalConsoleLog = console.log;
+    console.warn = jest.fn();
+    console.log = jest.fn();
+
+    // Reset all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.warn = originalConsoleWarn;
+    console.log = originalConsoleLog;
+  });
+
+  it('should create symlinks for third-party dependencies headers with preserved structure', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const headerFiles = [
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      `${thirdPartyHeadersPath}/glog/glog.h`,
+      `${thirdPartyHeadersPath}/fmt/format.h`,
+      `${thirdPartyHeadersPath}/folly/folly.hpp`,
+    ];
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (
+        filePath.includes('third-party') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.hpp'))
+      )
+        return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockFs.existsSync).toHaveBeenCalledWith(thirdPartyHeadersPath);
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
+      thirdPartyHeadersPath,
+      ['tests'],
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/glog/glog.h`,
+      '/output/folder/headers/glog/glog.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/fmt/format.h`,
+      '/output/folder/headers/fmt/format.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/folly/folly.hpp`,
+      '/output/folder/headers/folly/folly.hpp',
+    );
+    expect(result).toBe(4);
+  });
+
+  it('should use default folder name when folderName parameter is not provided', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const headerFiles = [`${thirdPartyHeadersPath}/boost/boost.h`];
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute - without folderName parameter
+    const result = symlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+    );
+
+    // Assert - should use default 'headers' folder
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/boost/boost.h`,
+      '/output/folder/headers/boost/boost.h',
+    );
+    expect(result).toBe(1);
+  });
+
+  it('should warn and return 0 if third-party headers path does not exist', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return false; // third-party headers path doesn't exist
+      return false;
+    });
+
+    // Execute
+    const result = symlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(console.warn).toHaveBeenCalledWith(
+      `Third-party dependencies headers path does not exist: ${thirdPartyHeadersPath}`,
+    );
+    expect(mockUtils.listHeadersInFolder).not.toHaveBeenCalled();
+    expect(result).toBe(0);
+  });
+
+  it('should handle setupSymlink throwing an error gracefully', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const headerFiles = [`${thirdPartyHeadersPath}/boost/boost.h`];
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (filePath.includes('third-party') && filePath.endsWith('.h'))
+        return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {
+      throw new Error('Link failed');
+    });
+
+    // Execute and Assert - function should throw the error from setupSymlink
+    expect(() => {
+      symlinkThirdPartyDependenciesHeaders(
+        reactNativePath,
+        outputFolder,
+        folderName,
+      );
+    }).toThrow('Link failed');
+  });
+
+  it('should handle both .h and .hpp files', () => {
+    // Setup
+    const reactNativePath = '/path/to/react-native';
+    const outputFolder = '/output/folder';
+    const folderName = 'headers';
+    const thirdPartyHeadersPath =
+      '/path/to/react-native/third-party/ReactNativeDependencies.xcframework/Headers';
+    const headerFiles = [
+      `${thirdPartyHeadersPath}/library1/header.h`,
+      `${thirdPartyHeadersPath}/library2/header.hpp`,
+    ];
+
+    mockFs.existsSync.mockImplementation(filePath => {
+      if (filePath === thirdPartyHeadersPath) return true;
+      if (
+        filePath.includes('third-party') &&
+        (filePath.endsWith('.h') || filePath.endsWith('.hpp'))
+      )
+        return true;
+      return false;
+    });
+    mockUtils.listHeadersInFolder.mockReturnValue(headerFiles);
+    mockUtils.setupSymlink.mockImplementation(() => {});
+
+    // Execute
+    const result = symlinkThirdPartyDependenciesHeaders(
+      reactNativePath,
+      outputFolder,
+      folderName,
+    );
+
+    // Assert
+    expect(mockUtils.listHeadersInFolder).toHaveBeenCalledWith(
+      thirdPartyHeadersPath,
+      ['tests'],
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/library1/header.h`,
+      '/output/folder/headers/library1/header.h',
+    );
+    expect(mockUtils.setupSymlink).toHaveBeenCalledWith(
+      `${thirdPartyHeadersPath}/library2/header.hpp`,
+      '/output/folder/headers/library2/header.hpp',
+    );
+    expect(result).toBe(2);
   });
 });
 
