@@ -5,15 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
-
-#import <cxxreact/MessageQueueThread.h>
 #import <hermes/Public/CrashManager.h>
 #import <jsi/jsi.h>
 #import <react/runtime/JSRuntimeFactory.h>
-#import <react/runtime/hermes/HermesInstance.h>
 
 namespace facebook::react {
+
+class MessageQueueThread;
 
 using CrashManagerProvider =
     std::function<std::shared_ptr<::hermes::vm::CrashManager>()>;
@@ -21,11 +19,14 @@ using CrashManagerProvider =
 // ObjC++ wrapper for HermesInstance.cpp
 class RCTHermesInstance : public JSRuntimeFactory {
  public:
-  RCTHermesInstance();
-  RCTHermesInstance(CrashManagerProvider crashManagerProvider);
+  RCTHermesInstance() : RCTHermesInstance(nullptr, false) {}
+  RCTHermesInstance(CrashManagerProvider crashManagerProvider)
+      : RCTHermesInstance(std::move(crashManagerProvider), false) {}
   RCTHermesInstance(
       CrashManagerProvider crashManagerProvider,
-      bool allocInOldGenBeforeTTI);
+      bool allocInOldGenBeforeTTI)
+      : _crashManagerProvider(std::move(crashManagerProvider)),
+        _allocInOldGenBeforeTTI(allocInOldGenBeforeTTI) {}
 
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
@@ -34,7 +35,6 @@ class RCTHermesInstance : public JSRuntimeFactory {
 
  private:
   CrashManagerProvider _crashManagerProvider;
-  std::unique_ptr<HermesInstance> _hermesInstance;
   bool _allocInOldGenBeforeTTI;
 };
 
