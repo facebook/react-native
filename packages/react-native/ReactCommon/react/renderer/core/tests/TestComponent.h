@@ -37,7 +37,7 @@ struct TestState {
 #endif
 };
 
-// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+// NOLINTNEXTLINE(modernize-avoid-c-arrays,facebook-hte-CArray)
 static const char TestComponentName[] = "Test";
 
 class TestProps : public ViewProps {
