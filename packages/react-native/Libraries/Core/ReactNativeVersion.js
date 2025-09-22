@@ -29,7 +29,7 @@ export default class ReactNativeVersion {
   static major: number = 0;
   static minor: number = 82;
   static patch: number = 0;
-  static prerelease: string | null = 'rc.3';
+  static prerelease: string | null = 'rc.4';
 
   static getVersionString(): string {
     return `${this.major}.${this.minor}.${this.patch}${this.prerelease != null ? `-${this.prerelease}` : ''}`;
