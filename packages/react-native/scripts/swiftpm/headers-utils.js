@@ -8,6 +8,7 @@
  * @format
  */
 
+const {reactCommonMappings} = require('./headers-mappings');
 const {listHeadersInFolder, setupSymlink} = require('./utils');
 const fs = require('fs');
 const path = require('path');
@@ -119,7 +120,59 @@ function symlinkReactAppleHeaders(
   return linkedCount;
 }
 
+/**
+ * Create symlinks for ReactCommon headers with conditional path logic
+ * The proper way to map ReactCommon headers is a bit complicated, because we it collects
+ * packages that needs linking in various ways:
+ * - Headers in the react/renderer subpath needs to be mapped to React folder
+ * - Platform specific code in
+ * react/renderer/components/<component>/platform/ios/react/renderer/components/<component>/<headers>
+ * needs to be flattened to react/renderer/components/<component>/<headers>.
+ * - Some headers related to TurboModules needs to be mapped to ReactCommon
+ * - Some modules in specific folders, such as oscompat, needs to be mapped to their parent folder.
+ * - Yoga structure which is ReactCommon/yoga/yoga/<public-headers> need to be flattened to just yoga/<public-headers>.
+ *
+ * This function implement the basic logic of scanning the ReactCommon folder and proceed with the mapping
+ * by following the rules above. It can also be customized by passing an array of path that needs to be flattened
+ * and a map of special mapping objects.
+ * @param {string} reactCommonPath - Path to ReactCommon directory
+ * @param {string} headersOutput - Base headers output directory
+ * @returns {number} Number of symlinks created
+ */
+function symlinkReactCommonHeaders(
+  reactCommonPath /*: string */,
+  headersOutput /*: string */,
+) /*: number */ {
+  let linkedCount = 0;
+  const mappings = reactCommonMappings(reactCommonPath, headersOutput);
+
+  // Iterate over the key-value pairs of the mappings object
+  for (const [sourceDir, options] of Object.entries(mappings)) {
+    const headerFiles = listHeadersInFolder(sourceDir, options.excludeFolders);
+    headerFiles.forEach(sourceHeaderPath => {
+      const relativePath = path.relative(sourceDir, sourceHeaderPath);
+      let destPath = '';
+      let mappedOutputPath = options.destination;
+
+      if (options.preserveStructure) {
+        // Preserve directory structure
+        destPath = path.join(mappedOutputPath, relativePath);
+      } else {
+        // Flatten structure - just use the header filename
+        const headerName = path.basename(sourceHeaderPath);
+        destPath = path.join(mappedOutputPath, headerName);
+      }
+
+      setupSymlink(sourceHeaderPath, destPath);
+      linkedCount++;
+    });
+  }
+
+  return linkedCount;
+}
+
 module.exports = {
   symlinkHeadersFromPath,
   symlinkReactAppleHeaders,
+  symlinkReactCommonHeaders,
 };
