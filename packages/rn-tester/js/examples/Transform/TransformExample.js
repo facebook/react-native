@@ -144,6 +144,13 @@ function TranslatePercentage() {
   return <View style={styles.translatePercentageView} />;
 }
 
+function TranslateMatrix2D() {
+  return <View style={styles.translateMatrix2D} />;
+}
+function TranslateMatrix3D() {
+  return <View style={styles.translateMatrix3D} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     height: 500,
@@ -288,6 +295,18 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     backgroundColor: 'lightblue',
   },
+  translateMatrix2D: {
+    transform: [{matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]}],
+    width: 50,
+    height: 50,
+    backgroundColor: 'red',
+  },
+  translateMatrix3D: {
+    transform: [{matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]}],
+    height: 50,
+    width: 50,
+    backgroundColor: 'green',
+  },
 });
 
 exports.title = 'Transforms';
@@ -412,6 +431,21 @@ exports.examples = [
     description: "transform: 'translate(50%)'",
     render(): React.Node {
       return <TranslatePercentage />;
+    },
+  },
+  {
+    title: 'Transform Matrix 2D',
+    description: "transform: 'matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return <TranslateMatrix2D />;
+    },
+  },
+  {
+    title: 'Transform Matrix 3D',
+    description:
+      "transform: 'matrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)'",
+    render(): React.Node {
+      return <TranslateMatrix3D />;
     },
   },
 ] as Array<RNTesterModuleExample>;
