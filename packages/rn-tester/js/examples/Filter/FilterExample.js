@@ -155,7 +155,6 @@ exports.examples = [
     title: 'Grayscale',
     description: 'grayscale(0.5)',
     name: 'grayscale',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison style={{filter: [{grayscale: 0.5}]}} />
@@ -231,7 +230,6 @@ exports.examples = [
     title: 'Drop Shadow',
     description: 'drop-shadow(30px 10px 4px #4444dd)',
     name: 'drop-shadow',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison

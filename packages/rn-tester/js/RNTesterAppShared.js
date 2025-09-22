@@ -275,18 +275,6 @@ const RNTesterApp = ({
   const shouldHideChrome = isScreenTiny && hadDeepLink;
 
   return (
-    <View
-      style={{
-        height: 200,
-        width: 200,
-        margin: 100,
-        backgroundColor: 'blue',
-        // filter: 'drop-shadow(4px 4px 10px red)',
-      }}
-    />
-  );
-
-  return (
     <RNTesterThemeContext.Provider value={theme}>
       {Platform.OS === 'android' ? (
         <StatusBar
