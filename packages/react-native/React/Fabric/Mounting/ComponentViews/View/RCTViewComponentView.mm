@@ -1079,6 +1079,11 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
             Float grayscale = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateGrayscale:@(grayscale)];
           }
+        } else if (primitive.type == FilterType::Saturate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float saturation = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateSaturation:@(saturation)];
+          }
         }
       }
     }
@@ -1502,7 +1507,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     for (const auto &primitive : _props->filter) {
       if (primitive.type == FilterType::Blur
           || primitive.type == FilterType::Grayscale
-          || primitive.type == FilterType::DropShadow) {
+          || primitive.type == FilterType::DropShadow
+          || primitive.type == FilterType::Saturate) {
         return YES;
       }
     }

@@ -165,7 +165,6 @@ exports.examples = [
     title: 'Saturate',
     description: 'saturate(4)',
     name: 'saturate',
-    platform: 'android',
     render(): React.Node {
       return <StaticViewAndImageComparison style={{filter: [{saturate: 4}]}} />;
     },

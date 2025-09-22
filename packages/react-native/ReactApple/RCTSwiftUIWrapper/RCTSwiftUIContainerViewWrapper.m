@@ -53,6 +53,11 @@
   [self.swiftContainerView updateGrayscale:grayscale];
 }
 
+- (void)updateSaturation:(NSNumber *)saturation
+{
+  [self.swiftContainerView updateSaturation:saturation];
+}
+
 - (void)updateDropShadow:(NSNumber *)standardDeviation x:(NSNumber *)x y:(NSNumber *)y color:(UIColor *)color
 {
   [self.swiftContainerView updateDropShadowWithStandardDeviation:standardDeviation x:x y:y color:color];
