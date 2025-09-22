@@ -808,9 +808,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 // SwiftUI wrapper.
 - (UIView *)effectiveContentView
 {
-  if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
-    return self;
-  }
+ if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
+   return self;
+ }
 
   UIView *effectiveContentView = self;
 
@@ -1047,14 +1047,23 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   [_filterLayer removeFromSuperlayer];
   _filterLayer = nil;
   if (_swiftUIWrapper != nullptr) {
-    [_swiftUIWrapper updateBlurRadius:@(0)];
+    [_swiftUIWrapper resetStyles];
   }
   self.layer.opacity = (float)_props->opacity;
   if (!_props->filter.empty()) {
     float multiplicativeBrightness = 1;
     bool hasBrightnessFilter = false;
     for (const auto &primitive : _props->filter) {
-      if (std::holds_alternative<Float>(primitive.parameters)) {
+      if (primitive.type == FilterType::DropShadow) {
+        if (_swiftUIWrapper != nullptr && std::holds_alternative<DropShadowParams>(primitive.parameters)) {
+          const auto& dropShadowParams = std::get<DropShadowParams>(primitive.parameters);
+          UIColor *shadowColor = RCTUIColorFromSharedColor(dropShadowParams.color);
+          [_swiftUIWrapper updateDropShadow:@(dropShadowParams.standardDeviation)
+                                          x:@(dropShadowParams.offsetX)
+                                          y:@(dropShadowParams.offsetY)
+                                      color:shadowColor];
+        }
+      } else if (std::holds_alternative<Float>(primitive.parameters)) {
         if (primitive.type == FilterType::Brightness) {
           multiplicativeBrightness *= std::get<Float>(primitive.parameters);
           hasBrightnessFilter = true;
@@ -1064,6 +1073,11 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
           if (_swiftUIWrapper != nullptr) {
             Float blurRadius = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateBlurRadius:@(blurRadius)];
+          }
+        } else if (primitive.type == FilterType::Grayscale) {
+          if (_swiftUIWrapper != nullptr) {
+            Float grayscale = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateGrayscale:@(grayscale)];
           }
         }
       }
@@ -1486,7 +1500,9 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   if (!_props->filter.empty()) {
     for (const auto &primitive : _props->filter) {
-      if (primitive.type == FilterType::Blur) {
+      if (primitive.type == FilterType::Blur
+          || primitive.type == FilterType::Grayscale
+          || primitive.type == FilterType::DropShadow) {
         return YES;
       }
     }

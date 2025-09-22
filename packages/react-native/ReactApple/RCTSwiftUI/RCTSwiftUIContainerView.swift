@@ -38,6 +38,17 @@ import UIKit
     containerViewModel.blurRadius = blurRadius
   }
 
+  @objc public func updateGrayscale(_ grayscale: NSNumber) {
+    containerViewModel.grayscale = CGFloat(grayscale.floatValue)
+  }
+
+  @objc public func updateDropShadow(standardDeviation: NSNumber, x: NSNumber, y: NSNumber, color: UIColor) {
+    containerViewModel.shadowRadius = CGFloat(standardDeviation.floatValue)
+    containerViewModel.shadowX = CGFloat(x.floatValue)
+    containerViewModel.shadowY = CGFloat(y.floatValue)
+    containerViewModel.shadowColor = Color(color)
+  }
+
   @objc public func updateLayout(withBounds bounds: CGRect) {
     hostingController?.view.frame = bounds
     containerViewModel.contentView?.frame = bounds
@@ -45,11 +56,21 @@ import UIKit
 
   @objc public func resetStyles() {
     containerViewModel.blurRadius = 0
+    containerViewModel.grayscale = 0
+    containerViewModel.shadowRadius = 0
+    containerViewModel.shadowX = 0
+    containerViewModel.shadowY = 0
+    containerViewModel.shadowColor = Color.clear
   }
 }
 
 class ContainerViewModel: ObservableObject {
   @Published var blurRadius: CGFloat = 0
+  @Published var grayscale: CGFloat = 0
+  @Published var shadowRadius: CGFloat = 0
+  @Published var shadowX: CGFloat = 0
+  @Published var shadowY: CGFloat = 0
+  @Published var shadowColor: Color = Color.clear
   @Published var contentView: UIView?
 }
 
@@ -58,8 +79,10 @@ struct SwiftUIContainerView: View {
 
   var body: some View {
     if let contentView = viewModel.contentView {
-      UIViewWrapper(view: contentView)
-        .blur(radius: viewModel.blurRadius)
+        UIViewWrapper(view: contentView)
+          .blur(radius: viewModel.blurRadius)
+          .grayscale(viewModel.grayscale)
+          .shadow(color: viewModel.shadowColor, radius: viewModel.shadowRadius, x: viewModel.shadowX, y: viewModel.shadowY)
     }
   }
 }
@@ -67,9 +90,9 @@ struct SwiftUIContainerView: View {
 struct UIViewWrapper: UIViewRepresentable {
   let view: UIView
 
-  func makeUIView(context: Context) -> UIView {
+func makeUIView(context: Context) -> UIView {
     return view
-  }
+}
 
   func updateUIView(_ uiView: UIView, context: Context) {
   }
