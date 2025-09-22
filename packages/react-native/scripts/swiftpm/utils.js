@@ -8,8 +8,44 @@
  * @format
  */
 
+const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
+function listHeadersInFolder(
+  folder /*: string */,
+  excludeSubfolders /*: Array<string> */,
+) /*: Array<string> */ {
+  try {
+    // Build find command with exclusions using -prune
+    let findCommand = `find "${folder}"`;
+
+    // Add exclusions for specified folders using -prune
+    if (excludeSubfolders.length > 0) {
+      const pruneConditions = excludeSubfolders
+        .map(subfolder => `-name "${subfolder}"`)
+        .join(' -o ');
+      findCommand += ` \\( ${pruneConditions} \\) -prune -o`;
+    }
+
+    findCommand += ` \\( -name "*.h" -o -name "*.hpp" \\) -type f -print`;
+
+    const result = execSync(findCommand, {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    });
+
+    const headerFiles = result
+      .trim()
+      .split('\n')
+      .filter(p => p.length > 0);
+
+    return headerFiles;
+  } catch (error) {
+    console.error(`Failed to process headers from ${folder}:`, error.message);
+    throw error;
+  }
+}
 
 function setupSymlink(
   sourceFilePath /*: string */,
@@ -33,4 +69,5 @@ function setupSymlink(
 
 module.exports = {
   setupSymlink,
+  listHeadersInFolder,
 };
