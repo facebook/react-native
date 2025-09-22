@@ -94,13 +94,13 @@ public class DefaultDevLoadingViewImplementation(
       if (backgroundColor != null) {
         view.setBackgroundColor(backgroundColor.toInt())
       }
+      view.setOnClickListener { hideInternal() }
       val popup =
           PopupWindow(
               view,
               ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.WRAP_CONTENT,
           )
-      popup.isTouchable = false
       popup.showAtLocation(currentActivity.window.decorView, Gravity.NO_GRAVITY, 0, topOffset)
       devLoadingView = view
       devLoadingPopup = popup
