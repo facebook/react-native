@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateSaturation:(NSNumber *)saturation;
 - (void)updateContrast:(NSNumber *)contrast;
 - (void)updateInvert:(NSNumber *)invert;
+- (void)updateHueRotate:(NSNumber *)degrees;
 - (void)updateContentView:(UIView *)view;
 - (UIView *_Nullable)hostingView;
 - (void)resetStyles;

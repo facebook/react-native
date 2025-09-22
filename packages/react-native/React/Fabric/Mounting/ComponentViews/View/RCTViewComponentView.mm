@@ -1098,6 +1098,11 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
             Float invert = std::get<Float>(primitive.parameters);
             [_swiftUIWrapper updateInvert:@(invert)];
           }
+        } else if (primitive.type == FilterType::HueRotate) {
+          if (_swiftUIWrapper != nullptr) {
+            Float hueRotateDegrees = std::get<Float>(primitive.parameters);
+            [_swiftUIWrapper updateHueRotate:@(hueRotateDegrees)];
+          }
         }
       }
     }
@@ -1556,7 +1561,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     for (const auto &primitive : _props->filter) {
       if (primitive.type == FilterType::Blur || primitive.type == FilterType::Grayscale ||
           primitive.type == FilterType::DropShadow || primitive.type == FilterType::Saturate
-          || primitive.type == FilterType::Contrast || primitive.type == FilterType::Invert) {
+          || primitive.type == FilterType::Contrast || primitive.type == FilterType::Invert
+          || primitive.type == FilterType::HueRotate) {
         return YES;
       }
     }

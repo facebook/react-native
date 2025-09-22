@@ -61,6 +61,10 @@ import UIKit
     containerViewModel.invertAmount = CGFloat(invert.floatValue)
   }
 
+  @objc public func updateHueRotate(_ degrees: NSNumber) {
+    containerViewModel.hueRotationDegrees = CGFloat(degrees.floatValue)
+  }
+
   @objc public func updateLayout(withBounds bounds: CGRect) {
     hostingController?.view.frame = bounds
     containerViewModel.contentView?.frame = bounds
@@ -76,6 +80,7 @@ import UIKit
     containerViewModel.saturationAmount = 1
     containerViewModel.contrastAmount = 1
     containerViewModel.invertAmount = 0
+    containerViewModel.hueRotationDegrees = 0
   }
 }
 
@@ -101,6 +106,9 @@ class ContainerViewModel: ObservableObject {
   // invert filter properties
   @Published var invertAmount: CGFloat = 0
   
+  // hue-rotate filter properties
+  @Published var hueRotationDegrees: CGFloat = 0
+  
   @Published var contentView: UIView?
 }
 
@@ -116,6 +124,7 @@ struct SwiftUIContainerView: View {
         .saturation(viewModel.saturationAmount)
         .contrast(viewModel.contrastAmount)
         .cssInvert(viewModel.invertAmount)
+        .hueRotate(viewModel.hueRotationDegrees)
     }
   }
 }
@@ -131,6 +140,8 @@ struct UIViewWrapper: UIViewRepresentable {
   }
 }
 
+// SwiftUI lacks CSS like invert filter, so we implement it using a workaround of
+// overlaying a white rectangle with difference blend mode
 extension View {
   @ViewBuilder
   func cssInvert(_ amount: CGFloat) -> some View {

@@ -181,7 +181,6 @@ exports.examples = [
     title: 'Hue Rotate',
     description: 'hueRotate(-90deg)',
     name: 'hueRotate',
-    platform: 'android',
     render(): React.Node {
       return (
         <StaticViewAndImageComparison
