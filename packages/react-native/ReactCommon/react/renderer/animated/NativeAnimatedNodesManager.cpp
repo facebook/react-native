@@ -852,7 +852,11 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     bool layoutStyleUpdated,
     bool forceFabricCommit) noexcept {
   if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    mergeObjects(updateViewProps_[viewTag], props);
+    if (layoutStyleUpdated) {
+      mergeObjects(updateViewProps_[viewTag], props);
+    } else {
+      mergeObjects(updateViewPropsDirect_[viewTag], props);
+    }
     return;
   }
 
@@ -910,6 +914,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
     auto timestamp = static_cast<double>(microseconds) / 1000.0;
     bool containsChange = false;
+    AnimatedPropsBuilder propsBuilder;
     {
       // copied from onAnimationFrame
       // Run all active animations
@@ -949,9 +954,13 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
         }
       }
 
-      for (auto& [tag, props] : updateViewProps_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
+      for (auto& [tag, props] : updateViewPropsDirect_) {
+        // TODO: also handle layout props (updateViewProps_). It is skipped for
+        // now, because the backend requires shadowNodeFamilies to be able to
+        // commit to the ShadowTree
+        propsBuilder.storeDynamic(props);
+        mutations.push_back(
+            AnimationMutation{tag, nullptr, propsBuilder.get()});
         containsChange = true;
       }
     }
@@ -978,9 +987,11 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
 
       isEventAnimationInProgress_ = false;
 
-      for (auto& [tag, props] : updateViewProps_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
+      for (auto& [tag, props] : updateViewPropsDirect_) {
+        // TODO: handle layout props
+        propsBuilder.storeDynamic(props);
+        mutations.push_back(
+            AnimationMutation{tag, nullptr, propsBuilder.get()});
       }
     }
   } else {
