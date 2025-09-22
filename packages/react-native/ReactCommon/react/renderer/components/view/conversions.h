@@ -613,15 +613,16 @@ inline void fromRawValue(
         return;
       }
 
-      size_t i = 0;
       if (numbers.size() == 16) {
+        size_t i = 0;
+
         for (auto number : numbers) {
           transformMatrix.matrix[i++] = number;
         }
       } else if (numbers.size() == 9) {
         // We need to convert the 2d transform matrix into a 3d one as such:
         // [
-        //   x01, x02, 0, x03
+        //   x00, x01, 0, x02
         //   x10, x11, 0, x12
         //   0,   0,   1, 0
         //   x20, x21, 0, x22
