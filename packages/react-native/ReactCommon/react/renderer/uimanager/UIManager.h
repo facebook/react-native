@@ -36,6 +36,7 @@ namespace facebook::react {
 class UIManagerBinding;
 class UIManagerCommitHook;
 class UIManagerMountHook;
+class AnimationBackend;
 
 class UIManager final : public ShadowTreeDelegate {
  public:
@@ -55,6 +56,7 @@ class UIManager final : public ShadowTreeDelegate {
    */
   void setDelegate(UIManagerDelegate* delegate);
   UIManagerDelegate* getDelegate();
+  std::shared_ptr<AnimationBackend> animationBackend_;
 
   /**
    * Sets and gets the UIManager's Animation APIs delegate.
@@ -62,6 +64,8 @@ class UIManager final : public ShadowTreeDelegate {
    * the pointer before being destroyed.
    */
   void setAnimationDelegate(UIManagerAnimationDelegate* delegate);
+  void setAnimationBackend(std::shared_ptr<AnimationBackend> animationBackend);
+  std::shared_ptr<AnimationBackend> getAnimationBackend();
 
   /**
    * Execute stopSurface on any UIMAnagerAnimationDelegate.
