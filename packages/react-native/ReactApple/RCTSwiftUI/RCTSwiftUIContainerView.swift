@@ -90,9 +90,9 @@ struct SwiftUIContainerView: View {
 struct UIViewWrapper: UIViewRepresentable {
   let view: UIView
 
-func makeUIView(context: Context) -> UIView {
+  func makeUIView(context: Context) -> UIView {
     return view
-}
+  }
 
   func updateUIView(_ uiView: UIView, context: Context) {
   }

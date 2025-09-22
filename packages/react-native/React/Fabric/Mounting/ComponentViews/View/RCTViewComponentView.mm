@@ -808,9 +808,9 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 // SwiftUI wrapper.
 - (UIView *)effectiveContentView
 {
- if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
-   return self;
- }
+  if (!ReactNativeFeatureFlags::enableSwiftUIBasedFilters()) {
+    return self;
+  }
 
   UIView *effectiveContentView = self;
 
