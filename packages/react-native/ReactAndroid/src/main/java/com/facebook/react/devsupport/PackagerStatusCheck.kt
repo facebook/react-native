@@ -65,14 +65,6 @@ internal class PackagerStatusCheck {
                   return
                 }
                 val body = response.body()
-                if (body == null) {
-                  FLog.e(
-                      ReactConstants.TAG,
-                      "Got null body response from packager when requesting status",
-                  )
-                  callback.onPackagerStatusFetched(false)
-                  return
-                }
                 val bodyString =
                     body.string() // cannot call body.string() twice, stored it into variable.
                 // https://github.com/square/okhttp/issues/1240#issuecomment-68142603

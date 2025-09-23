@@ -163,24 +163,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       callback: DevBundleDownloadListener,
   ) {
     val responseBody = response.body()
-    if (responseBody == null) {
-      callback.onFailure(
-          DebugServerException(
-              ("""
-                    Error while reading multipart response.
-                    
-                    Response body was empty: ${response.code()}
-                    
-                    URL: $url
-                    
-                    
-                    """
-                  .trimIndent())
-          )
-      )
-      return
-    }
-    val source = checkNotNull(responseBody.source())
+    val source = responseBody.source()
     val bodyReader = MultipartStreamReader(source, boundary)
     val completed =
         bodyReader.readAllParts(
