@@ -78,7 +78,6 @@ import java.io.File
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Locale
-import javax.inject.Provider
 
 public abstract class DevSupportManagerBase(
     protected val applicationContext: Context,
@@ -185,6 +184,7 @@ public abstract class DevSupportManagerBase(
         }
 
   private var perfMonitorOverlayManager: PerfMonitorOverlayManager? = null
+  private var perfMonitorInitialized = false
   private var tracingStateProvider: TracingStateProvider? = null
 
   init {
@@ -222,13 +222,6 @@ public abstract class DevSupportManagerBase(
       perfMonitorOverlayManager =
           PerfMonitorOverlayManager(
               reactInstanceDevHelper,
-              Provider {
-                val context = reactInstanceDevHelper.currentActivity
-                if (context == null || context.isFinishing) {
-                  return@Provider null
-                }
-                context
-              },
               { openDebugger(DebuggerFrontendPanelName.PERFORMANCE.toString()) },
           )
     }
@@ -552,14 +545,16 @@ public abstract class DevSupportManagerBase(
   }
 
   override fun onNewReactContextCreated(reactContext: ReactContext) {
-    resetCurrentContext(reactContext)
-
-    if (reactInstanceDevHelper is PerfMonitorDevHelper) {
+    if (!perfMonitorInitialized && reactInstanceDevHelper is PerfMonitorDevHelper) {
       perfMonitorOverlayManager?.let { manager ->
         reactInstanceDevHelper.inspectorTarget?.addPerfMonitorListener(manager)
       }
       perfMonitorOverlayManager?.enable()
+      perfMonitorOverlayManager?.startBackgroundTrace()
+      perfMonitorInitialized = true
     }
+
+    resetCurrentContext(reactContext)
   }
 
   override fun onReactInstanceDestroyed(reactContext: ReactContext) {
@@ -877,8 +872,6 @@ public abstract class DevSupportManagerBase(
         devLoadingViewManager?.showMessage("Reloading...")
       }
 
-      perfMonitorOverlayManager?.reset()
-
       devServerHelper.openPackagerConnection(
           javaClass.simpleName,
           object : PackagerCommandListener {
@@ -928,7 +921,7 @@ public abstract class DevSupportManagerBase(
       hideRedboxDialog()
       hideDevOptionsDialog()
       devLoadingViewManager?.hide()
-      perfMonitorOverlayManager?.reset()
+      perfMonitorOverlayManager?.disable()
 
       devServerHelper.closePackagerConnection()
     }
