@@ -575,6 +575,9 @@ public abstract class com/facebook/react/bridge/BaseJavaModule : com/facebook/re
 	protected fun setEventEmitterCallback (Lcom/facebook/react/bridge/CxxCallbackImpl;)V
 }
 
+public final class com/facebook/react/bridge/BridgeReactContext$Companion {
+}
+
 public abstract interface class com/facebook/react/bridge/BridgeReactContext$RCTDeviceEventEmitter : com/facebook/react/bridge/JavaScriptModule {
 	public abstract fun emit (Ljava/lang/String;Ljava/lang/Object;)V
 }
@@ -3806,6 +3809,7 @@ public abstract interface class com/facebook/react/uimanager/ReactPointerEventsV
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactRoot {
+	public static final field Companion Lcom/facebook/react/uimanager/ReactRoot$Companion;
 	public static final field STATE_STARTED I
 	public static final field STATE_STOPPED I
 	public abstract fun getAppProperties ()Landroid/os/Bundle;
@@ -3821,6 +3825,11 @@ public abstract interface class com/facebook/react/uimanager/ReactRoot {
 	public abstract fun runApplication ()V
 	public abstract fun setRootViewTag (I)V
 	public abstract fun setShouldLogContentAppeared (Z)V
+}
+
+public final class com/facebook/react/uimanager/ReactRoot$Companion {
+	public static final field STATE_STARTED I
+	public static final field STATE_STOPPED I
 }
 
 public abstract interface class com/facebook/react/uimanager/ReactShadowNode {
