@@ -9,6 +9,7 @@
  */
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+import type {AnimatedNode} from 'react-native/Libraries/Animated/AnimatedExports';
 
 import * as React from 'react';
 import {useEffect, useRef, useState} from 'react';
@@ -226,7 +227,16 @@ const styles = StyleSheet.create({
     height: 50,
     position: 'absolute',
     top: 0,
-    transform: [{translate: [200, 350]}, {scale: 2.5}, {rotate: '-0.2rad'}],
+    transform: [
+      {
+        translate: [200, 350] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {scale: 2.5},
+      {rotate: '-0.2rad'},
+    ],
     width: 100,
   },
   box5: {
@@ -238,7 +248,16 @@ const styles = StyleSheet.create({
     width: 50,
   },
   box5Transform: {
-    transform: [{translate: [-50, 35]}, {rotate: '50deg'}, {scale: 2}],
+    transform: [
+      {
+        translate: [-50, 35] as [
+          number | string | AnimatedNode,
+          number | string | AnimatedNode,
+        ],
+      },
+      {rotate: '50deg'},
+      {scale: 2},
+    ],
   },
   box6: {
     backgroundColor: 'salmon',

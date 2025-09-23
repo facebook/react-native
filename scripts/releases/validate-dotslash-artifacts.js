@@ -31,7 +31,7 @@ async function main() {
     allowPositionals: true,
     options: {
       help: {type: 'boolean'},
-    },
+    } /*:: as {[string]: util$ParseArgsOption} */,
   });
 
   if (help) {
