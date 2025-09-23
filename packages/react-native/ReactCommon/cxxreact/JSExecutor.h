@@ -106,7 +106,7 @@ class RN_EXPORT [[deprecated(
    * necessary native modules methods.
    */
   virtual void invokeCallback(
-      const double callbackId,
+      double callbackId,
       const folly::dynamic& arguments) = 0;
 
   virtual void setGlobalVariable(
