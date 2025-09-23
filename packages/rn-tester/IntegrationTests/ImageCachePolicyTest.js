@@ -31,7 +31,7 @@ const {TestModule} = NativeModules;
 const TESTS = ['only-if-cached', 'default', 'reload', 'force-cache'] as const;
 
 function ImageCachePolicyTest(): React.Node {
-  const [state, setState] = useState({
+  const [state, setState] = useState<{[string]: ?boolean}>({
     'only-if-cached': undefined,
     default: undefined,
     reload: undefined,
