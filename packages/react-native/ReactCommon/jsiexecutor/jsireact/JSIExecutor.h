@@ -91,7 +91,7 @@ class [[deprecated(
       const std::string& moduleId,
       const std::string& methodId,
       const folly::dynamic& arguments) override;
-  void invokeCallback(const double callbackId, const folly::dynamic& arguments)
+  void invokeCallback(double callbackId, const folly::dynamic& arguments)
       override;
   void setGlobalVariable(
       std::string propName,
