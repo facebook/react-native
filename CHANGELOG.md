@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.81.4
+
+### Fixed
+
+#### iOS specific
+
+- Fix regression that skips artifacts code generation ([f6f5ea0b2e](https://github.com/facebook/react-native/commit/f6f5ea0b2eed894725d8f6e8bd045c99c3182026) by [@kitten](https://github.com/kitten))
+- Reapplied "Use autolinking-generated react-native-config output in second step of cocoapods linking that generates artifacts and generated source" ([bb73315a3f](https://github.com/facebook/react-native/commit/bb73315a3fd8cd203c4ddb3ffa10bfec307c7e92) by [@kitten](https://github.com/kitten))
+
 ## v0.82.0-rc.3
 
 ### Added
