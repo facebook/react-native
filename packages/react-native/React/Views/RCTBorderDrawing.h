@@ -61,7 +61,7 @@ RCT_EXTERN CGPathRef RCTPathCreateWithRoundedRect(
     CGRect bounds,
     RCTCornerInsets cornerInsets,
     const CGAffineTransform *transform,
-    const BOOL inverted);
+    BOOL inverted);
 
 /**
  * Draw a CSS-compliant border as an image. You can determine if it's scalable
