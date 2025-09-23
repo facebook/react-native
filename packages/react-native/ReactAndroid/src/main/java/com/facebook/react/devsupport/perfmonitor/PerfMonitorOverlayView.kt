@@ -164,7 +164,7 @@ internal class PerfMonitorOverlayView(
             shape = GradientDrawable.RECTANGLE
             setColor(Color.BLACK)
             cornerRadius = dpToPx(14.5f)
-            alpha = (0.8 * 255).toInt()
+            alpha = (0.4 * 255).toInt()
             setStroke(dpToPx(1f).toInt(), COLOR_OVERLAY_BORDER)
           }
       showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
