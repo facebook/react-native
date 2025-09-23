@@ -380,6 +380,11 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
                   moduleProvider:(RCTBridgeModuleListProvider)block
                    launchOptions:(NSDictionary *)launchOptions
 {
+  // Only enabld this assertion in OSS
+#if COCOAPODS
+  [RCTBridge throwIfOnLegacyArch];
+#endif
+
   if (self = [super init]) {
     RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
@@ -391,6 +396,17 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
     [self setUp];
   }
   return self;
+}
+
+// Wrap the exception throwing in a static method to avoid the warning: "The code following the exception will never be
+// executed". This might create build failures internally where we treat warnings as errors.
++ (void)throwIfOnLegacyArch
+{
+  @throw [NSException
+      exceptionWithName:NSInternalInconsistencyException
+                 reason:
+                     @"You are trying to initialize the legacy architecture. This is not supported anymore and will be removed in the next version of React Native. Please use the New Architecture instead."
+               userInfo:nil];
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)init)
