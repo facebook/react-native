@@ -135,19 +135,17 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
                     // In case the server doesn't support multipart/mixed responses, fallback to
                     // normal
                     // download.
-                    resp.body().use { body ->
-                      if (body != null) {
-                        processBundleResult(
-                            url,
-                            resp.code(),
-                            resp.headers(),
-                            body.source(),
-                            outputFile,
-                            bundleInfo,
-                            callback,
-                        )
-                      }
-                    }
+                  resp.body()?.use { body ->
+                    processBundleResult(
+                        url,
+                        resp.code(),
+                        resp.headers(),
+                        body.source(),
+                        outputFile,
+                        bundleInfo,
+                        callback,
+                    )
+                  }
                   }
                 }
               }
@@ -164,7 +162,8 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       bundleInfo: BundleInfo?,
       callback: DevBundleDownloadListener,
   ) {
-    if (response.body() == null) {
+    val responseBody = response.body()
+    if (responseBody == null) {
       callback.onFailure(
           DebugServerException(
               ("""
@@ -181,7 +180,7 @@ public class BundleDownloader public constructor(private val client: OkHttpClien
       )
       return
     }
-    val source = checkNotNull(response.body()?.source())
+    val source = checkNotNull(responseBody.source())
     val bodyReader = MultipartStreamReader(source, boundary)
     val completed =
         bodyReader.readAllParts(
