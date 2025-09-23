@@ -17,6 +17,7 @@ import type {
 import type Performance from '../../src/private/webapis/performance/Performance';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import Event from '../../src/private/webapis/dom/events/Event';
 import {
   getEventHandlerAttribute,
@@ -183,6 +184,10 @@ class XMLHttpRequest extends EventTarget {
   }
 
   static enableProfiling(enableProfiling: boolean): void {
+    if (ReactNativeFeatureFlags.enableNetworkEventReporting) {
+      // Disable manual event creation if network event reporting is enabled
+      return;
+    }
     XMLHttpRequest._profiling = enableProfiling;
   }
 
