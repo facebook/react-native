@@ -201,4 +201,4 @@ const styles = StyleSheet.create({
 });
 
 LayoutEventsTest.displayName = 'LayoutEventsTest';
-module.exports = LayoutEventsTest;
+export default LayoutEventsTest;
