@@ -1,0 +1,184 @@
+diff --git a/node_modules/react-native-worklets/android/CMakeLists.txt b/node_modules/react-native-worklets/android/CMakeLists.txt
+index 1d949d6..cfa5dc2 100644
+--- a/node_modules/react-native-worklets/android/CMakeLists.txt
++++ b/node_modules/react-native-worklets/android/CMakeLists.txt
+@@ -31,13 +31,13 @@ if(NOT ${CMAKE_BUILD_TYPE} MATCHES "Debug")
+   string(APPEND CMAKE_CXX_FLAGS " -DNDEBUG")
+ endif()
+ 
+-if(${JS_RUNTIME} STREQUAL "hermes")
++# if(${JS_RUNTIME} STREQUAL "hermes")
+   string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1")
+-elseif(${JS_RUNTIME} STREQUAL "jsc")
+-  string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_JSC=1")
+-else()
+-  message(FATAL_ERROR "Unknown JS runtime ${JS_RUNTIME}.")
+-endif()
++# elseif(${JS_RUNTIME} STREQUAL "jsc")
++#   string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_JSC=1")
++# else()
++#   message(FATAL_ERROR "Unknown JS runtime ${JS_RUNTIME}.")
++# endif()
+ 
+ set(BUILD_DIR "${CMAKE_SOURCE_DIR}/build")
+ set(ANDROID_CPP_DIR "${CMAKE_SOURCE_DIR}/src/main/cpp")
+@@ -52,21 +52,21 @@ file(GLOB_RECURSE WORKLETS_ANDROID_CPP_SOURCES CONFIGURE_DEPENDS
+ find_package(fbjni REQUIRED CONFIG)
+ find_package(ReactAndroid REQUIRED CONFIG)
+ 
+-if(${JS_RUNTIME} STREQUAL "hermes")
++# if(${JS_RUNTIME} STREQUAL "hermes")
+   find_package(hermes-engine REQUIRED CONFIG)
+-endif()
++# endif()
+ 
+ add_library(worklets SHARED ${WORKLETS_COMMON_CPP_SOURCES}
+                             ${WORKLETS_ANDROID_CPP_SOURCES})
+ 
+-if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
++# if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 80)
+   include(
+     "${REACT_NATIVE_DIR}/ReactCommon/cmake-utils/react-native-flags.cmake")
+   target_compile_reactnative_options(worklets PUBLIC)
+-else()
+-  string(APPEND CMAKE_CXX_FLAGS
+-         " -fexceptions -frtti -std=c++${CMAKE_CXX_STANDARD} -Wall -Werror")
+-endif()
++# else()
++#   string(APPEND CMAKE_CXX_FLAGS
++#          " -fexceptions -frtti -std=c++${CMAKE_CXX_STANDARD} -Wall -Werror")
++# endif()
+ 
+ # includes
+ target_include_directories(worklets PUBLIC "${COMMON_CPP_DIR}"
+@@ -84,41 +84,41 @@ target_include_directories(
+           "${REACT_NATIVE_DIR}/ReactCommon/react/renderer/graphics/platform/cxx"
+ )
+ 
+-if(ReactAndroid_VERSION_MINOR LESS 76)
++# if(ReactAndroid_VERSION_MINOR LESS 76)
+   target_link_libraries(
+     worklets ReactAndroid::fabricjni ReactAndroid::react_debug
+     ReactAndroid::react_render_core
+     ReactAndroid::react_render_componentregistry ReactAndroid::rrc_view)
+-endif()
++# endif()
+ 
+ # build shared lib
+ set_target_properties(worklets PROPERTIES LINKER_LANGUAGE CXX)
+ 
+ target_link_libraries(worklets log ReactAndroid::jsi fbjni::fbjni)
+ 
+-if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+-  target_link_libraries(worklets ReactAndroid::reactnative)
+-else()
++# if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
++#   target_link_libraries(worklets ReactAndroid::reactnative)
++# else()
+   target_link_libraries(
+     worklets ReactAndroid::react_nativemodule_core ReactAndroid::folly_runtime
+     ReactAndroid::glog ReactAndroid::reactnativejni)
+-endif()
+-
+-if(${JS_RUNTIME} STREQUAL "hermes")
+-  target_link_libraries(worklets hermes-engine::libhermes)
+-
+-  if(${HERMES_ENABLE_DEBUGGER})
+-    string(APPEND CMAKE_CXX_FLAGS " -DHERMES_ENABLE_DEBUGGER=1")
+-    if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+-      target_link_libraries(worklets ReactAndroid::hermestooling)
+-    else()
+-      target_link_libraries(worklets ReactAndroid::hermes_executor)
+-    endif()
+-  endif()
+-elseif(${JS_RUNTIME} STREQUAL "jsc")
+-  if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
+-    target_link_libraries(worklets ReactAndroid::jsctooling)
+-  else()
+-    target_link_libraries(worklets ReactAndroid::jscexecutor)
+-  endif()
+-endif()
++# endif()
++
++# if(${JS_RUNTIME} STREQUAL "hermes")
++  target_link_libraries(worklets hermes-engine::hermesvm)
++
++  # if(${HERMES_ENABLE_DEBUGGER})
++  #   string(APPEND CMAKE_CXX_FLAGS " -DHERMES_ENABLE_DEBUGGER=1")
++  #   if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
++  #     target_link_libraries(worklets ReactAndroid::hermestooling)
++  #   else()
++  #     target_link_libraries(worklets ReactAndroid::hermes_executor)
++  #   endif()
++  # endif()
++# elseif(${JS_RUNTIME} STREQUAL "jsc")
++#   if(ReactAndroid_VERSION_MINOR GREATER_EQUAL 76)
++#     target_link_libraries(worklets ReactAndroid::jsctooling)
++#   else()
++#     target_link_libraries(worklets ReactAndroid::jscexecutor)
++#   endif()
++# endif()
+diff --git a/node_modules/react-native-worklets/android/build.gradle b/node_modules/react-native-worklets/android/build.gradle
+index 021f5bc..a8e3e8a 100644
+--- a/node_modules/react-native-worklets/android/build.gradle
++++ b/node_modules/react-native-worklets/android/build.gradle
+@@ -17,7 +17,7 @@ def isNewArchitectureEnabled() {
+     // - Set `newArchEnabled` to true inside the `gradle.properties` file
+     // - Invoke gradle with `-newArchEnabled=true`
+     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+-    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
++    return true
+ }
+ 
+ def resolveReactNativeDirectory() {
+@@ -51,7 +51,7 @@ def getReactNativeVersion() {
+ 
+ def getReactNativeMinorVersion() {
+     def reactNativeVersion = getReactNativeVersion()
+-    return reactNativeVersion.startsWith("0.0.0-") ? 1000 : reactNativeVersion.split("\\.")[1].toInteger()
++    return 1000
+ }
+ 
+ def getWorkletsVersion() {
+@@ -175,7 +175,7 @@ android {
+     }
+ 
+     defaultConfig {
+-        minSdkVersion safeExtGet("minSdkVersion", 23)
++        minSdkVersion safeExtGet("minSdkVersion", 24)
+         targetSdkVersion safeExtGet("targetSdkVersion", 34)
+         versionCode 1
+         versionName WORKLETS_VERSION
+@@ -301,7 +301,7 @@ def validateReactNativeVersionResult = providers.exec {
+ task assertMinimalReactNativeVersionTask {
+     doFirst {
+         if (validateReactNativeVersionResult.getResult().get().exitValue != 0) {
+-            throw new GradleException(validateReactNativeVersionResult.getStandardError().getAsText().get().trim())
++            // throw new GradleException(validateReactNativeVersionResult.getStandardError().getAsText().get().trim())
+         }
+     }
+ }
+@@ -311,7 +311,7 @@ preBuild.dependsOn(assertMinimalReactNativeVersionTask)
+ task assertNewArchitectureEnabledTask {
+     onlyIf { !IS_NEW_ARCHITECTURE_ENABLED }
+     doFirst {
+-        throw new GradleException("[Worklets] Worklets require new architecture to be enabled. Please enable it by setting `newArchEnabled` to `true` in `gradle.properties`.")
++        // throw new GradleException("[Worklets] Worklets require new architecture to be enabled. Please enable it by setting `newArchEnabled` to `true` in `gradle.properties`.")
+     }
+ }
+ 
+@@ -341,10 +341,10 @@ dependencies {
+     implementation "androidx.transition:transition:1.1.0"
+     implementation "androidx.core:core:1.6.0"
+ 
+-    implementation "com.facebook.react:react-android" // version substituted by RNGP
+-    if (JS_RUNTIME == "hermes") {
+-        implementation "com.facebook.react:hermes-android" // version substituted by RNGP
+-    }
++    implementation(project(":packages:react-native:ReactAndroid"))
++    // if (JS_RUNTIME == "hermes") {
++    implementation(project(":packages:react-native:ReactAndroid:hermes-engine"))
++    // }
+ }
+ 
+ preBuild.dependsOn(prepareWorkletsHeadersForPrefabs)

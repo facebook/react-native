@@ -30,7 +30,8 @@
     "@react-native/popup-menu-android": "0.82.0-main",
     "flow-enums-runtime": "^0.0.6",
     "invariant": "^2.2.4",
-    "nullthrows": "^1.1.1"
+    "nullthrows": "^1.1.1",
+    "react-native-worklets": "0.5.1"
   },
   "peerDependencies": {
     "react": "19.1.1",
