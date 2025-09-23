@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<53981e017d681009b240ad6b5d09d4d8>>
+ * @generated SignedSource<<d4453ed23422fc05e53ac2b5e342b0e8>>
  */
 
 /**
@@ -57,6 +57,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableIOSTextBaselineOffsetPerLine();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableImagePrefetchingJNIBatchingAndroid();
   bool enableImagePrefetchingOnUiThreadAndroid();
   bool enableImmediateUpdateModeForContentOffsetChanges();
   bool enableImperativeFocus();
@@ -117,7 +118,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 74> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 75> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> cdpInteractionMetricsEnabled_;
@@ -144,6 +145,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableIOSTextBaselineOffsetPerLine_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingJNIBatchingAndroid_;
   std::atomic<std::optional<bool>> enableImagePrefetchingOnUiThreadAndroid_;
   std::atomic<std::optional<bool>> enableImmediateUpdateModeForContentOffsetChanges_;
   std::atomic<std::optional<bool>> enableImperativeFocus_;
