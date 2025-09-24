@@ -8,6 +8,8 @@ require 'json'
 require_relative "./utils.rb"
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
+require_relative "./rndependencies.rb"
+require_relative "./rncore.rb"
 
 
 class NewArchitectureHelper
