@@ -15,7 +15,7 @@ namespace {
 JavaVM* globalVm = nullptr;
 struct JavaVMInitializer {
   explicit JavaVMInitializer(JavaVM* vm) {
-    if (!vm) {
+    if (vm == nullptr) {
       logErrorMessageAndDie(
           "You cannot pass a NULL JavaVM to ensureInitialized");
     }
