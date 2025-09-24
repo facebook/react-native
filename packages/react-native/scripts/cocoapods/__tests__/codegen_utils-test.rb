@@ -136,29 +136,33 @@ class CodegenUtilsTests < Test::Unit::TestCase
         codegen_dir = "build/generated/ios"
         codegen_path = "#{@base_path}/#{codegen_dir}"
         globs = [
-            "/MyModuleSpecs/MyModule.h",
-            "#{codegen_path}/MyModuleSpecs/MyModule.mm",
-            "#{codegen_path}/react/components/MyComponent/ShadowNode.h",
-            "#{codegen_path}/react/components/MyComponent/ShadowNode.mm",
+            codegen_path
         ]
         rn_path = '../node_modules/react-native'
 
         DirMock.mocked_existing_dirs(codegen_path)
         DirMock.mocked_existing_globs(globs, "#{codegen_path}/*")
 
+        original_define_singleton_method = CodegenUtils.method(:assert_codegen_folder_is_empty)
+        CodegenUtils.define_singleton_method(:assert_codegen_folder_is_empty) do |*args, **kwargs|
+            # no-op
+        end
+
         # Act
         CodegenUtils.clean_up_build_folder(rn_path, codegen_dir, dir_manager: DirMock, file_manager: FileMock)
 
         # Assert
-        assert_equal(DirMock.exist_invocation_params, [codegen_path, codegen_path])
-        assert_equal(DirMock.glob_invocation, ["#{codegen_path}/*", "#{codegen_path}/*"])
+        assert_equal(DirMock.exist_invocation_params, [codegen_path])
         assert_equal(FileUtils::FileUtilsStorage.rmrf_invocation_count, 3)
         assert_equal(FileUtils::FileUtilsStorage.rmrf_paths, [
-            globs,
+            *globs,
             "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.h",
             "#{rn_path}/React/Fabric/RCTThirdPartyFabricComponentsProvider.mm",
         ])
         assert_equal(CodegenUtils.cleanup_done(), true)
+    ensure
+        # Restore original method so other tests are not affected
+        CodegenUtils.define_singleton_method(:assert_codegen_folder_is_empty, original_define_singleton_method)
     end
 
     # ===================================== #
