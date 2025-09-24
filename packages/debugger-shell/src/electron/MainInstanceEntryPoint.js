@@ -10,7 +10,7 @@
 
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
 const {BrowserWindow, Menu, app, shell, ipcMain} = require('electron') as any;
-const SettingsStore = require('./SettingsStore.js');
+const SettingsStore = require('./SettingsStore.js').default;
 const path = require('path');
 const util = require('util');
 
