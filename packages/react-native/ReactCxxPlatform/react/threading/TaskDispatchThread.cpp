@@ -108,21 +108,26 @@ void TaskDispatchThread::loop() noexcept {
     while (!queue_.empty()) {
       auto task = queue_.top();
       auto now = std::chrono::system_clock::now();
-      if (task.dispatchTime > now) {
-        if (running_) {
+
+      if (running_) {
+        if (task.dispatchTime > now) {
+          // Wait until the scheduled task time, if delayed
           loopCv_.wait_until(lock, task.dispatchTime);
-        } else {
-          // Shutting down, skip all the delayed tasks that are not to be
-          // executed yet
-          queue_.pop();
         }
-        continue;
+      } else {
+        // Shutting down, skip all the remaining tasks
+        queue_ = {};
+        return;
       }
 
+      // We should check whether the task thread is still running at this point
+      // (which may not anymore be the case since the previous check)
+      if (running_) {
+        lock.unlock();
+        task.fn();
+        lock.lock();
+      }
       queue_.pop();
-      lock.unlock();
-      task.fn();
-      lock.lock();
     }
   }
 }
