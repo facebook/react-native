@@ -25,7 +25,6 @@ jest.setTimeout(10000);
 describe('inspector proxy React Native reloads', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
   const autoCleanup = withAbortSignalForEachTest();
   afterEach(() => {
