@@ -17,5 +17,5 @@ module Xcodeproj
         def self.reset()
             @@path_to_file_mapping.clear
         end
-  end
+    end
 end
