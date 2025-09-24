@@ -73,6 +73,9 @@ void TaskDispatchThread::runAsync(
 }
 
 void TaskDispatchThread::runSync(TaskFn&& task) noexcept {
+  if (!running_) {
+    return;
+  }
   std::promise<void> promise;
   runAsync([&]() {
     if (running_) {
