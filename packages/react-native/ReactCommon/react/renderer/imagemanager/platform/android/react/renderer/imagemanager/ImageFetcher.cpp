@@ -16,20 +16,26 @@ namespace facebook::react {
 ImageFetcher::ImageFetcher(
     std::shared_ptr<const ContextContainer> contextContainer)
     : contextContainer_(std::move(contextContainer)) {
-  if (auto uiManagerCommitHookManager =
-          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
-              std::string(UIManagerCommitHookManagerKey));
-      uiManagerCommitHookManager.has_value()) {
-    (*uiManagerCommitHookManager)->registerCommitHook(*this);
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    if (auto uiManagerCommitHookManager =
+            contextContainer_
+                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
+                    std::string(UIManagerCommitHookManagerKey));
+        uiManagerCommitHookManager.has_value()) {
+      (*uiManagerCommitHookManager)->registerCommitHook(*this);
+    }
   }
 }
 
 ImageFetcher::~ImageFetcher() {
-  if (auto uiManagerCommitHookManager =
-          contextContainer_->find<std::shared_ptr<UIManagerCommitHookManager>>(
-              std::string(UIManagerCommitHookManagerKey));
-      uiManagerCommitHookManager.has_value()) {
-    (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    if (auto uiManagerCommitHookManager =
+            contextContainer_
+                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
+                    std::string(UIManagerCommitHookManagerKey));
+        uiManagerCommitHookManager.has_value()) {
+      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
+    }
   }
 }
 
@@ -45,6 +51,10 @@ ImageRequest ImageFetcher::requestImage(
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
+  if (!ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    flushImageRequests();
+  }
+
   return {imageSource, telemetry};
 }
 
@@ -53,8 +63,13 @@ RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
     const RootShadowNode::Shared& /*oldRootShadowNode*/,
     const RootShadowNode::Unshared& newRootShadowNode,
     const ShadowTree::CommitOptions& /*commitOptions*/) noexcept {
+  flushImageRequests();
+  return newRootShadowNode;
+}
+
+void ImageFetcher::flushImageRequests() {
   if (items_.empty()) {
-    return newRootShadowNode;
+    return;
   }
 
   auto fabricUIManager_ =
@@ -73,8 +88,6 @@ RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
   }
 
   items_.clear();
-
-  return newRootShadowNode;
 }
 
 } // namespace facebook::react

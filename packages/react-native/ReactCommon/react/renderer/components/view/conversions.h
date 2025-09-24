@@ -613,9 +613,36 @@ inline void fromRawValue(
         return;
       }
 
-      size_t i = 0;
-      for (auto number : numbers) {
-        transformMatrix.matrix[i++] = number;
+      if (numbers.size() == 16) {
+        size_t i = 0;
+
+        for (auto number : numbers) {
+          transformMatrix.matrix[i++] = number;
+        }
+      } else if (numbers.size() == 9) {
+        // We need to convert the 2d transform matrix into a 3d one as such:
+        // [
+        //   x00, x01, 0, x02
+        //   x10, x11, 0, x12
+        //   0,   0,   1, 0
+        //   x20, x21, 0, x22
+        // ]
+        transformMatrix.matrix[0] = numbers[0];
+        transformMatrix.matrix[1] = numbers[1];
+        transformMatrix.matrix[2] = 0;
+        transformMatrix.matrix[3] = numbers[2];
+        transformMatrix.matrix[4] = numbers[3];
+        transformMatrix.matrix[5] = numbers[4];
+        transformMatrix.matrix[6] = 0;
+        transformMatrix.matrix[7] = numbers[5];
+        transformMatrix.matrix[8] = 0;
+        transformMatrix.matrix[9] = 0;
+        transformMatrix.matrix[10] = 1;
+        transformMatrix.matrix[11] = 0;
+        transformMatrix.matrix[12] = numbers[6];
+        transformMatrix.matrix[13] = numbers[7];
+        transformMatrix.matrix[14] = 0;
+        transformMatrix.matrix[15] = numbers[8];
       }
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Arbitrary, Zero, Zero, Zero});

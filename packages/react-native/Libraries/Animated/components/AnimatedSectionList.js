@@ -15,7 +15,7 @@ import createAnimatedComponent from '../createAnimatedComponent';
 import * as React from 'react';
 
 // $FlowFixMe[incompatible-type]
-export default (createAnimatedComponent(SectionList): component<
+export default createAnimatedComponent(SectionList) as $FlowFixMe as component<
   // $FlowExpectedError[unclear-type]
   ItemT = any,
   // $FlowExpectedError[unclear-type]
@@ -23,4 +23,4 @@ export default (createAnimatedComponent(SectionList): component<
 >(
   ref?: React.RefSetter<SectionList<ItemT, SectionT>>,
   ...props: AnimatedProps<SectionListProps<ItemT, SectionT>>
-));
+);

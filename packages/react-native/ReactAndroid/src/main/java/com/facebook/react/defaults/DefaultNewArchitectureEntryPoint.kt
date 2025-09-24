@@ -120,7 +120,11 @@ public object DefaultNewArchitectureEntryPoint {
     privateBridgelessEnabled = featureFlags.enableBridgelessArchitecture()
 
     val (isValid, errorMessage) =
-        isConfigurationValid(turboModulesEnabled, fabricEnabled, bridgelessEnabled)
+        isConfigurationValid(
+            privateTurboModulesEnabled,
+            privateFabricEnabled,
+            privateBridgelessEnabled,
+        )
     if (!isValid) {
       error(errorMessage)
     }

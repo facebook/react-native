@@ -30,6 +30,7 @@ async function unstable_spawnDebuggerShellWithArgs(
   {
     mode = 'detached',
     flavor = 'prebuilt',
+    prebuiltBinaryPath,
   }: $ReadOnly<{
     // In 'syncAndExit' mode, the current process will block until the spawned process exits, and then it will exit
     // with the same exit code as the spawned process.
@@ -37,9 +38,13 @@ async function unstable_spawnDebuggerShellWithArgs(
     // continue to run normally.
     mode?: 'syncThenExit' | 'detached',
     flavor?: DebuggerShellFlavor,
+    prebuiltBinaryPath?: string,
   }> = {},
 ): Promise<void> {
-  const [binaryPath, baseArgs] = getShellBinaryAndArgs(flavor);
+  const [binaryPath, baseArgs] = getShellBinaryAndArgs(
+    flavor,
+    prebuiltBinaryPath,
+  );
 
   return new Promise((resolve, reject) => {
     const child = spawn(binaryPath, [...baseArgs, ...args], {
@@ -109,15 +114,18 @@ export type DebuggerShellPreparationResult = $ReadOnly<{
  */
 async function unstable_prepareDebuggerShell(
   flavor: DebuggerShellFlavor,
+  {prebuiltBinaryPath}: {prebuiltBinaryPath?: string} = {},
 ): Promise<DebuggerShellPreparationResult> {
-  const [binaryPath, baseArgs] = getShellBinaryAndArgs(flavor);
+  const [binaryPath, baseArgs] = getShellBinaryAndArgs(
+    flavor,
+    prebuiltBinaryPath,
+  );
 
   try {
     switch (flavor) {
       case 'prebuilt':
-        const prebuiltResult = await prepareDebuggerShellFromDotSlashFile(
-          DEVTOOLS_BINARY_DOTSLASH_FILE,
-        );
+        const prebuiltResult =
+          await prepareDebuggerShellFromDotSlashFile(binaryPath);
         if (prebuiltResult.code !== 'success') {
           return prebuiltResult;
         }
@@ -149,10 +157,14 @@ async function unstable_prepareDebuggerShell(
 
 function getShellBinaryAndArgs(
   flavor: DebuggerShellFlavor,
+  prebuiltBinaryPath: ?string,
 ): [string, Array<string>] {
   switch (flavor) {
     case 'prebuilt':
-      return [require('fb-dotslash'), [DEVTOOLS_BINARY_DOTSLASH_FILE]];
+      return [
+        require('fb-dotslash'),
+        [prebuiltBinaryPath ?? DEVTOOLS_BINARY_DOTSLASH_FILE],
+      ];
     case 'dev':
       return [
         // NOTE: Internally at Meta, this is aliased to a workspace that is
