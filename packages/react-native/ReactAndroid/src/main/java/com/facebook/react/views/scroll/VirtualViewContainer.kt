@@ -121,6 +121,14 @@ internal class VirtualViewContainerState {
         (-prerenderRect.height() * prerenderRatio).toInt(),
     )
 
+    if (hysteresisRatio > 0.0) {
+      hysteresisRect.set(prerenderRect)
+      hysteresisRect.inset(
+          (-visibleRect.width() * hysteresisRatio).toInt(),
+          (-visibleRect.height() * hysteresisRatio).toInt(),
+      )
+    }
+
     val virtualViewsIt =
         if (virtualView != null) listOf(virtualView) else virtualViews.toMutableSet()
     virtualViewsIt.forEach { vv ->
@@ -145,17 +153,8 @@ internal class VirtualViewContainerState {
           mode = VirtualViewMode.Prerender
           thresholdRect = prerenderRect
         }
-        else -> {
-          if (hysteresisRatio > 0.0) {
-            hysteresisRect.set(prerenderRect)
-            hysteresisRect.inset(
-                (-visibleRect.width() * hysteresisRatio).toInt(),
-                (-visibleRect.height() * hysteresisRatio).toInt(),
-            )
-            if (rectsOverlap(rect, hysteresisRect)) {
-              mode = null
-            }
-          }
+        (hysteresisRatio > 0.0 && rectsOverlap(rect, hysteresisRect)) -> {
+          mode = null
         }
       }
 
