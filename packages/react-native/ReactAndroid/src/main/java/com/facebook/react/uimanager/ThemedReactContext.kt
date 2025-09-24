@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.fabric.BigStringBufferWrapper
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 
 /**
@@ -148,6 +149,8 @@ public class ThemedReactContext(
       ReplaceWith("UIManagerHelper.getUIManager()"),
   )
   override fun getFabricUIManager(): UIManager? = reactApplicationContext.getFabricUIManager()
+
+  override fun getBundle(): BigStringBufferWrapper? = reactApplicationContext.getBundle()
 
   override fun getSourceURL(): String? = reactApplicationContext.getSourceURL()
 

@@ -46,6 +46,7 @@ int32_t getUniqueId()
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
+  RCTBundleProvider *_bundleProvider;
   RCTCallableJSModules *_callableJSModules;
   BOOL _isInitialized;
 }
@@ -100,6 +101,7 @@ int32_t getUniqueId()
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
+                      bundleProvider:(RCTBundleProvider *)bundleProvider
                   callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
@@ -121,6 +123,7 @@ int32_t getUniqueId()
                         moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                          bundleManager:(RCTBundleManager *)bundleManager
+                        bundleProvider:(RCTBundleProvider *)bundleProvider
                      callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
@@ -195,6 +198,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
           [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:_viewRegistry_DEPRECATED
                                                   moduleRegistry:_moduleRegistry
                                                    bundleManager:_bundleManager
+                                                  bundleProvider:_bundleProvider
                                                callableJSModules:_callableJSModules];
       [moduleDecorator attachInteropAPIsToModule:_instance];
 

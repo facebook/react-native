@@ -29,6 +29,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.fabric.BigStringBufferWrapper;
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.module.annotations.ReactModule;
@@ -107,6 +108,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private boolean mJSBundleHasLoaded;
   private @Nullable String mSourceURL;
+  private @Nullable BigStringBufferWrapper mBundle;
 
   private JavaScriptContextHolder mJavaScriptContextHolder;
   private @Nullable TurboModuleRegistry mTurboModuleRegistry;
@@ -298,6 +300,11 @@ public class CatalystInstanceImpl implements CatalystInstance {
     synchronized (mJSCallsPendingInitLock) {
       return mJSBundleHasLoaded && mAcceptCalls;
     }
+  }
+
+  @Override
+  public @Nullable BigStringBufferWrapper getBundle() {
+    return mBundle;
   }
 
   @Override

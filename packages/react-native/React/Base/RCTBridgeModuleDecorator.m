@@ -12,12 +12,14 @@
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
                       moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                        bundleManager:(RCTBundleManager *)bundleManager
+                      bundleProvider:(RCTBundleProvider *)bundleProvider
                    callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
     _viewRegistry_DEPRECATED = viewRegistry;
     _moduleRegistry = moduleRegistry;
     _bundleManager = bundleManager;
+    _bundleProvider = bundleProvider;
     _callableJSModules = callableJSModules;
   }
   return self;
@@ -45,6 +47,17 @@
    */
   if ([bridgeModule respondsToSelector:@selector(setBundleManager:)]) {
     bridgeModule.bundleManager = _bundleManager;
+  }
+
+  /**
+   * Attach the RCTBundleProvider to this TurboModule, which allows this TurboModule to
+   * read from the app's bundle and sourceURL.
+   *
+   * Usage: In the TurboModule @implementation, include:
+   *   `@synthesize bundleProvider = _bundleProvider`
+   */
+  if([bridgeModule respondsToSelector:@selector(setBundleProvider:)]) {
+    bridgeModule.bundleProvider = _bundleProvider;
   }
 
   /**

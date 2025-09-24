@@ -217,17 +217,16 @@ std::string simpleBasename(const std::string& path) {
  * preferably via the runtimeExecutor_.
  */
 void ReactInstance::loadScript(
-    std::unique_ptr<const JSBigString> script,
+    const std::shared_ptr<const BigStringBuffer>& script,
     const std::string& sourceURL,
     std::function<void(jsi::Runtime& runtime)>&& beforeLoad,
     std::function<void(jsi::Runtime& runtime)>&& afterLoad) {
-  auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
   std::string scriptName = simpleBasename(sourceURL);
 
   runtimeScheduler_->scheduleWork([this,
                                    scriptName,
                                    sourceURL,
-                                   buffer = std::move(buffer),
+                                   script,
                                    weakBufferedRuntimeExecuter =
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
@@ -252,7 +251,7 @@ void ReactInstance::loadScript(
       hermesAPI->evaluateSHUnit(shUnitCreator);
     } else {
       LOG(WARNING) << "ReactInstance: evaluateJavaScript() with JS bundle";
-      runtime.evaluateJavaScript(buffer, sourceURL);
+      runtime.evaluateJavaScript(script, sourceURL);
     }
 
     /**

@@ -14,6 +14,7 @@
 #import <RCTDeprecation/RCTDeprecation.h>
 
 #import "RCTBundleManager.h"
+#import "RCTBundleProvider.h"
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
@@ -141,6 +142,16 @@ RCT_EXTERN_C_END
  * RCTBundleManager!` to your module.
  */
 @property (nonatomic, weak, readwrite) RCTBundleManager *bundleManager;
+
+/**
+ * A reference to the RCTBundleProvider. Useful for modules that need to use
+ the app's JavaScript bundle and sourceURL.
+ *
+ * To implement this in your module, just add `@synthesize bundleProvider =
+ * _bundleProvider;`. If using Swift, add `@objc var bundleProvider:
+ * RCTBundleProvider!` to your module.
+ */
+@property (nonatomic, weak, readwrite) RCTBundleProvider *bundleProvider;
 
 /**
  * A reference to an RCTCallableJSModules. Useful for modules that need to

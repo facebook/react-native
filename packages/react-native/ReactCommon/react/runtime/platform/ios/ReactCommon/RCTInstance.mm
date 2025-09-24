@@ -11,6 +11,7 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
+#import <React/NSBigStringBuffer.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
@@ -111,6 +112,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
   RCTTurboModuleManager *_turboModuleManager;
+  RCTBundleProvider *_bundleProvider;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
   RCTJSThreadManager *_jsThreadManager;
@@ -128,6 +130,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 - (instancetype)initWithDelegate:(id<RCTInstanceDelegate>)delegate
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
+                  bundleProvider:(RCTBundleProvider *)bundleProvider
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
@@ -142,9 +145,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
+    _bundleProvider = bundleProvider;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
+                                                                    bundleProvider:bundleProvider
                                                                   callableJSModules:[RCTCallableJSModules new]];
     _parentInspectorTarget = parentInspectorTarget;
     {
@@ -572,7 +577,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   auto script = std::make_unique<NSDataBigString>(source.data);
+  const auto scriptBuffer = std::make_shared<const BigStringBuffer>(std::move(script));
   const auto *url = deriveSourceURL(source.url).UTF8String;
+
+  [_bundleProvider setBundle:[[NSBigStringBuffer new] initWithSharedPtr:scriptBuffer]];
+  [_bundleProvider setSourceURL:@(url)];
 
   auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
     if (waitUntilModuleSetupComplete) {
@@ -582,7 +591,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
   };
-  _reactInstance->loadScript(std::move(script), url, beforeLoad, afterLoad);
+
+  _reactInstance->loadScript(scriptBuffer, url, beforeLoad, afterLoad);
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime

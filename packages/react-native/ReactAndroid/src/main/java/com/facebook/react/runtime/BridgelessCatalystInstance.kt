@@ -29,6 +29,7 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import com.facebook.react.fabric.BigStringBufferWrapper
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
@@ -136,6 +137,9 @@ internal class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) 
   override fun extendNativeModules(modules: NativeModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'extendNativeModules'")
   }
+
+  override val bundle: BigStringBufferWrapper?
+    get() = throw UnsupportedOperationException("Unimplemented method 'getBundle'")
 
   override val sourceURL: String
     get() = throw UnsupportedOperationException("Unimplemented method 'getSourceURL'")

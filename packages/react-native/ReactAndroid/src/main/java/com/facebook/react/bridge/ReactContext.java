@@ -26,6 +26,7 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
+import com.facebook.react.fabric.BigStringBufferWrapper;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -504,6 +505,13 @@ public abstract class ReactContext extends ContextWrapper {
    * @return The UIManager when CatalystInstance is active.
    */
   public abstract @Nullable UIManager getFabricUIManager();
+
+  /**
+   * Get the BigStringBufferWrapper for the JS bundle.
+   *
+   * @return The BigStringBufferWrapper containing the JS bundle.
+   */
+  public abstract @Nullable BigStringBufferWrapper getBundle();
 
   /**
    * Get the sourceURL for the JS bundle from the CatalystInstance. This method is needed for

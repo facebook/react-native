@@ -25,6 +25,7 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+import com.facebook.react.fabric.BigStringBufferWrapper;
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder;
 import java.util.Collection;
 import java.util.Objects;
@@ -290,6 +291,16 @@ public class BridgeReactContext extends ReactApplicationContext {
   public @Nullable UIManager getFabricUIManager() {
     //noinspection deprecation
     return Objects.requireNonNull(mCatalystInstance).getFabricUIManager();
+  }
+
+  /**
+   * Get the JS bundle.
+   *
+   * @return The JS bundle set when the bundle was loaded
+   */
+  @Override
+  public @Nullable BigStringBufferWrapper getBundle() {
+    return mCatalystInstance == null ? null : mCatalystInstance.getBundle();
   }
 
   /**
