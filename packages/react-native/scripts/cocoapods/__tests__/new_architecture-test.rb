@@ -34,18 +34,18 @@ class NewArchitectureTests < Test::Unit::TestCase
         installer = prepare_mocked_installer_with_react_core
         NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
 
-        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
+        assert_equal("c++20", installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"])
+        assert_equal("c++20", installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"])
+        assert_equal(["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"], Pod::UI.collected_messages)
     end
 
     def test_setClangCxxLanguageStandardIfNeeded_whenThereAreDifferentValuesForLanguageStandard_takesTheFirstValue
         installer = prepare_mocked_installer_with_react_core_and_different_language_standards
         NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
 
-        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
+        assert_equal("c++20", installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"])
+        assert_equal("c++20", installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"])
+        assert_equal(["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"], Pod::UI.collected_messages)
     end
 
     # =================== #
@@ -71,14 +71,14 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, false)
 
         # Assert
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) ")
-        assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) ")
-        assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) ")
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) ")
-        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
-        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_equal("$(inherited) ", first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(["a/path/First.xcconfig"], first_xcconfig.save_as_invocation)
+        assert_equal("$(inherited) ", second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal(["a/path/Second.xcconfig"], second_xcconfig.save_as_invocation)
+        assert_equal("$(inherited) ", react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) ", react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)", yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited)", yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
     end
 
     def test_modifyFlagsForNewArch_whenOnNewArchAndIsRelease_updateFlags
@@ -101,19 +101,19 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.modify_flags_for_new_architecture(installer, true)
 
         # Assert
-        assert_equal(first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ")
+        assert_equal("$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ", first_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(first_xcconfig.attributes["OTHER_CFLAGS"])
-        assert_equal(first_xcconfig.save_as_invocation, ["a/path/First.xcconfig"])
-        assert_equal(second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ")
+        assert_equal(["a/path/First.xcconfig"], first_xcconfig.save_as_invocation)
+        assert_equal("$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ", second_xcconfig.attributes["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(second_xcconfig.attributes["OTHER_CFLAGS"])
-        assert_equal(second_xcconfig.save_as_invocation, ["a/path/Second.xcconfig"])
-        assert_equal(react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ")
+        assert_equal(["a/path/Second.xcconfig"], second_xcconfig.save_as_invocation)
+        assert_equal("$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ", react_core_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(react_core_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ")
+        assert_equal("$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ", react_core_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(react_core_release_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_equal("$(inherited)", yoga_debug_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(yoga_debug_config.build_settings["OTHER_CFLAGS"])
-        assert_equal(yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"], "$(inherited)")
+        assert_equal("$(inherited)", yoga_release_config.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_nil(yoga_release_config.build_settings["OTHER_CFLAGS"])
     end
 
@@ -129,9 +129,8 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.install_modules_dependencies(spec, true, '2024.10.14.00')
 
         # Assert
-        assert_equal(spec.compiler_flags, "-DRCT_NEW_ARCH_ENABLED=1")
+        assert_equal("-DRCT_NEW_ARCH_ENABLED=1", spec.compiler_flags)
         assert_equal(
-            spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"],
             [
                 "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
                 "$(PODS_ROOT)/glog",
@@ -141,12 +140,12 @@ class NewArchitectureTests < Test::Unit::TestCase
                 "$(PODS_ROOT)/fmt/include",
                 "$(PODS_ROOT)/SocketRocket",
                 "$(PODS_ROOT)/RCT-Folly"
-            ]
+            ],
+            spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"]
         )
-        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"], "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ")
+        assert_equal("c++20", spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"])
+        assert_equal("$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ", spec.pod_target_xcconfig["OTHER_CPLUSPLUSFLAGS"])
         assert_equal(
-            spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
                 { :dependency_name => "React-RCTFabric" },
@@ -175,7 +174,8 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "RCT-Folly" },
                 { :dependency_name => "SocketRocket" },
                 { :dependency_name => "RCT-Folly/Fabric" },
-            ]
+            ],
+            spec.dependencies
         )
     end
 
@@ -193,11 +193,10 @@ class NewArchitectureTests < Test::Unit::TestCase
         NewArchitectureHelper.install_modules_dependencies(spec, false, '2024.10.14.00')
 
         # Assert
-        assert_equal(Helpers::Constants.folly_config[:compiler_flags], "#{NewArchitectureHelper.folly_compiler_flags}")
-        assert_equal(spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"], [*other_flags_arr, '"$(PODS_ROOT)/Headers/Private/Yoga"', '$(PODS_ROOT)/glog', '$(PODS_ROOT)/boost', '$(PODS_ROOT)/DoubleConversion', '$(PODS_ROOT)/fast_float/include', '$(PODS_ROOT)/fmt/include', '$(PODS_ROOT)/SocketRocket', '$(PODS_ROOT)/RCT-Folly'])
-        assert_equal(spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
+        assert_equal("#{NewArchitectureHelper.folly_compiler_flags}", Helpers::Constants.folly_config[:compiler_flags])
+        assert_equal([*other_flags_arr, '"$(PODS_ROOT)/Headers/Private/Yoga"', '$(PODS_ROOT)/glog', '$(PODS_ROOT)/boost', '$(PODS_ROOT)/DoubleConversion', '$(PODS_ROOT)/fast_float/include', '$(PODS_ROOT)/fmt/include', '$(PODS_ROOT)/SocketRocket', '$(PODS_ROOT)/RCT-Folly'], spec.pod_target_xcconfig["HEADER_SEARCH_PATHS"])
+        assert_equal("c++20", spec.pod_target_xcconfig["CLANG_CXX_LANGUAGE_STANDARD"])
         assert_equal(
-            spec.dependencies,
             [
                 { :dependency_name => "React-Core" },
                 { :dependency_name => "React-RCTFabric" },
@@ -225,7 +224,8 @@ class NewArchitectureTests < Test::Unit::TestCase
                 { :dependency_name => "fmt" },
                 { :dependency_name => "RCT-Folly" },
                 { :dependency_name => "SocketRocket" },
-            ]
+            ],
+            spec.dependencies
         )
     end
 
