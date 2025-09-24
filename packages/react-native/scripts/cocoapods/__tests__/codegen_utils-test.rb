@@ -95,9 +95,9 @@ class CodegenUtilsTests < Test::Unit::TestCase
         ])
     end
 
-    # ============================= #
+    # =========================== #
     # Test - CleanUpCodegenFolder #
-    # ============================= #
+    # =========================== #
 
     def testCleanUpCodegenFolder_whenCleanupDone_doNothing
         # Arrange
