@@ -10,6 +10,17 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 
+@implementation RCTCustomBundleConfiguration
+@synthesize bundleFilePath;
+@synthesize packagerServerHost;
+@synthesize packagerServerScheme;
+
+- (NSURL *)getBundleURL:(NSMutableArray<NSURLQueryItem *> *)query
+{
+  return [NSURL alloc];
+}
+@end
+
 @implementation RCTBundleManager {
 #ifndef RCT_FIT_RM_OLD_RUNTIME
   __weak RCTBridge *_bridge;
@@ -18,6 +29,7 @@
   RCTBridgelessBundleURLSetter _bridgelessBundleURLSetter;
   RCTBridgelessBundleURLGetter _bridgelessBundleURLDefaultGetter;
 }
+@synthesize customBundleConfig;
 
 #ifndef RCT_FIT_RM_OLD_RUNTIME
 - (void)setBridge:(RCTBridge *)bridge

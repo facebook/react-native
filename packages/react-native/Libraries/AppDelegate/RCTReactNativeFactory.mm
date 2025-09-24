@@ -11,6 +11,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBundleManager.h>
 #import <ReactCommon/RCTHost.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlagsOverridesOSSCanary.h>
