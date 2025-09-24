@@ -75,9 +75,6 @@ export interface InspectorProxyQueries {
  * Main Inspector Proxy class that connects JavaScript VM inside Android/iOS apps and JS debugger.
  */
 export default class InspectorProxy implements InspectorProxyQueries {
-  // Root of the project used for relative to absolute source path conversion.
-  #projectRoot: string;
-
   // The base URL to the dev server from the dev-middleware host.
   #serverBaseUrl: URL;
 
@@ -101,7 +98,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #eventLoopPerfTracker: EventLoopPerfTracker;
 
   constructor(
-    projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
@@ -109,7 +105,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
     customMessageHandler: ?CreateCustomMessageHandlerFn,
     trackEventLoopPerf?: boolean = false,
   ) {
-    this.#projectRoot = projectRoot;
     this.#serverBaseUrl = new URL(serverBaseUrl);
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
@@ -355,7 +350,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
           name: deviceName,
           app: appName,
           socket,
-          projectRoot: this.#projectRoot,
           eventReporter: this.#eventReporter,
           createMessageMiddleware: this.#customMessageHandler,
           deviceRelativeBaseUrl,
