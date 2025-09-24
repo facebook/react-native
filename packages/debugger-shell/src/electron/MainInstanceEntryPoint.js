@@ -10,9 +10,11 @@
 
 // $FlowFixMe[unclear-type] We have no Flow types for the Electron API.
 const {BrowserWindow, Menu, app, shell, ipcMain} = require('electron') as any;
+const SettingsStore = require('./SettingsStore.js');
 const path = require('path');
 const util = require('util');
 
+const appSettings = new SettingsStore();
 const windowMetadata = new WeakMap<
   typeof BrowserWindow,
   $ReadOnly<{
@@ -53,10 +55,11 @@ function handleLaunchArgs(argv: string[]) {
       }, 1000);
     }
   } else {
-    // Create the browser window.
     frontendWindow = new BrowserWindow({
-      width: 1200,
-      height: 600,
+      ...(getSavedWindowPosition(windowKey) ?? {
+        width: 1200,
+        height: 600,
+      }),
       webPreferences: {
         partition: 'persist:react-native-devtools',
         preload: require.resolve('./preload.js'),
@@ -66,6 +69,8 @@ function handleLaunchArgs(argv: string[]) {
     });
     // Auto-hide the Windows/Linux menu bar
     frontendWindow.setMenuBarVisibility(false);
+    // Observe and update saved window position
+    setupWindowResizeListeners(frontendWindow, windowKey);
   }
 
   // Open links in the default browser instead of in new Electron windows.
@@ -117,6 +122,37 @@ function configureAppMenu() {
   ];
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+}
+
+function getSavedWindowPosition(
+  windowKey: string,
+): ?{width: number, height: number, x?: number, y?: number} {
+  return appSettings.get('windowArrangements', {})[windowKey];
+}
+
+function saveWindowPosition(
+  windowKey: string,
+  position: {x: number, y: number, width: number, height: number},
+) {
+  const windowArrangements = appSettings.get('windowArrangements', {});
+  windowArrangements[windowKey] = position;
+  appSettings.set('windowArrangements', windowArrangements);
+}
+
+function setupWindowResizeListeners(
+  browserWindow: typeof BrowserWindow,
+  windowKey: string,
+) {
+  const savePosition = () => {
+    if (!browserWindow.isDestroyed()) {
+      const [x, y] = browserWindow.getPosition();
+      const [width, height] = browserWindow.getSize();
+      saveWindowPosition(windowKey, {x, y, width, height});
+    }
+  };
+  browserWindow.on('moved', savePosition);
+  browserWindow.on('resized', savePosition);
+  browserWindow.on('closed', savePosition);
 }
 
 app.whenReady().then(() => {
