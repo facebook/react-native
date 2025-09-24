@@ -648,6 +648,10 @@ public class ReactHostImpl(
     if (currentReactContext != null) {
       if (ReactNativeFeatureFlags.enableFontScaleChangesUpdatingLayout()) {
         DisplayMetricsHolder.initDisplayMetrics(currentReactContext)
+
+        synchronized(attachedSurfaces) {
+          attachedSurfaces.forEach { surface -> surface.view?.requestLayout() }
+        }
       }
 
       val appearanceModule = currentReactContext.getNativeModule(AppearanceModule::class.java)
