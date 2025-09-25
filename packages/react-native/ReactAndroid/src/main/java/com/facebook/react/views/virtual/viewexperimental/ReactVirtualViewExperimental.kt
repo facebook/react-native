@@ -211,7 +211,7 @@ public class ReactVirtualViewExperimental(context: Context) :
     // If no ScrollView, or ScrollView has disabled removeClippedSubviews, use default behavior
     if (
         scrollView == null ||
-            !((scrollView as ReactClippingViewGroup)?.removeClippedSubviews ?: false)
+            !((scrollView as ReactClippingViewGroup).removeClippedSubviews ?: false)
     ) {
       super.updateClippingRect(excludedViews)
       return
