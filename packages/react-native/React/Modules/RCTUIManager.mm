@@ -133,7 +133,7 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   return moduleConstants;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
@@ -1645,7 +1645,7 @@ static UIView *_jsResponder;
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTUIManager
 - (void)registerRootViewTag:(NSNumber *)rootTag
@@ -1749,7 +1749,7 @@ static UIView *_jsResponder;
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 
 UIView *RCTPaperViewOrCurrentView(UIView *view)
 {

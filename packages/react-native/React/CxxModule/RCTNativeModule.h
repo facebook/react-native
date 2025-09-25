@@ -8,7 +8,7 @@
 #import <React/RCTModuleData.h>
 #import <cxxreact/NativeModule.h>
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 namespace facebook::react {
 
@@ -35,4 +35,4 @@ class [[deprecated(
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

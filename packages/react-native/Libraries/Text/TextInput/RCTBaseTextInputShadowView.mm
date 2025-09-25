@@ -7,7 +7,7 @@
 
 #import <React/RCTBaseTextInputShadowView.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
@@ -365,4 +365,4 @@ static float RCTTextInputShadowViewBaseline(YGNodeConstRef node, const float wid
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH
