@@ -51,7 +51,7 @@ internal class MountingManager(
   private val rootViewManager = RootViewManager()
 
   internal fun interface MountItemExecutor {
-    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem?>?)
+    @UiThread @ThreadConfined(ThreadConfined.UI) fun executeItems(items: Queue<MountItem>)
   }
 
   /**
