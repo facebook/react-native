@@ -131,6 +131,7 @@ public class ReactScrollView extends ScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart;
   private int mFadingEdgeLengthEnd;
+  private boolean mResponderIgnoreScroll;
 
   public ReactScrollView(Context context) {
     this(context, null);
@@ -193,6 +194,7 @@ public class ReactScrollView extends ScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mResponderIgnoreScroll = true;
   }
 
   /* package */ void recycleView() {
@@ -1526,5 +1528,13 @@ public class ReactScrollView extends ScrollView
   @Override
   public long getLastScrollDispatchTime() {
     return mLastScrollDispatchTime;
+  }
+
+  public void setResponderIgnoreScroll(boolean responderIgnoreScroll) {
+    mResponderIgnoreScroll = responderIgnoreScroll;
+  }
+
+  public boolean getResponderIgnoreScroll() {
+    return mResponderIgnoreScroll;
   }
 }
