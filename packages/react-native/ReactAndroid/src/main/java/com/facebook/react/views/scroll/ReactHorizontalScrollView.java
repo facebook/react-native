@@ -133,6 +133,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private @Nullable MaintainVisibleScrollPositionHelper mMaintainVisibleContentPositionHelper;
   private int mFadingEdgeLengthStart = 0;
   private int mFadingEdgeLengthEnd = 0;
+  private boolean mResponderIgnoreScroll = true;
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -196,6 +197,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mMaintainVisibleContentPositionHelper = null;
     mFadingEdgeLengthStart = 0;
     mFadingEdgeLengthEnd = 0;
+    mResponderIgnoreScroll = true;
   }
 
   /* package */ void recycleView() {
@@ -1721,5 +1723,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   public long getLastScrollDispatchTime() {
     return mLastScrollDispatchTime;
+  }
+
+  public void setResponderIgnoreScroll(boolean responderIgnoreScroll) {
+    mResponderIgnoreScroll = responderIgnoreScroll;
+  }
+
+  public boolean getResponderIgnoreScroll() {
+    return mResponderIgnoreScroll;
   }
 }
