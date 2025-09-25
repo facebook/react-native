@@ -211,7 +211,9 @@ Error: ${e.message}`;
       setHMRUnavailableReason(error);
     });
 
+    let pendingUpdatesCount = 0;
     client.on('update-start', ({isInitialUpdate}) => {
+      pendingUpdatesCount++;
       currentCompileErrorMessage = null;
       didConnect = true;
 
@@ -228,7 +230,10 @@ Error: ${e.message}`;
     });
 
     client.on('update-done', () => {
-      DevLoadingView.hide();
+      pendingUpdatesCount--;
+      if (pendingUpdatesCount === 0) {
+        DevLoadingView.hide();
+      }
     });
 
     client.on('error', data => {
