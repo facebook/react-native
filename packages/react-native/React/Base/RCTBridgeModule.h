@@ -14,7 +14,6 @@
 #import <RCTDeprecation/RCTDeprecation.h>
 
 #import "RCTBundleManager.h"
-#import "RCTBundleProvider.h"
 
 @class RCTBridge;
 @protocol RCTBridgeMethod;
@@ -23,6 +22,7 @@
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTCallableJSModules;
+@class RCTBundleProvider;
 
 /**
  * The type of a block that is capable of sending a response to a bridged

@@ -10,6 +10,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTBundleProvider.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTInspectorDevServerHelper.h>

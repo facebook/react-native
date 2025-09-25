@@ -11,7 +11,6 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
-#import <React/NSBigStringBuffer.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
 #import <React/RCTBridge+Private.h>
@@ -70,6 +69,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
   sRuntimeDiagnosticFlags = [flags copy];
 }
+
+@interface RCTBundleProvider : NSObject
+- (void)setBundle:(std::shared_ptr<const BigStringBuffer>)bundleBuffer;
+- (void)setSourceURL:(NSString *)sourceURL;
+@end
 
 @interface RCTBridgelessDisplayLinkModuleHolder : NSObject <RCTDisplayLinkModuleHolder>
 - (instancetype)initWithModule:(id<RCTBridgeModule>)module;
@@ -580,7 +584,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   const auto scriptBuffer = std::make_shared<const BigStringBuffer>(std::move(script));
   const auto *url = deriveSourceURL(source.url).UTF8String;
 
-  [_bundleProvider setBundle:[[NSBigStringBuffer new] initWithSharedPtr:scriptBuffer]];
+  [_bundleProvider setBundle:scriptBuffer];
   [_bundleProvider setSourceURL:@(url)];
 
   auto beforeLoad = [waitUntilModuleSetupComplete = self->_waitUntilModuleSetupComplete](jsi::Runtime &_) {
@@ -591,7 +595,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto afterLoad = [](jsi::Runtime &_) {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
   };
-
   _reactInstance->loadScript(scriptBuffer, url, beforeLoad, afterLoad);
 }
 

@@ -7,17 +7,19 @@
 
 #import "RCTBundleProvider.h"
 
+using namespace facebook::react;
+
 @implementation RCTBundleProvider{
-  NSBigStringBuffer *_scriptBuffer;
+  std::shared_ptr<const BigStringBuffer> _bundleBuffer;
   NSString *_sourceURL;
 }
 
-- (NSBigStringBuffer *)getBundle {
-  return _scriptBuffer;
+- (std::shared_ptr<const BigStringBuffer>)getBundle {
+  return _bundleBuffer;
 }
 
-- (void)setBundle:(NSBigStringBuffer *)bundle {
-  _scriptBuffer = bundle;
+- (void)setBundle:(std::shared_ptr<const BigStringBuffer>)bundle {
+  _bundleBuffer = bundle;
 }
 
 - (NSString *)getSourceURL {

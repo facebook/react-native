@@ -6,17 +6,16 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <jsireact/JSIExecutor.h>
 
-@class NSBigStringBuffer;
+@class NSBundleWrapper;
 
 /**
  * Provides the interface needed to register a Bundle Provider module.
  */
 @interface RCTBundleProvider : NSObject
 
-- (NSBigStringBuffer *)getBundle;
-- (void)setBundle:(NSBigStringBuffer *)bundle;
+- (std::shared_ptr<const facebook::react::BigStringBuffer>)getBundle;
 - (NSString *)getSourceURL;
-- (void)setSourceURL:(NSString *)sourceURL;
 
 @end
