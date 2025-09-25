@@ -89,14 +89,11 @@ NativeAnimatedNodesManager::NativeAnimatedNodesManager(
     LOG(ERROR)
         << "C++ Animated was setup without a way to update UI. Animations will not work.";
   }
-  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
-    // shouldn't be initialized here, but it's convenient for now
-    animationBackend_ = std::make_shared<AnimationBackend>(
-        startOnRenderCallback_,
-        stopOnRenderCallback_,
-        directManipulationCallback_);
-  }
 }
+
+NativeAnimatedNodesManager::NativeAnimatedNodesManager(
+    std::shared_ptr<AnimationBackend> animationBackend) noexcept
+    : animationBackend_(std::move(animationBackend)) {}
 
 NativeAnimatedNodesManager::~NativeAnimatedNodesManager() noexcept {
   stopRenderCallbackIfNeeded();
@@ -854,6 +851,11 @@ void NativeAnimatedNodesManager::schedulePropsCommit(
     const folly::dynamic& props,
     bool layoutStyleUpdated,
     bool forceFabricCommit) noexcept {
+  if (ReactNativeFeatureFlags::useSharedAnimatedBackend()) {
+    mergeObjects(updateViewProps_[viewTag], props);
+    return;
+  }
+
   // When fabricCommitCallback_ & directManipulationCallback_ are both
   // available, we commit layout props via Fabric and the other using direct
   // manipulation. If only fabricCommitCallback_ is available, we commit all
@@ -909,6 +911,7 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
     auto timestamp = static_cast<double>(microseconds) / 1000.0;
     bool containsChange = false;
     {
+      // copied from onAnimationFrame
       // Run all active animations
       auto hasFinishedAnimations = false;
       std::set<int> finishedAnimationValueNodes;
@@ -951,11 +954,6 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
             AnimationMutation{tag, props["opacity"].asDouble()});
         containsChange = true;
       }
-      for (auto& [tag, props] : updateViewPropsDirect_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
-        containsChange = true;
-      }
     }
 
     if (!containsChange) {
@@ -981,10 +979,6 @@ AnimationMutations NativeAnimatedNodesManager::pullAnimationMutations() {
       isEventAnimationInProgress_ = false;
 
       for (auto& [tag, props] : updateViewProps_) {
-        mutations.emplace_back(
-            AnimationMutation{tag, props["opacity"].asDouble()});
-      }
-      for (auto& [tag, props] : updateViewPropsDirect_) {
         mutations.emplace_back(
             AnimationMutation{tag, props["opacity"].asDouble()});
       }

@@ -10,12 +10,12 @@
 namespace facebook::react {
 
 AnimationBackend::AnimationBackend(
-    const StartOnRenderCallback& startOnRenderCallback,
-    const StopOnRenderCallback& stopOnRenderCallback,
-    const DirectManipulationCallback& directManipulationCallback)
-    : startOnRenderCallback_(startOnRenderCallback),
-      stopOnRenderCallback_(stopOnRenderCallback),
-      directManipulationCallback_(directManipulationCallback) {}
+    StartOnRenderCallback&& startOnRenderCallback,
+    StopOnRenderCallback&& stopOnRenderCallback,
+    DirectManipulationCallback&& directManipulationCallback)
+    : startOnRenderCallback_(std::move(startOnRenderCallback)),
+      stopOnRenderCallback_(std::move(stopOnRenderCallback)),
+      directManipulationCallback_(std::move(directManipulationCallback)) {}
 
 void AnimationBackend::onAnimationFrame(double timestamp) {
   for (auto& callback : callbacks) {

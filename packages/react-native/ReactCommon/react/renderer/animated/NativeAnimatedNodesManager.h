@@ -63,6 +63,9 @@ class NativeAnimatedNodesManager {
       StartOnRenderCallback&& startOnRenderCallback = nullptr,
       StopOnRenderCallback&& stopOnRenderCallback = nullptr) noexcept;
 
+  explicit NativeAnimatedNodesManager(
+      std::shared_ptr<AnimationBackend> animationBackend) noexcept;
+
   ~NativeAnimatedNodesManager() noexcept;
 
   template <
