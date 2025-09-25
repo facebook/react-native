@@ -12,7 +12,9 @@ import android.content.res.AssetManager
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStripAny
 
-/** TODO: Description */
+/** 
+ * A wrapper around a JavaScript bundle that is backed by a native C++ object.
+ */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
 public class BundleWrapper {
