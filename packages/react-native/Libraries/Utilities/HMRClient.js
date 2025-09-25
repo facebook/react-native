@@ -141,7 +141,7 @@ const HMRClient: HMRClientNativeInterface = {
           ),
         }),
       );
-    } catch (error) {
+    } catch {
       // If sending logs causes any failures we want to silently ignore them
       // to ensure we do not cause infinite-logging loops.
     }
