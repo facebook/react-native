@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bad2aadea64eba29430e9c93c169d621>>
+ * @generated SignedSource<<fdcf9db8d5445dc36df02b22f605ecd9>>
  */
 
 /**
@@ -393,6 +393,11 @@ class ReactNativeFeatureFlags {
    * Use the state stored on the source shadow node when cloning it instead of reading in the most recent state on the shadow node family.
    */
   RN_EXPORT static bool useShadowNodeStateOnClone();
+
+  /**
+   * Use shared animation backend in C++ Animated
+   */
+  RN_EXPORT static bool useSharedAnimatedBackend();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

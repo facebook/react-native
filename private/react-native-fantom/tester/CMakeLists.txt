@@ -75,6 +75,7 @@ add_react_common_subdir(react/nativemodule/webperformance)
 add_react_common_subdir(react/performance/cdpmetrics)
 add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animated)
+add_react_common_subdir(react/renderer/animationbackend)
 add_react_common_subdir(react/renderer/attributedstring)
 add_react_common_subdir(react/renderer/bridging)
 add_react_common_subdir(react/renderer/componentregistry)
@@ -231,6 +232,7 @@ target_link_libraries(fantom_tester
     react_cxx_platform_react_logging
     react_cxx_platform_react_profiling
     react_renderer_animated
+    react_renderer_animationbackend
     react_cxx_platform_react_renderer_scheduler
     react_cxx_platform_react_runtime
     react_cxx_platform_react_threading
