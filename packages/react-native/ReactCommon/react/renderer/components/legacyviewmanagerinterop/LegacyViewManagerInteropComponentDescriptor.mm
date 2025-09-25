@@ -104,7 +104,7 @@ static Class getViewManagerClass(const std::string &componentName, RCTBridge *br
   return nil;
 }
 
-static const std::shared_ptr<void> constructCoordinator(
+static std::shared_ptr<void> constructCoordinator(
     const std::shared_ptr<const ContextContainer> &contextContainer,
     const ComponentDescriptor::Flavor &flavor)
 {
