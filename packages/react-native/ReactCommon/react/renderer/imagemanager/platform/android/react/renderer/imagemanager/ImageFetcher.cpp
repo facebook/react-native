@@ -7,36 +7,57 @@
 
 #include "ImageFetcher.h"
 
-#include <glog/logging.h>
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/renderer/imagemanager/conversions.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
+#include <react/renderer/uimanager/UIManager.h>
+#include <react/renderer/uimanager/UIManagerBinding.h>
 
 namespace facebook::react {
 
-ImageFetcher::ImageFetcher(
-    std::shared_ptr<const ContextContainer> contextContainer)
-    : contextContainer_(std::move(contextContainer)) {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->registerCommitHook(*this);
-    }
+using RunOnUIManagerFn = std::function<void(UIManager&, ImageFetcher&)>;
+
+namespace {
+
+void runOnUIManager(
+    const ContextContainer& contextContainer,
+    std::shared_ptr<ImageFetcher> strongThis,
+    RunOnUIManagerFn&& runOnUIManagerFn) {
+  auto weakRuntimeScheduler =
+      contextContainer.find<std::weak_ptr<RuntimeScheduler>>(
+          RuntimeSchedulerKey);
+  auto runtimeScheduler = weakRuntimeScheduler.has_value()
+      ? weakRuntimeScheduler.value().lock()
+      : nullptr;
+  if (runtimeScheduler == nullptr) {
+    return;
   }
+  runtimeScheduler->scheduleTask(
+      SchedulerPriority::NormalPriority,
+      [strongThis,
+       runOnUIManagerFn = std::move(runOnUIManagerFn)](jsi::Runtime& runtime) {
+        runOnUIManagerFn(
+            UIManagerBinding::getBinding(runtime)->getUIManager(), *strongThis);
+      });
 }
 
+} // namespace
+
+ImageFetcher::ImageFetcher(
+    std::shared_ptr<const ContextContainer> contextContainer)
+    : contextContainer_(std::move(contextContainer)) {}
+
 ImageFetcher::~ImageFetcher() {
-  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
-    if (auto uiManagerCommitHookManager =
-            contextContainer_
-                ->find<std::shared_ptr<UIManagerCommitHookManager>>(
-                    std::string(UIManagerCommitHookManagerKey));
-        uiManagerCommitHookManager.has_value()) {
-      (*uiManagerCommitHookManager)->unregisterCommitHook(*this);
-    }
+  if (!commitHookRegistered_) {
+    return;
   }
+  commitHookRegistered_ = false;
+  runOnUIManager(
+      *contextContainer_,
+      shared_from_this(),
+      [](UIManager& uiManager, ImageFetcher& strongThis) {
+        uiManager.unregisterCommitHook(strongThis);
+      });
 }
 
 ImageRequest ImageFetcher::requestImage(
@@ -51,7 +72,17 @@ ImageRequest ImageFetcher::requestImage(
 
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
 
-  if (!ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingJNIBatchingAndroid()) {
+    if (!commitHookRegistered_) {
+      runOnUIManager(
+          *contextContainer_,
+          shared_from_this(),
+          [](UIManager& uiManager, ImageFetcher& strongThis) {
+            uiManager.registerCommitHook(strongThis);
+          });
+      commitHookRegistered_ = true;
+    }
+  } else {
     flushImageRequests();
   }
 
@@ -63,7 +94,9 @@ RootShadowNode::Unshared ImageFetcher::shadowTreeWillCommit(
     const RootShadowNode::Shared& /*oldRootShadowNode*/,
     const RootShadowNode::Unshared& newRootShadowNode,
     const ShadowTree::CommitOptions& /*commitOptions*/) noexcept {
-  flushImageRequests();
+  if (commitHookRegistered_) {
+    flushImageRequests();
+  }
   return newRootShadowNode;
 }
 
