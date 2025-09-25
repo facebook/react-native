@@ -29,7 +29,7 @@ type Options = $ReadOnly<{
  * - Maintains API and file format compatibility with `electron-store@8.2.0`.
  * - Supports the Electron main process only.
  */
-class SettingsStore {
+export default class SettingsStore {
   #defaultValues: Object = {};
   path: string;
 
@@ -126,5 +126,3 @@ class SettingsStore {
     fs.writeFileSync(this.path, data, {mode: 0o666});
   }
 }
-
-module.exports = SettingsStore;
