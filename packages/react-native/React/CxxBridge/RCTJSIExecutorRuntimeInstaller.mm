@@ -7,7 +7,7 @@
 
 #include "RCTJSIExecutorRuntimeInstaller.h"
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTLog.h>
 #include <chrono>
@@ -31,4 +31,4 @@ JSIExecutor::RuntimeInstaller RCTJSIExecutorRuntimeInstaller(JSIExecutor::Runtim
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

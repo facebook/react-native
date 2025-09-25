@@ -16,9 +16,9 @@
 
 - (void)createRootViewController:(UIView *)view;
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge;
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithWindow:(UIWindow *)window surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
 
 - (void)show;

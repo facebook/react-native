@@ -59,7 +59,7 @@ RCT_EXPORT_METHOD(show)
                                                  surfacePresenter:strongSelf->_bridgelessSurfacePresenter];
         [strongSelf->_view show];
       }
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
       else if ((strongSelf->_bridge != nullptr) && strongSelf->_bridge.valid) {
         if (strongSelf->_bridge.surfacePresenter != nullptr) {
           strongSelf->_view = [[RCTLogBoxView alloc] initWithWindow:RCTKeyWindow()
@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(show)
         }
         [strongSelf->_view show];
       }
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
     });
   }
 }

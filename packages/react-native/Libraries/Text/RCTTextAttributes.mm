@@ -7,7 +7,7 @@
 
 #import <React/RCTTextAttributes.h>
 
-#ifndef RCT_FIT_RM_OLD_COMPONENT
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #import <React/RCTAssert.h>
 #import <React/RCTFont.h>
@@ -355,4 +355,4 @@ static NSString *capitalizeText(NSString *text)
 
 @end
 
-#endif // RCT_FIT_RM_OLD_COMPONENT
+#endif // RCT_REMOVE_LEGACY_ARCH
