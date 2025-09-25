@@ -16,32 +16,30 @@
 
 namespace facebook::react {
 
-class BigStringBufferWrapper : public jni::HybridClass<BigStringBufferWrapper> {
+class BundleWrapper : public jni::HybridClass<BundleWrapper> {
  public:
   constexpr static const char* const kJavaDescriptor =
-      "Lcom/facebook/react/fabric/BigStringBufferWrapper;";
+      "Lcom/facebook/react/fabric/BundleWrapper;";
 
   static void registerNatives();
 
-  [[nodiscard]] const std::shared_ptr<const BigStringBuffer> getScript() const;
+  [[nodiscard]] const std::shared_ptr<const BigStringBuffer> getBundle() const;
 
  private:
-  static jni::local_ref<BigStringBufferWrapper::jhybriddata> initHybridFromFile(
+  static jni::local_ref<BundleWrapper::jhybriddata> initHybridFromFile(
       jni::alias_ref<jhybridobject> jThis,
       std::string fileName);
 
-  static jni::local_ref<BigStringBufferWrapper::jhybriddata>
-  initHybridFromAssets(
+  static jni::local_ref<BundleWrapper::jhybriddata> initHybridFromAssets(
       jni::alias_ref<jhybridobject> jThis,
       jni::alias_ref<JAssetManager::javaobject> assetManager,
       const std::string& assetURL);
 
   friend HybridBase;
 
-  explicit BigStringBufferWrapper(
-      const std::shared_ptr<const BigStringBuffer>& script);
+  explicit BundleWrapper(const std::shared_ptr<const BigStringBuffer>& bundle);
 
-  const std::shared_ptr<const BigStringBuffer> script_;
+  const std::shared_ptr<const BigStringBuffer> bundle_;
 };
 
 } // namespace facebook::react

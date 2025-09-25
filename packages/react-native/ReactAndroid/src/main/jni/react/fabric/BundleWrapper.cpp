@@ -5,50 +5,46 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "BigStringBufferWrapper.h"
+#include "BundleWrapper.h"
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/RecoverableError.h>
 
 using namespace facebook::jni;
 
 namespace facebook::react {
-jni::local_ref<BigStringBufferWrapper::jhybriddata>
-BigStringBufferWrapper::initHybridFromFile(
+jni::local_ref<BundleWrapper::jhybriddata> BundleWrapper::initHybridFromFile(
     jni::alias_ref<jhybridobject> jThis,
     std::string fileName) {
   std::unique_ptr<const JSBigFileString> script;
   RecoverableError::runRethrowingAsRecoverable<std::system_error>(
       [&fileName, &script]() { script = JSBigFileString::fromPath(fileName); });
-  auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
-  return makeCxxInstance(buffer);
+  auto bundle = std::make_shared<BigStringBuffer>(std::move(script));
+  return makeCxxInstance(bundle);
 }
 
-jni::local_ref<BigStringBufferWrapper::jhybriddata>
-BigStringBufferWrapper::initHybridFromAssets(
+jni::local_ref<BundleWrapper::jhybriddata> BundleWrapper::initHybridFromAssets(
     jni::alias_ref<jhybridobject> jThis,
     jni::alias_ref<JAssetManager::javaobject> assetManager,
     const std::string& sourceURL) {
   auto manager = extractAssetManager(assetManager);
   auto script = loadScriptFromAssets(manager, sourceURL);
-  auto buffer = std::make_shared<BigStringBuffer>(std::move(script));
-  return makeCxxInstance(buffer);
+  auto bundle = std::make_shared<BigStringBuffer>(std::move(script));
+  return makeCxxInstance(bundle);
 }
 
-BigStringBufferWrapper::BigStringBufferWrapper(
-    const std::shared_ptr<const BigStringBuffer>& script)
-    : script_(script) {}
+BundleWrapper::BundleWrapper(
+    const std::shared_ptr<const BigStringBuffer>& bundle)
+    : bundle_(bundle) {}
 
-const std::shared_ptr<const BigStringBuffer> BigStringBufferWrapper::getScript()
-    const {
-  return script_;
+const std::shared_ptr<const BigStringBuffer> BundleWrapper::getBundle() const {
+  return bundle_;
 }
 
-void BigStringBufferWrapper::registerNatives() {
+void BundleWrapper::registerNatives() {
   registerHybrid(
       {makeNativeMethod(
-           "initHybridFromFile", BigStringBufferWrapper::initHybridFromFile),
+           "initHybridFromFile", BundleWrapper::initHybridFromFile),
        makeNativeMethod(
-           "initHybridFromAssets",
-           BigStringBufferWrapper::initHybridFromAssets)});
+           "initHybridFromAssets", BundleWrapper::initHybridFromAssets)});
 }
 } // namespace facebook::react

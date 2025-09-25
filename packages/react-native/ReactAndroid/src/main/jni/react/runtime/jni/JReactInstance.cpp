@@ -133,10 +133,10 @@ jni::local_ref<JReactInstance::jhybriddata> JReactInstance::initHybrid(
 }
 
 void JReactInstance::loadJSBundle(
-    jni::alias_ref<BigStringBufferWrapper::javaobject> scriptWrapper,
+    jni::alias_ref<BundleWrapper::javaobject> bundleWrapper,
     const std::string& sourceURL) {
-  auto script = scriptWrapper->cthis()->getScript();
-  instance_->loadScript(script, sourceURL);
+  auto bundle = bundleWrapper->cthis()->getBundle();
+  instance_->loadScript(bundle, sourceURL);
 }
 
 /**

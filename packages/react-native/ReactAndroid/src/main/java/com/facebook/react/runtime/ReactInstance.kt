@@ -43,7 +43,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.InspectorFlags.getIsProfilingBuild
 import com.facebook.react.devsupport.StackTraceHelper
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.fabric.BigStringBufferWrapper
+import com.facebook.react.fabric.BundleWrapper
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.fabric.FabricUIManagerBinding
@@ -299,9 +299,9 @@ internal class ReactInstance(
     }
   }
 
-  fun beforeLoad(scriptWrapper: BigStringBufferWrapper, sourceURL: String){
+  fun beforeLoad(bundle: BundleWrapper, sourceURL: String){
     context.setSourceURL(sourceURL)
-    context.setBundle(scriptWrapper)
+    context.setBundle(bundle)
   }
 
   fun loadJSBundle(bundleLoader: JSBundleLoader) {
@@ -313,17 +313,17 @@ internal class ReactInstance(
               sourceURL: String,
               loadSynchronously: Boolean,
           ) {
-            val script = BigStringBufferWrapper(fileName);
+            val bundle = BundleWrapper(fileName);
 
-            beforeLoad(script, sourceURL);
-            loadJSBundle(script, sourceURL)
+            beforeLoad(bundle, sourceURL);
+            loadJSBundle(bundle, sourceURL)
           }
 
           override fun loadSplitBundleFromFile(fileName: String, sourceURL: String) {
-            val script = BigStringBufferWrapper(fileName)
+            val bundle = BundleWrapper(fileName)
 
-            beforeLoad(script, sourceURL);
-            loadJSBundle(script, sourceURL)
+            beforeLoad(bundle, sourceURL)
+            loadJSBundle(bundle, sourceURL)
           }
 
           override fun loadScriptFromAssets(
@@ -332,10 +332,10 @@ internal class ReactInstance(
               loadSynchronously: Boolean,
           ) {
             val sourceURL = assetURL.removePrefix("assets://")
-            val script = BigStringBufferWrapper(assetManager, sourceURL)
+            val bundle = BundleWrapper(assetManager, sourceURL)
 
-            beforeLoad(script, assetURL);
-            loadJSBundle(script, assetURL)
+            beforeLoad(bundle, assetURL)
+            loadJSBundle(bundle, assetURL)
           }
 
           override fun setSourceURLs(deviceURL: String, remoteURL: String) {
@@ -450,7 +450,7 @@ internal class ReactInstance(
       reactHostInspectorTarget: ReactHostInspectorTarget?,
   ): HybridData
 
-  private external fun loadJSBundle(scriptWrapper: BigStringBufferWrapper, sourceURL: String)
+  private external fun loadJSBundle(bundle: BundleWrapper, sourceURL: String)
 
   private external fun loadJSBundleFromAssets(assetManager: AssetManager, assetURL: String)
 

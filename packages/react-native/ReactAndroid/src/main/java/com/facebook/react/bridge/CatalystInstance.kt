@@ -12,7 +12,7 @@ package com.facebook.react.bridge
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
-import com.facebook.react.fabric.BigStringBufferWrapper
+import com.facebook.react.fabric.BundleWrapper
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
@@ -41,9 +41,9 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
   public val sourceURL: String?
 
   /**
-   * Get the JS bundle.
+   * Get the JS bundle that was run or `null` if no JS bundle has been run yet.
    */
-  public val bundle: BigStringBufferWrapper?
+  public val bundle: BundleWrapper?
 
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.

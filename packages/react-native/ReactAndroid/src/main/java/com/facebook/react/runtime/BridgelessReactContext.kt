@@ -25,7 +25,7 @@ import com.facebook.react.common.annotations.FrameworkAPI
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import com.facebook.react.fabric.BigStringBufferWrapper
+import com.facebook.react.fabric.BundleWrapper
 import com.facebook.react.internal.featureflags.ReactNativeNewArchitectureFeatureFlags
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference
  */
 internal class BridgelessReactContext(context: Context, private val reactHost: ReactHostImpl) :
     ReactApplicationContext(context), EventDispatcherProvider {
-  private val bundleRef = AtomicReference<BigStringBufferWrapper>()
+  private val bundleRef = AtomicReference<BundleWrapper>()
   private val sourceURLRef = AtomicReference<String>()
   private val TAG: String = this.javaClass.simpleName
 
@@ -56,9 +56,9 @@ internal class BridgelessReactContext(context: Context, private val reactHost: R
 
   override fun getEventDispatcher(): EventDispatcher = reactHost.eventDispatcher
 
-  override fun getBundle(): BigStringBufferWrapper? = bundleRef.get()
+  override fun getBundle(): BundleWrapper? = bundleRef.get()
 
-  fun setBundle(bundle: BigStringBufferWrapper?) {
+  fun setBundle(bundle: BundleWrapper?) {
     bundleRef.set(bundle)
   }
 

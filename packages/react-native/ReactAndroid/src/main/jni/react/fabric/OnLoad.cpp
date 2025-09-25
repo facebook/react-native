@@ -7,7 +7,7 @@
 
 #include <fbjni/fbjni.h>
 
-#include "BigStringBufferWrapper.h"
+#include "BundleWrapper.h"
 #include "ComponentFactory.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
@@ -23,6 +23,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* /*unused*/) {
     facebook::react::StateWrapperImpl::registerNatives();
     facebook::react::ComponentFactory::registerNatives();
     facebook::react::SurfaceHandlerBinding::registerNatives();
-    facebook::react::BigStringBufferWrapper::registerNatives();
+    facebook::react::BundleWrapper::registerNatives();
   });
 }

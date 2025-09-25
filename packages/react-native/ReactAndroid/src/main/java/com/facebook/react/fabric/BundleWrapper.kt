@@ -15,7 +15,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
 /** TODO: Description */
 @SuppressLint("MissingNativeLoadLibrary")
 @DoNotStripAny
-public class BigStringBufferWrapper {
+public class BundleWrapper {
 
   private val mHybridData: HybridData
 
