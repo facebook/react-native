@@ -18,6 +18,7 @@
 @class RCTHost;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
+@class RCTCustomBundleConfiguration;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -201,7 +202,13 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * @parameter: moduleName  - the name of the app, used by Metro to resolve the module.
  * @parameter: initialProperties  -  a set of initial properties.
  * @parameter: launchOptions  - a dictionary with a set of options.
+ * @parameter: customBundleConfiguration  - a configuration for custom bundle source.
  */
+- (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
+                     initialProperties:(NSDictionary *__nullable)initialProperties
+                         launchOptions:(NSDictionary *__nullable)launchOptions
+             customBundleConfiguration:(RCTCustomBundleConfiguration *__nullable)customBundleConfiguration;
+
 - (UIView *_Nonnull)viewWithModuleName:(NSString *)moduleName
                      initialProperties:(NSDictionary *__nullable)initialProperties
                          launchOptions:(NSDictionary *__nullable)launchOptions;
@@ -220,7 +227,11 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  *
  * @parameter: launchOptions  - a dictionary with a set of options.
  */
-- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions;
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions
+                   customBundleConfiguration:(RCTCustomBundleConfiguration *__nullable)customBundleConfiguration;
+
+- (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions
+    customBundleConfiguration:(RCTCustomBundleConfiguration *__nullable)customBundleConfiguration;
 
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 

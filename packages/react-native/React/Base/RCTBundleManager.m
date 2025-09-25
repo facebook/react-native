@@ -11,14 +11,31 @@
 #import "RCTBridge.h"
 
 @implementation RCTCustomBundleConfiguration
-@synthesize bundleFilePath;
-@synthesize packagerServerHost;
-@synthesize packagerServerScheme;
+
+- (instancetype)initWithBundleFilePath:(NSURL *)bundleFilePath
+{
+  if (self = [super init]) {
+    _bundleFilePath = bundleFilePath;
+  }
+  
+  return self;
+}
+
+- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme packagerServerHost:(NSString *)packagerServerHost
+{
+  if (self = [super init]) {
+    _packagerServerScheme = packagerServerScheme;
+    _packagerServerHost = packagerServerHost;
+  }
+  
+  return self;
+}
 
 - (NSURL *)getBundleURL:(NSMutableArray<NSURLQueryItem *> *)query
 {
   return [NSURL alloc];
 }
+
 @end
 
 @implementation RCTBundleManager {

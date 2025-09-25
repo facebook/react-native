@@ -15,7 +15,7 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
 /**
  * Configuration class for setting up custom bundle locations
  */
-@interface RCTCustomBundleConfiguration
+@interface RCTCustomBundleConfiguration : NSObject
 
 /**
  * The URL of the bundle to load from the file system
@@ -31,6 +31,11 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
  * The server host (e.g. localhost) to use when loading from the packager
  */
 @property (nonatomic, readonly, nullable) NSString *packagerServerHost;
+
+- (instancetype)initWithBundleFilePath:(NSURL *)bundleFilePath;
+
+- (instancetype)initWithPackagerServerScheme:(NSString *)packagerServerScheme
+                          packagerServerHost:(NSString *)packagerServerHost;
 
 - (NSURL *)getBundleURL:(NSMutableArray<NSURLQueryItem *> *)query;
 
@@ -48,5 +53,5 @@ typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
                     andDefaultGetter:(RCTBridgelessBundleURLGetter)defaultGetter;
 - (void)resetBundleURL;
 @property NSURL *bundleURL;
-@property (nonatomic, readonly, nullable) RCTCustomBundleConfiguration *customBundleConfig;
+@property (nonatomic, nullable) RCTCustomBundleConfiguration *customBundleConfig;
 @end

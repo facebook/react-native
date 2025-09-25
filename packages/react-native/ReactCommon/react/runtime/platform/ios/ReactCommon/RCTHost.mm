@@ -150,6 +150,20 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                    launchOptions:launchOptions];
 }
 
+- (instancetype)initWithBundleURLProvider:(RCTHostBundleURLProvider)provider
+                             hostDelegate:(id<RCTHostDelegate>)hostDelegate
+               turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                         jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
+                            launchOptions:(nullable NSDictionary *)launchOptions
+{
+  return [self initWithBundleURLProvider:provider
+                            hostDelegate:hostDelegate
+              turboModuleManagerDelegate:turboModuleManagerDelegate
+                        jsEngineProvider:jsEngineProvider
+                           launchOptions:launchOptions
+               customBundleConfiguration:nil];
+}
+
 /**
  Host initialization should not be resource intensive. A host may be created before any intention of using React Native
  has been expressed.
@@ -159,6 +173,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
                          jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                             launchOptions:(nullable NSDictionary *)launchOptions
+                customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
 {
   if (self = [super init]) {
     _hostDelegate = hostDelegate;
@@ -167,6 +182,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     _moduleRegistry = [RCTModuleRegistry new];
     _jsEngineProvider = [jsEngineProvider copy];
     _launchOptions = [launchOptions copy];
+    
+    _bundleManager.customBundleConfig = customBundleConfiguration;
 
     __weak RCTHost *weakSelf = self;
     auto bundleURLGetter = ^NSURL *() {

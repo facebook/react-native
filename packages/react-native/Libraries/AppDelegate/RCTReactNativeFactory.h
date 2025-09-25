@@ -117,7 +117,7 @@ typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
 
 @property (nonatomic, weak) id<RCTReactNativeFactoryDelegate> delegate;
 
-@property (nonatomic, nullable, readonly) RCTCustomBundleConfiguration *customBundleConfiguration;
+@property (nonatomic, nullable) RCTCustomBundleConfiguration *customBundleConfiguration;
 
 @end
 

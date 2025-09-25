@@ -142,6 +142,7 @@
 }
 
 - (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
+        customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
 {
   // Enable TurboModule interop by default in Bridgeless mode
   RCTEnableTurboModuleInterop(YES);
@@ -155,7 +156,15 @@
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
 {
-  [self initializeReactHostWithLaunchOptions:launchOptions];
+  return [self viewWithModuleName:moduleName initialProperties:initProps launchOptions:launchOptions customBundleConfiguration:nil];
+}
+
+- (UIView *)viewWithModuleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initProps
+                 launchOptions:(NSDictionary *)launchOptions
+     customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+{
+  [self initializeReactHostWithLaunchOptions:launchOptions customBundleConfiguration:customBundleConfiguration];
 
   RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName
                                                         initialProperties:initProps ? initProps : @{}];
@@ -235,6 +244,12 @@
 
 - (RCTHost *)createReactHost:(NSDictionary *)launchOptions
 {
+  return [self createReactHost:launchOptions customBundleConfiguration:nil];
+}
+
+- (RCTHost *)createReactHost:(NSDictionary *)launchOptions
+   customBundleConfiguration:(RCTCustomBundleConfiguration *)customBundleConfiguration
+{
   __weak __typeof(self) weakSelf = self;
   RCTHost *reactHost =
       [[RCTHost alloc] initWithBundleURLProvider:self->_configuration.bundleURLBlock
@@ -243,7 +258,8 @@
                                 jsEngineProvider:^std::shared_ptr<facebook::react::JSRuntimeFactory>() {
                                   return [weakSelf createJSRuntimeFactory];
                                 }
-                                   launchOptions:launchOptions];
+                                   launchOptions:launchOptions
+              customBundleConfiguration:customBundleConfiguration];
   [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];
