@@ -14,14 +14,14 @@ import com.facebook.react.fabric.mounting.MountingManager
  * for views that were preallcated but never mounted on the screen.
  */
 internal class DestroyUnmountedViewMountItem(
-    private val _surfaceId: Int,
+    private val surfaceId: Int,
     private val reactTag: Int,
 ) : MountItem {
 
   override fun execute(mountingManager: MountingManager) {
-    val surfaceMountingManager = mountingManager.getSurfaceManager(_surfaceId) ?: return
+    val surfaceMountingManager = mountingManager.getSurfaceManager(surfaceId) ?: return
     surfaceMountingManager.deleteView(reactTag)
   }
 
-  override fun getSurfaceId(): Int = _surfaceId
+  override fun getSurfaceId(): Int = surfaceId
 }
