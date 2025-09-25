@@ -65,7 +65,10 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   }
 
   init {
-    if (ReactNativeFeatureFlags.enableViewRecyclingForView()) {
+    if (
+        ReactNativeFeatureFlags.enableViewRecyclingForView() &&
+            this.javaClass == ReactViewManager::class.java
+    ) {
       setupViewRecycling()
     }
   }
