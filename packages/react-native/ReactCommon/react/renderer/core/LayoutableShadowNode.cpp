@@ -70,7 +70,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     if (policy.includeTransform) {
       layoutMetrics.frame = layoutMetrics.frame * ancestorNode.getTransform();
     }
-    layoutMetrics.frame.origin = {0, 0};
+    layoutMetrics.frame.origin = {.x = 0, .y = 0};
     return layoutMetrics;
   }
 
@@ -130,7 +130,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
 
   auto layoutMetrics = descendantLayoutableNode->getLayoutMetrics();
   auto& resultFrame = layoutMetrics.frame;
-  resultFrame.origin = {0, 0};
+  resultFrame.origin = {.x = 0, .y = 0};
 
   // Step 3.
   // Iterating on a list of nodes computing compound offset and size.
@@ -152,7 +152,7 @@ LayoutMetrics LayoutableShadowNode::computeRelativeLayoutMetrics(
     auto currentFrame = currentShadowNode->getLayoutMetrics().frame;
     if (i == size - 1) {
       // If it's the last element, its origin is irrelevant.
-      currentFrame.origin = {0, 0};
+      currentFrame.origin = {.x = 0, .y = 0};
     }
 
     auto isRootNode = currentShadowNode->getTraits().check(
@@ -216,7 +216,7 @@ Transform LayoutableShadowNode::getTransform() const {
 
 Point LayoutableShadowNode::getContentOriginOffset(
     bool /*includeTransform*/) const {
-  return {0, 0};
+  return {.x = 0, .y = 0};
 }
 
 bool LayoutableShadowNode::canBeTouchTarget() const {

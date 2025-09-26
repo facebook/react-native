@@ -168,7 +168,7 @@ T convertRawProp(
     return result;
   } catch (const std::exception& e) {
     // In case of errors, log the error and fall back to the default
-    RawPropsKey key{namePrefix, name, nameSuffix};
+    RawPropsKey key{.prefix = namePrefix, .name = name, .suffix = nameSuffix};
     // TODO: report this using ErrorUtils so it's more visible to the user
     LOG(ERROR) << "Error while converting prop '"
                << static_cast<std::string>(key) << "': " << e.what();
