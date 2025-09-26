@@ -320,11 +320,11 @@ class PathUtilsTest {
       writeText(
           // language=json
           """
-      {
-        "name": "a-library",
-        "codegenConfig": {}
-      }
-      """
+          {
+            "name": "a-library",
+            "codegenConfig": {}
+          }
+          """
               .trimIndent()
       )
     }

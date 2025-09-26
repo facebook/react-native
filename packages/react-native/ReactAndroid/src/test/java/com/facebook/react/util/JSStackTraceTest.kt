@@ -101,7 +101,7 @@ class JSStackTraceTest {
             method_from_segment_with_address@seg-1.js:9:18
             method_from_ram_segment@seg-3_198.js:10:20
             method_from_ram_segment_with_address@seg-3_198.js:10:20
-            
+
             """
                 .trimIndent()
         )

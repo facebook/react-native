@@ -549,9 +549,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        VERSION_NAME=1000.0.0
-        ANOTHER_PROPERTY=true
-      """
+              VERSION_NAME=1000.0.0
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -560,9 +560,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        HERMES_V1_VERSION_NAME=1000.0.0
-        ANOTHER_PROPERTY=true
-      """
+              HERMES_V1_VERSION_NAME=1000.0.0
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -583,11 +583,11 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        VERSION_NAME=0.0.0-20221101-2019-cfe811ab1
-        HERMES_VERSION_NAME=0.12.0-commitly-20221101-2019-cfe811ab1
-        HERMES_V1_VERSION_NAME=250829098.0.0-stable
-        ANOTHER_PROPERTY=true
-      """
+              VERSION_NAME=0.0.0-20221101-2019-cfe811ab1
+              HERMES_VERSION_NAME=0.12.0-commitly-20221101-2019-cfe811ab1
+              HERMES_V1_VERSION_NAME=250829098.0.0-stable
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -596,9 +596,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        HERMES_V1_VERSION_NAME=250829098.0.0-stable
-        ANOTHER_PROPERTY=true
-      """
+              HERMES_V1_VERSION_NAME=250829098.0.0-stable
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -619,8 +619,8 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        ANOTHER_PROPERTY=true
-      """
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -629,8 +629,8 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        ANOTHER_PROPERTY=true
-      """
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -650,9 +650,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        VERSION_NAME=
-        ANOTHER_PROPERTY=true
-      """
+              VERSION_NAME=
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -661,9 +661,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        HERMES_V1_VERSION_NAME=
-        ANOTHER_PROPERTY=true
-      """
+              HERMES_V1_VERSION_NAME=
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -683,10 +683,10 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        react.internal.publishingGroup=io.github.test
-        react.internal.hermesPublishingGroup=io.github.test
-        ANOTHER_PROPERTY=true
-      """
+              react.internal.publishingGroup=io.github.test
+              react.internal.hermesPublishingGroup=io.github.test
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -695,9 +695,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        HERMES_V1_VERSION_NAME=
-        ANOTHER_PROPERTY=true
-      """
+              HERMES_V1_VERSION_NAME=
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -716,8 +716,8 @@ class DependencyUtilsTest {
         tempFolder.newFile("gradle.properties").apply {
           writeText(
               """
-        ANOTHER_PROPERTY=true
-      """
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }
@@ -726,9 +726,9 @@ class DependencyUtilsTest {
         tempFolder.newFile("version.properties").apply {
           writeText(
               """
-        HERMES_V1_VERSION_NAME=
-        ANOTHER_PROPERTY=true
-      """
+              HERMES_V1_VERSION_NAME=
+              ANOTHER_PROPERTY=true
+              """
                   .trimIndent()
           )
         }

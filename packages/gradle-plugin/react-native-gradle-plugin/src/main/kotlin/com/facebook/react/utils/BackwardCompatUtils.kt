@@ -21,24 +21,24 @@ internal object BackwardCompatUtils {
       if (reactMap.isNotEmpty()) {
         project.logger.error(
             """
-          ********************************************************************************
- 
-          ERROR: Using old project.ext.react configuration.
-          We identified that your project is using a old configuration block as:
-          
-          project.ext.react = [
-              // ...
-          ]
-          
-          You should migrate to the new configuration:
-          
-          react {
-              // ...
-          }
-          You can find documentation inside `android/app/build.gradle` on how to use it.
-        
-          ********************************************************************************
-          """
+            ********************************************************************************
+
+            ERROR: Using old project.ext.react configuration.
+            We identified that your project is using a old configuration block as:
+
+            project.ext.react = [
+                // ...
+            ]
+
+            You should migrate to the new configuration:
+
+            react {
+                // ...
+            }
+            You can find documentation inside `android/app/build.gradle` on how to use it.
+
+            ********************************************************************************
+            """
                 .trimIndent()
         )
       }
