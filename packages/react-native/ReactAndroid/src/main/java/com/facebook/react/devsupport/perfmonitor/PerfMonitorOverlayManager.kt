@@ -15,6 +15,11 @@ internal class PerfMonitorOverlayManager(
     private val onRequestOpenDevTools: () -> Unit,
 ) : PerfMonitorUpdateListener {
   private var enabled: Boolean = false
+
+  /** Whether the Perf Monitor overlay is currently enabled. */
+  val isEnabled: Boolean
+    get() = enabled
+
   private var view: PerfMonitorOverlayView? = null
   private var tracingState: TracingState = TracingState.ENABLEDINCDPMODE
 
