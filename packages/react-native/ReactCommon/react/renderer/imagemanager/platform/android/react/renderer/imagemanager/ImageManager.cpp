@@ -18,14 +18,22 @@ constexpr inline bool isInteger(const std::string& str) {
   return str.find_first_not_of("0123456789") == std::string::npos;
 }
 
+struct ImageFetcherHolder {
+  explicit ImageFetcherHolder(
+      const std::shared_ptr<const ContextContainer>& contextContainer)
+      : imageFetcher_(std::make_shared<ImageFetcher>(contextContainer)) {}
+
+  const std::shared_ptr<ImageFetcher> imageFetcher_;
+};
+
 } // namespace
 
 ImageManager::ImageManager(
     const std::shared_ptr<const ContextContainer>& contextContainer)
-    : self_(new ImageFetcher(contextContainer)) {}
+    : self_(new ImageFetcherHolder(contextContainer)) {}
 
 ImageManager::~ImageManager() {
-  delete static_cast<ImageFetcher*>(self_);
+  delete static_cast<ImageFetcherHolder*>(self_);
 }
 
 ImageRequest ImageManager::requestImage(
@@ -35,8 +43,9 @@ ImageRequest ImageManager::requestImage(
     Tag tag) const {
   if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
     if (!isInteger(imageSource.uri)) {
-      return static_cast<ImageFetcher*>(self_)->requestImage(
-          imageSource, surfaceId, imageRequestParams, tag);
+      return static_cast<ImageFetcherHolder*>(self_)
+          ->imageFetcher_->requestImage(
+              imageSource, surfaceId, imageRequestParams, tag);
     }
   }
   return {imageSource, nullptr, {}};
