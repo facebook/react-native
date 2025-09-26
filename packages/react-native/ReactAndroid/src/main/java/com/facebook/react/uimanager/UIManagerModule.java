@@ -219,7 +219,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     ReactApplicationContext reactApplicationContext = getReactApplicationContext();
     reactApplicationContext.unregisterComponentCallbacks(mMemoryTrimCallback);
     reactApplicationContext.unregisterComponentCallbacks(mViewManagerRegistry);
-    YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
   }
 
@@ -815,11 +814,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private static class MemoryTrimCallback implements ComponentCallbacks2 {
 
     @Override
-    public void onTrimMemory(int level) {
-      if (level >= TRIM_MEMORY_MODERATE) {
-        YogaNodePool.get().clear();
-      }
-    }
+    public void onTrimMemory(int level) {}
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {}
