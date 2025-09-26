@@ -65,19 +65,19 @@ abstract class GenerateEntryPointTask : DefaultTask() {
     val generatedFileContentsTemplate =
         """
         package com.facebook.react;
-        
+
         import android.app.Application;
         import android.content.Context;
         import android.content.res.Resources;
-        
+
         import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
         import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
         import com.facebook.react.views.view.WindowUtilKt;
         import com.facebook.react.soloader.OpenSourceMergedSoMapping;
         import com.facebook.soloader.SoLoader;
-        
+
         import java.io.IOException;
-        
+
         /**
           * This class is the entry point for loading React Native using the configuration
           * that the users specifies in their .gradle files.
@@ -102,7 +102,7 @@ abstract class GenerateEntryPointTask : DefaultTask() {
             }
           }
         }
-              """
+        """
             .trimIndent()
   }
 }
