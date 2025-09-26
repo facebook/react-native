@@ -128,10 +128,12 @@ TEST_F(TaskDispatchThreadTest, RunAsyncFromMultipleThreads) {
   EXPECT_EQ(counter.load(), 3);
 }
 
+// Test: quit() shouldn't block if it is called inside loop thread
 TEST_F(TaskDispatchThreadTest, QuitInTaskShouldntBeBlockedForever) {
   dispatcher->runSync([&] { dispatcher->quit(); });
 }
 
+// Test: quit() should wait for already running task in the thread
 TEST_F(TaskDispatchThreadTest, QuitShouldWaitAlreadyRunningTask) {
   {
     std::unique_ptr<int> counter = std::make_unique<int>(0);
@@ -146,5 +148,15 @@ TEST_F(TaskDispatchThreadTest, QuitShouldWaitAlreadyRunningTask) {
   }
   // forcing dispatcher to join thread
   dispatcher.reset();
+}
+
+// Test: sync tasks shouldn't be blocked for forever due to delayed task
+TEST_F(TaskDispatchThreadTest, SyncTaskShouldntBeBlockedDueToDelayedTask) {
+  std::atomic<int> counter = 0;
+  constexpr int kHugeDelay = 100000;
+  dispatcher->runAsync([&] {}, std::chrono::seconds(kHugeDelay));
+  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  dispatcher->runSync([&] { counter++; });
+  EXPECT_EQ(counter.load(), 1);
 }
 } // namespace facebook::react
