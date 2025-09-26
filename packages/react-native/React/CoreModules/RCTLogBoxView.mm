@@ -38,8 +38,6 @@
 #ifndef RCT_REMOVE_LEGACY_ARCH
 - (instancetype)initWithWindow:(UIWindow *)window bridge:(RCTBridge *)bridge
 {
-  RCTErrorNewArchitectureValidation(RCTNotAllowedInFabricWithoutLegacy, @"RCTLogBoxView", nil);
-
   self = [super initWithWindowScene:window.windowScene];
 
   self.windowLevel = UIWindowLevelStatusBar - 1;

@@ -386,7 +386,6 @@ static RCTBridge *RCTCurrentBridgeInstance = nil;
 #endif
 
   if (self = [super init]) {
-    RCTEnforceNewArchitectureValidation(RCTNotAllowedInBridgeless, self, nil);
     _delegate = delegate;
     _bundleURL = bundleURL;
     _moduleProvider = block;
