@@ -17,6 +17,9 @@ runs:
       env:
         SCRATCH_DIR: ${{ runner.temp }}/diff-js-api-breaking-changes
       run: |
+        # Check if the file was changed in this PR, if not, exit early without saving to the output.json
+        git diff --name-status | awk '{print $2}' | grep 'packages/react-native/ReactNativeApi.d.ts' || exit 0
+
         node ./scripts/js-api/diff-api-snapshot \
         ${{ github.workspace }}/packages/react-native/ReactNativeApi.d.ts  \
         $SCRATCH_DIR/ReactNativeApi-after.d.ts \
