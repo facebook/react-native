@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`setHermesVersions updates monorepo for with hermes runtime and compiler versons separately: set-hermes-versions/package.json 1`] = `
+"{
+  \\"name\\": \\"@react-native/monorepo\\",
+  \\"private\\": true,
+  \\"version\\": \\"1000.0.0\\"
+}
+"
+`;
+
+exports[`setHermesVersions updates monorepo for with hermes runtime and compiler versons separately: set-hermes-versions/packages/react-native/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"hermes-compiler\\": \\"0.1.0\\"
+  }
+}
+"
+`;
+
+exports[`setHermesVersions updates monorepo for with hermes runtime and compiler versons separately: set-hermes-versions/packages/react-native/sdks/hermes-engine/version.properties 1`] = `
+"HERMES_VERSION_NAME=0.14.0
+HERMES_V1_VERSION_NAME=250829098.0.0
+"
+`;
+
+exports[`setHermesVersions updates monorepo for with set hermes versions: set-hermes-versions/package.json 1`] = `
+"{
+  \\"name\\": \\"@react-native/monorepo\\",
+  \\"private\\": true,
+  \\"version\\": \\"1000.0.0\\"
+}
+"
+`;
+
+exports[`setHermesVersions updates monorepo for with set hermes versions: set-hermes-versions/packages/react-native/package.json 1`] = `
+"{
+  \\"name\\": \\"react-native\\",
+  \\"version\\": \\"1000.0.0\\",
+  \\"description\\": \\"fake react native package\\",
+  \\"dependencies\\": {
+    \\"hermes-compiler\\": \\"0.14.0\\"
+  }
+}
+"
+`;
+
+exports[`setHermesVersions updates monorepo for with set hermes versions: set-hermes-versions/packages/react-native/sdks/hermes-engine/version.properties 1`] = `
+"HERMES_VERSION_NAME=0.14.0
+HERMES_V1_VERSION_NAME=250829098.0.0
+"
+`;
