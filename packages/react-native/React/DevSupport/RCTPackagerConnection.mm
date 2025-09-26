@@ -22,6 +22,7 @@
 #import <React/RCTReconnectingWebSocket.h>
 #import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBundleManager.h>
 
 #if RCT_DEV
 
@@ -52,15 +53,7 @@ struct Registration {
   std::vector<Registration<RCTConnectedHandler>> _connectedRegistrations;
 }
 
-+ (instancetype)sharedPackagerConnection
-{
-  static RCTPackagerConnection *connection;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    connection = [RCTPackagerConnection new];
-  });
-  return connection;
-}
+@synthesize bundleManager;
 
 - (instancetype)init
 {

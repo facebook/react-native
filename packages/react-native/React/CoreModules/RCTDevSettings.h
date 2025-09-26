@@ -10,6 +10,7 @@
 #import <React/RCTDefines.h>
 #import <React/RCTEventEmitter.h>
 #import <React/RCTInitializing.h>
+#import <React/RCTPackagerConnection.h>
 
 @protocol RCTPackagerClientMethod;
 
@@ -80,6 +81,8 @@
  */
 @property (nonatomic, assign) BOOL isPerfMonitorShown;
 
+@property (nonatomic, readonly) RCTPackagerConnection* packagerConnection;
+
 /**
  * Toggle the element inspector.
  */
@@ -94,6 +97,8 @@
  * Register additional bundles with the HMRClient.
  */
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL;
+
+- (void)startPackagerConnection;
 
 #if RCT_DEV_MENU
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler

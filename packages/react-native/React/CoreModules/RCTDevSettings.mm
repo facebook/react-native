@@ -145,6 +145,13 @@ RCT_EXPORT_MODULE()
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource =
       [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
+
+#if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
+
+  _packagerConnection = [[RCTPackagerConnection alloc] init];
+
+#endif
+
   return [self initWithDataSource:dataSource];
 }
 
@@ -179,14 +186,14 @@ RCT_EXPORT_MODULE()
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (numInitializedModules++ == 0) {
-    reloadToken = [[RCTPackagerConnection sharedPackagerConnection]
+    reloadToken = [_packagerConnection
         addNotificationHandler:^(id params) {
           RCTTriggerReloadCommandListeners(@"Global hotkey");
         }
                          queue:dispatch_get_main_queue()
                      forMethod:@"reload"];
 #if RCT_DEV_MENU
-    devMenuToken = [[RCTPackagerConnection sharedPackagerConnection]
+    devMenuToken = [_packagerConnection
         addNotificationHandler:^(id params) {
           [[self.moduleRegistry moduleForName:"DevMenu"] show];
         }
@@ -239,9 +246,9 @@ RCT_EXPORT_MODULE()
   [super invalidate];
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (--numInitializedModules == 0) {
-    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:reloadToken];
+    [_packagerConnection removeHandler:reloadToken];
 #if RCT_DEV_MENU
-    [[RCTPackagerConnection sharedPackagerConnection] removeHandler:devMenuToken];
+    [_packagerConnection removeHandler:devMenuToken];
 #endif
   }
 #endif
@@ -260,6 +267,11 @@ RCT_EXPORT_MODULE()
 - (id)settingForKey:(NSString *)key
 {
   return [_dataSource settingForKey:key];
+}
+
+- (void)startPackagerConnection
+{
+  NSLog(@"Starting Packager Connection from RCTDevSettings");
 }
 
 - (BOOL)isDeviceDebuggingAvailable
@@ -418,7 +430,7 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 - (void)addHandler:(id<RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
 #if RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
-  [[RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
+   [_packagerConnection addHandler:handler forMethod:name];
 #endif
 }
 
