@@ -104,10 +104,12 @@ static PointerEventTarget retargetPointerEvent(
   // More work will be needed to properly take non-trival transforms into
   // account.
   auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
-      *latestNodeToTarget, nullptr, {/* .includeTransform */ true});
+      *latestNodeToTarget,
+      nullptr,
+      {/* .includeTransform */ .includeTransform = true});
   retargetedEvent.offsetPoint = {
-      event.clientPoint.x - layoutMetrics.frame.origin.x,
-      event.clientPoint.y - layoutMetrics.frame.origin.y,
+      .x = event.clientPoint.x - layoutMetrics.frame.origin.x,
+      .y = event.clientPoint.y - layoutMetrics.frame.origin.y,
   };
 
   PointerEventTarget result = {};

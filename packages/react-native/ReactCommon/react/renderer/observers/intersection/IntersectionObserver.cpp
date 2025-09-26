@@ -65,8 +65,8 @@ static Rect getRootNodeBoundingRect(const RootShadowNode& rootShadowNode) {
 static Rect getBoundingRect(const ShadowNodeFamily::AncestorList& ancestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       ancestors,
-      {/* .includeTransform = */ true,
-       /* .includeViewportOffset = */ true});
+      {/* .includeTransform = */ .includeTransform = true,
+       /* .includeViewportOffset = */ .includeViewportOffset = true});
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
 }
 
@@ -74,9 +74,9 @@ static Rect getClippedTargetBoundingRect(
     const ShadowNodeFamily::AncestorList& targetAncestors) {
   auto layoutMetrics = LayoutableShadowNode::computeRelativeLayoutMetrics(
       targetAncestors,
-      {/* .includeTransform = */ true,
-       /* .includeViewportOffset = */ true,
-       /* .applyParentClipping = */ true});
+      {/* .includeTransform = */ .includeTransform = true,
+       /* .includeViewportOffset = */ .includeViewportOffset = true,
+       /* .applyParentClipping = */ .enableOverflowClipping = true});
 
   return layoutMetrics == EmptyLayoutMetrics ? Rect{} : layoutMetrics.frame;
 }
@@ -110,8 +110,8 @@ static Rect computeIntersection(
       getClippedTargetBoundingRect(targetToRootAncestors);
 
   auto clippedTargetBoundingRect = hasCustomRoot ? Rect{
-      rootBoundingRect.origin + clippedTargetFromRoot.origin,
-      clippedTargetFromRoot.size}
+      .origin=rootBoundingRect.origin + clippedTargetFromRoot.origin,
+      .size=clippedTargetFromRoot.size}
       : clippedTargetFromRoot;
 
   return Rect::intersect(rootBoundingRect, clippedTargetBoundingRect);
@@ -231,13 +231,13 @@ IntersectionObserver::setIntersectingState(
   if (state_ != newState) {
     state_ = newState;
     IntersectionObserverEntry entry{
-        intersectionObserverId_,
-        targetShadowNodeFamily_,
-        targetBoundingRect,
-        rootBoundingRect,
-        intersectionRect,
-        true,
-        time,
+        .intersectionObserverId = intersectionObserverId_,
+        .shadowNodeFamily = targetShadowNodeFamily_,
+        .targetRect = targetBoundingRect,
+        .rootRect = rootBoundingRect,
+        .intersectionRect = intersectionRect,
+        .isIntersectingAboveThresholds = true,
+        .time = time,
     };
     return std::optional<IntersectionObserverEntry>{std::move(entry)};
   }
@@ -254,13 +254,13 @@ IntersectionObserver::setNotIntersectingState(
   if (state_ != IntersectionObserverState::NotIntersecting()) {
     state_ = IntersectionObserverState::NotIntersecting();
     IntersectionObserverEntry entry{
-        intersectionObserverId_,
-        targetShadowNodeFamily_,
-        targetBoundingRect,
-        rootBoundingRect,
-        intersectionRect,
-        false,
-        time,
+        .intersectionObserverId = intersectionObserverId_,
+        .shadowNodeFamily = targetShadowNodeFamily_,
+        .targetRect = targetBoundingRect,
+        .rootRect = rootBoundingRect,
+        .intersectionRect = intersectionRect,
+        .isIntersectingAboveThresholds = false,
+        .time = time,
     };
     return std::optional<IntersectionObserverEntry>(std::move(entry));
   }

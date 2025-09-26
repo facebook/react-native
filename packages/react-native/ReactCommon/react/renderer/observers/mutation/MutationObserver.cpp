@@ -176,10 +176,10 @@ void MutationObserver::recordMutationsInSubtrees(
 
   if (!addedNodes.empty() || !removedNodes.empty()) {
     recordedMutations.emplace_back(MutationRecord{
-        mutationObserverId_,
-        oldNode,
-        std::move(addedNodes),
-        std::move(removedNodes)});
+        .mutationObserverId = mutationObserverId_,
+        .targetShadowNode = oldNode,
+        .addedShadowNodes = std::move(addedNodes),
+        .removedShadowNodes = std::move(removedNodes)});
   }
 }
 
