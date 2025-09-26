@@ -118,6 +118,7 @@ void TaskDispatchThread::loop() noexcept {
         if (task.dispatchTime > now) {
           // Wait until the scheduled task time, if delayed
           loopCv_.wait_until(lock, task.dispatchTime);
+          continue;
         }
       } else {
         // Shutting down, skip all the remaining tasks
