@@ -7,7 +7,7 @@
 set -e
 
 PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
-CURRENT_ARCH="${CURRENT_ARCH}"
+# CURRENT_ARCH is already set by the environment, no need to reassign
 
 if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     # Xcode 10 beta sets CURRENT_ARCH to "undefined_arch", this leads to incorrect linker arg.
@@ -44,13 +44,17 @@ fi
 
 XCRUN="$(which xcrun || true)"
 if [ -n "$XCRUN" ]; then
-  export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+  export CC
+  CC="$(xcrun -find -sdk "$PLATFORM_NAME" cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk "$PLATFORM_NAME" --show-sdk-path)"
   export CXX="$CC"
 else
-  export CC="$CC:-$(which gcc)"
-  export CXX="$CXX:-$(which g++ || true)"
+  export CC
+  CC="$CC:-$(which gcc)"
+  export CXX
+  CXX="$CXX:-$(which g++ || true)"
 fi
-export CXX="$CXX:-$CC"
+export CXX
+CXX="$CXX:-$CC"
 
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then
