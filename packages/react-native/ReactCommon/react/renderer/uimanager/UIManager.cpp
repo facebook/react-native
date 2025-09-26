@@ -73,7 +73,9 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
   PropsParserContext propsParserContext{surfaceId, *contextContainer_.get()};
 
   auto family = componentDescriptor.createFamily(
-      {tag, surfaceId, std::move(instanceHandle)});
+      {.tag = tag,
+       .surfaceId = surfaceId,
+       .instanceHandle = std::move(instanceHandle)});
   const auto props = componentDescriptor.cloneProps(
       propsParserContext, nullptr, std::move(rawProps));
   const auto state = componentDescriptor.createInitialState(props, family);
@@ -462,7 +464,7 @@ void UIManager::setNativeProps_DEPRECATED(
                             ->getProps(),
                         RawProps(rawProps));
 
-                    return oldShadowNode.clone({/* .props = */ props});
+                    return oldShadowNode.clone({/* .props = */ .props = props});
                   });
 
               return std::static_pointer_cast<RootShadowNode>(rootNode);
