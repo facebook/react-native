@@ -22,6 +22,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 
 /** Java wrapper around a C++ InspectorPackagerConnection. */
+@DoNotStripAny
 internal class CxxInspectorPackagerConnection(
     url: String,
     deviceName: String,
