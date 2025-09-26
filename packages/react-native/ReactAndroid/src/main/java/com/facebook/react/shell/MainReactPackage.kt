@@ -152,7 +152,6 @@ constructor(private val config: MainPackageConfig? = null) :
           if (ReactNativeFeatureFlags.enablePreparedTextLayout()) PreparedLayoutTextViewManager()
           else ReactTextViewManager(),
           ReactViewManager(),
-          com.facebook.react.views.text.ReactVirtualTextViewManager(),
           ReactUnimplementedViewManager(),
       )
 
@@ -195,10 +194,6 @@ constructor(private val config: MainPackageConfig? = null) :
                 else ReactTextViewManager()
               },
           ReactViewManager.REACT_CLASS to ModuleSpec.viewManagerSpec { ReactViewManager() },
-          com.facebook.react.views.text.ReactVirtualTextViewManager.REACT_CLASS to
-              ModuleSpec.viewManagerSpec {
-                com.facebook.react.views.text.ReactVirtualTextViewManager()
-              },
           ReactUnimplementedViewManager.REACT_CLASS to
               ModuleSpec.viewManagerSpec { ReactUnimplementedViewManager() },
       )
