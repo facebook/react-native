@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.infer.annotation.Assertions
 import java.util.HashMap
 import kotlin.collections.Iterator
 import kotlin.collections.Map
@@ -163,7 +164,24 @@ public class JavaOnlyMap() : ReadableMap, WritableMap {
     backingMap.remove(key)
   }
 
-  override fun toHashMap(): HashMap<String, Any?> = HashMap<String, Any?>(backingMap)
+  internal fun toHashMapShallow(): HashMap<String, Any?> = HashMap<String, Any?>(backingMap)
+
+  override fun toHashMap(): HashMap<String, Any?> {
+    val hashMap = HashMap<String, Any?>(backingMap)
+    val iterator: Iterator<*> = hashMap.keys.iterator()
+    while (iterator.hasNext()) {
+      val key = iterator.next() as String
+      when (getType(key)) {
+        ReadableType.Null,
+        ReadableType.Boolean,
+        ReadableType.Number,
+        ReadableType.String -> {}
+        ReadableType.Map -> hashMap[key] = Assertions.assertNotNull(getMap(key)).toHashMap()
+        ReadableType.Array -> hashMap[key] = Assertions.assertNotNull(getArray(key)).toArrayList()
+      }
+    }
+    return hashMap
+  }
 
   override fun toString(): String = backingMap.toString()
 
