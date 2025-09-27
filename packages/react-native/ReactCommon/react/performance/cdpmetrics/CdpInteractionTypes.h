@@ -17,6 +17,6 @@ using InteractionTypesMap =
 
 const InteractionTypesMap& getInteractionTypes();
 
-const std::string_view getInteractionTypeForEvent(std::string_view eventName);
+std::string_view getInteractionTypeForEvent(std::string_view eventName);
 
 } // namespace facebook::react
