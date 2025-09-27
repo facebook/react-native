@@ -4,176 +4,32 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
-import type {Task} from './TaskQueue';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import EventEmitter from '../vendor/emitter/EventEmitter';
-
-const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 
-export type {Task, SimpleTask, PromiseTask} from './TaskQueue';
+export type SimpleTask = {
+  name: string,
+  run: () => void,
+};
+export type PromiseTask = {
+  name: string,
+  gen: () => Promise<void>,
+};
+export type Task = SimpleTask | PromiseTask | (() => void);
 
 export type Handle = number;
 
-const _emitter = new EventEmitter<{
-  interactionComplete: [],
-  interactionStart: [],
-}>();
-
-const DEBUG_DELAY: 0 = 0;
-const DEBUG: false = false;
-
-const InteractionManagerImpl = {
-  Events: {
-    interactionStart: 'interactionStart',
-    interactionComplete: 'interactionComplete',
-  },
-
-  /**
-   * Schedule a function to run after all interactions have completed. Returns a cancellable
-   * "promise".
-   */
-  runAfterInteractions(task: ?Task): {
-    then: <U>(
-      onFulfill?: ?(void) => ?(Promise<U> | U),
-      onReject?: ?(error: mixed) => ?(Promise<U> | U),
-    ) => Promise<U>,
-    cancel: () => void,
-    ...
-  } {
-    const tasks: Array<Task> = [];
-    const promise = new Promise((resolve: () => void) => {
-      _scheduleUpdate();
-      if (task) {
-        tasks.push(task);
-      }
-      tasks.push({
-        run: resolve,
-        name: 'resolve ' + ((task && task.name) || '?'),
-      });
-      _taskQueue.enqueueTasks(tasks);
-    });
-    return {
-      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-      then: promise.then.bind(promise),
-      cancel: function () {
-        _taskQueue.cancelTasks(tasks);
-      },
-    };
-  },
-
-  /**
-   * Notify manager that an interaction has started.
-   */
-  createInteractionHandle(): Handle {
-    DEBUG && console.log('InteractionManager: create interaction handle');
-    _scheduleUpdate();
-    const handle = ++_inc;
-    _addInteractionSet.add(handle);
-    return handle;
-  },
-
-  /**
-   * Notify manager that an interaction has completed.
-   */
-  clearInteractionHandle(handle: Handle) {
-    DEBUG && console.log('InteractionManager: clear interaction handle');
-    invariant(!!handle, 'InteractionManager: Must provide a handle to clear.');
-    _scheduleUpdate();
-    _addInteractionSet.delete(handle);
-    _deleteInteractionSet.add(handle);
-  },
-
-  // $FlowFixMe[unclear-type] unclear type of _emitter
-  // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  addListener: _emitter.addListener.bind(_emitter) as (
-    eventType: string,
-    // $FlowFixMe[unclear-type] unclear type of arguments
-    listener: (...args: any) => mixed,
-    context: mixed,
-  ) => EventSubscription,
-
-  /**
-   * A positive number will use setTimeout to schedule any tasks after the
-   * eventLoopRunningTime hits the deadline value, otherwise all tasks will be
-   * executed in one setImmediate batch (default).
-   */
-  setDeadline(deadline: number) {
-    _deadline = deadline;
-  },
-};
-
-const _interactionSet = new Set<number | Handle>();
-const _addInteractionSet = new Set<number | Handle>();
-const _deleteInteractionSet = new Set<Handle>();
-const _taskQueue = new TaskQueue({onMoreTasks: _scheduleUpdate});
-let _nextUpdateHandle: $FlowFixMe | TimeoutID = 0;
-let _inc = 0;
-let _deadline = -1;
-
-/**
- * Schedule an asynchronous update to the interaction state.
- */
-function _scheduleUpdate() {
-  if (!_nextUpdateHandle) {
-    if (_deadline > 0) {
-      _nextUpdateHandle = setTimeout(_processUpdate, 0 + DEBUG_DELAY);
-    } else {
-      _nextUpdateHandle = setImmediate(_processUpdate);
-    }
-  }
-}
-
-/**
- * Notify listeners, process queue, etc
- */
-function _processUpdate() {
-  _nextUpdateHandle = 0;
-
-  const interactionCount = _interactionSet.size;
-  _addInteractionSet.forEach(handle => _interactionSet.add(handle));
-  _deleteInteractionSet.forEach(handle => _interactionSet.delete(handle));
-  const nextInteractionCount = _interactionSet.size;
-
-  if (interactionCount !== 0 && nextInteractionCount === 0) {
-    // transition from 1+ --> 0 interactions
-    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
-     * https://fburl.com/workplace/6291gfvu */
-    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
-     * https://fburl.com/workplace/6291gfvu */
-    _emitter.emit(InteractionManager.Events.interactionComplete);
-  } else if (interactionCount === 0 && nextInteractionCount !== 0) {
-    // transition from 0 --> 1+ interactions
-    /* $FlowFixMe[prop-missing] Natural Inference rollout. See
-     * https://fburl.com/workplace/6291gfvu */
-    /* $FlowFixMe[invalid-computed-prop] Natural Inference rollout. See
-     * https://fburl.com/workplace/6291gfvu */
-    _emitter.emit(InteractionManager.Events.interactionStart);
-  }
-
-  // process the queue regardless of a transition
-  if (nextInteractionCount === 0) {
-    while (_taskQueue.hasTasksToProcess()) {
-      _taskQueue.processNext();
-      if (
-        _deadline > 0 &&
-        BatchedBridge.getEventLoopRunningTime() >= _deadline
-      ) {
-        // Hit deadline before processing all tasks, so process more later.
-        _scheduleUpdate();
-        break;
-      }
-    }
-  }
-  _addInteractionSet.clear();
-  _deleteInteractionSet.clear();
+// NOTE: The original implementation of `InteractionManager` never rejected
+// the returned promise. This preserves that behavior in the stub.
+function reject(error: Error): void {
+  setTimeout(() => {
+    throw error;
+  }, 0);
 }
 
 /**
@@ -227,11 +83,106 @@ function _processUpdate() {
  *
  * @deprecated
  */
-const InteractionManager = (
-  ReactNativeFeatureFlags.disableInteractionManager()
-    ? // $FlowFixMe[incompatible-variance]
-      require('./InteractionManagerStub').default
-    : InteractionManagerImpl
-) as typeof InteractionManagerImpl;
+const InteractionManagerStub = {
+  Events: {
+    interactionStart: 'interactionStart',
+    interactionComplete: 'interactionComplete',
+  },
 
-export default InteractionManager;
+  /**
+   * Schedule a function to run after all interactions have completed. Returns a cancellable
+   * "promise".
+   *
+   * @deprecated
+   */
+  runAfterInteractions(task: ?Task): {
+    then: <U>(
+      onFulfill?: ?(void) => ?(Promise<U> | U),
+      onReject?: ?(error: mixed) => ?(Promise<U> | U),
+    ) => Promise<U>,
+    cancel: () => void,
+    ...
+  } {
+    let immediateID: ?$FlowFixMe;
+    const promise = new Promise(resolve => {
+      immediateID = setImmediate(() => {
+        if (typeof task === 'object' && task !== null) {
+          if (typeof task.gen === 'function') {
+            task.gen().then(resolve, reject);
+          } else if (typeof task.run === 'function') {
+            try {
+              task.run();
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            reject(new TypeError(`Task "${task.name}" missing gen or run.`));
+          }
+        } else if (typeof task === 'function') {
+          try {
+            task();
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
+        } else {
+          reject(new TypeError('Invalid task of type: ' + typeof task));
+        }
+      });
+    });
+
+    return {
+      // $FlowFixMe[method-unbinding] added when improving typing for this parameters
+      then: promise.then.bind(promise),
+      cancel() {
+        clearImmediate(immediateID);
+      },
+    };
+  },
+
+  /**
+   * Notify manager that an interaction has started.
+   *
+   * @deprecated
+   */
+  createInteractionHandle(): Handle {
+    return -1;
+  },
+
+  /**
+   * Notify manager that an interaction has completed.
+   *
+   * @deprecated
+   */
+  clearInteractionHandle(handle: Handle) {
+    invariant(!!handle, 'InteractionManager: Must provide a handle to clear.');
+  },
+
+  /**
+   * @deprecated
+   */
+  addListener(
+    eventType: string,
+    // $FlowFixMe[unclear-type]
+    listener: (...args: any) => mixed,
+    context: mixed,
+  ): EventSubscription {
+    return {
+      remove() {},
+    };
+  },
+
+  /**
+   * A positive number will use setTimeout to schedule any tasks after the
+   * eventLoopRunningTime hits the deadline value, otherwise all tasks will be
+   * executed in one setImmediate batch (default).
+   *
+   * @deprecated
+   */
+  setDeadline(deadline: number) {
+    // Do nothing.
+  },
+};
+
+export default InteractionManagerStub;

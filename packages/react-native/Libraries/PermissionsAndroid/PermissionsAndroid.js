@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {DialogOptions} from '../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid';
+
 import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManagerAndroid';
 import NativePermissionsAndroid from './NativePermissionsAndroid';
 import invariant from 'invariant';
@@ -130,7 +132,7 @@ const PERMISSIONS = Object.freeze({
  *
  * See https://reactnative.dev/docs/permissionsandroid
  */
-class PermissionsAndroid {
+class PermissionsAndroidImpl {
   PERMISSIONS: PermissionsType = PERMISSIONS;
   RESULTS: $ReadOnly<{
     DENIED: 'denied',
@@ -249,24 +251,24 @@ class PermissionsAndroid {
 
       if (shouldShowRationale && !!NativeDialogManagerAndroid) {
         return new Promise((resolve, reject) => {
-          const options = {
+          /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
+           * This comment suppresses an error found when Flow v0.111 was
+           * deployed. To see the error, delete this comment and run Flow.
+           */
+          const options: DialogOptions = {
             ...rationale,
           };
           NativeDialogManagerAndroid.showAlert(
-            /* $FlowFixMe[incompatible-exact] (>=0.111.0 site=react_native_fb)
-             * This comment suppresses an error found when Flow v0.111 was
-             * deployed. To see the error, delete this comment and run Flow.
-             */
             options,
             () => reject(new Error('Error showing rationale')),
             () =>
-              // $FlowFixMe[incompatible-call]
+              // $FlowFixMe[incompatible-type]
               resolve(NativePermissionsAndroid.requestPermission(permission)),
           );
         });
       }
     }
-    // $FlowFixMe[incompatible-return]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestPermission(permission);
   }
 
@@ -291,11 +293,11 @@ class PermissionsAndroid {
       NativePermissionsAndroid,
       'PermissionsAndroid is not installed correctly.',
     );
-    // $FlowFixMe[incompatible-return]
-    // $FlowFixMe[incompatible-call]
+    // $FlowFixMe[incompatible-type]
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
 
-const PermissionsAndroidInstance: PermissionsAndroid = new PermissionsAndroid();
+const PermissionsAndroidInstance: PermissionsAndroidImpl =
+  new PermissionsAndroidImpl();
 export default PermissionsAndroidInstance;

@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <cstdint>
 #include <stdexcept>
@@ -15,7 +15,8 @@
 
 namespace facebook::react {
 
-class JSModulesUnbundle {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSModulesUnbundle {
   /**
    * Represents the set of JavaScript modules that the application consists of.
    * The source code of each module can be retrieved by module ID.
@@ -36,7 +37,7 @@ class JSModulesUnbundle {
     std::string code;
   };
   JSModulesUnbundle() {}
-  virtual ~JSModulesUnbundle() {}
+  virtual ~JSModulesUnbundle() = default;
   virtual Module getModule(uint32_t moduleId) const = 0;
 
  private:
@@ -45,4 +46,4 @@ class JSModulesUnbundle {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

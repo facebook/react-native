@@ -17,7 +17,6 @@ jest.setTimeout(10000);
 describe('embedder script', () => {
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
   });
 
   test('is always served', async () => {

@@ -7,6 +7,8 @@
 
 #import "RCTSwitch.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "UIView+React.h"
 
 @implementation RCTSwitch
@@ -18,3 +20,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

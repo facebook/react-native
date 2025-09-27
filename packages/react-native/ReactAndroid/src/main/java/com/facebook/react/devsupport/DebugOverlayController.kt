@@ -44,14 +44,16 @@ internal class DebugOverlayController(private val reactContext: ReactContext) {
                     WindowOverlayCompat.TYPE_SYSTEM_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                    PixelFormat.TRANSLUCENT)
+                    PixelFormat.TRANSLUCENT,
+                )
             windowManager.addView(fpsDebugViewContainer, params)
           } else if (!fpsDebugViewVisible && fpsDebugViewContainer != null) {
             fpsDebugViewContainer?.removeAllViews()
             windowManager.removeView(fpsDebugViewContainer)
             fpsDebugViewContainer = null
           }
-        })
+        }
+    )
   }
 
   companion object {
@@ -62,11 +64,13 @@ internal class DebugOverlayController(private val reactContext: ReactContext) {
         val intent =
             Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:" + context.packageName))
+                Uri.parse("package:" + context.packageName),
+            )
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         FLog.w(
             ReactConstants.TAG,
-            "Overlay permissions needs to be granted in order for react native apps to run in dev mode")
+            "Overlay permissions needs to be granted in order for react native apps to run in dev mode",
+        )
         if (canHandleIntent(context, intent)) {
           context.startActivity(intent)
         }

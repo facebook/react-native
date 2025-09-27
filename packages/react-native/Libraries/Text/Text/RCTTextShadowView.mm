@@ -7,6 +7,8 @@
 
 #import <React/RCTTextShadowView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTBridge.h>
 #import <React/RCTShadowView+Layout.h>
 #import <React/RCTUIManager.h>
@@ -464,3 +466,5 @@ static float RCTTextShadowViewBaseline(YGNodeConstRef node, const float width, c
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

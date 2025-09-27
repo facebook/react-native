@@ -35,6 +35,7 @@ class ReadableNativeArray
   static void mapException(std::exception_ptr ex);
   static void registerNatives();
 
+  bool equals(jni::alias_ref<ReadableNativeArray::javaobject> other);
   jni::local_ref<jni::JArrayClass<jobject>> importArray();
   jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
 };

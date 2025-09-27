@@ -29,7 +29,7 @@ void initializePerfetto() {
     args.backends |= perfetto::kSystemBackend;
     args.use_monotonic_clock = true;
     perfetto::Tracing::Initialize(args);
-    perfetto::TrackEvent::Register();
+    TrackEvent::Register();
   });
 
   HermesPerfettoDataSource::RegisterDataSource();
@@ -42,7 +42,7 @@ static perfetto::Track createTrack(const std::string& trackName) {
   auto track = perfetto::Track(trackId++);
   auto desc = track.Serialize();
   desc.set_name(trackName);
-  perfetto::TrackEvent::SetTrackDescriptor(track, desc);
+  TrackEvent::SetTrackDescriptor(track, desc);
   return track;
 }
 
@@ -88,9 +88,7 @@ uint64_t highResTimeStampToPerfettoTraceTime(HighResTimeStamp timestamp) {
   auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(
       chronoDurationSinceSteadyClockEpoch);
 
-  return std::chrono::duration_cast<std::chrono::duration<std::uint64_t>>(
-             nanoseconds)
-      .count();
+  return static_cast<uint64_t>(nanoseconds.count());
 }
 
 } // namespace facebook::react

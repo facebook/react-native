@@ -123,7 +123,11 @@ internal class OutlineDrawable(
 
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
+            layoutDirection,
+            context,
+            bounds.width().pxToDp(),
+            bounds.height().pxToDp(),
+        )
 
     updateOutlineRect()
     if (computedBorderRadius != null && computedBorderRadius?.hasRoundedBorders() == true) {
@@ -148,7 +152,8 @@ internal class OutlineDrawable(
       OutlineStyle.DASHED ->
           DashPathEffect(
               floatArrayOf(outlineWidth * 3, outlineWidth * 3, outlineWidth * 3, outlineWidth * 3),
-              0f)
+              0f,
+          )
       OutlineStyle.DOTTED ->
           DashPathEffect(floatArrayOf(outlineWidth, outlineWidth, outlineWidth, outlineWidth), 0f)
     }
@@ -182,7 +187,8 @@ internal class OutlineDrawable(
             calculateRadius(bottomLeftRadius.horizontal, outlineWidth, outlineOffset),
             calculateRadius(bottomLeftRadius.vertical, outlineWidth, outlineOffset),
         ),
-        Path.Direction.CW)
+        Path.Direction.CW,
+    )
 
     canvas.drawPath(pathForOutline, outlinePaint)
   }

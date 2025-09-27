@@ -17,7 +17,7 @@ class LayoutAnimationDriver : public LayoutAnimationKeyFrameManager {
  public:
   LayoutAnimationDriver(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate)
       : LayoutAnimationKeyFrameManager(
             runtimeExecutor,

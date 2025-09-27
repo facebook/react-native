@@ -4,8 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @fantom_flags enableFixForParentTagDuringReparenting:true
- * @fantom_flags enableSynchronousStateUpdates:true
  * @fantom_flags enableViewCulling:true
  * @flow strict-local
  * @format
@@ -2554,5 +2552,90 @@ describe('culling inside ScrollView with overflow visible', () => {
     expect(root.takeMountingManagerLogs()).toContain(
       'Create {type: "View", nativeID: "child"}',
     );
+  });
+});
+
+describe('horizontal ScrollView in RTL script', () => {
+  it('renders item 1', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView
+          style={{direction: 'rtl', height: 100, width: 100}}
+          horizontal={true}>
+          <View nativeID={'item1'} style={{height: 90, width: 90, margin: 5}} />
+          <View nativeID={'item2'} style={{height: 90, width: 90, margin: 5}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "AndroidHorizontalScrollContentView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "item1"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "item1"}',
+      'Insert {type: "AndroidHorizontalScrollContentView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+
+  it('takes contentOffset into account', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView
+          style={{direction: 'rtl', height: 100, width: 100}}
+          horizontal={true}
+          contentOffset={{x: 100, y: 0}}>
+          <View nativeID={'item1'} style={{height: 90, width: 90, margin: 5}} />
+          <View nativeID={'item2'} style={{height: 90, width: 90, margin: 5}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "AndroidHorizontalScrollContentView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "item2"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "item2"}',
+      'Insert {type: "AndroidHorizontalScrollContentView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
+  });
+});
+
+describe('Views with no layout', () => {
+  it('are not culled', () => {
+    const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView style={{height: 100, width: 100}}>
+          <View nativeID={'viewWithLayout'} style={{height: 100, width: 100}} />
+          <View style={{height: 1000, width: 100}} />
+          <View
+            nativeID={'culledViewWithLayout'}
+            style={{height: 100, width: 100}}
+          />
+          <View nativeID={'viewWithoutLayout'} style={{height: 0, width: 0}} />
+        </ScrollView>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "ScrollView", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: (N/A)}',
+      'Create {type: "View", nativeID: "viewWithLayout"}',
+      'Create {type: "View", nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "viewWithLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 1, nativeID: "viewWithoutLayout"}',
+      'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+      'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    ]);
   });
 });

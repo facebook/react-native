@@ -160,6 +160,7 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
 
 - (void)bundleURLSettingsChanged
 {
+  // Will only reconnect if `packagerServerHostPort` has actually changed
   [self reconnect:[[RCTBundleURLProvider sharedSettings] packagerServerHostPort]];
 }
 

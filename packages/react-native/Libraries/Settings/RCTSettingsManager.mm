@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults *)defaults
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _defaults = defaults;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(setValues : (NSDictionary *)values)
   _ignoringUpdates = YES;
   [values enumerateKeysAndObjectsUsingBlock:^(NSString *key, id json, BOOL *stop) {
     id plist = [RCTConvert NSPropertyList:json];
-    if (plist) {
+    if (plist != nullptr) {
       [self->_defaults setObject:plist forKey:key];
     } else {
       [self->_defaults removeObjectForKey:key];

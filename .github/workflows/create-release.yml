@@ -19,6 +19,7 @@ on:
 
 jobs:
   create_release:
+    if: github.repository == 'facebook/react-native'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

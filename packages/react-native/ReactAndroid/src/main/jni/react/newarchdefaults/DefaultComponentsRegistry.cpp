@@ -23,11 +23,12 @@ std::function<void(std::shared_ptr<const ComponentDescriptorProviderRegistry>)>
         registerCodegenComponentDescriptorsFromEntryPoint{};
 
 void DefaultComponentsRegistry::setRegistryRunction(
-    jni::alias_ref<jclass>,
+    jni::alias_ref<jclass> /*unused*/,
     ComponentFactory* delegate) {
   delegate
       ->buildRegistryFunction = [](const EventDispatcher::Weak& eventDispatcher,
-                                   const ContextContainer::Shared&
+                                   const std::shared_ptr<
+                                       const ContextContainer>&
                                        contextContainer) {
     ComponentDescriptorParameters params{
         .eventDispatcher = eventDispatcher,
@@ -35,18 +36,19 @@ void DefaultComponentsRegistry::setRegistryRunction(
         .flavor = nullptr};
 
     auto providerRegistry = CoreComponentsRegistry::sharedProviderRegistry();
-    if (registerCodegenComponentDescriptorsFromEntryPoint) {
-      registerCodegenComponentDescriptorsFromEntryPoint(providerRegistry);
-    } else {
-      LOG(WARNING)
-          << "Codegen component descriptors were not configured from JNI_OnLoad";
-    }
     if (registerComponentDescriptorsFromEntryPoint) {
       registerComponentDescriptorsFromEntryPoint(providerRegistry);
     } else {
       LOG(WARNING)
           << "Custom component descriptors were not configured from JNI_OnLoad";
     }
+    if (registerCodegenComponentDescriptorsFromEntryPoint) {
+      registerCodegenComponentDescriptorsFromEntryPoint(providerRegistry);
+    } else {
+      LOG(WARNING)
+          << "Codegen component descriptors were not configured from JNI_OnLoad";
+    }
+    CoreComponentsRegistry::addCoreComponents(providerRegistry);
 
     auto registry = providerRegistry->createComponentDescriptorRegistry(params);
     auto& mutableRegistry = const_cast<ComponentDescriptorRegistry&>(*registry);

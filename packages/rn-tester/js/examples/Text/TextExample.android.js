@@ -38,7 +38,7 @@ class Entity extends React.Component<{children: React.Node}> {
     );
   }
 }
-class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
+class AttributeToggler extends React.Component<{...}, $FlowFixMe> {
   state: {fontSize: number, fontWeight: 'bold' | 'normal'} = {
     fontWeight: 'bold',
     fontSize: 15,
@@ -1714,6 +1714,20 @@ const examples = [
             }}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </RNTesterText>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Disabled',
+    name: 'disabled',
+    render: function (): React.Node {
+      return (
+        <View>
+          <RNTesterText testID="text-disabled" disabled={true}>
+            This text has its corresponding text view in the disabled state for
+            testing purposes.
           </RNTesterText>
         </View>
       );

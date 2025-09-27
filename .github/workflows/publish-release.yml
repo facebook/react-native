@@ -21,6 +21,7 @@ jobs:
 
   prepare_hermes_workspace:
     runs-on: ubuntu-latest
+    if: github.repository == 'facebook/react-native'
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_VERSION_FILE: packages/react-native/sdks/.hermesversion
@@ -98,6 +99,7 @@ jobs:
           flavor: ${{ matrix.flavor }}
 
   prebuild_apple_dependencies:
+    if: github.repository == 'facebook/react-native'
     uses: ./.github/workflows/prebuild-ios-dependencies.yml
     secrets: inherit
 
@@ -125,9 +127,9 @@ jobs:
     runs-on: windows-2025
     needs: prepare_hermes_workspace
     env:
-      HERMES_WS_DIR: 'D:\tmp\hermes'
-      HERMES_TARBALL_ARTIFACTS_DIR: 'D:\tmp\hermes\hermes-runtime-darwin'
-      HERMES_OSXBIN_ARTIFACTS_DIR: 'D:\tmp\hermes\osx-bin'
+      HERMES_WS_DIR: 'C:\tmp\hermes'
+      HERMES_TARBALL_ARTIFACTS_DIR: 'C:\tmp\hermes\hermes-runtime-darwin'
+      HERMES_OSXBIN_ARTIFACTS_DIR: 'C:\tmp\hermes\osx-bin'
       ICU_URL: "https://github.com/unicode-org/icu/releases/download/release-64-2/icu4c-64_2-Win64-MSVC2017.zip"
       MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
       CMAKE_DIR: 'C:\Program Files\CMake\bin'

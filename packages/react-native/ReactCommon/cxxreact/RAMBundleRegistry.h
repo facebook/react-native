@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <cstdint>
 #include <functional>
@@ -23,7 +23,8 @@
 
 namespace facebook::react {
 
-class RN_EXPORT RAMBundleRegistry {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] RAMBundleRegistry {
  public:
   constexpr static uint32_t MAIN_BUNDLE_ID = 0;
 
@@ -43,7 +44,7 @@ class RN_EXPORT RAMBundleRegistry {
 
   void registerBundle(uint32_t bundleId, std::string bundlePath);
   JSModulesUnbundle::Module getModule(uint32_t bundleId, uint32_t moduleId);
-  virtual ~RAMBundleRegistry(){};
+  virtual ~RAMBundleRegistry() = default;
 
  private:
   JSModulesUnbundle* getBundle(uint32_t bundleId) const;
@@ -55,4 +56,4 @@ class RN_EXPORT RAMBundleRegistry {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

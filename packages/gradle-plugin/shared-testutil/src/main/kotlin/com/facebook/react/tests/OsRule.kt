@@ -25,14 +25,14 @@ class OsRule : TestRule {
       override fun evaluate() {
         val annotation = description.annotations.filterIsInstance<WithOs>().firstOrNull()
 
-        annotation?.os?.propertyName?.let {
+        annotation?.os?.propertyName?.let { osName ->
           retainOs = System.getProperty(OS_NAME_KEY)
-          System.setProperty(OS_NAME_KEY, it)
+          System.setProperty(OS_NAME_KEY, osName)
         }
-        annotation?.arch?.let {
-          if (it.isNotBlank()) {
+        annotation?.arch?.let { arch ->
+          if (arch.isNotBlank()) {
             retainArch = System.getProperty(OS_ARCH_KEY)
-            System.setProperty(OS_ARCH_KEY, it)
+            System.setProperty(OS_ARCH_KEY, arch)
           }
         }
         try {

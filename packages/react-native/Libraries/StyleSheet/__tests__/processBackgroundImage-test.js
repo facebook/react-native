@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {BackgroundImageValue} from '../StyleSheetTypes';
+
 import processBackgroundImage from '../processBackgroundImage';
 
 const {OS} = require('../../Utilities/Platform').default;
@@ -121,7 +123,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process a linear gradient object style with case-insensitive direction keyword', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         direction: 'To Bottom',
@@ -138,7 +140,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process a linear gradient object style with case-insensitive angle', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         direction: '45DEG',
@@ -350,7 +352,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process an array of style objects', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         direction: 'to bottom right',
@@ -374,7 +376,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process an style object with default direction', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [{color: 'red'}, {color: 'blue'}],
@@ -388,7 +390,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process style object with direction enum', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         direction: 'to right',
@@ -403,7 +405,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process style object with direction angle', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         direction: '45deg',
@@ -418,7 +420,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should fix up stop positions #1', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [
@@ -456,7 +458,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should process multiple stop positions', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [
@@ -493,7 +495,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should fix up stop positions #2', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [
@@ -526,7 +528,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should fix up stop positions #3', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [
@@ -559,7 +561,7 @@ describe('processBackgroundImage', () => {
   });
 
   it('should fix up stop positions #4', () => {
-    const input = [
+    const input: $ReadOnlyArray<BackgroundImageValue> | string = [
       {
         type: 'linear-gradient' as const,
         colorStops: [
@@ -707,7 +709,7 @@ describe('processBackgroundImage', () => {
         colorStops: [{color: 'red'}, {positions: ['20%']}, {color: 'blue'}],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].type).toBe('linear-gradient');
     expect(result[0].direction).toEqual({type: 'angle', value: 180});
@@ -739,7 +741,7 @@ describe('processBackgroundImage', () => {
     expect(result).toEqual([]);
 
     // Invalid object syntax
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     result = processBackgroundImage([
       {
         type: 'linear-gradient' as const,
@@ -779,7 +781,7 @@ describe('processBackgroundImage', () => {
         ],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: null},
@@ -887,7 +889,7 @@ describe('processBackgroundImage', () => {
         ],
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result1 = processBackgroundImage(input1);
     expect(result1[0].colorStops).toEqual([
       {color: processColor('red'), position: '10%'},
@@ -923,7 +925,7 @@ describe('processBackgroundImage', () => {
         },
       },
     ];
-    // $FlowFixMe[incompatible-call] - `positions` is missing types.
+    // $FlowFixMe[incompatible-type] - `positions` is missing types.
     const result = processBackgroundImage(input);
     expect(result[0].colorStops).toEqual([
       {color: processColor('red'), position: '10%'},

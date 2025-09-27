@@ -7,4 +7,4 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NSInteger ReactTag;
+using ReactTag = NSInteger;

@@ -10,5 +10,5 @@
 
 'use strict';
 
-require('../../../scripts/babel-register').registerForMonorepo();
-module.exports = require('@react-native/metro-babel-transformer');
+require('../../../scripts/shared/babelRegister').registerForMonorepo();
+module.exports = require('./metro-babel-transformer.flow');

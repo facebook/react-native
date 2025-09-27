@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {Node} from 'react';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
@@ -39,7 +40,7 @@ const Drawer = () => {
       <Text style={styles.paragraph}>I'm in the Drawer!</Text>
       <Button
         title="Close drawer"
-        /* $FlowFixMe */
+        /* $FlowFixMe[incompatible-use] */
         onPress={() => drawer.current.closeDrawer()}
       />
     </View>
@@ -47,7 +48,6 @@ const Drawer = () => {
 
   return (
     <DrawerLayoutAndroid
-      /* $FlowFixMe */
       ref={drawer}
       accessibilityRole="drawerlayout"
       drawerWidth={300}
@@ -68,7 +68,7 @@ const Drawer = () => {
         </Text>
         <Button
           title="Open drawer"
-          /* $FlowFixMe */
+          /* $FlowFixMe[incompatible-use] */
           onPress={() => drawer.current.openDrawer()}
         />
       </View>
@@ -104,4 +104,4 @@ exports.examples = [
       return <Drawer />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

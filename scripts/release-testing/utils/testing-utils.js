@@ -20,7 +20,7 @@ const {
 } = require('../../releases/utils/release-utils');
 const ghaArtifactsUtils = require('./github-actions-utils.js');
 const fs = require('fs');
-// $FlowIgnore[cannot-resolve-module]
+// $FlowFixMe[cannot-resolve-module]
 const {spawn} = require('node:child_process');
 const os = require('os');
 const path = require('path');

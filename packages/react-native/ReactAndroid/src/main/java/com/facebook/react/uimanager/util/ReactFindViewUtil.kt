@@ -70,7 +70,7 @@ public object ReactFindViewUtil {
    * @param root root of the view hierarchy from which to find the view
    */
   @JvmStatic
-  public fun findView(root: View, onViewFoundListener: OnViewFoundListener): Unit {
+  public fun findView(root: View, onViewFoundListener: OnViewFoundListener) {
     val view = findView(root, onViewFoundListener.getNativeId())
     if (view != null) {
       onViewFoundListener.onViewFound(view)
@@ -83,29 +83,29 @@ public object ReactFindViewUtil {
    * Remove this listener using removeViewListener() if it's no longer needed.
    */
   @JvmStatic
-  public fun addViewListener(onViewFoundListener: OnViewFoundListener): Unit {
+  public fun addViewListener(onViewFoundListener: OnViewFoundListener) {
     onViewFoundListeners.add(onViewFoundListener)
   }
 
   /** Removes an OnViewFoundListener previously registered with addViewListener(). */
   @JvmStatic
-  public fun removeViewListener(onViewFoundListener: OnViewFoundListener): Unit {
+  public fun removeViewListener(onViewFoundListener: OnViewFoundListener) {
     onViewFoundListeners.remove(onViewFoundListener)
   }
 
   @JvmStatic
-  public fun addViewsListener(listener: OnMultipleViewsFoundListener, ids: Set<String>): Unit {
+  public fun addViewsListener(listener: OnMultipleViewsFoundListener, ids: Set<String>) {
     onMultipleViewsFoundListener[listener] = ids
   }
 
   @JvmStatic
-  public fun removeViewsListener(listener: OnMultipleViewsFoundListener): Unit {
+  public fun removeViewsListener(listener: OnMultipleViewsFoundListener) {
     onMultipleViewsFoundListener.remove(listener)
   }
 
   /** Invokes any listeners that are listening on this {@param view}'s native id */
   @JvmStatic
-  public fun notifyViewRendered(view: View): Unit {
+  public fun notifyViewRendered(view: View) {
     val nativeId = getNativeId(view) ?: return
     val iterator = onViewFoundListeners.iterator()
     while (iterator.hasNext()) {

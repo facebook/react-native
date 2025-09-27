@@ -35,4 +35,6 @@ class StubWebSocketClient : public IWebSocketClient {
   void ping() override {}
 };
 
+WebSocketClientFactory getStubWebSocketClientFactory();
+
 } // namespace facebook::react

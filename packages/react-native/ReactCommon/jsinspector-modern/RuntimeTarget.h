@@ -17,6 +17,7 @@
 
 #include <ReactCommon/RuntimeExecutor.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
+#include <jsinspector-modern/tracing/TraceRecordingState.h>
 
 #include <memory>
 
@@ -35,6 +36,7 @@
 namespace facebook::react::jsinspector_modern {
 
 class RuntimeAgent;
+class RuntimeTracingAgent;
 class RuntimeAgentDelegate;
 class RuntimeTarget;
 struct SessionState;
@@ -135,12 +137,6 @@ class RuntimeTargetController {
   void notifyDebuggerSessionDestroyed();
 
   /**
-   * Registers the corresponding RuntimeTarget for Tracing: might enable some
-   * capabilities that will be later used in Tracing Profile.
-   */
-  void registerForTracing();
-
-  /**
    * Start sampling profiler for the corresponding RuntimeTarget.
    */
   void enableSamplingProfiler();
@@ -205,14 +201,19 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * \returns The new agent, or nullptr if the runtime is not debuggable.
    */
   std::shared_ptr<RuntimeAgent> createAgent(
-      FrontendChannel channel,
+      const FrontendChannel& channel,
       SessionState& sessionState);
 
   /**
-   * Registers this Runtime for Tracing: might enable some
-   * capabilities that will be later used in Tracing Profile.
+   * Creates a new RuntimeTracingAgent.
+   * This Agent is not owned by the RuntimeTarget. The Agent will be destroyed
+   * either before the RuntimeTarget is destroyed, as part of the RuntimeTarget
+   * unregistration in InstanceTarget, or at the end of the tracing session.
+   *
+   * \param state A reference to the state of the active trace recording.
    */
-  void registerForTracing();
+  std::shared_ptr<RuntimeTracingAgent> createTracingAgent(
+      tracing::TraceRecordingState& state);
 
   /**
    * Start sampling profiler for a particular JavaScript runtime.
@@ -248,7 +249,7 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * constructor should be executed before any user code is run).
    */
   RuntimeTarget(
-      const ExecutionContextDescription& executionContextDescription,
+      ExecutionContextDescription executionContextDescription,
       RuntimeTargetDelegate& delegate,
       RuntimeExecutor jsExecutor);
 
@@ -257,6 +258,13 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   RuntimeExecutor jsExecutor_;
   WeakList<RuntimeAgent> agents_;
   RuntimeTargetController controller_{*this};
+
+  /**
+   * This TracingAgent is owned by the InstanceTracingAgent, both are bound to
+   * the lifetime of their corresponding targets and the lifetime of the tracing
+   * session - HostTargetTraceRecording.
+   */
+  std::weak_ptr<RuntimeTracingAgent> tracingAgent_;
 
   /**
    * Adds a function with the given name on the runtime's global object, that

@@ -108,14 +108,8 @@ public abstract class ReactContext extends ContextWrapper {
     mInteropModuleRegistry = new InteropModuleRegistry();
   }
 
-  public void resetPerfStats() {
-    if (mNativeModulesMessageQueueThread != null) {
-      mNativeModulesMessageQueueThread.resetPerfStats();
-    }
-    if (mJSMessageQueueThread != null) {
-      mJSMessageQueueThread.resetPerfStats();
-    }
-  }
+  @Deprecated(since = "MessageQueueThread perf stats are no longer collected")
+  public void resetPerfStats() {}
 
   public void setJSExceptionHandler(@Nullable JSExceptionHandler jSExceptionHandler) {
     mJSExceptionHandler = jSExceptionHandler;

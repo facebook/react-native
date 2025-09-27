@@ -7,6 +7,8 @@
 
 #import <React/RCTInputAccessoryView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTBridge.h>
 #import <React/RCTTouchHandler.h>
 #import <React/UIView+React.h>
@@ -76,3 +78,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

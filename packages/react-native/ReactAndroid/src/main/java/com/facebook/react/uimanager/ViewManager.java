@@ -9,10 +9,10 @@ package com.facebook.react.uimanager;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -54,7 +54,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
    * in a concrete constructor to enable View Recycling per ViewManager.
    */
-  @Nullable private HashMap<Integer, Stack<T>> mRecyclableViews = null;
+  @Nullable private Map<Integer, Stack<T>> mRecyclableViews = null;
 
   public ViewManager() {
     super(null);
@@ -211,7 +211,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     T view = null;
     @Nullable Stack<T> recyclableViews = getRecyclableViewStack(reactContext.getSurfaceId(), true);
     if (recyclableViews != null && !recyclableViews.empty()) {
-      view = recycleView(reactContext, recyclableViews.pop());
+      T recyclableView = recyclableViews.pop();
+
+      // When view recycling isn't enabled for all components, a recyclable view could still be
+      // attached to a non-recyclable view. This guarantees that recycled view have been removed
+      // from their parent.
+      if (ReactNativeFeatureFlags.enableViewRecycling() && recyclableView.getParent() != null) {
+        ((ViewGroup) recyclableView.getParent()).removeView(recyclableView);
+      }
+
+      view = recycleView(reactContext, recyclableView);
     } else {
       view = createViewInstance(reactContext);
     }
@@ -260,16 +269,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (recyclableViews != null) {
       T recyclableView = prepareToRecycleView(themedReactContext, view);
       if (recyclableView != null) {
-        Assertions.assertCondition(
-            recyclableView.getParent() == null,
-            "Recycled view ["
-                + view.getId()
-                + "] should not be attached to a parent. View: "
-                + view
-                + " Parent: "
-                + recyclableView.getParent()
-                + " ThemedReactContext: "
-                + themedReactContext);
         recyclableViews.push(recyclableView);
       }
     }
@@ -488,19 +487,18 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * <p>Subclasses can override this method to implement custom resource prefetching for the
    * ViewManager.
    *
+   * @param surfaceId surface ID
    * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
-   * @param surfaceId {@link int} surface ID
-   * @param reactTag reactTag that should be set as ID of the view instance
    * @param params {@link MapBuffer} prefetch request params defined in C++
    */
   @UnstableReactNativeAPI
-  public void experimental_prefetchResource(
-      ReactContext reactContext, int surfaceId, int reactTag, MapBuffer params) {
+  public void experimental_prefetchResources(
+      int surfaceId, ReactContext reactContext, MapBuffer params) {
     return;
   }
 
   @UnstableReactNativeAPI
   protected boolean experimental_isPrefetchingEnabled() {
-    return false;
+    return ReactNativeFeatureFlags.enableImagePrefetchingAndroid();
   }
 }

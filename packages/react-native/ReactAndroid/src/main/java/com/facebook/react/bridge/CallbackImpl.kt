@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.bridge
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
@@ -13,6 +15,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Implementation of javascript callback function that uses Bridge to schedule method execution. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class CallbackImpl(private val jsInstance: JSInstance, private val callbackId: Int) :
     Callback {
   private var invoked = false
@@ -20,16 +26,20 @@ internal class CallbackImpl(private val jsInstance: JSInstance, private val call
   override fun invoke(vararg args: Any?) {
     if (invoked) {
       throw RuntimeException(
-          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code.")
+          "Illegal callback invocation from native module. This callback type only permits a single invocation from native code."
+      )
     }
-    jsInstance.invokeCallback(callbackId, Arguments.fromJavaArgs(args))
+    @Suppress("UNCHECKED_CAST")
+    jsInstance.invokeCallback(callbackId, Arguments.fromJavaArgs(args as Array<Any?>))
     invoked = true
   }
 
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CallbackImpl", LegacyArchitectureLogLevel.ERROR)
+          "CallbackImpl",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

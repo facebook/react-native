@@ -145,7 +145,7 @@ class PojoCollector {
           }
         })();
 
-        /* $FlowFixMe[incompatible-return] Natural Inference rollout. See
+        /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
          * https://fburl.com/workplace/6291gfvu */
         return {
           type: 'ArrayTypeAnnotation',

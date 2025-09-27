@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type AnimatedValue from 'react-native/Libraries/Animated/nodes/AnimatedValue';
 
 import RNTesterSettingSwitchRow from '../../components/RNTesterSettingSwitchRow';
@@ -23,7 +24,7 @@ import {
   View,
 } from 'react-native';
 
-class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
+class Tester extends React.Component<$FlowFixMe, $FlowFixMe> {
   state: any | {js: AnimatedValue, native: AnimatedValue} = {
     native: new Animated.Value(0),
     js: new Animated.Value(0),
@@ -72,7 +73,7 @@ class Tester extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
+class ValueListenerExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {anim: AnimatedValue, progress: number} = {
     anim: new Animated.Value(0),
     progress: 0,
@@ -121,7 +122,7 @@ class ValueListenerExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class LoopExample extends React.Component<{...}, $FlowFixMeState> {
+class LoopExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {value: AnimatedValue} = {
     value: new Animated.Value(0),
   };
@@ -192,7 +193,7 @@ const InternalSettings = () => {
   );
 };
 
-class EventExample extends React.Component<{...}, $FlowFixMeState> {
+class EventExample extends React.Component<{...}, $FlowFixMe> {
   state: any | {anim: AnimatedValue} = {
     anim: new Animated.Value(0),
   };
@@ -239,10 +240,7 @@ class EventExample extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-class TrackingExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+class TrackingExample extends React.Component<$FlowFixMe, $FlowFixMe> {
   state:
     | any
     | {
@@ -657,4 +655,4 @@ exports.examples = [
       return <InternalSettings />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

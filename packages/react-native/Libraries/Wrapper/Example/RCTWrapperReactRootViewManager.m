@@ -7,6 +7,8 @@
 
 #import "RCTWrapperReactRootViewManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <RCTWrapper/RCTWrapperView.h>
 #import <RCTWrapper/RCTWrapperViewControllerHostingView.h>
 
@@ -29,3 +31,5 @@ RCT_EXPORT_MODULE()
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

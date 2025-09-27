@@ -38,37 +38,34 @@ internal class ReactModalHostManager :
   }
 
   @ReactProp(name = "animationType")
-  override fun setAnimationType(view: ReactModalHostView, animationType: String?) {
-    if (animationType != null) {
-      view.animationType = animationType
+  override fun setAnimationType(view: ReactModalHostView, value: String?) {
+    if (value != null) {
+      view.animationType = value
     }
   }
 
   @ReactProp(name = "transparent")
-  override fun setTransparent(view: ReactModalHostView, transparent: Boolean) {
-    view.transparent = transparent
+  override fun setTransparent(view: ReactModalHostView, value: Boolean) {
+    view.transparent = value
   }
 
   @ReactProp(name = "statusBarTranslucent")
-  override fun setStatusBarTranslucent(view: ReactModalHostView, statusBarTranslucent: Boolean) {
-    view.statusBarTranslucent = statusBarTranslucent
+  override fun setStatusBarTranslucent(view: ReactModalHostView, value: Boolean) {
+    view.statusBarTranslucent = value
   }
 
   @ReactProp(name = "navigationBarTranslucent")
-  override fun setNavigationBarTranslucent(
-      view: ReactModalHostView,
-      navigationBarTranslucent: Boolean
-  ) {
-    view.navigationBarTranslucent = navigationBarTranslucent
+  override fun setNavigationBarTranslucent(view: ReactModalHostView, value: Boolean) {
+    view.navigationBarTranslucent = value
   }
 
   @ReactProp(name = "hardwareAccelerated")
-  override fun setHardwareAccelerated(view: ReactModalHostView, hardwareAccelerated: Boolean) {
-    view.hardwareAccelerated = hardwareAccelerated
+  override fun setHardwareAccelerated(view: ReactModalHostView, value: Boolean) {
+    view.hardwareAccelerated = value
   }
 
   @ReactProp(name = "visible")
-  override fun setVisible(view: ReactModalHostView, visible: Boolean) {
+  override fun setVisible(view: ReactModalHostView, value: Boolean) {
     // iOS only
   }
 
@@ -98,7 +95,8 @@ internal class ReactModalHostManager :
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
         dispatcher.dispatchEvent(
-            RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
+            RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id)
+        )
       }
       view.onShowListener = OnShowListener {
         dispatcher.dispatchEvent(ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
@@ -123,7 +121,7 @@ internal class ReactModalHostManager :
   override fun updateState(
       view: ReactModalHostView,
       props: ReactStylesDiffMap,
-      stateWrapper: StateWrapper
+      stateWrapper: StateWrapper,
   ): Any? {
     view.stateWrapper = stateWrapper
     return null

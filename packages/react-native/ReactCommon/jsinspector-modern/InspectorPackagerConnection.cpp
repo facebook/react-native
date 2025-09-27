@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <cerrno>
 #include <chrono>
+#include <utility>
 
 using namespace std::literals;
 
@@ -34,7 +35,10 @@ InspectorPackagerConnection::Impl::create(
   // No make_shared because the constructor is private
   std::shared_ptr<InspectorPackagerConnection::Impl> impl(
       new InspectorPackagerConnection::Impl(
-          url, deviceName, appName, std::move(delegate)));
+          std::move(url),
+          std::move(deviceName),
+          std::move(appName),
+          std::move(delegate)));
   getInspectorInstance().registerPageStatusListener(impl);
   return impl;
 }
@@ -50,7 +54,7 @@ InspectorPackagerConnection::Impl::Impl(
       delegate_(std::move(delegate)) {}
 
 void InspectorPackagerConnection::Impl::handleProxyMessage(
-    folly::const_dynamic_view message) {
+    const folly::const_dynamic_view& message) {
   std::string event = message.descend("event").string_or(INVALID);
   if (event == "getPages") {
     sendToPackager(
@@ -67,7 +71,7 @@ void InspectorPackagerConnection::Impl::handleProxyMessage(
 }
 
 void InspectorPackagerConnection::Impl::sendEventToAllConnections(
-    std::string event) {
+    const std::string& event) {
   for (auto& connection : inspectorSessions_) {
     connection.second.localConnection->sendMessage(event);
   }
@@ -81,7 +85,7 @@ void InspectorPackagerConnection::Impl::closeAllConnections() {
 }
 
 void InspectorPackagerConnection::Impl::handleConnect(
-    folly::const_dynamic_view payload) {
+    const folly::const_dynamic_view& payload) {
   std::string pageId = payload.descend("pageId").string_or(INVALID);
   auto existingConnectionIt = inspectorSessions_.find(pageId);
   if (existingConnectionIt != inspectorSessions_.end()) {
@@ -91,7 +95,7 @@ void InspectorPackagerConnection::Impl::handleConnect(
     LOG(WARNING) << "Already connected: " << pageId;
     return;
   }
-  int pageIdInt;
+  int pageIdInt = 0;
   try {
     pageIdInt = std::stoi(pageId);
   } catch (...) {
@@ -123,7 +127,7 @@ void InspectorPackagerConnection::Impl::handleConnect(
 }
 
 void InspectorPackagerConnection::Impl::handleDisconnect(
-    folly::const_dynamic_view payload) {
+    const folly::const_dynamic_view& payload) {
   std::string pageId = payload.descend("pageId").string_or(INVALID);
   auto inspectorConnection = removeConnectionForPage(pageId);
   if (inspectorConnection) {
@@ -132,7 +136,8 @@ void InspectorPackagerConnection::Impl::handleDisconnect(
 }
 
 std::unique_ptr<ILocalConnection>
-InspectorPackagerConnection::Impl::removeConnectionForPage(std::string pageId) {
+InspectorPackagerConnection::Impl::removeConnectionForPage(
+    const std::string& pageId) {
   auto it = inspectorSessions_.find(pageId);
   if (it != inspectorSessions_.end()) {
     auto connection = std::move(it->second);
@@ -143,7 +148,7 @@ InspectorPackagerConnection::Impl::removeConnectionForPage(std::string pageId) {
 }
 
 void InspectorPackagerConnection::Impl::handleWrappedEvent(
-    folly::const_dynamic_view payload) {
+    const folly::const_dynamic_view& payload) {
   std::string pageId = payload.descend("pageId").string_or(INVALID);
   std::string wrappedEvent = payload.descend("wrappedEvent").string_or(INVALID);
   auto connectionIt = inspectorSessions_.find(pageId);
@@ -195,7 +200,7 @@ void InspectorPackagerConnection::Impl::didReceiveMessage(
                << e.what();
     return;
   }
-  handleProxyMessage(std::move(parsedJSON));
+  handleProxyMessage(parsedJSON);
 }
 
 void InspectorPackagerConnection::Impl::didOpen() {
@@ -263,10 +268,6 @@ void InspectorPackagerConnection::Impl::reconnect() {
           }
 
           strongSelf->connect();
-
-          if (!strongSelf->isConnected()) {
-            strongSelf->reconnect();
-          }
         }
       },
       RECONNECT_DELAY);
@@ -277,7 +278,8 @@ void InspectorPackagerConnection::Impl::closeQuietly() {
   disposeWebSocket();
 }
 
-void InspectorPackagerConnection::Impl::sendToPackager(folly::dynamic message) {
+void InspectorPackagerConnection::Impl::sendToPackager(
+    const folly::dynamic& message) {
   if (!webSocket_) {
     return;
   }
@@ -288,7 +290,7 @@ void InspectorPackagerConnection::Impl::sendToPackager(folly::dynamic message) {
 void InspectorPackagerConnection::Impl::scheduleSendToPackager(
     folly::dynamic message,
     SessionId sourceSessionId,
-    std::string sourcePageId) {
+    const std::string& sourcePageId) {
   delegate_->scheduleCallback(
       [weakSelf = weak_from_this(),
        message = std::move(message),
@@ -331,7 +333,7 @@ InspectorPackagerConnection::Impl::RemoteConnection::RemoteConnection(
     std::weak_ptr<InspectorPackagerConnection::Impl> owningPackagerConnection,
     std::string pageId,
     SessionId sessionId)
-    : owningPackagerConnection_(owningPackagerConnection),
+    : owningPackagerConnection_(std::move(owningPackagerConnection)),
       pageId_(std::move(pageId)),
       sessionId_(sessionId) {}
 
@@ -367,7 +369,11 @@ InspectorPackagerConnection::InspectorPackagerConnection(
     std::string deviceName,
     std::string appName,
     std::unique_ptr<InspectorPackagerConnectionDelegate> delegate)
-    : impl_(Impl::create(url, deviceName, appName, std::move(delegate))) {}
+    : impl_(Impl::create(
+          std::move(url),
+          std::move(deviceName),
+          std::move(appName),
+          std::move(delegate))) {}
 
 bool InspectorPackagerConnection::isConnected() const {
   return impl_->isConnected();

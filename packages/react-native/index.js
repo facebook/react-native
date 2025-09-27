@@ -66,6 +66,12 @@ module.exports = {
   get Modal() {
     return require('./Libraries/Modal/Modal').default;
   },
+  get unstable_NativeText() {
+    return require('./Libraries/Text/TextNativeComponent').NativeText;
+  },
+  get unstable_NativeView() {
+    return require('./Libraries/Components/View/ViewNativeComponent').default;
+  },
   get Pressable() {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
@@ -86,14 +92,14 @@ module.exports = {
   /**
    * @deprecated SafeAreaView has been deprecated and will be removed in a future release.
    * Please use 'react-native-safe-area-context' instead.
-   * See https://github.com/th3rdwave/react-native-safe-area-context
+   * See https://github.com/AppAndFlow/react-native-safe-area-context
    */
   get SafeAreaView() {
     warnOnce(
       'safe-area-view-deprecated',
       'SafeAreaView has been deprecated and will be removed in a future release. ' +
         "Please use 'react-native-safe-area-context' instead. " +
-        'See https://github.com/th3rdwave/react-native-safe-area-context',
+        'See https://github.com/AppAndFlow/react-native-safe-area-context',
     );
     return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
@@ -111,6 +117,9 @@ module.exports = {
   },
   get Text() {
     return require('./Libraries/Text/Text').default;
+  },
+  get unstable_TextAncestorContext() {
+    return require('./Libraries/Text/TextAncestorContext').default;
   },
   get TextInput() {
     return require('./Libraries/Components/TextInput/TextInput').default;
@@ -221,6 +230,12 @@ module.exports = {
    * @deprecated
    */
   get InteractionManager() {
+    warnOnce(
+      'interaction-manager-deprecated',
+      'InteractionManager has been deprecated and will be removed in a ' +
+        'future release. Please refactor long tasks into smaller ones, and ' +
+        " use 'requestIdleCallback' instead.",
+    );
     return require('./Libraries/Interaction/InteractionManager').default;
   },
   get Keyboard() {
@@ -237,6 +252,9 @@ module.exports = {
   },
   get NativeAppEventEmitter() {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
+  },
+  get NativeComponentRegistry() {
+    return require('./Libraries/NativeComponent/NativeComponentRegistry');
   },
   get NativeDialogManagerAndroid() {
     return require('./Libraries/NativeModules/specs/NativeDialogManagerAndroid')
@@ -285,6 +303,9 @@ module.exports = {
   },
   get requireNativeComponent() {
     return require('./Libraries/ReactNative/requireNativeComponent').default;
+  },
+  get ReactNativeVersion() {
+    return require('./Libraries/Core/ReactNativeVersion').default;
   },
   get RootTagContext() {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;

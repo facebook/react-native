@@ -8,13 +8,12 @@
  * @format
  */
 
-const {publishPackage} = require('../npm-utils');
-const {getPackages} = require('../utils/monorepo');
+const {publishPackage} = require('../releases/utils/npm-utils');
+const {getPackages} = require('../shared/monorepoUtils');
 const {execSync} = require('child_process');
 const {parseArgs} = require('util');
 
 const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
-const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
 
 const config = {
   options: {
@@ -25,7 +24,7 @@ const config = {
 async function main() {
   const {
     values: {help},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 
@@ -139,7 +138,6 @@ function runPublish(
 ) {
   const result = publishPackage(packagePath, {
     tags,
-    otp: NPM_CONFIG_OTP,
   });
 
   if (result.code !== 0) {

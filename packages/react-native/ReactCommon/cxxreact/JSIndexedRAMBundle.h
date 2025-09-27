@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <functional>
 #include <istream>
@@ -23,13 +23,15 @@
 
 namespace facebook::react {
 
-class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
+class RN_EXPORT [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSIndexedRAMBundle
+    : public JSModulesUnbundle {
  public:
   static std::function<std::unique_ptr<JSModulesUnbundle>(std::string)>
   buildFactory();
 
   // Throws std::runtime_error on failure.
-  JSIndexedRAMBundle(const char* sourceURL);
+  explicit JSIndexedRAMBundle(const char* sourcePath);
   JSIndexedRAMBundle(std::unique_ptr<const JSBigString> script);
 
   // Throws std::runtime_error on failure.
@@ -59,19 +61,19 @@ class RN_EXPORT JSIndexedRAMBundle : public JSModulesUnbundle {
   };
 
   void init();
-  std::string getModuleCode(const uint32_t id) const;
-  void readBundle(char* buffer, const std::streamsize bytes) const;
+  std::string getModuleCode(uint32_t id) const;
+  void readBundle(char* buffer, std::streamsize bytes) const;
   void readBundle(
       char* buffer,
-      const std::streamsize bytes,
-      const std::istream::pos_type position) const;
+      std::streamsize bytes,
+      std::istream::pos_type position) const;
 
   mutable std::unique_ptr<std::istream> m_bundle;
   ModuleTable m_table;
-  size_t m_baseOffset;
+  size_t m_baseOffset{};
   std::unique_ptr<JSBigBufferString> m_startupCode;
 };
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

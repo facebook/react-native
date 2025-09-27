@@ -7,6 +7,11 @@
 
 #import "RCTBaseTextViewManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
+__attribute__((deprecated("This API will be removed along with the legacy architecture.")))
 @interface RCTBaseTextInputViewManager : RCTBaseTextViewManager
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

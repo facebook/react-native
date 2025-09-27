@@ -11,6 +11,7 @@ import javax.inject.Inject
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 
 /**
  * A private extension we set on the rootProject to make easier to share values at execution time
@@ -39,12 +40,15 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
               //   - We're inside a user project, so inside the ./android folder. Default should be
               // ../
               // User can always override this default by setting a `root =` inside the template.
-              if (project.rootProject.name == "react-native-github" ||
-                  project.rootProject.name == "react-native-build-from-source") {
+              if (
+                  project.rootProject.name == "react-native-github" ||
+                      project.rootProject.name == "react-native-build-from-source"
+              ) {
                 project.rootProject.layout.projectDirectory.dir("../../")
               } else {
                 project.rootProject.layout.projectDirectory.dir("../")
-              })
+              }
+          )
 
   val reactNativeDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/react-native"))
@@ -54,4 +58,6 @@ abstract class PrivateReactExtension @Inject constructor(project: Project) {
 
   val codegenDir: DirectoryProperty =
       objects.directoryProperty().convention(root.dir("node_modules/@react-native/codegen"))
+
+  val hermesV1Enabled: Property<Boolean> = objects.property(Boolean::class.java).convention(false)
 }

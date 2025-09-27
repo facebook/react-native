@@ -33,13 +33,14 @@ import {
   BackHandler,
   Button,
   Linking,
+  NativeComponentRegistry,
   Platform,
+  StatusBar,
   StyleSheet,
   View,
   useColorScheme,
   useWindowDimensions,
 } from 'react-native';
-import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 // In Bridgeless mode, in dev, enable static view config validator
 if (global.RN$Bridgeless === true && __DEV__) {
@@ -275,6 +276,12 @@ const RNTesterApp = ({
 
   return (
     <RNTesterThemeContext.Provider value={theme}>
+      {Platform.OS === 'android' ? (
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={theme.GroupedBackgroundColor}
+        />
+      ) : null}
       {!shouldHideChrome && (
         <RNTTitleBar
           title={title}

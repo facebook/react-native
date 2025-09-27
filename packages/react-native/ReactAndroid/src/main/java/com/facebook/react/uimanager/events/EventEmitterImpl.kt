@@ -42,7 +42,8 @@ internal class EventEmitterImpl(
 
   @Deprecated(
       "Please use RCTModernEventEmitter instead",
-      ReplaceWith("RCTModernEventEmitter.receiveEvent(surfaceId, targetTag, eventName, params)"))
+      ReplaceWith("RCTModernEventEmitter.receiveEvent(surfaceId, targetTag, eventName, params)"),
+  )
   override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) {
     receiveEvent(-1, targetTag, eventName, params)
   }
@@ -51,7 +52,7 @@ internal class EventEmitterImpl(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      params: WritableMap?
+      params: WritableMap?,
   ) {
     // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
     receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
@@ -65,7 +66,7 @@ internal class EventEmitterImpl(
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
-      changedIndices: WritableArray
+      changedIndices: WritableArray,
   ) {
     check(touches.size() > 0)
     val reactTag = touches.getMap(0)?.getInt(TouchesHelper.TARGET_KEY) ?: 0
@@ -87,7 +88,9 @@ internal class EventEmitterImpl(
         logSoftException(
             TAG,
             ReactNoCrashSoftException(
-                "Cannot get RCTEventEmitter without active Catalyst instance!"))
+                "Cannot get RCTEventEmitter without active Catalyst instance!"
+            ),
+        )
       }
     }
     return legacyEventEmitter
@@ -100,7 +103,7 @@ internal class EventEmitterImpl(
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       params: WritableMap?,
-      @EventCategoryDef category: Int
+      @EventCategoryDef category: Int,
   ) {
     @UIManagerType val uiManagerType = getUIManagerType(targetTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
@@ -108,10 +111,18 @@ internal class EventEmitterImpl(
       if (fabricEventEmitter == null) {
         logSoftException(
             TAG,
-            ReactNoCrashSoftException("No fabricEventEmitter registered, cannot dispatch event"))
+            ReactNoCrashSoftException("No fabricEventEmitter registered, cannot dispatch event"),
+        )
       } else {
         fabricEventEmitter.receiveEvent(
-            surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
+            surfaceId,
+            targetTag,
+            eventName,
+            canCoalesceEvent,
+            customCoalesceKey,
+            params,
+            category,
+        )
       }
     } else if (uiManagerType == UIManagerType.LEGACY) {
       ensureLegacyEventEmitter()?.receiveEvent(targetTag, eventName, params)

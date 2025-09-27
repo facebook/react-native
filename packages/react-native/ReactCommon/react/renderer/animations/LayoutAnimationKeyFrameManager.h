@@ -41,7 +41,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
  public:
   LayoutAnimationKeyFrameManager(
       RuntimeExecutor runtimeExecutor,
-      ContextContainer::Shared& contextContainer,
+      std::shared_ptr<const ContextContainer>& contextContainer,
       LayoutAnimationStatusDelegate* delegate);
 
 #pragma mark - UIManagerAnimationDelegate methods
@@ -137,7 +137,7 @@ class LayoutAnimationKeyFrameManager : public UIManagerAnimationDelegate,
 
  private:
   RuntimeExecutor runtimeExecutor_;
-  ContextContainer::Shared contextContainer_;
+  std::shared_ptr<const ContextContainer> contextContainer_;
 
   mutable std::mutex layoutAnimationStatusDelegateMutex_;
   mutable LayoutAnimationStatusDelegate* layoutAnimationStatusDelegate_{};

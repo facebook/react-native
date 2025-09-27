@@ -13,12 +13,14 @@
 import VirtualizedLists from '@react-native/virtualized-lists';
 
 type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
-const VirtualizedList: VirtualizedListType = VirtualizedLists.VirtualizedList;
+const VirtualizedListComponent: VirtualizedListType =
+  VirtualizedLists.VirtualizedList;
 
 export type {
   ListRenderItemInfo,
   ListRenderItem,
+  ListViewToken,
   Separators,
   VirtualizedListProps,
 } from '@react-native/virtualized-lists';
-export default VirtualizedList;
+export default VirtualizedListComponent;

@@ -20,7 +20,6 @@ import type {
 
 import DebuggerSessionObserver from '../../../src/private/devsupport/rndevtools/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
-import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
@@ -443,7 +442,7 @@ export function withSubscription(
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
-      // $FlowFixMe[incompatible-call]
+      // $FlowFixMe[incompatible-type]
       reportLogBoxError(err, errorInfo.componentStack);
     }
 
@@ -493,6 +492,10 @@ function showFuseboxWarningsMigrationMessageOnce() {
     return;
   }
   hasShownFuseboxWarningsMigrationMessage = true;
+
+  const NativeDevSettings =
+    require('../../NativeModules/specs/NativeDevSettings').default;
+
   appendNewLog(
     new LogBoxLog({
       level: 'warn',

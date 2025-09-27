@@ -77,7 +77,11 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     this.heightMeasureSpec = heightMeasureSpec
     val viewportOffset = viewportOffset
     surface.updateLayoutSpecs(
-        widthMeasureSpec, heightMeasureSpec, viewportOffset.x, viewportOffset.y)
+        widthMeasureSpec,
+        heightMeasureSpec,
+        viewportOffset.x,
+        viewportOffset.y,
+    )
     Systrace.endSection(Systrace.TRACE_TAG_REACT)
   }
 
@@ -86,7 +90,11 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     if (wasMeasured && changed) {
       val viewportOffset = viewportOffset
       surface.updateLayoutSpecs(
-          widthMeasureSpec, heightMeasureSpec, viewportOffset.x, viewportOffset.y)
+          widthMeasureSpec,
+          heightMeasureSpec,
+          viewportOffset.x,
+          viewportOffset.y,
+      )
     }
   }
 
@@ -116,7 +124,11 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
    */
   override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
     val eventDispatcher = surface.eventDispatcher ?: return
-    jsTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
+    jsTouchDispatcher.onChildStartedNativeGesture(
+        ev,
+        eventDispatcher,
+        surface.reactHost?.currentReactContext,
+    )
     childView?.let { jsPointerDispatcher?.onChildStartedNativeGesture(it, ev, eventDispatcher) }
   }
 
@@ -145,10 +157,15 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     val eventDispatcher = surface.eventDispatcher
     if (eventDispatcher != null) {
       jsTouchDispatcher.handleTouchEvent(
-          event, eventDispatcher, surface.reactHost?.currentReactContext)
+          event,
+          eventDispatcher,
+          surface.reactHost?.currentReactContext,
+      )
     } else {
       FLog.w(
-          TAG, "Unable to dispatch touch events to JS as the React instance has not been attached")
+          TAG,
+          "Unable to dispatch touch events to JS as the React instance has not been attached",
+      )
     }
   }
 
@@ -166,7 +183,8 @@ public class ReactSurfaceView(context: Context?, private val surface: ReactSurfa
     } else {
       FLog.w(
           TAG,
-          "Unable to dispatch pointer events to JS as the React instance has not been attached")
+          "Unable to dispatch pointer events to JS as the React instance has not been attached",
+      )
     }
   }
 

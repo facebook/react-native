@@ -7,6 +7,8 @@
 
 #import <React/RCTMultilineTextInputView.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <React/RCTUtils.h>
 
 #import <React/RCTUITextView.h>
@@ -61,3 +63,5 @@
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

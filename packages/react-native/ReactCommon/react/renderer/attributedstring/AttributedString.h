@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/core/Sealable.h>
 #include <react/renderer/core/ShadowNode.h>
@@ -17,10 +15,6 @@
 #include <react/utils/hash_combine.h>
 
 namespace facebook::react {
-
-class AttributedString;
-
-using SharedAttributedString = std::shared_ptr<const AttributedString>;
 
 /*
  * Simple, cross-platform, React-specific implementation of attributed string

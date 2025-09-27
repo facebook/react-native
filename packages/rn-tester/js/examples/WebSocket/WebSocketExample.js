@@ -8,6 +8,8 @@
  * @format
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
@@ -380,4 +382,4 @@ exports.examples = [
       return <WebSocketExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

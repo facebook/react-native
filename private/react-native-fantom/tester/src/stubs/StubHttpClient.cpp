@@ -10,8 +10,8 @@
 
 namespace facebook::react {
 
-HttpClientFactory getHttpClientFactory() {
-  return []() { return std::make_unique<http::StubHttpClient>(); };
+HttpClientFactory getStubHttpClientFactory() {
+  return []() { return std::make_unique<StubHttpClient>(); };
 }
 
 } // namespace facebook::react

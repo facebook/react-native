@@ -7,13 +7,18 @@
 
 package com.facebook.react.utils
 
-import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.INCLUDE_JITPACK_REPOSITORY_DEFAULT
-import com.facebook.react.utils.PropertyUtils.INTERNAL_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_PUBLISHING_GROUP
+import com.facebook.react.utils.PropertyUtils.INTERNAL_HERMES_V1_VERSION_NAME
 import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO
+import com.facebook.react.utils.PropertyUtils.INTERNAL_REACT_PUBLISHING_GROUP
 import com.facebook.react.utils.PropertyUtils.INTERNAL_USE_HERMES_NIGHTLY
 import com.facebook.react.utils.PropertyUtils.INTERNAL_VERSION_NAME
+import com.facebook.react.utils.PropertyUtils.SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY
 import com.facebook.react.utils.PropertyUtils.SCOPED_INCLUDE_JITPACK_REPOSITORY
 import java.io.File
 import java.net.URI
@@ -23,11 +28,26 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
 internal object DependencyUtils {
 
+  internal data class Coordinates(
+      val versionString: String,
+      val hermesVersionString: String,
+      val hermesV1VersionString: String,
+      val reactGroupString: String = DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP,
+      val hermesGroupString: String = DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP,
+  )
+
   /**
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
   fun configureRepositories(project: Project) {
+    val exclusiveEnterpriseRepository = project.rootProject.exclusiveEnterpriseRepository()
+    if (exclusiveEnterpriseRepository != null) {
+      project.logger.lifecycle(
+          "Replacing ALL Maven Repositories with: $exclusiveEnterpriseRepository"
+      )
+    }
+
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
@@ -36,6 +56,16 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("org.webkit") }
           }
         }
+
+        if (exclusiveEnterpriseRepository != null) {
+          // We remove all previously set repositories and only configure the proxy provided by the
+          // user.
+          rootProject.repositories.clear()
+          mavenRepoFromUrl(exclusiveEnterpriseRepository)
+          // We return here as we don't want to configure other repositories as well.
+          return@allprojects
+        }
+
         // We add the snapshot for users on nightlies.
         mavenRepoFromUrl("https://central.sonatype.com/repository/maven-snapshots/") { repo ->
           repo.content { it.excludeGroup("org.webkit") }
@@ -76,14 +106,20 @@ internal object DependencyUtils {
    * This method takes care of configuring the resolution strategy for both the app and all the 3rd
    * party libraries which are auto-linked. Specifically it takes care of:
    * - Forcing the react-android/hermes-android version to the one specified in the package.json
-   * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`.
+   * - Substituting `react-native` with `react-android` and `hermes-engine` with `hermes-android`
+   * - Selecting between the classic Hermes and Hermes V1
    */
   fun configureDependencies(
       project: Project,
-      versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      coordinates: Coordinates,
+      hermesV1Enabled: Boolean = false,
   ) {
-    if (versionString.isBlank()) return
+    if (
+        coordinates.versionString.isBlank() ||
+            (!hermesV1Enabled && coordinates.hermesVersionString.isBlank()) ||
+            (hermesV1Enabled && coordinates.hermesV1VersionString.isBlank())
+    )
+        return
     project.rootProject.allprojects { eachProject ->
       eachProject.configurations.all { configuration ->
         // Here we set a dependencySubstitution for both react-native and hermes-engine as those
@@ -91,53 +127,83 @@ internal object DependencyUtils {
         // This allows users to import libraries that are still using
         // implementation("com.facebook.react:react-native:+") and resolve the right dependency.
         configuration.resolutionStrategy.dependencySubstitution {
-          getDependencySubstitutions(versionString, groupString).forEach { (module, dest, reason) ->
+          getDependencySubstitutions(coordinates, hermesV1Enabled).forEach { (module, dest, reason)
+            ->
             it.substitute(it.module(module)).using(it.module(dest)).because(reason)
           }
         }
         configuration.resolutionStrategy.force(
-            "${groupString}:react-android:${versionString}",
+            "${coordinates.reactGroupString}:react-android:${coordinates.versionString}",
         )
         if (!(eachProject.findProperty(INTERNAL_USE_HERMES_NIGHTLY) as? String).toBoolean()) {
           // Contributors only: The hermes-engine version is forced only if the user has
           // not opted into using nightlies for local development.
-          configuration.resolutionStrategy.force("${groupString}:hermes-android:${versionString}")
+          configuration.resolutionStrategy.force(
+              // TODO: T237406039 update coordinates
+              if (hermesV1Enabled)
+                  "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
+              else
+                  "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
+          )
         }
       }
     }
   }
 
   internal fun getDependencySubstitutions(
-      versionString: String,
-      groupString: String = DEFAULT_INTERNAL_PUBLISHING_GROUP
+      coordinates: Coordinates,
+      hermesV1Enabled: Boolean = false,
   ): List<Triple<String, String, String>> {
+    // TODO: T231755027 update coordinates and versioning
     val dependencySubstitution = mutableListOf<Triple<String, String, String>>()
+    // TODO: T237406039 update coordinates
+    val hermesVersionString =
+        if (hermesV1Enabled)
+            "${coordinates.hermesGroupString}:hermes-android:${coordinates.hermesV1VersionString}"
+        else "${coordinates.reactGroupString}:hermes-android:${coordinates.hermesVersionString}"
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:react-native",
-            "${groupString}:react-android:${versionString}",
-            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210."))
+            "${coordinates.reactGroupString}:react-android:${coordinates.versionString}",
+            "The react-native artifact was deprecated in favor of react-android due to https://github.com/facebook/react-native/issues/35210.",
+        )
+    )
     dependencySubstitution.add(
         Triple(
             "com.facebook.react:hermes-engine",
-            "${groupString}:hermes-android:${versionString}",
-            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210."))
-    if (groupString != DEFAULT_INTERNAL_PUBLISHING_GROUP) {
+            hermesVersionString,
+            "The hermes-engine artifact was deprecated in favor of hermes-android due to https://github.com/facebook/react-native/issues/35210.",
+        )
+    )
+    if (coordinates.reactGroupString != DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP) {
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:react-android",
-              "${groupString}:react-android:${versionString}",
-              "The react-android dependency was modified to use the correct Maven group."))
+              "${coordinates.reactGroupString}:react-android:${coordinates.versionString}",
+              "The react-android dependency was modified to use the correct Maven group.",
+          )
+      )
+      // TODO: T237406039 update coordinates
       dependencySubstitution.add(
           Triple(
               "com.facebook.react:hermes-android",
-              "${groupString}:hermes-android:${versionString}",
-              "The hermes-android dependency was modified to use the correct Maven group."))
+              hermesVersionString,
+              "The hermes-android dependency was modified to use the correct Maven group.",
+          )
+      )
+    } else if (hermesV1Enabled) {
+      dependencySubstitution.add(
+          Triple(
+              "com.facebook.react:hermes-android",
+              hermesVersionString,
+              "The hermes-android dependency was modified to use Hermes V1.",
+          )
+      )
     }
     return dependencySubstitution
   }
 
-  fun readVersionAndGroupStrings(propertiesFile: File): Pair<String, String> {
+  fun readVersionAndGroupStrings(propertiesFile: File, hermesVersionFile: File): Coordinates {
     val reactAndroidProperties = Properties()
     propertiesFile.inputStream().use { reactAndroidProperties.load(it) }
     val versionStringFromFile = (reactAndroidProperties[INTERNAL_VERSION_NAME] as? String).orEmpty()
@@ -149,15 +215,32 @@ internal object DependencyUtils {
           versionStringFromFile
         }
     // Returns Maven group for repos using different group for Maven artifacts
-    val groupString =
-        reactAndroidProperties[INTERNAL_PUBLISHING_GROUP] as? String
-            ?: DEFAULT_INTERNAL_PUBLISHING_GROUP
-    return Pair(versionString, groupString)
+    val reactGroupString =
+        reactAndroidProperties[INTERNAL_REACT_PUBLISHING_GROUP] as? String
+            ?: DEFAULT_INTERNAL_REACT_PUBLISHING_GROUP
+    val hermesGroupString =
+        reactAndroidProperties[INTERNAL_HERMES_PUBLISHING_GROUP] as? String
+            ?: DEFAULT_INTERNAL_HERMES_PUBLISHING_GROUP
+    // TODO: T237406039 read both versions from the same file
+    val hermesVersionProperties = Properties()
+    hermesVersionFile.inputStream().use { hermesVersionProperties.load(it) }
+
+    val hermesVersion = versionString
+    val hermesV1Version =
+        (hermesVersionProperties[INTERNAL_HERMES_V1_VERSION_NAME] as? String).orEmpty()
+
+    return Coordinates(
+        versionString,
+        hermesVersion,
+        hermesV1Version,
+        reactGroupString,
+        hermesGroupString,
+    )
   }
 
   fun Project.mavenRepoFromUrl(
       url: String,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = URI.create(url)
@@ -166,7 +249,7 @@ internal object DependencyUtils {
 
   fun Project.mavenRepoFromURI(
       uri: URI,
-      action: (MavenArtifactRepository) -> Unit = {}
+      action: (MavenArtifactRepository) -> Unit = {},
   ): MavenArtifactRepository =
       project.repositories.maven {
         it.url = uri
@@ -180,5 +263,14 @@ internal object DependencyUtils {
         hasProperty(INCLUDE_JITPACK_REPOSITORY) ->
             property(INCLUDE_JITPACK_REPOSITORY).toString().toBoolean()
         else -> INCLUDE_JITPACK_REPOSITORY_DEFAULT
+      }
+
+  internal fun Project.exclusiveEnterpriseRepository() =
+      when {
+        hasProperty(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(SCOPED_EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        hasProperty(EXCLUSIVE_ENTEPRISE_REPOSITORY) ->
+            property(EXCLUSIVE_ENTEPRISE_REPOSITORY).toString()
+        else -> null
       }
 }

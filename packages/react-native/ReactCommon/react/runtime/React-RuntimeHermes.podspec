@@ -25,17 +25,14 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "hermes/*.{cpp,h}"
+  s.source_files           = podspec_sources("hermes/*.{cpp,h}", "hermes/*.h")
   s.header_dir             = "react/runtime/hermes"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
-    s.header_mappings_dir     = '../../'
-    s.module_name             = 'React_RuntimeHermes'
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../../", module_name: "React_RuntimeHermes")
 
   s.dependency "React-jsitracing"
   s.dependency "React-jsi"
@@ -52,4 +49,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 end

@@ -50,6 +50,10 @@ class ImageProps final : public ViewProps {
   ComponentName getDiffPropsImplementationTarget() const override;
   folly::dynamic getDiffProps(const Props* prevProps) const override;
 #endif
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace facebook::react

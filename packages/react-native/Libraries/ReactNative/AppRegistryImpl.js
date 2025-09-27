@@ -22,13 +22,10 @@ import type {
   WrapperComponentProvider,
 } from './AppRegistry.flow';
 
-import BugReporting from '../BugReporting/BugReporting';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import SceneTracker from '../Utilities/SceneTracker';
 import {coerceDisplayMode} from './DisplayMode';
 import HeadlessJsTaskError from './HeadlessJsTaskError';
-import NativeHeadlessJsTaskSupport from './NativeHeadlessJsTaskSupport';
-import renderApplication from './renderApplication';
 import {unmountComponentAtNodeAndRemoveContainer} from './RendererProxy';
 import invariant from 'invariant';
 
@@ -36,7 +33,6 @@ type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
 const runnables: Runnables = {};
-let runCount = 1;
 const sections: Runnables = {};
 const taskProviders: Map<string, TaskProvider> = new Map();
 const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
@@ -88,6 +84,7 @@ export function registerComponent(
 ): string {
   const scopedPerformanceLogger = createPerformanceLogger();
   runnables[appKey] = (appParameters, displayMode) => {
+    const renderApplication = require('./renderApplication').default;
     renderApplication(
       componentProviderInstrumentationHook(
         componentProvider,
@@ -167,10 +164,6 @@ export function runApplication(
     const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
     const msg = `Running "${appKey}"${logParams}`;
     console.log(msg);
-    BugReporting.addSource(
-      'AppRegistry.runApplication' + runCount++,
-      () => msg,
-    );
   }
   invariant(
     runnables[appKey],
@@ -199,10 +192,6 @@ export function setSurfaceProps(
       '" with ' +
       JSON.stringify(appParameters);
     console.log(msg);
-    BugReporting.addSource(
-      'AppRegistry.setSurfaceProps' + runCount++,
-      () => msg,
-    );
   }
   invariant(
     runnables[appKey],
@@ -268,6 +257,9 @@ export function startHeadlessTask(
   taskKey: string,
   data: any,
 ): void {
+  const NativeHeadlessJsTaskSupport =
+    require('./NativeHeadlessJsTaskSupport').default;
+
   const taskProvider = taskProviders.get(taskKey);
   if (!taskProvider) {
     console.warn(`No task registered for key ${taskKey}`);

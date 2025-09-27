@@ -20,6 +20,6 @@ public fun interface PermissionListener {
   public fun onRequestPermissionsResult(
       requestCode: Int,
       permissions: Array<String>,
-      grantResults: IntArray
+      grantResults: IntArray,
   ): Boolean
 }

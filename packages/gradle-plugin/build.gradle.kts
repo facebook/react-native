@@ -5,7 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-plugins { alias(libs.plugins.kotlin.jvm).apply(false) }
+plugins {
+  alias(libs.plugins.kotlin.jvm).apply(false)
+  alias(libs.plugins.ktfmt).apply(true)
+}
 
 tasks.register("build") {
   dependsOn(
@@ -24,3 +27,25 @@ tasks.register("clean") {
       ":shared:clean",
   )
 }
+
+tasks.named("ktfmtCheck") {
+  dependsOn(
+      ":react-native-gradle-plugin:ktfmtCheck",
+      ":settings-plugin:ktfmtCheck",
+      ":shared-testutil:ktfmtCheck",
+      ":shared:ktfmtCheck",
+  )
+}
+
+tasks.named("ktfmtFormat") {
+  dependsOn(
+      ":react-native-gradle-plugin:ktfmtFormat",
+      ":settings-plugin:ktfmtFormat",
+      ":shared-testutil:ktfmtFormat",
+      ":shared:ktfmtFormat",
+  )
+}
+
+// We intentionally disable the `ktfmtCheck` tasks as the formatting is primarly handled inside
+// fbsource
+allprojects { tasks.withType<com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask>() { enabled = false } }

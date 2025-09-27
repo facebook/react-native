@@ -28,49 +28,66 @@ export type PerformanceEntryJSON = {
   ...
 };
 
-export class PerformanceEntry {
-  #name: string;
-  #entryType: PerformanceEntryType;
-  #startTime: DOMHighResTimeStamp;
-  #duration: DOMHighResTimeStamp;
+export interface PerformanceEntryInit {
+  +name: string;
+  +startTime: DOMHighResTimeStamp;
+  +duration: DOMHighResTimeStamp;
+}
 
-  constructor(init: {
-    name: string,
-    entryType: PerformanceEntryType,
-    startTime: DOMHighResTimeStamp,
-    duration: DOMHighResTimeStamp,
-  }) {
-    this.#name = init.name;
-    this.#entryType = init.entryType;
-    this.#startTime = init.startTime;
-    this.#duration = init.duration;
+export class PerformanceEntry {
+  // We don't use private fields because they're significantly slower to
+  // initialize on construction and to access.
+  // We also need these to be protected so they can be initialized in subclasses
+  // where we avoid calling `super()` for performance reasons.
+  __entryType: PerformanceEntryType;
+  __name: string;
+  __startTime: DOMHighResTimeStamp;
+  __duration: DOMHighResTimeStamp;
+
+  constructor(entryType: PerformanceEntryType, init: PerformanceEntryInit) {
+    this.__entryType = entryType;
+    this.__name = init.name;
+    this.__startTime = init.startTime;
+    this.__duration = init.duration;
   }
 
   get name(): string {
-    return this.#name;
+    return this.__name;
   }
 
   get entryType(): PerformanceEntryType {
-    return this.#entryType;
+    return this.__entryType;
   }
 
   get startTime(): DOMHighResTimeStamp {
-    return this.#startTime;
+    return this.__startTime;
   }
 
   get duration(): DOMHighResTimeStamp {
-    return this.#duration;
+    return this.__duration;
   }
 
   toJSON(): PerformanceEntryJSON {
     return {
-      name: this.#name,
-      entryType: this.#entryType,
-      startTime: this.#startTime,
-      duration: this.#duration,
+      name: this.__name,
+      entryType: this.__entryType,
+      startTime: this.__startTime,
+      duration: this.__duration,
     };
   }
 }
+
+export const PerformanceEntry_public: typeof PerformanceEntry =
+  /* eslint-disable no-shadow */
+  // $FlowExpectedError[incompatible-type]
+  function PerformanceEntry() {
+    throw new TypeError(
+      "Failed to construct 'PerformanceEntry': Illegal constructor",
+    );
+  };
+
+// $FlowExpectedError[prop-missing]
+PerformanceEntry_public.prototype = PerformanceEntry.prototype;
 
 setPlatformObject(PerformanceEntry);
 

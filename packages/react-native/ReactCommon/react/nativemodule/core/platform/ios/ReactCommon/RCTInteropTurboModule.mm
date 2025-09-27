@@ -17,8 +17,7 @@
 #import <React/RCTModuleMethod.h>
 #import <React/RCTParserUtils.h>
 
-namespace facebook {
-namespace react {
+namespace facebook::react {
 
 namespace {
 
@@ -52,7 +51,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
   std::vector<const RCTMethodInfo *> methodInfos;
 
   Class cls = moduleClass;
-  while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+  while ((cls != nullptr) && cls != [NSObject class] && cls != [NSProxy class]) {
     unsigned int methodCount;
     Method *methods = class_copyMethodList(object_getClass(cls), &methodCount);
 
@@ -76,7 +75,7 @@ std::vector<const RCTMethodInfo *> getMethodInfos(Class moduleClass)
 NSString *getJSMethodName(const RCTMethodInfo *methodInfo)
 {
   std::string jsName = methodInfo->jsName;
-  if (jsName != "") {
+  if (!jsName.empty()) {
     return @(jsName.c_str());
   }
 
@@ -125,7 +124,7 @@ std::vector<ExportedMethod> parseExportedMethods(std::string moduleName, Class m
     NSMethodSignature *objCMethodSignature = [moduleClass instanceMethodSignatureForSelector:objCMethodSelector];
     if (objCMethodSignature == nullptr) {
       RCTLogWarn(
-          @"The objective-c `%s` method signature for the JS method `%@` can not be found in the ObjecitveC definition of the %s module.\nThe `%@` JS method will not be available.",
+          @"The Objective-C `%s` method signature for the JS method `%@` can not be found in the Objective-C definition of the %s module.\nThe `%@` JS method will not be available.",
           methodInfo->objcName,
           jsMethodName,
           moduleName.c_str(),
@@ -216,7 +215,8 @@ ObjCInteropTurboModule::ObjCInteropTurboModule(const ObjCTurboModule::InitParams
         : method.returnType == @encode(void)                      ? VoidKind
                                                                   : ObjectKind;
 
-    methodMap_[[method.methodName UTF8String]] = MethodMetadata{static_cast<size_t>(jsArgCount), nullptr};
+    methodMap_[[method.methodName UTF8String]] =
+        MethodMetadata{.argCount = static_cast<size_t>(jsArgCount), .invoker = nullptr};
 
     for (NSUInteger i = 0; i < numArgs; i += 1) {
       NSString *typeName = method.argumentTypes[i];
@@ -482,7 +482,7 @@ void ObjCInteropTurboModule::setInvocationArg(
         return;
       }
 
-      if (arg) {
+      if (arg != nullptr) {
         [retainedObjectsForInvocation addObject:arg];
       }
       [inv setArgument:&arg atIndex:(index) + 2];
@@ -496,7 +496,7 @@ void ObjCInteropTurboModule::setInvocationArg(
       typeInvocation.target = [RCTConvert class];
 
       void *returnValue = malloc(typeSignature.methodReturnLength);
-      if (!returnValue) {
+      if (returnValue == nullptr) {
         // CWE - 391 : Unchecked error condition
         // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
         // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
@@ -519,7 +519,7 @@ void ObjCInteropTurboModule::setInvocationArg(
        * RCTModuleMethod doesn't actually call into RCTConvert in this case.
        */
       id arg = [objCArg copy];
-      if (arg) {
+      if (arg != nullptr) {
         [retainedObjectsForInvocation addObject:arg];
       }
       [inv setArgument:&arg atIndex:(index) + 2];
@@ -537,7 +537,7 @@ void ObjCInteropTurboModule::setInvocationArg(
 
     RCTResponseSenderBlock arg =
         (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
-    if (arg) {
+    if (arg != nullptr) {
       [retainedObjectsForInvocation addObject:arg];
     }
     [inv setArgument:&arg atIndex:(index) + 2];
@@ -695,5 +695,4 @@ std::vector<facebook::jsi::PropNameID> ObjCInteropTurboModule::getPropertyNames(
   return propNames;
 }
 
-} // namespace react
-} // namespace facebook
+} // namespace facebook::react

@@ -23,6 +23,7 @@ import com.facebook.react.common.ReactConstants
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.PixelUtil
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
 import com.facebook.react.views.view.setStatusBarVisibility
 
@@ -51,7 +52,15 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
+      return
+    }
+    if (isEdgeToEdgeFeatureFlagOn) {
+      FLog.w(
+          ReactConstants.TAG,
+          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -71,7 +80,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
               window.statusBarColor = color
             }
           }
-        })
+        }
+    )
   }
 
   override fun setTranslucent(translucent: Boolean) {
@@ -79,7 +89,15 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
+      return
+    }
+    if (isEdgeToEdgeFeatureFlagOn) {
+      FLog.w(
+          ReactConstants.TAG,
+          "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -87,7 +105,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
           override fun runGuarded() {
             activity.window?.setStatusBarTranslucency(translucent)
           }
-        })
+        }
+    )
   }
 
   override fun setHidden(hidden: Boolean) {
@@ -95,7 +114,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread { activity.window?.setStatusBarVisibility(hidden) }
@@ -107,7 +127,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
     if (activity == null) {
       FLog.w(
           ReactConstants.TAG,
-          "StatusBarModule: Ignored status bar change, current activity is null.")
+          "StatusBarModule: Ignored status bar change, current activity is null.",
+      )
       return
     }
     UiThreadUtil.runOnUiThread(
@@ -119,10 +140,13 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
               // dark-content means dark icons on a light status bar
               insetsController.setSystemBarsAppearance(
                   WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+              )
             } else {
               insetsController.setSystemBarsAppearance(
-                  0, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+                  0,
+                  WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+              )
             }
           } else {
             val decorView = window.decorView
@@ -135,7 +159,8 @@ internal class StatusBarModule(reactContext: ReactApplicationContext?) :
                 }
             decorView.systemUiVisibility = systemUiVisibilityFlags
           }
-        })
+        }
+    )
   }
 
   companion object {

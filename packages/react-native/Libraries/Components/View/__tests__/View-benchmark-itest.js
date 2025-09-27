@@ -15,7 +15,8 @@ import * as React from 'react';
 import {View} from 'react-native';
 
 let root;
-let thousandViews: React.MixedElement;
+let testViews: React.MixedElement;
+
 function createViewsWithLargeAmountOfPropsAndStyles(count: number): React.Node {
   let views: React.Node = null;
   for (let i = 0; i < count; i++) {
@@ -74,15 +75,16 @@ function createViewsWithLargeAmountOfPropsAndStyles(count: number): React.Node {
 
 Fantom.unstable_benchmark
   .suite('View')
-  .test(
-    'render 100 uncollapsable views',
+  .test.each(
+    [100, 1000],
+    n => `render ${n.toString()} uncollapsable views`,
     () => {
-      Fantom.runTask(() => root.render(thousandViews));
+      Fantom.runTask(() => root.render(testViews));
     },
-    {
+    n => ({
       beforeAll: () => {
         let views: React.Node = null;
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < n; i++) {
           views = (
             <View
               collapsable={false}
@@ -94,7 +96,7 @@ Fantom.unstable_benchmark
           );
         }
         // $FlowExpectedError[incompatible-type]
-        thousandViews = views;
+        testViews = views;
       },
       beforeEach: () => {
         root = Fantom.createRoot();
@@ -102,47 +104,18 @@ Fantom.unstable_benchmark
       afterEach: () => {
         root.destroy();
       },
-    },
+    }),
   )
-  .test(
-    'render 1000 uncollapsable views',
+  .test.each(
+    [100, 1000, 1500],
+    n => `render ${n.toString()} views with large amount of props and styles`,
     () => {
-      Fantom.runTask(() => root.render(thousandViews));
+      Fantom.runTask(() => root.render(testViews));
     },
-    {
-      beforeAll: () => {
-        let views: React.Node = null;
-        for (let i = 0; i < 1000; i++) {
-          views = (
-            <View
-              collapsable={false}
-              id={String(i)}
-              nativeID={String(i)}
-              style={{width: i + 1, height: i + 1}}>
-              {views}
-            </View>
-          );
-        }
-        // $FlowExpectedError[incompatible-type]
-        thousandViews = views;
-      },
-      beforeEach: () => {
-        root = Fantom.createRoot();
-      },
-      afterEach: () => {
-        root.destroy();
-      },
-    },
-  )
-  .test(
-    'render 100 views with large amount of props and styles',
-    () => {
-      Fantom.runTask(() => root.render(thousandViews));
-    },
-    {
+    n => ({
       beforeAll: () => {
         // $FlowExpectedError[incompatible-type]
-        thousandViews = createViewsWithLargeAmountOfPropsAndStyles(100);
+        testViews = createViewsWithLargeAmountOfPropsAndStyles(n);
       },
       beforeEach: () => {
         root = Fantom.createRoot();
@@ -150,41 +123,5 @@ Fantom.unstable_benchmark
       afterEach: () => {
         root.destroy();
       },
-    },
-  )
-  .test(
-    'render 1000 views with large amount of props and styles',
-    () => {
-      Fantom.runTask(() => root.render(thousandViews));
-    },
-    {
-      beforeAll: () => {
-        // $FlowExpectedError[incompatible-type]
-        thousandViews = createViewsWithLargeAmountOfPropsAndStyles(1000);
-      },
-      beforeEach: () => {
-        root = Fantom.createRoot();
-      },
-      afterEach: () => {
-        root.destroy();
-      },
-    },
-  )
-  .test(
-    'render 1500 views with large amount of props and styles',
-    () => {
-      Fantom.runTask(() => root.render(thousandViews));
-    },
-    {
-      beforeAll: () => {
-        // $FlowExpectedError[incompatible-type]
-        thousandViews = createViewsWithLargeAmountOfPropsAndStyles(1500);
-      },
-      beforeEach: () => {
-        root = Fantom.createRoot();
-      },
-      afterEach: () => {
-        root.destroy();
-      },
-    },
+    }),
   );

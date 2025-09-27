@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`execute test-app "RCTAppDependencyProvider.h" should match snapshot 1`] = `
+exports[`execute test-app "ReactAppDependencyProvider/RCTAppDependencyProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_END
 "
 `;
 
-exports[`execute test-app "RCTAppDependencyProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app "ReactAppDependencyProvider/RCTAppDependencyProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -73,7 +73,45 @@ exports[`execute test-app "RCTAppDependencyProvider.mm" should match snapshot 1`
 "
 `;
 
-exports[`execute test-app "RCTModuleProviders.h" should match snapshot 1`] = `
+exports[`execute test-app "ReactAppDependencyProvider/ReactAppDependencyProvider.podspec" should match snapshot 1`] = `
+"# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+version = \\"1000.0.0\\"
+source = { :git => 'https://github.com/facebook/react-native.git' }
+if version == '1000.0.0'
+  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
+  source[:commit] = \`git rev-parse HEAD\`.strip if system(\\"git rev-parse --git-dir > /dev/null 2>&1\\")
+else
+  source[:tag] = \\"v#{version}\\"
+end
+
+Pod::Spec.new do |s|
+  s.name                   = \\"ReactAppDependencyProvider\\"
+  s.version                = version
+  s.summary                = \\"The third party dependency provider for the app\\"
+  s.homepage               = \\"https://reactnative.dev/\\"
+  s.documentation_url      = \\"https://reactnative.dev/\\"
+  s.license                = \\"MIT\\"
+  s.author                 = \\"Meta Platforms, Inc. and its affiliates\\"
+  s.platforms              = min_supported_versions
+  s.source                 = source
+  s.source_files           = \\"**/RCTAppDependencyProvider.{h,mm}\\"
+
+  # This guard prevent to install the dependencies when we run \`pod install\` in the old architecture.
+  s.pod_target_xcconfig    = {
+    \\"CLANG_CXX_LANGUAGE_STANDARD\\" => rct_cxx_language_standard(),
+    \\"DEFINES_MODULE\\" => \\"YES\\"
+  }
+
+  s.dependency \\"ReactCodegen\\"
+end
+"
+`;
+
+exports[`execute test-app "ReactCodegen/RCTModuleProviders.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -93,7 +131,7 @@ exports[`execute test-app "RCTModuleProviders.h" should match snapshot 1`] = `
 "
 `;
 
-exports[`execute test-app "RCTModuleProviders.mm" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTModuleProviders.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -159,7 +197,7 @@ exports[`execute test-app "RCTModuleProviders.mm" should match snapshot 1`] = `
 "
 `;
 
-exports[`execute test-app "RCTModulesConformingToProtocolsProvider.h" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -181,7 +219,7 @@ exports[`execute test-app "RCTModulesConformingToProtocolsProvider.h" should mat
 "
 `;
 
-exports[`execute test-app "RCTModulesConformingToProtocolsProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTModulesConformingToProtocolsProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -248,7 +286,7 @@ exports[`execute test-app "RCTModulesConformingToProtocolsProvider.mm" should ma
 "
 `;
 
-exports[`execute test-app "RCTThirdPartyComponentsProvider.h" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTThirdPartyComponentsProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -268,7 +306,7 @@ exports[`execute test-app "RCTThirdPartyComponentsProvider.h" should match snaps
 "
 `;
 
-exports[`execute test-app "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -303,7 +341,7 @@ exports[`execute test-app "RCTThirdPartyComponentsProvider.mm" should match snap
 "
 `;
 
-exports[`execute test-app "RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -321,7 +359,7 @@ exports[`execute test-app "RCTUnstableModulesRequiringMainQueueSetupProvider.h" 
 "
 `;
 
-exports[`execute test-app "RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -355,45 +393,7 @@ exports[`execute test-app "RCTUnstableModulesRequiringMainQueueSetupProvider.mm"
 "
 `;
 
-exports[`execute test-app "ReactAppDependencyProvider.podspec" should match snapshot 1`] = `
-"# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-version = \\"1000.0.0\\"
-source = { :git => 'https://github.com/facebook/react-native.git' }
-if version == '1000.0.0'
-  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = \`git rev-parse HEAD\`.strip if system(\\"git rev-parse --git-dir > /dev/null 2>&1\\")
-else
-  source[:tag] = \\"v#{version}\\"
-end
-
-Pod::Spec.new do |s|
-  s.name                   = \\"ReactAppDependencyProvider\\"
-  s.version                = version
-  s.summary                = \\"The third party dependency provider for the app\\"
-  s.homepage               = \\"https://reactnative.dev/\\"
-  s.documentation_url      = \\"https://reactnative.dev/\\"
-  s.license                = \\"MIT\\"
-  s.author                 = \\"Meta Platforms, Inc. and its affiliates\\"
-  s.platforms              = min_supported_versions
-  s.source                 = source
-  s.source_files           = \\"**/RCTAppDependencyProvider.{h,mm}\\"
-
-  # This guard prevent to install the dependencies when we run \`pod install\` in the old architecture.
-  s.pod_target_xcconfig    = {
-    \\"CLANG_CXX_LANGUAGE_STANDARD\\" => rct_cxx_language_standard(),
-    \\"DEFINES_MODULE\\" => \\"YES\\"
-  }
-
-  s.dependency \\"ReactCodegen\\"
-end
-"
-`;
-
-exports[`execute test-app "ReactCodegen.podspec" should match snapshot 1`] = `
+exports[`execute test-app "ReactCodegen/ReactCodegen.podspec" should match snapshot 1`] = `
 "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -415,51 +415,31 @@ boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 header_search_paths = []
 framework_search_paths = []
 
-if ReactNativeCoreUtils.build_rncore_from_source()
+header_search_paths = [
+  \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
+  \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-Fabric\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
+  \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
+]
 
-  header_search_paths = [
-    \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
-    \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-Fabric\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
-    \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
-  ]
-
-  if use_frameworks
-    ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-NativeModulesApple\\", \\"React_NativeModulesApple\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-RCTFabric\\", \\"RCTFabric\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-debug\\", \\"React_debug\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-rendererdebug\\", \\"React_rendererdebug\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-utils\\", \\"React_utils\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-featureflags\\", \\"React_featureflags\\", []))
-      .each { |search_path|
-        header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
-      }
-    end
-else
-  header_search_paths = [
-    \\"$(PODS_ROOT)/Headers/Public/React-Core-prebuilt/ReactCommon\\",
-		\\"$(PODS_ROOT)/ReactNativeDependencies\\",
-		\\"$(REACT_NATIVE_PATH)/Libraries\\",
-		\\"$(REACT_NATIVE_PATH)/Libraries/FBLazyVector\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries/AppDelegate\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/RCTDeprecation\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/jsi\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/yoga\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/react/nativemodule/core\\",
-		\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\",
-		\\"\${REACT_NATIVE_PATH}/ReactCommon/jsi\\",
-		\\"\${REACT_NATIVE_PATH}/ReactCommon/yoga\\",
-  ]
-end
+if use_frameworks
+  ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-runtimeexecutor\\", \\"React_runtimeexecutor\\", [\\"platform/ios\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-NativeModulesApple\\", \\"React_NativeModulesApple\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-RCTFabric\\", \\"RCTFabric\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-debug\\", \\"React_debug\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-rendererdebug\\", \\"React_rendererdebug\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-utils\\", \\"React_utils\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-featureflags\\", \\"React_featureflags\\", []))
+    .each { |search_path|
+      header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
+    }
+  end
 
 Pod::Spec.new do |s|
   s.name                = \\"ReactCodegen\\"
@@ -480,32 +460,26 @@ Pod::Spec.new do |s|
     \\"OTHER_CPLUSPLUSFLAGS\\" => \\"$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}\\"
   }
 
-  if ReactNativeCoreUtils.build_rncore_from_source()
+  s.dependency \\"React-jsiexecutor\\"
+  s.dependency \\"RCTRequired\\"
+  s.dependency \\"RCTTypeSafety\\"
+  s.dependency \\"React-Core\\"
+  s.dependency \\"React-jsi\\"
+  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"ReactCommon/turbomodule/core\\"
+  s.dependency \\"React-NativeModulesApple\\"
+  s.dependency 'React-graphics'
+  s.dependency 'React-rendererdebug'
+  s.dependency 'React-Fabric'
+  s.dependency 'React-FabricImage'
+  s.dependency 'React-debug'
+  s.dependency 'React-utils'
+  s.dependency 'React-featureflags'
+  s.dependency 'React-RCTAppDelegate'
 
-    s.dependency \\"React-jsiexecutor\\"
-    s.dependency \\"RCTRequired\\"
-    s.dependency \\"RCTTypeSafety\\"
-    s.dependency \\"React-Core\\"
-    s.dependency \\"React-jsi\\"
-    s.dependency \\"ReactCommon/turbomodule/bridging\\"
-    s.dependency \\"ReactCommon/turbomodule/core\\"
-    s.dependency \\"React-NativeModulesApple\\"
-    s.dependency 'React-graphics'
-    s.dependency 'React-rendererdebug'
-    s.dependency 'React-Fabric'
-    s.dependency 'React-FabricImage'
-    s.dependency 'React-debug'
-    s.dependency 'React-utils'
-    s.dependency 'React-featureflags'
-    s.dependency 'React-RCTAppDelegate'
-
-    depend_on_js_engine(s)
-    add_rn_third_party_dependencies(s)
-
-  else
-    s.dependency 'React-Core-prebuilt'
-    s.dependency 'ReactNativeDependencies'
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',
@@ -523,9 +497,9 @@ export RCT_SCRIPT_APP_PATH=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT/..\\"
 export RCT_SCRIPT_OUTPUT_DIR=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT\\"
 export RCT_SCRIPT_TYPE=\\"withCodegenDiscovery\\"
 
-SCRIPT_PHASES_SCRIPT=\\"$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh\\"
-WITH_ENVIRONMENT=\\"$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh\\"
-/bin/sh -c \\"$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT\\"
+export SCRIPT_PHASES_SCRIPT=\\"$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh\\"
+export WITH_ENVIRONMENT=\\"$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh\\"
+/bin/sh -c '\\"$WITH_ENVIRONMENT\\" \\"$SCRIPT_PHASES_SCRIPT\\"'
 SCRIPT
   }
 
@@ -533,7 +507,7 @@ end
 "
 `;
 
-exports[`execute test-app-legacy "RCTAppDependencyProvider.h" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactAppDependencyProvider/RCTAppDependencyProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -562,7 +536,7 @@ NS_ASSUME_NONNULL_END
 "
 `;
 
-exports[`execute test-app-legacy "RCTAppDependencyProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactAppDependencyProvider/RCTAppDependencyProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -606,7 +580,45 @@ exports[`execute test-app-legacy "RCTAppDependencyProvider.mm" should match snap
 "
 `;
 
-exports[`execute test-app-legacy "RCTModuleProviders.h" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactAppDependencyProvider/ReactAppDependencyProvider.podspec" should match snapshot 1`] = `
+"# Copyright (c) Meta Platforms, Inc. and affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
+version = \\"1000.0.0\\"
+source = { :git => 'https://github.com/facebook/react-native.git' }
+if version == '1000.0.0'
+  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
+  source[:commit] = \`git rev-parse HEAD\`.strip if system(\\"git rev-parse --git-dir > /dev/null 2>&1\\")
+else
+  source[:tag] = \\"v#{version}\\"
+end
+
+Pod::Spec.new do |s|
+  s.name                   = \\"ReactAppDependencyProvider\\"
+  s.version                = version
+  s.summary                = \\"The third party dependency provider for the app\\"
+  s.homepage               = \\"https://reactnative.dev/\\"
+  s.documentation_url      = \\"https://reactnative.dev/\\"
+  s.license                = \\"MIT\\"
+  s.author                 = \\"Meta Platforms, Inc. and its affiliates\\"
+  s.platforms              = min_supported_versions
+  s.source                 = source
+  s.source_files           = \\"**/RCTAppDependencyProvider.{h,mm}\\"
+
+  # This guard prevent to install the dependencies when we run \`pod install\` in the old architecture.
+  s.pod_target_xcconfig    = {
+    \\"CLANG_CXX_LANGUAGE_STANDARD\\" => rct_cxx_language_standard(),
+    \\"DEFINES_MODULE\\" => \\"YES\\"
+  }
+
+  s.dependency \\"ReactCodegen\\"
+end
+"
+`;
+
+exports[`execute test-app-legacy "ReactCodegen/RCTModuleProviders.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -626,7 +638,7 @@ exports[`execute test-app-legacy "RCTModuleProviders.h" should match snapshot 1`
 "
 `;
 
-exports[`execute test-app-legacy "RCTModuleProviders.mm" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTModuleProviders.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -683,7 +695,7 @@ exports[`execute test-app-legacy "RCTModuleProviders.mm" should match snapshot 1
 "
 `;
 
-exports[`execute test-app-legacy "RCTModulesConformingToProtocolsProvider.h" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTModulesConformingToProtocolsProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -705,7 +717,7 @@ exports[`execute test-app-legacy "RCTModulesConformingToProtocolsProvider.h" sho
 "
 `;
 
-exports[`execute test-app-legacy "RCTModulesConformingToProtocolsProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTModulesConformingToProtocolsProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -763,7 +775,7 @@ exports[`execute test-app-legacy "RCTModulesConformingToProtocolsProvider.mm" sh
 "
 `;
 
-exports[`execute test-app-legacy "RCTThirdPartyComponentsProvider.h" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTThirdPartyComponentsProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -783,7 +795,7 @@ exports[`execute test-app-legacy "RCTThirdPartyComponentsProvider.h" should matc
 "
 `;
 
-exports[`execute test-app-legacy "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -817,7 +829,7 @@ exports[`execute test-app-legacy "RCTThirdPartyComponentsProvider.mm" should mat
 "
 `;
 
-exports[`execute test-app-legacy "RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -835,7 +847,7 @@ exports[`execute test-app-legacy "RCTUnstableModulesRequiringMainQueueSetupProvi
 "
 `;
 
-exports[`execute test-app-legacy "RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.mm" should match snapshot 1`] = `
 "/*
  * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
@@ -860,45 +872,7 @@ exports[`execute test-app-legacy "RCTUnstableModulesRequiringMainQueueSetupProvi
 "
 `;
 
-exports[`execute test-app-legacy "ReactAppDependencyProvider.podspec" should match snapshot 1`] = `
-"# Copyright (c) Meta Platforms, Inc. and affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-
-version = \\"1000.0.0\\"
-source = { :git => 'https://github.com/facebook/react-native.git' }
-if version == '1000.0.0'
-  # This is an unpublished version, use the latest commit hash of the react-native repo, which we’re presumably in.
-  source[:commit] = \`git rev-parse HEAD\`.strip if system(\\"git rev-parse --git-dir > /dev/null 2>&1\\")
-else
-  source[:tag] = \\"v#{version}\\"
-end
-
-Pod::Spec.new do |s|
-  s.name                   = \\"ReactAppDependencyProvider\\"
-  s.version                = version
-  s.summary                = \\"The third party dependency provider for the app\\"
-  s.homepage               = \\"https://reactnative.dev/\\"
-  s.documentation_url      = \\"https://reactnative.dev/\\"
-  s.license                = \\"MIT\\"
-  s.author                 = \\"Meta Platforms, Inc. and its affiliates\\"
-  s.platforms              = min_supported_versions
-  s.source                 = source
-  s.source_files           = \\"**/RCTAppDependencyProvider.{h,mm}\\"
-
-  # This guard prevent to install the dependencies when we run \`pod install\` in the old architecture.
-  s.pod_target_xcconfig    = {
-    \\"CLANG_CXX_LANGUAGE_STANDARD\\" => rct_cxx_language_standard(),
-    \\"DEFINES_MODULE\\" => \\"YES\\"
-  }
-
-  s.dependency \\"ReactCodegen\\"
-end
-"
-`;
-
-exports[`execute test-app-legacy "ReactCodegen.podspec" should match snapshot 1`] = `
+exports[`execute test-app-legacy "ReactCodegen/ReactCodegen.podspec" should match snapshot 1`] = `
 "# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
@@ -920,51 +894,31 @@ boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 header_search_paths = []
 framework_search_paths = []
 
-if ReactNativeCoreUtils.build_rncore_from_source()
+header_search_paths = [
+  \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
+  \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-Fabric\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\\\\\\"\\",
+  \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
+  \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
+]
 
-  header_search_paths = [
-    \\"\\\\\\"$(PODS_ROOT)/ReactNativeDependencies\\\\\\"\\",
-    \\"\\\\\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-Fabric\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\\\\\\"\\",
-    \\"\\\\\\"$(PODS_ROOT)/Headers/Private/Yoga\\\\\\"\\",
-    \\"\\\\\\"$(PODS_TARGET_SRCROOT)\\\\\\"\\",
-  ]
-
-  if use_frameworks
-    ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-NativeModulesApple\\", \\"React_NativeModulesApple\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-RCTFabric\\", \\"RCTFabric\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-debug\\", \\"React_debug\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-rendererdebug\\", \\"React_rendererdebug\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-utils\\", \\"React_utils\\", []))
-      .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-featureflags\\", \\"React_featureflags\\", []))
-      .each { |search_path|
-        header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
-      }
-    end
-else
-  header_search_paths = [
-    \\"$(PODS_ROOT)/Headers/Public/React-Core-prebuilt/ReactCommon\\",
-		\\"$(PODS_ROOT)/ReactNativeDependencies\\",
-		\\"$(REACT_NATIVE_PATH)/Libraries\\",
-		\\"$(REACT_NATIVE_PATH)/Libraries/FBLazyVector\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/Libraries/AppDelegate\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/RCTDeprecation\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/jsi\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/ReactCommon/yoga\\",
-		\\"\${PODS_ROOT}/Headers/Public/React-Core-prebuilt/react/nativemodule/core\\",
-		\\"\${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\\",
-		\\"\${REACT_NATIVE_PATH}/ReactCommon/jsi\\",
-		\\"\${REACT_NATIVE_PATH}/ReactCommon/yoga\\",
-  ]
-end
+if use_frameworks
+  ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-Fabric\\", \\"React_Fabric\\", [\\"react/renderer/components/view/platform/cxx\\"])
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-FabricImage\\", \\"React_FabricImage\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-graphics\\", \\"React_graphics\\", [\\"react/renderer/graphics/platform/ios\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"ReactCommon\\", \\"ReactCommon\\", [\\"react/nativemodule/core\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-runtimeexecutor\\", \\"React_runtimeexecutor\\", [\\"platform/ios\\"]))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-NativeModulesApple\\", \\"React_NativeModulesApple\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-RCTFabric\\", \\"RCTFabric\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-debug\\", \\"React_debug\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-rendererdebug\\", \\"React_rendererdebug\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-utils\\", \\"React_utils\\", []))
+    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks(\\"PODS_CONFIGURATION_BUILD_DIR\\", \\"React-featureflags\\", \\"React_featureflags\\", []))
+    .each { |search_path|
+      header_search_paths << \\"\\\\\\"#{search_path}\\\\\\"\\"
+    }
+  end
 
 Pod::Spec.new do |s|
   s.name                = \\"ReactCodegen\\"
@@ -985,32 +939,26 @@ Pod::Spec.new do |s|
     \\"OTHER_CPLUSPLUSFLAGS\\" => \\"$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}\\"
   }
 
-  if ReactNativeCoreUtils.build_rncore_from_source()
+  s.dependency \\"React-jsiexecutor\\"
+  s.dependency \\"RCTRequired\\"
+  s.dependency \\"RCTTypeSafety\\"
+  s.dependency \\"React-Core\\"
+  s.dependency \\"React-jsi\\"
+  s.dependency \\"ReactCommon/turbomodule/bridging\\"
+  s.dependency \\"ReactCommon/turbomodule/core\\"
+  s.dependency \\"React-NativeModulesApple\\"
+  s.dependency 'React-graphics'
+  s.dependency 'React-rendererdebug'
+  s.dependency 'React-Fabric'
+  s.dependency 'React-FabricImage'
+  s.dependency 'React-debug'
+  s.dependency 'React-utils'
+  s.dependency 'React-featureflags'
+  s.dependency 'React-RCTAppDelegate'
 
-    s.dependency \\"React-jsiexecutor\\"
-    s.dependency \\"RCTRequired\\"
-    s.dependency \\"RCTTypeSafety\\"
-    s.dependency \\"React-Core\\"
-    s.dependency \\"React-jsi\\"
-    s.dependency \\"ReactCommon/turbomodule/bridging\\"
-    s.dependency \\"ReactCommon/turbomodule/core\\"
-    s.dependency \\"React-NativeModulesApple\\"
-    s.dependency 'React-graphics'
-    s.dependency 'React-rendererdebug'
-    s.dependency 'React-Fabric'
-    s.dependency 'React-FabricImage'
-    s.dependency 'React-debug'
-    s.dependency 'React-utils'
-    s.dependency 'React-featureflags'
-    s.dependency 'React-RCTAppDelegate'
-
-    depend_on_js_engine(s)
-    add_rn_third_party_dependencies(s)
-
-  else
-    s.dependency 'React-Core-prebuilt'
-    s.dependency 'ReactNativeDependencies'
-  end
+  depend_on_js_engine(s)
+  add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',
@@ -1028,9 +976,9 @@ export RCT_SCRIPT_APP_PATH=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT/..\\"
 export RCT_SCRIPT_OUTPUT_DIR=\\"$RCT_SCRIPT_POD_INSTALLATION_ROOT\\"
 export RCT_SCRIPT_TYPE=\\"withCodegenDiscovery\\"
 
-SCRIPT_PHASES_SCRIPT=\\"$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh\\"
-WITH_ENVIRONMENT=\\"$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh\\"
-/bin/sh -c \\"$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT\\"
+export SCRIPT_PHASES_SCRIPT=\\"$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh\\"
+export WITH_ENVIRONMENT=\\"$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh\\"
+/bin/sh -c '\\"$WITH_ENVIRONMENT\\" \\"$SCRIPT_PHASES_SCRIPT\\"'
 SCRIPT
   }
 

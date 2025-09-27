@@ -42,18 +42,18 @@ const packageJson = JSON.stringify({
     });
 
     [
-      'RCTAppDependencyProvider.h',
-      'RCTAppDependencyProvider.mm',
-      'RCTModuleProviders.h',
-      'RCTModuleProviders.mm',
-      'RCTModulesConformingToProtocolsProvider.h',
-      'RCTModulesConformingToProtocolsProvider.mm',
-      'RCTThirdPartyComponentsProvider.h',
-      'RCTThirdPartyComponentsProvider.mm',
-      'ReactAppDependencyProvider.podspec',
-      'ReactCodegen.podspec',
-      'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
-      'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
+      'ReactAppDependencyProvider/RCTAppDependencyProvider.h',
+      'ReactAppDependencyProvider/RCTAppDependencyProvider.mm',
+      'ReactCodegen/RCTModuleProviders.h',
+      'ReactCodegen/RCTModuleProviders.mm',
+      'ReactCodegen/RCTModulesConformingToProtocolsProvider.h',
+      'ReactCodegen/RCTModulesConformingToProtocolsProvider.mm',
+      'ReactCodegen/RCTThirdPartyComponentsProvider.h',
+      'ReactCodegen/RCTThirdPartyComponentsProvider.mm',
+      'ReactAppDependencyProvider/ReactAppDependencyProvider.podspec',
+      'ReactCodegen/ReactCodegen.podspec',
+      'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.h',
+      'ReactCodegen/RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
     ].forEach(file => {
       it(`"${file}" should match snapshot`, () => {
         const generatedFileDir = path.join(outputDir, 'build/generated/ios');

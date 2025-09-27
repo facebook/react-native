@@ -22,7 +22,7 @@ struct FantomForcedCloneCommitHook : public UIManagerCommitHook {
 
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& shadowTree,
-      const RootShadowNode::Shared& oldRootShadowNode,
+      const std::shared_ptr<const RootShadowNode>& oldRootShadowNode,
       const RootShadowNode::Unshared& newRootShadowNode) noexcept override;
 };
 

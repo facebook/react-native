@@ -19,7 +19,7 @@ target_include_directories(bridgelesshermes PUBLIC .)
 
 react_native_android_selector(reactnative reactnative "")
 target_link_libraries(bridgelesshermes
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         hermes_executor_common
         hermes_inspector_modern
         jsi
@@ -29,10 +29,14 @@ target_link_libraries(bridgelesshermes
 )
 
 target_compile_reactnative_options(bridgelesshermes PRIVATE)
-if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+if(${CMAKE_BUILD_TYPE} MATCHES Debug OR REACT_NATIVE_DEBUG_OPTIMIZED)
         target_compile_options(
                 bridgelesshermes
                 PRIVATE
                 -DHERMES_ENABLE_DEBUGGER=1
         )
+
+        if (HERMES_V1_ENABLED)
+                target_compile_options(bridgelesshermes PRIVATE -DHERMES_V1_ENABLED=1)
+        endif()
 endif()

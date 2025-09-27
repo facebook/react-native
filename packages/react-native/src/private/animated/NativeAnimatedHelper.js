@@ -58,7 +58,6 @@ let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
 
 const shouldSignalBatch: boolean =
-  ReactNativeFeatureFlags.animatedShouldSignalBatch() ||
   ReactNativeFeatureFlags.cxxNativeAnimatedEnabled();
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
@@ -128,7 +127,7 @@ function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
       };
     }
   }
-  // $FlowExpectedError[incompatible-return] - Dynamism.
+  // $FlowExpectedError[incompatible-type] - Dynamism.
   return nativeOperations;
 }
 
@@ -141,10 +140,12 @@ const NativeOperations = createNativeOperations();
 const API = {
   getValue: (isSingleOpBatching
     ? (tag, saveValueCallback) => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         if (saveValueCallback) {
           eventListenerGetValueCallbacks[tag] = saveValueCallback;
         }
-        /* $FlowExpectedError[incompatible-call] - `saveValueCallback` is handled
+        /* $FlowExpectedError[incompatible-type] - `saveValueCallback` is handled
             differently when `isSingleOpBatching` is enabled. */
         NativeOperations.getValue(tag);
       }
@@ -240,7 +241,11 @@ const API = {
       }) as () => void,
 
   createAnimatedNode(tag: number, config: AnimatedNodeConfig): void {
-    NativeOperations.createAnimatedNode(tag, config);
+    if (config.disableBatchingForNativeCreate) {
+      NativeAnimatedModule?.createAnimatedNode(tag, config);
+    } else {
+      NativeOperations.createAnimatedNode(tag, config);
+    }
   },
 
   updateAnimatedNodeConfig(tag: number, config: AnimatedNodeConfig): void {
@@ -265,10 +270,12 @@ const API = {
 
   startAnimatingNode: (isSingleOpBatching
     ? (animationId, nodeTag, config, endCallback) => {
+        /* $FlowFixMe[constant-condition] Error discovered during Constant
+         * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
         if (endCallback) {
           eventListenerAnimationFinishedCallbacks[animationId] = endCallback;
         }
-        /* $FlowExpectedError[incompatible-call] - `endCallback` is handled
+        /* $FlowExpectedError[incompatible-type] - `endCallback` is handled
             differently when `isSingleOpBatching` is enabled. */
         NativeOperations.startAnimatingNode(animationId, nodeTag, config);
       }
@@ -350,6 +357,8 @@ function ensureGlobalEventEmitterListeners() {
     params => {
       const {tag} = params;
       const callback = eventListenerGetValueCallbacks[tag];
+      /* $FlowFixMe[constant-condition] Error discovered during Constant
+       * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
       if (!callback) {
         return;
       }
@@ -366,6 +375,8 @@ function ensureGlobalEventEmitterListeners() {
         for (const animation of animations) {
           const {animationId} = animation;
           const callback = eventListenerAnimationFinishedCallbacks[animationId];
+          /* $FlowFixMe[constant-condition] Error discovered during Constant
+           * Condition roll out. See https://fburl.com/workplace/1v97vimq. */
           if (callback) {
             callback(animation);
             delete eventListenerAnimationFinishedCallbacks[animationId];

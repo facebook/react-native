@@ -13,10 +13,8 @@ import {ThemedText, useTheme} from './Theme';
 import * as React from 'react';
 import {
   Image,
-  Platform,
-  SafeAreaView,
+  ReactNativeVersion,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -25,28 +23,35 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
-import {version as ReactNativeVersion} from 'react-native/Libraries/Core/ReactNativeVersion';
 
 export type NewAppScreenProps = $ReadOnly<{
   templateFileName?: string,
+  safeAreaInsets?: $ReadOnly<{
+    top: number,
+    bottom: number,
+    left: number,
+    right: number,
+  }>,
 }>;
-
-const statusBarHeightOffset = Platform.select({
-  android: StatusBar.currentHeight || 0,
-  default: 0,
-});
 
 export default function NewAppScreen({
   templateFileName = 'App.tsx',
+  safeAreaInsets = {top: 0, bottom: 0, left: 0, right: 0},
 }: NewAppScreenProps): React.Node {
   const {colors} = useTheme();
   const isDarkMode = useColorScheme() === 'dark';
   const isLargeScreen = useWindowDimensions().width > 600;
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.background}}>
-      <ScrollView>
-        <View style={[styles.container, {paddingTop: statusBarHeightOffset}]}>
+    <View
+      style={{
+        backgroundColor: colors.background,
+        paddingTop: safeAreaInsets.top,
+        paddingLeft: safeAreaInsets.left,
+        paddingRight: safeAreaInsets.right,
+      }}>
+      <ScrollView style={{paddingBottom: safeAreaInsets.bottom}}>
+        <View style={styles.container}>
           <View style={styles.header}>
             <Image
               style={styles.logo}
@@ -99,24 +104,14 @@ export default function NewAppScreen({
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 function getVersionLabel(): React.Node {
-  const version =
-    [
-      ReactNativeVersion.major,
-      ReactNativeVersion.minor,
-      ReactNativeVersion.patch,
-    ].join('.') +
-    (ReactNativeVersion.prerelease != null
-      ? '-' + ReactNativeVersion.prerelease
-      : '');
-
   return (
     <ThemedText color="secondary" style={styles.label}>
-      Version: {version}
+      Version: {ReactNativeVersion.getVersionString()}
     </ThemedText>
   );
 }

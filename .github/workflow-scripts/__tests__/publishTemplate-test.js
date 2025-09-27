@@ -117,13 +117,13 @@ describe('#verifyPublishedTemplate', () => {
     it('will timeout if npm does not update package version after a set number of retries', async () => {
       const RETRIES = 2;
 
-      await verifyPublishedTemplate('0.77.0', true, RETRIES),
+      (await verifyPublishedTemplate('0.77.0', true, RETRIES),
         expect(mockVerifyPublishedPackage).toHaveBeenCalledWith(
           '@react-native-community/template',
           '0.77.0',
           'latest',
           2,
-        );
+        ));
     });
   });
 });

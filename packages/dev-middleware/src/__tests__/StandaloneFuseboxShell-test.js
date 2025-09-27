@@ -9,6 +9,7 @@
  */
 
 import type {JsonPagesListResponse} from '../inspector-proxy/types';
+import type {BrowserLauncher} from '../types/BrowserLauncher';
 
 import DefaultBrowserLauncher from '../utils/DefaultBrowserLauncher';
 import {fetchJson, requestLocal} from './FetchUtils';
@@ -22,15 +23,17 @@ const PAGES_POLLING_DELAY = 2100;
 jest.useFakeTimers();
 
 describe('enableStandaloneFuseboxShell experiment', () => {
-  const BrowserLauncherWithFuseboxShell = {
+  const BrowserLauncherWithFuseboxShell: BrowserLauncher = {
     ...DefaultBrowserLauncher,
     unstable_showFuseboxShell: () => {
       throw new Error('Not implemented');
     },
+    unstable_prepareFuseboxShell: async () => {
+      return {code: 'not_implemented'};
+    },
   };
   const serverRef = withServerForEachTest({
     logger: undefined,
-    projectRoot: '',
     unstable_browserLauncher: BrowserLauncherWithFuseboxShell,
     unstable_experiments: {
       enableStandaloneFuseboxShell: true,
@@ -126,5 +129,7 @@ describe('enableStandaloneFuseboxShell experiment', () => {
         device.close();
       }
     });
+
+    // TODO(moti): Add tests around unstable_prepareFuseboxShell
   });
 });

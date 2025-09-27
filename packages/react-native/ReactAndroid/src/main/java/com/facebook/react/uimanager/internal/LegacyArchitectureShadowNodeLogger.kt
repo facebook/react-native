@@ -28,7 +28,7 @@ public object LegacyArchitectureShadowNodeLogger {
   public fun assertUnsupportedViewManager(
       reactContext: ReactApplicationContext,
       shadowNodeClass: Class<*>,
-      viewManagerName: String
+      viewManagerName: String,
   ) {
     val implementsYogaMeasureFunction =
         YogaMeasureFunction::class.java in shadowNodeClass.interfaces
@@ -37,16 +37,18 @@ public object LegacyArchitectureShadowNodeLogger {
     if (implementsYogaMeasureFunction && !annotatedWithCxxImpl) {
       val message =
           """
-              [Legacy Architecture] The ViewManager `$viewManagerName` is unlikely to work with the New Architecture.
-              That's because the shadow node `${shadowNodeClass.simpleName}` implements the `YogaMeasureFunction.measure()` method.
-              This is not supported in the New Architecture as shadow nodes with custom measurements should be implemented in C++.
-              """
+          [Legacy Architecture] The ViewManager `$viewManagerName` is unlikely to work with the New Architecture.
+          That's because the shadow node `${shadowNodeClass.simpleName}` implements the `YogaMeasureFunction.measure()` method.
+          This is not supported in the New Architecture as shadow nodes with custom measurements should be implemented in C++.
+          """
               .trimIndent()
 
       if (ReactBuildConfig.DEBUG) {
         RNLog.w(reactContext, message)
         ReactSoftExceptionLogger.logSoftException(
-            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS, ReactNoCrashSoftException(message))
+            ReactSoftExceptionLogger.Categories.SOFT_ASSERTIONS,
+            ReactNoCrashSoftException(message),
+        )
       }
     }
   }

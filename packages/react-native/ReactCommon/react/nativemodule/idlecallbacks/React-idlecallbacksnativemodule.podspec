@@ -31,23 +31,21 @@ Pod::Spec.new do |s|
   s.author                 = "Meta Platforms, Inc. and its affiliates"
   s.platforms              = min_supported_versions
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files           = podspec_sources("*.{cpp,h}", "*.h")
   s.header_dir             = "react/nativemodule/idlecallbacks"
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "OTHER_CFLAGS" => "$(inherited)",
                                "DEFINES_MODULE" => "YES" }
 
-  if ENV['USE_FRAMEWORKS']
-    s.module_name            = "idlecallbacksnativemodule"
-    s.header_mappings_dir  = "../.."
-  end
+  resolve_use_frameworks(s, header_mappings_dir: "../..", module_name: "idlecallbacksnativemodule")
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
 
   depend_on_js_engine(s)
   add_rn_third_party_dependencies(s)
+  add_rncore_dependency(s)
 
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-runtimescheduler"

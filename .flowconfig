@@ -48,7 +48,6 @@ packages/react-native/flow/
 [options]
 enums=true
 experimental.pattern_matching=true
-experimental.pattern_matching.includes=<PROJECT_ROOT>/packages/react-native/src/private/components/virtualview/
 casting_syntax=both
 component_syntax=true
 
@@ -76,12 +75,6 @@ module.system.haste.module_ref_prefix=m#
 
 react.runtime=automatic
 
-suppress_type=$FlowIssue
-suppress_type=$FlowFixMe
-suppress_type=$FlowFixMeProps
-suppress_type=$FlowFixMeState
-suppress_type=$FlowFixMeEmpty
-
 ban_spread_key_props=true
 
 [lints]
@@ -105,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.274.0
+^0.286.0

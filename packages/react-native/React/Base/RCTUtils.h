@@ -47,13 +47,13 @@ RCT_EXTERN void RCTExecuteOnMainQueue(dispatch_block_t block);
 // Legacy function to execute the specified block on the main queue synchronously.
 // Please do not use this unless you know what you're doing.
 RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block);
-RCT_EXTERN void RCTUnsafeExecuteOnMainQueueSyncWithError(dispatch_block_t block, NSString *context);
 
 // Get screen metrics in a thread-safe way
 RCT_EXTERN CGFloat RCTScreenScale(void);
 RCT_EXTERN CGFloat RCTFontSizeMultiplier(void);
 RCT_EXTERN CGSize RCTScreenSize(void);
 RCT_EXTERN CGSize RCTViewportSize(void);
+RCT_EXTERN CGSize RCTSwitchSize(void);
 
 // Round float coordinates to nearest whole screen pixel (not point)
 RCT_EXTERN CGFloat RCTRoundPixelValue(CGFloat value);

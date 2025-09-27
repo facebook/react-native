@@ -31,11 +31,10 @@ Pod::Spec.new do |s|
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
-    if ENV['USE_FRAMEWORKS']
-        s.header_mappings_dir     = './'
-    end
 
-    s.source_files = "ReactCommon/**/*.{mm,cpp,h}"
+    resolve_use_frameworks(s, header_mappings_dir: './')
+
+    s.source_files = podspec_sources("ReactCommon/**/*.{mm,cpp,h}", "ReactCommon/**/*.{h}")
 
     s.dependency "ReactCommon/turbomodule/core"
     s.dependency "ReactCommon/turbomodule/bridging"
@@ -44,6 +43,7 @@ Pod::Spec.new do |s|
     s.dependency "React-cxxreact"
     s.dependency "React-jsi"
     s.dependency "React-featureflags"
+    add_dependency(s, "React-debug")
     add_dependency(s, "React-runtimeexecutor", :additional_framework_paths => ["platform/ios"])
     add_dependency(s, "React-featureflags")
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
@@ -51,4 +51,5 @@ Pod::Spec.new do |s|
 
     depend_on_js_engine(s)
     add_rn_third_party_dependencies(s)
+    add_rncore_dependency(s)
 end

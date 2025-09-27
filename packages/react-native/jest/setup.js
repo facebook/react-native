@@ -17,7 +17,7 @@ import '@react-native/js-polyfills/error-guard';
 
 import mock from './mock';
 
-// $FlowIgnore[cannot-write]
+// $FlowFixMe[cannot-write]
 Object.defineProperties(global, {
   __DEV__: {
     configurable: true,
@@ -43,7 +43,7 @@ Object.defineProperties(global, {
     configurable: true,
     enumerable: true,
     value: {
-      // $FlowIgnore[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       now: jest.fn(Date.now),
     },
     writable: true,
@@ -70,7 +70,18 @@ Object.defineProperties(global, {
   },
 });
 
-// $FlowFixMe[incompatible-call] - `./mocks/AppState` is incomplete.
+/**
+ * Prettier v3 uses import (cjs/mjs) file formats that jest-runtime does not
+ * support. To work around this we need to bypass the jest module system by
+ * using the orginal node `require` function.
+ */
+jest.mock('prettier', () => {
+  // $FlowExpectedError[underconstrained-implicit-instantiation]
+  const module = jest.requireActual('module');
+  return module.prototype.require(require.resolve('prettier'));
+});
+
+// $FlowFixMe[incompatible-type] - `./mocks/AppState` is incomplete.
 mock('m#../Libraries/AppState/AppState', 'm#./mocks/AppState');
 mock('m#../Libraries/BatchedBridge/NativeModules', 'm#./mocks/NativeModules');
 mock(
@@ -84,41 +95,41 @@ mock(
 mock('m#../Libraries/Components/Clipboard/Clipboard', 'm#./mocks/Clipboard');
 mock(
   'm#../Libraries/Components/RefreshControl/RefreshControl',
-  // $FlowFixMe[incompatible-call] - `../Libraries/Components/RefreshControl/RefreshControl` should export a component type.
+  // $FlowFixMe[incompatible-type] - `../Libraries/Components/RefreshControl/RefreshControl` should export a component type.
   'm#./mocks/RefreshControl',
 );
 // $FlowFixMe[incompatible-exact] - `../Libraries/Components/ScrollView/ScrollView` is... I don't even.
-// $FlowFixMe[prop-missing]
+// $FlowFixMe[incompatible-type]
 mock('m#../Libraries/Components/ScrollView/ScrollView', 'm#./mocks/ScrollView');
 mock('m#../Libraries/Components/TextInput/TextInput', 'm#./mocks/TextInput');
 mock('m#../Libraries/Components/View/View', 'm#./mocks/View');
 mock(
   'm#../Libraries/Components/View/ViewNativeComponent',
-  // $FlowFixMe[incompatible-call] - `./mocks/ViewNativeComponent` is incomplete.
+  // $FlowFixMe[incompatible-type] - `./mocks/ViewNativeComponent` is incomplete.
   // $FlowFixMe[prop-missing]
   'm#./mocks/ViewNativeComponent',
 );
 mock('m#../Libraries/Core/InitializeCore', 'm#./mocks/InitializeCore');
 mock('m#../Libraries/Core/NativeExceptionsManager');
 mock('m#../Libraries/Image/Image', 'm#./mocks/Image');
-// $FlowFixMe[incompatible-call] - `./mocks/Linking` is incomplete.
+// $FlowFixMe[incompatible-type] - `./mocks/Linking` is incomplete.
 mock('m#../Libraries/Linking/Linking', 'm#./mocks/Linking');
-// $FlowFixMe[incompatible-call] - `../Libraries/Modal/Modal` should export a component type.
+// $FlowFixMe[incompatible-type] - `../Libraries/Modal/Modal` should export a component type.
 mock('m#../Libraries/Modal/Modal', 'm#./mocks/Modal');
 mock(
   'm#../Libraries/NativeComponent/NativeComponentRegistry',
-  // $FlowFixMe[prop-missing] - `./mocks/NativeComponentRegistry` should export named functions.
+  // $FlowFixMe[incompatible-type] - `./mocks/NativeComponentRegistry` should export named functions.
   'm#./mocks/NativeComponentRegistry',
 );
-// $FlowFixMe[prop-missing] - `./mocks/RendererProxy` is incomplete.
+// $FlowFixMe[incompatible-type] - `./mocks/RendererProxy` is incomplete.
 mock('m#../Libraries/ReactNative/RendererProxy', 'm#./mocks/RendererProxy');
 mock(
   'm#../Libraries/ReactNative/requireNativeComponent',
   'm#./mocks/requireNativeComponent',
 );
-// $FlowFixMe[prop-missing] - `./mocks/UIManager` is incomplete.
+// $FlowFixMe[incompatible-type] - `./mocks/UIManager` is incomplete.
 mock('m#../Libraries/ReactNative/UIManager', 'm#./mocks/UIManager');
 mock('m#../Libraries/Text/Text', 'm#./mocks/Text');
 mock('m#../Libraries/Utilities/useColorScheme', 'm#./mocks/useColorScheme');
-// $FlowFixMe[incompatible-call]
+// $FlowFixMe[incompatible-type]
 mock('m#../Libraries/Vibration/Vibration', 'm#./mocks/Vibration');

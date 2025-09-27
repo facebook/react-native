@@ -18,9 +18,16 @@ import {setPlatformObject} from '../../webidl/PlatformObjects';
 // IMPORTANT: The type definition for this module is defined in `HTMLCollection.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-// $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
+const REUSABLE_PROPERTY_DESCRIPTOR: {...PropertyDescriptor<mixed>, ...} = {
+  value: {},
+  enumerable: true,
+  configurable: false,
+  writable: false,
+};
+
+// $FlowFixMe[incompatible-type] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
-  #length: number;
+  _length: number;
 
   /**
    * Use `createHTMLCollection` to create instances of this class.
@@ -30,23 +37,19 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
    */
   constructor(elements: $ReadOnlyArray<T>) {
     for (let i = 0; i < elements.length; i++) {
-      Object.defineProperty(this, i, {
-        value: elements[i],
-        enumerable: true,
-        configurable: false,
-        writable: false,
-      });
+      REUSABLE_PROPERTY_DESCRIPTOR.value = elements[i];
+      Object.defineProperty(this, i, REUSABLE_PROPERTY_DESCRIPTOR);
     }
 
-    this.#length = elements.length;
+    this._length = elements.length;
   }
 
   get length(): number {
-    return this.#length;
+    return this._length;
   }
 
   item(index: number): T | null {
-    if (index < 0 || index >= this.#length) {
+    if (index < 0 || index >= this._length) {
       return null;
     }
 
@@ -64,7 +67,7 @@ export default class HTMLCollection<T> implements Iterable<T>, ArrayLike<T> {
     return null;
   }
 
-  // $FlowIssue[unsupported-syntax] Flow does not support computed properties in classes.
+  // $FlowFixMe[unsupported-syntax] Flow does not support computed properties in classes.
   [Symbol.iterator](): Iterator<T> {
     return createValueIterator(this);
   }

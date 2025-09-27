@@ -16,6 +16,43 @@
 
 namespace facebook::react {
 
+#ifdef RN_SERIALIZABLE_STATE
+
+inline folly::dynamic toDynamic(const std::vector<bool>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<std::string>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto& value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+inline folly::dynamic toDynamic(const std::vector<folly::dynamic>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (auto& value : arrayValue) {
+    resultArray.push_back(value);
+  }
+  return resultArray;
+}
+
+template <typename T>
+folly::dynamic toDynamic(const std::vector<T>& arrayValue) {
+  folly::dynamic resultArray = folly::dynamic::array();
+  for (const auto& value : arrayValue) {
+    resultArray.push_back(toDynamic(value));
+  }
+  return resultArray;
+}
+
+#endif
+
 /**
  * Use this only when a prop update has definitely been sent from JS;
  * essentially, cases where rawValue is virtually guaranteed to not be a
@@ -131,7 +168,7 @@ T convertRawProp(
     return result;
   } catch (const std::exception& e) {
     // In case of errors, log the error and fall back to the default
-    RawPropsKey key{namePrefix, name, nameSuffix};
+    RawPropsKey key{.prefix = namePrefix, .name = name, .suffix = nameSuffix};
     // TODO: report this using ErrorUtils so it's more visible to the user
     LOG(ERROR) << "Error while converting prop '"
                << static_cast<std::string>(key) << "': " << e.what();

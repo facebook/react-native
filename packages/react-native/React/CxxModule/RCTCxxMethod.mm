@@ -26,7 +26,7 @@ using namespace facebook::react;
 
 - (instancetype)initWithCxxMethod:(const CxxModule::Method &)method
 {
-  if ((self = [super init])) {
+  if ((self = [super init]) != nullptr) {
     _method = std::make_unique<CxxModule::Method>(method);
   }
   return self;

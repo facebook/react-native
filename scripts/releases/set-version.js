@@ -11,14 +11,14 @@
 'use strict';
 
 /*::
-import type {PackageJson} from '../utils/monorepo';
+import type {PackageJson} from '../shared/monorepoUtils';
 */
 
 const {
   getPackages,
   getWorkspaceRoot,
   updatePackageJson,
-} = require('../utils/monorepo');
+} = require('../shared/monorepoUtils');
 const {updateReactNativeArtifacts} = require('./set-rn-artifacts-version');
 const {parseArgs} = require('util');
 
@@ -36,7 +36,7 @@ async function main() {
   const {
     positionals: [version],
     values: {help, skipReactNativeVersion},
-    /* $FlowFixMe[incompatible-call] Natural Inference rollout. See
+    /* $FlowFixMe[incompatible-type] Natural Inference rollout. See
      * https://fburl.com/workplace/6291gfvu */
   } = parseArgs(config);
 

@@ -7,6 +7,8 @@
 
 #import <React/RCTImageViewManager.h>
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
@@ -114,3 +116,5 @@ RCT_EXPORT_METHOD(queryCache
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

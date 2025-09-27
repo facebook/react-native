@@ -17,9 +17,9 @@ using MutationObserverId = int32_t;
 
 struct MutationRecord {
   MutationObserverId mutationObserverId;
-  ShadowNode::Shared targetShadowNode;
-  std::vector<ShadowNode::Shared> addedShadowNodes;
-  std::vector<ShadowNode::Shared> removedShadowNodes;
+  std::shared_ptr<const ShadowNode> targetShadowNode;
+  std::vector<std::shared_ptr<const ShadowNode>> addedShadowNodes;
+  std::vector<std::shared_ptr<const ShadowNode>> removedShadowNodes;
 };
 
 class MutationObserver {
@@ -65,8 +65,8 @@ class MutationObserver {
       SetOfShadowNodePointers& processedNodes) const;
 
   void recordMutationsInSubtrees(
-      const ShadowNode::Shared& oldNode,
-      const ShadowNode::Shared& newNode,
+      const std::shared_ptr<const ShadowNode>& oldNode,
+      const std::shared_ptr<const ShadowNode>& newNode,
       bool observeSubtree,
       std::vector<MutationRecord>& recordedMutations,
       SetOfShadowNodePointers& processedNodes) const;

@@ -33,7 +33,8 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       if (host == AndroidInfoHelpers.DEVICE_LOCALHOST) {
         FLog.w(
             TAG,
-            "You seem to be running on device. Run '${AndroidInfoHelpers.getAdbReverseTcpCommand(appContext)}' to forward the debug server's port to the device.")
+            "You seem to be running on device. Run '${AndroidInfoHelpers.getAdbReverseTcpCommand(appContext)}' to forward the debug server's port to the device.",
+        )
       }
       return host
     }

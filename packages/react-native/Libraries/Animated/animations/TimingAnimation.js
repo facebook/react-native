@@ -49,6 +49,8 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
 
 let _easeInOut;
 function easeInOut() {
+  /* $FlowFixMe[constant-condition] Error discovered during Constant Condition
+   * roll out. See https://fburl.com/workplace/1v97vimq. */
   if (!_easeInOut) {
     const Easing = require('../Easing').default;
     _easeInOut = Easing.inOut(Easing.ease);

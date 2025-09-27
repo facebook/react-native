@@ -133,7 +133,7 @@ NSMutableDictionary<NSString *, id> *RCTModuleConstantsForDestructuredComponent(
   return moduleConstants;
 }
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComponent>))
 {
@@ -246,9 +246,6 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTEnforceNewArchitectureValidation(
-      RCTNotAllowedInBridgeless, self, @"RCTUIManager must not be initialized for the new architecture");
-
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
@@ -473,7 +470,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (!view) {
     view = _viewRegistry[reactTag];
   }
-  return [RCTUIManager paperViewOrCurrentView:view];
+  return RCTPaperViewOrCurrentView(view);
 }
 
 - (RCTShadowView *)shadowViewForReactTag:(NSNumber *)reactTag
@@ -1624,17 +1621,7 @@ static UIView *_jsResponder;
 
 + (UIView *)JSResponder
 {
-  RCTErrorNewArchitectureValidation(
-      RCTNotAllowedInFabricWithoutLegacy, @"RCTUIManager", @"Please migrate this legacy surface to Fabric.");
   return _jsResponder;
-}
-
-+ (UIView *)paperViewOrCurrentView:(UIView *)view
-{
-  if ([view respondsToSelector:@selector(paperView)]) {
-    return [view performSelector:@selector(paperView)];
-  }
-  return view;
 }
 
 - (void)removeViewFromRegistry:(NSNumber *)reactTag
@@ -1653,7 +1640,7 @@ static UIView *_jsResponder;
 
 @end
 
-#else // RCT_FIT_RM_OLD_RUNTIME
+#else // RCT_REMOVE_LEGACY_ARCH
 
 @implementation RCTUIManager
 - (void)registerRootViewTag:(NSNumber *)rootTag
@@ -1737,11 +1724,6 @@ static UIView *_jsResponder;
   return nil;
 }
 
-+ (UIView *)paperViewOrCurrentView:(UIView *)view
-{
-  return nil;
-}
-
 + (NSString *)moduleName
 {
   return @"UIManager";
@@ -1762,7 +1744,15 @@ static UIView *_jsResponder;
 
 @end
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH
+
+UIView *RCTPaperViewOrCurrentView(UIView *view)
+{
+  if ([view respondsToSelector:@selector(paperView)]) {
+    return [view performSelector:@selector(paperView)];
+  }
+  return view;
+}
 
 @implementation RCTComposedViewRegistry {
   __weak RCTUIManager *_uiManager;
@@ -1798,11 +1788,11 @@ static UIView *_jsResponder;
   NSNumber *index = (NSNumber *)key;
   UIView *view = _registry[index];
   if (view) {
-    return [RCTUIManager paperViewOrCurrentView:view];
+    return RCTPaperViewOrCurrentView(view);
   }
   view = [_uiManager viewForReactTag:index];
   if (view) {
-    return [RCTUIManager paperViewOrCurrentView:view];
+    return RCTPaperViewOrCurrentView(view);
   }
   return NULL;
 }

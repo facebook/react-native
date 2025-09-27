@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
     s.homepage               = "https://reactnative.dev/"
     s.source                 = { :git => 'https://github.com/facebook/react-native.git', :tag => 'v#{version}' }
     s.summary                = "Macros for marking APIs as deprecated"
-    s.source_files           = ["Exported/*.h", "RCTDeprecation.m"]
+    s.source_files           = podspec_sources(["Exported/*.h", "RCTDeprecation.m"], "Exported/*.h")
     s.pod_target_xcconfig    = {
       "DEFINES_MODULE" => "YES",
       "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()

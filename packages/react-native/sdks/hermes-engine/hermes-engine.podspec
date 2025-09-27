@@ -20,7 +20,13 @@ end
 
 # package.json
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
+# TODO: T231755000 read hermes version from version.properties when consuming hermes
 version = package['version']
+
+if ENV['RCT_HERMES_V1_ENABLED'] == "1"
+  versionProperties = Hash[*File.read("version.properties").split(/[=\n]+/)]
+  version = versionProperties['HERMES_V1_VERSION_NAME']
+end
 
 source_type = hermes_source_type(version, react_native_path)
 source = podspec_source(source_type, version, react_native_path)
@@ -45,10 +51,10 @@ Pod::Spec.new do |spec|
                     "GCC_WARN_INHIBIT_ALL_WARNINGS" => "YES" # Disable warnings because we don't control this library
                   }
 
-  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermes.framework"
-  spec.tvos.vendored_frameworks = "destroot/Library/Frameworks/tvos/hermes.framework"
-  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
-  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermes.framework"
+  spec.ios.vendored_frameworks = "destroot/Library/Frameworks/ios/hermesvm.framework"
+  spec.tvos.vendored_frameworks = "destroot/Library/Frameworks/tvos/hermesvm.framework"
+  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
+  spec.visionos.vendored_frameworks = "destroot/Library/Frameworks/xros/hermesvm.framework"
 
   if HermesEngineSourceType::isPrebuilt(source_type) then
 
@@ -56,12 +62,27 @@ Pod::Spec.new do |spec|
       ss.preserve_paths = ["destroot/bin/*"].concat(["**/*.{h,c,cpp}"])
       ss.source_files = "destroot/include/hermes/**/*.h"
       ss.header_mappings_dir = "destroot/include"
-      ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermes.xcframework"
-      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
+      ss.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.visionos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.tvos.vendored_frameworks = "destroot/Library/Frameworks/universal/hermesvm.xcframework"
+      ss.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermesvm.framework"
     end
 
+    # When using the local prebuilt tarball, it should include hermesc compatible with the used VM.
+    # In other cases, when using Hermes V1, the prebuilt versioned binaries can be used.
+    # TODO: T236142916 hermesc should be consumed from NPM even when not using Hermes V1
+    if source_type != HermesEngineSourceType::LOCAL_PREBUILT_TARBALL && ENV['RCT_HERMES_V1_ENABLED'] == "1"
+      hermes_compiler_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+        'require.resolve(
+        "hermes-compiler",
+        {paths: [process.argv[1]]}
+        )', __dir__]).strip
+      )
+
+      spec.user_target_xcconfig = {
+        'HERMES_CLI_PATH' => "#{hermes_compiler_path}/hermesc/osx-bin/hermesc"
+      }
+    end
 
     # Right now, even reinstalling pods with the PRODUCTION flag turned on, does not change the version of hermes that is downloaded
     # To remove the PRODUCTION flag, we want to download the right version of hermes on the flight
@@ -100,22 +121,24 @@ Pod::Spec.new do |spec|
       ss.header_dir = 'hermes/cdp'
     end
 
-    spec.subspec 'inspector' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/*.h'
-      ss.header_dir = 'hermes/inspector'
-    end
-
-    spec.subspec 'inspector_chrome' do |ss|
-      ss.source_files = ''
-      ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
-      ss.header_dir = 'hermes/inspector/chrome'
-    end
-
     spec.subspec 'Public' do |ss|
       ss.source_files = ''
       ss.public_header_files = 'public/hermes/Public/*.h'
       ss.header_dir = 'hermes/Public'
+    end
+
+    if ENV['RCT_HERMES_V1_ENABLED'] != "1"
+      spec.subspec 'inspector' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/*.h'
+        ss.header_dir = 'hermes/inspector'
+      end
+
+      spec.subspec 'inspector_chrome' do |ss|
+        ss.source_files = ''
+        ss.public_header_files = 'API/hermes/inspector/chrome/*.h'
+        ss.header_dir = 'hermes/inspector/chrome'
+      end
     end
 
     hermesc_path = "${PODS_ROOT}/hermes-engine/build_host_hermesc"
@@ -139,7 +162,7 @@ Pod::Spec.new do |spec|
         {
           :name => '[RN] [1] Build Hermesc',
           :output_files => [
-            "#{hermesc_path}/ImportHermesc.cmake"
+            "#{hermesc_path}/ImportHostCompilers.cmake"
           ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
@@ -149,14 +172,14 @@ Pod::Spec.new do |spec|
         },
         {
           :name => '[RN] [2] Build Hermes',
-          :input_files => ["#{hermesc_path}/ImportHermesc.cmake"],
+          :input_files => ["#{hermesc_path}/ImportHostCompilers.cmake"],
           :output_files => [
-            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermes.framework/hermes"
+            "${PODS_ROOT}/hermes-engine/build/iphonesimulator/API/hermes/hermesvm.framework/hermesvm"
           ],
           :script => <<-EOS
           . "${REACT_NATIVE_PATH}/scripts/xcode/with-environment.sh"
           export CMAKE_BINARY=${CMAKE_BINARY:-#{CMAKE_BINARY}}
-          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHermesc.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
+          . ${REACT_NATIVE_PATH}/sdks/hermes-engine/utils/build-hermes-xcode.sh #{version} #{hermesc_path}/ImportHostCompilers.cmake ${REACT_NATIVE_PATH}/ReactCommon/jsi
           EOS
         }
       ]

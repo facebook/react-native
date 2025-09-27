@@ -19,10 +19,13 @@
  * using it.
  */
 
-RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
-RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
+RCT_EXTERN __deprecated_msg("This API will be removed along with the legacy architecture.") NSString *const
+    RCTProfileDidStartProfiling;
+RCT_EXTERN __deprecated_msg("This API will be removed along with the legacy architecture.") NSString *const
+    RCTProfileDidEndProfiling;
 
-RCT_EXTERN const uint64_t RCTProfileTagAlways;
+RCT_EXTERN __deprecated_msg("This API will be removed along with the legacy architecture.") const uint64_t
+    RCTProfileTagAlways;
 
 #if RCT_PROFILE
 
@@ -35,27 +38,33 @@ RCT_EXTERN const uint64_t RCTProfileTagAlways;
 
 #define RCTProfileEndFlowEvent() _RCTProfileEndFlowEvent(__rct_profile_flow_id)
 
-RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void);
+RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void);
-RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger);
+RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Returns YES if the profiling information is currently being collected
  */
-RCT_EXTERN BOOL RCTProfileIsProfiling(void);
+RCT_EXTERN BOOL RCTProfileIsProfiling(void)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Start collecting profiling information
  */
-RCT_EXTERN void RCTProfileInit(RCTBridge *);
+RCT_EXTERN void RCTProfileInit(RCTBridge *)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Stop profiling and return a JSON string of the collected data - The data
  * returned is compliant with google's trace event format - the format used
  * as input to trace-viewer
  */
-RCT_EXTERN void RCTProfileEnd(RCTBridge *, void (^)(NSString *));
+RCT_EXTERN void RCTProfileEnd(RCTBridge *, void (^)(NSString *))
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Route the RCT_PROFILE_BEGIN_EVENT hooks to our loom tracing.
@@ -79,7 +88,8 @@ RCT_EXTERN void _RCTProfileBeginEvent(
     NSTimeInterval time,
     uint64_t tag,
     NSString *name,
-    NSDictionary<NSString *, NSString *> *args);
+    NSDictionary<NSString *, NSString *> *args)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 #define RCT_PROFILE_BEGIN_EVENT(tag, name, args)                      \
   do {                                                                \
     if (_RCTLoomIsProfiling()) {                                      \
@@ -97,12 +107,9 @@ RCT_EXTERN void _RCTProfileBeginEvent(
  * rest of the event information. Just at this point the event will actually be
  * registered
  */
-RCT_EXTERN void _RCTProfileEndEvent(
-    NSThread *calleeThread,
-    NSString *threadName,
-    NSTimeInterval time,
-    uint64_t tag,
-    NSString *category);
+RCT_EXTERN void
+_RCTProfileEndEvent(NSThread *calleeThread, NSString *threadName, NSTimeInterval time, uint64_t tag, NSString *category)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #define RCT_PROFILE_END_EVENT(tag, category)                                    \
   do {                                                                          \
@@ -121,7 +128,8 @@ RCT_EXTERN void _RCTProfileEndEvent(
  * Collects the initial event information for the event and returns a reference ID
  */
 RCT_EXTERN NSUInteger
-RCTProfileBeginAsyncEvent(uint64_t tag, NSString *name, NSDictionary<NSString *, NSString *> *args);
+RCTProfileBeginAsyncEvent(uint64_t tag, NSString *name, NSDictionary<NSString *, NSString *> *args)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -129,12 +137,14 @@ RCTProfileBeginAsyncEvent(uint64_t tag, NSString *name, NSDictionary<NSString *,
  * registered
  */
 RCT_EXTERN void
-RCTProfileEndAsyncEvent(uint64_t tag, NSString *category, NSUInteger cookie, NSString *name, NSString *threadName);
+RCTProfileEndAsyncEvent(uint64_t tag, NSString *category, NSUInteger cookie, NSString *name, NSString *threadName)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * An event that doesn't have a duration (i.e. Notification, VSync, etc)
  */
-RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag, NSString *name, NSTimeInterval time, char scope);
+RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag, NSString *name, NSTimeInterval time, char scope)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Helper to profile the duration of the execution of a block. This method uses
@@ -154,23 +164,27 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag, NSString *name, NSTimeInt
 /**
  * Hook into a bridge instance to log all bridge module's method calls
  */
-RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
+RCT_EXTERN void RCTProfileHookModules(RCTBridge *)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Unhook from a given bridge instance's modules
  */
-RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
+RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Hook into all of a module's methods
  */
-RCT_EXTERN void RCTProfileHookInstance(id instance);
+RCT_EXTERN void RCTProfileHookInstance(id instance)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Send systrace or cpu profiling information to the packager
  * to present to the user
  */
-RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profileData);
+RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *profileData)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Systrace gluecode
@@ -183,7 +197,7 @@ typedef struct {
   unsigned long key_len;
   const char *value;
   unsigned long value_len;
-} systrace_arg_t;
+} systrace_arg_t __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 typedef struct {
   char *(*start)(void);
@@ -199,15 +213,18 @@ typedef struct {
 
   void (*begin_async_flow)(uint64_t tag, const char *name, int cookie);
   void (*end_async_flow)(uint64_t tag, const char *name, int cookie);
-} RCTProfileCallbacks;
+} RCTProfileCallbacks __deprecated_msg("This API will be removed along with the legacy architecture.");
 
-RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
+RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 /**
  * Systrace control window
  */
-RCT_EXTERN void RCTProfileShowControls(void);
-RCT_EXTERN void RCTProfileHideControls(void);
+RCT_EXTERN void RCTProfileShowControls(void)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
+RCT_EXTERN void RCTProfileHideControls(void)
+    __deprecated_msg("This API will be removed along with the legacy architecture.");
 
 #else
 

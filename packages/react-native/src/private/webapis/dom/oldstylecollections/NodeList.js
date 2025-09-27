@@ -22,9 +22,14 @@ import {setPlatformObject} from '../../webidl/PlatformObjects';
 // IMPORTANT: The Flow type definition for this module is defined in `NodeList.js.flow`
 // because Flow only supports indexers in classes in declaration files.
 
-// $FlowIssue[prop-missing] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
+const REUSABLE_PROPERTY_DESCRIPTOR: {...PropertyDescriptor<mixed>, ...} = {
+  value: {},
+  writable: false,
+};
+
+// $FlowFixMe[incompatible-type] Flow doesn't understand [Symbol.iterator]() {} and thinks this class doesn't implement the Iterable<T> interface.
 export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
-  #length: number;
+  _length: number;
 
   /**
    * Use `createNodeList` to create instances of this class.
@@ -34,20 +39,18 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
    */
   constructor(elements: $ReadOnlyArray<T>) {
     for (let i = 0; i < elements.length; i++) {
-      Object.defineProperty(this, i, {
-        value: elements[i],
-        writable: false,
-      });
+      REUSABLE_PROPERTY_DESCRIPTOR.value = elements[i];
+      Object.defineProperty(this, i, REUSABLE_PROPERTY_DESCRIPTOR);
     }
-    this.#length = elements.length;
+    this._length = elements.length;
   }
 
   get length(): number {
-    return this.#length;
+    return this._length;
   }
 
   item(index: number): T | null {
-    if (index < 0 || index >= this.#length) {
+    if (index < 0 || index >= this._length) {
       return null;
     }
 
@@ -71,7 +74,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
     // eslint-disable-next-line consistent-this
     const arrayLike: ArrayLike<T> = this;
 
-    for (let index = 0; index < this.#length; index++) {
+    for (let index = 0; index < this._length; index++) {
       if (thisArg == null) {
         callbackFn(arrayLike[index], index, this);
       } else {
@@ -88,7 +91,7 @@ export default class NodeList<T> implements Iterable<T>, ArrayLike<T> {
     return createValueIterator(this);
   }
 
-  // $FlowIssue[unsupported-syntax] Flow does not support computed properties in classes.
+  // $FlowFixMe[unsupported-syntax] Flow does not support computed properties in classes.
   [Symbol.iterator](): Iterator<T> {
     return createValueIterator(this);
   }

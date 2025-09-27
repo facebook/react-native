@@ -39,7 +39,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
   /*
    * Associates a shared `ImageManager` with the node.
    */
-  void setImageManager(const SharedImageManager& imageManager);
+  void setImageManager(const std::shared_ptr<ImageManager>& imageManager);
 
   static ImageState initialStateData(
       const Props::Shared& props,
@@ -56,7 +56,7 @@ class ImageShadowNode final : public ConcreteViewShadowNode<
  private:
   ImageSource getImageSource() const;
 
-  SharedImageManager imageManager_;
+  std::shared_ptr<ImageManager> imageManager_;
 
   void updateStateIfNeeded();
 };

@@ -34,10 +34,10 @@ inline Color hostPlatformColorFromComponents(ColorComponents components) {
 inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   float ratio = 255;
   return ColorComponents{
-      (float)((color >> 16) & 0xff) / ratio,
-      (float)((color >> 8) & 0xff) / ratio,
-      (float)((color >> 0) & 0xff) / ratio,
-      (float)((color >> 24) & 0xff) / ratio};
+      .red = (float)((color >> 16) & 0xff) / ratio,
+      .green = (float)((color >> 8) & 0xff) / ratio,
+      .blue = (float)((color >> 0) & 0xff) / ratio,
+      .alpha = (float)((color >> 24) & 0xff) / ratio};
 }
 
 inline float alphaFromHostPlatformColor(Color color) {

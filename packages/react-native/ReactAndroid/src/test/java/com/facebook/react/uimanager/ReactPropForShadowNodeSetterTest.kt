@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.uimanager
 
 import com.facebook.react.bridge.BridgeReactContext
@@ -71,7 +73,7 @@ class ReactPropForShadowNodeSetterTest {
     init {
       setViewClassName("ShadowViewUnderTest")
       val context = BridgeReactContext(RuntimeEnvironment.getApplication())
-      setThemedContext(ThemedReactContext(context, context, null, -1))
+      themedContext = ThemedReactContext(context, context, null, -1)
     }
 
     @ReactProp(name = "boolProp")

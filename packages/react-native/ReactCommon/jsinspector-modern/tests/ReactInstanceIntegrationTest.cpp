@@ -66,9 +66,8 @@ void ReactInstanceIntegrationTest::SetUp() {
     VoidExecutor inspectorExecutor = [this](auto callback) {
       immediateExecutor_.add(callback);
     };
-    MockHostTargetDelegate hostTargetDelegate;
     hostTargetIfModernCDP =
-        HostTarget::create(hostTargetDelegate, inspectorExecutor);
+        HostTarget::create(hostTargetDelegate_, inspectorExecutor);
   }
 
   instance = std::make_unique<react::ReactInstance>(

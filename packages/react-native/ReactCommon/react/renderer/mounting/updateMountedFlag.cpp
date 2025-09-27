@@ -11,8 +11,8 @@
 
 namespace facebook::react {
 void updateMountedFlag(
-    const ShadowNode::ListOfShared& oldChildren,
-    const ShadowNode::ListOfShared& newChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& oldChildren,
+    const std::vector<std::shared_ptr<const ShadowNode>>& newChildren,
     ShadowTreeCommitSource commitSource) {
   // This is a simplified version of Diffing algorithm that only updates
   // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before

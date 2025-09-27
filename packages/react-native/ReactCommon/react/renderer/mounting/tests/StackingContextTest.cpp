@@ -9,8 +9,6 @@
 
 #include <gtest/gtest.h>
 
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/scrollview/ScrollViewComponentDescriptor.h>
@@ -25,22 +23,7 @@
 
 namespace facebook::react {
 
-class StackingContextTestFeatureFlags : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit StackingContextTestFeatureFlags(
-      bool enableFixForParentTagDuringReparenting)
-      : enableFixForParentTagDuringReparenting_(
-            enableFixForParentTagDuringReparenting) {}
-
-  bool enableFixForParentTagDuringReparenting() override {
-    return enableFixForParentTagDuringReparenting_;
-  }
-
- private:
-  bool enableFixForParentTagDuringReparenting_;
-};
-
-class StackingContextTest : public ::testing::TestWithParam<bool> {
+class StackingContextTest : public ::testing::Test {
  protected:
   std::unique_ptr<ComponentBuilder> builder_;
   std::shared_ptr<RootShadowNode> rootShadowNode_;
@@ -58,9 +41,6 @@ class StackingContextTest : public ::testing::TestWithParam<bool> {
   StubViewTree currentStubViewTree_;
 
   void SetUp() override {
-    ReactNativeFeatureFlags::override(
-        std::make_unique<StackingContextTestFeatureFlags>(GetParam()));
-
     //  ┌────────────── (Root) ──────────────┐
     //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │
     //  │ ┃                                ┃ │
@@ -203,7 +183,7 @@ class StackingContextTest : public ::testing::TestWithParam<bool> {
   }
 };
 
-TEST_P(StackingContextTest, defaultPropsMakeEverythingFlattened) {
+TEST_F(StackingContextTest, defaultPropsMakeEverythingFlattened) {
   testViewTree_([](const StubViewTree& viewTree) {
     // 1 view in total.
     EXPECT_EQ(viewTree.size(), 1);
@@ -213,7 +193,7 @@ TEST_P(StackingContextTest, defaultPropsMakeEverythingFlattened) {
   });
 }
 
-TEST_P(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
+TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   //  ┌────────────── (Root) ──────────────┐    ┌────────── (Root) ───────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │                             │
   //  │ ┃                                ┃ │    │                             │
@@ -316,7 +296,7 @@ TEST_P(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
   });
 }
 
-TEST_P(StackingContextTest, somePropsForceViewsToMaterialize1) {
+TEST_F(StackingContextTest, somePropsForceViewsToMaterialize1) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ AA (tag: 3) ━━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
@@ -400,7 +380,7 @@ TEST_P(StackingContextTest, somePropsForceViewsToMaterialize1) {
   });
 }
 
-TEST_P(StackingContextTest, somePropsForceViewsToMaterialize2) {
+TEST_F(StackingContextTest, somePropsForceViewsToMaterialize2) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ A (tag: 2) ━━━━━━━━━━━━┓ │
   //  │ ┃ backgroundColor: black;        ┃ │    │ ┃ #FormsView              ┃ │
@@ -502,7 +482,7 @@ TEST_P(StackingContextTest, somePropsForceViewsToMaterialize2) {
   });
 }
 
-TEST_P(StackingContextTest, nonCollapsableChildren) {
+TEST_F(StackingContextTest, nonCollapsableChildren) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BBA (tag: 7) ━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃                         ┃ │
@@ -579,7 +559,7 @@ TEST_P(StackingContextTest, nonCollapsableChildren) {
   });
 }
 
-TEST_P(StackingContextTest, nonCollapsableChildrenMixed) {
+TEST_F(StackingContextTest, nonCollapsableChildrenMixed) {
   //  ┌────────────── (Root) ──────────────┐    ┌─────────── (Root) ──────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BA (tag: 5) ━━ ━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃                         ┃ │
@@ -672,7 +652,7 @@ TEST_P(StackingContextTest, nonCollapsableChildrenMixed) {
   });
 }
 
-TEST_P(StackingContextTest, zIndexAndFlattenedNodes) {
+TEST_F(StackingContextTest, zIndexAndFlattenedNodes) {
   //  ┌────────────── (Root) ──────────────┐    ┌────────── (Root) ───────────┐
   //  │ ┏━ A (tag: 2) ━━━━━━━━━━━━━━━━━━━┓ │    │ ┏━ BD (tag: 10) ━━━━━━━━━━┓ │
   //  │ ┃                                ┃ │    │ ┃ #FormsView              ┃ │
@@ -994,10 +974,4 @@ TEST_P(StackingContextTest, zIndexAndFlattenedNodes) {
 #endif
   });
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    enableFixForParentTagDuringReparenting,
-    StackingContextTest,
-    testing::Values(false, true));
-
 } // namespace facebook::react

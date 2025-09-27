@@ -27,12 +27,12 @@ function _setDevelopmentModeForTests(dev: mixed) {
 
   beforeAll(() => {
     originalDev = global.__DEV__;
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = dev;
   });
 
   afterAll(() => {
-    // $FlowIgnore[cannot-write]
+    // $FlowFixMe[cannot-write]
     global.__DEV__ = originalDev;
   });
 }
@@ -49,6 +49,7 @@ function _defineCheckVersionTests() {
     // $FlowFixMe[cannot-write]
     console.error = jest.fn();
     // $FlowFixMe[cannot-write]
+    // $FlowFixMe[unsafe-addition]
     global.console = {error: jest.fn(error => (consoleOutput += error))};
     spyOnConsoleError = jest.spyOn(global.console, 'error');
   });

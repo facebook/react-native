@@ -30,7 +30,6 @@ import com.facebook.react.modules.debug.DevSettingsModule
 import com.facebook.react.modules.debug.SourceCodeModule
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule
 import com.facebook.react.modules.systeminfo.AndroidInfoModule
-import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.uimanager.ViewManagerResolver
 import com.facebook.systrace.Systrace
@@ -38,6 +37,7 @@ import com.facebook.systrace.Systrace
 /**
  * This is the basic module to support React Native. The debug modules are now in DebugCorePackage.
  */
+@Suppress("DEPRECATION")
 @ReactModuleList(
     // WARNING: If you modify this list, ensure that the list below in method
     // getReactModuleInfoByInitialization is also updated
@@ -53,14 +53,20 @@ import com.facebook.systrace.Systrace
             HeadlessJsTaskSupportModule::class,
             SourceCodeModule::class,
             TimingModule::class,
-            UIManagerModule::class])
+            com.facebook.react.uimanager.UIManagerModule::class,
+        ]
+)
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class CoreModulesPackage(
     private val reactInstanceManager: ReactInstanceManager,
     private val hardwareBackBtnHandler: DefaultHardwareBackBtnHandler,
     private val lazyViewManagersEnabled: Boolean,
-    private val minTimeLeftInFrameForNonBatchedOperationMs: Int
-) : BaseReactPackage(), ReactPackageLogger {
+    private val minTimeLeftInFrameForNonBatchedOperationMs: Int,
+) : BaseReactPackage() {
   /**
    * This method is overridden, since OSS does not run the annotation processor to generate
    * [CoreModulesPackage.ReactModuleInfoProvider] class. Here we check if it exists with the method
@@ -81,10 +87,14 @@ internal class CoreModulesPackage(
       return fallbackForMissingClass()
     } catch (e: InstantiationException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     } catch (e: IllegalAccessException) {
       throw RuntimeException(
-          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider", e)
+          "No ReactModuleInfoProvider for CoreModulesPackage$\$ReactModuleInfoProvider",
+          e,
+      )
     }
   }
 
@@ -102,7 +112,7 @@ internal class CoreModulesPackage(
             HeadlessJsTaskSupportModule::class.java,
             SourceCodeModule::class.java,
             TimingModule::class.java,
-            UIManagerModule::class.java,
+            com.facebook.react.uimanager.UIManagerModule::class.java,
         )
 
     val reactModuleInfoMap: MutableMap<String, ReactModuleInfo> = HashMap<String, ReactModuleInfo>()
@@ -118,7 +128,8 @@ internal class CoreModulesPackage(
                 reactModule.canOverrideExistingModule,
                 reactModule.needsEagerInit,
                 reactModule.isCxxModule,
-                ReactModuleInfo.classIsTurboModule(moduleClass))
+                ReactModuleInfo.classIsTurboModule(moduleClass),
+            )
       }
     }
 
@@ -139,15 +150,18 @@ internal class CoreModulesPackage(
       HeadlessJsTaskSupportModule.NAME -> HeadlessJsTaskSupportModule(reactContext)
       SourceCodeModule.NAME -> SourceCodeModule(reactContext)
       TimingModule.NAME -> TimingModule(reactContext, reactInstanceManager.devSupportManager)
-      UIManagerModule.NAME -> createUIManager(reactContext)
+      com.facebook.react.uimanager.UIManagerModule.NAME -> createUIManager(reactContext)
       DeviceInfoModule.NAME -> DeviceInfoModule(reactContext)
       else ->
           throw IllegalArgumentException(
-              "In CoreModulesPackage, could not find Native module for $name")
+              "In CoreModulesPackage, could not find Native module for $name"
+          )
     }
   }
 
-  private fun createUIManager(reactContext: ReactApplicationContext): UIManagerModule {
+  private fun createUIManager(
+      reactContext: ReactApplicationContext
+  ): com.facebook.react.uimanager.UIManagerModule {
     ReactMarker.logMarker(ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_START)
     Systrace.beginSection(Systrace.TRACE_TAG_REACT, "createUIManagerModule")
 
@@ -164,12 +178,17 @@ internal class CoreModulesPackage(
               }
             }
 
-        return UIManagerModule(reactContext, resolver, minTimeLeftInFrameForNonBatchedOperationMs)
+        return com.facebook.react.uimanager.UIManagerModule(
+            reactContext,
+            resolver,
+            minTimeLeftInFrameForNonBatchedOperationMs,
+        )
       } else {
-        return UIManagerModule(
+        return com.facebook.react.uimanager.UIManagerModule(
             reactContext,
             reactInstanceManager.getOrCreateViewManagers(reactContext),
-            minTimeLeftInFrameForNonBatchedOperationMs)
+            minTimeLeftInFrameForNonBatchedOperationMs,
+        )
       }
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT)
@@ -177,18 +196,12 @@ internal class CoreModulesPackage(
     }
   }
 
-  override fun startProcessPackage() {
-    ReactMarker.logMarker(ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_START)
-  }
-
-  override fun endProcessPackage() {
-    ReactMarker.logMarker(ReactMarkerConstants.PROCESS_CORE_REACT_PACKAGE_END)
-  }
-
   private companion object {
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "CoreModulesPackage", LegacyArchitectureLogLevel.ERROR)
+          "CoreModulesPackage",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

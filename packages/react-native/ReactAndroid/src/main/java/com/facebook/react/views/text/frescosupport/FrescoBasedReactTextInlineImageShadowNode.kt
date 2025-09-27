@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.views.text.frescosupport
 
 import android.content.Context
@@ -30,9 +32,13 @@ import java.util.Locale
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
 internal class FrescoBasedReactTextInlineImageShadowNode(
     private val draweeControllerBuilder: AbstractDraweeControllerBuilder<*, ImageRequest, *, *>,
-    private val callerContext: Any?
+    private val callerContext: Any?,
 ) : ReactTextInlineImageShadowNode() {
 
   private var uri: Uri? = null
@@ -59,7 +65,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         // ignore malformed uri, then attempt to extract resource ID.
       }
       if (tempUri == null) {
-        tempUri = getResourceDrawableUri(getThemedContext(), source)
+        tempUri = getResourceDrawableUri(themedContext, source)
       }
     }
     if (tempUri != uri) {
@@ -109,7 +115,7 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
   override fun isVirtual(): Boolean = true
 
   override fun buildInlineImageSpan(): TextInlineImageSpan {
-    val resources = getThemedContext().resources
+    val resources = themedContext.resources
     val finalWidth = Math.ceil(width.toDouble()).toInt()
     val finalHeight = Math.ceil(height.toDouble()).toInt()
     return FrescoBasedReactTextInlineImageSpan(
@@ -121,7 +127,8 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
         getHeaders(),
         getDraweeControllerBuilder(),
         getCallerContext(),
-        resizeMode)
+        resizeMode,
+    )
   }
 
   fun getDraweeControllerBuilder() = draweeControllerBuilder
@@ -141,7 +148,9 @@ internal class FrescoBasedReactTextInlineImageShadowNode(
 
     init {
       LegacyArchitectureLogger.assertLegacyArchitecture(
-          "FrescoBasedReactTextInlineImageShadowNode", LegacyArchitectureLogLevel.ERROR)
+          "FrescoBasedReactTextInlineImageShadowNode",
+          LegacyArchitectureLogLevel.ERROR,
+      )
     }
   }
 }

@@ -11,7 +11,6 @@
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
-import NativeReactNativeFeatureFlags from '../../src/private/featureflags/specs/NativeReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
@@ -183,20 +182,12 @@ const validAttributesForNonEventProps = {
   experimental_backgroundImage: {
     process: require('../StyleSheet/processBackgroundImage').default,
   },
-  boxShadow:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? (true as const)
-      : {
-          process: require('../StyleSheet/processBoxShadow').default,
-        },
-  filter:
-    NativeReactNativeFeatureFlags != null &&
-    ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? (true as const)
-      : {
-          process: require('../StyleSheet/processFilter').default,
-        },
+  boxShadow: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processBoxShadow').default},
+  filter: ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ? (true as const)
+    : {process: require('../StyleSheet/processFilter').default},
   mixBlendMode: true,
   isolation: true,
   opacity: true,

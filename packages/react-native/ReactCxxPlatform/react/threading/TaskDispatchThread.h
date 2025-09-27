@@ -10,6 +10,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <functional>
+#include <future>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -71,6 +72,8 @@ class TaskDispatchThread {
   std::atomic<bool> running_{true};
   std::string threadName_;
   std::thread thread_;
+
+  std::promise<void> loopStoppedPromise_;
 };
 
 } // namespace facebook::react

@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 const {
   default: SampleLegacyModuleExample,
 } = require('./SampleLegacyModuleExample');
@@ -27,4 +29,4 @@ exports.examples = [
       return <SampleLegacyModuleExample />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

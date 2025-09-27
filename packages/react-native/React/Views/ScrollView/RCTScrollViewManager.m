@@ -7,6 +7,8 @@
 
 #import "RCTScrollViewManager.h"
 
+#ifndef RCT_REMOVE_LEGACY_ARCH
+
 #import "RCTBridge.h"
 #import "RCTScrollView.h"
 #import "RCTShadowView.h"
@@ -199,3 +201,5 @@ RCT_EXPORT_METHOD(flashScrollIndicators : (nonnull NSNumber *)reactTag)
 }
 
 @end
+
+#endif // RCT_REMOVE_LEGACY_ARCH

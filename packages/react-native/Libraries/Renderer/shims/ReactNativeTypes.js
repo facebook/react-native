@@ -7,7 +7,7 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<4216c04f5a8c40a833b0146588fab5fa>>
+ * @generated SignedSource<<c0e57723772ea5f1aa8c3c897ac3c216>>
  */
 
 import type {
@@ -35,16 +35,7 @@ export type AttributeType<T, V> =
 export type AnyAttributeType = AttributeType<$FlowFixMe, $FlowFixMe>;
 
 export type AttributeConfiguration = $ReadOnly<{
-  [propName: string]: AnyAttributeType,
-  style: $ReadOnly<{
-    [propName: string]: AnyAttributeType,
-    ...
-  }>,
-  ...
-}>;
-
-export type PartialAttributeConfiguration = $ReadOnly<{
-  [propName: string]: AnyAttributeType,
+  [propName: string]: AnyAttributeType | void,
   style?: $ReadOnly<{
     [propName: string]: AnyAttributeType,
     ...
@@ -84,7 +75,7 @@ export type PartialViewConfig = $ReadOnly<{
   directEventTypes?: ViewConfig['directEventTypes'],
   supportsRawText?: boolean,
   uiViewClassName: string,
-  validAttributes?: PartialAttributeConfiguration,
+  validAttributes?: AttributeConfiguration,
 }>;
 
 type InspectorDataProps = $ReadOnly<{
@@ -144,6 +135,7 @@ export type RenderRootOptions = {
     error: mixed,
     errorInfo: {+componentStack?: ?string},
   ) => void,
+  onDefaultTransitionIndicator?: () => void | (() => void),
 };
 
 /**

@@ -29,7 +29,7 @@ using namespace facebook::react;
 - (void)invokeAsync:(std::function<void()> &&)func;
 @end
 
-static ContextContainer::Shared RCTContextContainerFromBridge(RCTBridge *bridge)
+static std::shared_ptr<const ContextContainer> RCTContextContainerFromBridge(RCTBridge *bridge)
 {
   auto contextContainer = std::make_shared<const ContextContainer>();
 
@@ -85,7 +85,8 @@ RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge)
   __weak RCTBridge *_batchedBridge;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge contextContainer:(ContextContainer::Shared)contextContainer
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+              contextContainer:(std::shared_ptr<const ContextContainer>)contextContainer
 {
   if (self = [super init]) {
     contextContainer->update(*RCTContextContainerFromBridge(bridge));

@@ -45,9 +45,15 @@ class ReactNativePodsUtils
     end
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+        if ENV['RCT_HERMES_V1_ENABLED'] == "1"
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1 HERMES_V1_ENABLED=1", "React-hermes", :debug)
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1 HERMES_V1_ENABLED=1", "React-RuntimeHermes", :debug)
+        else
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+            self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
+        end
+
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
     end
 
     def self.set_gcc_preprocessor_definition_for_debugger(installer)
@@ -255,18 +261,27 @@ class ReactNativePodsUtils
     end
 
     def self.create_header_search_path_for_frameworks(base_folder, pod_name, framework_name, additional_paths, include_base_path = true)
-        platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
         search_paths = []
 
-        if platforms.empty?() || platforms.length() == 1
-            base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
-            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-        else
-            platforms.each { |platform|
-                base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+        # When building using the prebuilt rncore we can't use framework folders as search paths since these aren't created
+        # Except for when adding search path for ReactCodegen since it contains source code.
+        if ReactNativeCoreUtils.build_rncore_from_source() || pod_name === "ReactCodegen"
+            platforms = $RN_PLATFORMS != nil ? $RN_PLATFORMS : []
+
+            if platforms.empty?() || platforms.length() == 1
+                base_path = File.join("${#{base_folder}}", pod_name, "#{framework_name}.framework", "Headers")
                 self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
-            }
+            else
+                platforms.each { |platform|
+                    base_path = File.join("${#{base_folder}}", "#{pod_name}-#{platform}", "#{framework_name}.framework", "Headers")
+                    self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
+                }
+            end
+        else
+            base_path = File.join("${PODS_ROOT}", "#{pod_name}")
+            self.add_search_path_to_result(search_paths, base_path, additional_paths, include_base_path)
         end
+
         return search_paths
     end
 
@@ -305,6 +320,7 @@ class ReactNativePodsUtils
                 header_search_paths = config.build_settings["HEADER_SEARCH_PATHS"] ||= "$(inherited)"
 
                 ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+                    .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-runtimeexecutor", "React_runtimeexecutor", ["platform/ios"]))
                     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon-Samples", "ReactCommon_Samples", ["platform/ios"]))
                     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"], false))
                     .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-NativeModulesApple", "React_NativeModulesApple", []))
@@ -555,6 +571,7 @@ class ReactNativePodsUtils
 
     def self.set_reactcommon_searchpaths(target_installation_result)
         header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "ReactCommon", "ReactCommon", ["react/nativemodule/core"])
+            .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-runtimeexecutor", "React_runtimeexecutor", ["platform/ios"]))
             .map { |search_path| "\"#{search_path}\"" }
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "ReactCommon", header_search_paths)
     end
@@ -689,6 +706,17 @@ class ReactNativePodsUtils
                     map[field].unshift("$(inherited)")
                 end
             end
+        end
+    end
+
+    def self.resolve_use_frameworks(spec, header_mappings_dir: nil, module_name: nil)
+        return unless ENV['USE_FRAMEWORKS']
+        if module_name
+            spec.module_name = module_name
+        end
+
+        if header_mappings_dir != nil && ReactNativeCoreUtils.build_rncore_from_source()
+            spec.header_mappings_dir = header_mappings_dir
         end
     end
 end

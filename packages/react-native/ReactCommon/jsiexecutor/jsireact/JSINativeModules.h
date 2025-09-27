@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifndef RCT_FIT_RM_OLD_RUNTIME
+#ifndef RCT_REMOVE_LEGACY_ARCH
 
 #include <memory>
 #include <string>
@@ -21,7 +21,8 @@ namespace facebook::react {
 /**
  * Holds and creates JS representations of the modules in ModuleRegistry
  */
-class JSINativeModules {
+class [[deprecated(
+    "This API will be removed along with the legacy architecture.")]] JSINativeModules {
  public:
   explicit JSINativeModules(std::shared_ptr<ModuleRegistry> moduleRegistry);
   jsi::Value getModule(jsi::Runtime& rt, const jsi::PropNameID& name);
@@ -39,4 +40,4 @@ class JSINativeModules {
 
 } // namespace facebook::react
 
-#endif // RCT_FIT_RM_OLD_RUNTIME
+#endif // RCT_REMOVE_LEGACY_ARCH

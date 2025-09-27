@@ -10,6 +10,7 @@
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
+import type {AccessibilityState} from '../View/ViewAccessibility';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -214,7 +215,7 @@ const Switch: component(
       native.value != null && native.value !== jsValue;
     if (
       shouldUpdateNativeSwitch &&
-      // $FlowIssue[method-unbinding]
+      // $FlowFixMe[method-unbinding]
       nativeSwitchRef.current?.setNativeProps != null
     ) {
       if (Platform.OS === 'android') {
@@ -231,7 +232,7 @@ const Switch: component(
     const _disabled =
       disabled != null ? disabled : accessibilityState?.disabled;
 
-    const _accessibilityState =
+    const _accessibilityState: ?AccessibilityState =
       _disabled !== accessibilityState?.disabled
         ? {...accessibilityState, disabled: _disabled}
         : accessibilityState;
@@ -263,7 +264,7 @@ const Switch: component(
       disabled,
       onTintColor: trackColorForTrue,
       style: StyleSheet.compose(
-        {height: 31, width: 51},
+        {alignSelf: 'flex-start' as const},
         StyleSheet.compose(
           style,
           ios_backgroundColor == null

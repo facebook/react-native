@@ -12,6 +12,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 
 /** Interface for a module that will be notified when a batch of JS->Java calls has finished. */
 @LegacyArchitecture(logLevel = LegacyArchitectureLogLevel.ERROR)
-public fun interface OnBatchCompleteListener {
-  public fun onBatchComplete()
+@Deprecated(
+    message = "This class is part of Legacy Architecture and will be removed in a future release",
+    level = DeprecationLevel.WARNING,
+)
+internal fun interface OnBatchCompleteListener {
+  fun onBatchComplete()
 }

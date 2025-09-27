@@ -22,6 +22,10 @@
 
 namespace facebook::react {
 
+namespace {
+const int MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING = 3;
+} // namespace
+
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
 
@@ -43,7 +47,7 @@ static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
     }
   }
 
-  auto newChildren = ShadowNode::ListOfShared{};
+  auto newChildren = std::vector<std::shared_ptr<const ShadowNode>>{};
   if (!shadowNode.getChildren().empty()) {
     auto index = size_t{0};
     for (const auto& childNode : shadowNode.getChildren()) {
@@ -66,9 +70,11 @@ static std::shared_ptr<ShadowNode> progressState(const ShadowNode& shadowNode) {
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
-                               std::move(newChildren))
-                         : ShadowNodeFragment::childrenPlaceholder(),
+      areChildrenChanged
+          ? std::make_shared<
+                const std::vector<std::shared_ptr<const ShadowNode>>>(
+                std::move(newChildren))
+          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }
@@ -102,7 +108,7 @@ static std::shared_ptr<ShadowNode> progressState(
 
   auto& children = shadowNode.getChildren();
   auto& baseChildren = baseShadowNode.getChildren();
-  auto newChildren = ShadowNode::ListOfShared{};
+  auto newChildren = std::vector<std::shared_ptr<const ShadowNode>>{};
 
   auto childrenSize = children.size();
   auto baseChildrenSize = baseChildren.size();
@@ -153,9 +159,11 @@ static std::shared_ptr<ShadowNode> progressState(
 
   return shadowNode.clone({
       ShadowNodeFragment::propsPlaceholder(),
-      areChildrenChanged ? std::make_shared<const ShadowNode::ListOfShared>(
-                               std::move(newChildren))
-                         : ShadowNodeFragment::childrenPlaceholder(),
+      areChildrenChanged
+          ? std::make_shared<
+                const std::vector<std::shared_ptr<const ShadowNode>>>(
+                std::move(newChildren))
+          : ShadowNodeFragment::childrenPlaceholder(),
       isStateChanged ? newState : ShadowNodeFragment::statePlaceholder(),
   });
 }
@@ -206,7 +214,8 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
   auto revision = ShadowTreeRevision{};
 
   {
-    std::unique_lock lock(commitMutex_);
+    ShadowTree::UniqueLock lock = uniqueCommitLock();
+
     if (commitMode_ == commitMode) {
       return;
     }
@@ -223,7 +232,7 @@ void ShadowTree::setCommitMode(CommitMode commitMode) const {
 }
 
 CommitMode ShadowTree::getCommitMode() const {
-  std::shared_lock lock(commitMutex_);
+  SharedLock lock = sharedCommitLock();
   return commitMode_;
 }
 
@@ -237,17 +246,32 @@ CommitStatus ShadowTree::commit(
     const CommitOptions& commitOptions) const {
   [[maybe_unused]] int attempts = 0;
 
-  while (true) {
-    attempts++;
-
-    auto status = tryCommit(transaction, commitOptions);
-    if (status != CommitStatus::Failed) {
-      return status;
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
+    while (attempts < MAX_COMMIT_ATTEMPTS_BEFORE_LOCKING) {
+      auto status = tryCommit(transaction, commitOptions);
+      if (status != CommitStatus::Failed) {
+        return status;
+      }
+      attempts++;
     }
 
-    // After multiple attempts, we failed to commit the transaction.
-    // Something internally went terribly wrong.
-    react_native_assert(attempts < 1024);
+    {
+      std::unique_lock lock(commitMutexRecursive_);
+      return tryCommit(transaction, commitOptions);
+    }
+  } else {
+    while (true) {
+      attempts++;
+
+      auto status = tryCommit(transaction, commitOptions);
+      if (status != CommitStatus::Failed) {
+        return status;
+      }
+
+      // After multiple attempts, we failed to commit the transaction.
+      // Something internally went terribly wrong.
+      react_native_assert(attempts < 1024);
+    }
   }
 }
 
@@ -265,7 +289,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Reading `currentRevision_` in shared manner.
-    std::shared_lock lock(commitMutex_);
+    SharedLock lock = sharedCommitLock();
     commitMode = commitMode_;
     oldRevision = currentRevision_;
   }
@@ -306,7 +330,7 @@ CommitStatus ShadowTree::tryCommit(
 
   {
     // Updating `currentRevision_` in unique manner if it hasn't changed.
-    std::unique_lock lock(commitMutex_);
+    UniqueLock lock = uniqueCommitLock();
 
     if (currentRevision_.number != oldRevision.number) {
       return CommitStatus::Failed;
@@ -345,7 +369,7 @@ CommitStatus ShadowTree::tryCommit(
 }
 
 ShadowTreeRevision ShadowTree::getCurrentRevision() const {
-  std::shared_lock lock(commitMutex_);
+  SharedLock lock = sharedCommitLock();
   return currentRevision_;
 }
 
@@ -391,6 +415,22 @@ void ShadowTree::emitLayoutEvents(
 
 void ShadowTree::notifyDelegatesOfUpdates() const {
   delegate_.shadowTreeDidFinishTransaction(mountingCoordinator_, true);
+}
+
+inline ShadowTree::UniqueLock ShadowTree::uniqueCommitLock() const {
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
+    return std::unique_lock{commitMutexRecursive_};
+  } else {
+    return std::unique_lock{commitMutex_};
+  }
+}
+
+inline ShadowTree::SharedLock ShadowTree::sharedCommitLock() const {
+  if (ReactNativeFeatureFlags::preventShadowTreeCommitExhaustion()) {
+    return std::unique_lock{commitMutexRecursive_};
+  } else {
+    return std::shared_lock{commitMutex_};
+  }
 }
 
 } // namespace facebook::react

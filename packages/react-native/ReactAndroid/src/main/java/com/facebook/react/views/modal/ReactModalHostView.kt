@@ -37,11 +37,10 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.config.ReactFeatureFlags
-import com.facebook.react.uimanager.DisplayMetricsHolder
-import com.facebook.react.uimanager.DisplayMetricsHolder.getStatusBarHeightPx
 import com.facebook.react.uimanager.JSPointerDispatcher
 import com.facebook.react.uimanager.JSTouchDispatcher
 import com.facebook.react.uimanager.PixelUtil.pxToDp
@@ -51,11 +50,11 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
-import com.facebook.react.views.modal.ReactModalHostView.DialogRootViewGroup
 import com.facebook.react.views.view.ReactViewGroup
+import com.facebook.react.views.view.disableEdgeToEdge
+import com.facebook.react.views.view.enableEdgeToEdge
+import com.facebook.react.views.view.isEdgeToEdgeFeatureFlagOn
 import com.facebook.react.views.view.setStatusBarTranslucency
-import com.facebook.react.views.view.setSystemBarsTranslucency
-import com.facebook.yoga.annotations.DoNotStrip
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.
@@ -70,7 +69,6 @@ import com.facebook.yoga.annotations.DoNotStrip
  *    addition and removal of views to the DialogRootViewGroup.
  */
 @SuppressLint("ViewConstructor")
-@DoNotStrip
 public class ReactModalHostView(context: ThemedReactContext) :
     ViewGroup(context), LifecycleEventListener {
 
@@ -81,16 +79,19 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var transparent: Boolean = false
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
+
   public var statusBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var navigationBarTranslucent: Boolean = false
+    get() = field || isEdgeToEdgeFeatureFlagOn
     set(value) {
       field = value
-      createNewDialog = true
+      createNewDialog = createNewDialog || !isEdgeToEdgeFeatureFlagOn
     }
 
   public var animationType: String? = null
@@ -126,7 +127,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
-    initStatusBarHeight(context)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -251,8 +251,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
     if (createNewDialog) {
       dismiss()
     } else {
-      updateProperties()
-      return
+      // With Props 2.0 the view creation could include initial props. This means the dialog might
+      // still have to be created before the properties can be set. We only update properties if the
+      // dialog was already initialized.
+      dialog?.let {
+        updateProperties()
+        return
+      }
     }
 
     // Reset the flag since we are going to create a new dialog
@@ -270,7 +275,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val window = requireNotNull(newDialog.window)
     window.setFlags(
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+    )
 
     newDialog.setContentView(contentView)
     updateProperties()
@@ -317,7 +323,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
             }
             return false
           }
-        })
+        }
+    )
 
     window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
@@ -326,7 +333,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val flagSecureSet = isFlagSecureSet(currentActivity)
     if (flagSecureSet) {
       window.setFlags(
-          WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+          WindowManager.LayoutParams.FLAG_SECURE,
+          WindowManager.LayoutParams.FLAG_SECURE,
+      )
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
@@ -378,9 +387,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       }
 
       // Navigation bar cannot be translucent without status bar being translucent too
-      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
-
-      if (!navigationBarTranslucent) {
+      if (navigationBarTranslucent) {
+        dialogWindow.enableEdgeToEdge()
+      } else {
+        dialogWindow.disableEdgeToEdge()
         dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
       }
 
@@ -389,7 +399,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
       } else {
         dialogWindow.setDimAmount(0.5f)
         dialogWindow.setFlags(
-            WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+            WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+        )
       }
     } catch (e: IllegalArgumentException) {
       // This is to prevent a crash from the following error, without a clear repro steps:
@@ -415,6 +427,13 @@ public class ReactModalHostView(context: ThemedReactContext) :
           WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
       val dialogWindowInsetsController =
           WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
+
+      if (isEdgeToEdgeFeatureFlagOn) {
+        activityWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        dialogWindowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+      }
 
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
@@ -466,26 +485,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private companion object {
     private const val TAG = "ReactModalHost"
-
-    // We store the status bar height to be able to properly position
-    // the modal on the first render.
-    private var statusBarHeight = 0
-
-    private fun initStatusBarHeight(reactContext: ReactContext) {
-      statusBarHeight = getStatusBarHeightPx(reactContext.currentActivity)
-    }
-
-    @JvmStatic
-    @DoNotStrip
-    private fun getScreenDisplayMetricsWithoutInsets(): Long {
-      val displayMetrics = DisplayMetricsHolder.getScreenDisplayMetrics()
-      return encodeFloatsToLong(
-          displayMetrics.widthPixels.toFloat().pxToDp(),
-          (displayMetrics.heightPixels - statusBarHeight).toFloat().pxToDp())
-    }
-
-    private fun encodeFloatsToLong(width: Float, height: Float): Long =
-        (width.toRawBits().toLong()) shl 32 or (height.toRawBits().toLong())
   }
 
   /**
@@ -562,7 +561,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
                       .getNativeModule(UIManagerModule::class.java)
                       ?.updateNodeSize(id, viewWidth, viewHeight)
                 }
-              })
+              }
+          )
         }
       }
     }
@@ -601,9 +601,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       return super.onHoverEvent(event)
     }
 
+    @OptIn(UnstableReactNativeAPI::class)
     override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
       eventDispatcher?.let { eventDispatcher ->
-        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
+        jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher, reactContext)
         jSPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)
       }
     }
