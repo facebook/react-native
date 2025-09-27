@@ -16,6 +16,7 @@
 #include "WeakList.h"
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
 #include <jsinspector-modern/tracing/TraceRecordingState.h>
 
@@ -39,7 +40,15 @@ class RuntimeAgent;
 class RuntimeTracingAgent;
 class RuntimeAgentDelegate;
 class RuntimeTarget;
+class HostTargetDelegate;
 struct SessionState;
+
+using ConsoleTimeStampCallback = std::function<void(
+    std::string_view label,
+    std::optional<tracing::ConsoleTimeStampEntry> start,
+    std::optional<tracing::ConsoleTimeStampEntry> end,
+    std::optional<std::string_view> trackName,
+    std::optional<std::string_view> trackGroup)>;
 
 /**
  * Receives events from a RuntimeTarget. This is a shared interface that
@@ -151,6 +160,11 @@ class RuntimeTargetController {
    */
   tracing::RuntimeSamplingProfile collectSamplingProfile();
 
+  /**
+   * Get access to HostTargetDelegate.
+   */
+  HostTargetDelegate& getHostTargetDelegate() const;
+
  private:
   RuntimeTarget& target_;
 };
@@ -178,12 +192,14 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * \param selfExecutor An executor that may be used to call methods on this
    * RuntimeTarget while it exists. \c create additionally guarantees that the
    * executor will not be called after the RuntimeTarget is destroyed.
+   * \param hostTargetDelegate Reference to HostTargetDelegate.
    */
   static std::shared_ptr<RuntimeTarget> create(
       const ExecutionContextDescription& executionContextDescription,
       RuntimeTargetDelegate& delegate,
       RuntimeExecutor jsExecutor,
-      VoidExecutor selfExecutor);
+      VoidExecutor selfExecutor,
+      HostTargetDelegate& hostTargetDelegate);
 
   RuntimeTarget(const RuntimeTarget&) = delete;
   RuntimeTarget(RuntimeTarget&&) = delete;
@@ -251,7 +267,8 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   RuntimeTarget(
       ExecutionContextDescription executionContextDescription,
       RuntimeTargetDelegate& delegate,
-      RuntimeExecutor jsExecutor);
+      RuntimeExecutor jsExecutor,
+      HostTargetDelegate& hostTargetDelegate);
 
   const ExecutionContextDescription executionContextDescription_;
   RuntimeTargetDelegate& delegate_;
@@ -267,6 +284,11 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   std::weak_ptr<RuntimeTracingAgent> tracingAgent_;
 
   /**
+   * Reference to HostTargetDelegate.
+   */
+  HostTargetDelegate& hostTargetDelegate_;
+
+  /**
    * Adds a function with the given name on the runtime's global object, that
    * when called will send a Runtime.bindingCalled event through all connected
    * sessions that have registered to receive binding events for that name.
@@ -280,9 +302,21 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   void installGlobals();
 
   /**
-   * Install the console API handler.
+   * console.timeStamp() callback for propagating events up to HostTarget.
    */
-  void installConsoleHandler();
+  void consoleTimestampCallback(
+      std::string_view label,
+      std::optional<tracing::ConsoleTimeStampEntry> start,
+      std::optional<tracing::ConsoleTimeStampEntry> end,
+      std::optional<std::string_view> trackName,
+      std::optional<std::string_view> trackGroup);
+
+  /**
+   * Install the console API handler.
+   * \param timestampCallback Callback function for console.timeStamp() event
+   * propagation.
+   */
+  void installConsoleHandler(const ConsoleTimeStampCallback& timestampCallback);
 
   /**
    * Installs __DEBUGGER_SESSION_OBSERVER__ object on the JavaScript's global
