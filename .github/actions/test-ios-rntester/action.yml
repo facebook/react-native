@@ -7,9 +7,9 @@ inputs:
   ruby-version:
     description: The version of ruby that must be used
     default: 2.6.10
-  run-unit-tests:
-    description: whether unit tests should run or not.
-    default: "false"
+  run-unit-integration-tests:
+    description: whether unit & integration tests should run or not.
+    default: "true"
   hermes-tarball-artifacts-dir:
     description: The directory where the hermes tarball artifacts are stored
     default: /tmp/hermes/hermes-runtime-darwin
@@ -46,7 +46,7 @@ runs:
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-integration-tests == 'true' }}
       uses: ./.github/actions/prepare-ios-tests
     - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
       shell: bash
@@ -134,12 +134,12 @@ runs:
           echo "App found at $APP_PATH"
           echo "app-path=$APP_PATH" >> $GITHUB_ENV
     - name: "Run Tests: iOS Unit and Integration Tests"
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-integration-tests == 'true' }}
       shell: bash
       run: yarn test-ios
 
     - name: Zip Derived data folder
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-integration-tests == 'true' }}
       shell: bash
       run: |
         echo "zipping tests results"
@@ -148,7 +148,7 @@ runs:
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
       uses: actions/upload-artifact@v4.3.4
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-integration-tests == 'true' }}
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
@@ -159,7 +159,7 @@ runs:
         name: RNTesterApp-NewArch-${{ inputs.flavor }}
         path: ${{ env.app-path }}
     - name: Store test results
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-integration-tests == 'true' }}
       uses: actions/upload-artifact@v4.3.4
       with:
         name: test-results
