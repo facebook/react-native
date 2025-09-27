@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8e1821e9a153a4b725890cb4a7f262ee>>
+ * @generated SignedSource<<7a0a26494846d6b4881bea01beabb9d6>>
  */
 
 /**
@@ -477,6 +477,12 @@ class ReactNativeFeatureFlagsJavaProvider
     return method(javaProvider_);
   }
 
+  double viewCullingOutsetRatio() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("viewCullingOutsetRatio");
+    return method(javaProvider_);
+  }
+
   double virtualViewHysteresisRatio() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jdouble()>("virtualViewHysteresisRatio");
@@ -858,6 +864,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useTurboModules(
   return ReactNativeFeatureFlags::useTurboModules();
 }
 
+double JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::viewCullingOutsetRatio();
+}
+
 double JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::virtualViewHysteresisRatio();
@@ -1118,6 +1129,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useTurboModules",
         JReactNativeFeatureFlagsCxxInterop::useTurboModules),
+      makeNativeMethod(
+        "viewCullingOutsetRatio",
+        JReactNativeFeatureFlagsCxxInterop::viewCullingOutsetRatio),
       makeNativeMethod(
         "virtualViewHysteresisRatio",
         JReactNativeFeatureFlagsCxxInterop::virtualViewHysteresisRatio),
