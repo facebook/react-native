@@ -388,6 +388,19 @@ export type ScrollViewPropsAndroid = $ReadOnly<{
    * @platform android
    */
   fadingEdgeLength?: ?number | {start: number, end: number},
+
+  /**
+   * Emit touchcancel from native Android ScrollView, instead of letting Responder System
+   * terminate responder at scroll.
+   *
+   * When it's set to false, `onTouchCancel` on ScrollView children will not be invoked, but
+   * `onTouchEnd` will be invoked (if touch starts on it) - which aligns with iOS.
+   *
+   * The default value is true.
+   *
+   * @platform android
+   */
+  responderIgnoreScroll?: ?boolean,
 }>;
 
 type StickyHeaderComponentType = component(
